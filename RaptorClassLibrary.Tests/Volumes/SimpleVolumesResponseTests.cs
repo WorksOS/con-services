@@ -1,21 +1,20 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.VisionLink.Raptor.Volumes.GridFabric.Responses;
+using Xunit;
 
 namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests.Volumes
 {
-    [TestClass]
-    public class SimpleVolumesResponseTests
+        public class SimpleVolumesResponseTests
     {
-        [TestMethod]
+        [Fact]
         public void Test_SimpleVolumesResponseTests_Creation()
         {
             SimpleVolumesResponse response = new SimpleVolumesResponse();
 
-            Assert.IsNotNull(response, "Simple volumes response failed to create");
+            Assert.NotNull(response, "Simple volumes response failed to create");
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_SimpleVolumesResponseTests_AggregateWith()
         {
             // Allow this to be null, it will receive all the aggregations
@@ -32,12 +31,12 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests.Volumes
 
             response1.AggregateWith(response2);
 
-            Assert.IsTrue(response1.Cut == 10.0, "Cut value incorrect after aggregatewith");
-            Assert.IsTrue(response1.Fill == 20.0, "Fill value incorrect after aggregatewith");
-            Assert.IsTrue(response1.BoundingExtentGrid.Equals(response2.BoundingExtentGrid), "BoundingExtentGrid value incorrect after aggregatewith");
-            Assert.IsTrue(response1.CutArea == 30.0, "CutArea value incorrect after aggregatewith");
-            Assert.IsTrue(response1.FillArea == 40.0, "FillArea value incorrect after aggregatewith");
-            Assert.IsTrue(response1.TotalCoverageArea == 100.0, "TotalCoverageArea value incorrect after aggregatewith");
+            Assert.Equal(response1.Cut, 10.0);
+            Assert.Equal(response1.Fill, 20.0);
+            Assert.True(response1.BoundingExtentGrid.Equals(response2.BoundingExtentGrid), "BoundingExtentGrid value incorrect after aggregatewith");
+            Assert.Equal(response1.CutArea, 30.0);
+            Assert.Equal(response1.FillArea, 40.0);
+            Assert.Equal(response1.TotalCoverageArea, 100.0);
         }
     }
 }

@@ -1,24 +1,23 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.VisionLink.Raptor.Volumes.GridFabric.Requests;
 using VSS.VisionLink.Raptor.Volumes.GridFabric.Responses;
 using VSS.VisionLink.Raptor.Volumes.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Geometry;
+using Xunit;
 
 namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests.Volumes
 {
-    [TestClass]
-    public class SimpleVolumesRequestTests
+        public class SimpleVolumesRequestTests
     {
-        [TestMethod]
+        [Fact]
         public void TesT_SimpleVolumesRequest_Creation()
         {
             SimpleVolumesRequest_ClusterCompute request = new SimpleVolumesRequest_ClusterCompute();
 
-            Assert.IsNotNull(request, "Volumes request failed to create");
+            Assert.NotNull(request, "Volumes request failed to create");
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_SimpleVolumesRequest_Execute()
         {
             SimpleVolumesRequest_ClusterCompute request = new SimpleVolumesRequest_ClusterCompute();
@@ -29,8 +28,8 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests.Volumes
             // This request will fail (Ignite not accessibel from unit tests) and will return a 
             // response with null values
 
-            Assert.IsNotNull(response, "Null response returned");
-            Assert.IsTrue(!response.Cut.HasValue &&
+            Assert.NotNull(response, "Null response returned");
+            Assert.True(!response.Cut.HasValue &&
                           !response.Fill.HasValue &&
                           !response.TotalCoverageArea.HasValue &&
                           !response.CutArea.HasValue &&

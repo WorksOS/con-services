@@ -1,56 +1,55 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Designs;
+using Xunit;
 
 namespace VSS.VisionLink.Raptor.Filters.Tests
 {
-    [TestClass()]
-    public class CellPassAttributeFilterTests
+        public class CellPassAttributeFilterTests
     {
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_CellPassAttributeFilter()
         {
             CellPassAttributeFilter filter = new CellPassAttributeFilter(null);
 
-            Assert.IsFalse(filter.AnyFilterSelections || filter.AnyMachineEventFilterSelections || filter.AnyNonMachineEventFilterSelections,
+            Assert.False(filter.AnyFilterSelections || filter.AnyMachineEventFilterSelections || filter.AnyNonMachineEventFilterSelections,
                 "Filter flags set for default filter");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_Prepare()
         {
             CellPassAttributeFilter filter = new CellPassAttributeFilter(null);
 
-            Assert.IsFalse(filter.ElevationRangeIsInitialised, "Elevation range is initialised");
+            Assert.False(filter.ElevationRangeIsInitialised, "Elevation range is initialised");
 
             filter.Prepare();
 
-            Assert.IsFalse(filter.ElevationRangeIsInitialised, "Elevation range is not initialised");
+            Assert.False(filter.ElevationRangeIsInitialised, "Elevation range is not initialised");
 
             filter.ClearFilter();
 
-            Assert.IsFalse(filter.AnyFilterSelections, "AnyFilterSelections not false");
-            Assert.IsFalse(filter.AnyMachineEventFilterSelections, "AnyMachineEventFilterSelections not false");
-            Assert.IsFalse(filter.AnyNonMachineEventFilterSelections, "AnyNonMachineEventFilterSelections not false");
+            Assert.False(filter.AnyFilterSelections, "AnyFilterSelections not false");
+            Assert.False(filter.AnyMachineEventFilterSelections, "AnyMachineEventFilterSelections not false");
+            Assert.False(filter.AnyNonMachineEventFilterSelections, "AnyNonMachineEventFilterSelections not false");
 
             filter.HasTimeFilter = true;
             filter.Prepare();
 
-            Assert.IsTrue(filter.AnyFilterSelections, "AnyFilterSelections not true after adding time filter");
-            Assert.IsFalse(filter.AnyMachineEventFilterSelections, "AnyMachineEventFilterSelections not false");
-            Assert.IsTrue(filter.AnyNonMachineEventFilterSelections, "AnyNonMachineEventFilterSelections not true after adding time filter");
+            Assert.True(filter.AnyFilterSelections, "AnyFilterSelections not true after adding time filter");
+            Assert.False(filter.AnyMachineEventFilterSelections, "AnyMachineEventFilterSelections not false");
+            Assert.True(filter.AnyNonMachineEventFilterSelections, "AnyNonMachineEventFilterSelections not true after adding time filter");
 
             filter.HasPositioningTechFilter = true;
 
             filter.Prepare();
 
-            Assert.IsTrue(filter.AnyFilterSelections, "AnyFilterSelections not true");
-            Assert.IsTrue(filter.AnyMachineEventFilterSelections, "AnyMachineEventFilterSelections not true");
-            Assert.IsTrue(filter.AnyNonMachineEventFilterSelections, "AnyNonMachineEventFilterSelections not true");
+            Assert.True(filter.AnyFilterSelections, "AnyFilterSelections not true");
+            Assert.True(filter.AnyMachineEventFilterSelections, "AnyMachineEventFilterSelections not true");
+            Assert.True(filter.AnyNonMachineEventFilterSelections, "AnyNonMachineEventFilterSelections not true");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_ClearFilter()
         {
             Assert.Fail();
@@ -62,16 +61,16 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
         {
             CellPassAttributeFilter filter = new CellPassAttributeFilter(null);
 
-            Assert.IsTrue(checkClearState(filter), "[{0}] State set when expected to be not set (1)", name);
+            Assert.True(checkClearState(filter), "[{0}] State set when expected to be not set (1)", name);
 
             setState(filter);
-            Assert.IsTrue(checkSetState(filter), "[{0}] State not set when expected to be set", name);
+            Assert.True(checkSetState(filter), "[{0}] State not set when expected to be set", name);
 
             clearState(filter);
-            Assert.IsTrue(checkClearState(filter), "[{0}] State set when expected to be not set (2)", name);
+            Assert.True(checkClearState(filter), "[{0}] State set when expected to be not set (2)", name);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_ClearVibeState()
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("VibeState", 
@@ -87,31 +86,31 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
             CellPassAttributeFilter filter2 = new CellPassAttributeFilter(null);
 
             SetState(filter1);
-            Assert.IsTrue(filter1.CompareTo(filter2) == -1, "[{0}] filter1.CompareTo(filter2) != -1, = {1}", name, filter1.CompareTo(filter2));
+            Assert.Equal(-1, filter1.CompareTo(filter2));
 
             SetState(filter2);
-            Assert.IsTrue(filter1.CompareTo(filter2) == 0, "[{0}] filter1.CompareTo(filter2) != 0, = {1}", name, filter1.CompareTo(filter2));
+            Assert.Equal(0, filter1.CompareTo(filter2));
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_Time()
         {
             Test_CellPassAttributeFilter_CompareTo_Aspect("Time", x => { x.HasTimeFilter = true; x.StartTime = new DateTime(2000, 1, 1); });
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_CompactionMachines()
         {
             Test_CellPassAttributeFilter_CompareTo_Aspect("CompactionMachinesOnly", x => { x.HasCompactionMachinesOnlyFilter = true; });
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_DesignNameID()
         {
             Test_CellPassAttributeFilter_CompareTo_Aspect("Time", x => { x.HasDesignFilter = true; x.DesignNameID = 10; });
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_ElevationRange()
         {
             Test_CellPassAttributeFilter_CompareTo_Aspect("ElevationRange_Design",
@@ -133,86 +132,86 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
                 });
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_ElevationType()
         {
             Test_CellPassAttributeFilter_CompareTo_Aspect("ElevationType", x => { x.HasElevationTypeFilter = true; x.ElevationType = Types.ElevationType.Highest; });
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_GCSGuidanceMode()
         {
             Test_CellPassAttributeFilter_CompareTo_Aspect("GCSGuidanceMode", x => { x.HasGCSGuidanceModeFilter = true; x.GCSGuidanceMode = Types.MachineAutomaticsMode.Automatics; });
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_GPSAccuracy()
         {
             Test_CellPassAttributeFilter_CompareTo_Aspect("GPSAccuracy", x => { x.HasGPSAccuracyFilter = true; x.GPSAccuracy = Types.GPSAccuracy.Medium; });
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_GPSTolerance()
         {
             Test_CellPassAttributeFilter_CompareTo_Aspect("GPSTolerance", x => { x.HasGPSToleranceFilter = true; x.GPSTolerance = 1000; });
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_LayerID()
         {
             Test_CellPassAttributeFilter_CompareTo_Aspect("LayerID", x => { x.HasLayerIDFilter = true; x.LayerID = 10; });
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_LayerState()
         {
             Test_CellPassAttributeFilter_CompareTo_Aspect("LayerState On", x => { x.HasLayerStateFilter = true; x.LayerState = Types.LayerState.On; });
             Test_CellPassAttributeFilter_CompareTo_Aspect("LayerState Off", x => { x.HasLayerStateFilter = true; x.LayerState = Types.LayerState.Off; });
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_MachineDirection()
         {
             Test_CellPassAttributeFilter_CompareTo_Aspect("MachineDirection forward", x => { x.HasMachineDirectionFilter = true; x.MachineDirection = Types.MachineDirection.Forward; });
             Test_CellPassAttributeFilter_CompareTo_Aspect("MachineDirection reverse", x => { x.HasMachineDirectionFilter = true; x.MachineDirection = Types.MachineDirection.Reverse; });
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_Machine()
         {
             // TODO readd when machines are available
             //Test_CellPassAttributeFilter_CompareTo_Aspect("Machine", x => { x.HasMachineFilter = true; x.Machine =  });
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_MinElevMapping()
         {
             Test_CellPassAttributeFilter_CompareTo_Aspect("MinElevationMapping true", x => { x.HasMinElevMappingFilter = true; x.MinElevationMapping = true; });
             Test_CellPassAttributeFilter_CompareTo_Aspect("MinElevationMapping false", x => { x.HasMinElevMappingFilter = true; x.MinElevationMapping = true; });
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_PassType()
         {
             // TODO readd when pass type available
             //Test_CellPassAttributeFilter_CompareTo_Aspect("PassType", x => { x.HasPassTypeFilter = true; x.PassType; });
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_PositioningTech()
         {
             Test_CellPassAttributeFilter_CompareTo_Aspect("PositioningTech GPS", x => { x.HasPositioningTechFilter = true; x.PositioningTech = Types.PositioningTech.GPS; });
             Test_CellPassAttributeFilter_CompareTo_Aspect("PositioningTech UTS", x => { x.HasPositioningTechFilter = true; x.PositioningTech = Types.PositioningTech.UTS; });
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_VibeState()
         {
             Test_CellPassAttributeFilter_CompareTo_Aspect("VibeState Off", x => { x.HasVibeStateFilter = true; x.VibeState = Types.VibrationState.Off; });
             Test_CellPassAttributeFilter_CompareTo_Aspect("VibeState On", x => { x.HasVibeStateFilter = true; x.VibeState = Types.VibrationState.On; });
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_ClearDesigns()
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("Designs",
@@ -222,7 +221,7 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
                                                             x => { return !x.HasDesignFilter && x.DesignNameID == Consts.kNoDesignNameID; });
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_ClearElevationRange()
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("ElevationRange Design",
@@ -247,7 +246,7 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
                                                             x => { return !x.HasElevationRangeFilter && x.ElevationRangeLevel == Consts.NullDouble && x.ElevationRangeLevel == Consts.NullDouble && x.ElevationRangeThickness == Consts.NullDouble; });
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_ClearElevationRangeFilterInitialisation()
         {
             CellPassAttributeFilter filter = new CellPassAttributeFilter(null)
@@ -257,28 +256,28 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
             };
             filter.ClearElevationRangeFilterInitialisation();
 
-            Assert.IsTrue(filter.ElevationRangeIsInitialised == false && filter.ElevationRangeDesignElevations == null);
+            Assert.True(filter.ElevationRangeIsInitialised == false && filter.ElevationRangeDesignElevations == null);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_ClearElevationType()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_ClearGPSAccuracy()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_ClearGPSTolerance()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_ClearGuidanceMode()
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("GuidanceMode",
@@ -288,7 +287,7 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
                                                             x => { return !x.HasGCSGuidanceModeFilter && x.GCSGuidanceMode == Types.MachineAutomaticsMode.Unknown; });
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_ClearLayerID()
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("LayerID",
@@ -298,7 +297,7 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
                                                             x => { return !x.HasLayerIDFilter && x.LayerID == 0; });
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_ClearLayerState()
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("Layer State",
@@ -308,13 +307,13 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
                                                             x => { return !x.HasLayerStateFilter; });
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_Assign()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_ClearCompactionMachineOnlyRestriction()
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("Compaction only",
@@ -324,7 +323,7 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
                                                             x => { return !x.HasCompactionMachinesOnlyFilter; });
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_ClearMachineDirection()
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("MachineDirection",
@@ -334,14 +333,14 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
                                                             x => { return !x.HasMachineDirectionFilter && x.MachineDirection == Types.MachineDirection.Unknown; });
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_ClearMachines()
         {
             //TODO: Readd when machines are available
             Assert.Inconclusive();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_ClearMinElevationMapping()
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("MinElevMapping",
@@ -351,7 +350,7 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
                                                             x => { return !x.HasMinElevMappingFilter && x.MinElevationMapping == false; });
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_ClearPassType()
         {
             // TODO: Readd when pass type is available
@@ -363,7 +362,7 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
             Assert.Inconclusive();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_ClearPositioningTech()
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("PositioningTech",
@@ -373,13 +372,13 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
                                                             x => { return !x.HasPositioningTechFilter; });
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_ClearSurveyedSurfaceExclusionList()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_ClearTime()
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("Time",
@@ -389,94 +388,94 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
                                                             x => { return !x.HasTimeFilter && x.StartTime == DateTime.MinValue && x.EndTime == DateTime.MaxValue; });
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_FilterPass()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_FilterPassTest1()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_FilterPassUsingElevationRange()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_FilterPassUsingTimeOnly()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_FilterPass_MachineEvents()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_FilterPass_NoMachineEvents()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_FiltersElevation()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_FiltersElevationTest1()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_FilterSinglePass()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_InitaliaseFilteringForCell()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_InitialiseElevationRangeFilter()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_InitialiseMachineIDsSet()
         {
             // TODO: Add when machine are available
             Assert.Inconclusive();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_IsTimeRangeFilter()
         {
             CellPassAttributeFilter filter = new CellPassAttributeFilter(null);
 
-            Assert.IsFalse(filter.IsTimeRangeFilter(), "Time range set");
+            Assert.False(filter.IsTimeRangeFilter(), "Time range set");
 
             filter.HasTimeFilter = true;
-            Assert.IsFalse(filter.IsTimeRangeFilter(), "Time range set");
+            Assert.False(filter.IsTimeRangeFilter(), "Time range set");
 
             filter.StartTime = new DateTime(2000, 1, 1);
-            Assert.IsTrue(filter.IsTimeRangeFilter(), "Time range not set");
+            Assert.True(filter.IsTimeRangeFilter(), "Time range not set");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_CellPassAttributeFilter_FilterMultiplePasses()
         {
             Assert.Fail();

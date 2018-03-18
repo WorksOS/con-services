@@ -1,25 +1,24 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor;
+using Xunit;
 
 namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 {
-    [TestClass]
-    public class SubGridTests
+        public class SubGridTests
     {
-        [TestMethod]
+        [Fact]
         public void Test_SubGrid_Creation()
         {
             ISubGrid subgrid = null;
 
             // Try creating a new base subgrid instance directly, supplying 
             subgrid = new SubGrid(new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>()), null, SubGridTree.SubGridTreeLevels);
-            Assert.IsTrue(subgrid != null, "Subgrid failed to construct");
+            Assert.NotNull(subgrid);
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_SubGrid_LeafSubgridProperties()
         {
             ISubGrid leafSubgrid = null;
@@ -28,22 +27,22 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             // Create a new base subgrid leaf instance directly
             leafSubgrid = new SubGrid(tree, null, SubGridTree.SubGridTreeLevels);
 
-            Assert.IsTrue(leafSubgrid.IsLeafSubGrid() == true, "Created Leaf subgrid does not advertise as such");
+            Assert.True(leafSubgrid.IsLeafSubGrid());
 
-            Assert.IsTrue(leafSubgrid.Dirty == false, "Dirty flag set on creation of subgrid");
-            Assert.IsTrue(leafSubgrid.Level == SubGridTree.SubGridTreeLevels, "Incorrect tree level in subgrid");
-            Assert.IsTrue(leafSubgrid.AxialCellCoverageByThisSubgrid() == SubGridTree.SubGridTreeDimension, "Incorrect number of cells reported for axial cell coverage in subgrid");
+            Assert.False(leafSubgrid.Dirty);
+            Assert.Equal(leafSubgrid.Level, SubGridTree.SubGridTreeLevels);
+            Assert.Equal(leafSubgrid.AxialCellCoverageByThisSubgrid(), SubGridTree.SubGridTreeDimension);
 
-            Assert.IsTrue(leafSubgrid.OriginX == 0, "Invalid OriginX on newly created subgrid");
-            Assert.IsTrue(leafSubgrid.OriginY == 0, "Invalid OriginY on newly created subgrid");
-            Assert.IsTrue(leafSubgrid.Moniker() == "0:0", "Invalid Moniker on newly created subgrid");
+            Assert.Equal(0, leafSubgrid.OriginX);
+            Assert.Equal(0, leafSubgrid.OriginY);
+            Assert.Equal(leafSubgrid.Moniker(), "0:0");
 
             // Does the dirty flag change?
             leafSubgrid.Dirty = true;
-            Assert.IsTrue(leafSubgrid.Dirty, "Leaf subgrid is not marked as dirty after setting it to dirty");
+            Assert.True(leafSubgrid.Dirty, "Leaf subgrid is not marked as dirty after setting it to dirty");
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_SubGrid_NodeSubgridProperties()
         {
             ISubGrid nodeSubgrid = null;
@@ -51,22 +50,20 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 
             // Create a new base subgrid node instance directly
             nodeSubgrid = new SubGrid(tree, null, SubGridTree.SubGridTreeLevels - 1);
-            Assert.IsTrue(nodeSubgrid.IsLeafSubGrid() == false, "Created node subgrid does not advertise as such");
+            Assert.False(nodeSubgrid.IsLeafSubGrid());
 
-            Assert.IsTrue(nodeSubgrid.Dirty == false, "Dirty flag set on creation of subgrid");
-            Assert.IsTrue(nodeSubgrid.Level == SubGridTree.SubGridTreeLevels - 1, "Incorrect tree level in subgrid");
+            Assert.False(nodeSubgrid.Dirty);
+            Assert.Equal(nodeSubgrid.Level, SubGridTree.SubGridTreeLevels - 1);
 
             // A subgrid one level above a leaf subgrid covers sqr(SubGridTree.SubGridTreeDimension) cells in each dimension (X & Y)
-            Assert.IsTrue(nodeSubgrid.AxialCellCoverageByThisSubgrid() == SubGridTree.SubGridTreeDimension * SubGridTree.SubGridTreeDimension,
-                          "Incorrect number of cells reported for axial cell coverage in the subgrid");
+            Assert.Equal(nodeSubgrid.AxialCellCoverageByThisSubgrid(), SubGridTree.SubGridTreeDimension * SubGridTree.SubGridTreeDimension);
 
             // A child subgrid of this parent shoudl ahve an axial coverage of SubGridTree.SubGridTreeDimension cells in each dimension (X & Y)
             // (as there are SubGridTree.SubGridTreeDimension children cells in the X and Y dimensions
-            Assert.IsTrue(nodeSubgrid.AxialCellCoverageByChildSubgrid() == SubGridTree.SubGridTreeDimension,
-                          "Incorrect number of cells reported for axial cell coverage for a child in the subgrid");
+            Assert.Equal(nodeSubgrid.AxialCellCoverageByChildSubgrid(), SubGridTree.SubGridTreeDimension);
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_SubGrid_ParentAssignment()
         {
             ISubGrid parentSubgrid = null;
@@ -80,12 +77,12 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             leafSubgrid.Parent = parentSubgrid;
             leafSubgrid.SetOriginPosition(10, 10);
 
-            Assert.IsTrue(leafSubgrid.OriginX == 10 * SubGridTree.SubGridTreeDimension, "Invalid OriginX on newly created subgrid");
-            Assert.IsTrue(leafSubgrid.OriginY == 10 * SubGridTree.SubGridTreeDimension, "Invalid OriginY on newly created subgrid");
-            Assert.IsTrue(leafSubgrid.Moniker() == String.Format("{0}:{0}", 10 * SubGridTree.SubGridTreeDimension), "Invalid Moniker on newly created subgrid");
+            Assert.Equal(leafSubgrid.OriginX, 10 * SubGridTree.SubGridTreeDimension);
+            Assert.Equal(leafSubgrid.OriginY, 10 * SubGridTree.SubGridTreeDimension);
+            Assert.Equal(leafSubgrid.Moniker(), String.Format("{0}:{0}", 10 * SubGridTree.SubGridTreeDimension));
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_SubGrid_Invalid_GetSubgrid()
         {
             ISubGrid subgrid = null;
@@ -106,7 +103,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_SubGrid_Invalid_SetSubgrid()
         {
             ISubGrid subgrid = null;
@@ -127,7 +124,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_SubGrid_Invalid_Clear()
         {
             ISubGrid subgrid = null;
@@ -148,7 +145,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_SubGrid_Invalid_CellHasValue()
         {
             ISubGrid subgrid = null;
@@ -171,7 +168,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_SubGrid_GetWorldOrigin()
         {
             ISubGrid leafSubgrid = null;
@@ -186,13 +183,11 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             // World origin of leaf subgrid is the extreme origin of the overmapped world coordinate system (cell coordinate system * cell size)
             // as the cell origin position is 0, 0 in the cell address space for a newly created subgrid
             // The leaf So, both X and Y origin values 
-            Assert.IsTrue(WorldOriginX == WorldOriginY, "Default subgrid origin values for X and Y are not the same");
-            Assert.IsTrue(WorldOriginX == (-tree.IndexOriginOffset * tree.CellSize),
-                          String.Format("World origin values for default subgrid are not correct, they are {0}, but should be {1}",
-                                        WorldOriginX, -tree.IndexOriginOffset * tree.CellSize));
+            Assert.Equal(WorldOriginX, WorldOriginY);
+            Assert.Equal(WorldOriginX, (-tree.IndexOriginOffset * tree.CellSize));
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_SubGrid_GetSubGridCellIdex()
         {
             ISubGrid leafSubgrid = null;
@@ -207,16 +202,16 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 
             byte SubGridCellX, SubGridCellY;
             leafSubgrid.GetSubGridCellIndex(0, 0, out SubGridCellX, out SubGridCellY);
-            Assert.IsTrue(SubGridCellX == 0 && SubGridCellY == 0, "Subgrid cell indices incorrect");
+            Assert.True(SubGridCellX == 0 && SubGridCellY == 0, "Subgrid cell indices incorrect");
 
             leafSubgrid.GetSubGridCellIndex(SubGridTree.SubGridTreeDimensionMinus1, SubGridTree.SubGridTreeDimensionMinus1, out SubGridCellX, out SubGridCellY);
-            Assert.IsTrue(SubGridCellX == (SubGridTree.SubGridTreeDimensionMinus1) && SubGridCellY == (SubGridTree.SubGridTreeDimensionMinus1), "Subgrid cell indices incorrect");
+            Assert.True(SubGridCellX == (SubGridTree.SubGridTreeDimensionMinus1) && SubGridCellY == (SubGridTree.SubGridTreeDimensionMinus1), "Subgrid cell indices incorrect");
 
             leafSubgrid.GetSubGridCellIndex(SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension, out SubGridCellX, out SubGridCellY);
-            Assert.IsTrue(SubGridCellX == 0 && SubGridCellY == 0, "Subgrid cell indices incorrect");
+            Assert.True(SubGridCellX == 0 && SubGridCellY == 0, "Subgrid cell indices incorrect");
         }  
 
-        [TestMethod]
+        [Fact]
         public void Test_SubGrid_AllChangesMigrated()
         {
             ISubGrid leafSubgrid = null;
@@ -225,14 +220,14 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 
             leafSubgrid = new SubGrid(tree, null, SubGridTree.SubGridTreeLevels);
 
-            Assert.IsFalse(leafSubgrid.Dirty, "Leaf is Dirty after creation");
+            Assert.False(leafSubgrid.Dirty, "Leaf is Dirty after creation");
             leafSubgrid.Dirty = true;
-            Assert.IsTrue(leafSubgrid.Dirty, "Leaf is not Dirty after setting Dirty to true");
+            Assert.True(leafSubgrid.Dirty, "Leaf is not Dirty after setting Dirty to true");
             leafSubgrid.AllChangesMigrated();
-            Assert.IsFalse(leafSubgrid.Dirty, "Leaf is Dirty after AllChangesMigrated");
+            Assert.False(leafSubgrid.Dirty, "Leaf is Dirty after AllChangesMigrated");
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_SubGrid_IsEmpty()
         {
             ISubGrid leafSubgrid = null;
@@ -241,10 +236,10 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 
             leafSubgrid = new SubGrid(tree, null, SubGridTree.SubGridTreeLevels);
 
-            Assert.IsFalse(leafSubgrid.IsEmpty(), "Base subgrid class identifying itself as empty");
+            Assert.False(leafSubgrid.IsEmpty(), "Base subgrid class identifying itself as empty");
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_SubGrid_RemoveFromParent_Null()
         {
             // This can't be tested fully as the entire Set/Get subgrid functionality is abstract at this point, and
@@ -268,7 +263,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_SubGrid_ContainsOTGCell()
         {
             ISubGrid leafSubgrid = null;
@@ -279,8 +274,8 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             // matching the real work coordaintge origin (0, 0)
             leafSubgrid = tree.ConstructPathToCell(tree.IndexOriginOffset, tree.IndexOriginOffset, VSS.VisionLink.Raptor.SubGridTrees.Types.SubGridPathConstructionType.CreateLeaf);
 
-            Assert.IsTrue(leafSubgrid != null, "Failed to create leaf node");
-            Assert.IsTrue(leafSubgrid.OriginX == tree.IndexOriginOffset && leafSubgrid.OriginX == tree.IndexOriginOffset,
+            Assert.NotNull(leafSubgrid);
+            Assert.True(leafSubgrid.OriginX == tree.IndexOriginOffset && leafSubgrid.OriginX == tree.IndexOriginOffset,
                 "Failed to create leaf node at the expected location");
 
             // Check that a 1m x 1m square (the size of the cells in the subgridtree created above) registers as being
@@ -289,13 +284,13 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 
             uint CellX, CellY;
 
-            Assert.IsTrue(tree.CalculateIndexOfCellContainingPosition(0.5, 0.5, out CellX, out CellY),
+            Assert.True(tree.CalculateIndexOfCellContainingPosition(0.5, 0.5, out CellX, out CellY),
                           "Failed to get cell index for (0.5, 0.5)");
-            Assert.IsTrue(leafSubgrid.ContainsOTGCell(CellX, CellY),
+            Assert.True(leafSubgrid.ContainsOTGCell(CellX, CellY),
                          "Leaf subgrid denies enclosing the OTG cell at (0.5, 0.5)");
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_SubGrid_SetAbsoluteOriginPosition()
         {
             ISubGrid subgrid = null;
@@ -307,7 +302,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             // Test setting origin for unattached subgrid
             subgrid.SetAbsoluteOriginPosition(100, 100);
 
-            Assert.IsTrue(subgrid.OriginX == 100 && subgrid.OriginY == 100,
+            Assert.True(subgrid.OriginX == 100 && subgrid.OriginY == 100,
                           "SetAbsoluteOriginPosition did not set origin position for subgrid");
 
             // Add subgrid to the root (which will set it's parent and prevent the origin position from 
@@ -324,7 +319,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_SubGrid_SetAbsoluteLevel()
         {
             ISubGrid subgrid = null;
@@ -336,7 +331,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             // Test setting level for unattached subgrid (even though we set it in the constructor above
             subgrid.SetAbsoluteLevel(3);
 
-            Assert.IsTrue(subgrid.Level == 3, "SetAbsoluteLevel did not set level for subgrid");
+            Assert.Equal(3, subgrid.Level);
 
             // Add subgrid to the root (which will set it's parent and prevent the level from 
             // being changed and will throw an exception)

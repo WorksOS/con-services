@@ -1,24 +1,23 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 {
-    [TestClass]
-    public class ClientLeafSubGridFactoryTests
+        public class ClientLeafSubGridFactoryTests
     {
-        [TestMethod]
+        [Fact]
         public void Test_ClientLeafSubGridFactoryTests_Creation()
         {
             Assert.Fail("Not implemented");
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_ClientLeafSubGridFactoryTests_RegisterClientLeafSubGridType()
         {
             Assert.Fail("Not implemented");
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_ClientLeafSubGridFactoryTests_GetSubGrid()
         {
             Assert.Fail("Not implemented");

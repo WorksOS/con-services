@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher;
+﻿using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +25,7 @@ using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Positioning;
 using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Proofing;
 using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Time;
 using VSS.VisionLink.Raptor.Cells;
+using Xunit;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
 {
@@ -41,8 +41,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
         }
     }
 
-    [TestClass()]
-    public class TAGValueMatcherTests
+        public class TAGValueMatcherTests
     {
         private static void InitStateAndSink(out TAGProcessorStateBase sink, out TAGValueMatcherState state)
         {
@@ -50,7 +49,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             state = new TAGValueMatcherState();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_ApplicationVersion()
         {
             TAGProcessorStateBase sink;
@@ -59,14 +58,14 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGApplicationVersionValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessANSIStringValue(new TAGDictionaryItem("", Types.TAGDataType.tANSIString, 0),
+            Assert.True(matcher.ProcessANSIStringValue(new TAGDictionaryItem("", Types.TAGDataType.tANSIString, 0),
                                                   ASCIIEncoding.ASCII.GetBytes("Test")),
                           "Matcher process function returned false");
 
-            Assert.IsTrue(sink.ApplicationVersion == "Test", "TAG value not processed as expected");
+            Assert.Equal(sink.ApplicationVersion, "Test");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_CCATargetValue()
         {
             TAGProcessorStateBase sink;
@@ -75,14 +74,14 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGCCATargetValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
                                                               100),
                           "Matcher process function returned false");
 
-            Assert.IsTrue(sink.ICCCATargetValue == 100, "TAG value not processed as expected");
+            Assert.Equal(100, sink.ICCCATargetValue);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_CCAValue()
         {
             TAGProcessorStateBase sink;
@@ -92,20 +91,20 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             var matcher = new TAGCCAValueMatcher(sink, state);
 
             // Test value sets correctly
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitUInt, 0),
                                                 100),
                           "Matcher process function returned false");
 
-            Assert.IsTrue((short)sink.ICCCAValues.GetLatest() == 100, "TAG value not processed as expected");
+            Assert.Equal(100, (short)sink.ICCCAValues.GetLatest());
 
             // Test value ussets correctly on an empty value
-            Assert.IsTrue(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitUInt, 0)),
+            Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitUInt, 0)),
                           "Matcher process function returned false");
 
-            Assert.IsTrue((short)sink.ICCCAValues.GetLatest() == CellPass.NullCCA, "TAG value not proceed as expected");
+            Assert.Equal((short)sink.ICCCAValues.GetLatest(), CellPass.NullCCA);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_UsingCCA()
         {
             TAGProcessorStateBase sink;
@@ -115,20 +114,20 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             var matcher = new TAGUsingCCAValueMatcher(sink, state);
 
             // Test value sets correctly
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitUInt, 0),
                                                 1),
                           "Matcher process function returned false");
 
-            Assert.IsTrue(sink.UsingCCA, "TAG value not processed as expected");
+            Assert.True(sink.UsingCCA, "TAG value not processed as expected");
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitUInt, 0),
                                                 0),
                           "Matcher process function returned false");
 
-            Assert.IsFalse(sink.UsingCCA, "TAG value not processed as expected");
+            Assert.False(sink.UsingCCA, "TAG value not processed as expected");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_CCVValue()
         {
             TAGProcessorStateBase sink;
@@ -138,33 +137,33 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             var matcher = new TAGCCVValueMatcher(sink, state);
 
             // Test offset value before absolute value sets correctly
-            Assert.IsFalse(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
+            Assert.False(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
                                                                100),
                            "Offset accepted before absolute");
 
             // Test value sets correctly
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
                                                               1000),
                           "Matcher process function returned false");
-            Assert.IsTrue((short)sink.ICCCVValues.GetLatest() == 1000, "Incorrect value after assignment");
-            Assert.IsTrue(state.HaveSeenAnAbsoluteCCV, "Incorrect value after assignment");
+            Assert.Equal(1000, (short)sink.ICCCVValues.GetLatest());
+            Assert.True(state.HaveSeenAnAbsoluteCCV, "Incorrect value after assignment");
 
-            Assert.IsTrue(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
+            Assert.True(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
                                                 100),
                           "Matcher process function returned false");
 
-            Assert.IsTrue((short)sink.ICCCVValues.GetLatest() == 1100, "Incorrect value after assignment");
+            Assert.Equal(1100, (short)sink.ICCCVValues.GetLatest());
 
             // Test value ussets correctly on an empty value
-            Assert.IsTrue(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0)),
+            Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0)),
                           "Matcher process function returned false");
 
-            Assert.IsFalse(state.HaveSeenAnAbsoluteCCV, "Incorrect value after assignment");
+            Assert.False(state.HaveSeenAnAbsoluteCCV, "Incorrect value after assignment");
 
-            Assert.IsTrue((short)sink.ICCCVValues.GetLatest() == CellPass.NullCCV, "TAG value not proceed as expected");
+            Assert.Equal((short)sink.ICCCVValues.GetLatest(), CellPass.NullCCV);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_TargetCCVValue()
         {
             TAGProcessorStateBase sink;
@@ -173,16 +172,16 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGTargetCCVValueMatcher(sink, state);
 
-            Assert.IsTrue(sink.ICCCVTargetValue == CellPass.NullCCV, "Incorrect value before assignment");
+            Assert.Equal(sink.ICCCVTargetValue, CellPass.NullCCV);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
                                                                100),
                            "Matcher process function returned false");
 
-            Assert.IsTrue(sink.ICCCVTargetValue == 100, "Incorrect value after assignment");
+            Assert.Equal(100, sink.ICCCVTargetValue);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_MDPValue()
         {
             TAGProcessorStateBase sink;
@@ -192,33 +191,33 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             var matcher = new TAGMDPValueMatcher(sink, state);
 
             // Test offset value before absolute value sets correctly
-            Assert.IsFalse(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
+            Assert.False(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
                                                                100),
                            "Offset accepted before absolute");
 
             // Test value sets correctly
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
                                                               1000),
                           "Matcher process function returned false");
-            Assert.IsTrue((short)sink.ICMDPValues.GetLatest() == 1000, "Incorrect value after assignment");
-            Assert.IsTrue(state.HaveSeenAnAbsoluteMDP, "Incorrect value after assignment");
+            Assert.Equal(1000, (short)sink.ICMDPValues.GetLatest());
+            Assert.True(state.HaveSeenAnAbsoluteMDP, "Incorrect value after assignment");
 
-            Assert.IsTrue(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
+            Assert.True(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
                                                 100),
                           "Matcher process function returned false");
 
-            Assert.IsTrue((short)sink.ICMDPValues.GetLatest() == 1100, "Incorrect value after assignment");
+            Assert.Equal(1100, (short)sink.ICMDPValues.GetLatest());
 
             // Test value ussets correctly on an empty value
-            Assert.IsTrue(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0)),
+            Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0)),
                           "Matcher process function returned false");
 
-            Assert.IsFalse(state.HaveSeenAnAbsoluteMDP, "Incorrect value after assignment");
+            Assert.False(state.HaveSeenAnAbsoluteMDP, "Incorrect value after assignment");
 
-            Assert.IsTrue((short)sink.ICMDPValues.GetLatest() == CellPass.NullMDP, "TAG value not proceed as expected");
+            Assert.Equal((short)sink.ICMDPValues.GetLatest(), CellPass.NullMDP);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_TargetMDPValue()
         {
             TAGProcessorStateBase sink;
@@ -227,16 +226,16 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGTargetMDPValueMatcher(sink, state);
 
-            Assert.IsTrue(sink.ICMDPTargetValue == CellPass.NullMDP, "Incorrect value before assignment");
+            Assert.Equal(sink.ICMDPTargetValue, CellPass.NullMDP);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
                                                                100),
                            "Matcher process function returned false");
 
-            Assert.IsTrue(sink.ICMDPTargetValue == 100, "Incorrect value after assignment");
+            Assert.Equal(100, sink.ICMDPTargetValue);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_PassCount()
         {
             TAGProcessorStateBase sink;
@@ -245,16 +244,16 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGTargetPassCountValueMatcher(sink, state);
 
-            Assert.IsTrue(sink.ICPassTargetValue == 0, "Incorrect value before assignment");
+            Assert.Equal(0, sink.ICPassTargetValue);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
                                                                100),
                            "Matcher process function returned false");
 
-            Assert.IsTrue(sink.ICPassTargetValue == 100, "Incorrect value after assignment");
+            Assert.Equal(100, sink.ICPassTargetValue);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_Temperature()
         {
             TAGProcessorStateBase sink;
@@ -264,33 +263,33 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             var matcher = new TAGTemperatureValueMatcher(sink, state);
 
             // Test offset value before absolute value sets correctly
-            Assert.IsFalse(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
+            Assert.False(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
                                                                100),
                            "Offset accepted before absolute");
 
             // Test value sets correctly
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
                                                               1000),
                           "Matcher process function returned false");
-            Assert.IsTrue((ushort)sink.ICTemperatureValues.GetLatest() == 1000, "Incorrect value after assignment");
-            Assert.IsTrue(state.HaveSeenAnAbsoluteTemperature, "Incorrect value after assignment");
+            Assert.Equal(1000, (ushort)sink.ICTemperatureValues.GetLatest());
+            Assert.True(state.HaveSeenAnAbsoluteTemperature, "Incorrect value after assignment");
 
-            Assert.IsTrue(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
+            Assert.True(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
                                                 100),
                           "Matcher process function returned false");
 
-            Assert.IsTrue((ushort)sink.ICTemperatureValues.GetLatest() == 1100, "Incorrect value after assignment");
+            Assert.Equal(1100, (ushort)sink.ICTemperatureValues.GetLatest());
 
             // Test value ussets correctly on an empty value
-            Assert.IsTrue(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0)),
+            Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0)),
                           "Matcher process function returned false");
 
-            Assert.IsFalse(state.HaveSeenAnAbsoluteTemperature, "Incorrect value after assignment");
+            Assert.False(state.HaveSeenAnAbsoluteTemperature, "Incorrect value after assignment");
 
-            Assert.IsTrue((ushort)sink.ICTemperatureValues.GetLatest() == CellPass.NullMaterialTemp, "TAG value not proceed as expected");
+            Assert.Equal((ushort)sink.ICTemperatureValues.GetLatest(), CellPass.NullMaterialTemp);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_TemperatureWarningLevelMin()
         {
             TAGProcessorStateBase sink;
@@ -300,13 +299,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             var matcher = new TAGTemperatureWarningLevelMinValueMatcher(sink, state);
 
             // Test value sets correctly
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
                                                               100),
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.ICTempWarningLevelMinValue == 1000, "Incorrect value after assignment");
+            Assert.Equal(1000, sink.ICTempWarningLevelMinValue);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_TemperatureWarningLevelMax()
         {
             TAGProcessorStateBase sink;
@@ -316,13 +315,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             var matcher = new TAGTemperatureWarningLevelMaxValueMatcher(sink, state);
 
             // Test value sets correctly
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
                                                               100),
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.ICTempWarningLevelMaxValue == 1000, "Incorrect value after assignment");
+            Assert.Equal(1000, sink.ICTempWarningLevelMaxValue);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_Amplitude()
         {
             TAGProcessorStateBase sink;
@@ -332,33 +331,33 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             var matcher = new TAGAmplitudeValueMatcher(sink, state);
 
             // Test offset value before absolute value sets correctly
-            Assert.IsFalse(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
+            Assert.False(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
                                                                100),
                            "Offset accepted before absolute");
 
             // Test value sets correctly
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
                                                               1000),
                           "Matcher process function returned false");
-            Assert.IsTrue((ushort)sink.ICAmplitudes.GetLatest() == 1000, "Incorrect value after assignment");
-            Assert.IsTrue(state.HaveSeenAnAbsoluteAmplitude, "Incorrect value after assignment");
+            Assert.Equal(1000, (ushort)sink.ICAmplitudes.GetLatest());
+            Assert.True(state.HaveSeenAnAbsoluteAmplitude, "Incorrect value after assignment");
 
-            Assert.IsTrue(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
+            Assert.True(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
                                                 100),
                           "Matcher process function returned false");
 
-            Assert.IsTrue((ushort)sink.ICAmplitudes.GetLatest() == 1100, "Incorrect value after assignment");
+            Assert.Equal(1100, (ushort)sink.ICAmplitudes.GetLatest());
 
             // Test value ussets correctly on an empty value
-            Assert.IsTrue(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0)),
+            Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0)),
                           "Matcher process function returned false");
 
-            Assert.IsFalse(state.HaveSeenAnAbsoluteAmplitude, "Incorrect value after assignment");
+            Assert.False(state.HaveSeenAnAbsoluteAmplitude, "Incorrect value after assignment");
 
-            Assert.IsTrue((ushort)sink.ICAmplitudes.GetLatest() == CellPass.NullAmplitude, "TAG value not proceed as expected");
+            Assert.Equal((ushort)sink.ICAmplitudes.GetLatest(), CellPass.NullAmplitude);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_Frequency()
         {
             TAGProcessorStateBase sink;
@@ -368,33 +367,33 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             var matcher = new TAGFrequencyValueMatcher(sink, state);
 
             // Test offset value before absolute value sets correctly
-            Assert.IsFalse(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
+            Assert.False(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
                                                                100),
                            "Offset accepted before absolute");
 
             // Test value sets correctly
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
                                                               1000),
                           "Matcher process function returned false");
-            Assert.IsTrue((ushort)sink.ICFrequencys.GetLatest() == 1000, "Incorrect value after assignment");
-            Assert.IsTrue(state.HaveSeenAnAbsoluteFrequency, "Incorrect value after assignment");
+            Assert.Equal(1000, (ushort)sink.ICFrequencys.GetLatest());
+            Assert.True(state.HaveSeenAnAbsoluteFrequency, "Incorrect value after assignment");
 
-            Assert.IsTrue(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
+            Assert.True(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
                                                 100),
                           "Matcher process function returned false");
 
-            Assert.IsTrue((ushort)sink.ICFrequencys.GetLatest() == 1100, "Incorrect value after assignment");
+            Assert.Equal(1100, (ushort)sink.ICFrequencys.GetLatest());
 
             // Test value ussets correctly on an empty value
-            Assert.IsTrue(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0)),
+            Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0)),
                           "Matcher process function returned false");
 
-            Assert.IsFalse(state.HaveSeenAnAbsoluteFrequency, "Incorrect value after assignment");
+            Assert.False(state.HaveSeenAnAbsoluteFrequency, "Incorrect value after assignment");
 
-            Assert.IsTrue((ushort)sink.ICFrequencys.GetLatest() == CellPass.NullFrequency, "TAG value not proceed as expected");
+            Assert.Equal((ushort)sink.ICFrequencys.GetLatest(), CellPass.NullFrequency);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_RMVJumpthreshold()
         {
             TAGProcessorStateBase sink;
@@ -404,13 +403,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             var matcher = new TAGRMVJumpThresholdValueMatcher(sink, state);
 
             // Test value sets correctly
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
                                                               100),
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.ICRMVJumpthreshold == 100, "Incorrect value after assignment");
+            Assert.Equal(100, sink.ICRMVJumpthreshold);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_RMV()
         {
             TAGProcessorStateBase sink;
@@ -420,33 +419,33 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             var matcher = new TAGRMVValueMatcher(sink, state);
 
             // Test offset value before absolute value sets correctly
-            Assert.IsFalse(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
+            Assert.False(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
                                                                100),
                            "Offset accepted before absolute");
 
             // Test value sets correctly
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
                                                               1000),
                           "Matcher process function returned false");
-            Assert.IsTrue((short)sink.ICRMVValues.GetLatest() == 1000, "Incorrect value after assignment");
-            Assert.IsTrue(state.HaveSeenAnAbsoluteRMV, "Incorrect value after assignment");
+            Assert.Equal(1000, (short)sink.ICRMVValues.GetLatest());
+            Assert.True(state.HaveSeenAnAbsoluteRMV, "Incorrect value after assignment");
 
-            Assert.IsTrue(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
+            Assert.True(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
                                                 100),
                           "Matcher process function returned false");
 
-            Assert.IsTrue((short)sink.ICRMVValues.GetLatest() == 1100, "Incorrect value after assignment");
+            Assert.Equal(1100, (short)sink.ICRMVValues.GetLatest());
 
             // Test value ussets correctly on an empty value
-            Assert.IsTrue(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0)),
+            Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0)),
                           "Matcher process function returned false");
 
-            Assert.IsFalse(state.HaveSeenAnAbsoluteRMV, "Incorrect value after assignment");
+            Assert.False(state.HaveSeenAnAbsoluteRMV, "Incorrect value after assignment");
 
-            Assert.IsTrue((short)sink.ICRMVValues.GetLatest() == CellPass.NullRMV, "TAG value not proceed as expected");
+            Assert.Equal((short)sink.ICRMVValues.GetLatest(), CellPass.NullRMV);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_ICModeFlags()
         {
             TAGProcessorStateBase sink;
@@ -456,13 +455,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             var matcher = new TAGICModeFlagsValueMatcher(sink, state);
 
             // Test value sets correctly
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
                                                               8),
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.ICMode == 8, "Incorrect value after assignment");
+            Assert.Equal(8, sink.ICMode);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_LayerID()
         {
             TAGProcessorStateBase sink;
@@ -472,13 +471,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             var matcher = new TAGLayerIDValueMatcher(sink, state);
 
             // Test value sets correctly
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
                                                               8),
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.ICLayerIDValue == 8, "Incorrect value after assignment");
+            Assert.Equal(8, sink.ICLayerIDValue);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_TargetLiftThickness()
         {
             TAGProcessorStateBase sink;
@@ -488,13 +487,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             var matcher = new TAGTargetLiftThicknessValueMatcher(sink, state);
 
             // Test value sets correctly
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t16bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t16bitUInt, 0),
                                                               1000), // supplied as millimeters
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.ICTargetLiftThickness == 1.0, "Incorrect value after assignment"); // Presented as meters
+            Assert.Equal(sink.ICTargetLiftThickness, 1.0); // Presented as meters
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_VolkelMeasurementRangeUtil()
         {
             TAGProcessorStateBase sink;
@@ -504,33 +503,33 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             var matcher = new TAGVolkelMeasurementRangeUtilValueMatcher(sink, state);
 
             // Test offset value before absolute value sets correctly
-            Assert.IsFalse(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
+            Assert.False(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
                                                                100),
                            "Offset accepted before absolute");
 
             // Test value sets correctly
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
                                                               1000),
                           "Matcher process function returned false");
-            Assert.IsTrue((int)sink.VolkelMeasureUtilRanges.GetLatest() == 1000, "Incorrect value after assignment");
-            Assert.IsTrue(state.HaveSeenAnAbsoluteVolkelMeasUtilRange, "Incorrect value after assignment");
+            Assert.Equal(1000, (int)sink.VolkelMeasureUtilRanges.GetLatest());
+            Assert.True(state.HaveSeenAnAbsoluteVolkelMeasUtilRange, "Incorrect value after assignment");
 
-            Assert.IsTrue(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
+            Assert.True(matcher.ProcessIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0),
                                                 100),
                           "Matcher process function returned false");
 
-            Assert.IsTrue((int)sink.VolkelMeasureUtilRanges.GetLatest() == 1100, "Incorrect value after assignment");
+            Assert.Equal(1100, (int)sink.VolkelMeasureUtilRanges.GetLatest());
 
             // Test value ussets correctly on an empty value
-            Assert.IsTrue(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0)),
+            Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitInt, 0)),
                           "Matcher process function returned false");
 
-            Assert.IsFalse(state.HaveSeenAnAbsoluteVolkelMeasUtilRange, "Incorrect value after assignment");
+            Assert.False(state.HaveSeenAnAbsoluteVolkelMeasUtilRange, "Incorrect value after assignment");
 
-            Assert.IsTrue((int)sink.VolkelMeasureUtilRanges.GetLatest() == CellPass.NullVolkelMeasUtilRange, "TAG value not proceed as expected");
+            Assert.Equal((int)sink.VolkelMeasureUtilRanges.GetLatest(), CellPass.NullVolkelMeasUtilRange);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_ControlStateLeftLift()
         {
             TAGProcessorStateBase sink;
@@ -539,13 +538,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGControlStateLeftLiftValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
                                                               1000),
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.ControlStateLeftLift == 1000, "Incorrect value after assignment");
+            Assert.Equal(1000, sink.ControlStateLeftLift);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_ControlStateRightLift()
         {
             TAGProcessorStateBase sink;
@@ -554,13 +553,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGControlStateRightLiftValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
                                                               1000),
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.ControlStateRightLift == 1000, "Incorrect value after assignment");
+            Assert.Equal(1000, sink.ControlStateRightLift);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_ControlStateLift()
         {
             TAGProcessorStateBase sink;
@@ -569,13 +568,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             TAGControlStateLiftValueMatcher matcher = new TAGControlStateLiftValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
                                                               1000),
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.ControlStateLift == 1000, "Incorrect value after assignment");
+            Assert.Equal(1000, sink.ControlStateLift);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_ControlStateTilt()
         {
             TAGProcessorStateBase sink;
@@ -584,13 +583,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGControlStateTiltValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
                                                               1000),
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.ControlStateTilt == 1000, "Incorrect value after assignment");
+            Assert.Equal(1000, sink.ControlStateTilt);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_ControlStateSideShift()
         {
             TAGProcessorStateBase sink;
@@ -599,13 +598,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGControlStateSideShiftValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t12bitUInt, 0),
                                                               1000),
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.ControlStateSideShift == 1000, "Incorrect value after assignment");
+            Assert.Equal(1000, sink.ControlStateSideShift);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_CoordinateSystemType()
         {
             TAGProcessorStateBase sink;
@@ -614,30 +613,30 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGCoordinateSystemTypeValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
                                                               0), // Unknown CS
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.CSType == CoordinateSystemType.NoCoordSystem, "Incorrect value after assignment");
+            Assert.Equal(sink.CSType, CoordinateSystemType.NoCoordSystem);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
                                                               1), // Project calibration (CSIB)
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.CSType == CoordinateSystemType.CSIB, "Incorrect value after assignment");
-            Assert.IsTrue(sink.IsCSIBCoordSystemTypeOnly, "Incorrect value after assignment");
+            Assert.Equal(sink.CSType, CoordinateSystemType.CSIB);
+            Assert.True(sink.IsCSIBCoordSystemTypeOnly, "Incorrect value after assignment");
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
                                                               2), // Automatic Coordinate System (ACS)
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.CSType == CoordinateSystemType.ACS, "Incorrect value after assignment");
-            Assert.IsFalse(sink.IsCSIBCoordSystemTypeOnly, "Incorrect value after assignment");
+            Assert.Equal(sink.CSType, CoordinateSystemType.ACS);
+            Assert.False(sink.IsCSIBCoordSystemTypeOnly, "Incorrect value after assignment");
 
-            Assert.IsFalse(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
+            Assert.False(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
                                                               3),  // Invalid
                           "Matcher process function returned false");
         }
 
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_UTMZone()
         {
             TAGProcessorStateBase sink;
@@ -646,13 +645,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGUTMZoneValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitUInt, 0),
                                                               50),
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.UTMZone == 50, "Incorrect value after assignment");
+            Assert.Equal(50, sink.UTMZone);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_MachineShutdown()
         {
             TAGProcessorStateBase sink;
@@ -661,13 +660,12 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGMachineShutdownValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.tEmptyType, 0)),
+            Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.tEmptyType, 0)),
                           "Matcher process function returned false");
-            Assert.IsTrue(((TAGProcessorStateBase_Test)sink).TriggeredEpochStateEvent == EpochStateEvent.MachineShutdown,
-                          "Incorrect value after assignment");
+            Assert.Equal(((TAGProcessorStateBase_Test)sink).TriggeredEpochStateEvent, EpochStateEvent.MachineShutdown);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_MachineStartup()
         {
             TAGProcessorStateBase sink;
@@ -676,13 +674,12 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGMachineStartupValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.tEmptyType, 0)),
+            Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.tEmptyType, 0)),
                           "Matcher process function returned false");
-            Assert.IsTrue(((TAGProcessorStateBase_Test)sink).TriggeredEpochStateEvent == EpochStateEvent.MachineStartup,
-                          "Incorrect value after assignment");
+            Assert.Equal(((TAGProcessorStateBase_Test)sink).TriggeredEpochStateEvent, EpochStateEvent.MachineStartup);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_MapReset()
         {
             TAGProcessorStateBase sink;
@@ -691,13 +688,12 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGMapResetValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.tEmptyType, 0)),
+            Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.tEmptyType, 0)),
                           "Matcher process function returned false");
-            Assert.IsTrue(((TAGProcessorStateBase_Test)sink).TriggeredEpochStateEvent == EpochStateEvent.MachineMapReset,
-                          "Incorrect value after assignment");
+            Assert.Equal(((TAGProcessorStateBase_Test)sink).TriggeredEpochStateEvent, EpochStateEvent.MachineMapReset);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_UTSMode()
         {
             TAGProcessorStateBase sink;
@@ -706,13 +702,12 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGUTSModeValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.tEmptyType, 0)),
+            Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.tEmptyType, 0)),
                           "Matcher process function returned false");
-            Assert.IsTrue(((TAGProcessorStateBase_Test)sink).TriggeredEpochStateEvent == EpochStateEvent.MachineInUTSMode,
-                          "Incorrect value after assignment");
+            Assert.Equal(((TAGProcessorStateBase_Test)sink).TriggeredEpochStateEvent, EpochStateEvent.MachineInUTSMode);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_Height()
         {
             TAGProcessorStateBase sink;
@@ -721,12 +716,12 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGHeightValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessDoubleValue(new TAGDictionaryItem("", Types.TAGDataType.tEmptyType, 0), 100.0),
+            Assert.True(matcher.ProcessDoubleValue(new TAGDictionaryItem("", Types.TAGDataType.tEmptyType, 0), 100.0),
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.LLHHeight == 100.0, "Incorrect value after assignment");
+            Assert.Equal(sink.LLHHeight, 100.0);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_Longitude()
         {
             TAGProcessorStateBase sink;
@@ -735,12 +730,12 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGLongitudeValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessDoubleValue(new TAGDictionaryItem("", Types.TAGDataType.tEmptyType, 0), 100.0),
+            Assert.True(matcher.ProcessDoubleValue(new TAGDictionaryItem("", Types.TAGDataType.tEmptyType, 0), 100.0),
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.LLHLon == 100.0, "Incorrect value after assignment");
+            Assert.Equal(sink.LLHLon, 100.0);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_Latitude()
         {
             TAGProcessorStateBase sink;
@@ -749,12 +744,12 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGLatitudeValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessDoubleValue(new TAGDictionaryItem("", Types.TAGDataType.tEmptyType, 0), 100.0),
+            Assert.True(matcher.ProcessDoubleValue(new TAGDictionaryItem("", Types.TAGDataType.tEmptyType, 0), 100.0),
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.LLHLat == 100.0, "Incorrect value after assignment");
+            Assert.Equal(sink.LLHLat, 100.0);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_CompactorSensorType()
         {
             TAGProcessorStateBase sink;
@@ -763,32 +758,32 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             TAGCompactorSensorTypeValueMatcher matcher = new TAGCompactorSensorTypeValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
                                                               0), // No sensor
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.ICSensorType == CompactionSensorType.NoSensor, "Incorrect value after assignment");
+            Assert.Equal(sink.ICSensorType, CompactionSensorType.NoSensor);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
                                                               1), // MC 024
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.ICSensorType == CompactionSensorType.MC024, "Incorrect value after assignment");
+            Assert.Equal(sink.ICSensorType, CompactionSensorType.MC024);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
                                                               2), // Volkel
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.ICSensorType == CompactionSensorType.Volkel, "Incorrect value after assignment");
+            Assert.Equal(sink.ICSensorType, CompactionSensorType.Volkel);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
                                                               3), // CAT factory fit
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.ICSensorType == CompactionSensorType.CATFactoryFitSensor, "Incorrect value after assignment");
+            Assert.Equal(sink.ICSensorType, CompactionSensorType.CATFactoryFitSensor);
 
-            Assert.IsFalse(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
+            Assert.False(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
                                                               4),  // Invalid
                           "Matcher process function returned false");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_VolkelMeasurementRange()
         {
             TAGProcessorStateBase sink;
@@ -797,13 +792,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGVolkelMeasurementRangeValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
                                                               100),
                           "Matcher process function returned false");
-            Assert.IsTrue((int)sink.VolkelMeasureRanges.GetLatest() == 100, "Incorrect value after assignment");
+            Assert.Equal(100, (int)sink.VolkelMeasureRanges.GetLatest());
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_RadioSerial()
         {
             TAGProcessorStateBase sink;
@@ -812,14 +807,14 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGRadioSerialValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessANSIStringValue(new TAGDictionaryItem("", Types.TAGDataType.tANSIString, 0),
+            Assert.True(matcher.ProcessANSIStringValue(new TAGDictionaryItem("", Types.TAGDataType.tANSIString, 0),
                                                   ASCIIEncoding.ASCII.GetBytes("Test")),
                           "Matcher process function returned false");
 
-            Assert.IsTrue(sink.RadioSerial == "Test", "TAG value not processed as expected");
+            Assert.Equal(sink.RadioSerial, "Test");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_RadioType()
         {
             TAGProcessorStateBase sink;
@@ -828,14 +823,14 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGRadioTypeValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessANSIStringValue(new TAGDictionaryItem("", Types.TAGDataType.tANSIString, 0),
+            Assert.True(matcher.ProcessANSIStringValue(new TAGDictionaryItem("", Types.TAGDataType.tANSIString, 0),
                                                   ASCIIEncoding.ASCII.GetBytes("Test")),
                           "Matcher process function returned false");
 
-            Assert.IsTrue(sink.RadioType == "Test", "TAG value not processed as expected");
+            Assert.Equal(sink.RadioType, "Test");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_BladeOnGround()
         {
             TAGProcessorStateBase sink;
@@ -844,24 +839,24 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGBladeOnGroundValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
                                                   0), // No
                           "Matcher process function returned false");
 
-            Assert.IsTrue((OnGroundState)sink.OnGrounds.GetLatest() == OnGroundState.No, "TAG value not processed as expected");
+            Assert.Equal((OnGroundState)sink.OnGrounds.GetLatest(), OnGroundState.No);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
                                                   5), //Yes, Remote Switch
                           "Matcher process function returned false");
 
-            Assert.IsTrue((OnGroundState)sink.OnGrounds.GetLatest() == OnGroundState.YesRemoteSwitch, "TAG value not processed as expected");
+            Assert.Equal((OnGroundState)sink.OnGrounds.GetLatest(), OnGroundState.YesRemoteSwitch);
 
-            Assert.IsFalse(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
+            Assert.False(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
                                                   7), // Invalid
                           "Matcher process function returned false");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_OnGround()
         {
             TAGProcessorStateBase sink;
@@ -870,25 +865,25 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGOnGroundValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
                                                   0), // No
                           "Matcher process function returned false");
 
-            Assert.IsTrue((OnGroundState)sink.OnGrounds.GetLatest() == OnGroundState.No, "TAG value not processed as expected");
+            Assert.Equal((OnGroundState)sink.OnGrounds.GetLatest(), OnGroundState.No);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
                                                   1), //Yes, Legacy
                           "Matcher process function returned false");
 
-            Assert.IsTrue((OnGroundState)sink.OnGrounds.GetLatest() == OnGroundState.YesLegacy, "TAG value not processed as expected");
+            Assert.Equal((OnGroundState)sink.OnGrounds.GetLatest(), OnGroundState.YesLegacy);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
                                                   2), // Invalid -> unknown
                           "Matcher process function returned false");
-            Assert.IsTrue((OnGroundState)sink.OnGrounds.GetLatest() == OnGroundState.Unknown, "TAG value not processed as expected");
+            Assert.Equal((OnGroundState)sink.OnGrounds.GetLatest(), OnGroundState.Unknown);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_Design()
         {
             TAGProcessorStateBase sink;
@@ -897,14 +892,14 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGDesignValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessUnicodeStringValue(new TAGDictionaryItem("", Types.TAGDataType.tANSIString, 0),
+            Assert.True(matcher.ProcessUnicodeStringValue(new TAGDictionaryItem("", Types.TAGDataType.tANSIString, 0),
                                                   "Test"),
                           "Matcher process function returned false");
 
-            Assert.IsTrue(sink.Design == "Test", "TAG value not processed as expected");
+            Assert.Equal(sink.Design, "Test");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_Gear()
         {
             TAGProcessorStateBase sink;
@@ -913,13 +908,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGGearValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
                                                               3), // Sensor failed
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.ICGear == MachineGear.SensorFailedDeprecated, "Incorrect value after assignment");
+            Assert.Equal(sink.ICGear, MachineGear.SensorFailedDeprecated);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_MachineID()
         {
             TAGProcessorStateBase sink;
@@ -928,14 +923,14 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGMachineIDValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessANSIStringValue(new TAGDictionaryItem("", Types.TAGDataType.tANSIString, 0),
+            Assert.True(matcher.ProcessANSIStringValue(new TAGDictionaryItem("", Types.TAGDataType.tANSIString, 0),
                                                   ASCIIEncoding.ASCII.GetBytes("Test")),
                           "Matcher process function returned false");
 
-            Assert.IsTrue(sink.MachineID == "Test", "TAG value not processed as expected");
+            Assert.Equal(sink.MachineID, "Test");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_MachineSpeed()
         {
             TAGProcessorStateBase sink;
@@ -944,13 +939,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGMachineSpeedValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessDoubleValue(new TAGDictionaryItem("", Types.TAGDataType.tEmptyType, 0), 100.0),
+            Assert.True(matcher.ProcessDoubleValue(new TAGDictionaryItem("", Types.TAGDataType.tEmptyType, 0), 100.0),
                           "Matcher process function returned false");
-            Assert.IsTrue((double)sink.ICMachineSpeedValues.GetLatest() == 100.0, "Incorrect value after assignment");
-            Assert.IsTrue(state.HaveSeenMachineSpeed, "HaveSeenMachineSpeed not set");
+            Assert.Equal((double)sink.ICMachineSpeedValues.GetLatest(), 100.0);
+            Assert.True(state.HaveSeenMachineSpeed, "HaveSeenMachineSpeed not set");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_MachineType()
         {
             TAGProcessorStateBase sink;
@@ -959,13 +954,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGMachineTypeValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitUInt, 0),
                                                               100),
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.MachineType == 100, "Incorrect value after assignment");
+            Assert.Equal(100, sink.MachineType);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_MinElevMapping()
         {
             TAGProcessorStateBase sink;
@@ -974,22 +969,22 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGMinElevMappingValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
                                                               0),
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.MinElevMapping == false, "Incorrect value after assignment");
+            Assert.False(sink.MinElevMapping);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
                                                               1),
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.MinElevMapping == true, "Incorrect value after assignment");
+            Assert.True(sink.MinElevMapping);
 
-            Assert.IsFalse(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
+            Assert.False(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
                                                               2),
                           "Matcher process function returned false");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_Sequence()
         {
             TAGProcessorStateBase sink;
@@ -998,13 +993,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGSequenceValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t32bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t32bitUInt, 0),
                                                               100),
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.Sequence == 100, "Incorrect value after assignment");
+            Assert.Equal(100, sink.Sequence);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_WheelWidth()
         {
             TAGProcessorStateBase sink;
@@ -1013,13 +1008,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGWheelWidthValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessDoubleValue(new TAGDictionaryItem("", Types.TAGDataType.tIEEEDouble, 0),
+            Assert.True(matcher.ProcessDoubleValue(new TAGDictionaryItem("", Types.TAGDataType.tIEEEDouble, 0),
                                                      1.0),
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.MachineWheelWidth == 1.0, "Incorrect value after assignment");
+            Assert.Equal(sink.MachineWheelWidth, 1.0);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_LeftRightBlade()
         {
             TAGProcessorStateBase sink;
@@ -1028,16 +1023,16 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGLeftRightBladeValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessEmptyValue(new TAGDictionaryItem(TAGValueNames.kTagFileLeftTag, Types.TAGDataType.tEmptyType, 0)),
+            Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem(TAGValueNames.kTagFileLeftTag, Types.TAGDataType.tEmptyType, 0)),
                           "Matcher process function returned false");
-            Assert.IsTrue(state.Side == TAGValueSide.Left, "Incorrect value after assignment");
+            Assert.Equal(state.Side, TAGValueSide.Left);
 
-            Assert.IsTrue(matcher.ProcessEmptyValue(new TAGDictionaryItem(TAGValueNames.kTagFileRightTag, Types.TAGDataType.tEmptyType, 0)),
+            Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem(TAGValueNames.kTagFileRightTag, Types.TAGDataType.tEmptyType, 0)),
                           "Matcher process function returned false");
-            Assert.IsTrue(state.Side == TAGValueSide.Right, "Incorrect value after assignment");
+            Assert.Equal(state.Side, TAGValueSide.Right);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_LeftRightTrack()
         {
             TAGProcessorStateBase sink;
@@ -1046,16 +1041,16 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGLeftRightTrackValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessEmptyValue(new TAGDictionaryItem(TAGValueNames.kTagFileLeftTrackTag, Types.TAGDataType.tEmptyType, 0)),
+            Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem(TAGValueNames.kTagFileLeftTrackTag, Types.TAGDataType.tEmptyType, 0)),
                           "Matcher process function returned false");
-            Assert.IsTrue(state.TrackSide == TAGValueSide.Left, "Incorrect value after assignment");
+            Assert.Equal(state.TrackSide, TAGValueSide.Left);
 
-            Assert.IsTrue(matcher.ProcessEmptyValue(new TAGDictionaryItem(TAGValueNames.kTagFileRightTrackTag, Types.TAGDataType.tEmptyType, 0)),
+            Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem(TAGValueNames.kTagFileRightTrackTag, Types.TAGDataType.tEmptyType, 0)),
                           "Matcher process function returned false");
-            Assert.IsTrue(state.TrackSide == TAGValueSide.Right, "Incorrect value after assignment");
+            Assert.Equal(state.TrackSide, TAGValueSide.Right);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_LeftRightWheel()
         {
             TAGProcessorStateBase sink;
@@ -1064,16 +1059,16 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGLeftRightWheelValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessEmptyValue(new TAGDictionaryItem(TAGValueNames.kTagFileLeftWheelTag, Types.TAGDataType.tEmptyType, 0)),
+            Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem(TAGValueNames.kTagFileLeftWheelTag, Types.TAGDataType.tEmptyType, 0)),
                           "Matcher process function returned false");
-            Assert.IsTrue(state.WheelSide == TAGValueSide.Left, "Incorrect value after assignment");
+            Assert.Equal(state.WheelSide, TAGValueSide.Left);
 
-            Assert.IsTrue(matcher.ProcessEmptyValue(new TAGDictionaryItem(TAGValueNames.kTagFileRightWheelTag, Types.TAGDataType.tEmptyType, 0)),
+            Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem(TAGValueNames.kTagFileRightWheelTag, Types.TAGDataType.tEmptyType, 0)),
                           "Matcher process function returned false");
-            Assert.IsTrue(state.WheelSide == TAGValueSide.Right, "Incorrect value after assignment");
+            Assert.Equal(state.WheelSide, TAGValueSide.Right);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_LeftRightRear()
         {
             TAGProcessorStateBase sink;
@@ -1082,16 +1077,16 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGLeftRightRearValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessEmptyValue(new TAGDictionaryItem(TAGValueNames.kTagFileLeftRearTag, Types.TAGDataType.tEmptyType, 0)),
+            Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem(TAGValueNames.kTagFileLeftRearTag, Types.TAGDataType.tEmptyType, 0)),
                           "Matcher process function returned false");
-            Assert.IsTrue(state.RearSide == TAGValueSide.Left, "Incorrect value after assignment");
+            Assert.Equal(state.RearSide, TAGValueSide.Left);
 
-            Assert.IsTrue(matcher.ProcessEmptyValue(new TAGDictionaryItem(TAGValueNames.kTagFileRightRearTag, Types.TAGDataType.tEmptyType, 0)),
+            Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem(TAGValueNames.kTagFileRightRearTag, Types.TAGDataType.tEmptyType, 0)),
                           "Matcher process function returned false");
-            Assert.IsTrue(state.RearSide == TAGValueSide.Right, "Incorrect value after assignment");
+            Assert.Equal(state.RearSide, TAGValueSide.Right);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_BladeOrdinateValue()
         {
             TAGProcessorStateBase sink;
@@ -1105,46 +1100,46 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             TAGDictionaryItem absoluteItem = new TAGDictionaryItem(TAGValueNames.kTagFileEastingTag, Types.TAGDataType.tIEEEDouble, 0);
             TAGDictionaryItem offsetItem = new TAGDictionaryItem(TAGValueNames.kTagFileEastingTag, Types.TAGDataType.t32bitInt, 0);
 
-            Assert.IsTrue(matcher.ProcessDoubleValue(absoluteItem, 1.0), "Matcher process function returned false");
+            Assert.True(matcher.ProcessDoubleValue(absoluteItem, 1.0), "Matcher process function returned false");
 
-            Assert.IsTrue(sink.DataLeft.X == 1.0, "Incorrect value after assignment");
-            Assert.IsTrue(state.HaveSeenAnAbsolutePosition, "Incorrect value after assignment");
+            Assert.Equal(sink.DataLeft.X, 1.0);
+            Assert.True(state.HaveSeenAnAbsolutePosition, "Incorrect value after assignment");
 
             // Offset the absolute item with a distance in millimeters
-            Assert.IsTrue(matcher.ProcessIntegerValue(offsetItem, 500), "Matcher process function returned false");
-            Assert.IsTrue(sink.DataLeft.X == 1.5, "Incorrect value after assignment");
+            Assert.True(matcher.ProcessIntegerValue(offsetItem, 500), "Matcher process function returned false");
+            Assert.Equal(sink.DataLeft.X, 1.5);
 
             absoluteItem.Name = TAGValueNames.kTagFileNorthingTag; 
             offsetItem.Name = TAGValueNames.kTagFileNorthingTag;
 
-            Assert.IsTrue(matcher.ProcessDoubleValue(absoluteItem, 1.0), "Matcher process function returned false");
+            Assert.True(matcher.ProcessDoubleValue(absoluteItem, 1.0), "Matcher process function returned false");
 
-            Assert.IsTrue(sink.DataLeft.Y == 1.0, "Incorrect value after assignment");
-            Assert.IsTrue(state.HaveSeenAnAbsolutePosition, "Incorrect value after assignment");
+            Assert.Equal(sink.DataLeft.Y, 1.0);
+            Assert.True(state.HaveSeenAnAbsolutePosition, "Incorrect value after assignment");
 
             // Offset the absolute item with a distance in millimeters
-            Assert.IsTrue(matcher.ProcessIntegerValue(offsetItem, 500), "Matcher process function returned false");
-            Assert.IsTrue(sink.DataLeft.X == 1.5, "Incorrect value after assignment");
+            Assert.True(matcher.ProcessIntegerValue(offsetItem, 500), "Matcher process function returned false");
+            Assert.Equal(sink.DataLeft.X, 1.5);
 
             absoluteItem.Name = TAGValueNames.kTagFileElevationTag;
             offsetItem.Name = TAGValueNames.kTagFileElevationTag;
 
-            Assert.IsTrue(matcher.ProcessDoubleValue(absoluteItem, 1.0), "Matcher process function returned false");
+            Assert.True(matcher.ProcessDoubleValue(absoluteItem, 1.0), "Matcher process function returned false");
 
-            Assert.IsTrue(sink.DataLeft.Z == 1.0, "Incorrect value after assignment");
-            Assert.IsTrue(state.HaveSeenAnAbsolutePosition, "Incorrect value after assignment");
+            Assert.Equal(sink.DataLeft.Z, 1.0);
+            Assert.True(state.HaveSeenAnAbsolutePosition, "Incorrect value after assignment");
 
             // Offset the absolute item with a distance in millimeters
-            Assert.IsTrue(matcher.ProcessIntegerValue(offsetItem, 500), "Matcher process function returned false");
-            Assert.IsTrue(sink.DataLeft.Z == 1.5, "Incorrect value after assignment");
+            Assert.True(matcher.ProcessIntegerValue(offsetItem, 500), "Matcher process function returned false");
+            Assert.Equal(sink.DataLeft.Z, 1.5);
 
             // Test an empty value clears the absolute value seen flag
 
-            Assert.IsTrue(matcher.ProcessEmptyValue(absoluteItem), "Matcher process function returned false");
-            Assert.IsFalse(state.HaveSeenAnAbsolutePosition, "Incorrect value after assignment");
+            Assert.True(matcher.ProcessEmptyValue(absoluteItem), "Matcher process function returned false");
+            Assert.False(state.HaveSeenAnAbsolutePosition, "Incorrect value after assignment");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_TrackOrdinateValue()
         {
             TAGProcessorStateBase sink;
@@ -1158,46 +1153,46 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             TAGDictionaryItem absoluteItem = new TAGDictionaryItem(TAGValueNames.kTagFileEastingTrackTag, Types.TAGDataType.tIEEEDouble, 0);
             TAGDictionaryItem offsetItem = new TAGDictionaryItem(TAGValueNames.kTagFileEastingTrackTag, Types.TAGDataType.t32bitInt, 0);
 
-            Assert.IsTrue(matcher.ProcessDoubleValue(absoluteItem, 1.0), "Matcher process function returned false");
+            Assert.True(matcher.ProcessDoubleValue(absoluteItem, 1.0), "Matcher process function returned false");
 
-            Assert.IsTrue(sink.DataTrackLeft.X == 1.0, "Incorrect value after assignment");
-            Assert.IsTrue(state.HaveSeenAnAbsoluteTrackPosition, "Incorrect value after assignment");
+            Assert.Equal(sink.DataTrackLeft.X, 1.0);
+            Assert.True(state.HaveSeenAnAbsoluteTrackPosition, "Incorrect value after assignment");
 
             // Offset the absolute item with a distance in millimeters
-            Assert.IsTrue(matcher.ProcessIntegerValue(offsetItem, 500), "Matcher process function returned false");
-            Assert.IsTrue(sink.DataTrackLeft.X == 1.5, "Incorrect value after assignment");
+            Assert.True(matcher.ProcessIntegerValue(offsetItem, 500), "Matcher process function returned false");
+            Assert.Equal(sink.DataTrackLeft.X, 1.5);
 
             absoluteItem.Name = TAGValueNames.kTagFileNorthingTrackTag;
             offsetItem.Name = TAGValueNames.kTagFileNorthingTrackTag;
 
-            Assert.IsTrue(matcher.ProcessDoubleValue(absoluteItem, 1.0), "Matcher process function returned false");
+            Assert.True(matcher.ProcessDoubleValue(absoluteItem, 1.0), "Matcher process function returned false");
 
-            Assert.IsTrue(sink.DataTrackLeft.Y == 1.0, "Incorrect value after assignment");
-            Assert.IsTrue(state.HaveSeenAnAbsoluteTrackPosition, "Incorrect value after assignment");
+            Assert.Equal(sink.DataTrackLeft.Y, 1.0);
+            Assert.True(state.HaveSeenAnAbsoluteTrackPosition, "Incorrect value after assignment");
 
             // Offset the absolute item with a distance in millimeters
-            Assert.IsTrue(matcher.ProcessIntegerValue(offsetItem, 500), "Matcher process function returned false");
-            Assert.IsTrue(sink.DataTrackLeft.X == 1.5, "Incorrect value after assignment");
+            Assert.True(matcher.ProcessIntegerValue(offsetItem, 500), "Matcher process function returned false");
+            Assert.Equal(sink.DataTrackLeft.X, 1.5);
 
             absoluteItem.Name = TAGValueNames.kTagFileElevationTrackTag;
             offsetItem.Name = TAGValueNames.kTagFileElevationTrackTag;
 
-            Assert.IsTrue(matcher.ProcessDoubleValue(absoluteItem, 1.0), "Matcher process function returned false");
+            Assert.True(matcher.ProcessDoubleValue(absoluteItem, 1.0), "Matcher process function returned false");
 
-            Assert.IsTrue(sink.DataTrackLeft.Z == 1.0, "Incorrect value after assignment");
-            Assert.IsTrue(state.HaveSeenAnAbsoluteTrackPosition, "Incorrect value after assignment");
+            Assert.Equal(sink.DataTrackLeft.Z, 1.0);
+            Assert.True(state.HaveSeenAnAbsoluteTrackPosition, "Incorrect value after assignment");
 
             // Offset the absolute item with a distance in millimeters
-            Assert.IsTrue(matcher.ProcessIntegerValue(offsetItem, 500), "Matcher process function returned false");
-            Assert.IsTrue(sink.DataTrackLeft.Z == 1.5, "Incorrect value after assignment");
+            Assert.True(matcher.ProcessIntegerValue(offsetItem, 500), "Matcher process function returned false");
+            Assert.Equal(sink.DataTrackLeft.Z, 1.5);
 
             // Test an empty value clears the absolute value seen flag
 
-            Assert.IsTrue(matcher.ProcessEmptyValue(absoluteItem), "Matcher process function returned false");
-            Assert.IsFalse(state.HaveSeenAnAbsoluteTrackPosition, "Incorrect value after assignment");
+            Assert.True(matcher.ProcessEmptyValue(absoluteItem), "Matcher process function returned false");
+            Assert.False(state.HaveSeenAnAbsoluteTrackPosition, "Incorrect value after assignment");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_WheelOrdinateValue()
         {
             TAGProcessorStateBase sink;
@@ -1211,46 +1206,46 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             TAGDictionaryItem absoluteItem = new TAGDictionaryItem(TAGValueNames.kTagFileEastingWheelTag, Types.TAGDataType.tIEEEDouble, 0);
             TAGDictionaryItem offsetItem = new TAGDictionaryItem(TAGValueNames.kTagFileEastingWheelTag, Types.TAGDataType.t32bitInt, 0);
 
-            Assert.IsTrue(matcher.ProcessDoubleValue(absoluteItem, 1.0), "Matcher process function returned false");
+            Assert.True(matcher.ProcessDoubleValue(absoluteItem, 1.0), "Matcher process function returned false");
 
-            Assert.IsTrue(sink.DataWheelLeft.X == 1.0, "Incorrect value after assignment");
-            Assert.IsTrue(state.HaveSeenAnAbsoluteWheelPosition, "Incorrect value after assignment");
+            Assert.Equal(sink.DataWheelLeft.X, 1.0);
+            Assert.True(state.HaveSeenAnAbsoluteWheelPosition, "Incorrect value after assignment");
 
             // Offset the absolute item with a distance in millimeters
-            Assert.IsTrue(matcher.ProcessIntegerValue(offsetItem, 500), "Matcher process function returned false");
-            Assert.IsTrue(sink.DataWheelLeft.X == 1.5, "Incorrect value after assignment");
+            Assert.True(matcher.ProcessIntegerValue(offsetItem, 500), "Matcher process function returned false");
+            Assert.Equal(sink.DataWheelLeft.X, 1.5);
 
             absoluteItem.Name = TAGValueNames.kTagFileNorthingWheelTag;
             offsetItem.Name = TAGValueNames.kTagFileNorthingWheelTag;
 
-            Assert.IsTrue(matcher.ProcessDoubleValue(absoluteItem, 1.0), "Matcher process function returned false");
+            Assert.True(matcher.ProcessDoubleValue(absoluteItem, 1.0), "Matcher process function returned false");
 
-            Assert.IsTrue(sink.DataWheelLeft.Y == 1.0, "Incorrect value after assignment");
-            Assert.IsTrue(state.HaveSeenAnAbsoluteWheelPosition, "Incorrect value after assignment");
+            Assert.Equal(sink.DataWheelLeft.Y, 1.0);
+            Assert.True(state.HaveSeenAnAbsoluteWheelPosition, "Incorrect value after assignment");
 
             // Offset the absolute item with a distance in millimeters
-            Assert.IsTrue(matcher.ProcessIntegerValue(offsetItem, 500), "Matcher process function returned false");
-            Assert.IsTrue(sink.DataWheelLeft.X == 1.5, "Incorrect value after assignment");
+            Assert.True(matcher.ProcessIntegerValue(offsetItem, 500), "Matcher process function returned false");
+            Assert.Equal(sink.DataWheelLeft.X, 1.5);
 
             absoluteItem.Name = TAGValueNames.kTagFileElevationWheelTag;
             offsetItem.Name = TAGValueNames.kTagFileElevationWheelTag;
 
-            Assert.IsTrue(matcher.ProcessDoubleValue(absoluteItem, 1.0), "Matcher process function returned false");
+            Assert.True(matcher.ProcessDoubleValue(absoluteItem, 1.0), "Matcher process function returned false");
 
-            Assert.IsTrue(sink.DataWheelLeft.Z == 1.0, "Incorrect value after assignment");
-            Assert.IsTrue(state.HaveSeenAnAbsoluteWheelPosition, "Incorrect value after assignment");
+            Assert.Equal(sink.DataWheelLeft.Z, 1.0);
+            Assert.True(state.HaveSeenAnAbsoluteWheelPosition, "Incorrect value after assignment");
 
             // Offset the absolute item with a distance in millimeters
-            Assert.IsTrue(matcher.ProcessIntegerValue(offsetItem, 500), "Matcher process function returned false");
-            Assert.IsTrue(sink.DataWheelLeft.Z == 1.5, "Incorrect value after assignment");
+            Assert.True(matcher.ProcessIntegerValue(offsetItem, 500), "Matcher process function returned false");
+            Assert.Equal(sink.DataWheelLeft.Z, 1.5);
 
             // Test an empty value clears the absolute value seen flag
 
-            Assert.IsTrue(matcher.ProcessEmptyValue(absoluteItem), "Matcher process function returned false");
-            Assert.IsFalse(state.HaveSeenAnAbsoluteWheelPosition, "Incorrect value after assignment");
+            Assert.True(matcher.ProcessEmptyValue(absoluteItem), "Matcher process function returned false");
+            Assert.False(state.HaveSeenAnAbsoluteWheelPosition, "Incorrect value after assignment");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_RearOrdinateValue()
         {
             TAGProcessorStateBase sink;
@@ -1264,46 +1259,46 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             TAGDictionaryItem absoluteItem = new TAGDictionaryItem(TAGValueNames.kTagFileEastingRearTag, Types.TAGDataType.tIEEEDouble, 0);
             TAGDictionaryItem offsetItem = new TAGDictionaryItem(TAGValueNames.kTagFileEastingRearTag, Types.TAGDataType.t32bitInt, 0);
 
-            Assert.IsTrue(matcher.ProcessDoubleValue(absoluteItem, 1.0), "Matcher process function returned false");
+            Assert.True(matcher.ProcessDoubleValue(absoluteItem, 1.0), "Matcher process function returned false");
 
-            Assert.IsTrue(sink.DataRearLeft.X == 1.0, "Incorrect value after assignment");
-            Assert.IsTrue(state.HaveSeenAnAbsoluteRearPosition, "Incorrect value after assignment");
+            Assert.Equal(sink.DataRearLeft.X, 1.0);
+            Assert.True(state.HaveSeenAnAbsoluteRearPosition, "Incorrect value after assignment");
 
             // Offset the absolute item with a distance in millimeters
-            Assert.IsTrue(matcher.ProcessIntegerValue(offsetItem, 500), "Matcher process function returned false");
-            Assert.IsTrue(sink.DataRearLeft.X == 1.5, "Incorrect value after assignment");
+            Assert.True(matcher.ProcessIntegerValue(offsetItem, 500), "Matcher process function returned false");
+            Assert.Equal(sink.DataRearLeft.X, 1.5);
 
             absoluteItem.Name = TAGValueNames.kTagFileNorthingRearTag;
             offsetItem.Name = TAGValueNames.kTagFileNorthingRearTag;
 
-            Assert.IsTrue(matcher.ProcessDoubleValue(absoluteItem, 1.0), "Matcher process function returned false");
+            Assert.True(matcher.ProcessDoubleValue(absoluteItem, 1.0), "Matcher process function returned false");
 
-            Assert.IsTrue(sink.DataRearLeft.Y == 1.0, "Incorrect value after assignment");
-            Assert.IsTrue(state.HaveSeenAnAbsoluteRearPosition, "Incorrect value after assignment");
+            Assert.Equal(sink.DataRearLeft.Y, 1.0);
+            Assert.True(state.HaveSeenAnAbsoluteRearPosition, "Incorrect value after assignment");
 
             // Offset the absolute item with a distance in millimeters
-            Assert.IsTrue(matcher.ProcessIntegerValue(offsetItem, 500), "Matcher process function returned false");
-            Assert.IsTrue(sink.DataRearLeft.X == 1.5, "Incorrect value after assignment");
+            Assert.True(matcher.ProcessIntegerValue(offsetItem, 500), "Matcher process function returned false");
+            Assert.Equal(sink.DataRearLeft.X, 1.5);
 
             absoluteItem.Name = TAGValueNames.kTagFileElevationRearTag;
             offsetItem.Name = TAGValueNames.kTagFileElevationRearTag;
 
-            Assert.IsTrue(matcher.ProcessDoubleValue(absoluteItem, 1.0), "Matcher process function returned false");
+            Assert.True(matcher.ProcessDoubleValue(absoluteItem, 1.0), "Matcher process function returned false");
 
-            Assert.IsTrue(sink.DataRearLeft.Z == 1.0, "Incorrect value after assignment");
-            Assert.IsTrue(state.HaveSeenAnAbsoluteRearPosition, "Incorrect value after assignment");
+            Assert.Equal(sink.DataRearLeft.Z, 1.0);
+            Assert.True(state.HaveSeenAnAbsoluteRearPosition, "Incorrect value after assignment");
 
             // Offset the absolute item with a distance in millimeters
-            Assert.IsTrue(matcher.ProcessIntegerValue(offsetItem, 500), "Matcher process function returned false");
-            Assert.IsTrue(sink.DataRearLeft.Z == 1.5, "Incorrect value after assignment");
+            Assert.True(matcher.ProcessIntegerValue(offsetItem, 500), "Matcher process function returned false");
+            Assert.Equal(sink.DataRearLeft.Z, 1.5);
 
             // Test an empty value clears the absolute value seen flag
 
-            Assert.IsTrue(matcher.ProcessEmptyValue(absoluteItem), "Matcher process function returned false");
-            Assert.IsFalse(state.HaveSeenAnAbsoluteRearPosition, "Incorrect value after assignment");
+            Assert.True(matcher.ProcessEmptyValue(absoluteItem), "Matcher process function returned false");
+            Assert.False(state.HaveSeenAnAbsoluteRearPosition, "Incorrect value after assignment");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_GPSAccuracy()
         {
             TAGProcessorStateBase sink;
@@ -1315,13 +1310,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             // Set GPS accuracy word to be Medium accuracy with a 100mm error limit
             ushort GPSAccuracyWord = (0x1 << 14) | 100;
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t16bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t16bitUInt, 0),
                                                               GPSAccuracyWord),
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.GPSAccuracy == GPSAccuracy.Medium && sink.GPSAccuracyErrorLimit == 100, "Incorrect value after assignment");
+            Assert.True(sink.GPSAccuracy == GPSAccuracy.Medium && sink.GPSAccuracyErrorLimit == 100, "Incorrect value after assignment");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_GPSBasePosition()
         {
             TAGProcessorStateBase sink;
@@ -1330,12 +1325,12 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGGPSBasePositionValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.tEmptyType, 0)),
+            Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.tEmptyType, 0)),
                           "Matcher process function returned false");
-            Assert.IsTrue(state.GPSBasePositionReportingHaveStarted, "Incorrect value after assignment");
+            Assert.True(state.GPSBasePositionReportingHaveStarted, "Incorrect value after assignment");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_GPSMode()
         {
             TAGProcessorStateBase sink;
@@ -1344,13 +1339,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGGPSModeValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
                                                               2), // Float RTK
                           "Matcher process function returned false");
-            Assert.IsTrue((GPSMode)sink.GPSModes.GetLatest() == GPSMode.Float, "Incorrect value after assignment");
+            Assert.Equal((GPSMode)sink.GPSModes.GetLatest(), GPSMode.Float);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_ValidPosition()
         {
             TAGProcessorStateBase sink;
@@ -1359,13 +1354,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGValidPositionValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
                                                               100),
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.ValidPosition == 100, "Incorrect value after assignment");
+            Assert.Equal(100, sink.ValidPosition);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_EndProofingTimeValue()
         {
             TAGProcessorStateBase sink;
@@ -1375,27 +1370,27 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             var matcher = new TAGEndProofingTimeValueMatcher(sink, state);
 
             // Test the Time aspect
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem(TAGValueNames.kTagFileStartProofingTimeTag, Types.TAGDataType.t32bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem(TAGValueNames.kTagFileStartProofingTimeTag, Types.TAGDataType.t32bitUInt, 0),
                                                               10000000),
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.StartProofingTime == 10000000, "Incorrect value after assignment");
-            Assert.IsTrue(state.HaveSeenAProofingRunTimeValue, "Incorrect value after assignment");
+            Assert.Equal(10000000, sink.StartProofingTime);
+            Assert.True(state.HaveSeenAProofingRunTimeValue, "Incorrect value after assignment");
 
             // Test the Week aspect
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem(TAGValueNames.kTagFileStartProofingWeekTag, Types.TAGDataType.t16bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem(TAGValueNames.kTagFileStartProofingWeekTag, Types.TAGDataType.t16bitUInt, 0),
                                                               10000),
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.StartProofingWeek == 10000, "Incorrect value after assignment");
-            Assert.IsTrue(state.HaveSeenAProofingRunWeekValue, "Incorrect value after assignment");
+            Assert.Equal(10000, sink.StartProofingWeek);
+            Assert.True(state.HaveSeenAProofingRunWeekValue, "Incorrect value after assignment");
 
             // Test the actual start proofing run time value is calculated correctly
-            Assert.IsTrue(sink.StartProofingTime == 10000000 &&
+            Assert.True(sink.StartProofingTime == 10000000 &&
                 sink.StartProofingWeek == 10000 &&
                 GPS.GPSOriginTimeToDateTime(sink.StartProofingWeek, sink.StartProofingTime) == sink.StartProofingDataTime,
                 "Start proofing data time not as expected");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_EndProofing()
         {
             TAGProcessorStateBase sink;
@@ -1404,14 +1399,14 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGEndProofingValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessANSIStringValue(new TAGDictionaryItem("", Types.TAGDataType.tANSIString, 0),
+            Assert.True(matcher.ProcessANSIStringValue(new TAGDictionaryItem("", Types.TAGDataType.tANSIString, 0),
                                                   ASCIIEncoding.ASCII.GetBytes("TestEnd")),
                           "Matcher process function returned false");
 
-            Assert.IsTrue(sink.EndProofingName == "TestEnd", "TAG value not processed as expected");
+            Assert.Equal(sink.EndProofingName, "TestEnd");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_StartProofing()
         {
             TAGProcessorStateBase sink;
@@ -1428,22 +1423,22 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
 
             sink.DataTime = GPS.GPSOriginTimeToDateTime(sink.GPSWeekNumber, sink.GPSWeekTime = 10000000);
 
-            Assert.IsTrue(matcher.ProcessANSIStringValue(new TAGDictionaryItem("", Types.TAGDataType.tANSIString, 0),
+            Assert.True(matcher.ProcessANSIStringValue(new TAGDictionaryItem("", Types.TAGDataType.tANSIString, 0),
                                                   ASCIIEncoding.ASCII.GetBytes("TestStart")),
                           "Matcher process function returned false");
 
-            Assert.IsTrue(sink.StartProofing == "TestStart", "TAG value not processed as expected");
+            Assert.Equal(sink.StartProofing, "TestStart");
 
             // Test the start proofing data time is calculated correctly
-            Assert.IsTrue(sink.StartProofingDataTime == sink.DataTime, "Start proofing time not set to data time");
+            Assert.Equal(sink.StartProofingDataTime, sink.DataTime);
 
-            Assert.IsTrue(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.tANSIString, 0)),
+            Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.tANSIString, 0)),
                           "Matcher process function returned false");
 
-            Assert.IsTrue(sink.StartProofing == "", "TAG value not processed as expected");
+            Assert.Equal(sink.StartProofing, "");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_Time()
         {
             TAGProcessorStateBase sink;
@@ -1453,40 +1448,40 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             var matcher = new TAGTimeValueMatcher(sink, state);
 
             // Test the Time aspect
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem(TAGValueNames.kTagFileTimeTag, Types.TAGDataType.t32bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem(TAGValueNames.kTagFileTimeTag, Types.TAGDataType.t32bitUInt, 0),
                                                               10000000),
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.GPSWeekTime == 10000000, "Incorrect value after assignment");
-            Assert.IsTrue(state.HaveSeenATimeValue, "Incorrect value after assignment");
+            Assert.Equal(10000000, sink.GPSWeekTime);
+            Assert.True(state.HaveSeenATimeValue, "Incorrect value after assignment");
 
             // Test the absolute Week aspect
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem(TAGValueNames.kTagFileWeekTag, Types.TAGDataType.t16bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem(TAGValueNames.kTagFileWeekTag, Types.TAGDataType.t16bitUInt, 0),
                                                               10000),
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.GPSWeekNumber == 10000, "Incorrect value after assignment");
-            Assert.IsTrue(state.HaveSeenAWeekValue, "Incorrect value after assignment");
+            Assert.Equal(10000, sink.GPSWeekNumber);
+            Assert.True(state.HaveSeenAWeekValue, "Incorrect value after assignment");
 
             // Test the epoch data time is calculated correctly
-            Assert.IsTrue(sink.GPSWeekTime == 10000000 &&
+            Assert.True(sink.GPSWeekTime == 10000000 &&
                 sink.GPSWeekNumber == 10000 &&
                 GPS.GPSOriginTimeToDateTime(sink.GPSWeekNumber, sink.GPSWeekTime) == sink.DataTime,
                 "Absolute epoch GPS data time not as expected");
 
             // Test the incremental time aspect
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem(TAGValueNames.kTagFileTimeTag, Types.TAGDataType.t4bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem(TAGValueNames.kTagFileTimeTag, Types.TAGDataType.t4bitUInt, 0),
                                                               10), // Adds 10, 1/10 of a second intervals, for an increment of 1000ms
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.GPSWeekTime == 10001000, "Incorrect value after assignment");
-            Assert.IsTrue(state.HaveSeenAWeekValue, "Incorrect value after assignment");
+            Assert.Equal(10001000, sink.GPSWeekTime);
+            Assert.True(state.HaveSeenAWeekValue, "Incorrect value after assignment");
 
             // Test the epoch data time is calculated correctly
-            Assert.IsTrue(sink.GPSWeekTime == 10001000 &&
+            Assert.True(sink.GPSWeekTime == 10001000 &&
                 sink.GPSWeekNumber == 10000 &&
                 GPS.GPSOriginTimeToDateTime(sink.GPSWeekNumber, sink.GPSWeekTime) == sink.DataTime,
                 "Incremented epoch GPS data time not as expected");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_AgeOfCOrrections()
         {
             TAGProcessorStateBase sink;
@@ -1495,13 +1490,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             InitStateAndSink(out sink, out state);
             var matcher = new TAGAgeValueMatcher(sink, state);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
+            Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0),
                                                               10),
                           "Matcher process function returned false");
-            Assert.IsTrue((byte)sink.AgeOfCorrections.GetLatest() == 10, "Incorrect value after assignment");
+            Assert.Equal(10, (byte)sink.AgeOfCorrections.GetLatest());
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_3DSonic()
         {
             TAGProcessorStateBase sink;
@@ -1513,16 +1508,16 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
 
             for (uint i = 0; i < 3; i++)
             {
-                Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(dictItem, i),
+                Assert.True(matcher.ProcessUnsignedIntegerValue(dictItem, i),
                               "Matcher process function returned false");
-                Assert.IsTrue(sink.ICSonic3D == i, "Incorrect value after assignment");
+                Assert.Equal(sink.ICSonic3D, i);
             }
 
-            Assert.IsFalse(matcher.ProcessUnsignedIntegerValue(dictItem, 3),
+            Assert.False(matcher.ProcessUnsignedIntegerValue(dictItem, 3),
                           "Matcher process function returned false");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_Direction()
         {
             TAGProcessorStateBase sink;
@@ -1533,16 +1528,16 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             var dictItem = new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0);
 
             // Note: Machien direction values from the machine are 1-based
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(dictItem, 1), // Forwards
+            Assert.True(matcher.ProcessUnsignedIntegerValue(dictItem, 1), // Forwards
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.MachineDirection == MachineDirection.Forward, "Incorrect value after assignment");
+            Assert.Equal(sink.MachineDirection, MachineDirection.Forward);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(dictItem, 2), // Reverse
+            Assert.True(matcher.ProcessUnsignedIntegerValue(dictItem, 2), // Reverse
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.MachineDirection == MachineDirection.Reverse, "Incorrect value after assignment");
+            Assert.Equal(sink.MachineDirection, MachineDirection.Reverse);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_AvoidanceZone()
         {
             TAGProcessorStateBase sink;
@@ -1554,16 +1549,16 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
 
             for (uint i = 0; i < 4; i++)
             {
-                Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(dictItem, i),
+                Assert.True(matcher.ProcessUnsignedIntegerValue(dictItem, i),
                               "Matcher process function returned false");
-                Assert.IsTrue(sink.InAvoidZone == i, "Incorrect value after assignment");
+                Assert.Equal(sink.InAvoidZone, i);
             }
 
-            Assert.IsFalse(matcher.ProcessUnsignedIntegerValue(dictItem, 5),
+            Assert.False(matcher.ProcessUnsignedIntegerValue(dictItem, 5),
                           "Matcher process function returned false");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGValueMatcher_ResearchData()
         {
             TAGProcessorStateBase sink;
@@ -1573,17 +1568,17 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             var matcher = new TAGResearchDataValueMatcher(sink, state);
             var dictItem = new TAGDictionaryItem("", Types.TAGDataType.t4bitUInt, 0);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(dictItem, 0), // False
+            Assert.True(matcher.ProcessUnsignedIntegerValue(dictItem, 0), // False
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.ResearchData == false, "Incorrect value after assignment");
+            Assert.False(sink.ResearchData);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(dictItem, 1), // False
+            Assert.True(matcher.ProcessUnsignedIntegerValue(dictItem, 1), // False
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.ResearchData == true, "Incorrect value after assignment");
+            Assert.True(sink.ResearchData);
 
-            Assert.IsTrue(matcher.ProcessUnsignedIntegerValue(dictItem, 2), // Also true...
+            Assert.True(matcher.ProcessUnsignedIntegerValue(dictItem, 2), // Also true...
                           "Matcher process function returned false");
-            Assert.IsTrue(sink.ResearchData == true, "Incorrect value after assignment");
+            Assert.True(sink.ResearchData);
         }
     }
 }

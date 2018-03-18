@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 //using VSS.VisionLink.Raptor.SubGridTrees.Server;
 //using System.Collections.Generic;
 //using System.Linq;
@@ -14,11 +13,11 @@ using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
 using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.Compression;
 using System.Diagnostics;
+using Xunit;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
 {
-    [TestClass]
-    public class MutabilityConverterTests
+        public class MutabilityConverterTests
     {
         /// <summary>
         /// A handy test cell pass for the unit tests below to use
@@ -48,7 +47,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
             };
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_MutabilityConverterTests_ConvertSubgridDirectoryTest()
         {
             // Create a subgrid directory with a single segment and some cells. Create a stream fron it then use the
@@ -93,12 +92,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
 
                 double diff = immutableValue - mutableValue;
 
-                Assert.IsTrue(Math.Abs(diff) <= 0.001, "Cell height at ({0}, {1}) has unexpected value: {2} vs {3}, diff = {4}", 
+                Assert.True(Math.Abs(diff) <= 0.001, "Cell height at ({0}, {1}) has unexpected value: {2} vs {3}, diff = {4}", 
                              x, y, immutableValue, mutableValue, diff);
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_MutabilityConverterTests_ConvertSubgridSegmentTest()
         {
             // Create a segment with some cell passes. Create a stream fron it then use the
@@ -165,7 +164,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
 
                 double diff = immutableValue - mutableValue;
 
-                Assert.IsTrue(Math.Abs(diff) <= 0.001, "Cell height at ({0}, {1}) has unexpected value: {2} vs {3}, diff = {4}",
+                Assert.True(Math.Abs(diff) <= 0.001, "Cell height at ({0}, {1}) has unexpected value: {2} vs {3}, diff = {4}",
                              x, y, immutableValue, mutableValue, diff);
             });
 
@@ -179,7 +178,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
 
                     double diff = immutableValue - mutableValue;
 
-                    Assert.IsTrue(Math.Abs(diff) <= 0.001, "Cell height at ({0}, {1}) has unexpected value: {2} vs {3}, diff = {4}",
+                    Assert.True(Math.Abs(diff) <= 0.001, "Cell height at ({0}, {1}) has unexpected value: {2} vs {3}, diff = {4}",
                                  x, y, immutableValue, mutableValue, diff);
                 }
             });
@@ -195,7 +194,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
 
                     TimeSpan diff = mutableValue - immutableValue;
 
-                    Assert.IsTrue(diff.Duration() <= TimeSpan.FromSeconds(1), "Cell time at ({0}, {1}) has unexpected value: {2} vs {3}, diff = {4}",
+                    Assert.True(diff.Duration() <= TimeSpan.FromSeconds(1), "Cell time at ({0}, {1}) has unexpected value: {2} vs {3}, diff = {4}",
                                  x, y, immutableValue, mutableValue, diff);
                 }
             });
@@ -215,12 +214,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
                     cellPass.MachineID = mutablePasses[x, y][i].MachineID;
 
                     CellPass mutableCellPass = mutablePasses[x, y][i];
-                    Assert.IsTrue(mutableCellPass.Equals(cellPass), "Cell passes not equal at Cell[{0}, {1}], cell pass index {2}", x, y, i);
+                    Assert.True(mutableCellPass.Equals(cellPass), "Cell passes not equal at Cell[{0}, {1}], cell pass index {2}", x, y, i);
                 }
             });
         }
 
-        [TestMethod]
+        [Fact]
         [Ignore]
         public void Test_MutabilityConverterTests_ConvertEventListTest()
         {

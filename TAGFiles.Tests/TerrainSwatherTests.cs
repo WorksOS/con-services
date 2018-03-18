@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.Swather;
+﻿using VSS.VisionLink.Raptor.TAGFiles.Classes.Swather;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,13 +13,13 @@ using VSS.VisionLink.Raptor.SubGridTrees.Types;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.SiteModels;
+using Xunit;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather.Tests
 {
-    [TestClass()]
-    public class TerrainSwatherTests
+        public class TerrainSwatherTests
     {
-        [TestMethod()]
+        [Fact()]
         public void Test_TerrainSwather_Creation()
         {
             var siteModel = new SiteModel();
@@ -34,11 +33,11 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather.Tests
 
             TerrainSwather swather = new TerrainSwather(processor, events, siteModel, grid, machine.ID, fence);
 
-            Assert.IsTrue(swather != null & swather.MachineID == machine.ID,
+            Assert.True(swather != null & swather.MachineID == machine.ID,
                 "TerrainSwather not created as expected");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TerrainSwather_PerformSwathing()
         {
             var siteModel = new SiteModel();
@@ -76,10 +75,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather.Tests
             bool swathResult = swather.PerformSwathing(HeightInterpolator1, HeightInterpolator2, TimeInterpolator1, TimeInterpolator2, false, Raptor.Types.PassType.Front);
 
             // Did the swathing operation succeed?
-            Assert.IsTrue(swathResult, "Performaswathing failed");
+            Assert.True(swathResult, "Performaswathing failed");
 
             // Did it produce the expected set of swathed cells?
-            Assert.IsTrue(grid.Root.CountChildren() == 1, "Root node does not have a single child");
+            Assert.Equal(1, grid.Root.CountChildren());
 
             // Focr computation of the latest pass information which aids locating cells with non-null values
             try
@@ -114,7 +113,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather.Tests
                 Assert.Fail("Exception {0} occured counting non-null cells", E);
             }
 
-            Assert.IsTrue(nonNullCellCount == 174, "nonNullCellCount is incorrect = {0}, expected 174", nonNullCellCount);
+            Assert.Equal(174, nonNullCellCount);
 
             // Iterate over the cells and confirm their content is as expected
 

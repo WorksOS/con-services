@@ -1,89 +1,88 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.VisionLink.Raptor.Volumes;
+﻿using VSS.VisionLink.Raptor.Volumes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace VSS.VisionLink.Raptor.Volumes.Tests
 {
-    [TestClass()]
-    public class CutFillVolumeTests
+        public class CutFillVolumeTests
     {
-        [TestMethod()]
+        [Fact()]
         public void CutFillVolumeTest()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void CutFillVolumeTest1()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void AccumulatedVolumeTest()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void AccumulatedVolume_BulkShrinkAdjustedTest()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void AddCutFillVolumeTest()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void AddCutVolumeTest()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void AddFillVolumeTest()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void AddVolumeTest()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void AssignTest()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void ExcessVolumeTest()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void ExcessVolume_BulkShrinkAdjustedTest()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void CutVolume_BulkageAdjustedTest()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void FillVolume_ShrinkageAdjustedTest()
         {
             Assert.Fail();

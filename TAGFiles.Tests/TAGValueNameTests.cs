@@ -1,15 +1,14 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using VSS.VisionLink.Raptor.TAGFiles.Classes;
 using VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks;
+using Xunit;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Tests
 {
-    [TestClass]
-    public class TAGValueNameTests
+        public class TAGValueNameTests
     {
-        [TestMethod]
+        [Fact]
         public void Test_TAGValueNames_GetTAGValueNames()
         {
             // Determine that the set of defined TAG value names are fully used by the defined TAGValueMatchers
@@ -21,7 +20,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Tests
             string[] instantiatedTAGs = new TAGValueSink(null).InstantiatedTAGs;
 
 //            Assert.Fail("Instantiated TAGs! : {0}, compared to {1}", String.Join(", ", instantiatedTAGs), String.Join(", ", valueNames));
-            Assert.IsTrue(instantiatedTAGs != null || instantiatedTAGs.Length > 0, "No instantiated TAG!");
+            Assert.True(instantiatedTAGs != null || instantiatedTAGs.Length > 0, "No instantiated TAG!");
 
             List<string> missing = new List<string>();
 
@@ -45,7 +44,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Tests
                 }
             }
 
-            Assert.IsTrue(missing.Count == 0, "Missing TAGs: {0}", String.Join(", ", missing));
+            Assert.Equal(0, missing.Count);
             // Spot check a couple of names...
 //            Assert.IsTrue(valueNames.Contains("TIME") && valueNames.Contains("WEEK"), "TAG value names list does not contain expected names");
 //            Assert.IsTrue(String.Join(", ", valueNames) != String.Empty);

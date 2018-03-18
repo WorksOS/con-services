@@ -13,34 +13,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TestClassLibrary;
 
 namespace Apache_Ignite_DotNet_Test
 {
-    [Serializable]
-    class HelloAction : IComputeAction
-    {
-        public void Invoke()
-        {
-            Console.WriteLine("Hello World!");
 
-            TestClass tc = new TestClass();
-            tc.DoSomething();
-        }
-    }
 
-    [Serializable]
-    class HelloComputeFunc : Apache.Ignite.Core.Compute.IComputeFunc<String, String>
-    {
-        public String Invoke(String s)
-        {
-            Console.WriteLine("Hello World! - " + s);
 
-            TestClass tc = new TestClass();
-
-            return s;
-        }
-    }
 
     [Serializable]
     class AffinityComputeFunc : Apache.Ignite.Core.Compute.IComputeFunc<String>
@@ -245,38 +223,10 @@ namespace Apache_Ignite_DotNet_Test
             ICompute compute = ignite.GetCompute();
             IClusterGroup compute2 = ignite.GetCompute().ClusterGroup;
 
-            // Broadcast a no-arg/no-return action
-            compute.Broadcast(new HelloAction());
 
-            // Broadcast an action taking a string and returning a string
-            ICollection<String> result = compute.Broadcast<String, String>(new HelloComputeFunc(), "Come back!");
-            foreach (String ss in result)
-            {
-                Console.WriteLine("Result: " + ss);
-            }
 
-            // Broadcast an action taking a string and returning a string to all nodes other than this node
-            if (compute2.ForServers()?.ForRemotes()?.GetNodes()?.Any() == true)
-            {
-                try
-                {
-                    ICollection<String> result2 = compute2.ForRemotes().GetCompute().Broadcast<String, String>(new HelloComputeFunc(), "Come back (2)!");
-                    foreach (String ss in result2)
-                    {
-                        Console.WriteLine("Result: " + ss);
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Exception calling cluster remote nodes\r\n: {0}", e);
-                }
-            }
-            else
-            {
-                Console.WriteLine("Calling cluster remote broadcast function: No remote servers present in cluster");
-            }
 
-            // Execute a map reduce on the cluster
+           // Execute a map reduce on the cluster
             if (compute2.ForServers()?.GetNodes()?.Any() == true)
             {
                 try

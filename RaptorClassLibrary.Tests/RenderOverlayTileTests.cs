@@ -1,16 +1,15 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Geometry;
 using System.Drawing;
 using VSS.VisionLink.Raptor.Rendering.Executors;
+using Xunit;
 
 namespace VSS.VisionLink.Raptor.Executors.Tests
 {
-    [TestClass()]
-    public class RenderOverlayTileTests
+        public class RenderOverlayTileTests
     {
-        [TestMethod()]
+        [Fact()]
         public void Test_RenderOverlayTile_Creation()
         {
             RenderOverlayTile render = new RenderOverlayTile(1,
@@ -26,11 +25,11 @@ namespace VSS.VisionLink.Raptor.Executors.Tests
                                                              Color.Black,
                                                              String.Empty);
 
-            Assert.IsTrue(render != null, "Did not create renderer as expected");
+            Assert.NotNull(render);
         }
 
         [Ignore] // This requires a running Ignite server which cant run in unit testing framework
-        [TestMethod()]
+        [Fact()]
         public void Test_RenderOverlayTile_Execute()
         {
             RenderOverlayTile render = new RenderOverlayTile(1,
@@ -46,7 +45,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tests
                                                              Color.Black,
                                                              String.Empty);
            Bitmap bmp = render.Execute();
-           Assert.IsTrue(bmp != null, "Render did not return a Bitmap");
+           Assert.NotNull(bmp);
         }
     }
 }
