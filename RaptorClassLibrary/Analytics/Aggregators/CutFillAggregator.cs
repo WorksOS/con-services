@@ -10,7 +10,7 @@ using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 
-namespace VSS.VisionLink.Raptor.Analytics
+namespace VSS.VisionLink.Raptor.Analytics.Aggregators
 {
     /// <summary>
     /// Implements the specific business rules for calculating a cut fill summary
@@ -20,17 +20,17 @@ namespace VSS.VisionLink.Raptor.Analytics
         /// <summary>
         /// The array of height offsets representing the cut and fill bands of the cut-fill isopac surface being analysed
         /// </summary>
-        Double[] Offsets { get; set; }
+        public Double[] Offsets { get; set; }
 
         /// <summary>
         /// The set of counters relevant to the supplied cut fill offsets
         /// </summary>
-        long[] Counts { get; set; }
+        public long[] Counts { get; set; }
 
         /// <summary>
         /// The design to be used for comparison against the production data surface 
         /// </summary>
-        Design CutFillDesign { get; set; }
+        public Design CutFillDesign { get; set; }
 
         /// <summary>
         /// Default no-arg constructor
@@ -159,7 +159,7 @@ namespace VSS.VisionLink.Raptor.Analytics
         /// height fits into the requested bands
         /// </summary>
         /// <param name="subGrids"></param>
-        public override void SummariseSubgridResult(IClientLeafSubGrid[][] subGrids)
+        public override void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
         {
             // Works out the percentage each colour on the map represents
             ClientHeightLeafSubGrid HeightSubGrid = subGrids[0][0] as ClientHeightLeafSubGrid;

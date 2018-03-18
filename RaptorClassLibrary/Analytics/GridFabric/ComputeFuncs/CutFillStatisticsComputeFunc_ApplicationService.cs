@@ -5,11 +5,11 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Analytics.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.Analytics.GridFabric.Reponses;
+using VSS.VisionLink.Raptor.Analytics.GridFabric.Responses;
 
 namespace VSS.VisionLink.Raptor.Analytics.GridFabric.ComputeFuncs
 {
-    public class CutFillStatisticsComputeFunc_ApplicationService : AnalyticsComputeFunc_ApplicationService<CutFillStatisticsArgument, CutFillStatisticsResponse, CutFillStatisticsComputeFunc_ApplicationService>
+    public class CutFillStatisticsComputeFunc_ApplicationService : AnalyticsComputeFunc_ApplicationService<CutFillStatisticsArgument, CutFillStatisticResponse, CutFillStatisticsComputeFunc_ApplicationService>
     {
     }
 }

@@ -284,7 +284,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         }
 
         /// <summary>
-        /// Method responsible for accepting subgrods from the query engine and processing them in the next step of
+        /// Method responsible for accepting subgrids from the query engine and processing them in the next step of
         /// the request
         /// </summary>
         /// <param name="results"></param>
@@ -396,7 +396,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
             // Request surveyd surface only subgrids
             SurveyedSurfaceOnlyMask?.ScanAllSetBitsAsSubGridAddresses(address =>
             {
-                // Is this subgrid is the responsibility of this server?
+                // Is this subgrid the responsibility of this server?
                 if (address.ToSpatialDivisionDescriptor(numSpatialProcessingDivisions) != spatialSubdivisionDescriptor) return;
 
                 // Decorate the address with the production data and surveyed surface flags
@@ -454,8 +454,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                     }
 
                     result = PerformSubgridRequests();
-                    result.NumSubgridsExamined = (ProdDataMask != null ? ProdDataMask.CountBits() : 0) +
-                                                 (SurveyedSurfaceOnlyMask != null ? SurveyedSurfaceOnlyMask.CountBits() : 0);
+                    result.NumSubgridsExamined = NumSubgridsToBeExamined;
 
                     //TODO: Map the actual response code in to this
                     result.ResponseCode = SubGridRequestsResponseResult.OK;

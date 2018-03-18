@@ -4,11 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Analytics.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.Analytics.GridFabric.ComputeFuncs;
-using VSS.VisionLink.Raptor.Analytics.GridFabric.Reponses;
 using VSS.VisionLink.Raptor.Analytics.GridFabric.Requests;
-using VSS.VisionLink.Raptor.GridFabric.Requests;
 
 namespace VSS.VisionLink.Raptor.Analytics.Factories
 {

@@ -20,7 +20,6 @@ namespace VSS.VisionLink.Raptor.Analytics.GridFabric.Arguments
 
         public long DesignID { get; set; }
 
-  // TODO  LiftBuildSettings  :TICLiftBuildSettings;
-
+        // TODO  LiftBuildSettings  :TICLiftBuildSettings;
     }
 }

@@ -74,8 +74,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Analytics\AggregatorBase.cs" />
-    <Compile Include="Analytics\CutFillAggregator.cs" />
+    <Compile Include="Analytics\Aggregators\AggregatorBase.cs" />
+    <Compile Include="Analytics\Aggregators\CutFillAggregator.cs" />
+    <Compile Include="Analytics\AnalyticsComputor.cs" />
     <Compile Include="Analytics\Factories\AnalyticsRequestFactory.cs" />
     <Compile Include="Analytics\GridFabric\Arguments\CutFillStatisticsArgument.cs" />
     <Compile Include="Analytics\GridFabric\ComputeFuncs\AnalyticsComputeFunc_ClusterCompute.cs" />
@@ -86,6 +87,8 @@
     <Compile Include="Analytics\GridFabric\Requests\CutFillStatisticsRequest_ApplicationService.cs" />
     <Compile Include="Analytics\Interfaces\IAggregatorBase.cs" />
     <Compile Include="Analytics\GridFabric\Responses\CutFillStatisticsResponse.cs" />
+    <Compile Include="Analytics\Models\CutFillResult.cs" />
+    <Compile Include="Analytics\Operations\CutFill.cs" />
     <Compile Include="Analytics\Servers\Client\CutFillStatistics_AnalyticsServer.cs" />
     <Compile Include="Analytics\Servers\Client\AnalyticsServer.cs" />
     <Compile Include="Cells\CellStatic.cs" />
@@ -115,6 +118,7 @@
     <Compile Include="Events\StartEndRecordedDataEvent.cs" />
     <Compile Include="Designs\Executors\CalculateDesignElevationPatch.cs" />
     <Compile Include="Executors\ProjectExtents.cs" />
+    <Compile Include="Executors\Tasks\AggregatedPipelinedSubGridTask.cs" />
     <Compile Include="GridFabric\BaseImmutableRaptorIgniteClass.cs" />
     <Compile Include="GridFabric\BaseMutableRaptorIgniteClass.cs" />
     <Compile Include="GridFabric\ComputeFuncs\SubGridsRequestComputeFuncAggregative.cs" />
@@ -515,9 +519,9 @@
     <Compile Include="Interfaces\ISubGridRequestsAggregator.cs" />
     <Compile Include="Volumes\ProdReportSelectionType.cs" />
     <Compile Include="Volumes\Servers\Client\RaptorSimpleVolumesServer.cs" />
-    <Compile Include="Volumes\SimpleVolumesCalculationsAggregatorState.cs" />
     <Compile Include="Volumes\SimpleVolumesCalculationsAggregator.cs" />
     <Compile Include="Volumes\VolumeConputationType.cs" />
+    <Compile Include="Volumes\VolumesCalculatorBase.cs" />
     <Compile Include="Volumes\VolumesCalculator.cs" />
     <Compile Include="Volumes\VolumesConsts.cs" />
     <Compile Include="Volumes\VolumesDesign.cs" />
@@ -542,7 +546,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Analytics\Executors\Tasks\" />
-    <Folder Include="Analytics\Models\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

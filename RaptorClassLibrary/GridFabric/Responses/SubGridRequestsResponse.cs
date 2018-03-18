@@ -58,6 +58,5 @@ namespace VSS.VisionLink.Raptor.GridFabric.Responses
         /// of surveyed surface subgrids in the request unless ResponseCode indicates a failure.
         /// </summary>
         public long NumSurveyedSurfaceSubGridsExamined { get; set; } = -1;
-
     }
 }

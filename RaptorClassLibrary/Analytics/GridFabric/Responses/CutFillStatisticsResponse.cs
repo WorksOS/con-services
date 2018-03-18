@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
 using VSS.VisionLink.Raptor.GridFabric.Responses;
 
-namespace VSS.VisionLink.Raptor.Analytics.GridFabric.Reponses
+namespace VSS.VisionLink.Raptor.Analytics.GridFabric.Responses
 {
     /// <summary>
     /// The response state returned from a cut/fill statistics request
     /// </summary>
-    public class CutFillStatisticsResponse : SubGridRequestsResponse, IResponseAggregateWith<CutFillStatisticsResponse>
+    public class CutFillStatisticResponse : IResponseAggregateWith<CutFillStatisticResponse>
     {
         /// <summary>
         /// An array (or always 7) values represnting the counts of cells within each of the cut fill bands defined in the request.
@@ -24,10 +24,12 @@ namespace VSS.VisionLink.Raptor.Analytics.GridFabric.Reponses
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public CutFillStatisticsResponse AggregateWith(CutFillStatisticsResponse other)
+        public CutFillStatisticResponse AggregateWith(CutFillStatisticResponse other)
         {
             if (Counts == null)
+            {
                 Counts = new long[other.Counts.Length];
+            }
 
             Debug.Assert(Counts.Length == other.Counts.Length);
 

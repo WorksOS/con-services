@@ -5,20 +5,26 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Analytics.Interfaces;
 using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
+using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
-namespace VSS.VisionLink.Raptor.Analytics
+namespace VSS.VisionLink.Raptor.Analytics.Aggregators
 {
     /// <summary>
     /// Base class used by all analytics aggregators supporting funcitons such as pass coutn summary, cut/fill summary, speed summary etc
     /// where the analytics are calculated at the cluster compute layer and reduced at the application service layer.
     /// </summary>
-    public class AggregatorBase : IAggregatorBase, IResponseAggregateWith<AggregatorBase>
+    public class AggregatorBase : ISubGridRequestsAggregator, IResponseAggregateWith<AggregatorBase>
     {
         /// <summary>
         /// The project the aggregation is operating on
         /// </summary>
         public Int64 SiteModelID { get; set; }  = 0;
+
+        /// <summary>
+        /// The cell size of the site model the aggregation is being performed over
+        /// </summary>
+        public double CellSize { get; set; } = 0.0;
 
         /// <summary>
         /// The number of cells scanned while summarising information in the resulting analytics, report or export
@@ -58,6 +64,14 @@ namespace VSS.VisionLink.Raptor.Analytics
         /// </summary>
         public bool RequiresSerialisation { get; set; } = false;
 
+        public double ValueAtTargetPercent => SummaryCellsScanned > 0 ? CellsScannedAtTarget / SummaryCellsScanned * 100 : 0;
+
+        public double ValueOverTargetPercent => SummaryCellsScanned > 0 ? CellsScannedOverTarget / SummaryCellsScanned * 100 : 0;
+
+        public double ValueUnderTargetPercent => SummaryCellsScanned > 0 ? CellsScannedUnderTarget / SummaryCellsScanned * 100 : 0;
+
+        public double SummaryProcessedArea => SummaryCellsScanned * (CellSize * CellSize);
+
         /// <summary>
         /// Combine this aggregator with another aggregator and store the result in this aggregator
         /// </summary>
@@ -89,13 +103,13 @@ namespace VSS.VisionLink.Raptor.Analytics
             // No implementation in base class yet
         }
 
-        /// <summary>
-        /// Processes the given set of subgrids into this aggregator
-        /// </summary>
-        /// <param name="subGrids"></param>
-        public virtual void SummariseSubgridResult(IClientLeafSubGrid[][] subGrids)
+        public virtual void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
         {
-            // No implementation in base class yet
+            // Processes the given set of subgrids into this aggregator
+        }
+
+        public virtual void Finalise()
+        {
         }
 
         /// <summary>

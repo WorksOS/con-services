@@ -181,6 +181,9 @@ namespace VSS.VisionLink.Raptor.Pipelines
             // FMaximumOutstandingSubgridRequests:= VLPDSvcLocations.VLPDASNode_DefaultMaximumOutstandingSubgridRequestsInPipeline;
         }
 
+        /// <summary>
+        /// Signals to the running pipeline that its operation has been aborted
+        /// </summary>
         public virtual void Abort()
         {
             Aborted = true;
@@ -196,6 +199,10 @@ namespace VSS.VisionLink.Raptor.Pipelines
         // being restarted.
         // Procedure AbortAndShutdown;
 
+        /// <summary>
+        /// Orchestrates sending subgrid requests to the compute cluster and handling the result
+        /// </summary>
+        /// <returns></returns>
         public virtual bool Initiate()
         {            
             // First analyse the request to determine the set of subgrids that will need to be requested
@@ -241,6 +248,10 @@ namespace VSS.VisionLink.Raptor.Pipelines
             return Responses.All(x => x.ResponseCode == SubGridRequestsResponseResult.OK);
         }
 
+        /// <summary>
+        /// Waits until the set of requests injected into the pipeline have yielded all required results
+        /// (passed into the relevant Task and signalled), or the pipeline timeout has expired
+        /// </summary>
         public void WaitForCompletion()
         {
             if (PipelineSignalEvent.WaitOne(30000)) // Don't wait for more than two minutes...
