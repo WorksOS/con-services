@@ -6,8 +6,79 @@ namespace MockProjectWebApi.Utils
 {
   public class FilterDescriptors
   {
-    public class GoldenData
-    { }
+    public class GoldenDimensions
+    {
+      public static FilterDescriptor ProjectExtentsFilter => new FilterDescriptor
+      {
+        FilterUid = "5e089924-98cb-49a6-8323-19537dc6d665",
+        Name = "Golden Dimensions Project Extents Filter",
+        FilterJson = JsonResourceHelper.GetGoldenDimensionsFilterJson("ProjectExtentsFilter")
+      };
+
+      public static FilterDescriptor ProjectExtentsFilterElevationTypeFirst => new FilterDescriptor
+      {
+        FilterUid = "f4e9b4dd-e8c4-4edb-b9aa-59a209c17de7",
+        Name = "Golden Dimensions Project Extents Filter",
+        FilterJson = JsonResourceHelper.GetGoldenDimensionsFilterJson("ProjectExtentsFilterElevationTypeFirst")
+      };
+
+      public static FilterDescriptor ProjectExtentsFilterElevationTypeLast => new FilterDescriptor
+      {
+        FilterUid = "7730ea54-6c6f-4450-ae94-1933471d7961",
+        Name = "Golden Dimensions Project Extents Filter",
+        FilterJson = JsonResourceHelper.GetGoldenDimensionsFilterJson("ProjectExtentsFilterElevationTypeLast")
+      };
+
+      #region Invalid date range filters (first -> last)
+
+      public static FilterDescriptor InvalidDateFilterElevationTypeFirst => new FilterDescriptor
+      {
+        FilterUid = "f92100c6-5397-4574-9688-be375d40625e",
+        Name = "Golden Dimensions Project Extents Filter",
+        FilterJson = JsonResourceHelper.GetGoldenDimensionsFilterJson("InvalidDateFilterElevationTypeFirst")
+      };
+
+      public static FilterDescriptor InvalidDateFilterElevationTypeLast => new FilterDescriptor
+      {
+        FilterUid = "7bc0bfa5-b0e9-463d-9f17-bdc8b18c0b8f",
+        Name = "Golden Dimensions Project Extents Filter",
+        FilterJson = JsonResourceHelper.GetGoldenDimensionsFilterJson("InvalidDateFilterElevationTypeLast")
+      };
+
+      #endregion
+
+      #region No Data date range filters (first -> last)
+
+      public static FilterDescriptor NoDataFilterElevationTypeFirst => new FilterDescriptor
+      {
+        FilterUid = "ce4497d9-76d0-4477-aa23-2ee1acd8c4f0",
+        Name = "Golden Dimensions Project Extents Filter",
+        FilterJson = JsonResourceHelper.GetGoldenDimensionsFilterJson("NoDataFilterElevationTypeFirst")
+      };
+
+      public static FilterDescriptor NoDataFilterElevationTypeLast => new FilterDescriptor
+      {
+        FilterUid = "fe6065a7-21fe-4db0-8f47-3ea6c320dac7",
+        Name = "Golden Dimensions Project Extents Filter",
+        FilterJson = JsonResourceHelper.GetGoldenDimensionsFilterJson("NoDataFilterElevationTypeLast")
+      };
+
+      #endregion
+
+      public static FilterDescriptor SummaryVolumesBaseFilter20170305 => new FilterDescriptor
+      {
+        FilterUid = "abd72636-43d3-4b04-9c3b-6383743659e4",
+        Name = "GD Dimensions Base Filter 5/3/2017",
+        FilterJson = JsonResourceHelper.GetGoldenDimensionsFilterJson("SummaryVolumesBaseFilter20170305")
+      };
+
+      public static FilterDescriptor SummaryVolumesTopFilter20170621 => new FilterDescriptor
+      {
+        FilterUid = "f0e02abf-995c-44ef-bd89-1936d2564e57",
+        Name = "GD Dimensions Base Filter 21/6/2017",
+        FilterJson = JsonResourceHelper.GetGoldenDimensionsFilterJson("SummaryVolumesTopFilter20170621")
+      };
+    }
 
     public class Dimensions
     {

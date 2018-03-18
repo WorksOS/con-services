@@ -41,7 +41,7 @@ namespace MockProjectWebApi.Controllers
         }
         if (projectUidStr == ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1)
         {
-          fileList.AddRange(this.designSurfacesFileList);
+          fileList.AddRange(this.goldenDataDesignSurfaceFileList);
         }
       }
 
@@ -238,11 +238,12 @@ namespace MockProjectWebApi.Controllers
         ProjectUid = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
         CustomerUid = "SurveyedSurfaceAcceptanceTest",
         ImportedFileType = ImportedFileType.SurveyedSurface,
-        ImportedFileUid = Guid.NewGuid().ToString(),
+        ImportedFileUid = "ff323224-f2ab-4af6-b4bc-95dd0903c003",
         LegacyFileId = 14177,
         IsActivated = true,
         MinZoomLevel = 0,
-        MaxZoomLevel = 0
+        MaxZoomLevel = 0,
+        SurveyedUtc = DateTime.Parse("2012-05-13T00:02:02")
       },
       new FileData
       {
@@ -250,7 +251,7 @@ namespace MockProjectWebApi.Controllers
         ProjectUid = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
         CustomerUid = "SurveyedSurfaceAcceptanceTest",
         ImportedFileType = ImportedFileType.SurveyedSurface,
-        ImportedFileUid = Guid.NewGuid().ToString(),
+        ImportedFileUid = "4f9bebe8-812b-4552-9af6-1ddfb2f813ed",
         LegacyFileId = 14176,
         IsActivated = true,
         MinZoomLevel = 0,
@@ -266,7 +267,8 @@ namespace MockProjectWebApi.Controllers
         LegacyFileId = 14175,
         IsActivated = true,
         MinZoomLevel = 0,
-        MaxZoomLevel = 0
+        MaxZoomLevel = 0,
+        SurveyedUtc = DateTime.Parse("2016-05-08T23:46:47")
       },
       new FileData
       {
@@ -274,7 +276,7 @@ namespace MockProjectWebApi.Controllers
         ProjectUid = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
         CustomerUid = "SurveyedSurfaceAcceptanceTest",
         ImportedFileType = ImportedFileType.SurveyedSurface,
-        ImportedFileUid = Guid.NewGuid().ToString(),
+        ImportedFileUid = "0372718b-534a-430f-bb71-dc71acb9bd5b",
         LegacyFileId = 14174,
         IsActivated = true,
         MinZoomLevel = 0,
@@ -286,7 +288,7 @@ namespace MockProjectWebApi.Controllers
         ProjectUid = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
         CustomerUid = "SurveyedSurfaceAcceptanceTest",
         ImportedFileType = ImportedFileType.SurveyedSurface,
-        ImportedFileUid = Guid.NewGuid().ToString(),
+        ImportedFileUid = "0db110ed-8dc2-487a-901c-0ea5de6fd8dd",
         LegacyFileId = 14222,
         IsActivated = true,
         MinZoomLevel = 0,
@@ -294,7 +296,7 @@ namespace MockProjectWebApi.Controllers
       }
     };
 
-    private readonly List<FileData> designSurfacesFileList = new List<FileData>
+    private readonly List<FileData> goldenDataDesignSurfaceFileList = new List<FileData>
     {
       new FileData
       {
@@ -302,7 +304,7 @@ namespace MockProjectWebApi.Controllers
         ProjectUid = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
         CustomerUid = "DesignSurfaceAcceptanceTest",
         ImportedFileType = ImportedFileType.DesignSurface,
-        ImportedFileUid = Guid.NewGuid().ToString(),
+        ImportedFileUid = "3d255208-8aa2-4172-9046-f97a36eff896",
         LegacyFileId = 15177,
         IsActivated = true,
         MinZoomLevel = 15,
