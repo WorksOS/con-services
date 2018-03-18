@@ -23,10 +23,10 @@ namespace VSS.VisionLink.Raptor.Storage
 
         protected IIgnite ignite = null;
 
-        protected ICache<SubGridSpatialAffinityKey, byte[]> spatialCache = null;
         protected ICache<string, byte[]> nonSpatialCache = null;
-
         public ICache<string, byte[]> NonSpatialCache => nonSpatialCache;
+
+        protected ICache<SubGridSpatialAffinityKey, byte[]> spatialCache = null;
         public ICache<SubGridSpatialAffinityKey, byte[]> SpatialCache => spatialCache;
 
         /// <summary>

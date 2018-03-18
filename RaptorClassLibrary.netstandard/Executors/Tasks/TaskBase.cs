@@ -30,7 +30,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
         public bool IsCancelled = false;
 
         /// <summary>
-        /// The type od grid data being processed by this task
+        /// The type of grid data being processed by this task
         /// </summary>
         public GridDataType GridDataType { get; set; } = GridDataType.All;
 

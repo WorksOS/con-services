@@ -269,7 +269,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
                             //                                                        Owner.ProdDataExistenceMap.GetCell(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J),
                             //                                                        Owner.IncludeSurveyedSurfaceInformation);
 
-                            /// Set the ProdDataMaskk for the production data
+                            /// Set the ProdDataMask for the production data
                             if (ProdDataSubGrid != null && ProdDataSubGrid.Bits.BitSet(I, J))
                             {
                                 ProdDataMask.SetCell(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J, true);

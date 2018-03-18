@@ -2,6 +2,7 @@
 using System;
 using System.Reflection;
 using VSS.VisionLink.Raptor.Executors.Tasks;
+using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.Types;
 
@@ -18,13 +19,13 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors.Tasks
         /// <summary>
         /// The aggregator performing volumes computation operations
         /// </summary>
-        private SimpleVolumesCalculationsAggregator Aggregator = null;
+        private ISubGridRequestsAggregator Aggregator = null;
 
         /// <summary>
         /// Constructor accepting a simple volumes aggregator that hardwires the expected grid data type to height
         /// </summary>
         /// <param name="Aggregator"></param>
-        public SimpleVolumesComputationTask(SimpleVolumesCalculationsAggregator aggregator) : base(Guid.NewGuid().GetHashCode(), "", GridDataType.Height)
+        public SimpleVolumesComputationTask(ISubGridRequestsAggregator aggregator) : base(Guid.NewGuid().GetHashCode(), "", GridDataType.Height)
         {
             Aggregator = aggregator;
         }
@@ -56,7 +57,7 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors.Tasks
             }
 
             // Include this subgrid result into the aggregated volumes result
-            Aggregator.SummariseSubgridResult(response as IClientLeafSubGrid[][]);
+            Aggregator.ProcessSubgridResult(response as IClientLeafSubGrid[][]);
 
             return true;
         }

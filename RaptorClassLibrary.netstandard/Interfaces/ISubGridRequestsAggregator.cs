@@ -13,7 +13,7 @@ namespace VSS.VisionLink.Raptor.Interfaces
     public interface ISubGridRequestsAggregator
     {
         /// <summary>
-        /// Process the result of querying a subgrid against one or more filters. The argument is a generic lsit of client subgrids
+        /// Process the result of querying a subgrid against one or more filters. The argument is a generic list of client subgrids
         /// </summary>
         /// <param name="subGrids"></param>
         void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids);

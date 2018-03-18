@@ -6,6 +6,7 @@ using VSS.VisionLink.Raptor.Utilities;
 using VSS.VisionLink.Raptor.Volumes.GridFabric.Responses;
 using static VSS.VisionLink.Raptor.Volumes.VolumesCalculatorBase;
 using VSS.VisionLink.Raptor.SiteModels;
+using VSS.VisionLink.Raptor.Interfaces;
 
 namespace VSS.VisionLink.Raptor.Volumes.Executors
 {
@@ -71,6 +72,11 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
         public double FillTolerance = VolumesConsts.DEFAULT_CELL_VOLUME_FILL_TOLERANCE;
 
         /// <summary>
+        /// The aggregator to be used to compute the volumes related results
+        /// </summary>
+        public SimpleVolumesCalculationsAggregator Aggregator { get; set; } = null;
+
+        /// <summary>
         /// Performs funcional initialisation of ComnputeVolumes state that is dependent on the initial state
         /// set via the constructor
         /// </summary>
@@ -78,10 +84,9 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
         private void InitialiseVolumesCalculator(VolumesCalculator ComputeVolumes)
         {
             // Set up the volumes calc parameters
-            switch (ComputeVolumes.Aggregator.VolumeType)
+            switch (VolumeType)
             {
                 case VolumeComputationType.Between2Filters:
-
                     ComputeVolumes.FromSelectionType = ProdReportSelectionType.Filter;
                     ComputeVolumes.ToSelectionType = ProdReportSelectionType.Filter;
                     break;
@@ -101,6 +106,14 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
 
             ComputeVolumes.RefOriginal = BaseDesignID == long.MinValue ? null : Services.Designs.DesignsService.Instance().Find(SiteModelID, BaseDesignID);
             ComputeVolumes.RefDesign = TopDesignID == long.MinValue ? null : Services.Designs.DesignsService.Instance().Find(SiteModelID, TopDesignID);
+
+            if (ComputeVolumes.FromSelectionType == ProdReportSelectionType.Surface)
+                ComputeVolumes.ActiveDesign = ComputeVolumes.RefOriginal;
+            else
+                ComputeVolumes.ActiveDesign = ComputeVolumes.ToSelectionType == ProdReportSelectionType.Surface ? ComputeVolumes.RefDesign : null;
+
+            // Assign the active design into the aggregator for use
+            Aggregator.ActiveDesign = ComputeVolumes.ActiveDesign;
         }
 
         /// <summary>
@@ -190,21 +203,17 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
                     // Prepare filters for use in the request
                     ResultStatus = FilterUtilities.PrepareFiltersForUse(new CombinedFilter[] { BaseFilter, TopFilter, AdditionalSpatialFilter }, SiteModelID);
                     if (ResultStatus != RequestErrorStatus.OK)
-                    {
                         return VolumesResult;
-                    }
 
                     // Obtain the site model context for the request
                     SiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(SiteModelID);
 
                     if (SiteModel == null)
-                    {
                         return VolumesResult;
-                    }
 
                     // Create and configure the aggregator that contains the business logic for the 
                     // underlying volume calculation
-                    SimpleVolumesCalculationsAggregator Aggregator = new SimpleVolumesCalculationsAggregator()
+                    Aggregator = new SimpleVolumesCalculationsAggregator()
                     {
                         RequiresSerialisation = true,
                         SiteModelID = SiteModelID,
@@ -222,33 +231,27 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
                         SiteModel = SiteModel,
                         Aggregator = Aggregator,
                         BaseFilter = BaseFilter,
-                        TopFilter = TopFilter
+                        TopFilter = TopFilter,
+                        VolumeType = VolumeType
                     };
 
                     InitialiseVolumesCalculator(ComputeVolumes);
 
                     // Perform the volume computation
                     if (ComputeVolumes.ComputeVolumeInformation())
-                    {
                         ResultStatus = RequestErrorStatus.OK;
-                    }
                     else
-                    {
                         if (ComputeVolumes.AbortedDueToTimeout)
-                        {
-                            ResultStatus = RequestErrorStatus.AbortedDueToPipelineTimeout;
-                        }
-                        else
-                        {
-                            ResultStatus = RequestErrorStatus.Unknown;
-                        }
-                    }
+                        ResultStatus = RequestErrorStatus.AbortedDueToPipelineTimeout;
+                    else
+                        ResultStatus = RequestErrorStatus.Unknown;
 
-                    // Send the results back to the caller
                     if (ResultStatus != RequestErrorStatus.OK)
                     {
                         // TODO Readd when logging available
                         // SIGLogMessage.PublishNoODS(Self, Format('Summary volume result: Failure, error = %d', [Ord(ResultStatus)]), slmcMessage);
+
+                        // Send the (empty) results back to the caller
                         return VolumesResult;
                     }
 
@@ -257,21 +260,17 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
                                               [CutFillVolume.CutVolume, CutFillVolume.FillVolume, CoverageArea]), slmcMessage);
                     */
 
-                    // Instrust the Aggregator to performing any finalisation logic before readin out the results
+                    // Instruct the Aggregator to perform any finalisation logic before reading out the results
                     Aggregator.Finalise();
 
                     if (!Aggregator.BoundingExtents.IsValidPlanExtent)
                     {
-                        // TODO: Read when loggin available
+                        // TODO: Readd when logging available
                         //SIGLogMessage.PublishNoODS(Self, 'Summary volume invalid PlanExtents. Possibly no data found', slmcMessage);
                         if (Aggregator.CoverageArea == 0 && Aggregator.CutFillVolume.CutVolume == 0 && Aggregator.CutFillVolume.FillVolume == 0)
-                        {
                             ResultStatus = RequestErrorStatus.NoProductionDataFound;
-                        }
                         else
-                        {
                             ResultStatus = RequestErrorStatus.InvalidPlanExtents;
-                        }
 
                         return VolumesResult;
                     }
@@ -297,19 +296,14 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
                                                  RadToDeg(LLHCoords[1].Y));
                     */
 
-                    // Construct the result object to pass back to the caller
-                    VolumesResult = new SimpleVolumesResponse()
-                    {
-                        Cut = Aggregator.CutFillVolume.CutVolume,
-                        Fill = Aggregator.CutFillVolume.FillVolume,
-                        TotalCoverageArea = Aggregator.CoverageArea,
-                        CutArea = Aggregator.CutArea,
-                        FillArea = Aggregator.FillArea,
-                        BoundingExtentGrid = Aggregator.BoundingExtents,
-                        BoundingExtentLLH = ResultBoundingExtents
-                    };
-
-                    return VolumesResult;
+                    // Fill in the result object to pass back to the caller
+                    VolumesResult.Cut = Aggregator.CutFillVolume.CutVolume;
+                    VolumesResult.Fill = Aggregator.CutFillVolume.FillVolume;
+                    VolumesResult.TotalCoverageArea = Aggregator.CoverageArea;
+                    VolumesResult.CutArea = Aggregator.CutArea;
+                    VolumesResult.FillArea = Aggregator.FillArea;
+                    VolumesResult.BoundingExtentGrid = Aggregator.BoundingExtents;
+                    VolumesResult.BoundingExtentLLH = ResultBoundingExtents;
                 }
                 finally
                 {
