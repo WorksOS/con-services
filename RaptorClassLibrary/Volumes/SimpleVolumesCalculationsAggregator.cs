@@ -214,7 +214,9 @@ namespace VSS.VisionLink.Raptor.Volumes
             double CellArea = CellSize * CellSize;
 
             // Query the patch of elevations from the surface model for this subgrid
-            if (ActiveDesign?.GetDesignHeights(SiteModelID, new SubGridCellAddress(), CellSize, out DesignHeights, out ProfilerRequestResult) == false)
+            if (ActiveDesign?.GetDesignHeights(SiteModelID,
+                                               BaseScanSubGrid.OriginAsCellAddress(),
+                                               CellSize, out DesignHeights, out ProfilerRequestResult) == false)
             {
                 if (ProfilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
                 {
