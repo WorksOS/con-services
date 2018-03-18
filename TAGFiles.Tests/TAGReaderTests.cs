@@ -1,14 +1,13 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.VisionLink.Raptor.TAGFiles.Classes;
 using System.IO;
+using Xunit;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Tests
 {
-    [TestClass]
-    public class TAGReaderTests
+        public class TAGReaderTests
     {
-        [TestMethod]
+        [Fact]
         public void Test_TAGReader_Creation()
         {
             //Verify the no-arg connstructor fails
@@ -20,11 +19,11 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Tests
             }
             catch (Exception E)
             {
-                Assert.IsTrue(E is ArgumentException, "Exception thrown n is incorrect");
+                Assert.True(E is ArgumentException, "Exception thrown n is incorrect");
             }
 
             TAGReader reader = new TAGReader(new MemoryStream());
-            Assert.IsTrue(reader != null, "Reader with memory stream failed to construct");
+            Assert.NotNull(reader);
         }
     }
 }

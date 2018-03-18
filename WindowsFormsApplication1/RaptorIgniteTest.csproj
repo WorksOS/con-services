@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>RaptorIgniteTest</RootNamespace>
     <AssemblyName>RaptorIgniteTest</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -117,13 +117,21 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RaptorClassLibrary\RaptorClassLibrary.csproj">
-      <Project>{d900b783-706f-4845-82e1-3c93c1e06df2}</Project>
-      <Name>RaptorClassLibrary</Name>
+    <ProjectReference Include="..\Raptor.Common.netstandard\Raptor.Common.netstandard.csproj">
+      <Project>{737bfd08-031b-4506-8205-947b82c6d2ba}</Project>
+      <Name>Raptor.Common.netstandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\VSS.Velociraptor.Geometry\VSS.VisionLink.Raptor.Geometry.csproj">
-      <Project>{e1a52e73-5ccd-4aa5-bb78-561319479792}</Project>
-      <Name>VSS.VisionLink.Raptor.Geometry</Name>
+    <ProjectReference Include="..\RaptorClassLibrary.netstandard\RaptorClassLibrary.netstandard.csproj">
+      <Project>{40db7cf3-5817-45a5-9f90-29baa80e2c7a}</Project>
+      <Name>RaptorClassLibrary.netstandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSS.TRex.Rendering.Abstractions\VSS.TRex.Rendering.Abstractions.csproj">
+      <Project>{F1D135BE-638E-4E1C-9D8B-06F2A618C2F9}</Project>
+      <Name>VSS.TRex.Rendering.Abstractions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSS.Velociraptor.Geometry.netstandard\VSS.Velociraptor.Geometry.netstandard.csproj">
+      <Project>{bac0b22f-b4fd-406a-9196-2e864416ef4e}</Project>
+      <Name>VSS.Velociraptor.Geometry.netstandard</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

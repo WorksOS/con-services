@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Velociraptor.DesignProfiling;
+﻿using VSS.Velociraptor.DesignProfiling;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,11 +7,11 @@ using System.Threading.Tasks;
 using VSS.VisionLink.Raptor;
 using VSS.Velociraptor.Designs.TTM;
 using VSS.VisionLink.Raptor.Designs;
+using Xunit;
 
 namespace VSS.Velociraptor.DesignProfiling.Tests
 {
-    [TestClass()]
-    public class TTMDesignTests
+        public class TTMDesignTests
     {
         private static TTMDesign design = LoadTheDesign();
 
@@ -30,27 +29,27 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
         }
 
         [Ignore()]
-        [TestMethod()]
+        [Fact()]
         public void CreateAccessContextTest()
         {
             Assert.Fail();
         }
 
         [Ignore()]
-        [TestMethod()]
+        [Fact()]
         public void ComputeFilterPatchTest()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void TTMDesignTest()
         {
             try
             {
                 TTMDesign design = new TTMDesign(SubGridTree.DefaultCellSize);
 
-                Assert.IsTrue(design != null, "Creation of TTM design class instance failed");
+                Assert.NotNull(design);
             }
             catch (Exception E)
             {
@@ -58,59 +57,59 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
             }
         }
 
-        [TestMethod()]
+        [Fact()]
         public void GetExtentsTest()
         {
 
             design.GetExtents(out double x1, out double y1, out double x2, out double y2);
 
-            Assert.IsTrue(x1 != Consts.NullReal, "X1 is null");
-            Assert.IsTrue(y1 != Consts.NullReal, "Y1 is null");
-            Assert.IsTrue(x2 != Consts.NullReal, "X2 is null");
-            Assert.IsTrue(y2 != Consts.NullReal, "Y2 is null");
+            Assert.NotEqual(x1, Consts.NullReal);
+            Assert.NotEqual(y1, Consts.NullReal);
+            Assert.NotEqual(x2, Consts.NullReal);
+            Assert.NotEqual(y2, Consts.NullReal);
         }
 
-        [TestMethod()]
+        [Fact()]
         public void GetHeightRangeTest()
         {
 //            TTMDesign design = LoadTheDesign();
 
             design.GetHeightRange(out double z1, out double z2);
 
-            Assert.IsTrue(z1 != Consts.NullReal, "Z1 is null");
-            Assert.IsTrue(z2 != Consts.NullReal, "Z2 is null");
-            Assert.IsTrue(z2 >= z1, "Z2 is below Z1");
+            Assert.NotEqual(z1, Consts.NullReal);
+            Assert.NotEqual(z2, Consts.NullReal);
+            Assert.True(z2 >= z1, "Z2 is below Z1");
         }
 
         [Ignore()]
-        [TestMethod()]
+        [Fact()]
         public void HasElevationDataForSubGridPatchTest()
         {
             Assert.Fail();
         }
 
         [Ignore()]
-        [TestMethod()]
+        [Fact()]
         public void HasElevationDataForSubGridPatchTest1()
         {
             Assert.Fail();
         }
 
         [Ignore()]
-        [TestMethod()]
+        [Fact()]
         public void HasFiltrationDataForSubGridPatchTest()
         {
             Assert.Fail();
         }
 
         [Ignore()]
-        [TestMethod()]
+        [Fact()]
         public void HasFiltrationDataForSubGridPatchTest1()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         [DataRow(247500.0, 193350.0, 29.875899875665258)]
         public void InterpolateHeightTest(double probeX, double probeY, double expectedZ)
         {
@@ -120,12 +119,12 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
 
             bool result = design.InterpolateHeight(ref SearchState, ref Hint, probeX, probeY, 0, out double Z);
 
-            Assert.IsTrue(result, "Height interpolation returned false");
+            Assert.True(result, "Height interpolation returned false");
 
-            Assert.IsTrue(Math.Abs(Z - expectedZ) < 0.001, $"Interpolated height value is incorrect, expected {expectedZ}");
+            Assert.True(Math.Abs(Z - expectedZ) < 0.001, $"Interpolated height value is incorrect, expected {expectedZ}");
         }
 
-        [TestMethod()]
+        [Fact()]
         [DataRow(247500.0, 193350.0, 29.875899875665258)]
         public void InterpolateHeightTestPerf(double probeX, double probeY, double expectedZ)
         {
@@ -136,25 +135,25 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
             {
                 Hint = null;
                 bool result = design.InterpolateHeight(ref SearchState, ref Hint, probeX, probeY, 0, out double Z);
-                Assert.IsTrue(result);
+                Assert.True(result);
             }
 
             Assert.Fail("Perf Test");
         }
 
-        [TestMethod()]
+        [Fact()]
         [DataRow(247500.0, 193350.0, 29.875899875665258)]
         public void InterpolateHeightTest2(double probeX, double probeY, double expectedZ)
         {
             object Hint = null;
             bool result = design.InterpolateHeight2(ref Hint, probeX, probeY, 0, out double Z);
 
-            Assert.IsTrue(result, "Height interpolation returned false");
+            Assert.True(result, "Height interpolation returned false");
 
-            Assert.IsTrue(Math.Abs(Z - expectedZ) < 0.001, $"Interpolated height value is incorrect, expected {expectedZ}");
+            Assert.True(Math.Abs(Z - expectedZ) < 0.001, $"Interpolated height value is incorrect, expected {expectedZ}");
         }
 
-        [TestMethod()]
+        [Fact()]
         [DataRow(247500.0, 193350.0, 29.875899875665258)]
         public void InterpolateHeightTest2Perf(double probeX, double probeY, double expectedZ)
         {
@@ -168,7 +167,7 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
             Assert.Fail("Perf Test");
         }
 
-        [TestMethod()]
+        [Fact()]
         [DataRow(247500.0, 193350.0, 29.875899875665258)]
         public void InterpolateHeightTest3Perf(double probeX, double probeY, double expectedZ)
         {
@@ -182,7 +181,7 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
             Assert.Fail("Perf Test");
         }
 
-        [TestMethod()]
+        [Fact()]
         [DataRow(247500.0, 193350.0)]
         public void InterpolateHeightsTest(Double probeX, Double probeY)
         {
@@ -190,10 +189,10 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
 
             bool result = design.InterpolateHeights(Patch, probeX, probeY, SubGridTree.DefaultCellSize, 0);
 
-            Assert.IsTrue(result, "Heights interpolation returned false");
+            Assert.True(result, "Heights interpolation returned false");
         }
 
-        [TestMethod()]
+        [Fact()]
         [DataRow(247500.0, 193350.0)]
         public void InterpolateHeightsTestPerf(Double probeX, Double probeY)
         {
@@ -208,7 +207,7 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         [DataRow(247500.0, 193350.0)]
         public void InterpolateHeightsTest2Perf(Double probeX, Double probeY)
         {
@@ -223,7 +222,7 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         [DataRow(247500.0, 193350.0)]
         public void InterpolateHeightsTest3Perf(Double probeX, Double probeY)
         {
@@ -238,17 +237,17 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void LoadFromFileTest()
         {
-            Assert.IsTrue(design.Data.Triangles.Count > 0, "No triangles present in loaded TTM file.");
-            Assert.IsTrue(design.Data.Vertices.Count > 0, "No vertices present in loaded TTM file.");
+            Assert.True(design.Data.Triangles.Count > 0, "No triangles present in loaded TTM file.");
+            Assert.True(design.Data.Vertices.Count > 0, "No vertices present in loaded TTM file.");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void SubgridOverlayIndexTest()
         {
-            Assert.IsTrue(design.SubgridOverlayIndex() != null, "SubgridOverlayIndex is null");
+            Assert.NotNull(design.SubgridOverlayIndex());
         }
     }
 }

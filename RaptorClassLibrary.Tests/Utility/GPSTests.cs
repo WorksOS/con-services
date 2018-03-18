@@ -1,17 +1,16 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.VisionLink.Raptor.Time;
+﻿using VSS.VisionLink.Raptor.Time;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace VSS.VisionLink.Raptor.Time.Tests
 {
-    [TestClass()]
-    public class GPSTests
+        public class GPSTests
     {
-        [TestMethod()]
+        [Fact()]
         public void Test_GPSOriginTimeToDateTime()
         {
             DateTime dateTime = GPS.GPSOriginTimeToDateTime(10000, 10000000);
@@ -20,11 +19,11 @@ namespace VSS.VisionLink.Raptor.Time.Tests
 
             GPS.DateTimeToGPSOriginTime(dateTime, out GPSWeek, out GPSWeekMilliseconds);
 
-            Assert.IsTrue(GPSWeek == 10000 && GPSWeekMilliseconds == 10000000,
+            Assert.True(GPSWeek == 10000 && GPSWeekMilliseconds == 10000000,
                 "Round trip conversion of GPS date failed");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_GPSOriginTimeToDateTime_Invalid()
         {
             uint GPSWeek, GPSWeekMilliseconds;

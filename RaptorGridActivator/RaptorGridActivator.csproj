@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>RaptorGridActivator</RootNamespace>
     <AssemblyName>RaptorGridActivator</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -97,9 +97,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RaptorClassLibrary\RaptorClassLibrary.csproj">
-      <Project>{D900B783-706F-4845-82E1-3C93C1E06DF2}</Project>
-      <Name>RaptorClassLibrary</Name>
+    <ProjectReference Include="..\Raptor.Common.netstandard\Raptor.Common.netstandard.csproj">
+      <Project>{737bfd08-031b-4506-8205-947b82c6d2ba}</Project>
+      <Name>Raptor.Common.netstandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RaptorClassLibrary.netstandard\RaptorClassLibrary.netstandard.csproj">
+      <Project>{40db7cf3-5817-45a5-9f90-29baa80e2c7a}</Project>
+      <Name>RaptorClassLibrary.netstandard</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

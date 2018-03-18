@@ -1,15 +1,14 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor;
+using Xunit;
 
 namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 {
-    [TestClass]
-    public class LeafSubgridTests
+        public class LeafSubgridTests
     {
-        [TestMethod]
+        [Fact]
         public void Test_LeafSubgrid_Creation()
         {
             ISubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
@@ -39,10 +38,10 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 
             leaf = new LeafSubGrid(tree, null, tree.NumLevels);
 
-            Assert.IsTrue(leaf != null && leaf.Level == tree.NumLevels);
+            Assert.True(leaf != null && leaf.Level == tree.NumLevels);
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_LeafSubgrid_IsEmpty()
         {
             ISubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());

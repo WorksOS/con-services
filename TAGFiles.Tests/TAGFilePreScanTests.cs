@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.VisionLink.Raptor.Executors;
+﻿using VSS.VisionLink.Raptor.Executors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,18 +8,18 @@ using VSS.VisionLink.Raptor.TAGFiles.Types;
 using System.IO;
 using VSS.VisionLink.Raptor.TAGFiles.Tests;
 using VSS.VisionLink.Raptor.Cells;
+using Xunit;
 
 namespace VSS.VisionLink.Raptor.Executors.Tests
 {
-    [TestClass()]
-    public class TAGFilePreScanTests
+        public class TAGFilePreScanTests
     {
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGFilePreScan_Creation()
         {
             TAGFilePreScan preScan = new TAGFilePreScan();
 
-            Assert.IsTrue(preScan.ProcessedEpochCount == 0 &&
+            Assert.True(preScan.ProcessedEpochCount == 0 &&
                 preScan.ReadResult == TAGReadResult.NoError &&
                 preScan.SeedLatitude == null &&
                 preScan.SeedLongitude == null &&
@@ -32,15 +31,15 @@ namespace VSS.VisionLink.Raptor.Executors.Tests
                 "TAGFilePreScan not constructed as expected");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_TAGFilePreScan_Execute()
         {
             TAGFilePreScan preScan = new TAGFilePreScan();
 
-            Assert.IsTrue(preScan.Execute(new FileStream(TAGTestConsts.TestDataFilePath() + "TAGFiles\\TestTAGFile.tag", FileMode.Open, FileAccess.Read)),
+            Assert.True(preScan.Execute(new FileStream(TAGTestConsts.TestDataFilePath() + "TAGFiles\\TestTAGFile.tag", FileMode.Open, FileAccess.Read)),
                 "Prescan execute returned false");
 
-            Assert.IsTrue(preScan.ProcessedEpochCount == 1478 &&
+            Assert.True(preScan.ProcessedEpochCount == 1478 &&
                 preScan.ReadResult == TAGReadResult.NoError &&
                 preScan.SeedLatitude == 0.8551829920414814 && // 0.8551829920414814
                 preScan.SeedLongitude == -2.1377653549870974 && // -2.1377653549870974

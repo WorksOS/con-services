@@ -1,21 +1,20 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.VisionLink.Raptor.Filters;
+using Xunit;
 
 namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 {
-    [TestClass]
-    public class FilteredSinglePassInfoTests
+        public class FilteredSinglePassInfoTests
     {
-        [TestMethod]
+        [Fact]
         public void Test_FilteredSinglePass_Creation()
         {
             FilteredSinglePassInfo info = new FilteredSinglePassInfo();
 
-            Assert.IsTrue(info.PassCount == 0, "Incorrect pass count after creation");
+            Assert.Equal(0, info.PassCount);
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_FilteredSinglePass_Clear()
         {
             Assert.Fail();

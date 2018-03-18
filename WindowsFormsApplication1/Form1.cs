@@ -92,7 +92,8 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                     Fence = new Fence(extents)
                 };
 
-                return tileRenderServer.RenderTile(new TileRenderRequestArgument
+                //TODO Fix it with DI
+                return null; /*tileRenderServer.RenderTile(new TileRenderRequestArgument
                 (ID(),
                  displayMode,
                  extents,
@@ -102,7 +103,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                  new CombinedFilter(AttributeFilter, SpatialFilter), // Filter1
                  null, // filter 2
                  (cmbDesigns.Items.Count == 0) ? long.MinValue : (cmbDesigns.SelectedValue as Design).ID// DesignDescriptor
-                ));
+                ));*/
             }
             catch (Exception E)
             {

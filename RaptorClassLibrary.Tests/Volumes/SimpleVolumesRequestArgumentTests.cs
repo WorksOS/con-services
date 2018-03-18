@@ -1,18 +1,17 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.VisionLink.Raptor.Volumes.GridFabric.Arguments;
+using Xunit;
 
 namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests.Volumes
 {
-    [TestClass]
-    public class SimpleVolumesRequestArgumentTests
+        public class SimpleVolumesRequestArgumentTests
     {
-        [TestMethod]
+        [Fact]
         public void Test_SimpleVolumesRequestArgument_Creation()
         {
             SimpleVolumesRequestArgument arg = new SimpleVolumesRequestArgument();
 
-            Assert.IsNotNull(arg, "Simple volumes request arg did not create");
+            Assert.NotNull(arg, "Simple volumes request arg did not create");
         }
     }
 }

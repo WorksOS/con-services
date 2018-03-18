@@ -1,23 +1,22 @@
 ﻿using System;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 using VSS.VisionLink.Raptor.Types;
 using System.Text;
+using Xunit;
 
 namespace VSS.VisionLink.Raptor.Compression.Tests
 {
-    [TestClass]
-    public class EncodedBitFieldDescriptorTests
+        public class EncodedBitFieldDescriptorTests
     {
-        [TestMethod]
+        [Fact]
         public void Test_EncodedBitFieldDescriptor_Init()
         {
             EncodedBitFieldDescriptor descriptor = new EncodedBitFieldDescriptor();
 
             descriptor.Init();
 
-            Assert.IsTrue(descriptor.EncodedNullValue == 0 &&
+            Assert.True(descriptor.EncodedNullValue == 0 &&
                 descriptor.AllValuesAreNull == false &&
                 descriptor.MaxValue == 0 &&
                 descriptor.MinValue == 0 &&
@@ -28,7 +27,7 @@ namespace VSS.VisionLink.Raptor.Compression.Tests
                 "Descriptor state after Init() incorrect");
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_EncodedBitFieldDescriptor_ReadWrite()
         {
             EncodedBitFieldDescriptor descriptor1 = new EncodedBitFieldDescriptor()
@@ -58,10 +57,10 @@ namespace VSS.VisionLink.Raptor.Compression.Tests
                 descriptor2.Read(reader);
             }
 
-            Assert.AreEqual(descriptor1, descriptor2, "Read after write results in different structures");
+            Assert.Equal(descriptor1, descriptor2, "Read after write results in different structures");
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_EncodedBitFieldDescriptor_CalculateRequiredBitFieldSize()
         {
             // Test case where all values are null (expected 0 bits of entropy)
@@ -71,7 +70,7 @@ namespace VSS.VisionLink.Raptor.Compression.Tests
             };
 
             descriptor.CalculateRequiredBitFieldSize();
-            Assert.AreEqual(0, descriptor.RequiredBits, "Required bits for 'all null values' field is not zero");
+            Assert.Equal(0, descriptor.RequiredBits, "Required bits for 'all null values' field is not zero");
 
             // Test case where there is 1024 possible values plus an encoded null value, resulting in 10 required bits
             descriptor = new EncodedBitFieldDescriptor()
@@ -83,7 +82,7 @@ namespace VSS.VisionLink.Raptor.Compression.Tests
             };
 
             descriptor.CalculateRequiredBitFieldSize();
-            Assert.AreEqual(10, descriptor.RequiredBits, "Required bits for '1023 values + encoded null' field is incorrect");
+            Assert.Equal(10, descriptor.RequiredBits, "Required bits for '1023 values + encoded null' field is incorrect");
 
             // Test case where there is 1024 possible values plus an encoded null value, resulting in 11 required bits
             descriptor = new EncodedBitFieldDescriptor()
@@ -95,7 +94,7 @@ namespace VSS.VisionLink.Raptor.Compression.Tests
             };
 
             descriptor.CalculateRequiredBitFieldSize();
-            Assert.AreEqual(11, descriptor.RequiredBits, "Required bits for '1024 values + encoded null' field is incorrect");
+            Assert.Equal(11, descriptor.RequiredBits, "Required bits for '1024 values + encoded null' field is incorrect");
         }
     }
 }

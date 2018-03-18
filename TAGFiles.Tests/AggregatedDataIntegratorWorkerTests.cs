@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator;
+﻿using VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,31 +15,31 @@ using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.Machines;
+using Xunit;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator.Tests
 {
-    [TestClass()]
-    public class AggregatedDataIntegratorWorkerTests
+        public class AggregatedDataIntegratorWorkerTests
     {
-        [TestMethod()]
+        [Fact()]
         public void Test_AggregatedDataIntegratorWorker_AggregatedDataIntegratorWorkerTest()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_AggregatedDataIntegratorWorker_AggregatedDataIntegratorWorkerTest1()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_AggregatedDataIntegratorWorker_ProcessTask()
         {
             // Convert a TAG file usign a TAGFileConverter into a mini-site model
             TAGFileConverter converter = new TAGFileConverter();
 
-            Assert.IsTrue(converter.Execute(new FileStream(TAGTestConsts.TestDataFilePath() + "TAGFiles\\TestTAGFile.tag", FileMode.Open, FileAccess.Read)),
+            Assert.True(converter.Execute(new FileStream(TAGTestConsts.TestDataFilePath() + "TAGFiles\\TestTAGFile.tag", FileMode.Open, FileAccess.Read)),
                 "Converter execute returned false");
 
             // Create the site model and machine etc to aggregate the processed TAG file into
@@ -61,7 +60,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator.Tests
             AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess);
             worker.ProcessTask(ProcessedTasks);
 
-            Assert.IsTrue(ProcessedTasks.Count == 1, "Worker did not process the task passed to it");
+            Assert.Equal(1, ProcessedTasks.Count);
         }
     }
 }

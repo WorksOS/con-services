@@ -1,77 +1,76 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.VisionLink.Raptor.SubGridTrees;
+﻿using VSS.VisionLink.Raptor.SubGridTrees;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Tests
 {
-    [TestClass()]
-    public class SubGridTreeBitMaskTests
+        public class SubGridTreeBitMaskTests
     {
-        [TestMethod()]
+        [Fact()]
         public void Test_SubGridTreeBitMask_SubGridTreeBitMask()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_SubGridTreeBitMask_GetCell()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_SubGridTreeBitMask_SetCell()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_SubGridTreeBitMask_GetLeaf()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_SubGridTreeBitMask_RemoveLeafOwningCell()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_SubGridTreeBitMask_CountBits()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_SubGridTreeBitMask_ComputeCellsWorldExtents()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_SubGridTreeBitMask_LeafExists()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_SubGridTreeBitMask_SetOp_OR()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_SubGridTreeBitMask_SetOp_AND()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_SubGridTreeBitMask_ClearCellIfSet()
         {
             Assert.Fail();

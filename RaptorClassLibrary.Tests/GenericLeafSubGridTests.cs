@@ -1,36 +1,35 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using System.Text;
+using Xunit;
 
 namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 {
-    [TestClass]
-    public class GenericLeafSubGridTests
+        public class GenericLeafSubGridTests
     {
-        [TestMethod]
+        [Fact]
         public void Test_GenericLeafSubGridTests_Creation()
         {
             Assert.Fail("Not implemented");
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_GenericLeafSubGridTests_ForEach()
         {
             Assert.Fail("Not implemented");
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_GenericLeafSubGridTests_Clear()
         {
             Assert.Fail("Not implemented");
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_GenericLeafSubGridTests_Read_BinaryReader()
         {
             ISubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, GenericLeafSubGrid<Double>>());
@@ -48,7 +47,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_GenericLeafSubGridTests_Write_BinaryWriter()
         {
             ISubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, GenericLeafSubGrid<Double>>());
@@ -66,13 +65,13 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_GenericLeafSubGridTests_Read_BinaryFormatter()
         {
             Assert.Fail("Not implemented");
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_GenericLeafSubGridTests_Write_BinaryFormatter()
         {
             double[,] ary = new double[32, 32];
@@ -97,7 +96,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
                 }
             }
 
-            Assert.IsTrue(areSame, "The two arrays are not the same");
+            Assert.True(areSame, "The two arrays are not the same");
         }
 
     }

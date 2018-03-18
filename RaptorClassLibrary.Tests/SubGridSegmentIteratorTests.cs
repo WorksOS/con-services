@@ -1,17 +1,16 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators;
+﻿using VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators.Tests
 {
-    [TestClass()]
-    public class SubGridSegmentIteratorTests
+        public class SubGridSegmentIteratorTests
     {
-        [TestMethod()]
+        [Fact()]
         public void Test_SubGridSegmentIterator_SubGridSegmentIterator()
         {
             ServerSubGridTree tree = new ServerSubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
@@ -19,11 +18,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators.Tests
 
             SubGridSegmentIterator iterator = new SubGridSegmentIterator(leaf, leaf.Directory);
 
-            Assert.IsTrue(iterator.Directory == leaf.Directory &&
+            Assert.True(iterator.Directory == leaf.Directory &&
                 iterator.SubGrid == leaf, "SubGrid segment iterator not correctly initialised");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_SubGridSegmentIterator_SetTimeRange()
         {
             ServerSubGridTree tree = new ServerSubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
@@ -35,35 +34,35 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators.Tests
             DateTime end = new DateTime(2000, 1, 2, 1, 1, 1);
             iterator.SetTimeRange(start, end);
 
-            Assert.IsTrue(iterator.IterationState.StartSegmentTime == start && iterator.IterationState.EndSegmentTime == end,
+            Assert.True(iterator.IterationState.StartSegmentTime == start && iterator.IterationState.EndSegmentTime == end,
                 "Start and end time not set correctly");
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_SubGridSegmentIterator_MoveNext()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_SubGridSegmentIterator_MoveToFirstSubGridSegment()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_SubGridSegmentIterator_MoveToNextSubGridSegment()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_SubGridSegmentIterator_CurrentSubgridSegmentDestroyed()
         {
             Assert.Inconclusive();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_SubGridSegmentIterator_InitialiseIterator()
         {
             ServerSubGridTree tree = new ServerSubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
@@ -73,27 +72,27 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators.Tests
 
             iterator.IterationDirection = IterationDirection.Forwards;
             iterator.InitialiseIterator();
-            Assert.IsTrue(iterator.IterationState.Idx == -1, "Iterator state Idx is not -1 after initialisation with moving forwards");
+            Assert.Equal(-1, iterator.IterationState.Idx);
 
             iterator.IterationDirection = IterationDirection.Backwards;
             iterator.InitialiseIterator();
 
-            Assert.IsTrue(iterator.IterationState.Idx == leaf.Directory.SegmentDirectory.Count(), "Iterator state Idx is not SegmentDirectory.Count() after initialisation with moving backwards");
+            Assert.Equal(iterator.IterationState.Idx, leaf.Directory.SegmentDirectory.Count());
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_SubGridSegmentIterator_SegmentListExtended()
         {
             Assert.Inconclusive();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_SubGridSegmentIterator_MarkCacheStamp()
         {
             Assert.Inconclusive();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_SubGridSegmentIterator_SetIteratorElevationRange()
         {
             ServerSubGridTree tree = new ServerSubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
@@ -106,7 +105,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators.Tests
 
             iterator.SetIteratorElevationRange(lowerElevation, upperElevation);
 
-            Assert.IsTrue(iterator.IterationState.MinIterationElevation == lowerElevation && iterator.IterationState.MaxIterationElevation == upperElevation,
+            Assert.True(iterator.IterationState.MinIterationElevation == lowerElevation && iterator.IterationState.MaxIterationElevation == upperElevation,
                 "Elevation lower and upper bounds not set correctly");
         }
     }

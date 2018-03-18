@@ -7,7 +7,7 @@ using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Requests;
 using VSS.VisionLink.Raptor.TAGFiles.Servers.Client;
-using VSS.VisionLink.Raptor.TAGFiles.Tests;
+using VSSTests.TRex.Tests.Common;
 
 /*
 Arguments for building project #5, Dimensions:

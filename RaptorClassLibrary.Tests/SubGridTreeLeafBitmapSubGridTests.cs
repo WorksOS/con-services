@@ -1,41 +1,40 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.VisionLink.Raptor.SubGridTrees;
+﻿using VSS.VisionLink.Raptor.SubGridTrees;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Tests
 {
-    [TestClass()]
-    public class SubGridTreeLeafBitmapSubGridTests
+        public class SubGridTreeLeafBitmapSubGridTests
     {
-        [TestMethod()]
+        [Fact()]
         public void Test_SubGridTreeLeafBitmapSubGrid_Write()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_SubGridTreeLeafBitmapSubGrid_Read()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_SubGridTreeLeafBitmapSubGrid_SubGridTreeLeafBitmapSubGrid()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_SubGridTreeLeafBitmapSubGrid_CountBits()
         {
             Assert.Fail();
         }
 
-        [TestMethod()]
+        [Fact()]
         public void Test_SubGridTreeLeafBitmapSubGrid_ComputeCellsExtents()
         {
             Assert.Fail();

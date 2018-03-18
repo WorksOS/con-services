@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>VSS.Velociraptor.TAGFileSubmitter</RootNamespace>
     <AssemblyName>RaptorTAGFileSubmitter</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -87,17 +87,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RaptorClassLibrary\RaptorClassLibrary.csproj">
-      <Project>{d900b783-706f-4845-82e1-3c93c1e06df2}</Project>
-      <Name>RaptorClassLibrary</Name>
+    <ProjectReference Include="..\Raptor.Common.netstandard\Raptor.Common.netstandard.csproj">
+      <Project>{737bfd08-031b-4506-8205-947b82c6d2ba}</Project>
+      <Name>Raptor.Common.netstandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TAGFiles.Tests\TAGFiles.Tests.csproj">
-      <Project>{18856B8B-9821-4036-AF0F-4401707355C0}</Project>
-      <Name>TAGFiles.Tests</Name>
+    <ProjectReference Include="..\RaptorClassLibrary.netstandard\RaptorClassLibrary.netstandard.csproj">
+      <Project>{40db7cf3-5817-45a5-9f90-29baa80e2c7a}</Project>
+      <Name>RaptorClassLibrary.netstandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\VSS.Velociraptor.Geometry\VSS.VisionLink.Raptor.Geometry.csproj">
-      <Project>{e1a52e73-5ccd-4aa5-bb78-561319479792}</Project>
-      <Name>VSS.VisionLink.Raptor.Geometry</Name>
+    <ProjectReference Include="..\Tests.Common\Tests.Common.csproj">
+      <Project>{00400CF0-8011-4B1E-8AC6-2A752A79F527}</Project>
+      <Name>Tests.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

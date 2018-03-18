@@ -1,12 +1,11 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 {
-    [TestClass]
-    public class HeightAndTimeClientLeafSubgridTests
+        public class HeightAndTimeClientLeafSubgridTests
     {
-        [TestMethod]
+        [Fact]
         public void Test_HeightAndTimeClientLeafSubgrid_Creation()
         {
             Assert.Fail("Not implemented");
