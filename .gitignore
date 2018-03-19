@@ -33,3 +33,5 @@ _ReSharper*/
 /.vs/Apache-Ignite-DotNet-Test/v15/Server/sqlite3/db.lock
 /.vs/Apache-Ignite-DotNet-Test/v15/Server/sqlite3/storage.ide
 /Alan_RunFullRaptorIgniteStackAndClient_Debug.bat
+/.vs/Apache-Ignite-DotNet-Test/v15/Server/sqlite3/storage.ide-shm
+/.vs/Apache-Ignite-DotNet-Test/v15/Server/sqlite3/storage.ide-shm
