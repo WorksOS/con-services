@@ -26,14 +26,16 @@ namespace WebApiTests
 
     #region Filters
     [TestMethod]
-    public void InsertFilterInDatabaseAndGetItFromWebApi()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Transient)]
+    [DataRow(FilterType.Report)]
+    public void InsertFilterInDatabaseAndGetItFromWebApi(FilterType filterType)
     {
       const string filterName = "Filter DbWeb test 1";
       Msg.Title(filterName, "Insert Filter In Database And Get It From WebApi");
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
       var filterJson = CreateTestFilter();
-      var filterType = FilterType.Persistent;
       var eventsArray = new[] {
         "| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | fk_FilterTypeID   | FilterJson    | IsDeleted | LastActionedUTC |",
        $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {(int)filterType} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -48,14 +50,16 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    public void InsertElevationTypeLastFilterInDatabaseAndGetItFromWebApi()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Transient)]
+    [DataRow(FilterType.Report)]
+    public void InsertElevationTypeLastFilterInDatabaseAndGetItFromWebApi(FilterType filterType)
     {
       const string filterName = "Filter DbWeb test 2";
       Msg.Title(filterName, "Insert ElevationType.Last Filter In Database And Get It From WebApi");
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
       var filterJson = CreateTestFilter(ElevationType.Last);
-      var filterType = FilterType.Persistent;
       var eventsArray = new[] {
         $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | fk_FilterTypeID   | FilterJson    | IsDeleted | LastActionedUTC |",
         $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {(int)filterType} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -70,14 +74,16 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    public void InsertVibeStateOnFilterInDatabaseAndGetItFromWebApi()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Transient)]
+    [DataRow(FilterType.Report)]
+    public void InsertVibeStateOnFilterInDatabaseAndGetItFromWebApi(FilterType filterType)
     {
       const string filterName = "Filter DbWeb test 3";
       Msg.Title(filterName, "Insert VibeStateOn Filter In Database And Get It From WebApi");
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
       var filterJson = CreateTestFilter(null, true);
-      var filterType = FilterType.Persistent;
       var eventsArray = new[] {
         $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | fk_FilterTypeID   | FilterJson    | IsDeleted | LastActionedUTC |",
         $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {(int)filterType} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -92,14 +98,16 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    public void InsertForwardFilterInDatabaseAndGetItFromWebApi()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Transient)]
+    [DataRow(FilterType.Report)]
+    public void InsertForwardFilterInDatabaseAndGetItFromWebApi(FilterType filterType)
     {
       const string filterName = "Filter DbWeb test 4";
       Msg.Title(filterName, "Insert forward direction filter In Database And Get It From WebApi");
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
       var filterJson = CreateTestFilter(null, null, true);
-      var filterType = FilterType.Persistent;
       var eventsArray = new[] {
         $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | fk_FilterTypeID   | FilterJson    | IsDeleted | LastActionedUTC |",
         $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {(int)filterType} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -114,14 +122,16 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    public void InsertLayerNoFilterInDatabaseAndGetItFromWebApi()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Transient)]
+    [DataRow(FilterType.Report)]
+    public void InsertLayerNoFilterInDatabaseAndGetItFromWebApi(FilterType filterType)
     {
       const string filterName = "Filter DbWeb test 5";
       Msg.Title(filterName, "Insert layer number filter In Database And Get It From WebApi");
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
       var filterJson = CreateTestFilter(null, null, null, 2);
-      var filterType = FilterType.Persistent;
       var eventsArray = new[] {
         $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | fk_FilterTypeID   | FilterJson    | IsDeleted | LastActionedUTC |",
         $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {(int)filterType} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -136,14 +146,16 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    public void InsertFilterLayerMethodNoneFilterInDatabaseAndGetItFromWebApi()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Transient)]
+    [DataRow(FilterType.Report)]
+    public void InsertFilterLayerMethodNoneFilterInDatabaseAndGetItFromWebApi(FilterType filterType)
     {
       const string filterName = "Filter DbWeb test 6";
       Msg.Title(filterName, "Insert FilterLayerMethod None filter In Database And Get It From WebApi");
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
       var filterJson = CreateTestFilter(null, null, null, null);
-      var filterType = FilterType.Persistent;
       var eventsArray = new[] {
         $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | fk_FilterTypeID   | FilterJson    | IsDeleted | LastActionedUTC |",
         $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {(int)filterType} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -158,14 +170,16 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    public void InsertFilterLayerMethodMapResetFilterInDatabaseAndGetItFromWebApi()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Transient)]
+    [DataRow(FilterType.Report)]
+    public void InsertFilterLayerMethodMapResetFilterInDatabaseAndGetItFromWebApi(FilterType filterType)
     {
       const string filterName = "Filter DbWeb test 7";
       Msg.Title(filterName, "Insert FilterLayerMethod MapReset filter In Database And Get It From WebApi");
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
       var filterJson = CreateTestFilter();
-      var filterType = FilterType.Persistent;
       var eventsArray = new[] {
         $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | fk_FilterTypeID   | FilterJson    | IsDeleted | LastActionedUTC |",
         $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {(int)filterType} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -180,14 +194,16 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    public void InsertFilterLayerMethodTagfileLayerNumberFilterInDatabaseAndGetItFromWebApi()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Transient)]
+    [DataRow(FilterType.Report)]
+    public void InsertFilterLayerMethodTagfileLayerNumberFilterInDatabaseAndGetItFromWebApi(FilterType filterType)
     {
       const string filterName = "Filter DbWeb test 8";
       Msg.Title(filterName, "Insert FilterLayerMethod TagfileLayerNumber filter In Database And Get It From WebApi");
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
       var filterJson = CreateTestFilter();
-      var filterType = FilterType.Persistent;
       var eventsArray = new[] {
         $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | fk_FilterTypeID   | FilterJson    | IsDeleted | LastActionedUTC |",
         $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {(int)filterType} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -202,14 +218,16 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    public void InsertCombinationFilterInDatabaseAndGetItFromWebApi()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Transient)]
+    [DataRow(FilterType.Report)]
+    public void InsertCombinationFilterInDatabaseAndGetItFromWebApi(FilterType filterType)
     {
       const string filterName = "Filter DbWeb test 9";
       Msg.Title(filterName, "Insert Combination filter In Database And Get It From WebApi");
       var filterUid = Guid.NewGuid();
       ts.CustomerUid = CustomerUid;
       var filterJson = CreateTestFilter(ElevationType.Highest, true, true, 1);
-      var filterType = FilterType.Persistent;
       var eventsArray = new[] {
         $"| TableName | FilterUID   | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | fk_FilterTypeID   | FilterJson    | IsDeleted | LastActionedUTC |",
         $"| Filter    | {filterUid} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {(int)filterType} | {filterJson}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
@@ -224,9 +242,16 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    public void InsertMutipleFiltersInDatabaseAndGetItFromWebApi()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Transient)]
+    [DataRow(FilterType.Report)]
+    public void InsertMutipleFiltersInDatabaseAndGetItFromWebApi(FilterType filterType)
     {
       const string filterName = "Filter DbWeb test 10";
+      //Persistent filters require a unique name
+      string filterName1 = filterType == FilterType.Persistent ? $"{filterName}1" : $"{filterName}";
+      string filterName2 = filterType == FilterType.Persistent ? $"{filterName}2" : $"{filterName}";
+      string filterName3 = filterType == FilterType.Persistent ? $"{filterName}3" : $"{filterName}";
       Msg.Title(filterName, "Insert mutilple filters In Database And Get It From WebApi");
       ts.DeleteAllFiltersForProject(ProjectUid.ToString());
 
@@ -237,12 +262,11 @@ namespace WebApiTests
       var filterJson1 = CreateTestFilter(ElevationType.Highest, true, true, 1);
       var filterJson2 = CreateTestFilter(ElevationType.Last, true, true, 1);
       var filterJson3 = CreateTestFilter(ElevationType.Lowest, true, true, 1);
-      var filterType = FilterType.Persistent;
       var eventsArray = new[] {
         $"| TableName | FilterUID    | fk_CustomerUID | fk_ProjectUID | UserID   | Name         | fk_FilterTypeID   | FilterJson    | IsDeleted | LastActionedUTC |",
-        $"| Filter    | {filterUid1} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {(int)filterType} | {filterJson1}  | 0         | {ts.EventDate:yyyy-MM-dd} |",
-        $"| Filter    | {filterUid2} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {(int)filterType} | {filterJson2}  | 0         | {ts.EventDate:yyyy-MM-dd} |",
-        $"| Filter    | {filterUid3} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName} | {(int)filterType} | {filterJson3}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
+        $"| Filter    | {filterUid1} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName1} | {(int)filterType} | {filterJson1}  | 0         | {ts.EventDate:yyyy-MM-dd} |",
+        $"| Filter    | {filterUid2} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName2} | {(int)filterType} | {filterJson2}  | 0         | {ts.EventDate:yyyy-MM-dd} |",
+        $"| Filter    | {filterUid3} | {CustomerUid}  | {ProjectUid}  | {UserId} | {filterName3} | {(int)filterType} | {filterJson3}  | 0         | {ts.EventDate:yyyy-MM-dd} |"
 
       };
       ts.PublishEventCollection(eventsArray);
@@ -251,22 +275,33 @@ namespace WebApiTests
       mysql.VerifyTestResultDatabaseRecordCount("Filter", "FilterUID", 1, filterUid3);
       var responseGet = ts.CallFilterWebApi($"api/v1/filters/{ProjectUid}", "GET");
       var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorListResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      Assert.AreEqual(filterResponseGet.FilterDescriptors.Count, 3, "Expecting 3 filters in response");
+      if (filterType == FilterType.Persistent)
+      { 
+        Assert.AreEqual(filterResponseGet.FilterDescriptors.Count, 3, "Expecting 3 filters in response");
 
-      for (var cnt = 0; cnt < 3; cnt++)
-      {
-        switch (cnt)
+        for (var cnt = 0; cnt < 3; cnt++)
         {
-          case 0:
-            Assert.AreEqual(filterResponseGet.FilterDescriptors[cnt].FilterJson, filterJson1, "JSON Filter doesn't match for GET request");
-            break;
-          case 1:
-            Assert.AreEqual(filterResponseGet.FilterDescriptors[cnt].FilterJson, filterJson2, "JSON Filter doesn't match for GET request");
-            break;
-          case 2:
-            Assert.AreEqual(filterResponseGet.FilterDescriptors[cnt].FilterJson, filterJson3, "JSON Filter doesn't match for GET request");
-            break;
+          switch (cnt)
+          {
+            case 0:
+              Assert.AreEqual(filterResponseGet.FilterDescriptors[cnt].FilterJson, filterJson1,
+                "JSON Filter doesn't match for GET request");
+              break;
+            case 1:
+              Assert.AreEqual(filterResponseGet.FilterDescriptors[cnt].FilterJson, filterJson2,
+                "JSON Filter doesn't match for GET request");
+              break;
+            case 2:
+              Assert.AreEqual(filterResponseGet.FilterDescriptors[cnt].FilterJson, filterJson3,
+                "JSON Filter doesn't match for GET request");
+              break;
+          }
         }
+      }
+      else
+      {
+        //Get filters only returns persistent
+        Assert.AreEqual(filterResponseGet.FilterDescriptors.Count, 0, "Expecting 0 filters in response");
       }
     }
 

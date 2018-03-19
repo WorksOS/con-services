@@ -26,15 +26,17 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    public void CreateSimpleFilter()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Transient)]
+    [DataRow(FilterType.Report)]
+    public void CreateSimpleFilter(FilterType filterType)
     {
       ts.DeleteAllFiltersForProject(ProjectUid.ToString());
 
       const string filterName = "Filter Web test 1";
-      Msg.Title(filterName, "Create filter with all the defaults in the filter json");
+      Msg.Title(filterName, $"Create {filterType } filter with all the defaults in the filter json");
 
       var filterJson = CreateTestFilter();
-      var filterType = FilterType.Persistent;
 
       var filterRequest = FilterRequest.Create(string.Empty, filterName, filterJson, filterType);
       var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
@@ -52,35 +54,49 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    public void CreateFilterThenGetListOfFilters()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Transient)]
+    [DataRow(FilterType.Report)]
+    public void CreateFilterThenGetListOfFilters(FilterType filterType)
     {
       ts.DeleteAllFiltersForProject(ProjectUid.ToString());
 
       const string filterName = "Filter Web test 2";
-      Msg.Title(filterName, "Create filter then get a list of filters");
+      Msg.Title(filterName, $"Create {filterType } filter then get a list of filters");
 
       var filterJson = CreateTestFilter(ElevationType.Last, null, null, 1, null, DateTime.Now.AddYears(-5).ToUniversalTime(), DateTime.Now.AddYears(-1).ToUniversalTime());
-      var filterRequest = FilterRequest.Create(string.Empty, filterName, filterJson, FilterType.Persistent);
+      var filterRequest = FilterRequest.Create(string.Empty, filterName, filterJson, filterType);
       var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var response = ts.CallFilterWebApi($"api/v1/filter/{ProjectUid}", "PUT", filter);
       var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(response, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var filterUid = filterResponse.FilterDescriptor.FilterUid;
 
-      var responseGet = ts.CallFilterWebApi($"api/v1/filters/{ProjectUid}?filterUid={filterUid}", "GET");
+      var responseGet = ts.CallFilterWebApi($"api/v1/filters/{ProjectUid}", "GET");
       var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorListResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      Assert.AreEqual(filterJson, filterResponseGet.FilterDescriptors[0].FilterJson, "JSON Filter doesn't match for GET request");
+      if (filterType == FilterType.Persistent)
+      {
+        Assert.AreEqual(filterJson, filterResponseGet.FilterDescriptors[0].FilterJson,
+          "JSON Filter doesn't match for GET request");
+      }
+      else
+      {
+        Assert.AreEqual(0, filterResponseGet.FilterDescriptors.Count, "Should not return transient or report filters in list");
+      }
     }
 
     [TestMethod]
-    public void CreateThenUpdateFilter()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    public void CreateThenUpdateFilter(FilterType filterType)
     {
+      //Note: cannot update a transient filter - must create a new one
+
       ts.DeleteAllFiltersForProject(ProjectUid.ToString());
 
       const string filterName = "Filter Web test 3";
-      Msg.Title(filterName, "Create and update filter");
+      Msg.Title(filterName, $"Create and update {filterType } filter");
 
       var filterJson = CreateTestFilter(ElevationType.Last, null, null, 1, null, DateTime.Now.AddYears(-5).ToUniversalTime(), DateTime.Now.AddYears(-1).ToUniversalTime());
-      var filterType = FilterType.Persistent;
       var filterRequest = FilterRequest.Create(string.Empty, filterName, filterJson, filterType);
       var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var response = ts.CallFilterWebApi($"api/v1/filter/{ProjectUid}", "PUT", filter);
@@ -102,12 +118,15 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    public void CreateFilterWithBoundary()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Transient)]
+    [DataRow(FilterType.Report)]
+    public void CreateFilterWithBoundary(FilterType filterType)
     {
       ts.DeleteAllBoundariesAndAssociations();
 
       const string filterName = "Filter Web test 4";
-      Msg.Title(filterName, "Create filter with boundary in json string");
+      Msg.Title(filterName, $"Create {filterType } filter with boundary in json string");
 
       var boundaryWkt = GenerateWKTPolygon();
       var boundaryName = filterName + " - boundary";
@@ -118,7 +137,7 @@ namespace WebApiTests
       var boundaryUid = boundaryResponse.GeofenceData.GeofenceUID;
 
       var filterJson = CreateTestFilter(polygonUid: boundaryUid.ToString());
-      var filterRequest = FilterRequest.Create(string.Empty, filterName, filterJson, FilterType.Persistent);
+      var filterRequest = FilterRequest.Create(string.Empty, filterName, filterJson, filterType);
       var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       responseCreate = ts.CallFilterWebApi($"api/v1/filter/{ProjectUid}", "PUT", filter);
       var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseCreate, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
@@ -130,15 +149,19 @@ namespace WebApiTests
       var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       Assert.AreEqual(filterRequest.Name, filterResponseGet.FilterDescriptor.Name, "Filter name doesn't match for GET request");
       Assert.AreEqual(hydratedFilterJson, filterResponseGet.FilterDescriptor.FilterJson, "JSON Filter doesn't match for GET request");
+      Assert.AreEqual(filterRequest.FilterType, filterResponseGet.FilterDescriptor.FilterType, "Filter type doesn't match for GET request");
     }
 
     [TestMethod]
-    public void CreateFilterWithBoundaryThenDeleteBoundary()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Transient)]
+    [DataRow(FilterType.Report)]
+    public void CreateFilterWithBoundaryThenDeleteBoundary(FilterType filterType)
     {
       ts.DeleteAllBoundariesAndAssociations();
 
       const string filterName = "Filter Web test 5";
-      Msg.Title(filterName, "Create filter with boundary and delete boundary");
+      Msg.Title(filterName, $"Create {filterType} filter with boundary and delete boundary");
 
       var boundaryWkt = GenerateWKTPolygon();
       var boundaryName = filterName + " - boundary";
@@ -149,7 +172,7 @@ namespace WebApiTests
       var boundaryUid = boundaryResponse.GeofenceData.GeofenceUID;
 
       var filterJson = CreateTestFilter(polygonUid: boundaryUid.ToString());
-      var filterRequest = FilterRequest.Create(string.Empty, filterName, filterJson, FilterType.Persistent);
+      var filterRequest = FilterRequest.Create(string.Empty, filterName, filterJson, filterType);
       var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       responseCreate = ts.CallFilterWebApi($"api/v1/filter/{ProjectUid}", "PUT", filter);
       var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseCreate, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
@@ -165,32 +188,39 @@ namespace WebApiTests
       var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       Assert.AreEqual(filterRequest.Name, filterResponseGet.FilterDescriptor.Name, "Filter name doesn't match for GET request");
       Assert.AreEqual(hydratedFilterJson, filterResponseGet.FilterDescriptor.FilterJson, "JSON Filter doesn't match for GET request");
+      Assert.AreEqual(filterRequest.FilterType, filterResponseGet.FilterDescriptor.FilterType, "Filter type doesn't match for GET request");
     }
 
     [TestMethod]
-    public void CreateFilterWithInValidDesignId()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Transient)]
+    [DataRow(FilterType.Report)]
+    public void CreateFilterWithInvalidDesignId(FilterType filterType)
     {
       const string filterName = "Filter Web test 6";
-      Msg.Title(filterName, "Create filter with invalid DesignId");
+      Msg.Title(filterName, $"Create {filterType } filter with invalid DesignId");
 
-      var filterRequest = FilterRequest.Create(string.Empty, filterName, string.Empty, FilterType.Persistent);
+      var filterRequest = FilterRequest.Create(string.Empty, filterName, string.Empty, filterType);
       filterRequest.FilterJson =
         "{\"startUTC\":null,\"designUid\":\"xxx\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}],\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true,\"forwardDirection\":false,\"layerNumber\":null,\"layerType\":null}";
       var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var responseCreate = ts.CallFilterWebApi($"api/v1/filter/{ProjectUid}", "PUT", filter);
       var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseCreate, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      Assert.AreEqual(filterResponse.Message, "Invalid designUid.", "Expecting a Invalid designUid.");
+      Assert.AreEqual(filterResponse.Message, "Invalid designUid.", "Expecting an Invalid designUid.");
     }
 
 
     [TestMethod]
-    public void CreateThenDeleteFilter()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Transient)]
+    [DataRow(FilterType.Report)]
+    public void CreateThenDeleteFilter(FilterType filterType)
     {
       const string filterName = "Filter Web test 7";
-      Msg.Title(filterName, "Create then delete filter");
+      Msg.Title(filterName, "Create then delete {filterType } filter");
 
       var filterJson = CreateTestFilter(ElevationType.Lowest, true, false);
-      var filterRequest = FilterRequest.Create(string.Empty, filterName, filterJson, FilterType.Persistent);
+      var filterRequest = FilterRequest.Create(string.Empty, filterName, filterJson, filterType);
       var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var response = ts.CallFilterWebApi($"api/v1/filter/{ProjectUid}", "PUT", filter);
       var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(response, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
@@ -206,7 +236,6 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    [Ignore]
     public void PostMultipleFiltersThenGetListOfFilters()
     {
       const string filterName = "Filter Web test 8";
@@ -223,11 +252,10 @@ namespace WebApiTests
       var response = ts.CallFilterWebApi($"api/v1/filters/{ProjectUid}", "POST", filter);
       var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorListResult>(response, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       Assert.AreEqual(0, filterResponse.Code, "  Expecting a sucessful result but got " + filterResponse.Message);
-      var filterUid = filterResponse.FilterDescriptors[0].FilterUid;
 
-      var responseGet = ts.CallFilterWebApi($"api/v1/filters/{ProjectUid}?filterUid={filterUid}", "GET");
+      var responseGet = ts.CallFilterWebApi($"api/v1/filters/{ProjectUid}", "GET");
       var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorListResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      Assert.AreEqual(filterJson1, filterResponseGet.FilterDescriptors[0].FilterJson, "JSON Filter doesn't match for GET request");
+      Assert.AreEqual(2, filterResponseGet.FilterDescriptors.Count, "Should be 2 filters returned");
     }
 
     /// <summary>

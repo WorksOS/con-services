@@ -169,7 +169,9 @@ namespace RepositoryTests
     /// Create Happy path i.e. filter doesn't exist
     /// </summary>
     [TestMethod]
-    public void CreateTransientFilter_HappyPath()
+    [DataRow("")]
+    [DataRow("SomeFilter")]
+    public void CreateTransientFilter_HappyPath(string filterName)
     {
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var createFilterEvent = new CreateFilterEvent
@@ -178,7 +180,7 @@ namespace RepositoryTests
         UserID = Guid.NewGuid().ToString(),
         ProjectUID = Guid.NewGuid(),
         FilterUID = Guid.NewGuid(),
-        Name = string.Empty,
+        Name = filterName,
         FilterType = FilterType.Transient,
         FilterJson = "blah",
         ActionUTC = firstCreatedUtc,
@@ -452,7 +454,9 @@ namespace RepositoryTests
     /// Update Persistent Happy path i.e. allowed to update persistent
     /// </summary>
     [TestMethod]
-    public void UpdatePersistentFilter_HappyPath()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    public void UpdatePersistentFilter_HappyPath(FilterType filterType)
     {
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var createFilterEvent = new CreateFilterEvent
@@ -462,7 +466,7 @@ namespace RepositoryTests
         UserID = Guid.NewGuid().ToString(),
         FilterUID = Guid.NewGuid(),
         Name = "persistent",
-        FilterType = FilterType.Persistent,
+        FilterType = filterType,
         FilterJson = "blah",
         ActionUTC = firstCreatedUtc,
         ReceivedUTC = firstCreatedUtc
@@ -476,7 +480,7 @@ namespace RepositoryTests
         FilterUID = createFilterEvent.FilterUID,
         Name = "changed",
         FilterJson = "blahDeBlah",
-        FilterType = FilterType.Persistent,
+        FilterType = filterType,
         ActionUTC = firstCreatedUtc.AddMinutes(2),
         ReceivedUTC = firstCreatedUtc
       };
@@ -506,7 +510,9 @@ namespace RepositoryTests
     /// Update Persistent unHappy path i.e. update received before create
     /// </summary>
     [TestMethod]
-    public void UpdatePersistentFilter_OutOfOrder()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    public void UpdatePersistentFilter_OutOfOrder(FilterType filterType)
     {
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var createFilterEvent = new CreateFilterEvent
@@ -516,7 +522,7 @@ namespace RepositoryTests
         UserID = Guid.NewGuid().ToString(),
         FilterUID = Guid.NewGuid(),
         Name = "persistent",
-        FilterType = FilterType.Persistent,
+        FilterType = filterType,
         FilterJson = "blah",
         ActionUTC = firstCreatedUtc,
         ReceivedUTC = firstCreatedUtc
@@ -529,7 +535,7 @@ namespace RepositoryTests
         UserID = createFilterEvent.UserID,
         FilterUID = createFilterEvent.FilterUID,
         Name = "changed",
-        FilterType = FilterType.Persistent,
+        FilterType = filterType,
         FilterJson = "blahDeBlah",
         ActionUTC = firstCreatedUtc.AddMinutes(2),
         ReceivedUTC = firstCreatedUtc
@@ -630,7 +636,9 @@ namespace RepositoryTests
     /// Delete Happy path i.e. filter exists
     /// </summary>
     [TestMethod]
-    public void DeletePersistentFilter_HappyPath()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    public void DeletePersistentFilter_HappyPath(FilterType filterType)
     {
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var createFilterEvent = new CreateFilterEvent
@@ -640,7 +648,7 @@ namespace RepositoryTests
         UserID = Guid.NewGuid().ToString(),
         FilterUID = Guid.NewGuid(),
         Name = "hasOne",
-        FilterType = FilterType.Persistent,
+        FilterType = filterType,
         FilterJson = "blah",
         ActionUTC = firstCreatedUtc,
         ReceivedUTC = firstCreatedUtc

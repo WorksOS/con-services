@@ -94,8 +94,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       {
         existingPersistentFilters =
         (await ((IFilterRepository)Repository)
-          .GetFiltersForProjectUser(filterRequest.CustomerUid, filterRequest.ProjectUid, filterRequest.UserId)
-          .ConfigureAwait(false)).ToList();
+          .GetFiltersForProjectUser(filterRequest.CustomerUid, filterRequest.ProjectUid, filterRequest.UserId, true)
+          .ConfigureAwait(false)).Where(f => f.FilterType == filterRequest.FilterType).ToList();
       }
       catch (Exception e)
       {

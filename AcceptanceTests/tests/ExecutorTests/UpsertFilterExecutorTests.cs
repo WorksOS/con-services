@@ -172,13 +172,14 @@ namespace ExecutorTests
     }
 
     [TestMethod]
-    public async Task UpsertFilterExecutor_Persistent_NoExisting()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    public async Task UpsertFilterExecutor_Persistent_NoExisting(FilterType filterType)
     {
       string custUid = Guid.NewGuid().ToString();
       string userUid = TestUtility.UIDs.JWT_USER_ID;
       string projectUid = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
       string name = "the Name";
-      FilterType filterType = FilterType.Persistent;
       string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
 
       var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, projectUid, new FilterRequest { Name = name, FilterJson = filterJson, FilterType = filterType });
@@ -195,14 +196,15 @@ namespace ExecutorTests
     }
 
     [TestMethod]
-    public async Task UpsertFilterExecutor_Persistent_NoExisting_InvalidFilterUidProvided()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    public async Task UpsertFilterExecutor_Persistent_NoExisting_InvalidFilterUidProvided(FilterType filterType)
     {
       string custUid = Guid.NewGuid().ToString();
       string userUid = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "the Name";
-      FilterType filterType = FilterType.Persistent;
       string filterJson = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
 
       var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson, FilterType = filterType });
@@ -215,14 +217,15 @@ namespace ExecutorTests
     }
 
     [TestMethod]
-    public async Task UpsertFilterExecutor_Persistent_Existing_ChangeJsonIgnored()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    public async Task UpsertFilterExecutor_Persistent_Existing_ChangeJsonIgnored(FilterType filterType)
     {
       string custUid = Guid.NewGuid().ToString();
       string userId = TestUtility.UIDs.JWT_USER_ID;
       string projectUid = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "theName";
-      FilterType filterType = FilterType.Persistent;
       string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
       string filterJsonUpdated = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
 
@@ -251,19 +254,12 @@ namespace ExecutorTests
       Assert.AreEqual(name, result.FilterDescriptor.Name, "executor returned incorrect filter Name");
       Assert.AreEqual(filterJson, result.FilterDescriptor.FilterJson, "executor returned incorrect FilterJson, should be the original");
       Assert.AreEqual(filterType, result.FilterDescriptor.FilterType, "executor returned incorrect FilterType, should be the original");
-
-      var fr = FilterRepo.GetFiltersForProjectUser(custUid, projectUid, userId);
-      fr.Wait();
-      Assert.IsNotNull(fr, "should return the updated filter");
-      Assert.AreEqual(1, fr.Result.Count(), "should return 1 updatedw filterUid");
-      Assert.AreEqual(filterUid, fr.Result.ToList()[0].FilterUid, "should return same filterUid");
-      Assert.AreEqual(name, fr.Result.ToList()[0].Name, "should return same name");
-      Assert.AreEqual(filterJson, fr.Result.ToList()[0].FilterJson, "should return a original FilterJson");
-      Assert.AreEqual(filterType, fr.Result.ToList()[0].FilterType, "should return a original FilterType");
     }
 
     [TestMethod]
-    public async Task UpsertFilterExecutor_Persistent_Existing_ChangeJsonAndName()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    public async Task UpsertFilterExecutor_Persistent_Existing_ChangeJsonAndName(FilterType filterType)
     {
       string custUid = Guid.NewGuid().ToString();
       string userId = TestUtility.UIDs.JWT_USER_ID;
@@ -273,7 +269,6 @@ namespace ExecutorTests
       string nameUpdated = "theName updated";
       string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
       string filterJsonUpdated = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
-      FilterType filterType = FilterType.Persistent;
 
       WriteEventToDb(new CreateFilterEvent
       {
@@ -300,19 +295,12 @@ namespace ExecutorTests
       Assert.AreEqual(nameUpdated, result.FilterDescriptor.Name, "executor returned incorrect filter Name");
       Assert.AreEqual(filterJson, result.FilterDescriptor.FilterJson, "executor returned incorrect FilterJson, should return original");
       Assert.AreEqual(filterType, result.FilterDescriptor.FilterType, "executor returned incorrect FilterType, should return original");
-
-      var fr = FilterRepo.GetFiltersForProjectUser(custUid, projectUid, userId);
-      fr.Wait();
-      Assert.IsNotNull(fr, "should return the updated filter");
-      Assert.AreEqual(1, fr.Result.Count(), "should return 1 filter");
-      Assert.AreEqual(filterUid, fr.Result.ToList()[0].FilterUid, "should return same filterUid");
-      Assert.AreEqual(nameUpdated, fr.Result.ToList()[0].Name, "should return new name");
-      Assert.AreEqual(filterJson, fr.Result.ToList()[0].FilterJson, "should return original FilterJson");
-      Assert.AreEqual(filterType, fr.Result.ToList()[0].FilterType, "should return original FilterType");
     }
 
     [TestMethod]
-    public async Task UpsertFilterExecutor_Persistent_ExistingName_AddNew_CaseInsensitive()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    public async Task UpsertFilterExecutor_Persistent_ExistingName_AddNew_CaseInsensitive(FilterType filterType)
     {
       string custUid = Guid.NewGuid().ToString();
       string userId = TestUtility.UIDs.JWT_USER_ID;
@@ -322,7 +310,6 @@ namespace ExecutorTests
       string nameUpdated = name.ToUpper();
       string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
       string filterJsonNew = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";//should be ignored
-      FilterType filterType = FilterType.Persistent;
 
       WriteEventToDb(new CreateFilterEvent
       {
@@ -349,20 +336,14 @@ namespace ExecutorTests
       Assert.AreEqual(nameUpdated, result.FilterDescriptor.Name, "executor returned incorrect filter Name");
       Assert.AreEqual(filterJson, result.FilterDescriptor.FilterJson, "executor returned incorrect FilterJson - should return original");
       Assert.AreEqual(filterType, result.FilterDescriptor.FilterType, "executor returned incorrect FilterType - should return original");
-
-      var fr = FilterRepo.GetFiltersForProjectUser(custUid, projectUid, userId);
-      fr.Wait();
-      Assert.IsNotNull(fr, "should return the updated filter");
-      Assert.AreEqual(1, fr.Result.Count(), "should return 1 filter");
-      Assert.AreEqual(filterUid, fr.Result.ToList()[0].FilterUid, "should return same filterUid");
-      Assert.AreEqual(nameUpdated, fr.Result.ToList()[0].Name, "should return new name");
-      Assert.AreEqual(filterJson, fr.Result.ToList()[0].FilterJson, "should return same FilterJson");
-      Assert.AreEqual(filterType, fr.Result.ToList()[0].FilterType, "should return same FilterType");
     }
 
     [TestMethod]
     public async Task UpsertFilterExecutor_Persistent_ExistingName_NoFilterUidProvided_ChangeJson()
     {
+      //Note: this test only applies to persistent filters not report filters.
+      //Report filters are allowed duplicate names.
+
       string custUid = Guid.NewGuid().ToString();
       string userId = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
@@ -370,8 +351,8 @@ namespace ExecutorTests
       string name = "theName";
       string filterJson = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
       string filterJsonUpdated = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
-      FilterType filterType = FilterType.Persistent;
-
+      var filterType = FilterType.Persistent;
+     
       WriteEventToDb(new CreateFilterEvent
       {
         CustomerUID = Guid.Parse(custUid),
@@ -397,6 +378,9 @@ namespace ExecutorTests
     [TestMethod]
     public async Task UpsertFilterExecutor_Persistent_ExistingName_FilterUidProvided_ChangeJson()
     {
+      //Note: this test only applies to persistent filters not report filters.
+      //Report filters are allowed duplicate names.
+
       string custUid = Guid.NewGuid().ToString();
       string userId = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
@@ -405,7 +389,8 @@ namespace ExecutorTests
       string name = "theName";
       string filterJson = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
       string filterJsonUpdated = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
-      FilterType filterType = FilterType.Persistent;
+      var filterType = FilterType.Persistent;
+      ;
 
       var filterEvent = new CreateFilterEvent
       {
@@ -433,12 +418,15 @@ namespace ExecutorTests
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request)).ConfigureAwait(false);
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2039", StringComparison.Ordinal), "executor threw exception but incorrect code");
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("UpsertFilter failed. Unable to add persistent filter as Name already exists.", StringComparison.Ordinal), "executor threw exception but incorrect messaage");
+      var content = ex.GetContent;
+      Assert.AreNotEqual(-1, content.IndexOf("2039", StringComparison.Ordinal), "executor threw exception but incorrect code");
+      Assert.AreNotEqual(-1, content.IndexOf("UpsertFilter failed. Unable to add persistent filter as Name already exists.", StringComparison.Ordinal), "executor threw exception but incorrect messaage");
     }
 
     [TestMethod]
-    public async Task UpsertFilterExecutor_Persistent_Existing_FilterUidProvidedBelongsToTransient()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    public async Task UpsertFilterExecutor_Persistent_Existing_FilterUidProvidedBelongsToTransient(FilterType filterType)
     {
       string custUid = Guid.NewGuid().ToString();
       string userId = Guid.NewGuid().ToString();
@@ -461,7 +449,7 @@ namespace ExecutorTests
         ReceivedUTC = DateTime.UtcNow
       });
 
-      var request = FilterRequestFull.Create(null, custUid, false, userId, projectUid, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJsonUpdated, FilterType = FilterType.Persistent });
+      var request = FilterRequestFull.Create(null, custUid, false, userId, projectUid, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJsonUpdated, FilterType = filterType });
 
       var executor =
         RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
