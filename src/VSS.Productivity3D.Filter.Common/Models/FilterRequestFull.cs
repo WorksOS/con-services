@@ -13,7 +13,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
 {
   public class FilterRequestFull : FilterRequest
   {
-    
+
     public ProjectData ProjectData { get; set; }
 
     public string CustomerUid { get; set; }
@@ -33,6 +33,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
         FilterUid = request?.FilterUid ?? string.Empty,
         Name = request?.Name ?? string.Empty,
         FilterJson = request?.FilterJson ?? string.Empty,
+        FilterType = request?.FilterType ?? FilterType.Transient,
         CustomerUid = customerUid,
         IsApplicationContext = isApplicationContext,
         UserId = userId,
@@ -42,7 +43,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
       };
     }
 
-    public override void Validate(IServiceExceptionHandler serviceExceptionHandler)
+    public override void Validate(IServiceExceptionHandler serviceExceptionHandler, bool onlyFilterUid = false)
     {
       if (string.IsNullOrEmpty(CustomerUid) || Guid.TryParse(CustomerUid, out Guid _) == false)
       {
@@ -59,7 +60,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 1);
       }
 
-      base.Validate(serviceExceptionHandler);
+      base.Validate(serviceExceptionHandler, onlyFilterUid);
     }
   }
 }

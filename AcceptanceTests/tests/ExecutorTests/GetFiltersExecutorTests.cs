@@ -14,6 +14,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using System.Linq;
 
 namespace ExecutorTests
 {
@@ -40,7 +41,11 @@ namespace ExecutorTests
     }
 
     [TestMethod]
-    public async Task GetFiltersExecutor_ExistingFilter()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Transient)]
+    [DataRow(FilterType.Report)]
+
+    public async Task GetFiltersExecutor_ExistingFilter(FilterType filterType)
     {
       string custUid = Guid.NewGuid().ToString();
       string userId = Guid.NewGuid().ToString();
@@ -56,12 +61,13 @@ namespace ExecutorTests
         ProjectUID = Guid.Parse(projectUid),
         FilterUID = Guid.Parse(filterUid),
         Name = name,
+        FilterType = filterType,
         FilterJson = filterJson,
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
       });
 
-      var request = CreateAndValidateRequest(customerUid: custUid, userId: userId, projectUid: projectUid);
+      var request = CreateAndValidateRequest(customerUid: custUid, userId: userId, projectUid: projectUid, filterJson: filterJson, filterType: filterType, name: name);
 
       var executor =
         RequestExecutorContainer.Build<GetFiltersExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null);
@@ -70,18 +76,34 @@ namespace ExecutorTests
       var filterToTest = new FilterDescriptorListResult
       {
         FilterDescriptors = ImmutableList<FilterDescriptor>.Empty.Add
-          (new FilterDescriptor {FilterUid = filterUid, Name = name, FilterJson = filterJson})
+          (new FilterDescriptor {FilterUid = filterUid, Name = name, FilterJson = filterJson, FilterType = filterType})
       };
 
       Assert.IsNotNull(result, Responses.ShouldReturnResult);
-      Assert.AreEqual(1, result.FilterDescriptors.Count, "should be 1 filter");
-      Assert.AreEqual(filterToTest.FilterDescriptors[0].FilterUid, result.FilterDescriptors[0].FilterUid, Responses.IncorrectFilterDescriptorFilterUid);
-      Assert.AreEqual(filterToTest.FilterDescriptors[0].Name, result.FilterDescriptors[0].Name, Responses.IncorrectFilterDescriptorName);
-      Assert.AreEqual("{\"dateRangeType\":0,\"dateRangeName\":\"Today\"}", result.FilterDescriptors[0].FilterJson, Responses.IncorrectFilterDescriptorFilterJson);
+      var filters = result.FilterDescriptors.Where(f => f.FilterType == filterType).ToList();
+      if (filterType == FilterType.Persistent)
+      {
+        Assert.AreEqual(1, filters.Count, "should be 1 filter");
+        Assert.AreEqual(filterToTest.FilterDescriptors[0].FilterUid, filters[0].FilterUid,
+          Responses.IncorrectFilterDescriptorFilterUid);
+        Assert.AreEqual(filterToTest.FilterDescriptors[0].Name, filters[0].Name,
+          Responses.IncorrectFilterDescriptorName);
+        Assert.AreEqual("{\"dateRangeType\":0,\"dateRangeName\":\"Today\"}", filters[0].FilterJson,
+          Responses.IncorrectFilterDescriptorFilterJson);
+        Assert.AreEqual(filterToTest.FilterDescriptors[0].FilterType, filters[0].FilterType,
+          Responses.IncorrectFilterDescriptorFilterType);
+      }
+      else
+      {  
+        Assert.AreEqual(0, filters.Count, "should be 0 filters");
+      }
     }
 
     [TestMethod]
-    public async Task GetFiltersExecutor_ExistingFilters2()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Transient)]
+    [DataRow(FilterType.Report)]
+    public async Task GetFiltersExecutor_ExistingFilters2(FilterType filterType)
     {
       string custUid = Guid.NewGuid().ToString();
       string userId = Guid.NewGuid().ToString();
@@ -100,6 +122,7 @@ namespace ExecutorTests
         ProjectUID = Guid.Parse(projectUid),
         FilterUID = Guid.Parse(filterUid1),
         Name = name1,
+        FilterType = filterType,
         FilterJson = filterJson1,
         ActionUTC = DateTime.UtcNow.AddMinutes(-5),
         ReceivedUTC = DateTime.UtcNow.AddMinutes(-5)
@@ -112,6 +135,7 @@ namespace ExecutorTests
         ProjectUID = Guid.Parse(projectUid),
         FilterUID = Guid.Parse(filterUid2),
         Name = name2,
+        FilterType = filterType,
         FilterJson = filterJson2,
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
@@ -126,24 +150,35 @@ namespace ExecutorTests
       var filterToTest = new FilterDescriptorListResult
       {
         FilterDescriptors = ImmutableList<FilterDescriptor>.Empty
-                                                           .Add(new FilterDescriptor {FilterUid = filterUid1, Name = name1, FilterJson = filterJson1})
-                                                           .Add(new FilterDescriptor {FilterUid = filterUid2, Name = name2, FilterJson = filterJson2})
+                                                           .Add(new FilterDescriptor {FilterUid = filterUid1, Name = name1, FilterType = filterType, FilterJson = filterJson1})
+                                                           .Add(new FilterDescriptor {FilterUid = filterUid2, Name = name2, FilterType = filterType, FilterJson = filterJson2})
       };
 
       Assert.IsNotNull(result, Responses.ShouldReturnResult);
-      Assert.AreEqual(2, result.FilterDescriptors.Count, "should be 2 filter2");
-      Assert.AreEqual(filterToTest.FilterDescriptors[0].FilterUid, result.FilterDescriptors[0].FilterUid,
-        Responses.IncorrectFilterDescriptorFilterUid);
-      Assert.AreEqual(filterToTest.FilterDescriptors[0].Name, result.FilterDescriptors[0].Name,
-        Responses.IncorrectFilterDescriptorName);
-      Assert.AreEqual("{\"dateRangeType\":0,\"dateRangeName\":\"Today\"}", result.FilterDescriptors[0].FilterJson,
-        Responses.IncorrectFilterDescriptorFilterJson);
-      Assert.AreEqual(filterToTest.FilterDescriptors[1].FilterUid, result.FilterDescriptors[1].FilterUid,
-        Responses.IncorrectFilterDescriptorFilterUid);
-      Assert.AreEqual(filterToTest.FilterDescriptors[1].Name, result.FilterDescriptors[1].Name,
-        Responses.IncorrectFilterDescriptorName);
-      Assert.AreEqual("{\"dateRangeType\":1,\"dateRangeName\":\"Yesterday\"}", result.FilterDescriptors[1].FilterJson,
-        Responses.IncorrectFilterDescriptorFilterJson);
+      if (filterType == FilterType.Persistent)
+      {
+        Assert.AreEqual(2, result.FilterDescriptors.Count, "should be 2 filter2");
+        Assert.AreEqual(filterToTest.FilterDescriptors[0].FilterUid, result.FilterDescriptors[0].FilterUid,
+          Responses.IncorrectFilterDescriptorFilterUid);
+        Assert.AreEqual(filterToTest.FilterDescriptors[0].Name, result.FilterDescriptors[0].Name,
+          Responses.IncorrectFilterDescriptorName);
+        Assert.AreEqual("{\"dateRangeType\":0,\"dateRangeName\":\"Today\"}", result.FilterDescriptors[0].FilterJson,
+          Responses.IncorrectFilterDescriptorFilterJson);
+        Assert.AreEqual(filterToTest.FilterDescriptors[0].FilterType, result.FilterDescriptors[0].FilterType,
+          Responses.IncorrectFilterDescriptorFilterType);
+        Assert.AreEqual(filterToTest.FilterDescriptors[1].FilterUid, result.FilterDescriptors[1].FilterUid,
+          Responses.IncorrectFilterDescriptorFilterUid);
+        Assert.AreEqual(filterToTest.FilterDescriptors[1].Name, result.FilterDescriptors[1].Name,
+          Responses.IncorrectFilterDescriptorName);
+        Assert.AreEqual("{\"dateRangeType\":1,\"dateRangeName\":\"Yesterday\"}", result.FilterDescriptors[1].FilterJson,
+          Responses.IncorrectFilterDescriptorFilterJson);
+        Assert.AreEqual(filterToTest.FilterDescriptors[1].FilterType, result.FilterDescriptors[1].FilterType,
+          Responses.IncorrectFilterDescriptorFilterType);
+      }
+      else
+      {
+        Assert.AreEqual(0, result.FilterDescriptors.Count, "should be 0 filter2");
+      }
     }
 
     [TestMethod]
@@ -158,6 +193,7 @@ namespace ExecutorTests
         ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
         FilterUID = Guid.NewGuid(),
         Name = $"dateRangeType={dateRangeType}",
+        FilterType = FilterType.Persistent,
         FilterJson = $"{{\"startUtc\": null,\"endUtc\": null,\"dateRangeType\": {dateRangeType}}}",
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
@@ -203,6 +239,7 @@ namespace ExecutorTests
         ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
         FilterUID = Guid.NewGuid(),
         Name = $"dateRangeType={dateRangeType}",
+        FilterType = FilterType.Persistent,
         FilterJson = $"{{\"startUtc\": null,\"endUtc\": null,\"dateRangeType\": {dateRangeType}}}",
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
@@ -249,6 +286,7 @@ namespace ExecutorTests
         ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
         FilterUID = Guid.NewGuid(),
         Name = $"dateRangeType={dateRangeType}",
+        FilterType = FilterType.Persistent,
         FilterJson = $"{{\"startUtc\": \"{startDate}\",\"endUtc\": \"{endDate}\",\"dateRangeType\": {dateRangeType}}}",
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
@@ -261,6 +299,7 @@ namespace ExecutorTests
         ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
         FilterUID = Guid.NewGuid(),
         Name = $"dateRangeType={dateRangeType}",
+        FilterType = FilterType.Persistent,
         FilterJson = $"{{\"startUtc\": \"{startDate}\",\"endUtc\": \"{endDate}\",\"dateRangeType\": {dateRangeType}}}",
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow

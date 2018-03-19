@@ -21,6 +21,7 @@ using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using System.Linq;
 using VSS.Productivity3D.Filter.Common.Filters.Authentication;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Filter.WebAPI.Controllers
 {
@@ -64,7 +65,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
           ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
           (User as TIDCustomPrincipal)?.GetProject(projectUid));
 
-      requestFull.Validate(ServiceExceptionHandler);
+      requestFull.Validate(ServiceExceptionHandler, true);
 
       var executor =
         RequestExecutorContainer.Build<GetFiltersExecutor>(ConfigStore, Logger, ServiceExceptionHandler, this.filterRepo, null);
@@ -96,7 +97,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
           (User as TIDCustomPrincipal)?.GetProject(projectUid),
           new FilterRequest { FilterUid = filterUid });
 
-      requestFull.Validate(ServiceExceptionHandler);
+      requestFull.Validate(ServiceExceptionHandler, true);
 
       var executor =
         RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, this.filterRepo, null, this.ProjectListProxy);
@@ -148,7 +149,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       //Only transient filters for now. Supporting batching of permanent filters requires rollback logic when one or more fails.
       foreach (var filterRequest in request.FilterRequests)
       {
-        if (!string.IsNullOrEmpty(filterRequest.Name))
+        if (filterRequest.FilterType != FilterType.Transient)
         {
           ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 24);
         }
@@ -213,7 +214,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         (User as TIDCustomPrincipal)?.GetProject(projectUid),
         new FilterRequest { FilterUid = filterUid });
 
-      requestFull.Validate(ServiceExceptionHandler);
+      requestFull.Validate(ServiceExceptionHandler, true);
 
       var executor = RequestExecutorContainer.Build<DeleteFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, this.filterRepo, null, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
       var result = await executor.ProcessAsync(requestFull);

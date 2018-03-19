@@ -164,7 +164,8 @@ namespace TestUtility
             CustomerUID = new Guid(eventObject.CustomerUID),
             ProjectUID = new Guid(eventObject.ProjectUID),
             UserID = eventObject.UserID,
-            FilterJson = eventObject.FilterJson
+            FilterJson = eventObject.FilterJson,
+            FilterType = eventObject.FilterType
           };
           jsonString = JsonConvert.SerializeObject(new { CreateFilterEvent = createFilterEvent }, jsonSettings);
           break;
@@ -176,7 +177,8 @@ namespace TestUtility
             CustomerUID = new Guid(eventObject.CustomerUID),
             ProjectUID = new Guid(eventObject.ProjectUID),
             UserID = eventObject.UserID,
-            FilterJson = eventObject.FilterJson
+            FilterJson = eventObject.FilterJson,
+            FilterType = eventObject.FilterType
           };
           jsonString = JsonConvert.SerializeObject(new { UpdateFilterEvent = updateFilterEvent }, jsonSettings);
           break;
@@ -207,8 +209,8 @@ namespace TestUtility
       switch (dbTable)
       {
         case "Filter":
-          sqlCmd += $@"(FilterUID,fk_CustomerUID,fk_ProjectUID,UserID,Name,FilterJson,IsDeleted,LastActionedUTC) VALUES 
-                ('{eventObject.FilterUID}','{eventObject.fk_CustomerUID}','{eventObject.fk_ProjectUID}','{eventObject.UserID}','{eventObject.Name}','{eventObject.FilterJson}',{eventObject.IsDeleted},'{eventObject.LastActionedUTC}');";
+          sqlCmd += $@"(FilterUID,fk_CustomerUID,fk_ProjectUID,UserID,Name,fk_FilterTypeID,FilterJson,IsDeleted,LastActionedUTC) VALUES 
+                ('{eventObject.FilterUID}','{eventObject.fk_CustomerUID}','{eventObject.fk_ProjectUID}','{eventObject.UserID}','{eventObject.Name}',{eventObject.fk_FilterTypeID},'{eventObject.FilterJson}',{eventObject.IsDeleted},'{eventObject.LastActionedUTC}');";
           break;
         case "Geofence":
           sqlCmd += $@"(GeofenceUID,Name,fk_GeofenceTypeID,GeometryWKT,FillColor,IsTransparent,IsDeleted,Description,fk_CustomerUID,UserUID,LastActionedUTC) VALUES 
