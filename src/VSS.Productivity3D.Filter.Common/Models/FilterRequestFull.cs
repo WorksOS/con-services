@@ -8,6 +8,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Filter.Common.Filters.Authentication;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Filter.Common.Models
 {

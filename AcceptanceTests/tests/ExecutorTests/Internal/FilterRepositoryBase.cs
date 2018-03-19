@@ -63,7 +63,9 @@ namespace ExecutorTests.Internal
       string name = null,
       string filterJson = "",
       string boundaryUid = null,
-      string customerUid = null)
+      string customerUid = null,
+      FilterType filterType = FilterType.Transient,
+      bool onlyFilterUid = false)
     {
       var request = FilterRequestFull.Create(
         new Dictionary<string, string>(),
