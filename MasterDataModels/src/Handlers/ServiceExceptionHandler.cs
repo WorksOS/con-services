@@ -31,7 +31,7 @@ namespace VSS.Common.Exceptions
     {
       throw new ServiceException(statusCode,
         new ContractExecutionResult(_contractExecutionStatesEnum.GetErrorNumberwithOffset(errorNumber),
-          $"{_contractExecutionStatesEnum.FirstNameWithOffset(errorNumber)}  {resultCode} {errorMessage1} {errorMessage2}"),innerException);
+          string.Format(_contractExecutionStatesEnum.FirstNameWithOffset(errorNumber), resultCode, errorMessage1 ?? "null", errorMessage2 ?? "null")),innerException);
     }
   }
 }
