@@ -122,10 +122,6 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 8, "Missing filter");
       }
 
-      //await ValidationUtil.ValidateProjectForCustomer(ProjectListProxy, Log, ServiceExceptionHandler, Request.Headers.GetCustomHeaders(),
-      //  (User as TIDCustomPrincipal)?.CustomerUid, projectUid).ConfigureAwait(false);
-      (User as TIDCustomPrincipal)?.GetProject(projectUid);
-
       var filterExecutor = RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, this.filterRepo, this.geofenceRepository, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
 
       var upsertFilterResult = await UpsertFilter(filterExecutor, projectUid, request);
@@ -148,9 +144,6 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 7, "Missing filters");
       }
 
-      (User as TIDCustomPrincipal)?.GetProject(projectUid);
-      //await ValidationUtil.ValidateProjectForCustomer(ProjectListProxy, Log, ServiceExceptionHandler, Request.Headers.GetCustomHeaders(),
-      //        (User as TIDCustomPrincipal)?.CustomerUid, projectUid).ConfigureAwait(false);
 
       //Only transient filters for now. Supporting batching of permanent filters requires rollback logic when one or more fails.
       foreach (var filterRequest in request.FilterRequests)
