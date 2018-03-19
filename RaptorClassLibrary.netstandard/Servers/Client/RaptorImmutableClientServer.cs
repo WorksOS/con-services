@@ -2,7 +2,6 @@
 using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
-using Apache.Ignite.Core.Cache.Eviction;
 using Apache.Ignite.Core.Communication.Tcp;
 using Apache.Ignite.Core.Configuration;
 using Apache.Ignite.Core.Discovery.Tcp;
