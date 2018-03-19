@@ -397,22 +397,22 @@ namespace VSS.MasterData.Models.Models
       {
         var hashCode = StartUtc.GetHashCode();
         hashCode = (hashCode * 397) ^ EndUtc.GetHashCode();
-        hashCode = (hashCode * 397) ^ DateRangeType.GetHashCode();
-        hashCode = (hashCode * 397) ^ (DesignUid != null ? DesignUid.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (ContributingMachines != null ? ContributingMachines.GetListHashCode() : 0);
-        hashCode = (hashCode * 397) ^ OnMachineDesignId.GetHashCode();
-        hashCode = (hashCode * 397) ^ ElevationType.GetHashCode();
-        hashCode = (hashCode * 397) ^ VibeStateOn.GetHashCode();
-        hashCode = (hashCode * 397) ^ (PolygonUid != null ? PolygonUid.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (PolygonName != null ? PolygonName.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (PolygonLL != null ? PolygonLL.GetListHashCode() : 0);
-        hashCode = (hashCode * 397) ^ ForwardDirection.GetHashCode();
-        hashCode = (hashCode * 397) ^ LayerNumber.GetHashCode();
-        hashCode = (hashCode * 397) ^ (AlignmentUid != null ? AlignmentUid.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (StartStation != null ? StartStation.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (EndStation != null ? EndStation.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (LeftOffset != null ? LeftOffset.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (RightOffset != null ? RightOffset.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ (DateRangeType != null ? DateRangeType.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (DesignUid != null ? DesignUid.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (ContributingMachines != null ? ContributingMachines.GetListHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (OnMachineDesignId != null ? OnMachineDesignId.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (ElevationType !=null ? ElevationType.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (VibeStateOn !=null ? VibeStateOn.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (PolygonUid != null ? PolygonUid.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (PolygonName != null ? PolygonName.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (PolygonLL != null ? PolygonLL.GetListHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (ForwardDirection !=null ? ForwardDirection.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (LayerNumber!=null ? LayerNumber.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (AlignmentUid != null ? AlignmentUid.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (StartStation != null ? StartStation.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (EndStation != null ? EndStation.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (LeftOffset != null ? LeftOffset.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (RightOffset != null ? RightOffset.GetHashCode() : 397);
         return hashCode;
       }
     }
