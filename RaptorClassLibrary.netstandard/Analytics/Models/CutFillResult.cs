@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.Analytics.GridFabric.Responses;
 
 namespace VSS.VisionLink.Raptor.Analytics.Models
 {
     /// <summary>
     /// The result obtained fcrom performing a CutFill analytics request
     /// </summary>
-    public class CutFillResult
+    public class CutFillResult : AnalyticsResult
     {
         /// <summary>
         /// An array (or always 7) values represnting the counts of cells within each of the cut fill bands defined in the request.
@@ -58,6 +59,18 @@ namespace VSS.VisionLink.Raptor.Analytics.Models
         public CutFillResult(long [] counts) : this()
         {
             Counts = counts;
+        }
+
+        /// <summary>
+        ///  Takes a response from the cluster compuet layer and transforms it into the model to be handed back to the client context
+        /// </summary>
+        /// <param name="response"></param>
+        public override void PopulateFromClusterComputeResponse(Object response)
+        {
+            if (response is CutFillStatisticsResponse)
+            {
+                Counts = ((CutFillStatisticsResponse)response).Counts;
+            }
         }
     }
 }

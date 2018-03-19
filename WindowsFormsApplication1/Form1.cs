@@ -12,6 +12,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using VSS.VisionLink.Raptor.Analytics.GridFabric.Arguments;
+using VSS.VisionLink.Raptor.Analytics.GridFabric.Requests;
+using VSS.VisionLink.Raptor.Analytics.Models;
 using VSS.VisionLink.Raptor.Designs.Storage;
 using VSS.VisionLink.Raptor.Executors;
 using VSS.VisionLink.Raptor.Filters;
@@ -21,7 +24,6 @@ using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Events;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.GridFabric.Queues;
-using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Rendering.Servers.Client;
 using VSS.VisionLink.Raptor.Servers.Client;
 using VSS.VisionLink.Raptor.Services.Designs;
@@ -712,6 +714,24 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             {
                 MessageBox.Show($"Exception: {ex}");
             }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            // Calculate cut fill statistics from the latest elevations to the selected design
+
+            var request = new CutFillStatisticsRequest_ApplicationService();
+
+            CutFillResult result = request.Execute(new CutFillStatisticsArgument()
+            {
+                DataModelID = ID(),
+                Filter = new CombinedFilter(),
+                DesignID = (cmbDesigns.Items.Count == 0) ? long.MinValue : (cmbDesigns.SelectedValue as Design).ID,
+                Offsets = new double[7] { -0.5, -0.2, 0.1, 0, 0.1, 0.2, 0.5 }
+            });
+
+            // Show the list of percentages calculated by the request
+            MessageBox.Show($"Results: {result.Percents.Aggregate("", (v, a) => a + v.ToString() + "% ")}");
         }
     }
 }

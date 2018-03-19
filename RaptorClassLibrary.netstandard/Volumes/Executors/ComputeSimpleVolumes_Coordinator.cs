@@ -160,8 +160,8 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
             SimpleVolumesResponse VolumesResult = new SimpleVolumesResponse();
 
             BoundingWorldExtent3D ResultBoundingExtents = BoundingWorldExtent3D.Null();
-            BoundingWorldExtent3D SpatialExtent = BoundingWorldExtent3D.Null();
-            long[] SurveyedSurfaceExclusionList = new long[0];
+//            BoundingWorldExtent3D SpatialExtent = BoundingWorldExtent3D.Null();
+//            long[] SurveyedSurfaceExclusionList = new long[0];
 
             RequestErrorStatus ResultStatus = RequestErrorStatus.Unknown;
 

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Analytics.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Analytics.GridFabric.ComputeFuncs;
 using VSS.VisionLink.Raptor.Analytics.GridFabric.Responses;
+using VSS.VisionLink.Raptor.Analytics.Models;
 using VSS.VisionLink.Raptor.GridFabric.Requests;
 
 namespace VSS.VisionLink.Raptor.Analytics.GridFabric.Requests
@@ -14,16 +15,20 @@ namespace VSS.VisionLink.Raptor.Analytics.GridFabric.Requests
     /// <summary>
     /// Sends a request to the grid for a cut fill statistics request to be executed
     /// </summary>
-    public class CutFillStatisticsRequest_ApplicationService : GenericASNodeRequest<CutFillStatisticsArgument, CutFillStatisticsComputeFunc_ApplicationService, CutFillStatisticResponse>, IComputeFunc<CutFillStatisticsArgument, CutFillStatisticResponse>
+    public class CutFillStatisticsRequest_ApplicationService : GenericASNodeRequest<CutFillStatisticsArgument, CutFillStatisticsComputeFunc_ApplicationService, CutFillStatisticsResponse> //, IComputeFunc<CutFillStatisticsArgument, CutFillResult>
     {
         /// <summary>
         /// Add specific behaviour here if needed
         /// </summary>
         /// <param name="arg"></param>
         /// <returns></returns>
-        public CutFillStatisticResponse Invoke(CutFillStatisticsArgument arg)
+        public CutFillResult Execute(CutFillStatisticsArgument arg)
         {
-            return base.Execute(arg);
+            CutFillResult result = new CutFillResult();
+
+            result.PopulateFromClusterComputeResponse(base.Execute(arg));
+
+            return result;
         }
     }
 }
