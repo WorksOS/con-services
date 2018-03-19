@@ -31,7 +31,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Tests
 
             dict.Entries.Add(10, new TAGDictionaryItem("name", TAGDataType.tUnicodeString, 10));
 
-            Assert.Equal(1, dict.Entries.Count);
+            Assert.True(1 == dict.Entries.Count);
         }
 
         [Fact]

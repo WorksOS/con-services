@@ -362,11 +362,11 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             string s = bits.RowToString(0);
-            Assert.Equal(s, " 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0");
+            Assert.True(s == " 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0");
 
             bits.Fill();
             string s2 = bits.RowToString(0);
-            Assert.Equal(s2, " 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1");
+            Assert.True(s2 == " 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1");
         }
 
         [Fact]

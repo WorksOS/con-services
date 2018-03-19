@@ -61,7 +61,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator.Tests
             AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess);
             worker.ProcessTask(ProcessedTasks);
 
-            Assert.Equal(1, ProcessedTasks.Count);
+            Assert.True(1 == ProcessedTasks.Count);
         }
     }
 }

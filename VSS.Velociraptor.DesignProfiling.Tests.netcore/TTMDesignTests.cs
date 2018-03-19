@@ -115,8 +115,8 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
         }
 
         [Theory()]
-        [InlineData(247500.0, 193350.0, 29.875899875665258)]
-        public void InterpolateHeightTestPerf(double probeX, double probeY, double expectedZ)
+        [InlineData(247500.0, 193350.0)]
+        public void InterpolateHeightTestPerf(double probeX, double probeY)
         {
             object Hint = null;
 
@@ -144,8 +144,8 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
         }
 
         [Theory()]
-        [InlineData(247500.0, 193350.0, 29.875899875665258)]
-        public void InterpolateHeightTest2Perf(double probeX, double probeY, double expectedZ)
+        [InlineData(247500.0, 193350.0)]
+        public void InterpolateHeightTest2Perf(double probeX, double probeY)
         {
             object Hint = null;
             for (int i = 0; i < 10000000; i++)
@@ -158,8 +158,8 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
         }
 
         [Theory()]
-        [InlineData(247500.0, 193350.0, 29.875899875665258)]
-        public void InterpolateHeightTest3Perf(double probeX, double probeY, double expectedZ)
+        [InlineData(247500.0, 193350.0)]
+        public void InterpolateHeightTest3Perf(double probeX, double probeY)
         {
             object Hint = null;
             for (int i = 0; i < 10000000; i++)
