@@ -41,7 +41,7 @@ namespace VSS.Productivity3D.Filter.Tests
           "sfgsdfsf",
           false,
           userUid,
-          new ProjectData { ProjectUid = projectUid},,
+          new ProjectData { ProjectUid = projectUid },
           new FilterRequest {FilterUid = filterUid, Name = Name, FilterJson = FilterJson, FilterType = filterType}
         );
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));

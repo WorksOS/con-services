@@ -53,7 +53,7 @@ namespace VSS.Productivity3D.Filter.Tests
         Guid.NewGuid().ToString(),
         false,
         Guid.NewGuid().ToString(),
-        new ProjectData { ProjectUid = Guid.NewGuid().ToString() }
+        new ProjectData { ProjectUid = Guid.NewGuid().ToString() },
         new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = filterType }
 
       );
