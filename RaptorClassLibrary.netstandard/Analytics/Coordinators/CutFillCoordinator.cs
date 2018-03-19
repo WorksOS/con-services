@@ -9,41 +9,30 @@ using VSS.VisionLink.Raptor.Analytics.Aggregators;
 using VSS.VisionLink.Raptor.Analytics.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Analytics.GridFabric.Responses;
 using VSS.VisionLink.Raptor.Analytics.Models;
-using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Utilities;
 
-namespace VSS.VisionLink.Raptor.Analytics.Operations
+namespace VSS.VisionLink.Raptor.Analytics.Coordinators
 {
     /// <summary>
-    /// Computes cut fill statistics. Executes in the 'application service' layer
+    /// Computes cut fill statistics. Executes in the 'application service' layer and acts as the coordinator
+    /// for the request onto the cluster compute layer.
     /// </summary>
-    public class CutFill
+    public class CutFillCoordinator : BaseAnalyticsCoordinator<CutFillStatisticsArgument, CutFillStatisticsResponse>
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
-        /// Details the error status of the bmp result returned by the renderer
+        /// Executes the cut fill analytics request returning the counts and percetages for the (7) defined cut fill bands
         /// </summary>
-        public RequestErrorStatus ResultStatus = RequestErrorStatus.Unknown;
-
-        private void InitialiseComputor(AnalyticsComputor<CutFillStatisticsArgument, CutFillStatisticResponse> Computor)
+        /// <param name="arg"></param>
+        /// <returns></returns>
+        public override CutFillStatisticsResponse Execute(CutFillStatisticsArgument arg) 
         {
-
-        }
-
-        public CutFillResult Execute(CutFillStatisticsArgument arg) 
-        {
-
             //  ScheduledWithGovernor       :Boolean = false;
-            //  SpatialExtent               :T3DBoundingWorldExtent;
-            //  CellSize                    :Double;
-            //  IndexOriginOffset           :Integer;
             //  SurveyedSurfaceExclusionList:TSurveyedSurfaceIDList;
-            //  ResultString                :String = '';
-
-            CutFillResult result = new CutFillResult();
+            CutFillStatisticsResponse result = new CutFillStatisticsResponse();
 
             try
             {
@@ -62,8 +51,6 @@ namespace VSS.VisionLink.Raptor.Analytics.Operations
                   end;
           */
 
-                //      RequestDescriptor := ASNodeImplInstance.NextDescriptor;
-
                 // TODO - Readd when logging available
                 //SIGLogMessage.PublishNoODS(Self, Format('#In# Performing %s.Execute for DataModel:%d', [Self.ClassName, FDataModelID]), slmcMessage);
 
@@ -81,23 +68,22 @@ namespace VSS.VisionLink.Raptor.Analytics.Operations
                         end;
                 */
 
-                BoundingWorldExtent3D ResultBoundingExtents = BoundingWorldExtent3D.Null();
-                BoundingWorldExtent3D SpatialExtent = BoundingWorldExtent3D.Null();
-                long[] SurveyedSurfaceExclusionList = new long[0];
-
-                RequestErrorStatus ResultStatus = RequestErrorStatus.Unknown;
+                //BoundingWorldExtent3D ResultBoundingExtents = BoundingWorldExtent3D.Null();
+                //BoundingWorldExtent3D SpatialExtent = BoundingWorldExtent3D.Null();
+                //long[] SurveyedSurfaceExclusionList = new long[0];
 
                 long RequestDescriptor = Guid.NewGuid().GetHashCode(); // TODO ASNodeImplInstance.NextDescriptor;
 
-                ResultStatus = FilterUtilities.PrepareFilterForUse(arg.Filter, arg.DataModelID);
-                if (ResultStatus != RequestErrorStatus.OK)
+                result.ResultStatus = FilterUtilities.PrepareFilterForUse(arg.Filter, arg.DataModelID);
+                if (result.ResultStatus != RequestErrorStatus.OK)
                 {
-                    return null;
+                    return result;
                 }
 
                 // Obtain the site model context for the request
                 SiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(arg.DataModelID);
 
+                // Create the aggregator to collect and reduce the results
                 CutFillAggregator Aggregator = new CutFillAggregator()
                 {
                     RequiresSerialisation = true,
@@ -107,8 +93,8 @@ namespace VSS.VisionLink.Raptor.Analytics.Operations
                     Offsets = arg.Offsets
                 };
 
-                // create reporting engine
-                AnalyticsComputor<CutFillStatisticsArgument, CutFillStatisticResponse> Computor = new AnalyticsComputor<CutFillStatisticsArgument, CutFillStatisticResponse>()
+                // Create the analytics engine to orchestrate the calculation
+                AnalyticsComputor<CutFillStatisticsArgument, CutFillStatisticsResponse> Computor = new AnalyticsComputor<CutFillStatisticsArgument, CutFillStatisticsResponse>()
                 {
                     RequestDescriptor = RequestDescriptor,
                     SiteModel = SiteModel,
@@ -119,31 +105,22 @@ namespace VSS.VisionLink.Raptor.Analytics.Operations
                     CutFillDesignID = arg.DesignID
                 };
 
-                InitialiseComputor(Computor);
-
-                //Reporter.AggregateState.CutFillSettings = FCutFillSettings; // Has Design Descriptor
-
-                // Readd when logging available
+                // TODO Readd when logging available: 
                 // Reporter.LiftBuildSettings.Assign(FLiftBuildSettings);
 
                 if (Computor.ComputeAnalytics())
-                    ResultStatus = RequestErrorStatus.OK;
+                    result.ResultStatus = RequestErrorStatus.OK;
+                else if (Computor.AbortedDueToTimeout)
+                    result.ResultStatus = RequestErrorStatus.AbortedDueToPipelineTimeout;
                 else
-                if (Computor.AbortedDueToTimeout)
-                    ResultStatus = RequestErrorStatus.AbortedDueToPipelineTimeout;
-                else
-                    ResultStatus = RequestErrorStatus.Unknown;
+                    result.ResultStatus = RequestErrorStatus.Unknown;
 
-                if (ResultStatus != RequestErrorStatus.OK)
+                if (result.ResultStatus == RequestErrorStatus.OK)
                 {
-                    // Send the (emnpty) results back to the caller
-                    return result;
+                    // Instruct the Aggregator to perform any finalisation logic before reading out the results
+                    Aggregator.Finalise();
+                    result.Counts = Aggregator.Counts;
                 }
-
-                // Instruct the Aggregator to perform any finalisation logic before reading out the results
-                Aggregator.Finalise();
-
-                result.Counts = Aggregator.Counts;
             }
             catch (Exception E)
             {

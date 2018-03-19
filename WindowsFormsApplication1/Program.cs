@@ -1,6 +1,8 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using VSS.Velociraptor.DesignProfiling;
@@ -22,7 +24,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
     [STAThread]
         static void Main()
         {
-            DoTest();
+            //DoTest();
             string logFileName = System.Diagnostics.Process.GetCurrentProcess().ProcessName + ".log";
             log4net.GlobalContext.Properties["LogName"] = logFileName;
             log4net.Config.XmlConfigurator.Configure();

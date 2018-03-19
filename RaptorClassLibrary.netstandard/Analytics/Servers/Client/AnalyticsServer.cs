@@ -47,10 +47,9 @@ namespace VSS.VisionLink.Raptor.Rendering.Servers.Client
         public TResponse Execute(TArgument argument)
         {
             GenericASNodeRequest<TArgument, TRequest, TResponse> request = new GenericASNodeRequest<TArgument, TRequest, TResponse>();
-            // GenericPSNodeBroadcastRequest<TArgument, TRequest, TResponse> request = new GenericPSNodeBroadcastRequest<TArgument, TRequest, TResponse>();
-
             return request.Execute(argument);
 
+            // GenericPSNodeBroadcastRequest<TArgument, TRequest, TResponse> request = new GenericPSNodeBroadcastRequest<TArgument, TRequest, TResponse>();
             //return analyticsRequest.Request_ApplicationService.Execute(argument);
         }
     }
