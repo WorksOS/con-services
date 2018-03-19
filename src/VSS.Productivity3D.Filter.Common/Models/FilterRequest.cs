@@ -27,10 +27,10 @@ namespace VSS.Productivity3D.Filter.Common.Models
     public string FilterJson { get; set; } = string.Empty;
 
     /// <summary>
-    /// The type of filter.
+    /// The type of filter. If not specified defaults to Transient.
     /// </summary>
-    [JsonProperty(Required = Required.Always)]
-    public FilterType FilterType { get; set; }
+    [JsonProperty(Required = Required.Default)]
+    public FilterType FilterType { get; set; } = FilterType.Transient;
 
     /// <summary>
     /// Returns a new instance of <see cref="FilterRequest"/> using the provided inputs.
