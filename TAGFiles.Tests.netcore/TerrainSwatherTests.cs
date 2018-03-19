@@ -14,6 +14,7 @@ using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.SiteModels;
 using Xunit;
+using VSS.VisionLink.Raptor.TAGFiles.Types;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather.Tests
 {
@@ -73,7 +74,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather.Tests
             var TimeInterpolator2 = new SimpleTriangle(T01, T11, T10);
 
             // Compute swath with full cell pass on the front (blade) mesurement location
-            bool swathResult = swather.PerformSwathing(HeightInterpolator1, HeightInterpolator2, TimeInterpolator1, TimeInterpolator2, false, Raptor.Types.PassType.Front);
+            bool swathResult = swather.PerformSwathing(HeightInterpolator1, HeightInterpolator2, TimeInterpolator1, TimeInterpolator2, false, Raptor.Types.PassType.Front, MachineSide.None);
 
             // Did the swathing operation succeed?
             Assert.True(swathResult, "Performaswathing failed");

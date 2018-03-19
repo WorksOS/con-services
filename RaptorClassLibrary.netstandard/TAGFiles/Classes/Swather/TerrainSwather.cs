@@ -11,6 +11,7 @@ using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
+using VSS.VisionLink.Raptor.TAGFiles.Types;
 using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
@@ -40,7 +41,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
                                              SimpleTriangle TimeInterpolator1,
                                              SimpleTriangle TimeInterpolator2,
                                              bool HalfPass,
-                                             PassType passType)
+                                             PassType passType,
+                                             MachineSide machineSide)
         {
             CellPass ProcessedCellPass;
             DateTime _TheTime = DateTime.MinValue;
@@ -161,11 +163,17 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
                                 if (CompactionDataSupportedByMachine)
                                 {
                                     ProcessedCellPass.MDP = Processor.ICMDPValues.GetMDPValueAtDateTime(_TheTime);
-                                    ProcessedCellPass.CCA = Processor.ICCCAValues.GetCCAValueAtDateTime(_TheTime);
 
-                                    // If VibeState is not On, then any CCV info etc is invalid, and should be recorded as appropriate null values
-                                    // temp bug fix AJR
-                                    if (MachineTargetValueChanges.VibrationStateEvents.GetValueAtDate(ProcessedCellPass.Time, out int StateChangeIndex, VibrationState.Invalid) == VibrationState.On)
+                  //    ProcessedCellPass.CCA = Processor.ICCCAValues.GetCCAValueAtDateTime(_TheTime);
+
+                                  // CCA values can come from 5 different fields in the TAG files. Earlier versions had a single CCA value for all
+                                  // four wheels. As of GCS v13.12, all four wheels have CCA independently reported for each wheel
+                                  // (see TAG file schema for more details)
+                                  ProcessedCellPass.CCA = Processor.SelectCCAValue(_TheTime, passType, machineSide);
+
+                  // If VibeState is not On, then any CCV info etc is invalid, and should be recorded as appropriate null values
+                  // temp bug fix AJR
+                  if (MachineTargetValueChanges.VibrationStateEvents.GetValueAtDate(ProcessedCellPass.Time, out int StateChangeIndex, VibrationState.Invalid) == VibrationState.On)
                                     {
 
                                         ProcessedCellPass.CCV = Processor.ICCCVValues.GetCCVValueAtDateTime(_TheTime);

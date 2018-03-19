@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.TAGFiles.Types;
+using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 {
@@ -566,30 +569,43 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
                 // If the distance between the two epochs is > kMaxEpochInterval, then don't process this epoch pair
                 // Test both sides of the quadrilateral to see if either is longer than the largest inter-epoch gap
 
+
+        
+              // todo check this code works      
+              foreach (MachineSide machSide in Enum.GetValues(typeof(MachineSide)))
+              {
+
                 for (int I = 0; I < InterpolationFences.Count; I++)
                 {
-                    if (DataTime < PrevEpochTime.AddSeconds(kPausedLoggingIntervalSeconds) && !InterpolationFences[I].IsNull())
+                  if (DataTime < PrevEpochTime.AddSeconds(kPausedLoggingIntervalSeconds) && !InterpolationFences[I].IsNull())
+                  {
+                    if (((Math.Pow(InterpolationFences[I][0].X - InterpolationFences[I][3].X, 2) +
+                          Math.Pow(InterpolationFences[I][0].Y - InterpolationFences[I][3].Y, 2)) <= MaxEpochIntervalSquared) &&
+                        ((Math.Pow(InterpolationFences[I][1].X - InterpolationFences[I][2].X, 2) +
+                          Math.Pow(InterpolationFences[I][1].Y - InterpolationFences[I][2].Y, 2)) <= MaxEpochIntervalSquared))
                     {
-                        if (((Math.Pow(InterpolationFences[I][0].X - InterpolationFences[I][3].X, 2) +
-                              Math.Pow(InterpolationFences[I][0].Y - InterpolationFences[I][3].Y, 2)) <= MaxEpochIntervalSquared) &&
-                            ((Math.Pow(InterpolationFences[I][1].X - InterpolationFences[I][2].X, 2) +
-                              Math.Pow(InterpolationFences[I][1].Y - InterpolationFences[I][2].Y, 2)) <= MaxEpochIntervalSquared))
-                        {
-//                            InterpolationFences[I].UpdateExtents();
+                      //                            InterpolationFences[I].UpdateExtents();
 
-                            // Process the quadrilateral formed by the two epochs
-                            if (!DoProcessEpochContext(InterpolationFences[I]))
-                            {
-                                return false;
-                            }
-                        }
+                      // Process the quadrilateral formed by the two epochs
+                      if (!DoProcessEpochContext(InterpolationFences[I], machSide))
+                      {
+                        return false;
+                      }
                     }
+                  }
                 }
+              }
 
-                // Set first epoch to second for next loop
 
-                //------------ FRONT AXLE ----------------
-                FrontLeftInterpolationFence[0].Assign(FrontLeftInterpolationFence[3]);
+
+        /* old way
+
+  */
+
+        // Set first epoch to second for next loop
+
+        //------------ FRONT AXLE ----------------
+        FrontLeftInterpolationFence[0].Assign(FrontLeftInterpolationFence[3]);
                 FrontLeftInterpolationFence[1].Assign(FrontLeftInterpolationFence[2]);
 
                 FrontRightInterpolationFence[0].Assign(FrontRightInterpolationFence[3]);
@@ -661,14 +677,15 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
             return true;
         }
 
-        /// <summary>
-        /// DoProcessEpochContext is the method that does the actual processing
-        /// of the epoch intervals into the appropriate data structures. Descendant
-        /// classes must override this function.
-        /// </summary>
-        /// <param name="InterpolationFence"></param>
-        /// <returns></returns>
-        public abstract bool DoProcessEpochContext(Fence InterpolationFence);
+    /// <summary>
+    /// DoProcessEpochContext is the method that does the actual processing
+    /// of the epoch intervals into the appropriate data structures. Descendant
+    /// classes must override this function.
+    /// </summary>
+    /// <param name="InterpolationFence"></param>
+    /// <param name="machineSide"></param>
+    /// <returns></returns>
+    public abstract bool DoProcessEpochContext(Fence InterpolationFence, MachineSide machineSide);
 
         /// <summary>
         /// DoPostProcessFileAction is called immediately after the file has been
@@ -689,5 +706,46 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// </summary>
         /// <returns></returns>
         public abstract bool DoEpochPreProcessAction();
+
+      public byte SelectCCAValue(DateTime dateTime, PassType passType, MachineSide machineSide)
+      {
+
+      //  return ICCCAValues.GetCCAValueAtDateTime(dateTime);
+
+        byte myResult = CellPass.NullCCA;
+
+        switch (passType)
+        {
+          case PassType.Front:
+            switch (machineSide)
+            {
+              case MachineSide.Left:
+                myResult = ICCCALeftFrontValues.GetCCAValueAtDateTime(dateTime);
+                break;
+              case MachineSide.Right:
+                myResult = ICCCARightFrontValues.GetCCAValueAtDateTime(dateTime);
+                break;
+            }
+            break;
+
+          case PassType.Rear:
+            switch (machineSide)
+            {
+              case MachineSide.Left:
+                myResult = ICCCALeftRearValues.GetCCAValueAtDateTime(dateTime);
+                break;
+              case MachineSide.Right:
+                myResult = ICCCARightRearValues.GetCCAValueAtDateTime(dateTime);
+                break;
+            }
+            break;
+        }
+
+        if (myResult == CellPass.NullCCA)
+             myResult = ICCCAValues.GetCCAValueAtDateTime(dateTime);
+
+        return myResult;
+      }
     }
 }
+

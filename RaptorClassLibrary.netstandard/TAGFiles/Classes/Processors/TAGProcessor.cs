@@ -11,6 +11,7 @@ using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
 using VSS.VisionLink.Raptor.TAGFiles.Classes.Swather;
+using VSS.VisionLink.Raptor.TAGFiles.Types;
 using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes
@@ -205,7 +206,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// </summary>
         /// <param name="InterpolationFence"></param>
         /// <returns></returns>
-        public override bool DoProcessEpochContext(Fence InterpolationFence)
+        public override bool DoProcessEpochContext(Fence InterpolationFence, MachineSide machineSide )
         {
             SwatherBase Swather;
 
@@ -222,27 +223,27 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 
             // Primary e.g. blade, front drum
             Swather.PerformSwathing(FrontHeightInterpolator1, FrontHeightInterpolator2, FrontTimeInterpolator1,
-                                    FrontTimeInterpolator2, HasRearAxleInThisEpoch, PassType.Front);
+                                    FrontTimeInterpolator2, HasRearAxleInThisEpoch, PassType.Front, machineSide);
 
             // rear positions
             if (HasRearAxleInThisEpoch)
             {
                 Swather.PerformSwathing(RearHeightInterpolator1, RearHeightInterpolator2, RearTimeInterpolator1,
-                                        RearTimeInterpolator2, HasRearAxleInThisEpoch, PassType.Rear);
+                                        RearTimeInterpolator2, HasRearAxleInThisEpoch, PassType.Rear, machineSide);
             }
 
             // track positions
             if (HasTrackInThisEpoch)
             {
                 Swather.PerformSwathing(TrackHeightInterpolator1, TrackHeightInterpolator2, TrackTimeInterpolator1,
-                                        TrackTimeInterpolator2, false, PassType.Track);
+                                        TrackTimeInterpolator2, false, PassType.Track, machineSide);
             }
 
             // wheel positions
             if (HasWheelInThisEpoch)
             {
                 Swather.PerformSwathing(WheelHeightInterpolator1, WheelHeightInterpolator2, WheelTimeInterpolator1,
-                                        WheelTimeInterpolator2, false, PassType.Wheel);
+                                        WheelTimeInterpolator2, false, PassType.Wheel, machineSide);
             }
 
             return true;

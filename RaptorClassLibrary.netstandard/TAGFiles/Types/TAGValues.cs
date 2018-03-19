@@ -126,12 +126,19 @@ namespace VSS.VisionLink.Raptor.TAGFiles
         // CCA
         public const string kTagFileICCCATag = "CCA_PASS_COUNT";
         public const string kTagFileICCCATargetTag = "CCA_MINIMUM_PASSES";
-    }
 
-    /// <summary>
-    /// Utility class for TAG names
-    /// </summary>
-    public static class TagValueNamesArray
+        public const string kTagFileICCCALeftFrontTag = "CCA_PASS_COUNT_LEFT_FRONT";
+        public const string kTagFileICCCARightFrontTag = "CCA_PASS_COUNT_RIGHT_FRONT";
+        public const string kTagFileICCCALeftRearTag = "CCA_PASS_COUNT_LEFT_REAR";
+        public const string kTagFileICCCARightRearTag = "CCA_PASS_COUNT_RIGHT_REAR";
+
+
+  }
+
+  /// <summary>
+  /// Utility class for TAG names
+  /// </summary>
+  public static class TagValueNamesArray
     {
         /// <summary>
         /// Returns all TAG name strings as a list

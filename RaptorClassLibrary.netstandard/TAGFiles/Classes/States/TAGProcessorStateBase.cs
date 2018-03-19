@@ -142,9 +142,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
             ICMDPValues.Add(DateTime.MinValue, CellPass.NullMDP);
             ICTemperatureValues.Add(DateTime.MinValue, CellPass.NullMaterialTemp);
             ICCCAValues.Add(DateTime.MinValue, CellPass.NullCCA);
+            ICCCALeftFrontValues.Add(DateTime.MinValue, CellPass.NullCCA);
+            ICCCARightFrontValues.Add(DateTime.MinValue, CellPass.NullCCA);
+            ICCCALeftRearValues.Add(DateTime.MinValue, CellPass.NullCCA);
+            ICCCALeftRearValues.Add(DateTime.MinValue, CellPass.NullCCA);
         }
 
-        protected virtual void DiscardAllButLatestAttributeAccumulatorValues()
+    protected virtual void DiscardAllButLatestAttributeAccumulatorValues()
         {
             ICMachineSpeedValues.DiscardAllButLatest();
             ICCCVValues.DiscardAllButLatest();
@@ -158,6 +162,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
             VolkelMeasureUtilRanges.DiscardAllButLatest();
             ICMDPValues.DiscardAllButLatest();
             ICCCAValues.DiscardAllButLatest();
+            ICCCALeftFrontValues.DiscardAllButLatest();
+            ICCCARightFrontValues.DiscardAllButLatest();
+            ICCCALeftRearValues.DiscardAllButLatest();
+            ICCCARightRearValues.DiscardAllButLatest();
             ICTemperatureValues.DiscardAllButLatest();
         }
 
@@ -421,16 +429,14 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         public MachineGear ICGear { get { return _ICGear; } set { SetICGear(value); } }
         public byte ICSonic3D { get { return _ICSonic3D; } set { SetICSonic3D(value); } }
         public byte ICMode { get { return _ICMode; } set { SetICMode(value); } }
-
-
         public CompactionSensorType ICSensorType { get { return _ICSensorType; } set { SetICSensorType(value); } }
-
         public AccumulatedAttributes ICMDPValues { get; set; } = new AccumulatedAttributes();
-
         public short ICMDPTargetValue { get { return _ICMDPTargetValue; } set { SetICMDPTargetValue(value); } }
-
         public AccumulatedAttributes ICCCAValues { get; set; } = new AccumulatedAttributes();
-
+        public AccumulatedAttributes ICCCALeftFrontValues { get; set; } = new AccumulatedAttributes();
+        public AccumulatedAttributes ICCCARightFrontValues { get; set; } = new AccumulatedAttributes();
+        public AccumulatedAttributes ICCCALeftRearValues { get; set; } = new AccumulatedAttributes();
+        public AccumulatedAttributes ICCCARightRearValues { get; set; } = new AccumulatedAttributes();
         public short ICCCATargetValue { get { return _ICCCATargetValue; } set { SetICCCATargetValue(value); } }
         public AccumulatedAttributes ICTemperatureValues { get; set; } = new AccumulatedAttributes();
 
@@ -537,6 +543,12 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         }
         public virtual void SetICMDPValue(short value) => ICMDPValues.Add(DataTime, value);
         public virtual void SetICCCAValue(short value) => ICCCAValues.Add(DataTime, value);
+        public virtual void SetICCCARightFrontValue(short value) => ICCCARightFrontValues.Add(DataTime, value);
+        public virtual void SetICCCALeftFrontValue(short value) => ICCCALeftFrontValues.Add(DataTime, value);
+        public virtual void SetICCCARightRearValue(short value) => ICCCARightRearValues.Add(DataTime, value);
+        public virtual void SetICCCALeftRearValue(short value) => ICCCALeftRearValues.Add(DataTime, value);
+
+
         public virtual void SetICTemperatureValue(ushort value) => ICTemperatureValues.Add(DataTime, value);
 
         /// <summary>

@@ -11,6 +11,7 @@ using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
 using VSS.VisionLink.Raptor.SubGridTrees.Types;
+using VSS.VisionLink.Raptor.TAGFiles.Types;
 using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
@@ -103,7 +104,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
                                             SimpleTriangle TimeInterpolator1,
                                             SimpleTriangle TimeInterpolator2,
                                             bool HalfPas,
-                                            PassType passType)
+                                            PassType passType,
+                                            MachineSide machineSide)
         {
             throw new NotImplementedException();
         }

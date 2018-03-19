@@ -54,6 +54,7 @@ namespace VSS.VisionLink.Raptor.Types
         FailedToComputeDesignFilterPatch = 0x00000028,
         DataModelDoesNotHaveValidPlanExtents = 0x00000029,
         DataModelHasInvalidZeroCellSize = 0x0000002A,
-        ProfileGenerationFailure = 0x0000002B
-    }
+        ProfileGenerationFailure = 0x0000002B,
+        DataModelDoesNotHaveValidPlanExtentsNoData = 0x0000002C
+  }
 }

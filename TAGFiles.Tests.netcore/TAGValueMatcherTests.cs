@@ -104,7 +104,101 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
             Assert.Equal((short)sink.ICCCAValues.GetLatest(), CellPass.NullCCA);
         }
 
-        [Fact()]
+      [Fact()]
+      public void Test_TAGValueMatcher_CCARightFrontValue()
+      {
+        TAGProcessorStateBase sink;
+        TAGValueMatcherState state;
+
+        InitStateAndSink(out sink, out state);
+        var matcher = new TAGCCARightFrontValueMatcher(sink, state);
+
+        // Test value sets correctly
+        Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitUInt, 0),
+            100),
+          "Matcher process function returned false");
+
+        Assert.Equal(100, (short)sink.ICCCARightFrontValues.GetLatest());
+
+        // Test value ussets correctly on an empty value
+        Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitUInt, 0)),
+          "Matcher process function returned false");
+
+        Assert.Equal((short)sink.ICCCARightFrontValues.GetLatest(), CellPass.NullCCA);
+      }
+
+      [Fact()]
+      public void Test_TAGValueMatcher_CCARightRearValue()
+      {
+        TAGProcessorStateBase sink;
+        TAGValueMatcherState state;
+
+        InitStateAndSink(out sink, out state);
+        var matcher = new TAGCCARightRearValueMatcher(sink, state);
+
+        // Test value sets correctly
+        Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitUInt, 0),
+            100),
+          "Matcher process function returned false");
+
+        Assert.Equal(100, (short)sink.ICCCARightRearValues.GetLatest());
+
+        // Test value ussets correctly on an empty value
+        Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitUInt, 0)),
+          "Matcher process function returned false");
+
+        Assert.Equal((short)sink.ICCCARightRearValues.GetLatest(), CellPass.NullCCA);
+      }
+
+      [Fact()]
+      public void Test_TAGValueMatcher_CCALeftFrontValue()
+      {
+        TAGProcessorStateBase sink;
+        TAGValueMatcherState state;
+
+        InitStateAndSink(out sink, out state);
+        var matcher = new TAGCCALeftFrontValueMatcher(sink, state);
+
+        // Test value sets correctly
+        Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitUInt, 0),
+            100),
+          "Matcher process function returned false");
+
+        Assert.Equal(100, (short)sink.ICCCALeftFrontValues.GetLatest());
+
+        // Test value ussets correctly on an empty value
+        Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitUInt, 0)),
+          "Matcher process function returned false");
+
+        Assert.Equal((short)sink.ICCCALeftFrontValues.GetLatest(), CellPass.NullCCA);
+      }
+
+
+      [Fact()]
+      public void Test_TAGValueMatcher_CCALeftRearValue()
+      {
+        TAGProcessorStateBase sink;
+        TAGValueMatcherState state;
+
+        InitStateAndSink(out sink, out state);
+        var matcher = new TAGCCALeftRearValueMatcher(sink, state);
+
+        // Test value sets correctly
+        Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitUInt, 0),
+            100),
+          "Matcher process function returned false");
+
+        Assert.Equal(100, (short)sink.ICCCALeftRearValues.GetLatest());
+
+        // Test value ussets correctly on an empty value
+        Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem("", Types.TAGDataType.t8bitUInt, 0)),
+          "Matcher process function returned false");
+
+        Assert.Equal((short)sink.ICCCALeftRearValues.GetLatest(), CellPass.NullCCA);
+      }
+
+
+    [Fact()]
         public void Test_TAGValueMatcher_UsingCCA()
         {
             TAGProcessorStateBase sink;
