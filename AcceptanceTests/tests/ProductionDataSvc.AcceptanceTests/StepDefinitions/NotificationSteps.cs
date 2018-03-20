@@ -45,8 +45,20 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     public void GivenAFilespaceIdAndAPathAndAFileName(string filespaceId, string path, string fileName)
     {
       this.fileDescriptor = "{\"filespaceId\":\"" + filespaceId + "\",\"path\":\"" + path + "\",\"fileName\":\"" + fileName + "\"}";
-      //1 = DesignSurface, 0 = Linework
-      this.fileTypeId = Path.GetExtension(fileName).ToLower() == ".ttm" ? 1 : 0;
+      //1 = DesignSurface, 0 = Linework, 3 = Alignment
+      var ext = Path.GetExtension(fileName).ToLower();
+      switch (ext)
+      {
+        case ".ttm":
+          this.fileTypeId = 1;
+          break;
+        case ".svl":
+          this.fileTypeId = 3;
+          break;
+        default:
+          this.fileTypeId = 0;
+          break;
+      }
     }
 
     [Given(@"a fileId ""(.*)""")]
