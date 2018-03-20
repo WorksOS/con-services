@@ -41,7 +41,8 @@ namespace VSS.VisionLink.Raptor.Types
         CCVPercentChangeIgnoredTopNullValue = 0x00000016,
         CCA = 0x00000017,
         CCAPercent = 0x00000018,
-        TemperatureDetail = 0x00000019
+        TemperatureDetail = 0x00000019,
+        CutFill = 0x00000020
   }
 
     public static class GridDataFromModeConverter
