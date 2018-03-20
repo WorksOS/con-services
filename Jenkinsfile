@@ -33,7 +33,7 @@ node('Ubuntu_Slave') {
 		checkout scm
 	}
 	stage ('Restore packages') {        
-		sh "CollectCoverage.sh"
+		sh "bash ./CollectCoverage.sh"
 	}
 
      publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './coverage-html', reportFiles: '*', reportName: 'Coverage report'])
