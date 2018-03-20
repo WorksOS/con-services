@@ -15,16 +15,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
     public double[] Percents { get; private set; }
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor.
     /// </summary>
     private CompactionCutFillDetailedResult()
     { }
 
     /// <summary>
-    /// Creates an instance of the CompactionCutFillDetailedResult class.
+    /// Static constructor.
     /// </summary>
-    /// <param name="result">The Raptor results</param>
-    /// <returns>An instance of the CompactionCutFillDetailedResult class.</returns>
     public static CompactionCutFillDetailedResult CreateCutFillDetailedResult(double[] result)
     {
       return new CompactionCutFillDetailedResult

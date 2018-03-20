@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Net;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common.Filters.Interfaces;
+using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
@@ -18,10 +18,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
   /// </summary>
   public class SummarySpeedExecutor : RequestExecutorContainer
   {
-    private SummarySpeedResult ConvertResult(TASNodeSpeedSummaryResult result)
+    private SpeedSummaryResult ConvertResult(TASNodeSpeedSummaryResult result)
     {
 
-      return SummarySpeedResult.CreateSummarySpeedResult
+      return SpeedSummaryResult.Create
           (
               Math.Round(result.AboveTargetAreaPercent, 1, MidpointRounding.AwayFromZero),
               Math.Round(result.BelowTargetAreaPercent, 1, MidpointRounding.AwayFromZero),

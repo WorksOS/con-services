@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
-using System;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models;
+using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 {
@@ -16,24 +16,22 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
     [JsonProperty(PropertyName = "cmvChangeData")]
     public CmvChangeSummaryData SummaryData { get; private set; }
 
+    public static CompactionCmvPercentChangeResult CreateEmptyResult() => new CompactionCmvPercentChangeResult();
+
     /// <summary>
-    /// Private constructor
+    /// Default private constructor.
     /// </summary>
     private CompactionCmvPercentChangeResult()
     { }
 
     /// <summary>
-    /// CompactionCmvPercentChangeResult create instance
+    /// Static constructor.
     /// </summary>
-    /// <param name="result">The CMV results from Raptor</param>
-    /// <returns>An instance of CompactionCmvPercentChangeResult</returns>
     public static CompactionCmvPercentChangeResult CreateCmvPercentChangeResult(CMVChangeSummaryResult result)
     {
-      const int noCmvData = 0;
-
-      if (Math.Abs(result.CoverageArea - noCmvData) < 0.001)
+      if (result == null || !result.HasData())
       {
-        return new CompactionCmvPercentChangeResult { SummaryData = new CmvChangeSummaryData { Percents = new double[0] } };
+        return CreateEmptyResult();
       }
 
       return new CompactionCmvPercentChangeResult
@@ -44,24 +42,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
           TotalAreaCoveredSqMeters = result.CoverageArea
         }
       };
-    }
-
-    /// <summary>
-    /// CMV % change summary data returned
-    /// </summary>
-    public class CmvChangeSummaryData
-    {
-      /// <summary>
-      /// The CMV % change values
-      /// </summary>
-      [JsonProperty(PropertyName = "percents")]
-      public double[] Percents { get; set; }
-
-      /// <summary>
-      /// The total area covered by non-null cells in the request area
-      /// </summary>
-      [JsonProperty(PropertyName = "totalAreaCoveredSqMeters")]
-      public double TotalAreaCoveredSqMeters { get; set; }
     }
   }
 }

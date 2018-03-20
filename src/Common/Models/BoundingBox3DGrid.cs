@@ -13,42 +13,42 @@ namespace VSS.Productivity3D.Common.Models
     /// </summary>
     [JsonProperty(PropertyName = "maxX", Required = Required.Always)]
     [Required]
-    public double maxX { get; set; }
+    public double MaxX { get; set; }
 
     /// <summary>
     /// Maximum Y value, in the cartesian grid coordinate system, expressed in meters
     /// </summary>
     [JsonProperty(PropertyName = "maxY", Required = Required.Always)]
     [Required]
-    public double maxY { get; set; }
+    public double MaxY { get; set; }
 
     /// <summary>
     /// Maximum Z value, in the cartesian grid coordinate system, expressed in meters
     /// </summary>
     [JsonProperty(PropertyName = "maxZ", Required = Required.Always)]
     [Required]
-    public double maxZ { get; set; }
+    public double MaxZ { get; set; }
 
     /// <summary>
     /// Minimum X value, in the cartesian grid coordinate system, expressed in meters
     /// </summary>
     [JsonProperty(PropertyName = "minX", Required = Required.Always)]
     [Required]
-    public double minX { get; set; }
+    public double MinX { get; set; }
 
     /// <summary>
     /// Minimum Y value, in the cartesian grid coordinate system, expressed in meters
     /// </summary>
     [JsonProperty(PropertyName = "minY", Required = Required.Always)]
     [Required]
-    public double minY { get; set; }
+    public double MinY { get; set; }
 
     /// <summary>
     /// Minimum Z value, in the cartesian grid coordinate system, expressed in meters
     /// </summary>
     [JsonProperty(PropertyName = "minZ", Required = Required.Always)]
     [Required]
-    public double minZ { get; set; }
+    public double MinZ { get; set; }
 
     /// <summary>
     /// Prevents a default instance of the <see cref="BoundingBox3DGrid"/> class from being created.
@@ -56,16 +56,19 @@ namespace VSS.Productivity3D.Common.Models
     private BoundingBox3DGrid()
     { }
 
+    /// <summary>
+    /// Static constructor.
+    /// </summary>
     public static BoundingBox3DGrid CreatBoundingBox3DGrid(double minx, double miny, double minz, double maxx, double maxy, double maxz)
     {
       return new BoundingBox3DGrid
       {
-        minX = minx,
-        minY = miny,
-        minZ = minz,
-        maxX = maxx,
-        maxY = maxy,
-        maxZ = maxz,
+        MinX = minx,
+        MinY = miny,
+        MinZ = minz,
+        MaxX = maxx,
+        MaxY = maxy,
+        MaxZ = maxz,
       };
     }
 
@@ -75,7 +78,7 @@ namespace VSS.Productivity3D.Common.Models
     /// <returns>A string representation of the 3D extents values</returns>
     public override string ToString()
     {
-      return $"minX:{minX}, minY:{minY}, minZ:{minZ}, maxX:{maxX}, maxY:{maxY}, maxZ:{maxZ}";
+      return $"minX:{MinX}, minY:{MinY}, minZ:{MinZ}, maxX:{MaxX}, maxY:{MaxY}, maxZ:{MaxZ}";
     }
   }
 }

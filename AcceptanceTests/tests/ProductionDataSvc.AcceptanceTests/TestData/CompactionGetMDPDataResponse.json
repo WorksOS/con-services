@@ -32,18 +32,7 @@
     "Message": "success"
   },
   "DesignOutside": {
-    "mdpSummaryData": {
-      "percentEqualsTarget": 0.0,
-      "percentGreaterThanTarget": 0.0,
-      "percentLessThanTarget": 0.0,
-      "totalAreaCoveredSqMeters": 0.0,
-      "mdpTarget": {
-        "mdpMachineTarget": 0.0,
-        "targetVaries": false
-      },
-      "minMDPPercent": 0.0,
-      "maxMDPPercent": 0.0
-    },
+    "mdpSummaryData": null,
     "Code": 0,
     "Message": "success"
   },

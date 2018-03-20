@@ -18,7 +18,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [TestClassAttribute]
     public class GetVolumesType : VolumeSummaryHelperTests
     {
-      private readonly VolumeSummaryHelper volumeSummaryHelper = new VolumeSummaryHelper();
+      private readonly SummaryDataDataHelper volumeSummaryDataHelper = new SummaryDataDataHelper();
       private static Filter filter;
 
       [ClassInitialize]
@@ -34,19 +34,19 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       [TestMethod]
       public void Should_return_GroundToGround_When_both_filters_are_set()
       {
-        Assert.AreEqual(RaptorConverters.VolumesType.Between2Filters, this.volumeSummaryHelper.GetVolumesType(filter, filter));
+        Assert.AreEqual(RaptorConverters.VolumesType.Between2Filters, this.volumeSummaryDataHelper.GetVolumesType(filter, filter));
       }
 
       [TestMethod]
       public void Should_return_GroundToDesign_When_only_baseFilter_is_set()
       {
-        Assert.AreEqual(RaptorConverters.VolumesType.BetweenFilterAndDesign, this.volumeSummaryHelper.GetVolumesType(filter, null));
+        Assert.AreEqual(RaptorConverters.VolumesType.BetweenFilterAndDesign, this.volumeSummaryDataHelper.GetVolumesType(filter, null));
       }
 
       [TestMethod]
       public void Should_return_DesignToGround_When_only_topFilter_is_set()
       {
-        Assert.AreEqual(RaptorConverters.VolumesType.BetweenDesignAndFilter, this.volumeSummaryHelper.GetVolumesType(null, filter));
+        Assert.AreEqual(RaptorConverters.VolumesType.BetweenDesignAndFilter, this.volumeSummaryDataHelper.GetVolumesType(null, filter));
       }
     }
   }

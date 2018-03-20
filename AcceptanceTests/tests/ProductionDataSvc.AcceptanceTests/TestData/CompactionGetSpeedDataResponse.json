@@ -24,14 +24,7 @@
     "Message": "success"
   },
   "DesignOutside_Summary": {
-    "speedSummaryData": {
-      "percentEqualsTarget": 0.0,
-      "percentGreaterThanTarget": 0.0,
-      "percentLessThanTarget": 0.0,
-      "totalAreaCoveredSqMeters": 0.0,
-      "minTarget": 0.0,
-      "maxTarget": 0.0
-    },
+    "speedSummaryData": null,
     "Code": 0,
     "Message": "success"
   },

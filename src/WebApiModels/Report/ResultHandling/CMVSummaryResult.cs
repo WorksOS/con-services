@@ -1,6 +1,8 @@
-﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
+﻿using Newtonsoft.Json;
+using System;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
 {
   /// <summary>
   /// The result representation of a summary CMV request
@@ -10,57 +12,61 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
     /// <summary>
     /// The percentage of cells that are compacted within the target bounds
     /// </summary>
-    public double compactedPercent { get; private set; }
+    [JsonProperty(PropertyName = "compactedPercent")]
+    public double CompactedPercent { get; private set; }
 
     /// <summary>
     /// If the CMV value is constant, this is the constant value of all CMV targets in the processed data.
     /// </summary>
-    public short constantTargetCMV { get; private set; }
+    [JsonProperty(PropertyName = "constantTargetCMV")]
+    public short ConstantTargetCmv { get; private set; }
 
     /// <summary>
     /// Are the CMV target values applying to all processed cells constant?
     /// </summary>
-    public bool isTargetCMVConstant { get; private set; }
+    [JsonProperty(PropertyName = "isTargetCMVConstant")]
+    public bool IsTargetCmvConstant { get; private set; }
 
     /// <summary>
     /// The percentage of the cells that are over-compacted
     /// </summary>
-    public double overCompactedPercent { get; private set; }
+    [JsonProperty(PropertyName = "overCompactedPercent")]
+    public double OverCompactedPercent { get; private set; }
 
     /// <summary>
     /// The internal result code of the request. Documented elsewhere.
     /// </summary>
-    public short returnCode { get; private set; }
+    /// The total area covered by non-null cells in the request area
+    [JsonProperty(PropertyName = "returnCode")]
+    public short ReturnCode { get; private set; }
 
     /// <summary>
     /// The total area covered by non-null cells in the request area
     /// </summary>
-    public double totalAreaCoveredSqMeters { get; private set; }
+    [JsonProperty(PropertyName = "totalAreaCoveredSqMeters")]
+    public double TotalAreaCoveredSqMeters { get; private set; }
 
     /// <summary>
     /// The percentage of the cells that are under compacted
     /// </summary>
-    public double underCompactedPercent { get; private set; }
+    [JsonProperty(PropertyName = "underCompactedPercent")]
+    public double UnderCompactedPercent { get; private set; }
 
-       /// <summary>
-    /// Private constructor
+    public bool HasData() => Math.Abs(this.TotalAreaCoveredSqMeters) > 0.001;
+
+    /// <summary>
+    /// Default private constructor.
     /// </summary>
     private CMVSummaryResult() 
     {}
 
-
-    public static CMVSummaryResult Empty()
-    {
-      return new CMVSummaryResult();
-    }
-
     /// <summary>
-    /// Create instance of CMVSummaryResult
+    /// Static constructor.
     /// </summary>
-    public static CMVSummaryResult CreateCMVSummaryResult(
+    public static CMVSummaryResult Create(
       double compactedPercent,
-      short constantTargetCMV,
-      bool isTargetCMVConstant,
+      short constantTargetCmv,
+      bool isTargetCmvConstant,
       double overCompactedPercent,
       short returnCode,
       double totalAreaCoveredSqMeters,
@@ -69,13 +75,13 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
     {
       return new CMVSummaryResult
       {
-        compactedPercent = compactedPercent,
-        constantTargetCMV = constantTargetCMV,
-        isTargetCMVConstant = isTargetCMVConstant,
-        overCompactedPercent = overCompactedPercent,
-        returnCode = returnCode,
-        totalAreaCoveredSqMeters = totalAreaCoveredSqMeters,
-        underCompactedPercent = underCompactedPercent
+        CompactedPercent = compactedPercent,
+        ConstantTargetCmv = constantTargetCmv,
+        IsTargetCmvConstant = isTargetCmvConstant,
+        OverCompactedPercent = overCompactedPercent,
+        ReturnCode = returnCode,
+        TotalAreaCoveredSqMeters = totalAreaCoveredSqMeters,
+        UnderCompactedPercent = underCompactedPercent
       };
     }
   }

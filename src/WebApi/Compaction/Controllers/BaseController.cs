@@ -26,22 +26,25 @@ using Filter = VSS.Productivity3D.Common.Models.Filter;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
+  /// <summary>
+  /// Common base class for Raptor service controllers.
+  /// </summary>
   public abstract class BaseController : Controller
   {
     /// <summary>
-    /// Gets the user id from the current context
+    /// LoggerFactory for logging
     /// </summary>
-    /// <value>
-    /// The user uid or applicationID as a string.
-    /// </value>
-    protected string userId => GetUserId();
+    protected ILogger Log;
 
     /// <summary>
-    /// Logger for logging
+    /// LoggerFactory factory for use by executor
     /// </summary>
-    private readonly ILogger log;
+    protected readonly ILoggerFactory LoggerFactory;
 
-    protected readonly IServiceExceptionHandler serviceExceptionHandler;
+    /// <summary>
+    /// Gets the
+    /// </summary>
+    protected readonly IServiceExceptionHandler ServiceExceptionHandler;
 
     /// <summary>
     /// Where to get environment variables, connection string etc. from
@@ -71,19 +74,22 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the custom headers for the request.
     /// </summary>
-    /// <value>
-    /// The custom headers.
-    /// </value>
     protected IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
+
+    /// <summary>
+    /// Returns the legacy ProjectId (long) for a given ProjectUid (Guid).
+    /// </summary>
+    protected long GetLegacyProjectId(Guid projectUid) => ((RaptorPrincipal)this.User).GetLegacyProjectId(projectUid);
 
     /// <summary>
     /// Default constructor.
     /// </summary>
-    protected BaseController(ILogger log, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore, IFileListProxy fileListProxy,
+    protected BaseController(ILoggerFactory loggerFactory, ILogger log, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore, IFileListProxy fileListProxy,
       IProjectSettingsProxy projectSettingsProxy, IFilterServiceProxy filterServiceProxy, ICompactionSettingsManager settingsManager)
     {
-      this.log = log;
-      this.serviceExceptionHandler = serviceExceptionHandler;
+      this.LoggerFactory = loggerFactory;
+      this.Log = log;
+      this.ServiceExceptionHandler = serviceExceptionHandler;
       this.ConfigStore = configStore;
       this.FileListProxy = fileListProxy;
       this.ProjectSettingsProxy = projectSettingsProxy;
@@ -95,7 +101,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Gets the User uid/applicationID from the context.
     /// </summary>
     /// <exception cref="ArgumentException">Incorrect user Id value.</exception>
-    private string GetUserId()
+    protected string GetUserId()
     {
       if (User is RaptorPrincipal principal && (principal.Identity is GenericIdentity identity))
       {
@@ -115,7 +121,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         result = action.Invoke();
-        log.LogTrace($"Executed {action.Method.Name} with result {JsonConvert.SerializeObject(result)}");
+        Log.LogTrace($"Executed {action.Method.Name} with result {JsonConvert.SerializeObject(result)}");
 
       }
       catch (ServiceException)
@@ -124,12 +130,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       catch (Exception ex)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
           ContractExecutionStatesEnum.InternalProcessingError - 2000, errorMessage1: ex.Message, innerException: ex);
       }
       finally
       {
-        log.LogInformation($"Executed {action.Method.Name} with the result {result?.Code}");
+        Log.LogInformation($"Executed {action.Method.Name} with the result {result?.Code}");
       }
       return result;
     }
@@ -143,7 +149,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         result = await action.Invoke();
-        log.LogTrace($"Executed {action.Method.Name} with result {JsonConvert.SerializeObject(result)}");
+        Log.LogTrace($"Executed {action.Method.Name} with result {JsonConvert.SerializeObject(result)}");
 
       }
       catch (ServiceException)
@@ -152,30 +158,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       catch (Exception ex)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
           ContractExecutionStatesEnum.InternalProcessingError - 2000, ex.Message, innerException: ex);
       }
       finally
       {
-        log.LogInformation($"Executed {action.Method.Name} with the result {result?.Code}");
+        Log.LogInformation($"Executed {action.Method.Name} with the result {result?.Code}");
       }
       return result;
-    }
-
-    /// <summary>
-    /// Gets the project identifier.
-    /// </summary>
-    /// <param name="projectUid">The project uid.</param>
-    /// <returns>The project's Id for the Uid provided</returns>
-    /// <exception cref="ArgumentException">Incorrect request context principal.</exception>
-    protected long GetProjectId(Guid projectUid)
-    {
-      if (User is RaptorPrincipal principal)
-      {
-        return principal.GetProjectId(projectUid);
-      }
-
-      throw new ArgumentException("Incorrect request context principal.");
     }
 
     /// <summary>
@@ -186,7 +176,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>The list of file ids for the surveyed surfaces to be excluded</returns>
     protected async Task<List<long>> GetExcludedSurveyedSurfaceIds(Guid projectUid)
     {
-      var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), userId, CustomHeaders);
+      var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), GetUserId(), CustomHeaders);
       if (fileList == null || fileList.Count == 0)
       {
         return null;
@@ -209,7 +199,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         return null;
       }
 
-      var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), userId, CustomHeaders);
+      var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), GetUserId(), CustomHeaders);
       if (fileList == null || fileList.Count == 0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
@@ -245,7 +235,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
                       Path.GetExtension(tccFileName);
       }
 
-      string fileSpaceId = FileDescriptor.GetFileSpaceId(this.ConfigStore, this.log);
+      string fileSpaceId = FileDescriptor.GetFileSpaceId(this.ConfigStore, this.Log);
       FileDescriptor fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, file.Path, tccFileName);
 
       return DesignDescriptor.CreateDesignDescriptor(file.LegacyFileId, fileDescriptor, 0.0);
@@ -259,7 +249,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     protected async Task<CompactionProjectSettings> GetProjectSettingsTargets(Guid projectUid)
     {
       CompactionProjectSettings ps;
-      var jsonSettings = await this.ProjectSettingsProxy.GetProjectSettings(projectUid.ToString(), userId, CustomHeaders, ProjectSettingsType.Targets);
+      var jsonSettings = await this.ProjectSettingsProxy.GetProjectSettings(projectUid.ToString(), GetUserId(), CustomHeaders, ProjectSettingsType.Targets);
       if (jsonSettings != null)
       {
         try
@@ -269,14 +259,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         }
         catch (Exception ex)
         {
-          log.LogInformation(
+          Log.LogInformation(
             $"JObject conversion to Project Settings targets or validation failure for projectUid {projectUid}. Error is {ex.Message}");
           ps = CompactionProjectSettings.DefaultSettings;
         }
       }
       else
       {
-        log.LogDebug($"No Project Settings targets for projectUid {projectUid}. Using defaults.");
+        Log.LogDebug($"No Project Settings targets for projectUid {projectUid}. Using defaults.");
         ps = CompactionProjectSettings.DefaultSettings;
       }
       return ps;
@@ -290,7 +280,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     protected async Task<CompactionProjectSettingsColors> GetProjectSettingsColors(Guid projectUid)
     {
       CompactionProjectSettingsColors ps;
-      var jsonSettings = await this.ProjectSettingsProxy.GetProjectSettings(projectUid.ToString(), userId, CustomHeaders, ProjectSettingsType.Colors);
+      var jsonSettings = await this.ProjectSettingsProxy.GetProjectSettings(projectUid.ToString(), GetUserId(), CustomHeaders, ProjectSettingsType.Colors);
       if (jsonSettings != null)
       {
         try
@@ -300,40 +290,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         }
         catch (Exception ex)
         {
-          log.LogInformation(
+          Log.LogInformation(
             $"JObject conversion to Project Settings colours or validation failure for projectUid {projectUid}. Error is {ex.Message}");
           ps = CompactionProjectSettingsColors.DefaultSettings;
         }
       }
       else
       {
-        log.LogDebug($"No Project Settings colours for projectUid {projectUid}. Using defaults.");
+        Log.LogDebug($"No Project Settings colours for projectUid {projectUid}. Using defaults.");
         ps = CompactionProjectSettingsColors.DefaultSettings;
       }
       return ps;
-    }
-
-    /// <summary>
-    /// Gets the list of contributing machines from the query parameters
-    /// </summary>
-    /// <param name="assetId">The asset ID</param>
-    /// <param name="machineName">The machine name</param>
-    /// <param name="isJohnDoe">The john doe flag</param>
-    /// <returns>List of machines</returns>
-    protected List<MachineDetails> GetMachines(long? assetId, string machineName, bool? isJohnDoe)
-    {
-      MachineDetails machine = null;
-      if (assetId.HasValue || !string.IsNullOrEmpty(machineName) || isJohnDoe.HasValue)
-      {
-        if (!assetId.HasValue || string.IsNullOrEmpty(machineName) || !isJohnDoe.HasValue)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-              "If using a machine, asset ID machine name and john doe flag must be provided"));
-        }
-        machine = MachineDetails.CreateMachineDetails(assetId.Value, machineName, isJohnDoe.Value);
-      }
-      return machine == null ? null : new List<MachineDetails> { machine };
     }
 
     /// <summary>
@@ -354,7 +321,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           var filterData = await GetFilterDescriptor(projectUid, filterUid.Value);
           if (filterData != null)
           {
-            log.LogDebug($"Filter from Filter Svc: {JsonConvert.SerializeObject(filterData)}");
+            Log.LogDebug($"Filter from Filter Svc: {JsonConvert.SerializeObject(filterData)}");
             if (filterData.DesignUid != null && Guid.TryParse(filterData.DesignUid, out Guid designUidGuid))
             {
               designDescriptor = await GetAndValidateDesignDescriptor(projectUid, designUidGuid);
@@ -389,19 +356,19 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
                 null,
                 layerMethod, null, null, filterData.LayerNumber, null, filterData.ContributingMachines,
                 excludedIds, returnEarliest, null, null, null, null, null, designDescriptor);
-              log.LogDebug($"Filter after filter conversion: {JsonConvert.SerializeObject(raptorFilter)}");
+              Log.LogDebug($"Filter after filter conversion: {JsonConvert.SerializeObject(raptorFilter)}");
               return raptorFilter;
             }
           }
         }
         catch (ServiceException ex)
         {
-          log.LogDebug($"EXCEPTION caught - cannot find filter {ex.Message} {ex.GetContent} {ex.GetResult.Message}");
+          Log.LogDebug($"EXCEPTION caught - cannot find filter {ex.Message} {ex.GetContent} {ex.GetResult.Message}");
           throw;
         }
         catch (Exception ex)
         {
-          log.LogDebug("EXCEPTION caught - cannot find filter " + ex.Message);
+          Log.LogDebug("EXCEPTION caught - cannot find filter " + ex.Message);
           throw;
         }
       }
@@ -421,7 +388,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       if (!filter.DateRangeType.HasValue || filter.DateRangeType.Value == DateRangeType.Custom)
       {
-        log.LogTrace("Filter provided doesn't have dateRangeType set or it is set to Custom. Returning without setting filter start and end dates.");
+        Log.LogTrace("Filter provided doesn't have dateRangeType set or it is set to Custom. Returning without setting filter start and end dates.");
         return filter;
       }
 
@@ -452,6 +419,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       );
     }
 
+    /// <summary>
+    /// Gets the <see cref="FilterDescriptor"/> for a given Filter Uid (by project).
+    /// </summary>
     public async Task<MasterData.Models.Models.Filter> GetFilterDescriptor(Guid projectUid, Guid filterUid)
     {
       var filterDescriptor = await this.FilterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), Request.Headers.GetCustomHeaders(true));

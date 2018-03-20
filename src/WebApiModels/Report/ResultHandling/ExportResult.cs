@@ -16,7 +16,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
     /// <summary>
     /// Create instance of TileResult
     /// </summary>
-    public static ExportResult CreateExportDataResult(byte[] data, short resultCode)
+    public static ExportResult Create(byte[] data, short resultCode)
     {
       return new ExportResult
       {

@@ -14,7 +14,6 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
-using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
@@ -40,11 +39,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     private readonly IASNodeClient raptorClient;
     /// <summary>
-    /// Logger for logging
+    /// LoggerFactory for logging
     /// </summary>
     private readonly ILogger log;
     /// <summary>
-    /// Logger factory for use by executor
+    /// LoggerFactory factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
     /// <summary>
@@ -56,7 +55,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// Constructor with dependency injection
     /// </summary>
     /// <param name="geofenceProxy">Proxy client for getting geofences for boundaries</param>
-    /// <param name="logger">Logger</param>
+    /// <param name="logger">LoggerFactory</param>
     /// <param name="raptorClient">Raptor client</param>
     public CCATileController(IGeofenceProxy geofenceProxy, ILoggerFactory logger, IASNodeClient raptorClient)
     {
@@ -140,7 +139,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     )
     {
       log.LogInformation("Get: " + Request.QueryString);
-      long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      long projectId = (User as RaptorPrincipal).GetLegacyProjectId(projectUid);
       var request = CreateAndValidateRequest(projectId, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid);
 
       return GetCCADataTile(request);

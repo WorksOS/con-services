@@ -1,6 +1,6 @@
 ﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
 {
   /// <summary>
   /// The result representation of a summary CCA request
@@ -41,7 +41,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
     /// <summary>
     /// Create instance of CCASummaryResult
     /// </summary>
-    public static CCASummaryResult CreateCCASummaryResult(
+    public static CCASummaryResult Create(
       double completePercent,
       double overCompactedPercent,
       short returnCode,

@@ -67,7 +67,7 @@ namespace VSS.Productivity3D.WebApiTests
       var result = await transfer.Download(s3Key);
       using (var reader = new BinaryReader(result.FileStream))
       {
-        var exportResult = WebApi.Models.Report.ResultHandling.ExportResult.CreateExportDataResult(reader.ReadBytes((int)result.FileStream.Length), 0);
+        var exportResult = WebApi.Models.Report.ResultHandling.ExportResult.Create(reader.ReadBytes((int)result.FileStream.Length), 0);
         Assert.AreEqual(0, exportResult.Code);
         Assert.AreEqual("success", exportResult.Message);
         Assert.AreEqual(0, exportResult.ResultCode);

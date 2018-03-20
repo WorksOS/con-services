@@ -11,12 +11,12 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
-using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Coord.Executors;
 using VSS.Productivity3D.WebApiModels.Coord.Models;
 using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
@@ -395,8 +395,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
       var coordList = new List<TwoDConversionCoordinate>
       {
-        TwoDConversionCoordinate.CreateTwoDConversionCoordinate(statsResult.extents.minX, statsResult.extents.minY),
-        TwoDConversionCoordinate.CreateTwoDConversionCoordinate(statsResult.extents.maxX, statsResult.extents.maxY)
+        TwoDConversionCoordinate.CreateTwoDConversionCoordinate(statsResult.extents.MinX, statsResult.extents.MinY),
+        TwoDConversionCoordinate.CreateTwoDConversionCoordinate(statsResult.extents.MaxX, statsResult.extents.MaxY)
       };
 
       var coordRequest = CoordinateConversionRequest.CreateCoordinateConversionRequest(projectId,

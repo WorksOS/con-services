@@ -36,11 +36,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private const int PROJECT_THUMBNAIL_HEIGHT = 182;
 
     /// <summary>
-    /// Logger for logging
-    /// </summary>
-    private readonly ILogger log;
-
-    /// <summary>
     /// For retrieving user preferences
     /// </summary>
     private readonly IPreferenceProxy prefProxy;
@@ -63,7 +58,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Constructor with injection
     /// </summary>
-    /// <param name="logger">Logger</param>
+    /// <param name="loggerFactory">LoggerFactory</param>
     /// <param name="configStore">Configuration store</param>
     /// <param name="geofenceProxy">Geofence proxy</param>
     /// <param name="fileListProxy">File list proxy</param>
@@ -74,17 +69,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="tileGenerator">Tile generator</param>
     /// <param name="prefProxy">User preferences proxy</param>
     /// <param name="requestFactory">The request factory.</param>
-    public CompactionReportTileController(ILoggerFactory logger, IConfigurationStore configStore, IGeofenceProxy geofenceProxy,
+    public CompactionReportTileController(ILoggerFactory loggerFactory, IConfigurationStore configStore, IGeofenceProxy geofenceProxy,
       IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
       IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IMapTileGenerator tileGenerator,
       IPreferenceProxy prefProxy, IProductionDataRequestFactory requestFactory)
-      : base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
+      : base(loggerFactory, loggerFactory.CreateLogger<CompactionReportTileController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.tileGenerator = tileGenerator;
       this.prefProxy = prefProxy;
       this.geofenceProxy = geofenceProxy;
       this.requestFactory = requestFactory;
-      this.log = logger.CreateLogger<CompactionReportTileController>();
     }
 
     /// <summary>
@@ -121,7 +115,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? volumeTopUid,
       [FromQuery] VolumeCalcType? volumeCalcType)
     {
-      log.LogDebug("GetReportTile: " + Request.QueryString);
+      Log.LogDebug("GetReportTile: " + Request.QueryString);
 
       var tileResult = await GetGeneratedTile(projectUid, filterUid, cutFillDesignUid, volumeBaseUid, volumeTopUid,
         volumeCalcType, overlays, width, height, mapType, mode);
@@ -164,7 +158,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? volumeTopUid,
       [FromQuery] VolumeCalcType? volumeCalcType)
     {
-      log.LogDebug("GetReportTileRaw: " + Request.QueryString);
+      Log.LogDebug("GetReportTileRaw: " + Request.QueryString);
 
       var tileResult = await GetGeneratedTile(projectUid, filterUid, cutFillDesignUid, volumeBaseUid, volumeTopUid,
         volumeCalcType, overlays, width, height, mapType, mode);
@@ -185,7 +179,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     public async Task<TileResult> GetProjectThumbnail(
       [FromQuery] Guid projectUid)
     {
-      log.LogDebug("GetProjectThumbnail: " + Request.QueryString);
+      Log.LogDebug("GetProjectThumbnail: " + Request.QueryString);
 
       var tileResult = await GetGeneratedTile(projectUid, null, null, null, null,
         null, PROJECT_THUMBNAIL_OVERLAYS, PROJECT_THUMBNAIL_WIDTH, PROJECT_THUMBNAIL_HEIGHT, MapType.MAP,
@@ -204,7 +198,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     public async Task<FileResult> GetProjectThumbnailRaw(
       [FromQuery] Guid projectUid)
     {
-      log.LogDebug("GetProjectThumbnailRaw: " + Request.QueryString);
+      Log.LogDebug("GetProjectThumbnailRaw: " + Request.QueryString);
 
       var tileResult = await GetGeneratedTile(projectUid, null, null, null, null,
         null, PROJECT_THUMBNAIL_OVERLAYS, PROJECT_THUMBNAIL_WIDTH, PROJECT_THUMBNAIL_HEIGHT, MapType.MAP, DisplayMode.Height, true);
@@ -277,7 +271,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>List of active imported files of specified type</returns>
     private async Task<List<FileData>> GetFilesOfType(Guid projectUid, ImportedFileType fileType)
     {
-      var fileList = await FileListProxy.GetFiles(projectUid.ToString(), userId, CustomHeaders);
+      var fileList = await FileListProxy.GetFiles(projectUid.ToString(), GetUserId(), CustomHeaders);
       if (fileList == null || fileList.Count == 0)
       {
         return new List<FileData>();

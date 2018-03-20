@@ -4,15 +4,14 @@ using System.Collections.Generic;
 using System.Net;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Productivity3D.WebApiModels.Report.Models
+namespace VSS.Productivity3D.WebApi.Models.Report.Models
 {
   /// <summary>
   /// The representation of a pass counts request
   /// </summary>
-  public class PassCounts : ProjectID, IValidatable
+  public class PassCounts : ProjectID
   {
     /// <summary>
     /// An identifier from the caller. 
@@ -107,10 +106,9 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     {
       base.Validate();
       //pass count settings only required for detailed
-      if (passCountSettings != null)
-        passCountSettings.Validate();
-      if (liftBuildSettings != null)
-          liftBuildSettings.Validate();
+      passCountSettings?.Validate();
+      liftBuildSettings?.Validate();
+
       if (filter != null)
         filter.Validate();
 
@@ -133,7 +131,5 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
         }
       }
     }
-
-
   }
 }
