@@ -44,7 +44,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Tests
                 }
             }
 
-            Assert.Equal(0, missing.Count);
+            Assert.True(0 == missing.Count);
             // Spot check a couple of names...
 //            Assert.IsTrue(valueNames.Contains("TIME") && valueNames.Contains("WEEK"), "TAG value names list does not contain expected names");
 //            Assert.IsTrue(String.Join(", ", valueNames) != String.Empty);

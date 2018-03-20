@@ -110,11 +110,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
             ServerSubGridTree tree = new ServerSubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
             ServerSubGridTreeLeaf leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
 
-            Assert.Equal(0, leaf.Directory.SegmentDirectory.Count);
+            Assert.True(0 == leaf.Directory.SegmentDirectory.Count);
 
             leaf.CreateDefaultSegment();
 
-            Assert.Equal(1, leaf.Directory.SegmentDirectory.Count);
+            Assert.True(1 == leaf.Directory.SegmentDirectory.Count);
 
             Assert.True(leaf.Directory.SegmentDirectory.First().StartTime == DateTime.MinValue &&
                           leaf.Directory.SegmentDirectory.First().EndTime == DateTime.MaxValue,
