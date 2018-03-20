@@ -27,10 +27,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
     /// </summary>
     public abstract class TAGProcessorBase : TAGProcessorStateBase
     {
-        /// <summary>
-        /// Allow maximum of 10 meters separation between processed epochs
-        /// </summary>
-        private const double kMaxEpochInterval = 10;
+    /// <summary>
+    /// Allow maximum of 10 meters separation between processed epochs
+    /// </summary>
+    private const double kMaxEpochInterval = 10;
 
         /// <summary>
         /// Any gap of over this many seconds indicates the loggin was paused
@@ -157,7 +157,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
             WheelTimeInterpolator1 = new SimpleTriangle(WheelTimes[0], WheelTimes[1], WheelTimes[2]);
             WheelTimeInterpolator2 = new SimpleTriangle(WheelTimes[1], WheelTimes[2], WheelTimes[3]);
 
-            InterpolationFences = new List<Fence>();
+            int NumFences = Enum.GetValues(typeof(MachineSide)).Length;
+            InterpolationFences = Enumerable.Range(1, NumFences).Select(x => new List<Fence>()).ToArray();
+           // InterpolationFences[(int)MachineSide.None] = null;
         }
 
         /// <summary>
@@ -201,7 +203,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 
             if (ClearInterpolators)
             {
-                InterpolationFences.Clear();
+              for (int J = 0; J < InterpolationFences.Length; J++)
+              {
+                InterpolationFences[J].Clear();
+              }
             }
 
             if (ADataLeft.IsNull || ADataRight.IsNull) 
@@ -223,22 +228,22 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
                     LeftFence2.SetXY(ADataRight.X, ADataRight.Y);
 
 //                    LeftInterpolationFence.UpdateExtents();
-                    InterpolationFences.Add(LeftInterpolationFence);
-                }
+                    InterpolationFences[MachineSideConst.None].Add(LeftInterpolationFence); // machineside none
+        }
                 else
                 {
                     LeftFence1.SetXY(ADataLeft.X, ADataLeft.Y);
                     LeftFence2.SetXY(ADataLeft.X + Ratio * DeltaX, ADataLeft.Y + Ratio * DeltaY);
 
 //                    LeftInterpolationFence.UpdateExtents();
-                    InterpolationFences.Add(LeftInterpolationFence);
+                    InterpolationFences[MachineSideConst.Left].Add(LeftInterpolationFence); // machineside left
 
-                    RightFence1.SetXY(ADataRight.X - Ratio * DeltaX, ADataRight.Y - Ratio * DeltaY);
+          RightFence1.SetXY(ADataRight.X - Ratio * DeltaX, ADataRight.Y - Ratio * DeltaY);
                     RightFence2.SetXY(ADataRight.X, ADataRight.Y);
 
 //                    RightInterpolationFence.UpdateExtents();
-                    InterpolationFences.Add(RightInterpolationFence);
-                }
+                    InterpolationFences[MachineSideConst.Right].Add(RightInterpolationFence); // machineside right
+        }
             }
             else
             {
@@ -246,7 +251,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
                 LeftFence2.SetXY(ADataRight.X, ADataRight.Y);
 
 //                LeftInterpolationFence.UpdateExtents();
-                InterpolationFences.Add(LeftInterpolationFence);
+                InterpolationFences[MachineSideConst.None].Add(LeftInterpolationFence); // machineside none
             };
 
             Height1 = ADataLeft;
@@ -306,7 +311,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         public Fence WheelLeftInterpolationFence { get; set; }
         public Fence WheelRightInterpolationFence { get; set; }
 
-        public List<Fence> InterpolationFences { get; set; }
+        public List<Fence>[] InterpolationFences { get; set; }
 
         public SimpleTriangle FrontHeightInterpolator1 { get; set; }
         public SimpleTriangle FrontHeightInterpolator2 { get; set; }
@@ -564,30 +569,30 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
                 ProcessedEpochCount++;
                 double MaxEpochIntervalSquared = MaxEpochInterval() * MaxEpochInterval();
 
-                // If the time intervalue between the two epochs is > kPausedLoggingInterval then
-                // don't process this epoch pair as this indicates logging has been paused.
-                // If the distance between the two epochs is > kMaxEpochInterval, then don't process this epoch pair
-                // Test both sides of the quadrilateral to see if either is longer than the largest inter-epoch gap
+        // If the time intervalue between the two epochs is > kPausedLoggingInterval then
+        // don't process this epoch pair as this indicates logging has been paused.
+        // If the distance between the two epochs is > kMaxEpochInterval, then don't process this epoch pair
+        // Test both sides of the quadrilateral to see if either is longer than the largest inter-epoch gap
 
 
-        
-              // todo check this code works      
-              foreach (MachineSide machSide in Enum.GetValues(typeof(MachineSide)))
+        // todo check this code works      
+        //foreach (MachineSide machSide in Enum.GetValues(typeof(MachineSide)))
+          for (int J = 0; J < InterpolationFences.Length; J++)
               {
 
-                for (int I = 0; I < InterpolationFences.Count; I++)
+                for (int I = 0; I < InterpolationFences[J].Count; I++)
                 {
-                  if (DataTime < PrevEpochTime.AddSeconds(kPausedLoggingIntervalSeconds) && !InterpolationFences[I].IsNull())
+                  if (DataTime < PrevEpochTime.AddSeconds(kPausedLoggingIntervalSeconds) && !InterpolationFences[J][I].IsNull())
                   {
-                    if (((Math.Pow(InterpolationFences[I][0].X - InterpolationFences[I][3].X, 2) +
-                          Math.Pow(InterpolationFences[I][0].Y - InterpolationFences[I][3].Y, 2)) <= MaxEpochIntervalSquared) &&
-                        ((Math.Pow(InterpolationFences[I][1].X - InterpolationFences[I][2].X, 2) +
-                          Math.Pow(InterpolationFences[I][1].Y - InterpolationFences[I][2].Y, 2)) <= MaxEpochIntervalSquared))
+                    if (((Math.Pow(InterpolationFences[J][I][0].X - InterpolationFences[J][I][3].X, 2) +
+                          Math.Pow(InterpolationFences[J][I][0].Y - InterpolationFences[J][I][3].Y, 2)) <= MaxEpochIntervalSquared) &&
+                        ((Math.Pow(InterpolationFences[J][I][1].X - InterpolationFences[J][I][2].X, 2) +
+                          Math.Pow(InterpolationFences[J][I][1].Y - InterpolationFences[J][I][2].Y, 2)) <= MaxEpochIntervalSquared))
                     {
                       //                            InterpolationFences[I].UpdateExtents();
 
                       // Process the quadrilateral formed by the two epochs
-                      if (!DoProcessEpochContext(InterpolationFences[I], machSide))
+                      if (!DoProcessEpochContext(InterpolationFences[J][I],(MachineSide)J))
                       {
                         return false;
                       }
@@ -596,11 +601,6 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
                 }
               }
 
-
-
-        /* old way
-
-  */
 
         // Set first epoch to second for next loop
 
