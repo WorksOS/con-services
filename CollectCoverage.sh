@@ -1,3 +1,4 @@
+#!/bin/bash
 dotnet clean TRex.Framework.sln
 dotnet restore TRex.Framework.sln
 dotnet build TRex.Framework.sln
