@@ -31,86 +31,89 @@ namespace VSS.VisionLink.Raptor.Utilities
                     return Result;
                 }
 
-                if (!Filter.SpatialFilter.CoordsAreGrid)
+                if (Filter.SpatialFilter != null)
                 {
-                    // If the filter has a spatial or positional context, then convert the LLH values in the
-                    // spatial context into the NEE values consistent with the data model.
-                    if (Filter.SpatialFilter.HasSpatialOrPostionalFilters)
+                    if (!Filter.SpatialFilter.CoordsAreGrid)
                     {
-                        LLHCoords = new XYZ[Filter.SpatialFilter.Fence.NumVertices];
-
-                        // Note: Lat/Lons in filter fence boundaries are supplied to us in decimal degrees, not radians
-                        for (int FencePointIdx = 0; FencePointIdx < Filter.SpatialFilter.Fence.NumVertices; FencePointIdx++)
+                        // If the filter has a spatial or positional context, then convert the LLH values in the
+                        // spatial context into the NEE values consistent with the data model.
+                        if (Filter.SpatialFilter.HasSpatialOrPostionalFilters)
                         {
-                            LLHCoords[FencePointIdx] = new XYZ(Filter.SpatialFilter.Fence[FencePointIdx].X * (Math.PI / 180), Filter.SpatialFilter.Fence[FencePointIdx].Y * (Math.PI / 180));
+                            LLHCoords = new XYZ[Filter.SpatialFilter.Fence.NumVertices];
+
+                            // Note: Lat/Lons in filter fence boundaries are supplied to us in decimal degrees, not radians
+                            for (int FencePointIdx = 0; FencePointIdx < Filter.SpatialFilter.Fence.NumVertices; FencePointIdx++)
+                            {
+                                LLHCoords[FencePointIdx] = new XYZ(Filter.SpatialFilter.Fence[FencePointIdx].X * (Math.PI / 180), Filter.SpatialFilter.Fence[FencePointIdx].Y * (Math.PI / 180));
+                            }
+
+                            /* TODO - not yet supported
+                            CoordConversionResult = ASNodeImplInstance.CoordService.RequestCoordinateConversion(-1, DataModelID, cctLLHtoNEE, LLHCoords, EmptyStr, NEECoords);
+                            if (CoordConversionResult != csOK)
+                            {
+                                return RequestErrorStatus.FailedToConvertClientWGSCoords;
+                            }
+
+                            for (int FencePointIdx = 0; FencePointIdx < Filter.SpatialFilter.Fence.NumVertices; FencePointIdx++)
+                            {
+                                Filter.SpatialFilter.Fence[FencePointIdx].X = NEECoords[FencePointIdx].X;
+                                Filter.SpatialFilter.Fence[FencePointIdx].Y = NEECoords[FencePointIdx].Y;
+                            }
+
+                            // Ensure that the bounding rectangle for the filter fence correctly encloses the newly calculated grid coordinates
+                            Filter.SpatialFilter.Fence.UpdateExtents();
+                            */
+
+                            throw new NotImplementedException();
                         }
 
-                        /* TODO - not yet supported
-                        CoordConversionResult = ASNodeImplInstance.CoordService.RequestCoordinateConversion(-1, DataModelID, cctLLHtoNEE, LLHCoords, EmptyStr, NEECoords);
-                        if (CoordConversionResult != csOK)
+                        if (Filter.SpatialFilter.HasSpatialOrPostionalFilters)
                         {
-                            return RequestErrorStatus.FailedToConvertClientWGSCoords;
+                            // Note: Lat/Lons in filter fence boundaries are supplied to us in decimal degrees, not radians
+                            LLHCoords = new XYZ[1] { new Geometry.XYZ(Filter.SpatialFilter.PositionX * (Math.PI / 180), Filter.SpatialFilter.PositionY * (Math.PI / 180)) };
+
+                            /* TODO - not yet supported
+                            CoordConversionResult = ASNodeImplInstance.CoordService.RequestCoordinateConversion(-1, aDataModelID, cctLLHtoNEE, LLHCoords, EmptyStr, NEECoords);
+                            if (CoordConversionResult != csOK)
+                            {
+                                return RequestErrorStatus.FailedToConvertClientWGSCoords;
+                            }
+
+                            Filter.SpatialFilter.PositionX = NEECoords[0].X;
+                            Filter.SpatialFilter.PositionY = NEECoords[0].Y;
+                            */
+
+                            throw new NotImplementedException();
                         }
 
-                        for (int FencePointIdx = 0; FencePointIdx < Filter.SpatialFilter.Fence.NumVertices; FencePointIdx++)
-                        {
-                            Filter.SpatialFilter.Fence[FencePointIdx].X = NEECoords[FencePointIdx].X;
-                            Filter.SpatialFilter.Fence[FencePointIdx].Y = NEECoords[FencePointIdx].Y;
-                        }
+                        Filter.SpatialFilter.CoordsAreGrid = true;
+                    }
 
-                        // Ensure that the bounding rectangle for the filter fence correctly encloses the newly calculated grid coordinates
-                        Filter.SpatialFilter.Fence.UpdateExtents();
+                    // Ensure that the bounding rectangle for the filter fence correctly encloses the newly calculated grid coordinates
+                    Filter.SpatialFilter?.Fence.UpdateExtents();
+
+                    // Do we have an alignment file to look up
+                    if (Filter.SpatialFilter.HasAlignmentDesignMask())
+                    {
+                        /* TODO - Not yet supported
+                        RequestResult = DesignProfilerLayerLoadBalancer.LoadBalancedDesignProfilerService.RequestDesignFilterBoundary
+                            (Construct_CalculateDesignFilterBoundary_Args(DataModelID,
+                                                                          Filter.SpatialFilter.ReferenceDesign,
+                                                                          Filter.SpatialFilter.StartStation, Filter.SpatialFilter.EndStation,
+                                                                          Filter.SpatialFilter.LeftOffset, Filter.SpatialFilter.RightOffset, dfbrtList),
+                                                                    DesignBoundary);
+                        if (RequestResult == dppiOK)
+                        {
+                            Filter.SpatialFilter.AlignmentFence.Assign(DesignBoundary);
+                        }
                         */
-
                         throw new NotImplementedException();
                     }
-
-                    if (Filter.SpatialFilter.HasSpatialOrPostionalFilters)
+                    else
                     {
-                        // Note: Lat/Lons in filter fence boundaries are supplied to us in decimal degrees, not radians
-                        LLHCoords = new XYZ[1] { new Geometry.XYZ(Filter.SpatialFilter.PositionX * (Math.PI / 180), Filter.SpatialFilter.PositionY * (Math.PI / 180)) };
-
-                        /* TODO - not yet supported
-                        CoordConversionResult = ASNodeImplInstance.CoordService.RequestCoordinateConversion(-1, aDataModelID, cctLLHtoNEE, LLHCoords, EmptyStr, NEECoords);
-                        if (CoordConversionResult != csOK)
-                        {
-                            return RequestErrorStatus.FailedToConvertClientWGSCoords;
-                        }
-
-                        Filter.SpatialFilter.PositionX = NEECoords[0].X;
-                        Filter.SpatialFilter.PositionY = NEECoords[0].Y;
-                        */
-
-                        throw new NotImplementedException();
+                        // TODO readd when logging available
+                        //SIGLogMessage.Publish(Nil, Format('PrepareFilterForUse: Failed to get alignment boundary for %s', [Filter.ReferenceDesign.FileName]), slmcError);
                     }
-
-                    Filter.SpatialFilter.CoordsAreGrid = true;
-                }
-
-                // Ensure that the bounding rectangle for the filter fence correctly encloses the newly calculated grid coordinates
-                Filter.SpatialFilter.Fence.UpdateExtents();
-
-                // Do we have an alignment file to look up
-                if (Filter.SpatialFilter.HasAlignmentDesignMask())
-                {
-                    /* TODO - Not yet supported
-                    RequestResult = DesignProfilerLayerLoadBalancer.LoadBalancedDesignProfilerService.RequestDesignFilterBoundary
-                        (Construct_CalculateDesignFilterBoundary_Args(DataModelID,
-                                                                      Filter.SpatialFilter.ReferenceDesign,
-                                                                      Filter.SpatialFilter.StartStation, Filter.SpatialFilter.EndStation,
-                                                                      Filter.SpatialFilter.LeftOffset, Filter.SpatialFilter.RightOffset, dfbrtList),
-                                                                DesignBoundary);
-                    if (RequestResult == dppiOK)
-                    {
-                        Filter.SpatialFilter.AlignmentFence.Assign(DesignBoundary);
-                    }
-                    */
-                    throw new NotImplementedException();
-                }
-                else
-                {
-                    // TODO readd when logging available
-                    //SIGLogMessage.Publish(Nil, Format('PrepareFilterForUse: Failed to get alignment boundary for %s', [Filter.ReferenceDesign.FileName]), slmcError);
                 }
             }
             catch

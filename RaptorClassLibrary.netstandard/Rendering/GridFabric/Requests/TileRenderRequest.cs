@@ -11,14 +11,14 @@ namespace VSS.VisionLink.Raptor.Rendering.GridFabric.Requests
     /// <summary>
     /// Sends a request to the grid for a tile to be rendered
     /// </summary>
-    public class TileRenderRequest : ApplicationServicePoolRequest
+    public class TileRenderRequest : ApplicationServicePoolRequest<TileRenderRequestArgument, IBitmap>
     {
         /// <summary>
         /// Renders a bitmap according to the parameters in its argument
         /// </summary>
         /// <param name="arg"></param>
         /// <returns></returns>
-        public IBitmap Execute(TileRenderRequestArgument arg)
+        public override IBitmap Execute(TileRenderRequestArgument arg)
         {
             // Construct the function to be used
             IComputeFunc<TileRenderRequestArgument, IBitmap> func = new TileRenderRequestComputeFunc();

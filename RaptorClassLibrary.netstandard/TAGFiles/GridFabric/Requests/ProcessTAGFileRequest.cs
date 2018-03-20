@@ -18,7 +18,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.GridFabric.Requests
         /// </summary>
         /// <param name="arg"></param>
         /// <returns></returns>
-        public ProcessTAGFileResponse Execute(ProcessTAGFileRequestArgument arg)
+        public override ProcessTAGFileResponse Execute(ProcessTAGFileRequestArgument arg)
         {
             // Construct the function to be used
             IComputeFunc<ProcessTAGFileRequestArgument, ProcessTAGFileResponse> func = new ProcessTAGFileComputeFunc();

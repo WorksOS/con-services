@@ -14,7 +14,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
     /// <summary>
     /// The base class for requests. This provides common aspects such as the injected Ignite instance
     /// </summary>
-    public class BaseRaptorRequest : BaseRaptorIgniteClass
+    [Serializable]
+    public abstract class BaseRaptorRequest<TArgument, TResponse> : BaseRaptorIgniteClass
     {
         /// <summary>
         /// Default no-arg constructor
@@ -29,6 +30,11 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         /// <param name="role"></param>
         public BaseRaptorRequest(string gridName, string role) : base(gridName, role)
         {
+        }
+
+        public virtual TResponse Execute(TArgument arg)
+        {            
+            throw new NotImplementedException("BaseRaptorRequest has no implementation - don't call it!");
         }
     }
 }

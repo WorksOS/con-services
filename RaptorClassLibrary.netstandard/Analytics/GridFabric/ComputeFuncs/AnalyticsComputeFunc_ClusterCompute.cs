@@ -14,8 +14,8 @@ using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
 namespace VSS.VisionLink.Raptor.Analytics.GridFabric.ComputeFuncs
 {
     public class AnalyticsComputeFunc_ClusterCompute<TArgument, TResponse, TCoordinator> : BaseRaptorComputeFunc, IComputeFunc<TArgument, TResponse>
-        where TArgument : class, new()
-        where TResponse : class, IResponseAggregateWith<TResponse>, new()
+        where TArgument : class //, new()
+        where TResponse : class, IResponseAggregateWith<TResponse> //, new()
         where TCoordinator : BaseAnalyticsCoordinator<TArgument, TResponse>, new()
     {
         [NonSerialized]

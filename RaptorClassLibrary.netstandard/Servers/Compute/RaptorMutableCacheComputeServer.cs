@@ -144,9 +144,9 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             IIgnite ignite = Ignition.TryGetIgnite(gridName);
 
             // If the grid exists, and it is not active, then set it to active
-            if (ignite != null && !ignite.IsActive())
+            if (ignite != null && !ignite.GetCluster().IsActive())
             {
-                ignite.SetActive(true);
+                ignite.GetCluster().SetActive(true);
 
                 Log.InfoFormat("Set grid '{0}' to active.", gridName);
 
@@ -156,7 +156,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             {
                 Log.InfoFormat("Grid '{0}' is not available or is already active.", gridName);
 
-                return ignite != null && ignite.IsActive();
+                return ignite != null && ignite.GetCluster().IsActive();
             }
         }
 

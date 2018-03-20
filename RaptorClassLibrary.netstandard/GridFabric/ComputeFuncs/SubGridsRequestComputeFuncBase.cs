@@ -18,6 +18,7 @@ using System.Reflection;
 using Apache.Ignite.Core.Cluster;
 using System.Diagnostics;
 using VSS.VisionLink.Raptor.Utilities;
+using VSS.VisionLink.Raptor.GridFabric.Grids;
 
 namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 {
@@ -25,7 +26,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
     /// The closure/function that implements subgrid request processing on compute nodes
     /// </summary>
     [Serializable]
-    public abstract class SubGridsRequestComputeFuncBase<TSubGridsRequestArgument, TSubGridRequestsResponse> : CacheComputeComputeFunc, IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse>, IDisposable
+    public abstract class SubGridsRequestComputeFuncBase<TSubGridsRequestArgument, TSubGridRequestsResponse> : IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse>, IDisposable
         where TSubGridsRequestArgument : SubGridsRequestArgument, new()
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
@@ -435,23 +436,18 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
                     Log.Info(String.Format("Num subgrids present in request = {0} [All divisions]", NumSubgridsToBeExamined));
 
-                    AcquireIgniteGridReference();
-
-                    IClusterGroup group = _Ignite?.GetCluster().ForAttribute("RaptorNodeID", raptorNodeIDAsString);
+                    IIgnite Ignite = Ignition.TryGetIgnite(RaptorGrids.RaptorImmutableGridName());
+                    IClusterGroup group = Ignite?.GetCluster().ForAttribute("RaptorNodeID", raptorNodeIDAsString);
 
                     if (group == null)
-                    {
                         return new TSubGridRequestsResponse { ResponseCode = SubGridRequestsResponseResult.NoIgniteGroupProjection }; 
-                    }
 
                     Log.InfoFormat("Message group has {0} members", group.GetNodes().Count);
 
                     rmtMsg = group.GetMessaging();
 
                     if (group == null)
-                    {
                         return new TSubGridRequestsResponse { ResponseCode = SubGridRequestsResponseResult.NoIgniteMessagingProjection };
-                    }
 
                     result = PerformSubgridRequests();
                     result.NumSubgridsExamined = NumSubgridsToBeExamined;
@@ -468,10 +464,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
             {
                 Log.Error($"Exception occurred:\n{E}");
 
-                return new TSubGridRequestsResponse
-                {
-                    ResponseCode = SubGridRequestsResponseResult.Unknown
-                };
+                return new TSubGridRequestsResponse { ResponseCode = SubGridRequestsResponseResult.Unknown };
             }
 
             return result;

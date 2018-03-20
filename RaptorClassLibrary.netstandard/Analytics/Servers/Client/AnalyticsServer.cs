@@ -4,8 +4,8 @@ using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
 using VSS.VisionLink.Raptor.Servers;
 using VSS.VisionLink.Raptor.Servers.Client;
 
-namespace VSS.VisionLink.Raptor.Rendering.Servers.Client
-{
+namespace VSS.VisionLink.Analytics.Servers.Client
+{    
     public class AnalyticsRequest<TRequest, TArgument, TResponse>
         where TRequest : class, IComputeFunc<TArgument, TResponse>, new()
         where TResponse : class, IResponseAggregateWith<TResponse>, new()
@@ -48,9 +48,6 @@ namespace VSS.VisionLink.Raptor.Rendering.Servers.Client
         {
             GenericASNodeRequest<TArgument, TRequest, TResponse> request = new GenericASNodeRequest<TArgument, TRequest, TResponse>();
             return request.Execute(argument);
-
-            // GenericPSNodeBroadcastRequest<TArgument, TRequest, TResponse> request = new GenericPSNodeBroadcastRequest<TArgument, TRequest, TResponse>();
-            //return analyticsRequest.Request_ApplicationService.Execute(argument);
         }
     }
 }

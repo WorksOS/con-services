@@ -97,6 +97,7 @@ namespace VSS.VisionLink.Raptor.Types
         ExportLimitReached,
         ExportInvalidDateRange,
         ExportDateRangesNoOverlap,
-        InvalidArgument
+        InvalidArgument,
+        FailedToConfigureInternalPipeline
     }
 }

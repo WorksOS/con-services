@@ -48,9 +48,9 @@ namespace VSS.VisionLink.Raptor.Servers.Client
                     IIgnite ignite = RaptorGridFactory.Grid(gridName);
 
                     // If the grid exists, and it is not active, then set it to active
-                    if (ignite != null && !ignite.IsActive())
+                    if (ignite != null && !ignite.GetCluster().IsActive())
                     {
-                        ignite.SetActive(true);
+                        ignite.GetCluster().SetActive(true);
 
                         Log.InfoFormat("Set grid '{0}' to active.", gridName);
 
@@ -60,7 +60,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
                     {
                         Log.InfoFormat("Grid '{0}' is not available or is already active.", gridName);
 
-                        return ignite != null && ignite.IsActive();
+                        return ignite != null && ignite.GetCluster().IsActive();
                     }
                 }
                 catch (Exception E)
@@ -84,9 +84,9 @@ namespace VSS.VisionLink.Raptor.Servers.Client
                 IIgnite ignite = RaptorGridFactory.Grid(gridName);
 
                 // If the grid exists, and it is active, then set it to inactive
-                if (ignite != null && ignite.IsActive())
+                if (ignite != null && ignite.GetCluster().IsActive())
                 {
-                    ignite.SetActive(false);
+                    ignite.GetCluster().SetActive(false);
                     Log.InfoFormat("Set grid '{0}' to inactive.", gridName);
 
                     return true;
@@ -95,7 +95,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
                 {
                     Log.InfoFormat("Grid '{0}' is not available or is already inactive.", gridName);
 
-                    return ignite != null && !ignite.IsActive();
+                    return ignite != null && !ignite.GetCluster().IsActive();
                 }
             }
             catch (Exception E)
@@ -124,7 +124,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
             {
                 try
                 {
-                    isActive = ignite.IsActive();
+                    isActive = ignite.GetCluster().IsActive();
 
                     if (!isActive)
                     {

@@ -12,6 +12,8 @@ namespace VSS.VisionLink.Raptor.Analytics.Models
     /// </summary>
     public class CutFillResult : AnalyticsResult
     {
+        private long[] counts = null;
+
         /// <summary>
         /// An array (or always 7) values represnting the counts of cells within each of the cut fill bands defined in the request.
         /// </summary>
@@ -19,7 +21,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Models
         {
             get
             {
-                return Counts;
+                return counts;
             }
             set
             {
@@ -39,14 +41,20 @@ namespace VSS.VisionLink.Raptor.Analytics.Models
         /// <param name="value"></param>
         private void SetCounts(long[] value)
         {
-            Counts = new long[value.Length];
-            Array.Copy(value, Counts, value.Length);
+            if (value == null)
+            {
+                counts = null;
+                return;
+            }
 
-            Percents = new double[Counts.Length];
+            counts = new long[value.Length];
+            Array.Copy(value, counts, value.Length);
 
-            long sum = Counts.Sum();
-            for (int i = 0; i < Counts.Length; i++)
-                Percents[i] = Counts[i] == 0 ? 0 : (Counts[i] / sum) * 100;
+            Percents = new double[counts.Length];
+
+            long sum = counts.Sum();
+            for (int i = 0; i < counts.Length; i++)
+                Percents[i] = counts[i] == 0 ? 0 : (counts[i] / sum) * 100;
         }
 
         /// <summary>

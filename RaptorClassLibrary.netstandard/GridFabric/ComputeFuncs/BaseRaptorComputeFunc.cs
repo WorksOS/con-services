@@ -18,7 +18,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
     {
         public BaseRaptorComputeFunc()
         {
-            Debug.Assert(false, "BaseRaptorComputeFunc() may not be invoked");
+//            Debug.Assert(false, "BaseRaptorComputeFunc() may not be invoked");
         }
 
         /// <summary>

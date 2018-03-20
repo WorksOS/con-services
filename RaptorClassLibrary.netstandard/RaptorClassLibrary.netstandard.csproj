@@ -16,4 +16,8 @@
     <ProjectReference Include="..\VSS.Velociraptor.Geometry.netstandard\VSS.Velociraptor.Geometry.netstandard.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Analytics\Factories\" />
+  </ItemGroup>
+
 </Project>

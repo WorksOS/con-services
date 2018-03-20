@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.GridFabric.Grids;
+using VSS.VisionLink.Raptor.Servers;
 
 namespace VSS.VisionLink.Raptor.GridFabric.Requests
 {
@@ -13,19 +15,23 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
     /// <typeparam name="TArgument"></typeparam>
     /// <typeparam name="TComputeFunc"></typeparam>
     /// <typeparam name="TResponse"></typeparam>
-    public class GenericASNodeRequest<TArgument, TComputeFunc, TResponse> : ApplicationServicePoolRequest
+    [Serializable]
+    public class GenericASNodeRequest<TArgument, TComputeFunc, TResponse> : ApplicationServicePoolRequest<TArgument, TResponse>
         where TComputeFunc : IComputeFunc<TArgument, TResponse>, new()
         where TResponse : class, new()
     {
         /// <summary>
-        /// Renders a bitmap according to the parameters in its argument
+        /// Executes the generic request by instantiating the required ComputeFunc and sending it to 
+        /// the compute projection on the grid as defined by the GridName and Role parameters in this request
         /// </summary>
         /// <param name="arg"></param>
         /// <returns></returns>
-        public virtual TResponse Execute(TArgument arg)
+        public override TResponse Execute(TArgument arg)
         {
             // Construct the function to be used
-            IComputeFunc<TArgument, TResponse> func = new TComputeFunc();
+            TComputeFunc func = new TComputeFunc();
+
+//            InitialiseIgniteContext(RaptorGrids.RaptorImmutableGridName(), ServerRoles.ASNODE);
 
             // Send the request to the application service pool and retrieve the resul
             Task<TResponse> taskResult = _Compute.ApplyAsync(func, arg);
