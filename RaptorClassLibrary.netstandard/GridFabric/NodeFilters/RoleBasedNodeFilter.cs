@@ -42,7 +42,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.NodeFilters
         public virtual bool Invoke(IClusterNode node)
         {
             // No implementation in base class, reject the node
-            return node.GetAttributes().Contains(new KeyValuePair<string, object>($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{Role}", "True")); ;
+            return node.Attributes.Contains(new KeyValuePair<string, object>($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{Role}", "True")); ;
         }
     }
 }
