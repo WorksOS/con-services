@@ -181,18 +181,19 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       ProjectDescriptor projectDescr = (User as RaptorPrincipal).GetProject(projectUid);
       var customHeaders = Request.Headers.GetCustomHeaders();
 
-      //Cannot delete a design file that is used in a filter
+      //Cannot delete a design or alignment file that is used in a filter
       //TODO: When scheduled reports are implemented, extend this check to them as well.
-      if (fileType == ImportedFileType.DesignSurface)
+      if (fileType == ImportedFileType.DesignSurface || fileType == ImportedFileType.Alignment)
       {
         var filters = await GetFilters(projectUid, Request.Headers.GetCustomHeaders(true));
         if (filters != null)
         {
-          if (filters.Any(f => f.DesignUid == fileUid.ToString()))
+          var fileUidStr = fileUid.ToString();
+          if (filters.Any(f => f.DesignUid == fileUidStr || f.AlignmentUid == fileUidStr))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "Cannot delete a design surface used in a filter"));
+                "Cannot delete a design surface or alignment file used in a filter"));
           }
         }
       }
