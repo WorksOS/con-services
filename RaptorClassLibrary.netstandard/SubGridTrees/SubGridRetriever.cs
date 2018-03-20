@@ -285,7 +285,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                     cellPass.MaterialTemperature = _GlobalLatestCells.ReadTemperature(x, y);
                     break;
 
-                default: Debug.Assert(false, String.Format("Unsupported grid data type in AssignRequiredFilteredPassAttributesFromGlobalLatestCells: {0}", _GridDataType));
+                case GridDataType.TemperatureDetail:
+                  cellPass.MaterialTemperature = _GlobalLatestCells.ReadTemperature(x, y);
+                  break;
+
+        default: Debug.Assert(false, String.Format("Unsupported grid data type in AssignRequiredFilteredPassAttributesFromGlobalLatestCells: {0}", _GridDataType));
                     break;
             }
         }
@@ -363,9 +367,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                     case GridDataType.Temperature:
                         if (_GlobalLatestCells.ReadTemperature(CellX, CellY) == CellPass.NullMaterialTemp) { return; }
                         break;
-                }
+                    case GridDataType.TemperatureDetail:
+                        if (_GlobalLatestCells.ReadTemperature(CellX, CellY) == CellPass.NullMaterialTemp) { return; }
+                        break;
 
-                HaveFilteredPass = false;
+        }
+
+        HaveFilteredPass = false;
 
                 if (UseLastPassGrid)
                 {
@@ -461,6 +469,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                                     case GridDataType.CCA:
                                         FilteredValueIsFromLatestCellPass = _GlobalLatestCells.CCAValuesAreFromLastPass.BitSet(CellX, CellY);
                                         break;
+                                    case GridDataType.TemperatureDetail:
+                                      FilteredValueIsFromLatestCellPass = _GlobalLatestCells.TemperatureValuesAreFromLastPass.BitSet(CellX, CellY);
+                                      break;
                                     case GridDataType.CCVPercentChange:
                                     case GridDataType.CCVPercentChangeIgnoredTopNullValue:
                                         break;
@@ -824,6 +835,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                                         case GridDataType.CCA:
                                             FilteredValueIsFromLatestCellPass = _GlobalLatestCells.CCAValuesAreFromLastPass.BitSet(StripeIndex, J);
                                             break;
+                                        case GridDataType.TemperatureDetail:
+                                          FilteredValueIsFromLatestCellPass = _GlobalLatestCells.TemperatureValuesAreFromLastPass.BitSet(StripeIndex, J);
+                                          break;
                                         case GridDataType.CCVPercentChange:
                                         case GridDataType.CCVPercentChangeIgnoredTopNullValue:
                                             break;
@@ -1015,6 +1029,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 case GridDataType.Temperature: return !baseGlobalLatestCells.HasTemperatureData;
                 case GridDataType.MDP: return !baseGlobalLatestCells.HasMDPData;
                 case GridDataType.CCA: return !baseGlobalLatestCells.HasCCAData;
+                case GridDataType.TemperatureDetail: return !baseGlobalLatestCells.HasTemperatureData;
                 default: return false;
             }
         }

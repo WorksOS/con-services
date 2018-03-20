@@ -36,9 +36,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
                 instance.RegisterClientLeafSubGridType(GridDataType.MachineSpeed, typeof(ClientMachineSpeedLeafSubGrid));
                 instance.RegisterClientLeafSubGridType(GridDataType.CCV, typeof(ClientCMVLeafSubGrid));
                 instance.RegisterClientLeafSubGridType(GridDataType.Temperature, typeof(ClientTemperatureLeafSubGrid));
-            }
+                instance.RegisterClientLeafSubGridType(GridDataType.TemperatureDetail, typeof(ClientTemperatureLeafSubGrid));
+      }
 
-            return instance;
+      return instance;
         }
     }
 }

@@ -98,8 +98,10 @@ namespace VSS.VisionLink.Raptor.Filters
                     return PassValue.Frequency != CellPass.NullFrequency;
                 case GridDataType.Amplitude:
                     return PassValue.Amplitude != CellPass.NullAmplitude;
-                case GridDataType.Temperature:
+                case GridDataType.Temperature: 
                     return PassValue.MaterialTemperature != CellPass.NullMaterialTemp;
+                case GridDataType.TemperatureDetail:
+                  return PassValue.MaterialTemperature != CellPass.NullMaterialTemp;
                 case GridDataType.GPSMode:
                     return PassValue.gpsMode != CellPass.NullGPSMode;
                 default:
