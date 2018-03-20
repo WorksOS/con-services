@@ -44,8 +44,9 @@ namespace ExecutorTests.Internal
         new FilterRequest
         {
           FilterUid = filterUid ?? Guid.NewGuid().ToString(),
-          Name = Guid.NewGuid().ToString(),
-          FilterJson = filterJson
+          Name = name,
+          FilterJson = filterJson,
+          FilterType = filterType
         });
 
       request.Validate(ServiceExceptionHandler);
