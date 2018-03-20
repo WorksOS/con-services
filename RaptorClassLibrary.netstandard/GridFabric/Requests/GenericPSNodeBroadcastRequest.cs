@@ -15,7 +15,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
     /// <typeparam name="TArgument"></typeparam>
     /// <typeparam name="TComputeFunc"></typeparam>
     /// <typeparam name="TResponse"></typeparam>
-    public class GenericPSNodeBroadcastRequest<TArgument, TComputeFunc, TResponse> : CacheComputePoolRequest
+    public class GenericPSNodeBroadcastRequest<TArgument, TComputeFunc, TResponse> : CacheComputePoolRequest<TArgument, TResponse>
         where TComputeFunc : IComputeFunc<TArgument, TResponse>, new()
         where TResponse : IResponseAggregateWith<TResponse>, new()
     {
@@ -24,7 +24,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         /// </summary>
         /// <param name="arg"></param>
         /// <returns></returns>
-        public virtual TResponse Execute(TArgument arg)
+        public override TResponse Execute(TArgument arg)
         {
             // Construct the function to be used
             IComputeFunc<TArgument, TResponse> func = new TComputeFunc();

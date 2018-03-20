@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Analytics.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Analytics.GridFabric.ComputeFuncs;
 using VSS.VisionLink.Raptor.Analytics.GridFabric.Responses;
-using VSS.VisionLink.Raptor.Analytics.Models;
 using VSS.VisionLink.Raptor.GridFabric.Requests;
 
 namespace VSS.VisionLink.Raptor.Analytics.GridFabric.Requests

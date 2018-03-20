@@ -17,9 +17,9 @@ using VSS.VisionLink.Raptor.SubGridTrees.Client;
 
 namespace VSS.Velociraptor.DesignProfiling.GridFabric.Requests
 {
-    public class DesignElevationPatchRequest : DesignProfilerRaptorRequest
+    public class DesignElevationPatchRequest : DesignProfilerRaptorRequest<CalculateDesignElevationPatchArgument, ClientHeightLeafSubGrid>
     {
-        public ClientHeightLeafSubGrid Execute(CalculateDesignElevationPatchArgument arg)
+        public override ClientHeightLeafSubGrid Execute(CalculateDesignElevationPatchArgument arg)
         {
             // Construct the function to be used
             IComputeFunc<CalculateDesignElevationPatchArgument, byte[] /*ClientHeightLeafSubGrid*/> func = new CalculateDesignElevationPatchComputeFunc();

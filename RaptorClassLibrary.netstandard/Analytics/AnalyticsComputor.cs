@@ -64,24 +64,12 @@ namespace VSS.VisionLink.Raptor.Analytics
         {
         }
 
-        /// <summary>
-        /// Constructor accepting an instantiated aggregator instance
-        /// </summary>
-        /// <param name="aggregator"></param>
-        public AnalyticsComputor(ISubGridRequestsAggregator aggregator) : this()
-        {
-            Aggregator = aggregator;
-        }
-
         protected BoundingWorldExtent3D Extents = BoundingWorldExtent3D.Inverted(); // No get;set; on purpose
 
         public long RequestDescriptor { get; set; } = -1;
 
-        //      FEpochCount               : Integer;
-
         public CombinedFilter Filter { get; set; } = null;
 
-        //      property LiftBuildSettings                :TICLiftBuildSettings read FLiftBuildSettings;
         public bool AbortedDueToTimeout { get; set; } = false;
 
         public bool IncludeSurveyedSurfaces { get; set; } = false;
@@ -101,6 +89,8 @@ namespace VSS.VisionLink.Raptor.Analytics
             PipeLine.DataModelID = SiteModel.ID;
             PipeLine.RequestDescriptor = RequestDescriptor;
             PipeLine.IncludeSurveyedSurfaceInformation = IncludeSurveyedSurfaces;
+            PipeLine.PipelineTask = PipelinedTask;
+            PipeLine.GridDataType = RequestedGridDataType;
 
             Log.Debug($"Analytics computor extents for DM={SiteModel.ID}: {Extents}");
 
@@ -127,12 +117,15 @@ namespace VSS.VisionLink.Raptor.Analytics
                 }
             }
 
-            if (Filter.AttributeFilter.HasElevationRangeFilter && (Filter.AttributeFilter.ElevationRangeDesignID != long.MinValue))
+            if (Filter != null && Filter.AttributeFilter != null)
             {
-                SubGridTreeSubGridExistenceBitMask LiftDesignSubgridOverlayMap = ExistenceMaps.ExistenceMaps.GetSingleExistenceMap(SiteModel.ID, ExistenceMaps.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, Filter.AttributeFilter.ElevationRangeDesignID);
+                if (Filter.AttributeFilter.HasElevationRangeFilter && (Filter.AttributeFilter.ElevationRangeDesignID != long.MinValue))
+                {
+                    SubGridTreeSubGridExistenceBitMask LiftDesignSubgridOverlayMap = ExistenceMaps.ExistenceMaps.GetSingleExistenceMap(SiteModel.ID, ExistenceMaps.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, Filter.AttributeFilter.ElevationRangeDesignID);
 
-                if (LiftDesignSubgridOverlayMap != null)
-                    OverallExistenceMap.SetOp_AND(LiftDesignSubgridOverlayMap);
+                    if (LiftDesignSubgridOverlayMap != null)
+                        OverallExistenceMap.SetOp_AND(LiftDesignSubgridOverlayMap);
+                }
             }
 
             PipeLine.OverallExistenceMap = OverallExistenceMap;
@@ -168,20 +161,22 @@ namespace VSS.VisionLink.Raptor.Analytics
                     // for the purposes of computing volumes information
                     SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse> PipeLine = new SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse>(0, PipelinedTask);
 
-                    PipelinedTask = new AggregatedPipelinedSubGridTask(Aggregator);
-                    PipelinedTask.PipeLine = PipeLine;
+                    PipelinedTask = new AggregatedPipelinedSubGridTask(Aggregator)
+                    {
+                        PipeLine = PipeLine
+                    };
 
                     if (!ConfigurePipeline(PipeLine, PipelinedTask, out BoundingIntegerExtent2D CellExtents))
                     {
                         // TODO: Set some kind of failure mode into result
-                        return Result;
+                        return RequestErrorStatus.FailedToConfigureInternalPipeline;
                     }
 
                     // Start the pipeline processing it's work and wait for it to complete
-                    //          FEpochCount := 0;
                     PipeLine.Initiate();
 
                     /* TODO ????
+                              FEpochCount := 0;
                               while not FPipeLine.AllFinished and not FPipeline.PipelineAborted do
                                 begin
                                   WaitResult := FPipeLine.CompleteEvent.WaitFor(5000);
@@ -271,35 +266,11 @@ namespace VSS.VisionLink.Raptor.Analytics
             // FAggregateState.LiftBuildSettings := FLiftBuildSettings;
             Extents.SetMaximalCoverage();
 
-            // Adjust the extents we have been given to encompass the spatial extent
-            // of the supplied filters (if any);
+            // Adjust the extents we have been given to encompass the spatial extent of the supplied filters (if any);
             ApplyFilterAndSubsetBoundariesToExtents();
 
             // Compute the report as required
             return ExecutePipeline() == RequestErrorStatus.OK;
         }
-
-        /*
-         *constructor TICCompactionReportCalculator.Create(ARequestDescriptor : Int64;
-                AExternalDescriptor : TASNodeRequestDescriptor;
-                                                         ADataModelID : Int64;
-                                                         ACellSize : Double);
-        begin
-          FRequestDescriptor        = ARequestDescriptor;
-          FExternalDescriptor       = AExternalDescriptor;
-          FDataModelID              = ADataModelID;
-          FCellSize                 = ACellSize;
-        //  FEpochCount               := 0;
-        //  FAbortedDueToTimeout      := False;
-          FAggregateState           := TICCompactionReporterAggregateState.Create(Nil);
-          FAggregateState.RequiresSerialisation := True;
-        end;
-        */
-
-        //protected void ProcessTransferredSubgridResponse(const AResult: TICAsyncRequestResult)
-        //{
-        //  Aggregator.AggregateFrom((AResult as TICAsyncCompactionReporterSubgridGroupRequestResult).CompactionReporterAggregatedState);
-        //}
-
     }
 }

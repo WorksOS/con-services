@@ -12,7 +12,7 @@ namespace VSS.VisionLink.Raptor.Analytics.GridFabric.Arguments
     {
         public long DataModelID;
 
-        // ExternalDescriptor :TASNodeRequestDescriptor;
+        // TODO If desired: ExternalDescriptor :TASNodeRequestDescriptor;
 
         public CombinedFilter Filter;
 

@@ -14,6 +14,7 @@ using VSS.VisionLink.Raptor.Servers;
 
 namespace VSS.VisionLink.Raptor.GridFabric
 {
+    [Serializable]
     public class BaseRaptorIgniteClass
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -48,9 +49,11 @@ namespace VSS.VisionLink.Raptor.GridFabric
         public string GridName { get; set; }
 
         /// <summary>
-        /// Default no-arg constructor that sets up cluster and compute projections available for use
+        /// Initialises the GridName and Role parameters and uses them to establish grid connectivity and compute projections
         /// </summary>
-        public BaseRaptorIgniteClass(string gridName, string role) : base()
+        /// <param name="gridName"></param>
+        /// <param name="role"></param>
+        public void InitialiseIgniteContext(string gridName, string role)
         {
             GridName = gridName;
             Role = role;
@@ -60,11 +63,20 @@ namespace VSS.VisionLink.Raptor.GridFabric
         }
 
         /// <summary>
+        /// Default no-arg constructor that sets up cluster and compute projections available for use
+        /// </summary>
+        public BaseRaptorIgniteClass(string gridName, string role)
+        {
+            InitialiseIgniteContext(gridName, role);
+        }
+
+        /// <summary>
         /// Default no-arg constructor that throws an exception as the two arg constructor should be used
         /// </summary>
         public BaseRaptorIgniteClass()
         {
-            throw new ArgumentException("No-arg constructor invalid for BaseRaptorIgniteClass, use two-arg constructor");
+            Log.Info($"No-arg constructor BaseRaptorIgniteClass() called");
+            // throw new ArgumentException("No-arg constructor invalid for BaseRaptorIgniteClass, use two-arg constructor");
         }
 
         public void AcquireIgniteGridReference()
@@ -80,7 +92,7 @@ namespace VSS.VisionLink.Raptor.GridFabric
 
                 if (_ignite == null)
                 {
-                    Log.InfoFormat($"Ignite grid instance null after attempt to locate grid");
+                    Log.InfoFormat($"Ignite grid instance null after attempt to locate grid: '{GridName}'");
                 }
 
             }

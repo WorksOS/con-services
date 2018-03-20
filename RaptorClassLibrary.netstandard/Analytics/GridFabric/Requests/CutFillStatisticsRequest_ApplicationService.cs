@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Analytics.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Analytics.GridFabric.ComputeFuncs;
 using VSS.VisionLink.Raptor.Analytics.GridFabric.Responses;
-using VSS.VisionLink.Raptor.Analytics.Models;
 using VSS.VisionLink.Raptor.GridFabric.Requests;
 
 namespace VSS.VisionLink.Raptor.Analytics.GridFabric.Requests
@@ -15,6 +14,7 @@ namespace VSS.VisionLink.Raptor.Analytics.GridFabric.Requests
     /// <summary>
     /// Sends a request to the grid for a cut fill statistics request to be executed
     /// </summary>
+    [Serializable]
     public class CutFillStatisticsRequest_ApplicationService : GenericASNodeRequest<CutFillStatisticsArgument, CutFillStatisticsComputeFunc_ApplicationService, CutFillStatisticsResponse> //, IComputeFunc<CutFillStatisticsArgument, CutFillResult>
     {
         /// <summary>
@@ -22,13 +22,9 @@ namespace VSS.VisionLink.Raptor.Analytics.GridFabric.Requests
         /// </summary>
         /// <param name="arg"></param>
         /// <returns></returns>
-        public CutFillResult Execute(CutFillStatisticsArgument arg)
+        public override CutFillStatisticsResponse Execute(CutFillStatisticsArgument arg)
         {
-            CutFillResult result = new CutFillResult();
-
-            result.PopulateFromClusterComputeResponse(base.Execute(arg));
-
-            return result;
+            return base.Execute(arg);
         }
     }
 }

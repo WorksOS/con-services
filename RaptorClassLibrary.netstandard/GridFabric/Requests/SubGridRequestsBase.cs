@@ -23,7 +23,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
     /// to relevant filters other parameters. The grid fabric responds with responses as the servers in the fabric compute them, sending
     /// them to the Raptor node identified by the RaptorNodeID property
     /// </summary>
-    public abstract class SubGridRequestsBase<TSubGridsRequestArgument, TSubGridRequestsResponse> : CacheComputePoolRequest 
+    public abstract class SubGridRequestsBase<TSubGridsRequestArgument, TSubGridRequestsResponse> : CacheComputePoolRequest<TSubGridsRequestArgument, TSubGridRequestsResponse> 
         where TSubGridsRequestArgument : SubGridsRequestArgument, new()
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {

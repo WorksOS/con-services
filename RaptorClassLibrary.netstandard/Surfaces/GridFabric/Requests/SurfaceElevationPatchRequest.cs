@@ -20,7 +20,7 @@ using VSS.VisionLink.Raptor.Surfaces.GridFabric.ComputeFuncs;
 
 namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.Requests
 {
-    public class SurfaceElevationPatchRequest : DesignProfilerRaptorRequest
+    public class SurfaceElevationPatchRequest : DesignProfilerRaptorRequest<SurfaceElevationPatchArgument, ClientHeightAndTimeLeafSubGrid>
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -40,10 +40,9 @@ namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.Requests
         /// </summary>
         public SurfaceElevationPatchRequest()
         {
-
         }
 
-        public ClientHeightAndTimeLeafSubGrid Execute(SurfaceElevationPatchArgument arg)
+        public override ClientHeightAndTimeLeafSubGrid Execute(SurfaceElevationPatchArgument arg)
         {
             // Check the item is available in the cache
             ClientHeightAndTimeLeafSubGrid cachedResult = _cache.Get(arg);
