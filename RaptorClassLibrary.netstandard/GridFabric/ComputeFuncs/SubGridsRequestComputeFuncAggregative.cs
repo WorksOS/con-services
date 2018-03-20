@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Executors.Tasks.Interfaces;
 using VSS.VisionLink.Raptor.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.GridFabric.Responses;
+using VSS.VisionLink.Raptor.GridFabric.Types;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
 namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
@@ -58,5 +59,14 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
             return new TSubGridRequestsResponse();
         }
 
+        /// <summary>
+        /// Set up Ignite elements for aggregative subgrid requests
+        /// </summary>
+        public override bool EstablishRequiredIgniteContext(out SubGridRequestsResponseResult contextEstablishmentResponse)
+        {
+            // No Ignite infrastructure required
+            contextEstablishmentResponse = SubGridRequestsResponseResult.OK;
+            return true;
+        }
     }
 }

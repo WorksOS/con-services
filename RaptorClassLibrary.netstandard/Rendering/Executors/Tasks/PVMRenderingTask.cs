@@ -114,7 +114,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors.Tasks
                 arg.OriginX = ProductionElevations.OriginX;
                 arg.OriginY = ProductionElevations.OriginY;
                 arg.CellSize = ProductionElevations.CellSize;
-                arg.ProcessingMap = ProductionElevations.FilterMap;
+                // arg.ProcessingMap = ProductionElevations.FilterMap; 
 
                 ClientHeightLeafSubGrid DesignElevations = request.Execute(arg);
 

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Analytics.Aggregators;
 using VSS.VisionLink.Raptor.Analytics.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Analytics.GridFabric.Responses;
+using VSS.VisionLink.Raptor.Services.Designs;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Utilities;
@@ -94,7 +95,9 @@ namespace VSS.VisionLink.Raptor.Analytics.Coordinators
                 Log.Info("Obtaining site model");
                 SiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(arg.DataModelID);
 
-                // Create the aggregator to collect and reduce the results
+                // Create the aggregator to collect and reduce the results. As a part of this locate the
+                // design instance representing the design the cut/fill information is being calculated against
+                // and supply that to the aggregator
                 Log.Info("Creating aggregator");
                 CutFillAggregator Aggregator = new CutFillAggregator()
                 {
@@ -102,7 +105,8 @@ namespace VSS.VisionLink.Raptor.Analytics.Coordinators
                     SiteModelID = arg.DataModelID,
                     //LiftBuildSettings := LiftBuildSettings;
                     CellSize = SiteModel.Grid.CellSize,
-                    Offsets = arg.Offsets
+                    Offsets = arg.Offsets,
+                    CutFillDesign = DesignsService.Instance().Find(arg.DataModelID, arg.DesignID)
                 };
 
                 Log.Info("Creating computor");

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using VSS.Velociraptor.DesignProfiling;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Designs.Storage;
+using VSS.VisionLink.Raptor.Services.Designs;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
@@ -30,7 +31,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
         /// <summary>
         /// The design to be used for comparison against the production data surface 
         /// </summary>
-        public Design CutFillDesign { get; set; }
+        public Design CutFillDesign { get; set; } = null;
 
         /// <summary>
         /// Default no-arg constructor
@@ -47,10 +48,8 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
         void IncrementCountOfCutFillTransition(Double value)
         {
             // Works out what percentage of cutfill map colours are used
-            Double LowTransitionValue;
-            Double HighTransitionValue;
-
             // always 7 elements in array and assumes grade is set at zero
+            // eg: 0.5, 0.2, 0.1, 0.0, -0.1, -0.2, -0.5
             if (value == 0)  // on grade
                 Counts[3]++;
             else if (value > 0) // Cut
@@ -62,9 +61,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
                 }
                 for (int I = 0; I < 3; I++)
                 {
-                    HighTransitionValue = Offsets[I];     // highest value
-                    LowTransitionValue = Offsets[I + 1];   // lowest value
-                    if (value >= LowTransitionValue && value < HighTransitionValue)
+                    if (value >= Offsets[I + 1] && value < Offsets[I])
                     {
                         Counts[I + 1]++;
                         break;
@@ -81,9 +78,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
                 }
                 for (int I = 3; I < 6; I++)
                 {
-                    HighTransitionValue = Offsets[I];     // highest value
-                    LowTransitionValue = Offsets[I + 1];   // lowest value
-                    if (value >= LowTransitionValue && value < HighTransitionValue)
+                    if (value >= Offsets[I + 1] && value < Offsets[I])
                     {
                         Counts[I]++;
                         break;

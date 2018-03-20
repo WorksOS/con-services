@@ -58,7 +58,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
                 null, // MachineSpeedTarget = $00000015;
                 null, // CCVPercentChangeIgnoredTopNullValue = $0000016
                 null, // CCA = $0000017
-                null  // CCAPerccent = = $0000018
+                null, // CCAPerccent = $0000018
+                null, // TemperatureDetail = 0x00000019
+                null  // CutFill = 0x00000020
             };
         }
 

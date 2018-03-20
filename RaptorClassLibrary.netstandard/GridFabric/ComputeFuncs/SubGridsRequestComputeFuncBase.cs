@@ -74,12 +74,6 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         protected SubGridsRequestArgument localArg = null;
 
         [NonSerialized]
-        protected string raptorNodeIDAsString = String.Empty;
-
-        [NonSerialized]
-        protected IMessaging rmtMsg = null;
-
-        [NonSerialized]
         private SiteModel siteModel = null;
 
         [NonSerialized]
@@ -198,12 +192,9 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// to allow other methods to access it as local state.
         /// </summary>
         /// <param name="arg"></param>
-        private void UnpackArgument(SubGridsRequestArgument arg)
+        protected virtual void UnpackArgument(SubGridsRequestArgument arg)
         {
             localArg = arg;
-            raptorNodeIDAsString = arg.RaptorNodeID.ToString();
-
-            Log.InfoFormat("RaptorNodeIDAsString is {0} in UnpackArgument()", raptorNodeIDAsString);
 
             // Unpack the mask from the argument.
             // TODO: Would be nice to use the FromBytes/ToBytes pattern here
@@ -299,6 +290,11 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// <param name="resultCount"></param>
         /// <returns></returns>
         public abstract TSubGridRequestsResponse AcquireComputationResult();
+
+        /// <summary>
+        /// Performs any necessary setup and configuration of Ignite insfrastructure to support the processing of this request
+        /// </summary>
+        public abstract bool EstablishRequiredIgniteContext(out SubGridRequestsResponseResult contextEstablishmentResponse);
 
         /// <summary>
         /// Process a subset of the full set of subgrids in the request
@@ -428,26 +424,19 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                 try
                 {
                     Debug.Assert(Range.InRange(spatialSubdivisionDescriptor, 0, numSpatialProcessingDivisions),
-                                 String.Format("Invalid spatial sub division descriptor (must in be in range {0} -> [{1}, {2}])", spatialSubdivisionDescriptor, 0, numSpatialProcessingDivisions));
+                                 String.Format($"Invalid spatial sub division descriptor (must in be in range {spatialSubdivisionDescriptor} -> [0, {numSpatialProcessingDivisions}])"));
+
+                    UnpackArgument(arg);
 
                     long NumSubgridsToBeExamined = (ProdDataMask != null ? ProdDataMask.CountBits() : 0) +
                                                     (SurveyedSurfaceOnlyMask != null ? SurveyedSurfaceOnlyMask.CountBits() : 0);
-                    UnpackArgument(arg);
 
                     Log.Info(String.Format("Num subgrids present in request = {0} [All divisions]", NumSubgridsToBeExamined));
 
-                    IIgnite Ignite = Ignition.TryGetIgnite(RaptorGrids.RaptorImmutableGridName());
-                    IClusterGroup group = Ignite?.GetCluster().ForAttribute("RaptorNodeID", raptorNodeIDAsString);
-
-                    if (group == null)
-                        return new TSubGridRequestsResponse { ResponseCode = SubGridRequestsResponseResult.NoIgniteGroupProjection }; 
-
-                    Log.InfoFormat("Message group has {0} members", group.GetNodes().Count);
-
-                    rmtMsg = group.GetMessaging();
-
-                    if (group == null)
-                        return new TSubGridRequestsResponse { ResponseCode = SubGridRequestsResponseResult.NoIgniteMessagingProjection };
+                    if (!EstablishRequiredIgniteContext(out SubGridRequestsResponseResult contextEstablishmentResponse))
+                    {
+                        return new TSubGridRequestsResponse { ResponseCode = contextEstablishmentResponse };
+                    }
 
                     result = PerformSubgridRequests();
                     result.NumSubgridsExamined = NumSubgridsToBeExamined;

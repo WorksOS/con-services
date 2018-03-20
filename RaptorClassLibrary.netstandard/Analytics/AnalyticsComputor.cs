@@ -173,7 +173,10 @@ namespace VSS.VisionLink.Raptor.Analytics
                     }
 
                     // Start the pipeline processing it's work and wait for it to complete
-                    PipeLine.Initiate();
+                    if (PipeLine.Initiate())
+                    {
+                        PipeLine.WaitForCompletion();
+                    }
 
                     /* TODO ????
                               FEpochCount := 0;

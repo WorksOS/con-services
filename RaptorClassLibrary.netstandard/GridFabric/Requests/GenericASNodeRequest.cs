@@ -31,14 +31,16 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             // Construct the function to be used
             TComputeFunc func = new TComputeFunc();
 
-//            InitialiseIgniteContext(RaptorGrids.RaptorImmutableGridName(), ServerRoles.ASNODE);
+            // InitialiseIgniteContext(RaptorGrids.RaptorImmutableGridName(), ServerRoles.ASNODE);
 
             // Send the request to the application service pool and retrieve the resul
-            Task<TResponse> taskResult = _Compute.ApplyAsync(func, arg);
+            //Task<TResponse> taskResult = _Compute.ApplyAsync(func, arg);
+            TResponse Result = _Compute.Apply(func, arg);
 
             // Send the response to the caller
             // If there is no task result then return an empty response
-            return (taskResult?.Result != null) ? taskResult.Result : new TResponse();
+            //return (taskResult?.Result != null) ? taskResult.Result : new TResponse();
+            return Result ?? new TResponse();
         }
     }
 }
