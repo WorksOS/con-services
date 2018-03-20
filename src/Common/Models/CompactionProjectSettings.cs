@@ -23,7 +23,7 @@ namespace VSS.Productivity3D.Common.Models
     /// Flag to determine if machine target pass count or custom target range is used. Default is true.
     /// </summary>
     [JsonProperty(PropertyName = "useMachineTargetPassCount", Required = Required.Default)]
-    public bool? useMachineTargetPassCount { get; private set; } = false;
+    public bool? useMachineTargetPassCount { get; private set; } = true;
     /// <summary>
     /// The minimum target pass count when overriding the machine target value
     /// </summary>
@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.Common.Models
     /// Flag to determine if machine target temperature or custom target range is used. Default is true.
     /// </summary>
     [JsonProperty(PropertyName = "useMachineTargetTemperature", Required = Required.Default)]
-    public bool? useMachineTargetTemperature { get; private set; } = false;
+    public bool? useMachineTargetTemperature { get; private set; } = true;
     /// <summary>
     /// The minimum target temperature (°C) when overriding the machine target value
     /// </summary>
@@ -57,7 +57,7 @@ namespace VSS.Productivity3D.Common.Models
     /// Flag to determine if machine target CMV or custom target value is used. Default is true.
     /// </summary>
     [JsonProperty(PropertyName = "useMachineTargetCmv", Required = Required.Default)]
-    public bool? useMachineTargetCmv { get; private set; } = false;
+    public bool? useMachineTargetCmv { get; private set; } = true;
     /// <summary>
     /// The target CMV value when overriding the machine target value
     /// </summary>
@@ -68,7 +68,7 @@ namespace VSS.Productivity3D.Common.Models
     /// Flag to determine if machine target MDP or custom target value is used. Default is true.
     /// </summary>
     [JsonProperty(PropertyName = "useMachineTargetMdp", Required = Required.Default)]
-    public bool? useMachineTargetMdp { get; private set; } = false;
+    public bool? useMachineTargetMdp { get; private set; } = true;
     /// <summary>
     /// The target MDP value when overriding the machine target value
     /// </summary>
@@ -79,7 +79,7 @@ namespace VSS.Productivity3D.Common.Models
     /// Flag to determine if the default CMV % range or custom target range is used. Default is true.
     /// </summary>
     [JsonProperty(PropertyName = "useDefaultTargetRangeCmvPercent", Required = Required.Default)]
-    public bool? useDefaultTargetRangeCmvPercent { get; private set; } = false;
+    public bool? useDefaultTargetRangeCmvPercent { get; private set; } = true;
     /// <summary>
     /// The minimum target CMV % when overriding the default target range
     /// </summary>
@@ -96,7 +96,7 @@ namespace VSS.Productivity3D.Common.Models
     /// Flag to determine if the default MDP % range or custom target range is used. Default is true.
     /// </summary>
     [JsonProperty(PropertyName = "useDefaultTargetRangeMdpPercent", Required = Required.Default)]
-    public bool? useDefaultTargetRangeMdpPercent { get; private set; } = false;
+    public bool? useDefaultTargetRangeMdpPercent { get; private set; } = true;
     /// <summary>
     /// The minimum target MDP % when overriding the default target range
     /// </summary>
@@ -113,7 +113,7 @@ namespace VSS.Productivity3D.Common.Models
     /// Flag to determine if the default speed range or custom target range is used. Default is true.
     /// </summary>
     [JsonProperty(PropertyName = "useDefaultTargetRangeSpeed", Required = Required.Default)]
-    public bool? useDefaultTargetRangeSpeed { get; private set; } = false;
+    public bool? useDefaultTargetRangeSpeed { get; private set; } = true;
     /// <summary>
     /// The minimum target speed (km/h)  when overriding the default target range
     /// </summary>
@@ -130,7 +130,7 @@ namespace VSS.Productivity3D.Common.Models
     /// Flag to determine if default cut-fill tolerances or custom tolerances are used. Default is true.
     /// </summary>
     [JsonProperty(PropertyName = "useDefaultCutFillTolerances", Required = Required.Default)]
-    public bool? useDefaultCutFillTolerances { get; private set; } = false;
+    public bool? useDefaultCutFillTolerances { get; private set; } = true;
     /// <summary>
     /// The collection of custom cut-fill tolerances (m) when overriding the defaults. Values are in descending order, highest cut to lowest fill.
     /// There must be 7 values (3 cut, on grade value = 0, and 3 fill).
@@ -141,7 +141,7 @@ namespace VSS.Productivity3D.Common.Models
     /// Flag to determine if default shrinkage % and bulking % or custom values are used. Default is true.
     /// </summary>
     [JsonProperty(PropertyName = "useDefaultVolumeShrinkageBulking", Required = Required.Default)]
-    public bool? useDefaultVolumeShrinkageBulking { get; private set; } = false;
+    public bool? useDefaultVolumeShrinkageBulking { get; private set; } = true;
     /// <summary>
     /// The shrinkage % when overriding the default value.
     /// </summary>
@@ -158,7 +158,7 @@ namespace VSS.Productivity3D.Common.Models
     /// Flag to determine if machine default pass count details settings or custom settings are used. Default is true.
     /// </summary>
     [JsonProperty(PropertyName = "useDefaultPassCountTargets", Required = Required.Default)]
-    public bool? useDefaultPassCountTargets { get; private set; } = false;
+    public bool? useDefaultPassCountTargets { get; private set; } = true;
     /// <summary>
     /// The collection of pass count targets when overriding the defaults. Values are in ascending order.
     /// There must be 8 values and the first value must be 1.
