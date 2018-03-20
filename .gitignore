@@ -33,3 +33,6 @@ _ReSharper*/
 .vs/
 /Alan_RunFullRaptorIgniteStackAndClient_Debug.bat
 
+/coverage.json
+/coverage-hits.txt
+/coverage-html/*

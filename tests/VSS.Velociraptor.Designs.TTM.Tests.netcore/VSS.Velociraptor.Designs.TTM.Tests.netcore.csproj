@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\VSS.Velociraptor.Designs.TTM.netstandard\VSS.Velociraptor.Designs.TTM.netstandard.csproj" />
+    <ProjectReference Include="..\..\VSS.Velociraptor.Designs.TTM.netstandard\VSS.Velociraptor.Designs.TTM.netstandard.csproj" />
   </ItemGroup>
 
 </Project>

@@ -13,9 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RaptorClassLibrary.netstandard\RaptorClassLibrary.netstandard.csproj" />
-    <ProjectReference Include="..\Tests.Common\Tests.Common.csproj" />
-    <ProjectReference Include="..\VSS.Velociraptor.Geometry.netstandard\VSS.Velociraptor.Geometry.netstandard.csproj" />
+    <ProjectReference Include="..\..\RaptorClassLibrary.netstandard\RaptorClassLibrary.netstandard.csproj" />
   </ItemGroup>
 
 </Project>

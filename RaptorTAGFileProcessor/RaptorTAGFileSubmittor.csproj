@@ -95,7 +95,7 @@
       <Project>{40db7cf3-5817-45a5-9f90-29baa80e2c7a}</Project>
       <Name>RaptorClassLibrary.netstandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Tests.Common\Tests.Common.csproj">
+    <ProjectReference Include="..\tests\Tests.Common\Tests.Common.csproj">
       <Project>{00400CF0-8011-4B1E-8AC6-2A752A79F527}</Project>
       <Name>Tests.Common</Name>
     </ProjectReference>
