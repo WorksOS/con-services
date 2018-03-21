@@ -17,6 +17,7 @@ using log4net;
 using System.Reflection;
 using Apache.Ignite.Core.Cluster;
 using System.Diagnostics;
+using VSS.VisionLink.Raptor.Analytics.Aggregators;
 using VSS.VisionLink.Raptor.Utilities;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 
@@ -225,6 +226,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
             }
         }
 
+
         /// <summary>
         /// Take a subgrid address and request the required client subgrid depending on GridDataType
         /// </summary>
@@ -263,7 +265,34 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                     // Convert to an array to preserve the multiple filter semantic giving a list of subgrids to be converted (eg: volumes)
                     IClientLeafSubGrid[] ClientArray = new IClientLeafSubGrid[1] { clientGrid };
                     ConvertIntermediarySubgridsToResult(localArg.GridDataType, ref ClientArray);
-                    clientGrid = ClientArray[0];
+
+
+          // todo cutfill conversion
+                  if (clientGrid?.GridDataType == GridDataType.CutFill)
+                  {
+
+
+            /*
+                    // Cutfill mode which is a height grid now needs to be converted into a height difference grid for asnode to render
+                    if Requests.DisplayType = Ord(icdmCutFill) then
+                        begin
+                    if (Requests.ReferenceVolumeType = ic_cvtBetween2Filters) and(Length(SubgridResultArray) > 1) then
+                    TopScanSubgrid2 := SubgridResultArray[1].Subgrid
+                    else
+                    TopScanSubgrid2:= Nil;
+                    // depending on volumetype work out height difference
+                    ComputeCutFillSubgrid(Requests.ReferenceVolumeType,
+                      Requests.ReferenceDesign,
+                      SubgridResultArray[0].Subgrid, // base
+                      TopScanSubgrid2, // filter2 if present
+                      Requests.DataModelID);
+                    end;
+                */
+                  }
+
+
+
+          clientGrid = ClientArray[0];
                 }
 
                 return result;
