@@ -108,7 +108,7 @@ namespace VSS.Velociraptor.DesignProfiling
 
             if (design == null)
             {
-                // Load the design into the cache (in this case jsut TTM files)
+                // Load the design into the cache (in this case just TTM files)
                 design = new TTMDesign(ACellSize);
                 design.LoadFromFile(designDescriptor.FullPath);
 

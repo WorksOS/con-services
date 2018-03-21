@@ -22,13 +22,10 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
             {
                 design = new TTMDesign(SubGridTree.DefaultCellSize);
                 design.LoadFromFile(@"C:\Temp\Bug36372.ttm");
-
-                // design.QuadTreeSpatialIndex.dump_tree(" C# ");
             }
 
             return design;
         }
-
 
         [Fact(Skip = "not implemented")]
         public void CreateAccessContextTest()
@@ -105,9 +102,22 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
         {
             object Hint = null;
 
+            bool result = design.InterpolateHeight(ref Hint, probeX, probeY, 0, out double Z);
+
+            Assert.True(result, "Height interpolation returned false");
+
+            Assert.True(Math.Abs(Z - expectedZ) < 0.001, $"Interpolated height value is incorrect, expected {expectedZ}");
+        }
+
+        [Theory]
+        [InlineData(247500.0, 193350.0, 29.875899875665258)]
+        public void InterpolateHeightTest1(double probeX, double probeY, double expectedZ)
+        {
+            object Hint = null;
+
             TriangleQuadTree.Tsearch_state_rec SearchState = TriangleQuadTree.Tsearch_state_rec.Init();
 
-            bool result = design.InterpolateHeight(ref SearchState, ref Hint, probeX, probeY, 0, out double Z);
+            bool result = design.InterpolateHeight1(ref SearchState, ref Hint, probeX, probeY, 0, out double Z);
 
             Assert.True(result, "Height interpolation returned false");
 
@@ -116,7 +126,7 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
 
         [Theory()]
         [InlineData(247500.0, 193350.0)]
-        public void InterpolateHeightTestPerf(double probeX, double probeY)
+        public void InterpolateHeightTestPerf1(double probeX, double probeY)
         {
             object Hint = null;
 
@@ -124,7 +134,7 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
             for (int i = 0; i < 1000000; i++)
             {
                 Hint = null;
-                bool result = design.InterpolateHeight(ref SearchState, ref Hint, probeX, probeY, 0, out double Z);
+                bool result = design.InterpolateHeight1(ref SearchState, ref Hint, probeX, probeY, 0, out double Z);
                 Assert.True(result);
             }
 
@@ -182,7 +192,7 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
             Assert.True(result, "Heights interpolation returned false");
         }
 
-        [Theory()]
+        [Theory(Skip = "Performance Test")]
         [InlineData(247500.0, 193350.0)]
         public void InterpolateHeightsTestPerf(Double probeX, Double probeY)
         {
@@ -197,7 +207,7 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
             Assert.False(true, "Perf Test");
         }
 
-        [Theory()]
+        [Theory(Skip = "Performance Test")]
         [InlineData(247500.0, 193350.0)]
         public void InterpolateHeightsTest2Perf(Double probeX, Double probeY)
         {
@@ -212,7 +222,7 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
             Assert.False(true, "Perf Test");
         }
 
-        [Theory()]
+        [Theory(Skip = "Performance Test")]
         [InlineData(247500.0, 193350.0)]
         public void InterpolateHeightsTest3Perf(Double probeX, Double probeY)
         {

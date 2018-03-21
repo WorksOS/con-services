@@ -724,6 +724,9 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             var siteModel = SiteModels.Instance().GetSiteModel(ID(), false);
             var offsets = new double[7] { 0.5, 0.2, 0.1, 0, -0.1, -0.2, -0.5 };
 
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
             CutFillResult result = request.Execute(new CutFillStatisticsArgument()
             {
                 DataModelID = siteModel.ID,
@@ -737,7 +740,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             });
 
             // Show the list of percentages calculated by the request
-            MessageBox.Show($"Results [Cut/Fill:{offsets.Aggregate("", (a, v) => a + $"{ v.ToString("F1")}, ")}]: {(result?.Percents == null ? "No Result" : result.Percents?.Aggregate("", (a, v) => a + $"{v.ToString("F1")}% "))}");
+            MessageBox.Show($"Results (in {sw.Elapsed}) [Cut/Fill:{offsets.Aggregate("", (a, v) => a + $"{ v.ToString("F1")}, ")}]: {(result?.Percents == null ? "No Result" : result.Percents?.Aggregate("", (a, v) => a + $"{v.ToString("F1")}% "))}");
         }
     }
 }

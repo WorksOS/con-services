@@ -13,6 +13,9 @@ using VSS.VisionLink.Raptor.Utilities.ExtensionMethods;
 
 namespace VSS.Velociraptor.DesignProfiling.GridFabric.ComputeFuncs
 {
+    /// <summary>
+    /// Ignite ComputeFunc responsible for executing the elevation patch calculator
+    /// </summary>
     [Serializable]
     public class CalculateDesignElevationPatchComputeFunc : IComputeFunc<CalculateDesignElevationPatchArgument, byte [] /* ClientHeightLeafSubGrid */>
     {
@@ -23,15 +26,15 @@ namespace VSS.Velociraptor.DesignProfiling.GridFabric.ComputeFuncs
         {
             try
             {
-                Log.Debug($"CalculateDesignElevationPatchComputeFunc: Arg = {arg}");
+                // Log.Info($"CalculateDesignElevationPatchComputeFunc: Arg = {arg}");
 
-                CalculateDesignElevationPatch Executor = new CalculateDesignElevationPatch(arg);
+                CalculateDesignElevationPatch Executor = new CalculateDesignElevationPatch();
 
-                return Executor.Execute().ToBytes();
+                return Executor.Execute(arg).ToBytes();
             }
             catch (Exception E)
             {
-                Log.InfoFormat("Exception:", E);
+                Log.Error($"Exception: {E}");
                 return null; // Todo .....
             }
         }

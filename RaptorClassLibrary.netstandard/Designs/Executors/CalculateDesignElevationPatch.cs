@@ -12,25 +12,27 @@ namespace VSS.Velociraptor.DesignProfiling.Executors
     public class CalculateDesignElevationPatch
     {
         /// <summary>
-        /// Private reference to the arguments provided to the executor
+        /// Default no-args constructor
         /// </summary>
-        private CalculateDesignElevationPatchArgument Args { get; set; }
-
+        public CalculateDesignElevationPatch()
+        {
+        }
         /// <summary>
         /// Constructor for the executor accepting the arguments for its operation
         /// </summary>
         /// <param name="args"></param>
-        public CalculateDesignElevationPatch(CalculateDesignElevationPatchArgument args)
-        {
-            this.Args = args;
-        }
+        //        public CalculateDesignElevationPatch(CalculateDesignElevationPatchArgument args)
+        //        {
+        //            this.Args = args;
+        //        }
 
         /// <summary>
         /// Performs the donkey work of the elevation patch calculation
         /// </summary>
         /// <param name="CalcResult"></param>
         /// <returns></returns>
-        private ClientHeightLeafSubGrid Calc(out DesignProfilerRequestResult CalcResult)
+        private ClientHeightLeafSubGrid Calc(CalculateDesignElevationPatchArgument Args,
+                                             out DesignProfilerRequestResult CalcResult)
         {
             CalcResult = DesignProfilerRequestResult.UnknownError;
 
@@ -91,7 +93,7 @@ namespace VSS.Velociraptor.DesignProfiling.Executors
         /// Performs execution business logic for this executor
         /// </summary>
         /// <returns></returns>
-        public ClientHeightLeafSubGrid Execute()
+        public ClientHeightLeafSubGrid Execute(CalculateDesignElevationPatchArgument args)
         {
             try
             {
@@ -108,7 +110,7 @@ namespace VSS.Velociraptor.DesignProfiling.Executors
                     */
 
                     // Calculate the patch of elevations and return it
-                    ClientHeightLeafSubGrid result = Calc(out DesignProfilerRequestResult CalcResult);
+                    ClientHeightLeafSubGrid result = Calc(args, out DesignProfilerRequestResult CalcResult);
 
                     if (result == null)
                     {

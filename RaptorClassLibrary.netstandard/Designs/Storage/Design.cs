@@ -24,6 +24,16 @@ namespace VSS.VisionLink.Raptor.Designs.Storage
         DesignDescriptor FDesignDescriptor;
         BoundingWorldExtent3D FExtents;
 
+        /// <summary>
+        /// Singleton request used by all designs. This request encapsulates the Ignite reference which
+        /// is relatively slow to initialise when making many calls.
+        /// </summary>
+        private static DesignElevationPatchRequest request = new DesignElevationPatchRequest();
+
+        /// <summary>
+        /// Binary serialization logic
+        /// </summary>
+        /// <param name="writer"></param>
         public void Write(BinaryWriter writer)
         {
             writer.Write(FID);
@@ -31,8 +41,16 @@ namespace VSS.VisionLink.Raptor.Designs.Storage
             FExtents.Write(writer);
         }
 
+        /// <summary>
+        /// Binary serialization logic
+        /// </summary>
+        /// <param name="writer"></param>
         public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
 
+        /// <summary>
+        /// Binary deserialization logic
+        /// </summary>
+        /// <param name="writer"></param>
         public void Read(BinaryReader reader)
         {
             FID = reader.ReadInt64();
@@ -40,8 +58,19 @@ namespace VSS.VisionLink.Raptor.Designs.Storage
             FExtents.Read(reader);
         }
 
+        /// <summary>
+        /// The intenal identifier of the design
+        /// </summary>
         public long ID { get { return FID; } }
+
+        /// <summary>
+        /// The full design descriptior representing the design
+        /// </summary>
         public DesignDescriptor DesignDescriptor { get { return FDesignDescriptor; } }
+
+        /// <summary>
+        /// The rectangular bounding extents of the design in grid coordiantes
+        /// </summary>
         public BoundingWorldExtent3D Extents { get { return FExtents; } }
 
         /// <summary>
@@ -87,12 +116,7 @@ namespace VSS.VisionLink.Raptor.Designs.Storage
         /// <returns></returns>
         public override string ToString()
         {
-            return String.Format("ID:{0}, DesignID:{1}; {2};{3};{4} {5:F3} [{6}]",
-                            FID,
-                             FDesignDescriptor.DesignID,
-                             FDesignDescriptor.FileSpace, FDesignDescriptor.Folder, FDesignDescriptor.FileName,
-                             FDesignDescriptor.Offset,
-                             FExtents);
+            return $"ID:{FID}, DesignID:{FDesignDescriptor.DesignID}; {FDesignDescriptor.FileSpace};{FDesignDescriptor.Folder};{FDesignDescriptor.FileName} {FDesignDescriptor.Offset:F3} [{FExtents}]";
         }
 
         /// <summary>
@@ -107,21 +131,20 @@ namespace VSS.VisionLink.Raptor.Designs.Storage
                    (FExtents.Equals(other.Extents));
         }
 
+        /// <summary>
+        /// Calculates an elevation subgrid for a desginatec subgrid on this design
+        /// </summary>
+        /// <param name="siteModelID"></param>
+        /// <param name="originCellAddress"></param>
+        /// <param name="cellSize"></param>
+        /// <param name="designHeights"></param>
+        /// <param name="errorCode"></param>
+        /// <returns></returns>
         public bool GetDesignHeights(long siteModelID,
                                      SubGridCellAddress originCellAddress,
                                      double cellSize,
                                      out ClientHeightLeafSubGrid designHeights,
                                      out DesignProfilerRequestResult errorCode)
-        {
-            return GetDesignHeights(DesignDescriptor, siteModelID, originCellAddress, cellSize, out designHeights, out errorCode);
-        }
-
-        public static bool GetDesignHeights(DesignDescriptor DesignDescriptor,
-                                            long siteModelID,
-                                            SubGridCellAddress originCellAddress,
-                                            double cellSize,
-                                            out ClientHeightLeafSubGrid designHeights,
-                                            out DesignProfilerRequestResult errorCode)
         {
             // Query the DesignProfiler service to get the patch of elevations calculated
             errorCode = DesignProfilerRequestResult.OK;
@@ -129,12 +152,10 @@ namespace VSS.VisionLink.Raptor.Designs.Storage
 
             try
             {
-                DesignElevationPatchRequest request = new DesignElevationPatchRequest();
-
                 designHeights = request.Execute(new CalculateDesignElevationPatchArgument()
                 {
                     CellSize = cellSize,
-                    DesignDescriptor = DesignDescriptor,
+                    DesignDescriptor = FDesignDescriptor,
                     OriginX = originCellAddress.X,
                     OriginY = originCellAddress.Y,
                     // ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled),
@@ -148,6 +169,5 @@ namespace VSS.VisionLink.Raptor.Designs.Storage
 
             return errorCode == DesignProfilerRequestResult.OK;
         }
-
     }
 }

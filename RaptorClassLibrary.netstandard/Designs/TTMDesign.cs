@@ -746,10 +746,10 @@ namespace VSS.Velociraptor.DesignProfiling
         /// <param name="Offset"></param>
         /// <param name="Z"></param>
         /// <returns></returns>
-        public /*override */ bool InterpolateHeight2(ref object Hint,
-                                               double X, double Y,
-                                               double Offset,
-                                               out double Z)
+        public bool InterpolateHeight2(ref object Hint,
+                                       double X, double Y,
+                                       double Offset,
+                                       out double Z)
         {
             if (CheckHint(ref Hint, X, Y, Offset, out Z))
                 return true;
@@ -792,10 +792,10 @@ namespace VSS.Velociraptor.DesignProfiling
         /// <param name="Offset"></param>
         /// <param name="Z"></param>
         /// <returns></returns>
-        public /*override */ bool InterpolateHeight3(ref object Hint,
-                                               double X, double Y,
-                                               double Offset,
-                                               out double Z)
+        public bool InterpolateHeight3(ref object Hint,
+                                       double X, double Y,
+                                       double Offset,
+                                       out double Z)
         {
             if (CheckHint(ref Hint, X, Y, Offset, out Z))
                 return true;
@@ -841,11 +841,28 @@ namespace VSS.Velociraptor.DesignProfiling
         /// <param name="Offset"></param>
         /// <param name="Z"></param>
         /// <returns></returns>
-        public override bool InterpolateHeight(ref TriangleQuadTree.Tsearch_state_rec SearchState,
-                                               ref object Hint,
+        public override bool InterpolateHeight(ref object Hint,
                                                double X, double Y,
                                                double Offset,
                                                out double Z)
+        {
+            return InterpolateHeight3(ref Hint, X, Y, Offset, out Z);
+        }
+
+        /// <summary>
+        /// Interpolates a single spot height fromn the design
+        /// </summary>
+        /// <param name="Hint"></param>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <param name="Offset"></param>
+        /// <param name="Z"></param>
+        /// <returns></returns>
+        public bool InterpolateHeight1(ref TriangleQuadTree.Tsearch_state_rec SearchState,
+                                       ref object Hint,
+                                       double X, double Y,
+                                       double Offset,
+                                       out double Z)
         {
             if (CheckHint(ref Hint, X, Y, Offset, out Z))
                 return true;
@@ -882,10 +899,27 @@ namespace VSS.Velociraptor.DesignProfiling
         /// <param name="CellSize"></param>
         /// <param name="Offset"></param>
         /// <returns></returns>
-        public override bool InterpolateHeights(float[,] Patch, 
+        public override bool InterpolateHeights(float[,] Patch,
                                                 double OriginX, double OriginY,
                                                 double CellSize,
                                                 double Offset)
+        {
+            return InterpolateHeights3(Patch, OriginX, OriginY, CellSize, Offset);
+        }
+
+        /// <summary>
+        /// Interpolates heights from the design for all the cells in a subgrid
+        /// </summary>
+        /// <param name="Patch"></param>
+        /// <param name="OriginX"></param>
+        /// <param name="OriginY"></param>
+        /// <param name="CellSize"></param>
+        /// <param name="Offset"></param>
+        /// <returns></returns>
+        public bool InterpolateHeights1(float[,] Patch, 
+                                        double OriginX, double OriginY,
+                                        double CellSize,
+                                        double Offset)
         {
             int ValueCount = 0;
             object Hint = null;
@@ -899,11 +933,11 @@ namespace VSS.Velociraptor.DesignProfiling
             {
                 SubGridUtilities.SubGridDimensionalIterator((x, y) =>
                 {
-                    if (InterpolateHeight(ref SearchState,
-                                          ref Hint,
-                                          OriginXPlusHalfCellSize + (CellSize * x),
-                                          OriginYPlusHalfCellSize + (CellSize * y),
-                                          Offset, out double Z))
+                    if (InterpolateHeight1(ref SearchState,
+                                           ref Hint,
+                                           OriginXPlusHalfCellSize + (CellSize * x),
+                                           OriginYPlusHalfCellSize + (CellSize * y),
+                                           Offset, out double Z))
                     {
                         Patch[x, y] = (float)Z;
                         ValueCount++;
@@ -934,10 +968,10 @@ namespace VSS.Velociraptor.DesignProfiling
         /// <param name="CellSize"></param>
         /// <param name="Offset"></param>
         /// <returns></returns>
-        public /*override*/ bool InterpolateHeights2(float[,] Patch,
-                                                 double OriginX, double OriginY,
-                                                 double CellSize,
-                                                 double Offset)
+        public bool InterpolateHeights2(float[,] Patch,
+                                        double OriginX, double OriginY,
+                                        double CellSize,
+                                        double Offset)
         {
             int ValueCount = 0;
             object Hint = null;
@@ -983,10 +1017,10 @@ namespace VSS.Velociraptor.DesignProfiling
         /// <param name="CellSize"></param>
         /// <param name="Offset"></param>
         /// <returns></returns>
-        public /*override*/ bool InterpolateHeights3(float[,] Patch,
-                                                 double OriginX, double OriginY,
-                                                 double CellSize,
-                                                 double Offset)
+        public bool InterpolateHeights3(float[,] Patch,
+                                        double OriginX, double OriginY,
+                                        double CellSize,
+                                        double Offset)
         {
             int ValueCount = 0;
             object Hint = null;
