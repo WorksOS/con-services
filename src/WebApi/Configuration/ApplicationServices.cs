@@ -73,7 +73,7 @@ namespace VSS.Productivity3D.WebApi
         (IEnqueueItem<ProjectFileDescriptor>)provider.GetService<IHostedService>());
 
       // Action services
-      services.AddSingleton<ISummaryDataHelper, SummaryDataDataHelper>();
+      services.AddSingleton<ISummaryDataHelper, SummaryDataHelper>();
 
       serviceCollection = services;
     }
