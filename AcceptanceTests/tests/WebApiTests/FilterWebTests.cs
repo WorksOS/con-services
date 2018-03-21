@@ -236,7 +236,7 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    public void PostMultipleFiltersThenGetListOfFilters()
+    public void PostMultipleFiltersThenGetFilters()
     {
       const string filterName = "Filter Web test 8";
       Msg.Title(filterName, "Post filters then get a list of filters");
@@ -252,10 +252,18 @@ namespace WebApiTests
       var response = ts.CallFilterWebApi($"api/v1/filters/{ProjectUid}", "POST", filter);
       var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorListResult>(response, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       Assert.AreEqual(0, filterResponse.Code, "  Expecting a sucessful result but got " + filterResponse.Message);
+      var filter1UID = filterResponse.FilterDescriptors[0].FilterUid;
+      var filter2UID = filterResponse.FilterDescriptors[1].FilterUid;
 
-      var responseGet = ts.CallFilterWebApi($"api/v1/filters/{ProjectUid}", "GET");
-      var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorListResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      Assert.AreEqual(2, filterResponseGet.FilterDescriptors.Count, "Should be 2 filters returned");
+      var filter1Response = ts.CallFilterWebApi($"api/v1/filter/{ProjectUid}?filterUid={filter1UID}", "GET");
+      var filter2Response = ts.CallFilterWebApi($"api/v1/filter/{ProjectUid}?filterUid={filter2UID}", "GET");
+
+      var filter1 = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(filter1Response, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      var filter2 = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(filter2Response, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+
+      Assert.AreEqual(filterJson1, filter1.FilterDescriptor.FilterJson);
+      Assert.AreEqual(filterJson2, filter2.FilterDescriptor.FilterJson);
+
     }
 
     /// <summary>
