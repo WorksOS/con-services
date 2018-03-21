@@ -7,7 +7,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Analytics.Coordinators;
-using VSS.VisionLink.Raptor.Analytics.Models;
 using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
 using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
 

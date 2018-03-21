@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Analytics.Aggregators;
 using VSS.VisionLink.Raptor.Analytics.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Analytics.GridFabric.Responses;
-using VSS.VisionLink.Raptor.Services.Designs;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Utilities;
@@ -35,8 +34,6 @@ namespace VSS.VisionLink.Raptor.Analytics.Coordinators
             //  ScheduledWithGovernor       :Boolean = false;
             //  SurveyedSurfaceExclusionList:TSurveyedSurfaceIDList;
             CutFillStatisticsResponse result = new CutFillStatisticsResponse();
-
-            Log.Info("Constructed CutFillStatisticsResponse instance");
 
             try
             {
@@ -76,11 +73,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Coordinators
                 //BoundingWorldExtent3D SpatialExtent = BoundingWorldExtent3D.Null();
                 //long[] SurveyedSurfaceExclusionList = new long[0];
 
-                Log.Info("Setting request descriptor");
-
                 long RequestDescriptor = Guid.NewGuid().GetHashCode(); // TODO ASNodeImplInstance.NextDescriptor;
-
-                Log.Info($"Preparing filter for use, arg = null?{arg==null}");
 
                 result.ResultStatus = FilterUtilities.PrepareFilterForUse(arg.Filter, arg.DataModelID);
                 if (result.ResultStatus != RequestErrorStatus.OK)
@@ -89,16 +82,12 @@ namespace VSS.VisionLink.Raptor.Analytics.Coordinators
                     return result;
                 }
 
-                Log.Info("Prepared filter for use");
-
                 // Obtain the site model context for the request
-                Log.Info("Obtaining site model");
                 SiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(arg.DataModelID);
 
                 // Create the aggregator to collect and reduce the results. As a part of this locate the
                 // design instance representing the design the cut/fill information is being calculated against
                 // and supply that to the aggregator
-                Log.Info("Creating aggregator");
                 CutFillAggregator Aggregator = new CutFillAggregator()
                 {
                     RequiresSerialisation = true,
@@ -108,7 +97,6 @@ namespace VSS.VisionLink.Raptor.Analytics.Coordinators
                     Offsets = arg.Offsets
                 };
 
-                Log.Info("Creating computor");
                 // Create the analytics engine to orchestrate the calculation
                 AnalyticsComputor<CutFillStatisticsArgument, CutFillStatisticsResponse> Computor = new AnalyticsComputor<CutFillStatisticsArgument, CutFillStatisticsResponse>()
                 {
@@ -124,8 +112,6 @@ namespace VSS.VisionLink.Raptor.Analytics.Coordinators
                 // TODO Readd when logging available: 
                 // Reporter.LiftBuildSettings.Assign(FLiftBuildSettings);
 
-                Log.Info("Computing Analytics");
-
                 if (Computor.ComputeAnalytics())
                     result.ResultStatus = RequestErrorStatus.OK;
                 else if (Computor.AbortedDueToTimeout)
@@ -136,12 +122,9 @@ namespace VSS.VisionLink.Raptor.Analytics.Coordinators
                 if (result.ResultStatus == RequestErrorStatus.OK)
                 {
                     // Instruct the Aggregator to perform any finalisation logic before reading out the results
-                    Log.Info("Finalising Aggregator");
                     Aggregator.Finalise();
                     result.Counts = Aggregator.Counts;
                 }
-
-                Log.Info("All done!!!");
             }
             catch (Exception E)
             {

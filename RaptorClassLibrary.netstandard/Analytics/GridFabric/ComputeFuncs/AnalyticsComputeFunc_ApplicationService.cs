@@ -6,12 +6,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Analytics.Models;
 using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.GridFabric.Requests;
 using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
-using VSS.VisionLink.Raptor.Servers;
 
 namespace VSS.VisionLink.Raptor.Analytics.GridFabric.ComputeFuncs
 {
@@ -34,7 +31,6 @@ namespace VSS.VisionLink.Raptor.Analytics.GridFabric.ComputeFuncs
             try
             {
                 TRequest request = new TRequest();
-              //  request.InitialiseIgniteContext(RaptorGrids.RaptorImmutableGridName(), ServerRoles.PSNODE);
 
                 Log.Info("Executing AnalyticsComputeFunc_ApplicationService.Execute()");
 
