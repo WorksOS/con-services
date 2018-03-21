@@ -5,7 +5,7 @@ dotnet build TRex.Framework.sln
 
 cd tools
 
-dotnet minicover instrument --workdir ../ --assemblies tests/**/bin/**/*.dll --sources **/*.cs 
+dotnet minicover instrument --workdir ../ --assemblies tests/**/bin/**/*.dll --sources **/*.cs --exclude-assemblies **/*.Tests.*.dll
 
 dotnet minicover reset
 
