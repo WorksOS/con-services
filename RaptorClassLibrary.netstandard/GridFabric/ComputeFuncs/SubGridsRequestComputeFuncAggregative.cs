@@ -18,7 +18,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
     /// </summary>
     [Serializable]
     public class SubGridsRequestComputeFuncAggregative<TSubGridsRequestArgument, TSubGridRequestsResponse> : SubGridsRequestComputeFuncBase<TSubGridsRequestArgument, TSubGridRequestsResponse>
-        where TSubGridsRequestArgument : SubGridsRequestArgument, new()
+        where TSubGridsRequestArgument : SubGridsRequestArgument
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
         /// <summary>
