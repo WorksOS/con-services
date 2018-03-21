@@ -21,6 +21,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
             {
                 case GridDataType.Height: return IncludeSurveyedSurfacesInResult ? GridDataType.HeightAndTime : GridDataType.Height;
                 case GridDataType.SimpleVolumeOverlay: return IncludeSurveyedSurfacesInResult ? GridDataType.HeightAndTime : GridDataType.Height;
+                case GridDataType.CutFill: return GridDataType.Height;
                 default:
                     return DataType;
             }

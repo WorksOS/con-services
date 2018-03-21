@@ -83,6 +83,11 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         public bool IncludeSurveyedSurfaceInformation { get; set; } = false;
 
         /// <summary>
+        /// The design to be used in cases of cut/fill subgrid requests
+        /// </summary>
+        public long CutFillDesignID { get; set; } = long.MinValue;
+
+        /// <summary>
         /// No arg constructor that establishes this request as a cache compute request. 
         /// of subgrid processing is returned as a set of partitioned results from the Broadcast() invocation.
         /// </summary>
@@ -102,15 +107,17 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         /// <param name="prodDataMask"></param>
         /// <param name="surveyedSurfacOnlyeMask"></param>
         /// <param name="filters"></param>
+        /// <param name="cutFillDesignID"></param>
         public SubGridRequestsBase(ITask task, 
-                               long siteModelID, 
-                               long requestID, 
-                               string raptorNodeID, 
-                               GridDataType requestedGridDataType, 
-                               bool includeSurveyedSurfaceInformation,
-                               SubGridTreeSubGridExistenceBitMask prodDataMask,
-                               SubGridTreeSubGridExistenceBitMask surveyedSurfaceOnlyMask,
-                               FilterSet filters) : this()
+                                   long siteModelID, 
+                                   long requestID, 
+                                   string raptorNodeID, 
+                                   GridDataType requestedGridDataType, 
+                                   bool includeSurveyedSurfaceInformation,
+                                   SubGridTreeSubGridExistenceBitMask prodDataMask,
+                                   SubGridTreeSubGridExistenceBitMask surveyedSurfaceOnlyMask,
+                                   FilterSet filters,
+                                   long cutFillDesignID) : this()
         {
             Task = task;
             SiteModelID = siteModelID;
@@ -121,6 +128,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             ProdDataMask = prodDataMask;
             SurveyedSurfaceOnlyMask = surveyedSurfaceOnlyMask;
             Filters = filters;
+            CutFillDesignID = cutFillDesignID;
         }
 
         /// <summary>
@@ -148,7 +156,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
                         SurveyedSurfaceOnlyMaskBytes = SurveyedSurfaceMS.ToArray(),
                         Filters = Filters,
                         MessageTopic = String.Format("SubGridRequest:{0}", RequestID),
-                        RaptorNodeID = RaptorNodeID
+                        RaptorNodeID = RaptorNodeID,
+                        CutFillDesignID = CutFillDesignID
                     };
                 }
             }

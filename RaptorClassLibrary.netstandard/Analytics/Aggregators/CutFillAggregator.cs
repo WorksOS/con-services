@@ -31,7 +31,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
         /// <summary>
         /// The design to be used for comparison against the production data surface 
         /// </summary>
-        public Design CutFillDesign { get; set; } = null;
+//        public Design CutFillDesign { get; set; } = null;
 
         /// <summary>
         /// Default no-arg constructor
@@ -88,6 +88,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
             }
         }
 
+/*
         /// <summary>
         /// Converts a height subgrid to a cut fill isopach subgrid with respect to a design surface
         /// Note: This will be obviated when direct cutfill subgrid requests are handled at the subgrid processign engine level.
@@ -148,6 +149,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
 
             return false;
         }
+*/
 
         /// <summary>
         /// Processes an elevation subgrid into a cut fill isopach and calculate the counts of cells where the cut fill
@@ -160,13 +162,14 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
             ClientHeightLeafSubGrid HeightSubGrid = subGrids[0][0] as ClientHeightLeafSubGrid;
             Single HeightValue;
 
-            if (!ConvertElevationSubgridToCutFill(HeightSubGrid))
+/*
+ *if (!ConvertElevationSubgridToCutFill(HeightSubGrid))
             {
                 // TODO Add when logging available
                 // SIGLogMessage.Publish(Self, 'Supplied subgrid result could not be converted to a CutFill grid', slmcError);
                 return;
             }
-
+*/
             // loop through array. Note processing is accumulative so values may already hold values
             SubGridUtilities.SubGridDimensionalIterator((I, J) =>
                             {

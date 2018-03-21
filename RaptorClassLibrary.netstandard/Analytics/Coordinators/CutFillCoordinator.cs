@@ -105,8 +105,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Coordinators
                     SiteModelID = arg.DataModelID,
                     //LiftBuildSettings := LiftBuildSettings;
                     CellSize = SiteModel.Grid.CellSize,
-                    Offsets = arg.Offsets,
-                    CutFillDesign = DesignsService.Instance().Find(arg.DataModelID, arg.DesignID)
+                    Offsets = arg.Offsets
                 };
 
                 Log.Info("Creating computor");
@@ -118,7 +117,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Coordinators
                     Aggregator = Aggregator,
                     Filter = arg.Filter,
                     IncludeSurveyedSurfaces = true,
-                    RequestedGridDataType = GridDataType.Height, // TODO: Change to CutFill when this is merged from Legacy source                    
+                    RequestedGridDataType = GridDataType.CutFill, // TODO: Change to CutFill when this is merged from Legacy source                    
                     CutFillDesignID = arg.DesignID
                 };
 

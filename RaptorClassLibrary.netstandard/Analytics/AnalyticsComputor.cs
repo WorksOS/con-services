@@ -91,6 +91,7 @@ namespace VSS.VisionLink.Raptor.Analytics
             PipeLine.IncludeSurveyedSurfaceInformation = IncludeSurveyedSurfaces;
             PipeLine.PipelineTask = PipelinedTask;
             PipeLine.GridDataType = RequestedGridDataType;
+            PipeLine.CutFillDesignID = CutFillDesignID;
 
             Log.Debug($"Analytics computor extents for DM={SiteModel.ID}: {Extents}");
 

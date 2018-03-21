@@ -5,12 +5,10 @@ using VSS.VisionLink.Raptor.Executors.Tasks;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.GridFabric.Requests;
 using VSS.VisionLink.Raptor.GridFabric.Responses;
 using VSS.VisionLink.Raptor.Pipelines;
 using VSS.VisionLink.Raptor.Rendering.Displayers;
 using VSS.VisionLink.Raptor.Rendering.Executors.Tasks;
-using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Rendering.Palettes;
 using VSS.VisionLink.Raptor.Rendering.Palettes.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees;
@@ -68,14 +66,6 @@ namespace VSS.VisionLink.Raptor.Rendering
 
         public bool AbortedDueToTimeout;
 
-        /// <summary>
-        /// The identifier for the design held in the designs list ofr the project to be used to calculate cut/fill values
-        /// </summary>
-        public long CutFillDesignID = long.MinValue;
-        //public DesignDescriptor CutFillDesign; // =  // FCutFillDesignDescriptor : TVLPDDesignDescriptor;
-
-        // FReferenceVolumeType : TComputeICVolumesType;
-
         public int EpochCount;
 
         // The rotation of tile in the grid coordinate space due to any defined
@@ -101,13 +91,8 @@ namespace VSS.VisionLink.Raptor.Rendering
         // taken into account (Value=False)
         public bool IsWhollyInTermsOfGridProjection;
 
-//        protected void ProcessTransferredSubgridResponse() //(const AResult: TICAsyncRequestResult)
-//        {
-//        }
-
         // function GetWorkingPalette: TICDisplayPaletteBase;
         // procedure SetWorkingPalette(const Value: TICDisplayPaletteBase);
-        // function ConvertElevationSubgridToCutFill(Subgrid: TICSubGridTreeLeafSubGridBase): Boolean;
 
         private void ConfigurePipeline(out BoundingIntegerExtent2D CellExtents)
         {
@@ -171,7 +156,6 @@ namespace VSS.VisionLink.Raptor.Rendering
             PipeLine.ProdDataExistenceMap = ProdDataExistenceMap;
             PipeLine.DesignSubgridOverlayMap = DesignSubgridOverlayMap;
 
-            // PipeLine.OperationNode.OnOperateOnSubGrid  = ProcessTransferredSubgridResponse;
             PipeLine.GridDataType = GridDataFromModeConverter.Convert(Mode);
 
             // Construct and assign the filter set into the pipeline
@@ -183,8 +167,6 @@ namespace VSS.VisionLink.Raptor.Rendering
                 PipeLine.IncludeSurveyedSurfaceInformation = Utilities.FilterRequireSurveyedSurfaceInformation(PipeLine.FilterSet);
             }
 
-            //PipeLine.ReferenceDesign  = CutFillDesignDescriptor;
-            //PipeLine.ReferenceVolumeType  = FReferenceVolumeType;
             //PipeLine.NoChangeVolumeTolerance  = FICOptions.NoChangeVolumeTolerance;
         }
 
@@ -267,7 +249,7 @@ namespace VSS.VisionLink.Raptor.Rendering
 
                 // Displayer.ICOptions  = ICOptions;
 
-                PipelinedTask = new PVMRenderingTask(RequestDescriptor, RequestingRaptorNodeID, GridDataFromModeConverter.Convert(Mode), this, CutFillDesignID /*CutFillDesign*/);
+                PipelinedTask = new PVMRenderingTask(RequestDescriptor, RequestingRaptorNodeID, GridDataFromModeConverter.Convert(Mode), this);
 
                 // ASNodeImplInstance.AsyncResponder.ASNodeResponseProcessor.ASTasks.Add(PipelinedTask);
                 try
@@ -344,8 +326,6 @@ namespace VSS.VisionLink.Raptor.Rendering
         //      property DisplayPalettes : TICDisplayPalettes read FDisplayPalettes write FDisplayPalettes;
         //      property ICOptions : TSVOICOptions read FICOptions write FICOptions;
         //      property LiftBuildSettings : TICLiftBuildSettings read FLiftBuildSettings write FLiftBuildSettings;
-        //      property CutFillDesignDescriptor : TVLPDDesignDescriptor read FCutFillDesignDescriptor write FCutFillDesignDescriptor;
-        //      property ReferenceVolumeType : TComputeICVolumesType read FReferenceVolumeType write FReferenceVolumeType;
 
         public RequestErrorStatus PerformRender()
         {
@@ -401,8 +381,6 @@ namespace VSS.VisionLink.Raptor.Rendering
             AbortedDueToTimeout = false;
             Displayer = null;
             //Palette = null;
-
-            //ReferenceVolumeType = ic_cvtNone;
 
             EpochCount = 0;
             TileRotation = 0.0;

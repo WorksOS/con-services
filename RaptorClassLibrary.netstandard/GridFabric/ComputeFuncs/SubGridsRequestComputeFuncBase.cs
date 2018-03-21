@@ -20,6 +20,9 @@ using System.Diagnostics;
 using VSS.VisionLink.Raptor.Analytics.Aggregators;
 using VSS.VisionLink.Raptor.Utilities;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
+using VSS.VisionLink.Raptor.Designs.Storage;
+using VSS.VisionLink.Raptor.Services.Designs;
+using VSS.Velociraptor.DesignProfiling;
 
 namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 {
@@ -97,7 +100,13 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
         [NonSerialized]
         private AreaControlSet AreaControlSet = AreaControlSet.Null();
-            
+
+        /// <summary>
+        /// The Design to be used for querying elevation information from in the process of calculating cut-fill values
+        /// </summary>
+        [NonSerialized]
+        private Design CutFillDesign = null;
+
         /// <summary>
         /// Default no-arg constructor
         /// </summary>
@@ -163,6 +172,12 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
                                     (NewClientGrids[I] as ClientHeightLeafSubGrid).Assign(SubgridResultArray[I] as ClientHeightAndTimeLeafSubGrid);
                                     break;
+
+                                case GridDataType.CutFill:
+                                    // Just copy the height subgrid to new subgrid list
+                                    NewClientGrids[I] = SubgridResultArray[I];
+                                    SubgridResultArray[I] = null;
+                                    break;
                             }
                         }
                         else
@@ -224,6 +239,12 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                     }
                 }
             }
+
+            // Set up any required cut fill design
+            if (arg.CutFillDesignID != long.MinValue)
+            {
+                CutFillDesign = DesignsService.Instance().Find(arg.SiteModelID, arg.CutFillDesignID);
+            }
         }
 
 
@@ -266,33 +287,32 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                     IClientLeafSubGrid[] ClientArray = new IClientLeafSubGrid[1] { clientGrid };
                     ConvertIntermediarySubgridsToResult(localArg.GridDataType, ref ClientArray);
 
+                    // If the requested data is cut fill derived from elevation data previously calculated, 
+                    // then perform the conversion here
+                    if (localArg.GridDataType == GridDataType.CutFill)
+                    {
+                        if (ClientArray.Length == 2)
+                        {
+                            // The cut fill is defined between two production data derived height subgrids
+                            // depending on volumetype work out height difference
+                            CutFillUtilities.ComputeCutFillSubgrid(ClientArray[0], // 'base'
+                                                                   ClientArray[1]); // 'top'
+                        }
+                        else
+                        {
+                            // The cut fill is defined between one production data derived height subgrid and a
+                            // height subgrid to be calculated from a designated design
+                            if (!CutFillUtilities.ComputeCutFillSubgrid(ClientArray[0], // base
+                                                                        CutFillDesign, // 'top'
+                                                                        localArg.SiteModelID,
+                                                                        out DesignProfilerRequestResult ProfilerRequestResult))
+                            {
+                                result = ServerRequestResult.FailedToComputeDesignElevationPatch;
+                            }
+                        }
+                    }
 
-          // todo cutfill conversion
-                  if (clientGrid?.GridDataType == GridDataType.CutFill)
-                  {
-
-
-            /*
-                    // Cutfill mode which is a height grid now needs to be converted into a height difference grid for asnode to render
-                    if Requests.DisplayType = Ord(icdmCutFill) then
-                        begin
-                    if (Requests.ReferenceVolumeType = ic_cvtBetween2Filters) and(Length(SubgridResultArray) > 1) then
-                    TopScanSubgrid2 := SubgridResultArray[1].Subgrid
-                    else
-                    TopScanSubgrid2:= Nil;
-                    // depending on volumetype work out height difference
-                    ComputeCutFillSubgrid(Requests.ReferenceVolumeType,
-                      Requests.ReferenceDesign,
-                      SubgridResultArray[0].Subgrid, // base
-                      TopScanSubgrid2, // filter2 if present
-                      Requests.DataModelID);
-                    end;
-                */
-                  }
-
-
-
-          clientGrid = ClientArray[0];
+                    clientGrid = ClientArray[0];
                 }
 
                 return result;

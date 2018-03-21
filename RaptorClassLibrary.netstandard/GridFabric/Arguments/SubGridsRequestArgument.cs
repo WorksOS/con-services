@@ -57,45 +57,15 @@ namespace VSS.VisionLink.Raptor.GridFabric.Arguments
         public bool IncludeSurveyedSurfaceInformation { get; set; } = false;
 
         /// <summary>
+        /// The design to be used in cases of cut/fill subgrid requests
+        /// </summary>
+        public long CutFillDesignID { get; set; } = long.MinValue;
+
+        /// <summary>
         /// Default no-arg constructor
         /// </summary>
         public SubGridsRequestArgument()
         {
-
         }
-
-        /*
-        /// <summary>
-        /// Full constructor for a subgrids request
-        /// </summary>
-        /// <param name="siteModelID"></param>
-        /// <param name="requestID"></param>
-        /// <param name="gridDataType"></param>
-        /// <param name="includeSurveyedSurfaceInformation"></param>
-        /// <param name="prodDataMaskBytes"></param>
-        /// <param name="surveyedSurfaceOnlyMaskBytes"></param>
-        /// <param name="messageTopic"></param>
-        /// <param name="raptorNodeID"></param>
-        public SubGridsRequestArgument(long siteModelID, 
-                                       long requestID, 
-                                       GridDataType gridDataType, 
-                                       bool includeSurveyedSurfaceInformation,
-                                       byte[] prodDataMaskBytes,
-                                       byte[] surveyedSurfaceOnlyMaskBytes,
-                                       FilterSet filters, 
-                                       string messageTopic, 
-                                       string raptorNodeID) : this()
-        {
-            SiteModelID = siteModelID;
-            RequestID = requestID;
-            GridDataType = gridDataType;
-            IncludeSurveyedSurfaceInformation = includeSurveyedSurfaceInformation;
-            ProdDataMaskBytes = prodDataMaskBytes;
-            SurveyedSurfaceOnlyMaskBytes = surveyedSurfaceOnlyMaskBytes;
-            Filters = filters;
-            MessageTopic = messageTopic;
-            RaptorNodeID = raptorNodeID;
-        }
-        */
     }
 }

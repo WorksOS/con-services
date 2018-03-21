@@ -78,8 +78,8 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
         public int MaxNumberOfPassesToReturn = 0;
 
-        // public         FReferenceDesign : TVLPDDesignDescriptor;
-        // public         FReferenceVolumeType : TComputeICVolumesType;
+        public long CutFillDesignID { get; set; } = long.MinValue;
+
         // public         FNoChangeVolumeTolerance : Single;
 
         public AreaControlSet AreaControlSet;
@@ -165,8 +165,6 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
             // FMaxNumberOfPassesToReturn:= VLPDSvcLocations.VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary;
 
-            // ReferenceDesign.Clear;
-            // FReferenceVolumeType:= ic_cvtNone;
             // FNoChangeVolumeTolerance:= 0;
 
             // FPixelXWorldSize := 0.0;
@@ -238,7 +236,8 @@ namespace VSS.VisionLink.Raptor.Pipelines
                 IncludeSurveyedSurfaceInformation = IncludeSurveyedSurfaceInformation,
                 ProdDataMask = analyser.ProdDataMask,
                 SurveyedSurfaceOnlyMask = analyser.SurveydSurfaceOnlyMask,
-                Filters = FilterSet
+                Filters = FilterSet,
+                CutFillDesignID = CutFillDesignID
             };
 
             ICollection<TSubGridRequestsResponse> Responses = gridFabricRequest.Execute();
