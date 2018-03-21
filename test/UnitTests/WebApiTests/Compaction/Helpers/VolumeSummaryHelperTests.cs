@@ -13,22 +13,20 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
   [TestClass]
   public class VolumeSummaryHelperTests
   {
-
-
-    [TestClassAttribute]
-    public class GetVolumesType : VolumeSummaryHelperTests
+    [TestClass]
+    public class GetVolumesTypeTests : VolumeSummaryHelperTests
     {
-      private readonly SummaryDataDataHelper volumeSummaryDataHelper = new SummaryDataDataHelper();
+      private readonly SummaryDataHelper volumeSummaryDataHelper = new SummaryDataHelper();
       private static Filter filter;
 
       [ClassInitialize]
       public static void ClassInit(TestContext context)
       {
         filter = Filter.CreateFilter(
-            0, "name", "desc", DateTime.Now, DateTime.Now, 1, null, false, false, ElevationType.Highest, 
-            new List<WGSPoint>(), new List<Point>(), false, null, 0, 0, 0, 0, "designName", 
-            FilterLayerMethod.None, null, 0, 0, 0, new List<MachineDetails>(), new List<long>(), 
-            true, GPSAccuracy.Coarse, false, false, false, false, null);
+          0, "name", "desc", DateTime.Now, DateTime.Now, 1, null, false, false, ElevationType.Highest,
+          new List<WGSPoint>(), new List<Point>(), false, null, 0, 0, 0, 0, "designName",
+          FilterLayerMethod.None, null, 0, 0, 0, new List<MachineDetails>(), new List<long>(),
+          true, GPSAccuracy.Coarse, false, false, false, false, null);
       }
 
       [TestMethod]
@@ -47,6 +45,22 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       public void Should_return_DesignToGround_When_only_topFilter_is_set()
       {
         Assert.AreEqual(RaptorConverters.VolumesType.BetweenDesignAndFilter, this.volumeSummaryDataHelper.GetVolumesType(null, filter));
+      }
+    }
+
+    [TestClass]
+    public class DoGroundToGroundComparisonTests : VolumeSummaryHelperTests
+    {
+      [TestMethod]
+      public void Should_return_False_When_baseFilter_is_null()
+      {
+        Assert.IsFalse(SummaryDataHelper.DoGroundToGroundComparison(null, new MasterData.Models.Models.Filter()));
+      }
+
+      [TestMethod]
+      public void Should_return_False_When_topFilter_is_null()
+      {
+        Assert.IsFalse(SummaryDataHelper.DoGroundToGroundComparison(new MasterData.Models.Models.Filter(), null));
       }
     }
   }

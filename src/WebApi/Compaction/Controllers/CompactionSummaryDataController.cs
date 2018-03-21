@@ -12,6 +12,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApi.Compaction.ActionServices;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
@@ -332,6 +333,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
 
       var volumeCalcType = summaryDataHelper.GetVolumesType(baseFilter, topFilter);
+
+      if (volumeCalcType == RaptorConverters.VolumesType.None)
+      {
+        throw new ServiceException(
+          HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Missing volumes calculation type"));
+      }
+
       var request = SummaryVolumesRequest.CreateAndValidate(GetLegacyProjectId(projectUid), baseFilter, topFilter, baseDesign, topDesign, volumeCalcType);
 
       CompactionVolumesSummaryResult returnResult;

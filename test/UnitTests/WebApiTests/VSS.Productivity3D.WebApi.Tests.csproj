@@ -89,8 +89,4 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ProductionData\Helpers\" />
-  </ItemGroup>
-
 </Project>

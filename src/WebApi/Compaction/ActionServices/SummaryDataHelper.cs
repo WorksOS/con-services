@@ -7,7 +7,7 @@ using VSS.Productivity3D.Common.Proxies;
 namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
 {
   /// <inheritdoc />
-  public class SummaryDataDataHelper : ISummaryDataHelper
+  public class SummaryDataHelper : ISummaryDataHelper
   {
     /// <inheritdoc />
     public RaptorConverters.VolumesType GetVolumesType(Filter filter1, Filter filter2)
