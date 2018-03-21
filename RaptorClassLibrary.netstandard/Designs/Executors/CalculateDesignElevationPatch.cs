@@ -17,14 +17,6 @@ namespace VSS.Velociraptor.DesignProfiling.Executors
         public CalculateDesignElevationPatch()
         {
         }
-        /// <summary>
-        /// Constructor for the executor accepting the arguments for its operation
-        /// </summary>
-        /// <param name="args"></param>
-        //        public CalculateDesignElevationPatch(CalculateDesignElevationPatchArgument args)
-        //        {
-        //            this.Args = args;
-        //        }
 
         /// <summary>
         /// Performs the donkey work of the elevation patch calculation
