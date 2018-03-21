@@ -1,21 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
+using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
-using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
-using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -78,7 +76,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <executor>CellDatumExecutor</executor> 
     [Route("api/v2/productiondata/cells/datum")]
     [HttpGet]
-    public async Task<CellDatumResponse> GetProductionDataCellsDatum(
+    public async Task<CompactionCellDatumResult> GetProductionDataCellsDatum(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid,
       [FromQuery] Guid? cutfillDesignUid,
@@ -96,7 +94,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       CellDatumRequest request = CellDatumRequest.CreateCellDatumRequest(projectId, displayMode, llPoint, null, filter, filter.Id ?? -1, liftSettings, cutFillDesign);
       request.Validate();
 
-      return RequestExecutorContainerFactory.Build<CellDatumExecutor>(logger, raptorClient).Process(request) as CellDatumResponse;
+      return RequestExecutorContainerFactory.Build<CompactionCellDatumExecutor>(logger, raptorClient).Process(request) as CompactionCellDatumResult;
     }
   }
 }
