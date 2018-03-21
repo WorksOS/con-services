@@ -4,6 +4,8 @@ using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
 using VSS.VisionLink.Raptor.Servers;
 using VSS.VisionLink.Raptor.Servers.Client;
 
+/* WARNING - Danger Will Robinson, experimental only... */
+
 namespace VSS.VisionLink.Analytics.Servers.Client
 {    
     public class AnalyticsRequest<TRequest, TArgument, TResponse>

@@ -23,7 +23,7 @@ namespace VSS.VisionLink.Raptor.Analytics
     /// The base class the implements the analytics computation framework 
     /// </summary>
     public class AnalyticsComputor<TArgument, SubGridsRequestResponse>
-        where TArgument : BaseApplicationServiceRequestArgument, new()
+        where TArgument : BaseApplicationServiceRequestArgument
         where SubGridsRequestResponse : class, new()
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

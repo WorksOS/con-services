@@ -28,7 +28,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
     /// </summary>
     [Serializable]
     public abstract class SubGridsRequestComputeFuncBase<TSubGridsRequestArgument, TSubGridRequestsResponse> : IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse>, IDisposable
-        where TSubGridsRequestArgument : SubGridsRequestArgument, new()
+        where TSubGridsRequestArgument : SubGridsRequestArgument
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
         private const int addressBucketSize = 20;

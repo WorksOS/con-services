@@ -737,7 +737,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             });
 
             // Show the list of percentages calculated by the request
-            MessageBox.Show($"Results [Cut/Fill:{offsets.Aggregate("", (a, v) => a + $"{ v.ToString("F1")}, ")}]: {result?.Percents?.Aggregate("", (a, v) => a + $"{v.ToString("F1")}% ")}");
+            MessageBox.Show($"Results [Cut/Fill:{offsets.Aggregate("", (a, v) => a + $"{ v.ToString("F1")}, ")}]: {(result?.Percents == null ? "No Result" : result.Percents?.Aggregate("", (a, v) => a + $"{v.ToString("F1")}% "))}");
         }
     }
 }
