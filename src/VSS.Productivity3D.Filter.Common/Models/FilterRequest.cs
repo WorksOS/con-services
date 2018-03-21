@@ -56,8 +56,8 @@ namespace VSS.Productivity3D.Filter.Common.Models
       //Only filterUid needs validating for get filter otherwise everything needs validating
       if (!onlyFilterUid)
       {
-        //Must have a name for non-transient filters
-        if (FilterType != FilterType.Transient && string.IsNullOrEmpty(Name))
+        //Must have a name for persistent filters
+        if (FilterType == FilterType.Persistent && string.IsNullOrEmpty(Name))
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 3);
         }
