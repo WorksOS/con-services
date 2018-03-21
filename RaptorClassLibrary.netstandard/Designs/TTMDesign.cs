@@ -1141,7 +1141,7 @@ namespace VSS.Velociraptor.DesignProfiling
                         return true;
                     });
 
-                    Log.Info($"Constructed subgrid index for design containing {FData.Triangles.Count} triangles, using {sumLeafSubGrids} leafe and {sumNodeSubGrids} node subgrids, {sumTriangleLists} triangle lists and {sumTriangleReferences} triangle references");
+                    Log.Info($"Constructed subgrid index for design containing {FData.Triangles.Count} triangles, using {sumLeafSubGrids} leaf and {sumNodeSubGrids} node subgrids, {sumTriangleLists} triangle lists and {sumTriangleReferences} triangle references");
                 }
 
                 return true;

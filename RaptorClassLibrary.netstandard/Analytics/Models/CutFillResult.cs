@@ -54,7 +54,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Models
 
             long sum = counts.Sum();
             for (int i = 0; i < counts.Length; i++)
-                Percents[i] = counts[i] == 0 ? 0 : (counts[i] / sum) * 100;
+                Percents[i] = counts[i] == 0 ? 0 : ((1.0 * counts[i]) / sum) * 100;
         }
 
         /// <summary>

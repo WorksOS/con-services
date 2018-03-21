@@ -1,10 +1,6 @@
 ﻿using log4net;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Executors.Tasks;
 using VSS.VisionLink.Raptor.Filters;
@@ -23,7 +19,7 @@ namespace VSS.VisionLink.Raptor.Analytics
     /// The base class the implements the analytics computation framework 
     /// </summary>
     public class AnalyticsComputor<TArgument, SubGridsRequestResponse>
-        where TArgument : BaseApplicationServiceRequestArgument, new()
+        where TArgument : BaseApplicationServiceRequestArgument
         where SubGridsRequestResponse : class, new()
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -91,6 +87,7 @@ namespace VSS.VisionLink.Raptor.Analytics
             PipeLine.IncludeSurveyedSurfaceInformation = IncludeSurveyedSurfaces;
             PipeLine.PipelineTask = PipelinedTask;
             PipeLine.GridDataType = RequestedGridDataType;
+            PipeLine.CutFillDesignID = CutFillDesignID;
 
             Log.Debug($"Analytics computor extents for DM={SiteModel.ID}: {Extents}");
 
@@ -173,7 +170,10 @@ namespace VSS.VisionLink.Raptor.Analytics
                     }
 
                     // Start the pipeline processing it's work and wait for it to complete
-                    PipeLine.Initiate();
+                    if (PipeLine.Initiate())
+                    {
+                        PipeLine.WaitForCompletion();
+                    }
 
                     /* TODO ????
                               FEpochCount := 0;

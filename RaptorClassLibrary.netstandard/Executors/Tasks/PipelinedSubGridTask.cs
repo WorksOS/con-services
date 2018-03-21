@@ -6,8 +6,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Executors.Tasks.Interfaces;
-using VSS.VisionLink.Raptor.GridFabric.Requests;
-using VSS.VisionLink.Raptor.Pipelines;
 using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.Executors.Tasks

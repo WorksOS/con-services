@@ -358,6 +358,12 @@ namespace VSS.VisionLink.Raptor.Filters
             if (Result != 0)
                 return Result;
 
+            // Exclusion of surveyed surfaces from query
+            Result = FlagCheck2(ExcludeSurveyedSurfaces(), AFilter.ExcludeSurveyedSurfaces());
+            if (Result != 0)
+              return Result;
+
+
             // GCS Guidance mode
             Result = FlagCheck2(HasGCSGuidanceModeFilter, AFilter.HasGCSGuidanceModeFilter);
             if (Result != 0)

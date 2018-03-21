@@ -7,15 +7,14 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Analytics.Coordinators;
-using VSS.VisionLink.Raptor.Analytics.Models;
 using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
 using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
 
 namespace VSS.VisionLink.Raptor.Analytics.GridFabric.ComputeFuncs
 {
     public class AnalyticsComputeFunc_ClusterCompute<TArgument, TResponse, TCoordinator> : BaseRaptorComputeFunc, IComputeFunc<TArgument, TResponse>
-        where TArgument : class //, new()
-        where TResponse : class, IResponseAggregateWith<TResponse> //, new()
+        where TArgument : class
+        where TResponse : class, IResponseAggregateWith<TResponse>
         where TCoordinator : BaseAnalyticsCoordinator<TArgument, TResponse>, new()
     {
         [NonSerialized]

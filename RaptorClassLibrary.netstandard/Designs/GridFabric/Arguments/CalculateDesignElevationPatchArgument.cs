@@ -36,14 +36,13 @@ namespace VSS.Velociraptor.DesignProfiling.GridFabric.Arguments
         /// <summary>
         /// A map of the cells within the subgrid patch to be computed
         /// </summary>
-        public SubGridTreeBitmapSubGridBits ProcessingMap { get; set; }
+//        public SubGridTreeBitmapSubGridBits ProcessingMap { get; set; }
 
         /// <summary>
         /// Default no-arg constructor
         /// </summary>
         public CalculateDesignElevationPatchArgument()
         {
-
         }
 
         /// <summary>
@@ -59,15 +58,15 @@ namespace VSS.Velociraptor.DesignProfiling.GridFabric.Arguments
                                          uint originX,
                                          uint originY,
                                          double cellSize,
-                                         DesignDescriptor designDescriptor,
-                                         SubGridTreeBitmapSubGridBits processingMap) : this()
+                                         DesignDescriptor designDescriptor/*,
+                                         SubGridTreeBitmapSubGridBits processingMap*/) : this()
         {
             SiteModelID = siteModelID;
             OriginX = originX;
             OriginY = originY;
             CellSize = cellSize;
             DesignDescriptor = designDescriptor;
-            ProcessingMap = processingMap;
+//            ProcessingMap = processingMap;
         }
 
         /// <summary>

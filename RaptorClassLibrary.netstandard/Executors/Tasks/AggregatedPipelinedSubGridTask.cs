@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Interfaces;
+using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.Executors.Tasks
@@ -26,6 +27,22 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
         public AggregatedPipelinedSubGridTask(ISubGridRequestsAggregator aggregator) : base(Guid.NewGuid().GetHashCode(), "", GridDataType.All)
         {
             Aggregator = aggregator;
+        }
+
+        /// <summary>
+        /// Transfers a single subgrid response from a query context into the task processing context
+        /// </summary>
+        /// <param name="response"></param>
+        /// <returns></returns>
+        public override bool TransferResponse(object response)
+        {
+            if (base.TransferResponse(response))
+            {
+                Aggregator.ProcessSubgridResult(response as IClientLeafSubGrid[][]);
+                return true;
+            }
+
+            return false;
         }
     }
 }

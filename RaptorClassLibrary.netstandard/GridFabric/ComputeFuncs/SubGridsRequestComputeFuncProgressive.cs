@@ -1,4 +1,7 @@
-﻿using log4net;
+﻿using Apache.Ignite.Core;
+using Apache.Ignite.Core.Cluster;
+using Apache.Ignite.Core.Messaging;
+using log4net;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,7 +10,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Arguments;
+using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.GridFabric.Responses;
+using VSS.VisionLink.Raptor.GridFabric.Types;
 using VSS.VisionLink.Raptor.Servers;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
@@ -18,13 +23,60 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
     /// </summary>
     [Serializable]
     public class SubGridsRequestComputeFuncProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse> : SubGridsRequestComputeFuncBase<TSubGridsRequestArgument, TSubGridRequestsResponse>
-        where TSubGridsRequestArgument : SubGridsRequestArgument, new()
+        where TSubGridsRequestArgument : SubGridsRequestArgument
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        [NonSerialized]
+        protected IMessaging rmtMsg = null;
+
+        [NonSerialized]
+        protected string raptorNodeIDAsString = String.Empty;
+
+        [NonSerialized]
         private MemoryStream MS = new MemoryStream();
+
+        /// <summary>
+        /// Capture elements from the argument relevant to progressive subgrid requests
+        /// </summary>
+        /// <param name="arg"></param>
+        protected override void UnpackArgument(SubGridsRequestArgument arg)
+        {
+            raptorNodeIDAsString = arg.RaptorNodeID.ToString();
+
+            Log.InfoFormat("RaptorNodeIDAsString is {0} in UnpackArgument()", raptorNodeIDAsString);
+        }
+
+        /// <summary>
+        /// Set up Ignite elements for progressive subgrid requests
+        /// </summary>
+        public override bool EstablishRequiredIgniteContext(out SubGridRequestsResponseResult ResponseCode)
+        {
+            ResponseCode = SubGridRequestsResponseResult.OK;
+
+            IIgnite Ignite = Ignition.TryGetIgnite(RaptorGrids.RaptorImmutableGridName());
+            IClusterGroup group = Ignite?.GetCluster().ForAttribute("RaptorNodeID", raptorNodeIDAsString);
+
+            if (group == null)
+            {
+                ResponseCode = SubGridRequestsResponseResult.NoIgniteGroupProjection;
+                return false;
+            }
+
+            Log.InfoFormat("Message group has {0} members", group.GetNodes().Count);
+
+            rmtMsg = group.GetMessaging();
+
+            if (rmtMsg == null)
+            {
+                ResponseCode = SubGridRequestsResponseResult.NoIgniteGroupProjection;
+                return false;
+            }
+
+            return true;
+        }
 
         /// <summary>
         /// Processes a subgrid result that consists of a client leaf subgrid for each of the filters in the request

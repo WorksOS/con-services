@@ -14,8 +14,8 @@ using VSS.VisionLink.Raptor.GridFabric.Responses;
 namespace VSS.VisionLink.Raptor.GridFabric.Requests
 {
     /// <summary>
-    /// Performs subgrid requests where the procesing result is aggregated and returned as one of set of paritioned responses
-    /// from the cache computer cluster
+    /// Performs subgrid requests where the procesing result is aggregated and returned as one of set of partitioned responses
+    /// from the cache compute cluster
     /// </summary>
     public class SubGridRequestsAggregative<TSubGridsRequestArgument, TSubGridRequestsResponse> : SubGridRequestsBase<TSubGridsRequestArgument, TSubGridRequestsResponse> 
         where TSubGridsRequestArgument : SubGridsRequestArgument, new()
@@ -24,14 +24,14 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
-        /// Default no-arg constructor thje delgates construction to the base class
+        /// Default no-arg constructor that delegates construction to the base class
         /// </summary>
         public SubGridRequestsAggregative() : base()
         {
         }
 
         /// <summary>
-        /// Overrides the base Execut() semantics to add a listener available for aggregative processing of subgrids in the request engine.
+        /// Overrides the base Execute() semantics to add a listener available for aggregative processing of subgrids in the request engine.
         /// </summary>
         /// <returns></returns>
         public override ICollection<TSubGridRequestsResponse> Execute()
@@ -64,7 +64,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             {
                 sw.Stop();
                 Log.InfoFormat("TaskResult {0}: SubgidRequests.Execute() for DM:{1} from node {2} for data type {3} took {4}ms",
-                               taskResult.ResponseCode, Task.PipeLine.DataModelID, Task.RaptorNodeID, Task.GridDataType, sw.ElapsedMilliseconds);
+                               taskResult == null ? "<NullResult>" : taskResult.ResponseCode.ToString(), 
+                               Task.PipeLine.DataModelID, Task.RaptorNodeID, Task.GridDataType, sw.ElapsedMilliseconds);
             }
 
             /// Advise the pipeline of all the subgrids that were examined in the aggregative processing

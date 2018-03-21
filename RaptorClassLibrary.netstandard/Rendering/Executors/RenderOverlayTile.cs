@@ -64,7 +64,6 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
         /// The identifier for the design held in the designs list ofr the project to be used to calculate cut/fill values
         /// </summary>
         public long CutFillDesignID { get; set; } = long.MinValue;
-        // DesignDescriptor CutFillDesign; // DesignDescriptor
 
             
         // ComputeICVolumesType ReferenceVolumeType = ComputeICVolumesType.None;
@@ -691,9 +690,6 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
                 Renderer.SetBounds(NEECoords[0].X, NEECoords[0].Y,
                                    WorldTileWidth, WorldTileHeight,
                                    NPixelsX, NPixelsY);
-
-                Renderer.CutFillDesignID = CutFillDesignID;
-                //Renderer.CutFillDesign = CutFillDesign;
 
                 // Renderer.ReferenceVolumeType = FReferenceVolumeType;
 

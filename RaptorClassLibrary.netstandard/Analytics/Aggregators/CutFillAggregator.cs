@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VSS.Velociraptor.DesignProfiling;
 using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.Designs.Storage;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
@@ -28,11 +26,6 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
         public long[] Counts { get; set; }
 
         /// <summary>
-        /// The design to be used for comparison against the production data surface 
-        /// </summary>
-        public Design CutFillDesign { get; set; }
-
-        /// <summary>
         /// Default no-arg constructor
         /// </summary>
         public CutFillAggregator()
@@ -47,10 +40,8 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
         void IncrementCountOfCutFillTransition(Double value)
         {
             // Works out what percentage of cutfill map colours are used
-            Double LowTransitionValue;
-            Double HighTransitionValue;
-
             // always 7 elements in array and assumes grade is set at zero
+            // eg: 0.5, 0.2, 0.1, 0.0, -0.1, -0.2, -0.5
             if (value == 0)  // on grade
                 Counts[3]++;
             else if (value > 0) // Cut
@@ -62,9 +53,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
                 }
                 for (int I = 0; I < 3; I++)
                 {
-                    HighTransitionValue = Offsets[I];     // highest value
-                    LowTransitionValue = Offsets[I + 1];   // lowest value
-                    if (value >= LowTransitionValue && value < HighTransitionValue)
+                    if (value >= Offsets[I + 1] && value < Offsets[I])
                     {
                         Counts[I + 1]++;
                         break;
@@ -81,9 +70,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
                 }
                 for (int I = 3; I < 6; I++)
                 {
-                    HighTransitionValue = Offsets[I];     // highest value
-                    LowTransitionValue = Offsets[I + 1];   // lowest value
-                    if (value >= LowTransitionValue && value < HighTransitionValue)
+                    if (value >= Offsets[I + 1] && value < Offsets[I])
                     {
                         Counts[I]++;
                         break;
@@ -91,67 +78,6 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
                 }
                 // should not get past this point
             }
-        }
-
-        /// <summary>
-        /// Converts a height subgrid to a cut fill isopach subgrid with respect to a design surface
-        /// Note: This will be obviated when direct cutfill subgrid requests are handled at the subgrid processign engine level.
-        /// </summary>
-        /// <param name="SubGrid"></param>
-        /// <returns></returns>
-        private bool ConvertElevationSubgridToCutFill(IClientLeafSubGrid SubGrid)
-        {
-            //ClientHeightLeafSubGrid ElevationSubgrid = null;
-            ClientHeightLeafSubGrid DesignElevations = null;
-
-            //  SIGLogMessage.PublishNoODS(Self, 'Render(ProcessTransferredSubgridResponse): Converting height to cut/fill', slmcMessage);
-            try
-            {
-                if (CutFillDesign == null)
-                {
-                    // TODO Include when loggin available
-                    // SIGLogMessage.PublishNoODS(Self, 'Render(ProcessTransferredSubgridResponse): Converting height to cut/fill: No design supplied, exiting', slmcError);
-                    return false;
-                }
-
-                DesignProfilerRequestResult ProfilerRequestResult = DesignProfilerRequestResult.UnknownError;
-                ClientHeightLeafSubGrid ElevationSubgrid = SubGrid as ClientHeightLeafSubGrid;
-
-                if (CutFillDesign?.GetDesignHeights(SiteModelID, SubGrid.OriginAsCellAddress(), SubGrid.CellSize, out DesignElevations, out ProfilerRequestResult) == false)
-                {
-                    if (ProfilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
-                    {
-                        // TODO readd when logging available
-                        //SIGLogMessage.PublishNoODS(Self, Format('Design profiler subgrid elevation request for %s failed with error %d', [BaseScanSubGrid.OriginAsCellAddress.AsText, Ord(ProfilerRequestResult)]), slmcError);
-                        return false;
-                    }
-                }
-
-                // Compare the design elevations in the requested design elevation patch against the elevation subgrid we have been passed
-                SubGridUtilities.SubGridDimensionalIterator((I, J) =>
-                {
-                    if (ElevationSubgrid.Cells[I, J] != Consts.NullHeight)
-                    {
-                        if (DesignElevations.Cells[I, J] != Consts.NullHeight)
-                        {
-                            ElevationSubgrid.Cells[I, J] = ElevationSubgrid.Cells[I, J] - DesignElevations.Cells[I, J];
-                        }
-                        else
-                        {
-                            ElevationSubgrid.Cells[I, J] = Consts.NullHeight;
-                        }
-                    }
-                });
-
-                return true;
-            }
-            catch
-            {
-                // TODO Add when logging available
-                // SIGLogMessage.PublishNoODS(Self, Format('Render(ProcessTransferredSubgridResponse CutFill): Exception ''%s''', [E.Message]), slmcException);
-            }
-
-            return false;
         }
 
         /// <summary>
@@ -164,13 +90,6 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
             // Works out the percentage each colour on the map represents
             ClientHeightLeafSubGrid HeightSubGrid = subGrids[0][0] as ClientHeightLeafSubGrid;
             Single HeightValue;
-
-            if (!ConvertElevationSubgridToCutFill(HeightSubGrid))
-            {
-                // TODO Add when logging available
-                // SIGLogMessage.Publish(Self, 'Supplied subgrid result could not be converted to a CutFill grid', slmcError);
-                return;
-            }
 
             // loop through array. Note processing is accumulative so values may already hold values
             SubGridUtilities.SubGridDimensionalIterator((I, J) =>

@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.Velociraptor.DesignProfiling;
+using VSS.Velociraptor.DesignProfiling.GridFabric.Arguments;
+using VSS.Velociraptor.DesignProfiling.GridFabric.Requests;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
@@ -115,27 +117,34 @@ namespace VSS.VisionLink.Raptor.Designs.Storage
         }
 
         public static bool GetDesignHeights(DesignDescriptor DesignDescriptor,
-                                     long siteModelID,
-                                     SubGridCellAddress originCellAddress,
-                                     double cellSize,
-                                     out ClientHeightLeafSubGrid designHeights,
-                                     out DesignProfilerRequestResult errorCode)
+                                            long siteModelID,
+                                            SubGridCellAddress originCellAddress,
+                                            double cellSize,
+                                            out ClientHeightLeafSubGrid designHeights,
+                                            out DesignProfilerRequestResult errorCode)
         {
             // Query the DesignProfiler service to get the patch of elevations calculated
-
             errorCode = DesignProfilerRequestResult.OK;
             designHeights = null;
 
-            /* Convert this into a request to the grid based profiling service call used in the Tiling example
-               errorCode = DesignProfiler.RequestDesignElevationPatch
-               (Construct_CalculateDesignElevationPatch_Args(DataModelID,
-                                                             OriginCellAddress.X, OriginCellAddress.Y,
-                                                             CellSize,
-                                                             ADesignDescriptor,
-                                                             TSubGridTreeLeafBitmapSubGridBits.FullMask),
-                DesignHeights);
+            try
+            {
+                DesignElevationPatchRequest request = new DesignElevationPatchRequest();
 
-            */
+                designHeights = request.Execute(new CalculateDesignElevationPatchArgument()
+                {
+                    CellSize = cellSize,
+                    DesignDescriptor = DesignDescriptor,
+                    OriginX = originCellAddress.X,
+                    OriginY = originCellAddress.Y,
+                    // ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled),
+                    SiteModelID = siteModelID
+                });
+            }
+            catch
+            {
+                errorCode = DesignProfilerRequestResult.UnknownError;
+            }
 
             return errorCode == DesignProfilerRequestResult.OK;
         }

@@ -6,7 +6,7 @@ using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.Executors.Tasks.Interfaces
 {
-    public interface ITask  //<TSubGridRequestor> where TSubGridRequestor : SubGridRequestsBase, new()
+    public interface ITask  
     {
         void Cancel();
 

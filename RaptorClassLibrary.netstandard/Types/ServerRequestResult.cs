@@ -55,6 +55,7 @@ namespace VSS.VisionLink.Raptor.Types
         DataModelDoesNotHaveValidPlanExtents = 0x00000029,
         DataModelHasInvalidZeroCellSize = 0x0000002A,
         ProfileGenerationFailure = 0x0000002B,
-        DataModelDoesNotHaveValidPlanExtentsNoData = 0x0000002C
-  }
+        DataModelDoesNotHaveValidPlanExtentsNoData = 0x0000002C,
+        FailedToComputeDesignElevationPatch = 0x0000002D
+    }
 }

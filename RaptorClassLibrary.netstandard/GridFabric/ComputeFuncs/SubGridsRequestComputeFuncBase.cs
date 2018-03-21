@@ -17,8 +17,12 @@ using log4net;
 using System.Reflection;
 using Apache.Ignite.Core.Cluster;
 using System.Diagnostics;
+using VSS.VisionLink.Raptor.Analytics.Aggregators;
 using VSS.VisionLink.Raptor.Utilities;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
+using VSS.VisionLink.Raptor.Designs.Storage;
+using VSS.VisionLink.Raptor.Services.Designs;
+using VSS.Velociraptor.DesignProfiling;
 
 namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 {
@@ -27,7 +31,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
     /// </summary>
     [Serializable]
     public abstract class SubGridsRequestComputeFuncBase<TSubGridsRequestArgument, TSubGridRequestsResponse> : IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse>, IDisposable
-        where TSubGridsRequestArgument : SubGridsRequestArgument, new()
+        where TSubGridsRequestArgument : SubGridsRequestArgument
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
         private const int addressBucketSize = 20;
@@ -74,12 +78,6 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         protected SubGridsRequestArgument localArg = null;
 
         [NonSerialized]
-        protected string raptorNodeIDAsString = String.Empty;
-
-        [NonSerialized]
-        protected IMessaging rmtMsg = null;
-
-        [NonSerialized]
         private SiteModel siteModel = null;
 
         [NonSerialized]
@@ -102,7 +100,13 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
         [NonSerialized]
         private AreaControlSet AreaControlSet = AreaControlSet.Null();
-            
+
+        /// <summary>
+        /// The Design to be used for querying elevation information from in the process of calculating cut-fill values
+        /// </summary>
+        [NonSerialized]
+        private Design CutFillDesign = null;
+
         /// <summary>
         /// Default no-arg constructor
         /// </summary>
@@ -168,6 +172,12 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
                                     (NewClientGrids[I] as ClientHeightLeafSubGrid).Assign(SubgridResultArray[I] as ClientHeightAndTimeLeafSubGrid);
                                     break;
+
+                                case GridDataType.CutFill:
+                                    // Just copy the height subgrid to new subgrid list
+                                    NewClientGrids[I] = SubgridResultArray[I];
+                                    SubgridResultArray[I] = null;
+                                    break;
                             }
                         }
                         else
@@ -198,12 +208,9 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// to allow other methods to access it as local state.
         /// </summary>
         /// <param name="arg"></param>
-        private void UnpackArgument(SubGridsRequestArgument arg)
+        protected virtual void UnpackArgument(SubGridsRequestArgument arg)
         {
             localArg = arg;
-            raptorNodeIDAsString = arg.RaptorNodeID.ToString();
-
-            Log.InfoFormat("RaptorNodeIDAsString is {0} in UnpackArgument()", raptorNodeIDAsString);
 
             // Unpack the mask from the argument.
             // TODO: Would be nice to use the FromBytes/ToBytes pattern here
@@ -232,7 +239,14 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                     }
                 }
             }
+
+            // Set up any required cut fill design
+            if (arg.CutFillDesignID != long.MinValue)
+            {
+                CutFillDesign = DesignsService.Instance().Find(arg.SiteModelID, arg.CutFillDesignID);
+            }
         }
+
 
         /// <summary>
         /// Take a subgrid address and request the required client subgrid depending on GridDataType
@@ -272,6 +286,32 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                     // Convert to an array to preserve the multiple filter semantic giving a list of subgrids to be converted (eg: volumes)
                     IClientLeafSubGrid[] ClientArray = new IClientLeafSubGrid[1] { clientGrid };
                     ConvertIntermediarySubgridsToResult(localArg.GridDataType, ref ClientArray);
+
+                    // If the requested data is cut fill derived from elevation data previously calculated, 
+                    // then perform the conversion here
+                    if (localArg.GridDataType == GridDataType.CutFill)
+                    {
+                        if (ClientArray.Length == 2)
+                        {
+                            // The cut fill is defined between two production data derived height subgrids
+                            // depending on volumetype work out height difference
+                            CutFillUtilities.ComputeCutFillSubgrid(ClientArray[0], // 'base'
+                                                                   ClientArray[1]); // 'top'
+                        }
+                        else
+                        {
+                            // The cut fill is defined between one production data derived height subgrid and a
+                            // height subgrid to be calculated from a designated design
+                            if (!CutFillUtilities.ComputeCutFillSubgrid(ClientArray[0], // base
+                                                                        CutFillDesign, // 'top'
+                                                                        localArg.SiteModelID,
+                                                                        out DesignProfilerRequestResult ProfilerRequestResult))
+                            {
+                                result = ServerRequestResult.FailedToComputeDesignElevationPatch;
+                            }
+                        }
+                    }
+
                     clientGrid = ClientArray[0];
                 }
 
@@ -299,6 +339,11 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// <param name="resultCount"></param>
         /// <returns></returns>
         public abstract TSubGridRequestsResponse AcquireComputationResult();
+
+        /// <summary>
+        /// Performs any necessary setup and configuration of Ignite insfrastructure to support the processing of this request
+        /// </summary>
+        public abstract bool EstablishRequiredIgniteContext(out SubGridRequestsResponseResult contextEstablishmentResponse);
 
         /// <summary>
         /// Process a subset of the full set of subgrids in the request
@@ -428,26 +473,19 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                 try
                 {
                     Debug.Assert(Range.InRange(spatialSubdivisionDescriptor, 0, numSpatialProcessingDivisions),
-                                 String.Format("Invalid spatial sub division descriptor (must in be in range {0} -> [{1}, {2}])", spatialSubdivisionDescriptor, 0, numSpatialProcessingDivisions));
+                                 String.Format($"Invalid spatial sub division descriptor (must in be in range {spatialSubdivisionDescriptor} -> [0, {numSpatialProcessingDivisions}])"));
+
+                    UnpackArgument(arg);
 
                     long NumSubgridsToBeExamined = (ProdDataMask != null ? ProdDataMask.CountBits() : 0) +
                                                     (SurveyedSurfaceOnlyMask != null ? SurveyedSurfaceOnlyMask.CountBits() : 0);
-                    UnpackArgument(arg);
 
                     Log.Info(String.Format("Num subgrids present in request = {0} [All divisions]", NumSubgridsToBeExamined));
 
-                    IIgnite Ignite = Ignition.TryGetIgnite(RaptorGrids.RaptorImmutableGridName());
-                    IClusterGroup group = Ignite?.GetCluster().ForAttribute("RaptorNodeID", raptorNodeIDAsString);
-
-                    if (group == null)
-                        return new TSubGridRequestsResponse { ResponseCode = SubGridRequestsResponseResult.NoIgniteGroupProjection }; 
-
-                    Log.InfoFormat("Message group has {0} members", group.GetNodes().Count);
-
-                    rmtMsg = group.GetMessaging();
-
-                    if (group == null)
-                        return new TSubGridRequestsResponse { ResponseCode = SubGridRequestsResponseResult.NoIgniteMessagingProjection };
+                    if (!EstablishRequiredIgniteContext(out SubGridRequestsResponseResult contextEstablishmentResponse))
+                    {
+                        return new TSubGridRequestsResponse { ResponseCode = contextEstablishmentResponse };
+                    }
 
                     result = PerformSubgridRequests();
                     result.NumSubgridsExamined = NumSubgridsToBeExamined;

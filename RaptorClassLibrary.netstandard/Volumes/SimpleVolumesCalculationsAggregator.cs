@@ -560,12 +560,12 @@ namespace VSS.VisionLink.Raptor.Volumes
         }
 
         /// <summary>
-        /// Implement the subgrids request aggregator method ro process subgrid results...
+        /// Implement the subgrids request aggregator method to process subgrid results...
         /// </summary>
         /// <param name="subGrids"></param>
         public void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
         {
-            SummariseSubgridResult(subGrids as ClientHeightLeafSubGrid[][]);
+            SummariseSubgridResult(subGrids); // as ClientHeightLeafSubGrid[][]);
         }
     }
 }

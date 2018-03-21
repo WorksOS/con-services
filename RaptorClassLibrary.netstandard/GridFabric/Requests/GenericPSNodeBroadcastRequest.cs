@@ -30,11 +30,13 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             IComputeFunc<TArgument, TResponse> func = new TComputeFunc();
 
             // Broadcast the request to the compute pool and assemble a list of the results
-            Task<ICollection<TResponse>> taskResult = _Compute?.BroadcastAsync(func, arg);
+            //            Task<ICollection<TResponse>> taskResult = _Compute?.BroadcastAsync(func, arg);
+            ICollection<TResponse> Result = _Compute?.Broadcast(func, arg);
 
             // Reduce the set of results to a single aggreted result and send the result back
             // If there is no task result then return an empty response
-            return taskResult?.Result?.Count > 0 ? taskResult.Result.Aggregate((first, second) => first.AggregateWith(second)) : new TResponse();
+            //return taskResult?.Result?.Count > 0 ? taskResult.Result.Aggregate((first, second) => first.AggregateWith(second)) : new TResponse();
+            return Result?.Count > 0 ? Result.Aggregate((first, second) => first.AggregateWith(second)) : new TResponse();
         }
     }
 }

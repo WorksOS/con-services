@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using VSS.VisionLink.Raptor.Analytics.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Analytics.GridFabric.Requests;
-using VSS.VisionLink.Raptor.Analytics.GridFabric.Responses;
 using VSS.VisionLink.Raptor.Analytics.Models;
 
 namespace VSS.VisionLink.Analytics.Operations
@@ -21,7 +20,6 @@ namespace VSS.VisionLink.Analytics.Operations
         public CutFillResult Execute(CutFillStatisticsArgument arg)
         {
             var request = new CutFillStatisticsRequest_ApplicationService();
-            // request.InitialiseIgniteContext(RaptorGrids.RaptorImmutableGridName(), ServerRoles.ASNODE);
 
             CutFillResult result = new CutFillResult();
             result.PopulateFromClusterComputeResponse(request.Execute(arg));

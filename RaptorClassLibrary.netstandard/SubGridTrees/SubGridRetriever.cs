@@ -734,10 +734,23 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                         case GridDataType.Temperature:
                             if (_GlobalLatestCells.ReadTemperature(StripeIndex, J) == CellPass.NullMaterialTemp)
                             { continue; }
-                            break; 
-                    }
+                            break;
+                        case GridDataType.TemperatureDetail:
+                          if (_GlobalLatestCells.ReadTemperature(StripeIndex, J) == CellPass.NullMaterialTemp)
+                          { continue; }
+                          break;
+                        case GridDataType.CCVPercentChange:
+                          if (_GlobalLatestCells.ReadCCV(StripeIndex, J) == CellPass.NullCCV)
+                          { continue; }
+                          break;
+                        case GridDataType.CCVPercentChangeIgnoredTopNullValue:
+                          if (_GlobalLatestCells.ReadCCV(StripeIndex, J) == CellPass.NullCCV)
+                          { continue; }
+                          break;
 
-                    HaveFilteredPass = false;
+          }
+
+          HaveFilteredPass = false;
 
                     if (UseLastPassGrid)
                     {

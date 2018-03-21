@@ -14,7 +14,7 @@ using VSS.VisionLink.Raptor.Utilities.ExtensionMethods;
 namespace VSS.Velociraptor.DesignProfiling.GridFabric.ComputeFuncs
 {
     [Serializable]
-    public class CalculateDesignElevationPatchComputeFunc : /*BaseRaptorComputeFunc, */ IComputeFunc<CalculateDesignElevationPatchArgument, byte [] /* ClientHeightLeafSubGrid */>
+    public class CalculateDesignElevationPatchComputeFunc : IComputeFunc<CalculateDesignElevationPatchArgument, byte [] /* ClientHeightLeafSubGrid */>
     {
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
