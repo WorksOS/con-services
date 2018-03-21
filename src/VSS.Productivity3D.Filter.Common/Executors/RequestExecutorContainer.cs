@@ -194,18 +194,5 @@ namespace VSS.Productivity3D.Filter.Common.Executors
 
       return executor;
     }
-
-    protected async Task<ProjectData> GetProjectForRequest(FilterRequestFull filterRequest)
-    {
-      if (this.projectListProxy == null)
-      {
-        return null;
-      }
-
-      var project = await ValidationUtil.ValidateProjectForCustomer(this.projectListProxy, this.log, this.serviceExceptionHandler, filterRequest.CustomHeaders,
-        filterRequest.CustomerUid, filterRequest.ProjectUid).ConfigureAwait(false);
-
-      return project;
-    }
   }
 }

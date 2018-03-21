@@ -64,7 +64,7 @@ namespace VSS.Productivity3D.Filter.Tests
         custUid,
         false,
         userUid,
-        projectUid,
+        new ProjectData { ProjectUid = projectUid },
         new FilterRequest { FilterUid = filterUid }
       );
 
@@ -121,7 +121,7 @@ namespace VSS.Productivity3D.Filter.Tests
         custUid,
         false,
         requestingUserUid,
-        projectUid,
+        new ProjectData { ProjectUid = projectUid },
         new FilterRequest { FilterUid = filterUid }
       );
       var executor =
@@ -174,7 +174,7 @@ namespace VSS.Productivity3D.Filter.Tests
         custUid,
         false,
         userUid,
-        projectUid);
+        new ProjectData { ProjectUid = projectUid });
 
       var executor =
         RequestExecutorContainer.Build<GetFiltersExecutor>(configStore, logger, serviceExceptionHandler,
@@ -241,7 +241,7 @@ namespace VSS.Productivity3D.Filter.Tests
           custUid,
           false,
           userUid,
-          projectUid,
+          new ProjectData { ProjectUid = projectUid },
           new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson, FilterType = filterType }
         );
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
@@ -311,7 +311,7 @@ namespace VSS.Productivity3D.Filter.Tests
           custUid,
           false,
           userUid,
-          projectUid,
+          new ProjectData { ProjectUid = projectUid },
           new FilterRequest { Name = string.Empty, FilterJson = filterJson, FilterType = FilterType.Transient }
         );
 
@@ -395,7 +395,7 @@ namespace VSS.Productivity3D.Filter.Tests
           custUid, 
           false, 
           userUid, 
-          projectUid,
+          new ProjectData { ProjectUid = projectUid },
           new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson, FilterType = filterType });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
@@ -455,7 +455,7 @@ namespace VSS.Productivity3D.Filter.Tests
       filterRepo.As<IFilterRepository>().Setup(ps => ps.StoreEvent(It.IsAny<DeleteFilterEvent>())).ReturnsAsync(1);
 
       var request =
-        FilterRequestFull.Create(null, custUid, false, userUid, projectUid, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson, FilterType = filterType });
+        FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid }, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson, FilterType = filterType });
       var executor = RequestExecutorContainer.Build<DeleteFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, null, projectListProxy.Object, raptorProxy.Object, producer.Object, kafkaTopicName);
       var result = await executor.ProcessAsync(request);

@@ -6,9 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.Validators;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -39,7 +41,7 @@ namespace VSS.Productivity3D.Filter.Tests
           "sfgsdfsf",
           false,
           userUid,
-          projectUid,
+          new ProjectData { ProjectUid = projectUid },
           new FilterRequest {FilterUid = filterUid, Name = Name, FilterJson = FilterJson, FilterType = filterType}
         );
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
@@ -58,7 +60,7 @@ namespace VSS.Productivity3D.Filter.Tests
           custUid,
           false,
           string.Empty,
-          projectUid,
+          new ProjectData { ProjectUid = projectUid },
           new FilterRequest {FilterUid = filterUid, Name = Name, FilterJson = FilterJson, FilterType = filterType }
         );
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
@@ -83,7 +85,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_InvalidFilterUid()
     {
       var requestFull =
-        FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
+        FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
           new FilterRequest {FilterUid = "this is so wrong", Name = Name, FilterJson = FilterJson, FilterType = filterType });
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
 
@@ -95,7 +97,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_InvalidFilterUid_Null()
     {
       var requestFull =
-        FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
+        FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
           new FilterRequest {FilterUid = null, Name = Name, FilterJson = string.Empty, FilterType = filterType });
 
       requestFull.Validate(serviceExceptionHandler);
@@ -105,7 +107,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_MissingName()
     {
       var requestFull =
-        FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
+        FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
           new FilterRequest { FilterUid = filterUid, Name = string.Empty, FilterJson = string.Empty, FilterType = filterType });
 
       Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
@@ -115,7 +117,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_InvalidName()
     {
       var requestFull =
-        FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
+        FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
           new FilterRequest {FilterUid = filterUid, Name = null, FilterJson = string.Empty, FilterType = FilterType.Transient });
 
       requestFull.Validate(serviceExceptionHandler);
@@ -125,7 +127,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_InvalidFilterJson()
     {
       var requestFull =
-        FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
+        FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
           new FilterRequest {FilterUid = filterUid, Name = Name, FilterJson = null, FilterType = filterType });
 
       requestFull.Validate(serviceExceptionHandler);
@@ -137,7 +139,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_Should_succeed_When_supplied_json_is_valid(string filterJson)
     {
       var requestFull =
-        FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
+        FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
           new FilterRequest {FilterUid = filterUid, Name = string.Empty, FilterJson = filterJson, FilterType = FilterType.Transient});
       requestFull.Validate(serviceExceptionHandler);
     }
@@ -145,7 +147,7 @@ namespace VSS.Productivity3D.Filter.Tests
     [TestMethod]
     public void FilterRequestValidation_Should_fail_When_supplied_string_is_invalid_json()
     {
-      var requestFull = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
+      var requestFull = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
         new FilterRequest {FilterUid = filterUid, Name = Name, FilterJson = "de blah", FilterType = filterType });
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
 
@@ -156,7 +158,7 @@ namespace VSS.Productivity3D.Filter.Tests
     [TestMethod]
     public void FilterRequestValidation_PartialFill()
     {
-      var requestFull = FilterRequestFull.Create(null, custUid, false, userUid, projectUid);
+      var requestFull = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid });
 
       requestFull.Validate(serviceExceptionHandler);
     }
@@ -167,15 +169,16 @@ namespace VSS.Productivity3D.Filter.Tests
       var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
 
       var projectListProxy = new Mock<IProjectListProxy>();
-      var projects = new List<MasterData.Models.Models.ProjectData>
-      {
-        new MasterData.Models.Models.ProjectData {ProjectUid = projectUid, CustomerUid = custUid}
-      };
+      var projectData = new ProjectData { ProjectUid = projectUid, CustomerUid = custUid };
+      var projects = new List<ProjectData> { projectData };
+
       var customHeaders = new Dictionary<string, string>();
       projectListProxy.Setup(ps => ps.GetProjectsV4(It.IsAny<string>(), customHeaders)).ReturnsAsync(projects);
 
-      await ValidationUtil.ValidateProjectForCustomer(projectListProxy.Object, log, serviceExceptionHandler,
-        customHeaders, custUid, projectUid).ConfigureAwait(false);
+      TIDCustomPrincipal principal = new TIDCustomPrincipal(new System.Security.Claims.ClaimsIdentity(),
+        custUid, "","", projectListProxy.Object, customHeaders);
+
+      Assert.AreEqual(projectData, principal.GetProject(projectUid));
     }
 
     [TestMethod]
@@ -188,12 +191,34 @@ namespace VSS.Productivity3D.Filter.Tests
       var customHeaders = new Dictionary<string, string>();
       projectListProxy.Setup(ps => ps.GetProjectsV4(It.IsAny<string>(), customHeaders)).ReturnsAsync(projects);
 
-      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await ValidationUtil
-        .ValidateProjectForCustomer(projectListProxy.Object, log, serviceExceptionHandler,
-          customHeaders, custUid, projectUid).ConfigureAwait(false));
+      TIDCustomPrincipal principal = new TIDCustomPrincipal(new System.Security.Claims.ClaimsIdentity(),
+        custUid, "", "", projectListProxy.Object, customHeaders);
 
-      StringAssert.Contains(ex.GetContent, "2008");
-      StringAssert.Contains(ex.GetContent, "Validation of Customer/Project failed. Not allowed.");
+      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => principal.GetProject(projectUid));
+
+      StringAssert.Contains(ex.GetContent, "-5");
+      StringAssert.Contains(ex.GetContent, "Missing Project or project does not belong to customer");
+    }
+
+
+    [TestMethod]
+    public async Task CustomerProjectValidation_HappyPath_CacheSimulation()
+    {
+      var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
+
+      var projectListProxy = new Mock<IProjectListProxy>();
+      var projectData = new ProjectData { ProjectUid = projectUid, CustomerUid = custUid };
+      var projects = new List<ProjectData> { projectData };
+
+      var customHeaders = new Dictionary<string, string>();
+      projectListProxy.SetupSequence(ps => ps.GetProjectsV4(It.IsAny<string>(), customHeaders))
+        .ReturnsAsync(new List<ProjectData>())
+        .ReturnsAsync(projects);
+
+      TIDCustomPrincipal principal = new TIDCustomPrincipal(new System.Security.Claims.ClaimsIdentity(),
+        custUid, "", "", projectListProxy.Object, customHeaders);
+
+      Assert.AreEqual(projectData, principal.GetProject(projectUid));
     }
 
     [TestMethod]
@@ -205,7 +230,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
       var geofenceRepo = new Mock<IGeofenceRepository>();
 
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
         new FilterRequest {FilterUid = filterUid, FilterType = filterType, FilterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true}", Name = "a filter" });
 
       var result = await ValidationUtil
@@ -228,7 +253,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var leftOffset = 4.5;
       var rightOffset = 2.5;
 
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
         new FilterRequest { FilterUid = filterUid, Name = "a filter", FilterType = filterType, FilterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true, \"alignmentUid\": \"" + alignmentUid + "\", \"startStation\":" + startStation + ", \"endStation\":" + endStation + ", \"leftOffset\":" + leftOffset + ", \"rightOffset\":" + rightOffset + "}" });
 
       var result = await ValidationUtil
@@ -247,7 +272,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var geofenceRepo = new Mock<IGeofenceRepository>();
       geofenceRepo.Setup(g => g.GetGeofence(It.IsAny<string>())).ReturnsAsync((Geofence)null);
 
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
         new FilterRequest { FilterUid = filterUid, Name = "a filter", FilterType = filterType, FilterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true, \"polygonUID\": \"" + boundaryUid + "\"}" });
 
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await ValidationUtil
@@ -268,7 +293,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var geofence = new Geofence{GeometryWKT = "This is not a valid polygon WKT"};
       geofenceRepo.Setup(g => g.GetGeofence(It.IsAny<string>())).ReturnsAsync(geofence);
 
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
         new FilterRequest { FilterUid = filterUid, Name = "a filter", FilterType = filterType, FilterJson = "{\"designUID\": \"id\", \"vibeStateOn\": true, \"polygonUID\": \"" + boundaryUid + "\"}" });
 
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await ValidationUtil
@@ -289,7 +314,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var leftOffset = 4.5;
       var rightOffset = 2.5;
 
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
         new FilterRequest { FilterUid = filterUid, Name = "a filter", FilterType = filterType, FilterJson = "{\"vibeStateOn\": true, \"alignmentUid\": \"" + alignmentUid + "\", \"startStation\":" + startStation + ", \"endStation\": null, \"leftOffset\":" + leftOffset + ", \"rightOffset\":" + rightOffset + "}" });
 
       var ex = Assert.ThrowsException<ServiceException>(() => request.Validate(serviceExceptionHandler));
@@ -310,7 +335,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var leftOffset = 4.5;
       var rightOffset = 2.5;
 
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
         new FilterRequest { FilterUid = filterUid, Name = "a filter", FilterType = filterType, FilterJson = "{\"vibeStateOn\": true, \"alignmentUid\": \"" + alignmentUid + "\", \"startStation\": " + startStation + ", \"endStation\": " + endStation + ", \"leftOffset\": " + leftOffset + ", \"rightOffset\": " + rightOffset + "}" });
 
       request.Validate(serviceExceptionHandler);
@@ -327,7 +352,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var geofence = new Geofence { GeofenceUID = boundaryUid, Name = Name, GeometryWKT = GeometryWKT };
       geofenceRepo.Setup(g => g.GetGeofence(It.IsAny<string>())).ReturnsAsync(geofence);
 
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, projectUid,
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
         new FilterRequest { FilterUid = filterUid, Name = "a filter", FilterType = filterType, FilterJson = "{\"designUid\": \"id\", \"vibeStateOn\": true, \"polygonUid\": \"" + geofence.GeofenceUID + "\"}" });
 
       var result = await ValidationUtil
@@ -348,7 +373,7 @@ namespace VSS.Productivity3D.Filter.Tests
         (
           "sfgsdfsf",
           false,
-          projectUid,
+          new ProjectData() { ProjectUid = projectUid },
           userUid,
           new BoundaryRequest { BoundaryUid = boundaryUid, Name = Name, BoundaryPolygonWKT = GeometryWKT }
         );
@@ -366,7 +391,7 @@ namespace VSS.Productivity3D.Filter.Tests
         (
           custUid,
           false,
-          projectUid,
+          new ProjectData() { ProjectUid = projectUid },
           string.Empty,
           new BoundaryRequest { BoundaryUid = boundaryUid, Name = Name, BoundaryPolygonWKT = GeometryWKT }
         );
@@ -392,7 +417,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void BoundaryRequestValidation_InvalidBoundaryUid()
     {
       var requestFull =
-        BoundaryRequestFull.Create(custUid, false, projectUid, userUid,
+        BoundaryRequestFull.Create(custUid, false, new ProjectData() { ProjectUid = projectUid }, userUid,
           new BoundaryRequest { BoundaryUid = "this is so wrong", Name = Name, BoundaryPolygonWKT = GeometryWKT });
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
 
@@ -404,7 +429,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void BoundaryRequestValidation_InvalidName()
     {
       var requestFull =
-        BoundaryRequestFull.Create(custUid, false, projectUid, userUid,
+        BoundaryRequestFull.Create(custUid, false, new ProjectData() { ProjectUid = projectUid }, userUid,
           new BoundaryRequest { BoundaryUid = boundaryUid, Name = null, BoundaryPolygonWKT = GeometryWKT });
 
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
@@ -417,7 +442,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void BoundaryRequestValidation_InvalidBoundaryWKT()
     {
       var requestFull =
-        BoundaryRequestFull.Create(custUid, false, projectUid, userUid,
+        BoundaryRequestFull.Create(custUid, false, new ProjectData() { ProjectUid = projectUid }, userUid,
           new BoundaryRequest { BoundaryUid = boundaryUid, Name = Name, BoundaryPolygonWKT = null });
 
       var ex = Assert.ThrowsException<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));

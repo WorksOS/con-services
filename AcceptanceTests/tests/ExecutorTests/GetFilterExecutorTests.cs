@@ -68,7 +68,7 @@ namespace ExecutorTests
         ReceivedUTC = DateTime.UtcNow
       });
 
-      var request = FilterRequestFull.Create(null, custUid, false, userId, projectUid, new FilterRequest {FilterUid = filterUid, FilterType = filterType});
+      var request = FilterRequestFull.Create(null, custUid, false, userId,  new ProjectData() { ProjectUid = projectUid }, new FilterRequest {FilterUid = filterUid, FilterType = filterType});
 
       var executor =
         RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null);
@@ -206,9 +206,9 @@ namespace ExecutorTests
 
       WriteEventToDb(filterCreateEvent);
 
-      var request = CreateAndValidateRequest(customerUid: filterCreateEvent.CustomerUID.ToString(), userId: filterCreateEvent.UserID, projectUid: filterCreateEvent.ProjectUID.ToString(), filterUid: filterCreateEvent.FilterUID.ToString(), filterType: filterType, name: name);
-
       var projectData = new ProjectData { ProjectUid = filterCreateEvent.ProjectUID.ToString(), IanaTimeZone = "America/Los_Angeles" };
+
+      var request = CreateAndValidateRequest(customerUid: filterCreateEvent.CustomerUID.ToString(), userId: filterCreateEvent.UserID, projectData: projectData, filterUid: filterCreateEvent.FilterUID.ToString(), filterType: filterType, name: name);
 
       var tcs = new TaskCompletionSource<List<ProjectData>>();
       tcs.SetResult(new List<ProjectData> {projectData});
@@ -223,9 +223,9 @@ namespace ExecutorTests
       Assert.IsNotNull(result, Responses.ShouldReturnResult);
       Assert.AreEqual(filterCreateEvent.FilterUID, Guid.Parse(result.FilterDescriptor.FilterUid), Responses.IncorrectFilterDescriptorFilterUid);
 
-      dynamic filterObj = JsonConvert.DeserializeObject(result.FilterDescriptor.FilterJson);
-      Assert.IsTrue(DateTime.TryParse(filterObj.startUtc.ToString(), out DateTime _));
-      Assert.IsTrue(DateTime.TryParse(filterObj.endUtc.ToString(), out DateTime _));
+      Filter filterObj = JsonConvert.DeserializeObject<Filter>(result.FilterDescriptor.FilterJson);
+      Assert.IsTrue(DateTime.TryParse(filterObj.StartUtc.ToString(), out DateTime _));
+      Assert.IsTrue(DateTime.TryParse(filterObj.EndUtc.ToString(), out DateTime _));
     }
 
     [TestMethod]

@@ -39,42 +39,6 @@ namespace VSS.Productivity3D.Filter.Common.Validators
     }
 
     /// <summary>
-    /// Validates a <see cref="ProjectData"/> for a given customer and throws if invalid.
-    /// </summary>
-    public static async Task<ProjectData> ValidateProjectForCustomer(IProjectListProxy projectListProxy,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders,
-      string customerUid, string projectUid)
-    {
-      ProjectData project = null;
-      const string functionName = "ValidateProjectForCustomer";
-
-      try
-      {
-        var projects = await projectListProxy.GetProjectsV4(customerUid, customHeaders).ConfigureAwait(false);
-
-        project = projects.SingleOrDefault(p => p.ProjectUid == projectUid);
-      }
-      catch (Exception e)
-      {
-        log.LogError(
-          $"{functionName}: projectListProxy.GetProjectsV4 failed with exception. customerUid:{customerUid} ProjectUid:{projectUid}. Exception Thrown: {e.Message}. ");
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 7, e.Message);
-      }
-
-      if (project == null)
-      {
-        log.LogInformation(
-          $"{functionName}: projectListProxy: customerUid:{customerUid} ProjectUid:{projectUid}. returned no project match");
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 8);
-      }
-
-      log.LogInformation(
-        $"{functionName}: succeeded: customerUid:{customerUid} ProjectUid:{projectUid}.");
-
-      return project;
-    }
-
-    /// <summary>
     /// Hydrates the filterJson string with the boundary data and uses the MasterData Models filter model to do so - to isolate logic there
     /// </summary>
     public static async Task<string> HydrateJsonWithBoundary(IGeofenceRepository geofenceRepository,

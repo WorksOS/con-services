@@ -18,10 +18,9 @@ using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
-using VSS.Productivity3D.Filter.Common.Validators;
-using VSS.Productivity3D.Filter.WebApi.Filters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using System.Linq;
+using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Filter.WebAPI.Controllers
@@ -64,7 +63,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
           (User as TIDCustomPrincipal)?.CustomerUid,
           (User as TIDCustomPrincipal).IsApplication,
           ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
-          projectUid);
+          (User as TIDCustomPrincipal)?.GetProject(projectUid));
 
       requestFull.Validate(ServiceExceptionHandler, true);
 
@@ -95,7 +94,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
           (User as TIDCustomPrincipal)?.CustomerUid,
           (User as TIDCustomPrincipal).IsApplication,
           ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
-          projectUid,
+          (User as TIDCustomPrincipal)?.GetProject(projectUid),
           new FilterRequest { FilterUid = filterUid });
 
       requestFull.Validate(ServiceExceptionHandler, true);
@@ -124,9 +123,6 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 8, "Missing filter");
       }
 
-      await ValidationUtil.ValidateProjectForCustomer(ProjectListProxy, Log, ServiceExceptionHandler, Request.Headers.GetCustomHeaders(),
-        (User as TIDCustomPrincipal)?.CustomerUid, projectUid).ConfigureAwait(false);
-
       var filterExecutor = RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, this.filterRepo, this.geofenceRepository, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
 
       var upsertFilterResult = await UpsertFilter(filterExecutor, projectUid, request);
@@ -149,8 +145,6 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 7, "Missing filters");
       }
 
-      await ValidationUtil.ValidateProjectForCustomer(ProjectListProxy, Log, ServiceExceptionHandler, Request.Headers.GetCustomHeaders(),
-              (User as TIDCustomPrincipal)?.CustomerUid, projectUid).ConfigureAwait(false);
 
       //Only transient filters for now. Supporting batching of permanent filters requires rollback logic when one or more fails.
       foreach (var filterRequest in request.FilterRequests)
@@ -190,7 +184,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
        (User as TIDCustomPrincipal)?.CustomerUid,
        (User as TIDCustomPrincipal).IsApplication,
        ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
-       projectUid,
+       (User as TIDCustomPrincipal)?.GetProject(projectUid),
        filterRequest);
 
       requestFull.Validate(ServiceExceptionHandler);
@@ -217,13 +211,10 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         (User as TIDCustomPrincipal)?.CustomerUid,
         (User as TIDCustomPrincipal).IsApplication,
         ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
-        projectUid,
+        (User as TIDCustomPrincipal)?.GetProject(projectUid),
         new FilterRequest { FilterUid = filterUid });
 
       requestFull.Validate(ServiceExceptionHandler, true);
-
-      await ValidationUtil.ValidateProjectForCustomer(ProjectListProxy, Log, ServiceExceptionHandler, customHeaders,
-        (User as TIDCustomPrincipal)?.CustomerUid, projectUid).ConfigureAwait(false);
 
       var executor = RequestExecutorContainer.Build<DeleteFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, this.filterRepo, null, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
       var result = await executor.ProcessAsync(requestFull);

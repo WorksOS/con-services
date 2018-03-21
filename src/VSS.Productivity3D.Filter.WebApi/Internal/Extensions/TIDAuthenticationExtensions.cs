@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using VSS.Productivity3D.Filter.WebApi.Filters;
+using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 
 namespace VSS.Productivity3D.Filter.WebAPI.Internal.Extensions
 {

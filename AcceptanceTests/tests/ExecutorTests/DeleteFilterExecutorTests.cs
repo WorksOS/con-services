@@ -23,7 +23,7 @@ namespace ExecutorTests
     [DataRow(FilterType.Report)]
     public async Task DeleteFilterExecutor_NoExistingFilter(FilterType filterType)
     {
-      var request = CreateAndValidateRequest(filterType: filterType, onlyFilterUid: true);
+      var request = CreateAndValidateRequest(name:"delete " + filterType, filterType: filterType, onlyFilterUid: true);
 
       var executor =
         RequestExecutorContainer.Build<DeleteFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
@@ -58,7 +58,7 @@ namespace ExecutorTests
         ReceivedUTC = DateTime.UtcNow
       });
 
-      var request = CreateAndValidateRequest(customerUid: custUid, userId: userId, projectUid: projectUid, filterUid: filterUid, filterType: filterType, onlyFilterUid: true);
+      var request = CreateAndValidateRequest(name: name, customerUid: custUid, userId: userId, projectUid: projectUid, filterUid: filterUid, filterType: filterType, onlyFilterUid: true);
 
       var executor =
         RequestExecutorContainer.Build<DeleteFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);

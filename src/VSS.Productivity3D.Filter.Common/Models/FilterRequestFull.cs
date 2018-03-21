@@ -1,16 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Security.Principal;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Internal;
+using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Filter.Common.Models
 {
   public class FilterRequestFull : FilterRequest
   {
+
+    public ProjectData ProjectData { get; set; }
+
     public string CustomerUid { get; set; }
 
     public bool IsApplicationContext { get; set; }
@@ -21,7 +27,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
 
     public IDictionary<string, string> CustomHeaders { get; set; }
 
-    public static FilterRequestFull Create(IDictionary<string, string> customHeaders, string customerUid, bool isApplicationContext, string userId, string projectUid, FilterRequest request = null)
+    public static FilterRequestFull Create(IDictionary<string, string> customHeaders, string customerUid, bool isApplicationContext, string userId, ProjectData projectData, FilterRequest request = null)
     {
       return new FilterRequestFull
       {
@@ -32,7 +38,8 @@ namespace VSS.Productivity3D.Filter.Common.Models
         CustomerUid = customerUid,
         IsApplicationContext = isApplicationContext,
         UserId = userId,
-        ProjectUid = projectUid,
+        ProjectData = projectData,
+        ProjectUid = projectData?.ProjectUid,
         CustomHeaders = customHeaders
       };
     }
@@ -49,7 +56,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 28);
       }
 
-      if (string.IsNullOrEmpty(ProjectUid) || Guid.TryParse(ProjectUid, out Guid _) == false)
+      if (ProjectData == null || string.IsNullOrEmpty(ProjectUid) || Guid.TryParse(ProjectUid, out Guid _) == false)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 1);
       }
