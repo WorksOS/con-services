@@ -14,7 +14,6 @@ using VSS.MasterData.Models.FIlters;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters;
 using VSS.Productivity3D.Common.Filters.Authentication;
-using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using ValidationFilterAttribute = VSS.Productivity3D.Common.Filters.Validation.ValidationFilterAttribute;
 
@@ -111,16 +110,13 @@ namespace VSS.Productivity3D.WebApi
     /// <summary>
     /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline
     /// </summary>
-    /// <param name="app"></param>
-    /// <param name="env"></param>
-    /// <param name="loggerFactory"></param>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
       loggerFactory.AddConsole(Configuration.GetSection("Logging"));
       loggerFactory.AddDebug();
 
       serviceCollection.AddSingleton(loggerFactory);
-      var serviceProvider = serviceCollection.BuildServiceProvider();
+      serviceCollection.BuildServiceProvider();
 
       app.UseFilterMiddleware<ExceptionsTrap>();
 

@@ -29,8 +29,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// </summary>
   public class CompactionReportTileController : BaseController
   {
-    private readonly TileOverlayType[] PROJECT_THUMBNAIL_OVERLAYS = {
-      TileOverlayType.BaseMap, TileOverlayType.ProjectBoundary, TileOverlayType.ProductionData };
+    private readonly TileOverlayType[] PROJECT_THUMBNAIL_OVERLAYS =
+    {
+      TileOverlayType.BaseMap,
+      TileOverlayType.ProjectBoundary,
+      TileOverlayType.ProductionData
+    };
 
     private const int PROJECT_THUMBNAIL_WIDTH = 220;
     private const int PROJECT_THUMBNAIL_HEIGHT = 182;
@@ -170,7 +174,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets a project thumbnail
     /// </summary>
-    /// <param name="projectUid"></param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     [ProjectUidVerifier]
     [Route("api/v2/projectthumbnail")]
@@ -184,13 +187,19 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var tileResult = await GetGeneratedTile(projectUid, null, null, null, null,
         null, PROJECT_THUMBNAIL_OVERLAYS, PROJECT_THUMBNAIL_WIDTH, PROJECT_THUMBNAIL_HEIGHT, MapType.MAP,
         DisplayMode.Height, true);
+
+      // TODO (Aaron) refactor this repeated code
       //Short-circuit cache time for Archived projects
       if ((User as RaptorPrincipal).GetProject(projectUid).isArchived)
         Response.Headers["Cache-Control"] = "public,max-age=31536000";
       Response.Headers.Add("X-Warning", "false");
+
       return tileResult;
     }
 
+    /// <summary>
+    /// Gets a project thumbnail image.
+    /// </summary>
     [ProjectUidVerifier]
     [Route("api/v2/projectthumbnail/png")]
     [HttpGet]
@@ -202,10 +211,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var tileResult = await GetGeneratedTile(projectUid, null, null, null, null,
         null, PROJECT_THUMBNAIL_OVERLAYS, PROJECT_THUMBNAIL_WIDTH, PROJECT_THUMBNAIL_HEIGHT, MapType.MAP, DisplayMode.Height, true);
+
+      // TODO (Aaron) refactor this repeated code
       //Short-circuit cache time for Archived projects
       if ((User as RaptorPrincipal).GetProject(projectUid).isArchived)
         Response.Headers["Cache-Control"] = "public,max-age=31536000";
       Response.Headers.Add("X-Warning", "false");
+
       return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
     }
 
@@ -236,7 +248,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var alignmentDescriptors = overlayTypes.Contains(TileOverlayType.Alignments)
         ? await GetAlignmentDescriptors(projectUid)
         : new List<DesignDescriptor>();
-      var userPreferences = await GetUserPreferences();
+      var userPreferences = await GetShortCachedUserPreferences();
       var geofences = overlayTypes.Contains(TileOverlayType.Geofences)
         ? await geofenceProxy.GetGeofences((User as RaptorPrincipal).CustomerUid, CustomHeaders)
         : new List<GeofenceData>();
@@ -302,7 +314,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Get user preferences
     /// </summary>
-    private async Task<UserPreferenceData> GetUserPreferences()
+    private async Task<UserPreferenceData> GetShortCachedUserPreferences()
     {
       var userPreferences = await prefProxy.GetShortCachedUserPreferences((User as RaptorPrincipal).UserEmail, TimeSpan.FromSeconds(10), CustomHeaders);
       if (userPreferences == null)
