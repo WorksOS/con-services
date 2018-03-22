@@ -4,9 +4,7 @@ using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Utilities;
 using VSS.VisionLink.Raptor.Volumes.GridFabric.Responses;
-using static VSS.VisionLink.Raptor.Volumes.VolumesCalculatorBase;
 using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.Interfaces;
 
 namespace VSS.VisionLink.Raptor.Volumes.Executors
 {

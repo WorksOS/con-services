@@ -16,7 +16,7 @@ namespace VSS.VisionLink.Raptor.Analytics.GridFabric.Responses
         public long[] Counts { get; set; } = null;
 
         /// <summary>
-        /// Aggregate a set of cut file statistics into this set and return the result.
+        /// Aggregate a set of cut fill statistics into this set and return the result.
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>

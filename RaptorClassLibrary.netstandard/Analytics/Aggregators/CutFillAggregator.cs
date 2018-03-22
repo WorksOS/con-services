@@ -88,17 +88,16 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
         public override void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
         {
             // Works out the percentage each colour on the map represents
-            ClientHeightLeafSubGrid HeightSubGrid = subGrids[0][0] as ClientHeightLeafSubGrid;
-            Single HeightValue;
+            ClientHeightLeafSubGrid SubGrid = subGrids[0][0] as ClientHeightLeafSubGrid;
+            Single Value;
 
-            // loop through array. Note processing is accumulative so values may already hold values
             SubGridUtilities.SubGridDimensionalIterator((I, J) =>
                             {
-                                HeightValue = HeightSubGrid.Cells[I, J];
-                                if (HeightValue != Consts.NullHeight) // is there a value to test
+                                Value = SubGrid.Cells[I, J];
+                                if (Value != Consts.NullHeight) // is there a value to test
                                 {
                                     SummaryCellsScanned++;
-                                    IncrementCountOfCutFillTransition(HeightValue);
+                                    IncrementCountOfCutFillTransition(Value);
                                 }
                             });
         }

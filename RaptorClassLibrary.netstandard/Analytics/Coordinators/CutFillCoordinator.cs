@@ -33,7 +33,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Coordinators
 
             //  ScheduledWithGovernor       :Boolean = false;
             //  SurveyedSurfaceExclusionList:TSurveyedSurfaceIDList;
-            CutFillStatisticsResponse result = new CutFillStatisticsResponse();
+            var result = new CutFillStatisticsResponse();
 
             try
             {

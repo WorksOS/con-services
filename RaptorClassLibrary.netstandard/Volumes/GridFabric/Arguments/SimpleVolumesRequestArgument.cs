@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.Designs;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.GridFabric.Arguments;
 
