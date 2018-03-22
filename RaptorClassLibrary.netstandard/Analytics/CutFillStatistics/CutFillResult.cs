@@ -78,6 +78,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Models
             if (response is CutFillStatisticsResponse)
             {
                 Counts = ((CutFillStatisticsResponse)response).Counts;
+                ResultStatus = ((CutFillStatisticsResponse)response).ResultStatus;
             }
         }
     }
