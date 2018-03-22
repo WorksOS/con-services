@@ -48,7 +48,6 @@ namespace VSS.VisionLink.Raptor.Volumes
         // References necessary for correct summarisation of aggregated state
 
         // public LiftBuildSettings        : TICLiftBuildSettings; = null;
-        // DesignProfilerService    : TDesignProfilerPublicInterface; = null;
 
         public long SiteModelID { get; set; } = -1;
 
@@ -107,37 +106,6 @@ namespace VSS.VisionLink.Raptor.Volumes
 
         //  TICVolumesCalculationsAggregateStateArray = Array of TICVolumesCalculationsAggregateState;
 
-        /*
-            procedure TICVolumesCalculationsAggregateState.AggregateFrom(const Source: TICVolumesCalculationsAggregateState);
-            begin
-          if FRequiresSerialisation then
-            TMonitor.Enter(Self);
-          try
-          //  SIGLogMessage.PublishNoODS(Self, Format('Aggregating From:%s', [Source.ToString]), slmcDebug);
-          //  SIGLogMessage.PublishNoODS(Self, Format('Into:%s', [ToString]), slmcDebug);
-
-            Inc(FCellsUsed, Source.CellsUsed);
-            Inc(FCellsUsedCut, Source.CellsUsedCut);
-            Inc(FCellsUsedFill, Source.CellsUsedFill);
-            Inc(FCellsScanned, Source.CellsScanned);
-            Inc(FCellsDiscarded, Source.CellsDiscarded);
-
-            FCoverageArea := FCoverageArea + Source.CoverageArea;
-            FCutArea := FCutArea + Source.CutArea;
-            FFillArea := FFillArea + Source.FillArea;
-            FTotalArea := FTotalArea + Source.TotalArea;
-            FBoundingExtents.Include(Source.BoundingExtents);
-
-            Volume := Volume + Source.Volume;
-            CutFillVolume.Create(CutFillVolume.CutVolume + Source.CutFillVolume.CutVolume,
-                                 CutFillVolume.FillVolume + Source.CutFillVolume.FillVolume);
-          finally
-            if FRequiresSerialisation then
-              TMonitor.Exit(Self);
-          end;
-        end;
-        */
-
         public SimpleVolumesCalculationsAggregator() : base()
         {
             // NOTE: This aggregator state is now single threaded in the context of processing subgrid
@@ -181,12 +149,6 @@ namespace VSS.VisionLink.Raptor.Volumes
 
           FNullHeightSubgrid := TICClientSubGridTreeLeaf_Height.Create(Nil, Nil, kSubGridTreeLevels, CellSize, 0); //cell size of datamodel in question
           FNullHeightSubgrid.Clear;
-
-          if not FDesignDescriptor.IsNull then
-            begin
-              FActiveDesign := TVolumesDesign.Create;
-            FActiveDesign.DesignDescriptor := FDesignDescriptor;
-            end;
         end;
         */
 
@@ -565,7 +527,7 @@ namespace VSS.VisionLink.Raptor.Volumes
         /// <param name="subGrids"></param>
         public void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
         {
-            SummariseSubgridResult(subGrids); // as ClientHeightLeafSubGrid[][]);
+            SummariseSubgridResult(subGrids);
         }
     }
 }
