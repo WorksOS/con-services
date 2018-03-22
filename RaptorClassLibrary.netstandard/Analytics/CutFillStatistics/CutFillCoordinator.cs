@@ -98,7 +98,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Coordinators
                 };
 
                 // Create the analytics engine to orchestrate the calculation
-                AnalyticsComputor<CutFillStatisticsArgument, CutFillStatisticsResponse> Computor = new AnalyticsComputor<CutFillStatisticsArgument, CutFillStatisticsResponse>()
+                AnalyticsComputor Computor = new AnalyticsComputor()
                 {
                     RequestDescriptor = RequestDescriptor,
                     SiteModel = SiteModel,

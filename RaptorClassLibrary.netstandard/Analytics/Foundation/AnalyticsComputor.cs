@@ -18,9 +18,7 @@ namespace VSS.VisionLink.Raptor.Analytics
     /// <summary>
     /// The base class the implements the analytics computation framework 
     /// </summary>
-    public class AnalyticsComputor<TArgument, SubGridsRequestResponse>
-        where TArgument : BaseApplicationServiceRequestArgument
-        where SubGridsRequestResponse : class, new()
+    public class AnalyticsComputor
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -39,10 +37,6 @@ namespace VSS.VisionLink.Raptor.Analytics
         /// </summary>
         public double CellSize { get; set; } = Consts.NullDouble;
 
-        private SubGridTreeSubGridExistenceBitMask ProdDataExistenceMap = null;
-        private SubGridTreeSubGridExistenceBitMask OverallExistenceMap = null;
-        private SubGridTreeSubGridExistenceBitMask CutFillDesignExistenceMap = null;
-
         /// <summary>
         /// Identifier for the design to be used as the basis for any required cut fill operations
         /// </summary>
@@ -53,14 +47,20 @@ namespace VSS.VisionLink.Raptor.Analytics
         /// </summary>
         public GridDataType RequestedGridDataType { get; set; } = GridDataType.All;
 
+        public BoundingWorldExtent3D Extents = BoundingWorldExtent3D.Inverted(); // No get;set; on purpose
+
+        private SubGridTreeSubGridExistenceBitMask ProdDataExistenceMap = null;
+        private SubGridTreeSubGridExistenceBitMask OverallExistenceMap = null;
+        private SubGridTreeSubGridExistenceBitMask CutFillDesignExistenceMap = null;
+        private SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse> PipeLine = null;
+        private AggregatedPipelinedSubGridTask PipelinedTask = null;
+
         /// <summary>
         ///  Default no-arg constructor
         /// </summary>
         public AnalyticsComputor()
         {
         }
-
-        protected BoundingWorldExtent3D Extents = BoundingWorldExtent3D.Inverted(); // No get;set; on purpose
 
         public long RequestDescriptor { get; set; } = -1;
 
@@ -76,9 +76,7 @@ namespace VSS.VisionLink.Raptor.Analytics
                 Extents = Filter.SpatialFilter.CalculateIntersectionWithExtents(Extents);
         }
 
-        private bool ConfigurePipeline(SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse> PipeLine,
-                                       AggregatedPipelinedSubGridTask PipelinedTask,
-                                       out BoundingIntegerExtent2D CellExtents)
+        private bool ConfigurePipeline(out BoundingIntegerExtent2D CellExtents)
         {
             CellExtents = BoundingIntegerExtent2D.Inverted();
 
@@ -138,7 +136,6 @@ namespace VSS.VisionLink.Raptor.Analytics
 
         public RequestErrorStatus ExecutePipeline()
         {
-            AggregatedPipelinedSubGridTask PipelinedTask = null;
             RequestErrorStatus Result = RequestErrorStatus.Unknown;
             bool PipelineAborted = false;
             // WaitResult            : TWaitResult;
@@ -156,14 +153,14 @@ namespace VSS.VisionLink.Raptor.Analytics
                 {
                     // PipeLine is the subgrid pipeline used to drive the extraction of subgrid information
                     // for the purposes of computing volumes information
-                    SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse> PipeLine = new SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse>(0, PipelinedTask);
+                    PipeLine = new SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse>(0, PipelinedTask);
 
                     PipelinedTask = new AggregatedPipelinedSubGridTask(Aggregator)
                     {
                         PipeLine = PipeLine
                     };
 
-                    if (!ConfigurePipeline(PipeLine, PipelinedTask, out BoundingIntegerExtent2D CellExtents))
+                    if (!ConfigurePipeline(out BoundingIntegerExtent2D CellExtents))
                     {
                         // TODO: Set some kind of failure mode into result
                         return RequestErrorStatus.FailedToConfigureInternalPipeline;
