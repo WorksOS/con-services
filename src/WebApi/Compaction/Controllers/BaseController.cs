@@ -125,7 +125,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       catch (Exception ex)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
-          ContractExecutionStatesEnum.InternalProcessingError - 2000, ex.Message);
+          ContractExecutionStatesEnum.InternalProcessingError - 2000, errorMessage1: ex.Message, innerException: ex);
       }
       finally
       {
@@ -153,7 +153,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       catch (Exception ex)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
-          ContractExecutionStatesEnum.InternalProcessingError - 2000, ex.Message);
+          ContractExecutionStatesEnum.InternalProcessingError - 2000, ex.Message, innerException: ex);
       }
       finally
       {

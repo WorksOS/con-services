@@ -93,8 +93,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     {
       var cacheKey = ElevationCacheKey(projectId, filter);
       var strFilter = filter != null ? JsonConvert.SerializeObject(filter) : "";
-      var opts = (new MemoryCacheEntryOptions()).GetCacheOptions(elevationExtentsCacheLifeKey, configStore, log);
-
+      var opts = new MemoryCacheEntryOptions().GetCacheOptions(elevationExtentsCacheLifeKey, configStore, log);
 
       return elevationExtentsCache.GetOrAdd(cacheKey, opts, () =>
       {

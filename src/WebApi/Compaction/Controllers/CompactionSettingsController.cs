@@ -3,11 +3,14 @@ using Microsoft.AspNetCore.ResponseCaching.Internal;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -66,7 +69,27 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("ValidateProjectSettings: " + Request.QueryString);
 
+      return await ValidateProjectSettingsEx(projectUid.ToString(), projectSettings, settingsType);
+    }
 
+    /// <summary>
+    /// Validates 3D project settings.
+    /// </summary>
+    /// <param name="request">Description of the Project Settings request.</param>
+    /// <returns>ContractExecutionResult</returns>
+    [Route("api/v2/validatesettings")]
+    [HttpPost]
+    public async Task<ContractExecutionResult> ValidateProjectSettings([FromBody] ProjectSettingsRequest request)
+    {
+      log.LogDebug($"UpsertProjectSettings: {JsonConvert.SerializeObject(request)}");
+
+      request.Validate();
+
+      return await ValidateProjectSettingsEx(request.projectUid, request.Settings, request.ProjectSettingsType);
+    }
+
+    private async Task<ContractExecutionResult> ValidateProjectSettingsEx(string projectUid, string projectSettings, ProjectSettingsType? settingsType)
+    {
       if (!string.IsNullOrEmpty(projectSettings))
       {
         if (settingsType == null)
@@ -89,7 +112,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         //It is assumed that the settings are about to be saved.
         //Clear the cache for these updated settings so we get the updated settings for compaction requests.
         log.LogDebug($"About to clear settings for project {projectUid}");
-        projectSettingsProxy.ClearCacheItem(projectUid.ToString(), GetUserId());
+        ClearProjectSettingsCaches(projectUid, Request.Headers.GetCustomHeaders());
         cache.InvalidateReponseCacheForProject(projectUid);
       }
       log.LogInformation("ValidateProjectSettings returned: " + Response.StatusCode);
@@ -161,5 +184,19 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       throw new ArgumentException("Incorrect UserId in request context principal.");
     }
 
+    /// <summary>
+    /// Clears the project settings cache in the proxy.
+    /// </summary>
+    /// <param name="projectUid">The project UID that the cached items belong to</param>
+    /// <param name="customHeaders">The custom headers of the notification request</param>
+    private void ClearProjectSettingsCaches(string projectUid, IDictionary<string, string> customHeaders)
+    {
+      log.LogInformation("Clearing project settingss cache for project {0}", projectUid);
+      //Clear file list cache and reload
+      if (!customHeaders.ContainsKey("X-VisionLink-ClearCache"))
+        customHeaders.Add("X-VisionLink-ClearCache", "true");
+
+      projectSettingsProxy.ClearCacheItem(projectUid, GetUserId());
+    }
   }
 }

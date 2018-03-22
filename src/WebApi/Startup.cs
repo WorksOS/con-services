@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Swashbuckle.Swagger.Model;
+using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -52,7 +52,6 @@ namespace VSS.Productivity3D.WebApi
     /// <summary>
     /// This method gets called by the runtime. Use this method to add services to the container.
     /// </summary>
-    /// <param name="services"></param>
     public void ConfigureServices(IServiceCollection services)
     {
       //Configure CORS
@@ -79,18 +78,13 @@ namespace VSS.Productivity3D.WebApi
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
       //Configure swagger
-      services.AddSwaggerGen();
+      services.AddSwaggerGen(c =>
+      {
+        c.SwaggerDoc("v1", new Info { Title = "3dPm Service API", Description = "API for 3D compaction and volume data", Version = "v1" });
+      });
 
       services.ConfigureSwaggerGen(options =>
       {
-        options.SingleApiVersion(new Info
-        {
-          Version = "v1",
-          Title = "Raptor API",
-          Description = "API for 3D compaction and volume data",
-          TermsOfService = "None"
-        });
-
         string pathToXml;
 
         var moduleName = typeof(Startup).GetTypeInfo().Assembly.ManifestModule.Name;
@@ -110,7 +104,6 @@ namespace VSS.Productivity3D.WebApi
         options.IgnoreObsoleteProperties();
         options.DescribeAllEnumsAsStrings();
       });
-      //Swagger documentation can be viewed with http://localhost:5000/swagger/ui/index.html   
 
       ConfigureApplicationServices(services);
     }
@@ -144,13 +137,19 @@ namespace VSS.Productivity3D.WebApi
       app.UseResponseCompression();
 
       app.UseResponseCaching();
-      app.UseMvc();
 
       app.UseSwagger();
-      app.UseSwaggerUi();
+
+      //Swagger documentation can be viewed with http://localhost:5000/swagger/v1/swagger.json
+      app.UseSwaggerUI(c =>
+      {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "3dPm Service API");
+      });
+
+      app.UseMvc();
 
       //Check if the configuration is correct and we are able to connect to Raptor
-      var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
+    /*  var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
       log.LogInformation("Testing Raptor configuration with sending config request");
       try
       {
@@ -164,7 +163,7 @@ namespace VSS.Productivity3D.WebApi
         log.LogError("Exception loading config: {0} at {1}", e.Message, e.StackTrace);
         log.LogCritical("Can't talk to Raptor for some reason - check configuration");
         Environment.Exit(138);
-      }
+      }*/
     }
   }
 }

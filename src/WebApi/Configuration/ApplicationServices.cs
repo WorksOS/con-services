@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<ITransferProxy, TransferProxy>();
       services.AddSingleton<IHostedService, AddFileProcessingService>();
       services.AddSingleton<IEnqueueItem<ProjectFileDescriptor>>(provider =>
-        (IEnqueueItem<ProjectFileDescriptor>) provider.GetService<IHostedService>());
+        (IEnqueueItem<ProjectFileDescriptor>)provider.GetService<IHostedService>());
 
       // Action services
       services.AddSingleton<IVolumeSummaryHelper, VolumeSummaryHelper>();
