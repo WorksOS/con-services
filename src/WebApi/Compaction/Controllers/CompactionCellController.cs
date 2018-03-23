@@ -81,9 +81,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? filterUid,
       [FromQuery] Guid? cutfillDesignUid,
       [FromQuery] DisplayMode displayMode,
-      [FromQuery] WGSPoint llPoint) 
+      [FromQuery] double lat,
+      [FromQuery] double lon) 
     {
       log.LogInformation("GetProductionDataCellsDatum: " + Request.QueryString);
+
+      const double RADIANS = Math.PI / 180;
 
       var projectId = ((RaptorPrincipal)User).GetProjectId(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
@@ -91,7 +94,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
       var cutFillDesign = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
 
-      CellDatumRequest request = CellDatumRequest.CreateCellDatumRequest(projectId, displayMode, llPoint, null, filter, filter.Id ?? -1, liftSettings, cutFillDesign);
+      CellDatumRequest request = CellDatumRequest.CreateCellDatumRequest(
+        projectId, 
+        displayMode,
+        WGSPoint.CreatePoint(lat * RADIANS, lon * RADIANS), 
+        null, 
+        filter, 
+        filter?.Id ?? -1, 
+        liftSettings, 
+        cutFillDesign);
+
       request.Validate();
 
       return RequestExecutorContainerFactory.Build<CompactionCellDatumExecutor>(logger, raptorClient).Process(request) as CompactionCellDatumResult;

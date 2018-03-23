@@ -93,86 +93,85 @@ namespace ProductionDataSvc.AcceptanceTests.Models
     } 
     #endregion
 
-    #region Result
+  #region Result
     public class CellDatumResult : RequestResult, IEquatable<CellDatumResult>
     {
-        #region Members
-        /// <summary>
-        /// THe display mode used in the original request
-        /// </summary>
-        public DisplayMode displayMode;
+    #region Members
+    /// <summary>
+    /// THe display mode used in the original request
+    /// </summary>
+    public DisplayMode displayMode;
 
-        /// <summary>
-        /// The internal result code resulting from the request.
-        /// </summary>
-        public short returnCode;
+    /// <summary>
+    /// The internal result code resulting from the request.
+    /// </summary>
+    public short returnCode;
 
-        /// <summary>
-        /// The value from the request, scaled in accordance with the underlying attribute domain.
-        /// </summary>
-        public double value;
+    /// <summary>
+    /// The value from the request, scaled in accordance with the underlying attribute domain.
+    /// </summary>
+    public double value;
 
-        /// <summary>
-        /// The date and time of the value.
-        /// </summary>
-        public DateTime timestamp { get; set; }
-        #endregion
-
-        #region Constructor
-        public CellDatumResult()
-            : base("success")
-        {
-        }
-        #endregion
-
-        #region Equality test
-        public bool Equals(CellDatumResult other)
-        {
-            if (other == null)
-                return false;
-
-            return this.displayMode == other.displayMode &&
-                this.returnCode == other.returnCode &&
-                Math.Round(this.value, 3) == Math.Round(other.value, 3) &&
-                this.timestamp == other.timestamp &&
-                this.Code == other.Code &&
-                this.Message == other.Message;
-        }
-
-        public static bool operator ==(CellDatumResult a, CellDatumResult b)
-        {
-            if ((object)a == null || (object)b == null)
-                return Object.Equals(a, b);
-
-            return a.Equals(b);
-        }
-
-        public static bool operator !=(CellDatumResult a, CellDatumResult b)
-        {
-            return !(a == b);
-        }
-
-        public override bool Equals(object obj)
-        {
-            return obj is CellDatumResult && this == (CellDatumResult)obj;
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-        #endregion
-
-        #region ToString override
-        /// <summary>
-        /// ToString override
-        /// </summary>
-        /// <returns>A string representation.</returns>
-        public override string ToString()
-        {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
-        }
-        #endregion
-    } 
+    /// <summary>
+    /// The date and time of the value.
+    /// </summary>
+    public DateTime timestamp { get; set; }
     #endregion
+
+    #region Constructor
+    public CellDatumResult()
+        : base("success")
+    {
+    }
+    #endregion
+
+    #region Equality test
+    public virtual bool Equals(CellDatumResult other)
+    {
+        if (other == null)
+            return false;
+
+        return base.Equals(other) && 
+            this.displayMode == other.displayMode &&
+            this.returnCode == other.returnCode &&
+            Math.Round(this.value, 3) == Math.Round(other.value, 3) &&
+            this.timestamp == other.timestamp;
+    }
+
+    public static bool operator ==(CellDatumResult a, CellDatumResult b)
+    {
+      if ((object)a == null || (object)b == null)
+        return Object.Equals(a, b);
+
+      return a.Equals(b);
+    }
+
+    public static bool operator !=(CellDatumResult a, CellDatumResult b)
+    {
+      return !(a == b);
+    }
+
+    public override bool Equals(object obj)
+    {
+        return obj is CellDatumResult && this == (CellDatumResult)obj;
+    }
+
+    public override int GetHashCode()
+    {
+      return base.GetHashCode();
+    }
+    #endregion
+
+    #region ToString override
+    /// <summary>
+    /// ToString override
+    /// </summary>
+    /// <returns>A string representation.</returns>
+    public override string ToString()
+    {
+      return JsonConvert.SerializeObject(this, Formatting.Indented);
+    }
+    #endregion
+  } 
+  #endregion
 }
