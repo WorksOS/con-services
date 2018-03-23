@@ -11,6 +11,7 @@ using VSS.VisionLink.Raptor.Rendering.Executors;
 using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Servers;
 using VSS.TRex.Rendering.Abstractions;
+using RaptorClassLibrary.netstandard.Rendering.GridFabric.Responses;
 
 namespace VSS.VisionLink.Raptor.Rendering.GridFabric.ComputeFuncs
 {
@@ -19,7 +20,7 @@ namespace VSS.VisionLink.Raptor.Rendering.GridFabric.ComputeFuncs
     /// a client server instance requesting it.
     /// </summary>
     [Serializable]
-    public class TileRenderRequestComputeFunc : BaseRaptorComputeFunc, IComputeFunc<TileRenderRequestArgument, IBitmap>
+    public class TileRenderRequestComputeFunc : BaseRaptorComputeFunc, IComputeFunc<TileRenderRequestArgument, TileRenderResponse>
     {
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -31,7 +32,7 @@ namespace VSS.VisionLink.Raptor.Rendering.GridFabric.ComputeFuncs
         {
         }
 
-        public IBitmap Invoke(TileRenderRequestArgument arg)
+        public TileRenderResponse Invoke(TileRenderRequestArgument arg)
         {
             Log.Info("In TileRenderRequestComputeFunc.Invoke()");
 
@@ -57,7 +58,7 @@ namespace VSS.VisionLink.Raptor.Rendering.GridFabric.ComputeFuncs
 
                 Log.Info("Executing render.Execute()");
 
-              IBitmap bmp = render.Execute();
+                IBitmap bmp = render.Execute();
                 Log.Info($"Render status = {render.ResultStatus}");
 
                 if (bmp == null)
@@ -65,7 +66,10 @@ namespace VSS.VisionLink.Raptor.Rendering.GridFabric.ComputeFuncs
                     Log.Info("Null bitmap returned by executor");
                 }
 
-                return bmp;
+                return new TileRenderResponse()
+                {
+                    Bitmap = bmp
+                };
             }
             finally
             {
