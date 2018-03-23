@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 
@@ -9,7 +8,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
   {
     ExportRequestHelper SetRaptorClient(IASNodeClient raptorClient);
 
-    Task<ExportReport> CreateExportRequest(
+    ExportReport CreateExportRequest(
       DateTime? startUtc,
       DateTime? endUtc,
       CoordTypes coordType,

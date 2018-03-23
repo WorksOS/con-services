@@ -20,7 +20,6 @@ using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Coord.Executors;
 using VSS.Productivity3D.WebApiModels.Coord.Models;
 using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Report.Executors;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
@@ -248,9 +247,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     {
       log.LogInformation($"AdjustBoundingBoxToFit: requestedWidth={parameters.mapWidth}, requestedHeight={parameters.mapHeight}, bbox={parameters.bbox}");
 
-      Point pixelMin, pixelMax;
-      int requiredWidth, requiredHeight;
-      TryZoomIn(parameters, out requiredWidth, out requiredHeight, out pixelMin, out pixelMax);
+      TryZoomIn(parameters, out int requiredWidth, out int requiredHeight, out var pixelMin, out var pixelMax);
 
       bool adjust = false;
 
@@ -521,7 +518,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
             startStation = stationRange.StartStation;
             endStation = stationRange.EndStation;
           }
-          catch (Exception e)
+          catch
           {
             success = false;
           }
@@ -532,15 +529,12 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
           TVLPDDesignDescriptor alignmentDescriptor = RaptorConverters.DesignDescriptor(alignDescriptor);
 
-          //Get the alignment points
-          TWGS84Point[] pdsPoints = null;
-
           success = raptorClient.GetDesignFilterBoundaryAsPolygon(
             DesignProfiler.ComputeDesignFilterBoundary.RPC.__Global.Construct_CalculateDesignFilterBoundary_Args(
               projectId,
               alignmentDescriptor,
               startStation, endStation, leftOffset, rightOffset,
-              DesignProfiler.ComputeDesignFilterBoundary.RPC.TDesignFilterBoundaryReturnType.dfbrtList), out pdsPoints);
+              DesignProfiler.ComputeDesignFilterBoundary.RPC.TDesignFilterBoundaryReturnType.dfbrtList), out TWGS84Point[] pdsPoints);
 
           if (success && pdsPoints != null && pdsPoints.Length > 0)
           {
@@ -582,10 +576,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
  
       //Get the station extents
       TVLPDDesignDescriptor alignmentDescriptor = RaptorConverters.DesignDescriptor(alignDescriptor);
-      double startStation = 0;
-      double endStation = 0;
       bool success = raptorClient.GetStationExtents(projectId, alignmentDescriptor,
-        out startStation, out endStation);
+        out double startStation, out double endStation);
       if (success)
       {
         result = AlignmentStationResult.CreateAlignmentOffsetResult(startStation, endStation);

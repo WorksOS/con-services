@@ -199,6 +199,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       profileResultHelper.FindCutFillElevations(slicerProductionDataResult, slicerDesignResult, type, volumeCalcType);
     }
 
+    /// <summary>
+    /// Resource to get a profile design slicer.
+    /// </summary>
     [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v2/profiles/design/slicer")]
     [HttpGet]

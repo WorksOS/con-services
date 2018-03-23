@@ -103,7 +103,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       tolerance = tolerance ?? surfaceExportTollerance;
 
-      var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
+      var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectId(projectId)
           .Headers(this.CustomHeaders)
           .ProjectSettings(projectSettings)
@@ -255,7 +255,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var userPreferences = await GetUserPreferences();
       var startEndDate = GetDateRange(projectId, filter);
 
-      var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
+      var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectId(projectId)
           .Headers(this.CustomHeaders)
           .ProjectSettings(projectSettings)
@@ -314,7 +314,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var userPreferences = await GetUserPreferences();
       var startEndDate = GetDateRange(projectId, filter);
 
-      var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
+      var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectId(projectId)
           .Headers(this.CustomHeaders)
           .ProjectSettings(projectSettings)

@@ -21,7 +21,11 @@ namespace VSS.Productivity3D.WebApi
 {
   public partial class Startup
   {
+    /// <summary>
+    /// Log4net repository logger name.
+    /// </summary>
     public const string LOGGER_REPO_NAME = "WebApi";
+
     private IServiceCollection serviceCollection;
 
     /// <summary>

@@ -19,9 +19,8 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.Services;
 using VSS.Productivity3D.WebApi.Models.Notification.Executors;
-using VSS.Productivity3D.WebApiModels.Notification.Executors;
+using VSS.Productivity3D.WebApi.Models.Services;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -112,6 +111,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <param name="fileType">Type of the file</param>
     /// <param name="fileId">A unique file identifier</param>
     /// <param name="dxfUnitsType">A DXF file units type</param>
+    /// <param name="fileQueue"></param>
     /// <returns>A code and message to indicate the result</returns>
     /// <executor>AddFileExecutor</executor> 
     [ProjectUidVerifier]

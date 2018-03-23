@@ -4,7 +4,6 @@ using BoundingExtents;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using VLPDDecls;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
@@ -64,7 +63,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// Creates an instance of the ProfileProductionDataRequest class and populate it with data needed for a design profile.   
     /// </summary>
     /// <returns>An instance of the ProfileProductionDataRequest class.</returns>
-    public async Task<ExportReport> CreateExportRequest(
+    public ExportReport CreateExportRequest(
       DateTime? startUtc,
       DateTime? endUtc,
       CoordTypes coordType,
