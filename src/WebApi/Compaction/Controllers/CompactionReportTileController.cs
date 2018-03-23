@@ -249,9 +249,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         ? await GetAlignmentDescriptors(projectUid)
         : new List<DesignDescriptor>();
       var userPreferences = await GetShortCachedUserPreferences();
-      var geofences = overlayTypes.Contains(TileOverlayType.Geofences)
-        ? await geofenceProxy.GetGeofences((User as RaptorPrincipal).CustomerUid, CustomHeaders)
-        : new List<GeofenceData>();
+      ////var geofences = overlayTypes.Contains(TileOverlayType.Geofences)
+      ////  ? await geofenceProxy.GetGeofences((User as RaptorPrincipal).CustomerUid, CustomHeaders)
+      ////  : new List<GeofenceData>();
+      var geofences = new List<GeofenceData>();
 
       var request = requestFactory.Create<TileGenerationRequestHelper>(r => r
           .ProjectId(project.projectId)
