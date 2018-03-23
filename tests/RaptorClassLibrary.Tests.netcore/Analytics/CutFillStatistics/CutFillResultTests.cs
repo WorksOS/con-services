@@ -10,7 +10,7 @@ namespace VSS.VisionLink.Raptor.Tests.Analytics.CutFillStatistics
     public class CutFillResultTests
     {
         [Fact]
-        public void Test_CutFillResult_Creation()
+        public void Test_CutFillResult_Population_Successful()
         {
             CutFillResult r = new CutFillResult();
             long[] testCounts = new long[7] { 100, 100, 100, 400, 100, 100, 100 };
@@ -30,6 +30,15 @@ namespace VSS.VisionLink.Raptor.Tests.Analytics.CutFillStatistics
             {
                 Assert.True(Math.Abs(10 - r.Percents[i]) < 0.00001, $"Invalid initial result percentage for item {i}");
             }
+        }
+
+        [Fact]
+        public void Test_CutFillResult_Population_Failure()
+        {
+            CutFillResult r = new CutFillResult();
+
+            Assert.Throws<ArgumentException>("Response", () => { r.PopulateFromClusterComputeResponse(null); });
+            Assert.Throws<ArgumentException>("Response", () => { r.PopulateFromClusterComputeResponse(new Object()); });
         }
     }
 }

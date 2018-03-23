@@ -75,11 +75,15 @@ namespace VSS.VisionLink.Raptor.Analytics.Models
         /// <param name="response"></param>
         public override void PopulateFromClusterComputeResponse(Object response)
         {
-            if (response is CutFillStatisticsResponse)
+            CutFillStatisticsResponse statisticsResponse = response as CutFillStatisticsResponse;
+
+            if (statisticsResponse == null)
             {
-                Counts = ((CutFillStatisticsResponse)response).Counts;
-                ResultStatus = ((CutFillStatisticsResponse)response).ResultStatus;
+                throw new ArgumentException($"Response argument is null or not a CutFillStatisticsResponse instance");
             }
+
+            Counts = statisticsResponse.Counts;
+            ResultStatus = statisticsResponse.ResultStatus;
         }
     }
 }
