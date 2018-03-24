@@ -10,7 +10,7 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
         [Fact()]
         public void Test_CellPassAttributeFilter_CellPassAttributeFilter()
         {
-            CellPassAttributeFilter filter = new CellPassAttributeFilter(null);
+            CellPassAttributeFilter filter = new CellPassAttributeFilter(/*null*/);
 
             Assert.False(filter.AnyFilterSelections || filter.AnyMachineEventFilterSelections || filter.AnyNonMachineEventFilterSelections,
                 "Filter flags set for default filter");
@@ -19,7 +19,7 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
         [Fact()]
         public void Test_CellPassAttributeFilter_Prepare()
         {
-            CellPassAttributeFilter filter = new CellPassAttributeFilter(null);
+            CellPassAttributeFilter filter = new CellPassAttributeFilter(/*null*/);
 
             Assert.False(filter.ElevationRangeIsInitialised, "Elevation range is initialised");
 
@@ -59,7 +59,7 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
             (string name, Action<CellPassAttributeFilter> setState, Func<CellPassAttributeFilter, bool> checkSetState,
                          Action<CellPassAttributeFilter> clearState, Func<CellPassAttributeFilter, bool> checkClearState)
         {
-            CellPassAttributeFilter filter = new CellPassAttributeFilter(null);
+            CellPassAttributeFilter filter = new CellPassAttributeFilter(/*null*/);
 
             Assert.True(checkClearState(filter), $"[{name}] State set when expected to be not set (1)");
 
@@ -82,8 +82,8 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
 
         private void Test_CellPassAttributeFilter_CompareTo_Aspect(string name, Action<CellPassAttributeFilter> SetState)
         {
-            CellPassAttributeFilter filter1 = new CellPassAttributeFilter(null);
-            CellPassAttributeFilter filter2 = new CellPassAttributeFilter(null);
+            CellPassAttributeFilter filter1 = new CellPassAttributeFilter(/*null*/);
+            CellPassAttributeFilter filter2 = new CellPassAttributeFilter(/*null*/);
 
             SetState(filter1);
             Assert.Equal(-1, filter1.CompareTo(filter2));
@@ -249,7 +249,7 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
         [Fact()]
         public void Test_CellPassAttributeFilter_ClearElevationRangeFilterInitialisation()
         {
-            CellPassAttributeFilter filter = new CellPassAttributeFilter(null)
+            CellPassAttributeFilter filter = new CellPassAttributeFilter(/*null*/)
             {
                 ElevationRangeIsInitialised = true,
                 ElevationRangeDesignElevations = new SubGridTrees.Client.ClientHeightLeafSubGrid(null, null, 6, 1, 0)
@@ -480,7 +480,7 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
         [Fact()]
         public void Test_CellPassAttributeFilter_IsTimeRangeFilter()
         {
-            CellPassAttributeFilter filter = new CellPassAttributeFilter(null);
+            CellPassAttributeFilter filter = new CellPassAttributeFilter(/*null*/);
 
             Assert.False(filter.IsTimeRangeFilter(), "Time range set");
 
