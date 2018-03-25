@@ -34,7 +34,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
       await ValidateProjectWithCustomer(customerUid, request?.projectUid);
 
-      if (request.ProjectSettingsType == ProjectSettingsType.Targets)
+      if (request.ProjectSettingsType == ProjectSettingsType.Targets || request.ProjectSettingsType == ProjectSettingsType.Colors)
       {
         await RaptorValidateProjectSettings(request);
       }
