@@ -12,7 +12,7 @@ using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
 namespace VSS.Velociraptor.DesignProfiling.Tests
 {
-        public class TTMDesignTests
+    public class TTMDesignTests
     {
         private static TTMDesign design = LoadTheDesign();
 

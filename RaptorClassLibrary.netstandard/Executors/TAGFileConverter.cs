@@ -84,7 +84,10 @@ namespace VSS.VisionLink.Raptor.Executors
             ProcessedEpochCount = 0;
             ProcessedCellPassCount = 0;
 
-            SiteModel = new SiteModel(-1, StorageProxy.RaptorInstance(StorageMutability.Mutable));
+            // Note: Intermediary TAG file processing contexts don't store their data to any persistence context
+            // so the SiteModel constructed to contain the data processed from a TAG file does not need a 
+            // storage proxy assigned to it
+            SiteModel = new SiteModel(-1, null /*StorageProxy.RaptorInstance(StorageMutability.Mutable)*/);
             Events = new ProductionEventChanges(SiteModel, 0 /*TODO: Machine.ID*/);
 
             Machine = new Machine()
@@ -137,7 +140,7 @@ namespace VSS.VisionLink.Raptor.Executors
 
                 SetPublishedState(Processor);
             }
-            catch // (Exception E) // make sure any exception is trapped to return correct response to caller
+            catch (Exception E) // make sure any exception is trapped to return correct response to caller
             {
                 return false;
             }
