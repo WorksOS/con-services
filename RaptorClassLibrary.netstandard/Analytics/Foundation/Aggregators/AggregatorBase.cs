@@ -48,7 +48,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
         /// <summary>
         /// Were the target values for all data extraqted for the analytics requested the same
         /// </summary>
-        public bool IsTargetValueConstant { get; set; } = false;
+        public bool IsTargetValueConstant { get; set; } = true;
 
         /// <summary>
         /// Were there any missing target values within the data extracted for the analytics request

@@ -29,33 +29,6 @@ namespace VSS.VisionLink.Raptor.Cells
        data storage structure used in the gridded level of the main IC data grid.
     */
 
-    /// <summary>
-    /// Internal mapping of remaining GPSMode flag bits into usable fields in the cell pass structure
-    /// The last 4 bits of GPSStore byte are flags. Zero based
-    /// </summary>
-    public enum GPSFlagBits
-    {
-        /// <summary>
-        ///  bit 5 of 8, 0=fullpass,1=halfpass
-        /// </summary>
-        GPSSBitHalfPass = 4, 
-
-        /// <summary>
-        /// Next two bits 6&7 will be read together value 0 = front, 1=rear, 2=track,3=wheel
-        /// </summary>
-        GPSSBit6 = 5,
-
-        /// <summary>
-        /// Next two bits 6&7 will be read together value 0 = front, 1=rear, 2=track,3=wheel
-        /// </summary>
-        GPSSBit7 = 6,
-
-        /// <summary>
-        /// Unused, spare bit
-        /// </summary>
-        GPSSBitSpare = 7
-    };
-
      /// <summary>
     /// Describes all the 'per-cell' state recorded for a pass recorded by a machine over a cell.
     /// </summary>
@@ -403,21 +376,7 @@ namespace VSS.VisionLink.Raptor.Cells
         /// <returns></returns>
         public override String ToString()
         {
-            return String.Format("Time:{0} MachineID:{1}, Height:{2}, CCV:{3}, RadioLatency:{4}, RMV:{5}, GPSMode:{6}, Freq:{7}, Amp:{8}, Temperature:{9}, Speed:{10}, MDP:{11}, CCA:{12}",
-                                 Time.ToString(), 
-                                 MachineID, 
-                                 Height, 
-                                 CCV, 
-                                 RadioLatency, 
-                                 RMV, 
-                                 gpsMode.ToString(),
-                                 Frequency, 
-                                 Amplitude, 
-                                 MaterialTemperature, 
-                                 MachineSpeed, 
-                                 MDP, 
-                                 CCA
-                                 );
+            return  $"Time:{Time} MachineID:{MachineID}, Height:{Height}, CCV:{CCV}, RadioLatency:{RadioLatency}, RMV:{RMV}, GPSMode:{gpsMode}, Freq:{Frequency}, Amp:{Amplitude}, Temperature:{MaterialTemperature}, Speed:{MachineSpeed}, MDP:{MDP}, CCA:{CCA}";
         }
 
         /// <summary>

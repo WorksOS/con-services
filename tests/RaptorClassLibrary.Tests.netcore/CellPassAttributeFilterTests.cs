@@ -75,9 +75,9 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("VibeState", 
                                                             x => { x.HasVibeStateFilter = true; x.VibeState = Types.VibrationState.Off; },
-                                                            x => { return x.HasVibeStateFilter && x.VibeState == Types.VibrationState.Off; },
+                                                            x => x.HasVibeStateFilter && x.VibeState == Types.VibrationState.Off,
                                                             x => { x.ClearVibeState(); }, 
-                                                            x => { return !x.HasVibeStateFilter && x.VibeState == Types.VibrationState.Invalid; });
+                                                            x => !x.HasVibeStateFilter && x.VibeState == Types.VibrationState.Invalid);
         }
 
         private void Test_CellPassAttributeFilter_CompareTo_Aspect(string name, Action<CellPassAttributeFilter> SetState)
@@ -216,9 +216,9 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("Designs",
                                                             x => { x.HasDesignFilter = true; x.DesignNameID = 42; },
-                                                            x => { return x.HasDesignFilter && x.DesignNameID == 42; },
+                                                            x => x.HasDesignFilter && x.DesignNameID == 42,
                                                             x => { x.ClearDesigns(); },
-                                                            x => { return !x.HasDesignFilter && x.DesignNameID == Consts.kNoDesignNameID; });
+                                                            x => !x.HasDesignFilter && x.DesignNameID == Consts.kNoDesignNameID);
         }
 
         [Fact()]
@@ -230,9 +230,9 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
                                                                    x.ElevationRangeOffset = 10;
                                                                    x.ElevationRangeThickness = 1;
                                                             },
-                                                            x => { return x.HasElevationRangeFilter && x.ElevationRangeDesignID != long.MinValue && x.ElevationRangeOffset == 10 && x.ElevationRangeThickness == 1; },
+                                                            x => x.HasElevationRangeFilter && x.ElevationRangeDesignID != long.MinValue && x.ElevationRangeOffset == 10 && x.ElevationRangeThickness == 1,
                                                             x => { x.ClearElevationRange(); },
-                                                            x => { return !x.HasElevationRangeFilter && x.ElevationRangeDesignID == long.MinValue && x.ElevationRangeOffset == Consts.NullDouble && x.ElevationRangeThickness == Consts.NullDouble; });
+                                                            x => !x.HasElevationRangeFilter && x.ElevationRangeDesignID == long.MinValue && x.ElevationRangeOffset == Consts.NullDouble && x.ElevationRangeThickness == Consts.NullDouble);
 
             Test_CellPassAttributeFilter_ClearFilter_Aspect("ElevationRange Level",
                                                             x => {
@@ -241,9 +241,9 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
                                                                 x.ElevationRangeOffset = 10;
                                                                 x.ElevationRangeThickness = 1;
                                                             },
-                                                            x => { return x.HasElevationRangeFilter && x.ElevationRangeLevel == 100 && x.ElevationRangeOffset == 10 && x.ElevationRangeThickness == 1; ; },
+                                                            x => x.HasElevationRangeFilter && x.ElevationRangeLevel == 100 && x.ElevationRangeOffset == 10 && x.ElevationRangeThickness == 1,
                                                             x => { x.ClearElevationRange(); },
-                                                            x => { return !x.HasElevationRangeFilter && x.ElevationRangeLevel == Consts.NullDouble && x.ElevationRangeLevel == Consts.NullDouble && x.ElevationRangeThickness == Consts.NullDouble; });
+                                                            x => !x.HasElevationRangeFilter && x.ElevationRangeLevel == Consts.NullDouble && x.ElevationRangeLevel == Consts.NullDouble && x.ElevationRangeThickness == Consts.NullDouble);
         }
 
         [Fact()]
@@ -282,9 +282,9 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("GuidanceMode",
                                                             x => { x.HasGCSGuidanceModeFilter = true; x.GCSGuidanceMode = Types.MachineAutomaticsMode.Automatics; },
-                                                            x => { return x.HasGCSGuidanceModeFilter && x.GCSGuidanceMode == Types.MachineAutomaticsMode.Automatics; },
+                                                            x => x.HasGCSGuidanceModeFilter && x.GCSGuidanceMode == Types.MachineAutomaticsMode.Automatics,
                                                             x => { x.ClearGuidanceMode(); },
-                                                            x => { return !x.HasGCSGuidanceModeFilter && x.GCSGuidanceMode == Types.MachineAutomaticsMode.Unknown; });
+                                                            x => !x.HasGCSGuidanceModeFilter && x.GCSGuidanceMode == Types.MachineAutomaticsMode.Unknown);
         }
 
         [Fact()]
@@ -292,9 +292,9 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("LayerID",
                                                             x => { x.HasLayerIDFilter = true; x.LayerID = 42; },
-                                                            x => { return x.HasLayerIDFilter && x.LayerID == 42; },
+                                                            x => x.HasLayerIDFilter && x.LayerID == 42,
                                                             x => { x.ClearLayerID(); },
-                                                            x => { return !x.HasLayerIDFilter && x.LayerID == 0; });
+                                                            x => !x.HasLayerIDFilter && x.LayerID == 0);
         }
 
         [Fact()]
@@ -302,16 +302,15 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("Layer State",
                                                             x => { x.HasLayerStateFilter = true; },
-                                                            x => { return x.HasLayerStateFilter; },
+                                                            x => x.HasLayerStateFilter,
                                                             x => { x.ClearLayerState(); },
-                                                            x => { return !x.HasLayerStateFilter; });
+                                                            x => !x.HasLayerStateFilter);
         }
 
         [Fact()]
         public void Test_CellPassAttributeFilter_Assign()
         {
             Assert.True(false);
-
         }
 
         [Fact()]
@@ -319,9 +318,9 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("Compaction only",
                                                             x => { x.HasCompactionMachinesOnlyFilter = true; },
-                                                            x => { return x.HasCompactionMachinesOnlyFilter; },
+                                                            x => x.HasCompactionMachinesOnlyFilter,
                                                             x => { x.ClearCompactionMachineOnlyRestriction(); },
-                                                            x => { return !x.HasCompactionMachinesOnlyFilter; });
+                                                            x => !x.HasCompactionMachinesOnlyFilter);
         }
 
         [Fact()]
@@ -329,9 +328,9 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("MachineDirection",
                                                             x => { x.HasMachineDirectionFilter = true; x.MachineDirection = Types.MachineDirection.Reverse; },
-                                                            x => { return x.HasMachineDirectionFilter; },
+                                                            x => x.HasMachineDirectionFilter,
                                                             x => { x.ClearMachineDirection(); },
-                                                            x => { return !x.HasMachineDirectionFilter && x.MachineDirection == Types.MachineDirection.Unknown; });
+                                                            x => !x.HasMachineDirectionFilter && x.MachineDirection == Types.MachineDirection.Unknown);
         }
 
         [Fact()]
@@ -347,9 +346,9 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("MinElevMapping",
                                                             x => { x.HasMinElevMappingFilter = true; x.MinElevationMapping = true; },
-                                                            x => { return x.HasMinElevMappingFilter; },
+                                                            x => x.HasMinElevMappingFilter,
                                                             x => { x.ClearMinElevationMapping(); },
-                                                            x => { return !x.HasMinElevMappingFilter && x.MinElevationMapping == false; });
+                                                            x => !x.HasMinElevMappingFilter && x.MinElevationMapping == false);
         }
 
         [Fact()]
@@ -358,7 +357,7 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
             // TODO: Readd when pass type is available
             /*Test_CellPassAttributeFilter_ClearFilter_Aspect("PassType",
                                                             x => { x.HasPassTypeFilter = true; x.??? = ??; },
-                                                            x => { return x.HasPassTypeFilter; },
+                                                            x => x.HasPassTypeFilter;,
                                                             x => { x.ClearPassType(); },
                                                             x => { return !x.HasPassTypeFilter; x.??? = ??; });*/
             Assert.True(false);
@@ -370,9 +369,9 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("PositioningTech",
                                                             x => { x.HasPositioningTechFilter = true; x.PositioningTech = Types.PositioningTech.GPS; },
-                                                            x => { return x.HasPositioningTechFilter; },
+                                                            x => x.HasPositioningTechFilter,
                                                             x => { x.ClearPositioningTech(); },
-                                                            x => { return !x.HasPositioningTechFilter; });
+                                                            x => !x.HasPositioningTechFilter);
         }
 
         [Fact()]
@@ -387,9 +386,9 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("Time",
                                                             x => { x.HasTimeFilter = true; x.StartTime = new DateTime(2000, 1, 1); x.EndTime = new DateTime(2000, 1, 2); },
-                                                            x => { return x.HasTimeFilter; },
+                                                            x => x.HasTimeFilter,
                                                             x => { x.ClearTime(); },
-                                                            x => { return !x.HasTimeFilter && x.StartTime == DateTime.MinValue && x.EndTime == DateTime.MaxValue; });
+                                                            x => !x.HasTimeFilter && x.StartTime == DateTime.MinValue && x.EndTime == DateTime.MaxValue);
         }
 
         [Fact()]
