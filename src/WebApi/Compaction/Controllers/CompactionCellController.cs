@@ -8,7 +8,6 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
-using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
@@ -59,11 +58,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     public CompactionCellController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, 
       IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
       IServiceExceptionHandler serviceExceptionHandler, IFilterServiceProxy filterServiceProxy, IProductionDataRequestFactory requestFactory) 
-      : base(logger.CreateLogger<BaseController>(), serviceExceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
+      : base(logger, logger.CreateLogger<CompactionCellController>(), serviceExceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
-      this.log = logger.CreateLogger<CompactionDataController>();
+      this.log = logger.CreateLogger<CompactionCellController>();
       this.requestFactory = requestFactory;
     }
 
@@ -88,7 +87,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       const double RADIANS = Math.PI / 180;
 
-      var projectId = ((RaptorPrincipal)User).GetProjectId(projectUid);
+      var projectId = ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
