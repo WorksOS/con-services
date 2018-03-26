@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCaching.Internal;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -28,7 +28,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   public class CompactionSettingsController : Controller
   {
     /// <summary>
-    /// Logger for logging
+    /// LoggerFactory for logging
     /// </summary>
     private readonly ILogger log;
 
@@ -42,7 +42,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Constructor with dependency injection
     /// </summary>
-    /// <param name="logger">Logger</param>
+    /// <param name="logger">LoggerFactory</param>
     /// <param name="projectSettingsProxy">Project settings proxy</param>
     /// <param name="cache">The memory cache for the controller</param>
     public CompactionSettingsController(ILoggerFactory logger, IProjectSettingsProxy projectSettingsProxy, IResponseCache cache)

@@ -8,7 +8,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
   /// <summary>
   /// Service helper for Volume Summary APIs.
   /// </summary>
-  public interface IVolumeSummaryHelper
+  public interface ISummaryDataHelper
   {
     /// <summary>
     /// Get the Volumes Type for the given base and top surfaces.

@@ -30,13 +30,7 @@
     "Message": "success"
   },
   "DesignOutside_Summary": {
-    "temperatureSummaryData": {
-      "percentEqualsTarget": 0.0,
-      "percentGreaterThanTarget": 0.0,
-      "percentLessThanTarget": 0.0,
-      "totalAreaCoveredSqMeters": 0.0,
-      "temperatureTarget": null
-    },
+    "temperatureSummaryData": null,
     "Code": 0,
     "Message": "success"
   },

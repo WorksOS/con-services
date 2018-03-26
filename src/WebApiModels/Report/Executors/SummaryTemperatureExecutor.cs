@@ -1,18 +1,18 @@
-﻿using ASNodeDecls;
-using SVOICFilterSettings;
-using System;
+﻿using System;
 using System.Net;
+using ASNodeDecls;
+using SVOICFilterSettings;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common.Filters.Interfaces;
+using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Models;
-using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.Report.Executors
+namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
   /// <summary>
   /// The executor which passes the summary Temperature request to Raptor
@@ -35,10 +35,9 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
     /// <returns>a TemperatureSummaryResult if successful</returns>      
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result = null;
+      ContractExecutionResult result;
       try
       {
-        TTemperature temperatureSummary;
         TemperatureRequest request = item as TemperatureRequest;
         TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId,
             request.overrideStartUTC, request.overrideEndUTC, request.overrideAssetIds);
@@ -47,7 +46,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
                             ConvertSettings(request.temperatureSettings),
                             raptorFilter,
                             RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
-                            out temperatureSummary);
+                            out var temperatureSummary);
         if (success)
         {
           result = ConvertResult(temperatureSummary);
@@ -55,7 +54,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
         else
         {
           throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-            string.Format("Failed to get requested Temperature summary data with error: {0}", ContractExecutionStates.FirstNameWithOffset(temperatureSummary.ReturnCode))));
+            $"Failed to get requested Temperature summary data with error: {ContractExecutionStates.FirstNameWithOffset(temperatureSummary.ReturnCode)}"));
         }
 
       }
@@ -74,7 +73,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
 
     private TemperatureSummaryResult ConvertResult(TTemperature summary)
     {
-      return TemperatureSummaryResult.CreateTemperatureSummaryResult(
+      return TemperatureSummaryResult.Create(
                 summary.MinimumTemperature,
                 summary.MaximumTemperature,
                 summary.IsTargetTemperatureConstant,

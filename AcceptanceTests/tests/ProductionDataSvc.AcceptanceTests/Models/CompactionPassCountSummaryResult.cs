@@ -29,6 +29,12 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       if (other == null)
         return false;
 
+      if (this.passCountSummaryData == null)
+      {
+        return this.Code == other.Code &&
+               this.Message == other.Message;
+      }
+
       return this.passCountSummaryData.Equals(other.passCountSummaryData) &&
        this.Code == other.Code &&
        this.Message == other.Message;

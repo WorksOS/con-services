@@ -1,4 +1,7 @@
-﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
+﻿using System;
+using System.Linq;
+using Newtonsoft.Json;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
@@ -11,19 +14,21 @@ namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
     /// <summary>
     /// Range of the target pass count values if all target pass counts relevant to analysed cell passes are the same.
     /// </summary>
-    public TargetPassCountRange constantTargetPassCountRange { get; private set; }
+    [JsonProperty(PropertyName = "constantTargetPassCountRange")]
+    public TargetPassCountRange ConstantTargetPassCountRange { get; private set; }
 
     /// <summary>
     /// Are all target pass counts relevant to analysed cell passes are the same?
     /// </summary>
-    public bool isTargetPassCountConstant { get; private set; }
+    [JsonProperty(PropertyName = "isTargetPassCountConstant")]
+    public bool IsTargetPassCountConstant { get; private set; }
 
     /// <summary>
     /// Collection of passcount percentages where each element represents the percentage of the matching index passcount number provided in the 
     /// passCounts member of the pass count request representation.
     /// </summary>
-    public double[] percents { get; private set; }
-
+    [JsonProperty(PropertyName = "percents")]
+    public double[] Percents { get; private set; }
 
     /// <summary>
     /// Gets the total coverage area for the production data - not the total area specified in filter
@@ -31,27 +36,34 @@ namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
     /// <value>
     /// The total coverage area in sq meters.
     /// </value>
+    [JsonProperty(PropertyName = "totalCoverageArea")]
     public double TotalCoverageArea { get; private set; }
 
     /// <summary>
-    /// Private constructor
+    /// Gets whether the Pass Count result object contains data.
     /// </summary>
-    private PassCountDetailedResult()
-    {}
+    /// <remarks>
+    /// It's not enough to check the coverage area, if the Percents array contains non zero data then that affects the result.
+    /// </remarks>
+    /// <returns></returns>
+    public bool HasData() => Math.Abs(this.TotalCoverageArea) > 0.001 || (Percents?.Any(d => Math.Abs(d) > 0.001) ?? false);
 
     /// <summary>
-    /// Create instance of PassCountSummaryResult
+    /// Default private constructor.
     /// </summary>
-    public static PassCountDetailedResult CreatePassCountDetailedResult(
-      TargetPassCountRange constantTargetPassCountRange,
-      bool isTargetPassCountConstant,
-      double[] percents, double totalArea)
+    private PassCountDetailedResult()
+    { }
+
+    /// <summary>
+    /// Static constructor.
+    /// </summary>
+    public static PassCountDetailedResult Create(TargetPassCountRange constantTargetPassCountRange, bool isTargetPassCountConstant, double[] percents, double totalArea)
     {
       return new PassCountDetailedResult
       {
-        constantTargetPassCountRange = constantTargetPassCountRange,
-        isTargetPassCountConstant = isTargetPassCountConstant,
-        percents = percents,
+        ConstantTargetPassCountRange = constantTargetPassCountRange,
+        IsTargetPassCountConstant = isTargetPassCountConstant,
+        Percents = percents,
         TotalCoverageArea = totalArea
       };
     }
@@ -63,8 +75,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
     public override string ToString()
     {
       return
-        $"constantTargetPassCountRange:({this.constantTargetPassCountRange.min}, {this.constantTargetPassCountRange.max}), isTargetPassCountConstant:{this.isTargetPassCountConstant}, percents:{string.Join("%, ", this.percents) + "%"}";
+        $"constantTargetPassCountRange:({this.ConstantTargetPassCountRange.min}, {this.ConstantTargetPassCountRange.max}), isTargetPassCountConstant:{this.IsTargetPassCountConstant}, percents:{string.Join("%, ", this.Percents) + "%"}";
     }
-
   }
 }

@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
-using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Report.Controllers
 {
@@ -19,7 +18,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     private readonly IASNodeClient raptorClient;
 
     /// <summary>
-    /// Logger factory for use by executor
+    /// LoggerFactory factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
 
@@ -27,7 +26,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
-    /// <param name="logger">Logger</param>
+    /// <param name="logger">LoggerFactory</param>
     public ConfigController(IASNodeClient raptorClient, ILoggerFactory logger)
     {
       this.raptorClient = raptorClient;

@@ -11,15 +11,15 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 namespace VSS.Productivity3D.Common.Filters.Authentication.Models
 {
   /// <summary>
-  ///   Custom principal for Raptor with list of projects.
+  /// Custom principal for Raptor with list of projects.
   /// </summary>
   public class RaptorPrincipal : ClaimsPrincipal
   {
     private readonly IProjectListProxy projectProxy;
     private readonly IDictionary<string, string> authNContext;
 
-    //We need to delefgate Project retrieval downstream as project may not accessible to a user once it has been created
-    public RaptorPrincipal(ClaimsIdentity identity, string customerUid, 
+    //We need to delegate Project retrieval downstream as project may not accessible to a user once it has been created
+    public RaptorPrincipal(ClaimsIdentity identity, string customerUid,
       string username, string customername, IProjectListProxy projectProxy, IDictionary<string, string> contextHeaders, bool isApplication = false) : base(identity)
     {
       CustomerUid = customerUid;
@@ -69,10 +69,8 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
     }
 
     /// <summary>
-    ///   Get the project descriptor for the specified project id.
+    /// Get the project descriptor for the specified project id.
     /// </summary>
-    /// <param name="projectId">The project ID</param>
-    /// <returns>Project descriptor</returns>
     public ProjectDescriptor GetProject(long projectId)
     {
       var projectDescr = Projects.FirstOrDefault(p => p.projectId == projectId);
@@ -88,23 +86,22 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
     }
 
     /// <summary>
-    ///   Get the project descriptor for the specified project uid.
+    /// Get the project descriptor for the specified project uid.
     /// </summary>
-    /// <param name="projectUid">THe project UID</param>
-    /// <returns>Project descriptor</returns>
     public ProjectDescriptor GetProject(Guid? projectUid)
     {
       if (!projectUid.HasValue)
+      {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Missing project UID"));
+      }
+
       return GetProject(projectUid.ToString());
     }
 
     /// <summary>
-    ///   Get the project descriptor for the specified project uid.
+    /// Get the project descriptor for the specified project uid.
     /// </summary>
-    /// <param name="projectUid">THe project UID</param>
-    /// <returns>Project descriptor</returns>
     public ProjectDescriptor GetProject(string projectUid)
     {
       if (string.IsNullOrEmpty(projectUid))
@@ -127,19 +124,24 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
     }
 
     /// <summary>
-    ///   Gets the legacy project id for the specified project uid
+    /// Gets the legacy Project Id (long) from a ProjectUid (Guid).
     /// </summary>
-    /// <param name="projectUid">THe project UID</param>
-    /// <returns>Legacy project ID</returns>
-    public long GetProjectId(Guid? projectUid)
+    public long GetLegacyProjectId(Guid? projectUid)
     {
+      if (!(this is RaptorPrincipal _))
+      {
+        throw new ArgumentException("Incorrect request context principal.");
+      }
+
       var projectId = GetProject(projectUid).projectId;
+      if (projectId > 0)
+      {
+        return projectId;
+      }
 
-      if (projectId <= 0)
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.AuthError, "Missing project ID"));
-
-      return projectId;
+      throw new ServiceException(
+        HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.AuthError, "Missing project ID"));
     }
   }
 }

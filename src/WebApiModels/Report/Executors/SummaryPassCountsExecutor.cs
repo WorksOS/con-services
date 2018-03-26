@@ -5,12 +5,12 @@ using System.Net;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common.Filters.Interfaces;
+using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Models;
-using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiModels.Report.Executors
 {
@@ -51,7 +51,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
 
       private PassCountSummaryResult ConvertResult(TPassCountSummary summary, LiftBuildSettings liftSettings)
     {
-      return PassCountSummaryResult.CreatePassCountSummaryResult(
+      return PassCountSummaryResult.Create(
           liftSettings != null && liftSettings.overridingTargetPassCountRange != null ? liftSettings.overridingTargetPassCountRange : TargetPassCountRange.CreateTargetPassCountRange(summary.ConstantTargetPassCountRange.Min, summary.ConstantTargetPassCountRange.Max), 
           summary.IsTargetPassCountConstant, 
           summary.PercentEqualsTarget,

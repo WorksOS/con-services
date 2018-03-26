@@ -1,11 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
-using VSS.Productivity3D.Common.Interfaces;
 using VSS.TCCFileAccess;
 
-namespace VSS.Productivity3D.Common.Filters.Interfaces
+namespace VSS.Productivity3D.Common.Interfaces
 {
   public class RequestExecutorContainerFactory
   {

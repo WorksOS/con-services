@@ -30,6 +30,12 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       if (other == null)
         return false;
 
+      if (this.passCountDetailsData == null)
+      {
+        return this.Code == other.Code &&
+               this.Message == other.Message;
+      }
+
       return this.passCountDetailsData.Equals(other.passCountDetailsData) &&
        this.Code == other.Code &&
        this.Message == other.Message;
@@ -38,7 +44,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
     public static bool operator ==(CompactionPassCountDetailedResult a, CompactionPassCountDetailedResult b)
     {
       if ((object)a == null || (object)b == null)
-        return object.Equals(a, b);
+        return Equals(a, b);
 
       return a.Equals(b);
     }

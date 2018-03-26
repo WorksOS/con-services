@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Filters.Authentication;
-using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -25,7 +24,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     private readonly IASNodeClient raptorClient;
 
     /// <summary>
-    /// Logger factory for use by executor
+    /// LoggerFactory factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
 
@@ -33,7 +32,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
-    /// <param name="logger">Logger</param>
+    /// <param name="logger">LoggerFactory</param>
     public CellController(IASNodeClient raptorClient, ILoggerFactory logger)
     {
       this.raptorClient = raptorClient;

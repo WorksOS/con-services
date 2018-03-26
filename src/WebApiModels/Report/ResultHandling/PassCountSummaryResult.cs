@@ -1,4 +1,6 @@
-﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
+﻿using System;
+using Newtonsoft.Json;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
@@ -11,48 +13,57 @@ namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
     /// <summary>
     /// Value of the target pass count if all target pass counts relevant to analysed cell passes are the same.
     /// </summary>
-    public TargetPassCountRange constantTargetPassCountRange { get; private set; }
+    [JsonProperty(PropertyName = "constantTargetPassCountRange")]
+    public TargetPassCountRange ConstantTargetPassCountRange { get; private set; }
 
     /// <summary>
     /// Are all target pass counts relevant to analysed cell passes are the same?
     /// </summary>
-    public bool isTargetPassCountConstant { get; private set; }
+    [JsonProperty(PropertyName = "isTargetPassCountConstant")]
+    public bool IsTargetPassCountConstant { get; private set; }
 
     /// <summary>
     /// The percentage of pass counts that match the target pass count specified in the passCountTarget member of the request
     /// </summary>
-    public double percentEqualsTarget { get; private set; }
+    [JsonProperty(PropertyName = "percentEqualsTarget")]
+    public double PercentEqualsTarget { get; private set; }
 
     /// <summary>
     /// The percentage of pass counts that are greater than the target pass count specified in the passCountTarget member of the request
     /// </summary>
-    public double percentGreaterThanTarget { get; private set; }
+    [JsonProperty(PropertyName = "percentGreaterThanTarget")]
+    public double PercentGreaterThanTarget { get; private set; }
 
     /// <summary>
     /// The percentage of pass counts that are less than the target pass count specified in the passCountTarget member of the request
     /// </summary>
-    public double percentLessThanTarget { get; private set; }
+    [JsonProperty(PropertyName = "percentLessThanTarget")]
+    public double PercentLessThanTarget { get; private set; }
 
     /// <summary>
     /// The internal returnCode returned by the internal request. Documented elsewhere.
     /// </summary>
-    public short returnCode { get; private set; }
+    [JsonProperty(PropertyName = "returnCode")]
+    public short ReturnCode { get; private set; }
 
     /// <summary>
     /// The total area covered by non-null cells in the request area
     /// </summary>
-    public double totalAreaCoveredSqMeters { get; private set; }
+    [JsonProperty(PropertyName = "totalAreaCoveredSqMeters")]
+    public double TotalAreaCoveredSqMeters { get; private set; }
+
+    public bool HasData() => Math.Abs(this.TotalAreaCoveredSqMeters) > 0.001;
 
     /// <summary>
-    /// Private constructor
+    /// Defaullt private constructor.
     /// </summary>
-    private PassCountSummaryResult() 
-    {}
+    private PassCountSummaryResult()
+    { }
 
     /// <summary>
     /// Create instance of PassCountSummaryResult
     /// </summary>
-    public static PassCountSummaryResult CreatePassCountSummaryResult(
+    public static PassCountSummaryResult Create(
       TargetPassCountRange constantTargetPassCountRange,
       bool isTargetPassCountConstant,
       double percentEqualsTarget,
@@ -63,13 +74,13 @@ namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
     {
       return new PassCountSummaryResult
       {
-        constantTargetPassCountRange = constantTargetPassCountRange,
-        isTargetPassCountConstant = isTargetPassCountConstant,
-        percentEqualsTarget = percentEqualsTarget,
-        percentGreaterThanTarget = percentGreaterThanTarget,
-        percentLessThanTarget = percentLessThanTarget,
-        returnCode = returnCode,
-        totalAreaCoveredSqMeters = totalAreaCoveredSqMeters,
+        ConstantTargetPassCountRange = constantTargetPassCountRange,
+        IsTargetPassCountConstant = isTargetPassCountConstant,
+        PercentEqualsTarget = percentEqualsTarget,
+        PercentGreaterThanTarget = percentGreaterThanTarget,
+        PercentLessThanTarget = percentLessThanTarget,
+        ReturnCode = returnCode,
+        TotalAreaCoveredSqMeters = totalAreaCoveredSqMeters,
       };
     }
 
@@ -80,12 +91,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
     public override string ToString()
     {
       return
-        $"constantTargetPassCountRange:({this.constantTargetPassCountRange.min}, {this.constantTargetPassCountRange.max}), isTargetPassCountConstant:{this.isTargetPassCountConstant}, percentEqualsTarget:{this.percentEqualsTarget}, percentGreaterThanTarget:{this.percentGreaterThanTarget}, percentLessThanTarget:{this.percentLessThanTarget}, totalAreaCoveredSqMeters:{this.totalAreaCoveredSqMeters}, returnCode:{this.returnCode}";
-    }
-
-    public static PassCountSummaryResult Empty()
-    {
-      return new PassCountSummaryResult();
+        $"constantTargetPassCountRange:({this.ConstantTargetPassCountRange.min}, {this.ConstantTargetPassCountRange.max}), isTargetPassCountConstant:{this.IsTargetPassCountConstant}, percentEqualsTarget:{this.PercentEqualsTarget}, percentGreaterThanTarget:{this.PercentGreaterThanTarget}, percentLessThanTarget:{this.PercentLessThanTarget}, totalAreaCoveredSqMeters:{this.TotalAreaCoveredSqMeters}, returnCode:{this.ReturnCode}";
     }
   }
 }

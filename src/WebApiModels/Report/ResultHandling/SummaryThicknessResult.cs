@@ -1,7 +1,7 @@
 ﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
 {
   /// <summary>
   /// Represents result returned by Summary Volumes request
@@ -41,7 +41,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
     /// </summary>
     public double NoCoverageArea { get; private set; }
 
-    public static SummaryThicknessResult CreateSummaryThicknessResult(BoundingBox3DGrid convertExtents, double aboveTarget,
+    public static SummaryThicknessResult Create(BoundingBox3DGrid convertExtents, double aboveTarget,
         double belowTarget, double matchTarget, double noCoverageArea)
     {
       return new SummaryThicknessResult

@@ -4,8 +4,8 @@ using System.Net;
 using System.Xml;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common.Filters.Interfaces;
-using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiModels.Report.Executors
 {
@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
                 log.LogTrace("Received config {0}", config);
                 XmlDocument doc = new XmlDocument();
                 doc.LoadXml(config);
-                result = ConfigResult.CreateConfigResult(config);
+                result = ConfigResult.Create(config);
             }
             catch (Exception e)
             {

@@ -1,6 +1,6 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RaptorSvcAcceptTestsCommon.Models;
+using System;
 
 namespace ProductionDataSvc.AcceptanceTests.Models
 {
@@ -28,6 +28,12 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       if (other == null)
         return false;
 
+      if (this.cmvChangeData == null)
+      {
+        return this.Code == other.Code &&
+               this.Message == other.Message;
+      }
+
       return this.cmvChangeData.Equals(other.cmvChangeData) &&
         this.Code == other.Code && this.Message == other.Message;
     }
@@ -35,7 +41,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
     public static bool operator ==(CompactionCmvPercentChangeResult a, CompactionCmvPercentChangeResult b)
     {
       if ((object)a == null || (object)b == null)
-        return Object.Equals(a, b);
+        return Equals(a, b);
 
       return a.Equals(b);
     }

@@ -76,17 +76,7 @@
     "Message": "success"
   },
   "DesignOutside_Summary": {
-    "passCountSummaryData": {
-      "percentEqualsTarget": 0,
-      "percentGreaterThanTarget": 0,
-      "percentLessThanTarget": 0,
-      "totalAreaCoveredSqMeters": 0,
-      "passCountTarget": {
-        "minPassCountMachineTarget": 0,
-        "maxPassCountMachineTarget": 0,
-        "targetVaries": false
-      }
-    },
+    "passCountSummaryData": null,
     "Code": 0,
     "Message": "success"
   },
@@ -121,25 +111,7 @@
     "Message": "success"
   },
   "DesignOutside_Details": {
-    "passCountDetailsData": {
-      "percents": [
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0
-      ],
-      "totalCoverageArea": 0.0,
-      "PassCountTarget": {
-        "minPassCountMachineTarget": 0.0,
-        "maxPassCountMachineTarget": 0.0,
-        "targetVaries": false
-      }
-    },
+    "passCountDetailsData": null,
     "Code": 0,
     "Message": "success"
   },

@@ -17,7 +17,6 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
-using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Services;
@@ -41,12 +40,12 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     private readonly IASNodeClient raptorClient;
 
     /// <summary>
-    /// Logger for logging
+    /// LoggerFactory for logging
     /// </summary>
     private readonly ILogger log;
 
     /// <summary>
-    /// Logger factory for use by executor
+    /// LoggerFactory factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
 
@@ -80,7 +79,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
-    /// <param name="logger">Logger</param>
+    /// <param name="logger">LoggerFactory</param>
     /// <param name="fileRepo">Imported file repository</param>
     /// <param name="configStore">Configuration store</param>
     /// <param name="prefProxy">Proxy for user preferences</param>
@@ -142,7 +141,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
         fileType);
 
       request.Validate();
-      /*var executor = RequestExecutorContainerFactory.Build<AddFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
+      /*var executor = RequestExecutorContainerFactory.Build<AddFileExecutor>(logger, RaptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request) as Models.Notification.Models.AddFileResult;*/
       //Instead, leverage the service
       fileQueue.EnqueueItem(request);
@@ -181,18 +180,19 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       ProjectDescriptor projectDescr = (User as RaptorPrincipal).GetProject(projectUid);
       var customHeaders = Request.Headers.GetCustomHeaders();
 
-      //Cannot delete a design file that is used in a filter
+      //Cannot delete a design or alignment file that is used in a filter
       //TODO: When scheduled reports are implemented, extend this check to them as well.
-      if (fileType == ImportedFileType.DesignSurface)
+      if (fileType == ImportedFileType.DesignSurface || fileType == ImportedFileType.Alignment)
       {
         var filters = await GetFilters(projectUid, Request.Headers.GetCustomHeaders(true));
         if (filters != null)
         {
-          if (filters.Any(f => f.DesignUid == fileUid.ToString()))
+          var fileUidStr = fileUid.ToString();
+          if (filters.Any(f => f.DesignUid == fileUidStr || f.AlignmentUid == fileUidStr))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "Cannot delete a design surface used in a filter"));
+                "Cannot delete a design surface or alignment file used in a filter"));
           }
         }
       }

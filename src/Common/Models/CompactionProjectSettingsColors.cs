@@ -22,11 +22,12 @@ namespace VSS.Productivity3D.Common.Models
     #region Properties
 
     #region Elevation
+
     /// <summary>
     /// Flag to determine if default or custom Elevation colour values are used. Default is true.
     /// </summary>
     [JsonProperty(PropertyName = "useDefaultElevationColors", Required = Required.Default)]
-    public bool? useDefaultElevationColors { get; private set; }
+    public bool? useDefaultElevationColors { get; private set; } = true;
 
     /// <summary>
     /// The Elevation colour values when overriding the default ones.
@@ -37,11 +38,12 @@ namespace VSS.Productivity3D.Common.Models
     #endregion
 
     #region CMV
+
     /// <summary>
     /// Flag to determine if default or custom CMV details colour values are used. Default is true.
     /// </summary>
     [JsonProperty(PropertyName = "useDefaultCMVDetailsColors", Required = Required.Default)]
-    public bool? useDefaultCMVDetailsColors { get; private set; }
+    public bool? useDefaultCMVDetailsColors { get; private set; } = true;
 
     /// <summary>
     /// The CMV details colour values when overriding the default ones.
@@ -54,7 +56,7 @@ namespace VSS.Productivity3D.Common.Models
     /// Flag to determine if default or custom CMV summary colour values are used. Default is true.
     /// </summary>
     [JsonProperty(PropertyName = "useDefaultCMVSummaryColors", Required = Required.Default)]
-    public bool? useDefaultCMVSummaryColors { get; private set; }
+    public bool? useDefaultCMVSummaryColors { get; private set; } = true;
 
     /// <summary>
     /// The colour value when the reported CMV value is on target.
@@ -78,7 +80,7 @@ namespace VSS.Productivity3D.Common.Models
     /// Flag to determine if default or custom CMV percent change colour values are used. Default is true.
     /// </summary>
     [JsonProperty(PropertyName = "useDefaultCMVPercentColors", Required = Required.Default)]
-    public bool? useDefaultCMVPercentColors { get; private set; }
+    public bool? useDefaultCMVPercentColors { get; private set; } = true;
 
     /// <summary>
     /// The CMV percent colour values when overriding the default ones.
@@ -89,11 +91,12 @@ namespace VSS.Productivity3D.Common.Models
     #endregion
 
     #region Pass Count
+
     /// <summary>
     /// Flag to determine if default or custom Pass Count details colour values are used. Default is true.
     /// </summary>
     [JsonProperty(PropertyName = "useDefaultPassCountDetailsColors", Required = Required.Default)]
-    public bool? useDefaultPassCountDetailsColors { get; private set; }
+    public bool? useDefaultPassCountDetailsColors { get; private set; } = true;
 
     /// <summary>
     /// The Pass Count details colour values when overriding the default ones.
@@ -106,7 +109,7 @@ namespace VSS.Productivity3D.Common.Models
     /// Flag to determine if default or custom Pass Count summary colour values are used. Default is true.
     /// </summary>
     [JsonProperty(PropertyName = "useDefaultPassCountSummaryColors", Required = Required.Default)]
-    public bool? useDefaultPassCountSummaryColors { get; private set; }
+    public bool? useDefaultPassCountSummaryColors { get; private set; } = true;
 
     /// <summary>
     /// The colour value when the reported pass count value is on target.
@@ -128,11 +131,12 @@ namespace VSS.Productivity3D.Common.Models
     #endregion
 
     #region Cut/Fill
+
     /// <summary>
     /// Flag to determine if default or custom Cut/Fill colour values are used. Default is true.
     /// </summary>
     [JsonProperty(PropertyName = "useDefaultCutFillColors", Required = Required.Default)]
-    public bool? useDefaultCutFillColors { get; private set; }
+    public bool? useDefaultCutFillColors { get; private set; } = true;
 
     /// <summary>
     /// The Cut/Fill colour values when overriding the default ones.
@@ -143,11 +147,12 @@ namespace VSS.Productivity3D.Common.Models
     #endregion
 
     #region Temperature
+
     /// <summary>
     /// Flag to determine if default or custom Temperature summary colour values are used. Default is true.
     /// </summary>
     [JsonProperty(PropertyName = "useDefaultTemperatureSummaryColors", Required = Required.Default)]
-    public bool? useDefaultTemperatureSummaryColors { get; private set; }
+    public bool? useDefaultTemperatureSummaryColors { get; private set; } = true;
 
     /// <summary>
     /// The colour value when the reported temperature value is on target.
@@ -169,11 +174,12 @@ namespace VSS.Productivity3D.Common.Models
     #endregion
 
     #region Speed
+
     /// <summary>
     /// Flag to determine if default or custom Speed summary colour values are used. Default is true.
     /// </summary>
     [JsonProperty(PropertyName = "useDefaultSpeedSummaryColors", Required = Required.Default)]
-    public bool? useDefaultSpeedSummaryColors { get; private set; }
+    public bool? useDefaultSpeedSummaryColors { get; private set; } = true;
 
     /// <summary>
     /// The colour value when the reported speed value is on target.
@@ -195,11 +201,12 @@ namespace VSS.Productivity3D.Common.Models
     #endregion
 
     #region MDP
+
     /// <summary>
     /// Flag to determine if default or custom MDP summary colour values are used. Default is true.
     /// </summary>
     [JsonProperty(PropertyName = "useDefaultMDPSummaryColors", Required = Required.Default)]
-    public bool? useDefaultMDPSummaryColors { get; private set; }
+    public bool? useDefaultMDPSummaryColors { get; private set; } = true;
 
     /// <summary>
     /// The colour value when the reported MDP value is on target.

@@ -13,40 +13,54 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
   [TestClass]
   public class VolumeSummaryHelperTests
   {
-
-
-    [TestClassAttribute]
-    public class GetVolumesType : VolumeSummaryHelperTests
+    [TestClass]
+    public class GetVolumesTypeTests : VolumeSummaryHelperTests
     {
-      private readonly VolumeSummaryHelper volumeSummaryHelper = new VolumeSummaryHelper();
+      private readonly SummaryDataHelper volumeSummaryDataHelper = new SummaryDataHelper();
       private static Filter filter;
 
       [ClassInitialize]
       public static void ClassInit(TestContext context)
       {
         filter = Filter.CreateFilter(
-            0, "name", "desc", DateTime.Now, DateTime.Now, 1, null, false, false, ElevationType.Highest, 
-            new List<WGSPoint>(), new List<Point>(), false, null, 0, 0, 0, 0, "designName", 
-            FilterLayerMethod.None, null, 0, 0, 0, new List<MachineDetails>(), new List<long>(), 
-            true, GPSAccuracy.Coarse, false, false, false, false, null);
+          0, "name", "desc", DateTime.Now, DateTime.Now, 1, null, false, false, ElevationType.Highest,
+          new List<WGSPoint>(), new List<Point>(), false, null, 0, 0, 0, 0, "designName",
+          FilterLayerMethod.None, null, 0, 0, 0, new List<MachineDetails>(), new List<long>(),
+          true, GPSAccuracy.Coarse, false, false, false, false, null);
       }
 
       [TestMethod]
       public void Should_return_GroundToGround_When_both_filters_are_set()
       {
-        Assert.AreEqual(RaptorConverters.VolumesType.Between2Filters, this.volumeSummaryHelper.GetVolumesType(filter, filter));
+        Assert.AreEqual(RaptorConverters.VolumesType.Between2Filters, this.volumeSummaryDataHelper.GetVolumesType(filter, filter));
       }
 
       [TestMethod]
       public void Should_return_GroundToDesign_When_only_baseFilter_is_set()
       {
-        Assert.AreEqual(RaptorConverters.VolumesType.BetweenFilterAndDesign, this.volumeSummaryHelper.GetVolumesType(filter, null));
+        Assert.AreEqual(RaptorConverters.VolumesType.BetweenFilterAndDesign, this.volumeSummaryDataHelper.GetVolumesType(filter, null));
       }
 
       [TestMethod]
       public void Should_return_DesignToGround_When_only_topFilter_is_set()
       {
-        Assert.AreEqual(RaptorConverters.VolumesType.BetweenDesignAndFilter, this.volumeSummaryHelper.GetVolumesType(null, filter));
+        Assert.AreEqual(RaptorConverters.VolumesType.BetweenDesignAndFilter, this.volumeSummaryDataHelper.GetVolumesType(null, filter));
+      }
+    }
+
+    [TestClass]
+    public class DoGroundToGroundComparisonTests : VolumeSummaryHelperTests
+    {
+      [TestMethod]
+      public void Should_return_False_When_baseFilter_is_null()
+      {
+        Assert.IsFalse(SummaryDataHelper.DoGroundToGroundComparison(null, new MasterData.Models.Models.Filter()));
+      }
+
+      [TestMethod]
+      public void Should_return_False_When_topFilter_is_null()
+      {
+        Assert.IsFalse(SummaryDataHelper.DoGroundToGroundComparison(new MasterData.Models.Models.Filter(), null));
       }
     }
   }
