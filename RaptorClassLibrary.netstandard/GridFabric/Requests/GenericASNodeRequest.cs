@@ -18,7 +18,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
     [Serializable]
     public class GenericASNodeRequest<TArgument, TComputeFunc, TResponse> : ApplicationServicePoolRequest<TArgument, TResponse>
         where TComputeFunc : IComputeFunc<TArgument, TResponse>, new()
-        where TResponse : class, new()
+        where TResponse : class
     {
         /// <summary>
         /// Executes the generic request by instantiating the required ComputeFunc and sending it to 
@@ -36,9 +36,9 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             TResponse Result = _Compute.Apply(func, arg);
 
             // Send the response to the caller
-            // If there is no task result then return an empty response
-            //return (taskResult?.Result != null) ? taskResult.Result : new TResponse();
-            return Result ?? new TResponse();
+            // If there is no task result then return a null response
+            //return taskResult?.Result != null) ? taskResult.Result : null;
+            return Result;
         }
     }
 }

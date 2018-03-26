@@ -4,6 +4,7 @@ using VSS.VisionLink.Raptor.Rendering.GridFabric.Requests;
 using VSS.VisionLink.Raptor.Servers;
 using VSS.VisionLink.Raptor.Servers.Client;
 using VSS.TRex.Rendering.Abstractions;
+using RaptorClassLibrary.netstandard.Rendering.GridFabric.Responses;
 
 namespace VSS.VisionLink.Raptor.Rendering.Servers.Client
 {
@@ -33,7 +34,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Servers.Client
         /// </summary>
         /// <param name="argument"></param>
         /// <returns></returns>
-        public IBitmap RenderTile(TileRenderRequestArgument argument)
+        public TileRenderResponse RenderTile(TileRenderRequestArgument argument)
         {
             TileRenderRequest request = new TileRenderRequest();
 

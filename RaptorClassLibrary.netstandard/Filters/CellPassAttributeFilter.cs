@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Linq;
 using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.Designs;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.SiteModels;
@@ -187,7 +186,8 @@ namespace VSS.VisionLink.Raptor.Filters
         //TODO add when machine sets are implemented 
         //  public something[] MachineIDSets
 
-        public CellPassAttributeFilter(SiteModel owner) : base(owner)
+        //  public CellPassAttributeFilter(SiteModel owner) : base(owner)
+        public CellPassAttributeFilter() : base()
         {
             ClearFilter();
         }
@@ -542,7 +542,7 @@ namespace VSS.VisionLink.Raptor.Filters
 
         public void Assign(CellPassAttributeFilter Source)
         {
-            Owner = Source.Owner;
+            siteModel = Source.siteModel;
             //  FilterSelections = Source.FilterSelections;
 
             // Time based filtering members
@@ -746,14 +746,14 @@ FAvoidZoneUndergroundServiceZones = false;
 
             if (HasCompactionMachinesOnlyFilter)
             {
-                Machine = Owner.Machines.Locate(PassValue.MachineID);
+                Machine = siteModel.Machines.Locate(PassValue.MachineID);
                 if (Machine != null && !Machine.MachineIsConpactorType())
                     return false;
             }
 
-            // Extract the list of events for the machine referred ot in the cell pass. Use this
+            // Extract the list of events for the machine referred to in the cell pass. Use this
             // reference for all filter criteria that depend on machine events
-            ProductionEventChanges machineTargetValues = AnyMachineEventFilterSelections ? Owner.MachinesTargetValues[PassValue.MachineID] : null;
+            ProductionEventChanges machineTargetValues = AnyMachineEventFilterSelections ? siteModel.MachinesTargetValues[PassValue.MachineID] : null;
 
             if (HasDesignFilter)
             {
@@ -921,7 +921,7 @@ FAvoidZoneUndergroundServiceZones = false;
 
             if (HasCompactionMachinesOnlyFilter)
             {
-                Machine = Owner.Machines.Locate(PassValue.FilteredPass.MachineID);
+                Machine = siteModel.Machines.Locate(PassValue.FilteredPass.MachineID);
                 if (Machine != null && !Machine.MachineIsConpactorType())
                     return false;
             }
@@ -1203,7 +1203,7 @@ FAvoidZoneUndergroundServiceZones = false;
 
             if (HasCompactionMachinesOnlyFilter)
             {
-                Machine = Owner.Machines.Locate(PassValue.MachineID);
+                Machine = siteModel.Machines.Locate(PassValue.MachineID);
                 if (Machine != null && !Machine.MachineIsConpactorType())
                     return false;
             }

@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.button5 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.btnCalculateVolumes = new System.Windows.Forms.Button();
@@ -63,7 +64,7 @@
             this.label6 = new System.Windows.Forms.Label();
             this.cmbDesigns = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.button5 = new System.Windows.Forms.Button();
+            this.button6 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -74,6 +75,7 @@
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Controls.Add(this.button6);
             this.panel1.Controls.Add(this.button5);
             this.panel1.Controls.Add(this.button4);
             this.panel1.Controls.Add(this.button3);
@@ -104,8 +106,18 @@
             this.panel1.Controls.Add(this.btnZoomAll);
             this.panel1.Location = new System.Drawing.Point(865, 2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(187, 606);
+            this.panel1.Size = new System.Drawing.Size(187, 641);
             this.panel1.TabIndex = 15;
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(14, 540);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(121, 19);
+            this.button5.TabIndex = 42;
+            this.button5.Text = "Cut/Fill Statistics...";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // button4
             // 
@@ -375,7 +387,7 @@
             this.panel2.Controls.Add(this.pictureBox1);
             this.panel2.Location = new System.Drawing.Point(2, 58);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(857, 550);
+            this.panel2.Size = new System.Drawing.Size(857, 585);
             this.panel2.TabIndex = 16;
             // 
             // pictureBox1
@@ -385,7 +397,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox1.Location = new System.Drawing.Point(4, 4);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(849, 542);
+            this.pictureBox1.Size = new System.Drawing.Size(849, 577);
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
@@ -443,21 +455,21 @@
             this.label5.TabIndex = 30;
             this.label5.Text = "Design";
             // 
-            // button5
+            // button6
             // 
-            this.button5.Location = new System.Drawing.Point(14, 540);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(121, 19);
-            this.button5.TabIndex = 42;
-            this.button5.Text = "Cut/Fill Statistics...";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
+            this.button6.Location = new System.Drawing.Point(17, 607);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(158, 19);
+            this.button6.TabIndex = 43;
+            this.button6.Text = "Test TTM probe performance";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1054, 613);
+            this.ClientSize = new System.Drawing.Size(1054, 648);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
@@ -511,6 +523,7 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Button button6;
     }
 }
 

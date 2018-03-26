@@ -28,9 +28,12 @@ namespace VSS.VisionLink.Raptor.Filters
         /// </summary>
         public CombinedFilter()
         {
+            AttributeFilter = new CellPassAttributeFilter();
+            SpatialFilter = new CellSpatialFilter();
         }
 
-        /// <summary>
+/*
+ /// <summary>
         /// Constructor that takes a Sitemodel owner and creates default attribute and spatial filters
         /// </summary>
         /// <param name="Owner"></param>
@@ -39,6 +42,7 @@ namespace VSS.VisionLink.Raptor.Filters
             AttributeFilter = new CellPassAttributeFilter(Owner);
             SpatialFilter = new CellSpatialFilter();
         }
+*/
 
         /// <summary>
         /// Constructor accepting attribute and spatial filters

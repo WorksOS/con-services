@@ -12,7 +12,7 @@ using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
 namespace VSS.Velociraptor.DesignProfiling.Tests
 {
-        public class TTMDesignTests
+    public class TTMDesignTests
     {
         private static TTMDesign design = LoadTheDesign();
 
@@ -124,7 +124,7 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
             Assert.True(Math.Abs(Z - expectedZ) < 0.001, $"Interpolated height value is incorrect, expected {expectedZ}");
         }
 
-        [Theory()]
+        [Theory(Skip = "Performance Test")]
         [InlineData(247500.0, 193350.0)]
         public void InterpolateHeightTestPerf1(double probeX, double probeY)
         {
@@ -153,7 +153,7 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
             Assert.True(Math.Abs(Z - expectedZ) < 0.001, $"Interpolated height value is incorrect, expected {expectedZ}");
         }
 
-        [Theory()]
+        [Theory(Skip = "Performance Test")]
         [InlineData(247500.0, 193350.0)]
         public void InterpolateHeightTest2Perf(double probeX, double probeY)
         {
@@ -167,7 +167,7 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
             Assert.False(true,"Perf Test");
         }
 
-        [Theory()]
+        [Theory(Skip = "Performance Test")]
         [InlineData(247500.0, 193350.0)]
         public void InterpolateHeightTest3Perf(double probeX, double probeY)
         {

@@ -37,10 +37,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator.Tests
         [Fact()]
         public void Test_AggregatedDataIntegratorWorker_ProcessTask()
         {
-            // Convert a TAG file usign a TAGFileConverter into a mini-site model
+            // Convert a TAG file using a TAGFileConverter into a mini-site model
             TAGFileConverter converter = new TAGFileConverter();
 
-            Assert.True(converter.Execute(new FileStream(TAGTestConsts.TestDataFilePath() + "TAGFiles\\TestTAGFile.tag", FileMode.Open, FileAccess.Read)),
+            Assert.True(converter.Execute(new FileStream(TAGTestConsts.TestTAGFileName(), FileMode.Open, FileAccess.Read)),
                 "Converter execute returned false");
 
             // Create the site model and machine etc to aggregate the processed TAG file into

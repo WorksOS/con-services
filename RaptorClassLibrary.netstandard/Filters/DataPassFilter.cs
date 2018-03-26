@@ -19,10 +19,11 @@ namespace VSS.VisionLink.Raptor.Filters
     public abstract class DataPassFilter : ICellPassAttributeFilter
     {
         /// <summary>
-        /// Owner is the <SiteModel> instance to which this filter relates
+        /// Owner is the <SiteModel> instance to which this filter relates and is used in cases where machine related
+        /// attriutes are included in the filter
         /// </summary>
         [NonSerialized]
-        public SiteModel Owner = null;
+        public SiteModel siteModel = null;
 
         /// <summary>
         /// RequestedGridDataType stores the type of grid data being requested at
@@ -37,10 +38,12 @@ namespace VSS.VisionLink.Raptor.Filters
         {
         }
 
-        public DataPassFilter(SiteModel owner) : this()
+/*
+        public DataPassFilter(SiteModel siteModel) : this()
         {
-            Owner = owner;
+            this.siteModel = siteModel;
         }
+*/
 
         public bool HasTimeFilter { get; set; } = false;
         public bool HasMachineFilter { get; set; } = false;

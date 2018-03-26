@@ -12,7 +12,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using VSS.Velociraptor.DesignProfiling;
 using VSS.VisionLink.Analytics.Operations;
+using VSS.VisionLink.Raptor;
 using VSS.VisionLink.Raptor.Analytics.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Analytics.Models;
 using VSS.VisionLink.Raptor.Designs.Storage;
@@ -79,7 +81,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
             try
             {
-                CellPassAttributeFilter AttributeFilter = new CellPassAttributeFilter(siteModel)
+                CellPassAttributeFilter AttributeFilter = new CellPassAttributeFilter(/*siteModel*/)
                 {
                     ReturnEarliestFilteredCellPass = returnEarliestFilteredCellPass,
                     HasElevationTypeFilter = true,
@@ -603,7 +605,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 // Create the two filters
                 CombinedFilter FromFilter = new CombinedFilter()
                 {
-                    AttributeFilter = new CellPassAttributeFilter(siteModel)
+                    AttributeFilter = new CellPassAttributeFilter(/*siteModel*/)
                     {
                         ReturnEarliestFilteredCellPass = true,
                         HasElevationTypeFilter = true,
@@ -621,7 +623,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
                 CombinedFilter ToFilter = new CombinedFilter()
                 {
-                    AttributeFilter = new CellPassAttributeFilter(siteModel)
+                    AttributeFilter = new CellPassAttributeFilter(/*siteModel*/)
                     {
                         ReturnEarliestFilteredCellPass = false,
                         HasElevationTypeFilter = true,
@@ -730,17 +732,38 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             CutFillResult result = request.Execute(new CutFillStatisticsArgument()
             {
                 DataModelID = siteModel.ID,
-                Filter = new CombinedFilter()
-                {
-                    AttributeFilter = new CellPassAttributeFilter(siteModel),
-                    SpatialFilter = new CellSpatialFilter()
-                },
+                Filter = new CombinedFilter(),
+                //{
+                //    AttributeFilter = new CellPassAttributeFilter(/*siteModel*/),
+                //    SpatialFilter = new CellSpatialFilter()
+                //},
                 DesignID = (cmbDesigns.Items.Count == 0) ? long.MinValue : (cmbDesigns.SelectedValue as Design).ID,
                 Offsets = offsets
             });
 
             // Show the list of percentages calculated by the request
             MessageBox.Show($"Results (in {sw.Elapsed}) [Cut/Fill:{offsets.Aggregate("", (a, v) => a + $"{ v.ToString("F1")}, ")}]: {(result?.Percents == null ? "No Result" : result.Percents?.Aggregate("", (a, v) => a + $"{v.ToString("F1")}% "))}");
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            // Tests the time taken to perform 100,000 full TTM patch requests for a test design 
+
+            TTMDesign design = new TTMDesign(SubGridTree.DefaultCellSize);
+            design.LoadFromFile(@"C:\Temp\Bug36372.ttm");
+            const int numPatches = 10000;
+
+            float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            for (int i = 0; i < numPatches; i++)
+            {
+                bool result = design.InterpolateHeights(Patch, 247500.0, 193350.0, SubGridTree.DefaultCellSize, 0);
+            }
+
+            MessageBox.Show($"{numPatches} patches requested in {sw.Elapsed}, {(numPatches * 1024.0) / (sw.ElapsedMilliseconds / 1000.0)} per second");
         }
     }
 }

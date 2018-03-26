@@ -108,7 +108,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             SiteModel = sitemodel;
             _CellSize = SiteModel.Grid.CellSize;
 
-            Filter = filter ?? new CombinedFilter(SiteModel);
+            Filter = filter ?? new CombinedFilter(/*SiteModel*/);
 
             CanUseGlobalLatestCells = Filter.AttributeFilter.LastRecordedCellPassSatisfiesFilter;
 

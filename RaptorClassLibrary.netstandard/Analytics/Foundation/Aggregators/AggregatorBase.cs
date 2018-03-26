@@ -10,7 +10,7 @@ using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 namespace VSS.VisionLink.Raptor.Analytics.Aggregators
 {
     /// <summary>
-    /// Base class used by all analytics aggregators supporting funcitons such as pass coutn summary, cut/fill summary, speed summary etc
+    /// Base class used by all analytics aggregators supporting funcitons such as pass count summary, cut/fill summary, speed summary etc
     /// where the analytics are calculated at the cluster compute layer and reduced at the application service layer.
     /// </summary>
     public class AggregatorBase : ISubGridRequestsAggregator, IResponseAggregateWith<AggregatorBase>
@@ -48,7 +48,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
         /// <summary>
         /// Were the target values for all data extraqted for the analytics requested the same
         /// </summary>
-        public bool IsTargetValueConstant { get; set; } = false;
+        public bool IsTargetValueConstant { get; set; } = true;
 
         /// <summary>
         /// Were there any missing target values within the data extracted for the analytics request
@@ -78,6 +78,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
         /// <returns></returns>
         public virtual AggregatorBase AggregateWith(AggregatorBase other)
         {
+            CellSize = other.CellSize;
             SummaryCellsScanned += other.SummaryCellsScanned;
 
             CellsScannedAtTarget += other.CellsScannedAtTarget;
