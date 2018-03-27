@@ -12,6 +12,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests.MockedClasses.GridFabri
     {
         private Guid _id = Guid.NewGuid();
         private Dictionary<string, object> _attributes = null;
+        private bool _IsClient = false;
 
         public Guid Id => _id;
 
@@ -21,11 +22,11 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests.MockedClasses.GridFabri
 
         public long Order => 0; ///throw new NotImplementedException();
 
-        public bool IsLocal => false; //throw new NotImplementedException();
+        public bool IsLocal => false; //throw new NotImplementedException
 
         public bool IsDaemon => false; //throw new NotImplementedException();
 
-        public bool IsClient => false; //throw new NotImplementedException();
+        public bool IsClient => _IsClient; //throw new NotImplementedException();
 
         public object ConsistentId => GetHashCode();  //throw new NotImplementedException();
 
@@ -54,8 +55,9 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests.MockedClasses.GridFabri
         {
         }
 
-        public MockedClusterServerNode(string role)
+        public MockedClusterServerNode(bool isClient, string role)
         {
+            _IsClient = isClient;
             _attributes = new Dictionary<string, object>()
             {
                 { $"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{role}", "True" }

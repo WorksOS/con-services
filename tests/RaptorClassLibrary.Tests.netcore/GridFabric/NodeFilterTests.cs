@@ -13,8 +13,8 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.GridFabric.Tests
         {
             RoleBasedNodeFilter filter = new PSNodeRoleBasedNodeFilter();
 
-            Assert.True(filter.Invoke(new MockedClusterServerNode(ServerRoles.PSNODE)), "PSNode role based node did not meet the filter");
-            Assert.False(filter.Invoke(new MockedClusterServerNode("NotAValidRole")), "PSNode role based node matched invalid filter");
+            Assert.True(filter.Invoke(new MockedClusterServerNode(false, ServerRoles.PSNODE)), "PSNode role based node did not meet the filter");
+            Assert.False(filter.Invoke(new MockedClusterServerNode(false, "NotAValidRole")), "PSNode role based node matched invalid filter");
         }
 
         [Fact]
@@ -22,8 +22,8 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.GridFabric.Tests
         {
             RoleBasedNodeFilter filter = new ASNodeRoleBasedNodeFilter();
 
-            Assert.True(filter.Invoke(new MockedClusterServerNode(ServerRoles.ASNODE)), "PSNode role based node did not meet the filter");
-            Assert.False(filter.Invoke(new MockedClusterServerNode("NotAValidRole")), "PSNode role based node matched invalid filter");
+            Assert.True(filter.Invoke(new MockedClusterServerNode(true, ServerRoles.ASNODE)), "PSNode role based node did not meet the filter");
+            Assert.False(filter.Invoke(new MockedClusterServerNode(true, "NotAValidRole")), "PSNode role based node matched invalid filter");
         }
     }
 }
