@@ -50,6 +50,8 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
         /// Constructor accepting a request descriptor identifying the overall request this task is associated with
         /// </summary>
         /// <param name="requestDescriptor"></param>
+        /// <param name="raptorNodeID"></param>
+        /// <param name="gridDataType"></param>
         public TaskBase(long requestDescriptor, string raptorNodeID, GridDataType gridDataType)
         {
             RequestDescriptor = requestDescriptor;
@@ -66,7 +68,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
         /// <summary>
         /// TransferReponses is the sink for sets of responses received from the processing layers.
         /// </summary>
-        /// <param name="response"></param>
+        /// <param name="responses"></param>
         public abstract bool TransferResponses(object [] responses);
 
         /// <summary>

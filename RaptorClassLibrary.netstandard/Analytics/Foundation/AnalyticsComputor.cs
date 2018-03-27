@@ -112,7 +112,7 @@ namespace VSS.VisionLink.Raptor.Analytics
                 }
             }
 
-            if (Filter != null && Filter.AttributeFilter != null)
+            if (Filter?.AttributeFilter != null)
             {
                 if (Filter.AttributeFilter.HasElevationRangeFilter && (Filter.AttributeFilter.ElevationRangeDesignID != long.MinValue))
                 {
@@ -134,7 +134,7 @@ namespace VSS.VisionLink.Raptor.Analytics
             return true;
         }
 
-        public RequestErrorStatus ExecutePipeline()
+        private RequestErrorStatus ExecutePipeline()
         {
             RequestErrorStatus Result = RequestErrorStatus.Unknown;
             bool PipelineAborted = false;
@@ -257,6 +257,10 @@ namespace VSS.VisionLink.Raptor.Analytics
             return Result;
         }
 
+        /// <summary>
+        /// Primary method called to begin analytics computation
+        /// </summary>
+        /// <returns></returns>
         public bool ComputeAnalytics()
         {
             // TODO: add when lift build setting ssupported

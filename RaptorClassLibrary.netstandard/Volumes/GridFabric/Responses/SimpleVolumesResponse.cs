@@ -55,7 +55,6 @@ namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Responses
         /// </summary>
         public SimpleVolumesResponse() : base()
         {
-
         }
 
         /// <summary>
@@ -67,7 +66,7 @@ namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Responses
         /// <returns></returns>
         private double? AggregateValue(double? thisVal, double? otherVal)
         {
-            return thisVal.HasValue ? thisVal + (otherVal.HasValue ? otherVal : 0) : otherVal;
+            return thisVal.HasValue ? thisVal + (otherVal ?? 0) : otherVal;
         }
 
         /// <summary>

@@ -39,13 +39,14 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
                 // PipeLine.OperationNode.AddSubGridToOperateOn(response);
                 return true;
             }
-            else
-            {
-                Log.InfoFormat(" WARNING: PipelinedSubGridTask.TransferSubgridResponse: No pipeline available to submit grouped result for request {0}", RequestDescriptor);
-                return false;
-            }
+
+            Log.InfoFormat(" WARNING: PipelinedSubGridTask.TransferSubgridResponse: No pipeline available to submit grouped result for request {0}", RequestDescriptor);
+            return false;
         }
 
+        /// <summary>
+        /// Cancels the currently executing pipline by instructing it to abort
+        /// </summary>
         public override void Cancel()
         {
             if (PipeLine == null)
@@ -55,17 +56,14 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
 
             try
             {
-                try
-                {
-                    Log.Debug("WARNING: Aborting pipeline due to cancellation");
-                    PipeLine.Abort();
-                }
-                catch
-                {
-                    // Just in case the pipeline commits suicide before other related tasks are
-                    // cancelled (and so also inform the pipeline that it is cancelled), swallow
-                    // any exception generated for the abort request.
-                }
+                Log.Debug("WARNING: Aborting pipeline due to cancellation");
+                PipeLine.Abort();
+            }
+            catch
+            {
+                // Just in case the pipeline commits suicide before other related tasks are
+                // cancelled (and so also inform the pipeline that it is cancelled), swallow
+                // any exception generated for the abort request.
             }
             finally
             {
@@ -77,7 +75,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
         /// <summary>
         /// Transfers a single subgrid response from a query context into the task processing context
         /// </summary>
-        /// <param name="response"></param>
+        /// <param name="responses"></param>
         /// <returns></returns>
         public override bool TransferResponses(object[] responses)
         {
@@ -86,11 +84,9 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
                 // PipeLine.OperationNode.AddSubGridToOperateOn(response);
                 return true;
             }
-            else
-            {
-                Log.InfoFormat(" WARNING: PipelinedSubGridTask.TransferSubgridResponse: No pipeline available to submit grouped result for request {0}", RequestDescriptor);
-                return false;
-            }
+
+            Log.InfoFormat(" WARNING: PipelinedSubGridTask.TransferSubgridResponse: No pipeline available to submit grouped result for request {0}", RequestDescriptor);
+            return false;
         }
     }
 }
