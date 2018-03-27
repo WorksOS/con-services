@@ -29,7 +29,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests.MockedClasses.GridFabri
 
         public object ConsistentId => GetHashCode();  //throw new NotImplementedException();
 
-        public IDictionary<string, object> Attributes => throw new NotImplementedException();
+        public IDictionary<string, object> Attributes => _attributes;
 
         public T GetAttribute<T>(string name)
         {
