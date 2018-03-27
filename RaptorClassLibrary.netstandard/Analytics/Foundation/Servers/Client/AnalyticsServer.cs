@@ -10,7 +10,7 @@ namespace VSS.VisionLink.Analytics.Servers.Client
 {    
     public class AnalyticsRequest<TRequest, TArgument, TResponse>
         where TRequest : class, IComputeFunc<TArgument, TResponse>, new()
-        where TResponse : class, IResponseAggregateWith<TResponse>, new()
+        where TResponse : class, IAggregateWith<TResponse>, new()
     {
         public GenericPSNodeBroadcastRequest<TArgument, TRequest, TResponse> Request_ClusterCompute = new GenericPSNodeBroadcastRequest<TArgument, TRequest, TResponse>();
         public GenericASNodeRequest<TArgument, TRequest, TResponse> Request_ApplicationService = new GenericASNodeRequest<TArgument, TRequest, TResponse>();
@@ -21,7 +21,7 @@ namespace VSS.VisionLink.Analytics.Servers.Client
     /// </summary>
     public class AnalyticsServer<TRequest, TArgument, TResponse> : RaptorApplicationServiceServer 
         where TRequest : class, IComputeFunc<TArgument, TResponse>, new()
-        where TResponse : class, IResponseAggregateWith<TResponse>, new()
+        where TResponse : class, IAggregateWith<TResponse>, new()
     {
         private AnalyticsRequest<TRequest, TArgument, TResponse> analyticsRequest = new AnalyticsRequest<TRequest, TArgument, TResponse>();
 

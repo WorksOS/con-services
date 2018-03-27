@@ -24,7 +24,7 @@ namespace VSS.VisionLink.Raptor.Volumes
     /// <summary>
     /// Defines an aggregator that summaries simple volumes information for subgrids
     /// </summary>
-    public class SimpleVolumesCalculationsAggregator : ISubGridRequestsAggregator, IResponseAggregateWith<SimpleVolumesCalculationsAggregator>
+    public class SimpleVolumesCalculationsAggregator : ISubGridRequestsAggregator, IAggregateWith<SimpleVolumesCalculationsAggregator>
     {
         /// <summary>
         /// Defines a subgrid full of null values to run through the volumes engine in cases when 

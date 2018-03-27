@@ -18,7 +18,7 @@ namespace VSS.VisionLink.Raptor.Analytics.GridFabric.ComputeFuncs
     /// </summary>
     public class AnalyticsComputeFunc_ApplicationService<TArgument, TResponse, TRequest> : BaseRaptorComputeFunc, IComputeFunc<TArgument, TResponse>
         where TArgument : class
-        where TResponse : class, IResponseAggregateWith<TResponse>
+        where TResponse : class, IAggregateWith<TResponse>
         where TRequest : BaseRaptorRequest<TArgument, TResponse>, new()
     {
         [NonSerialized]

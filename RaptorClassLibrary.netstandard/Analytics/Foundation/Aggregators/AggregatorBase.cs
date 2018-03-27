@@ -13,12 +13,12 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
     /// Base class used by all analytics aggregators supporting funcitons such as pass count summary, cut/fill summary, speed summary etc
     /// where the analytics are calculated at the cluster compute layer and reduced at the application service layer.
     /// </summary>
-    public class AggregatorBase : ISubGridRequestsAggregator, IResponseAggregateWith<AggregatorBase>
+    public class AggregatorBase : ISubGridRequestsAggregator, IAggregateWith<AggregatorBase>
     {
         /// <summary>
         /// The project the aggregation is operating on
         /// </summary>
-        public Int64 SiteModelID { get; set; }  = 0;
+        public Int64 SiteModelID { get; set; } = 0;
 
         /// <summary>
         /// The cell size of the site model the aggregation is being performed over

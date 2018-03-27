@@ -8,7 +8,7 @@ namespace VSS.VisionLink.Raptor.Analytics.GridFabric.Responses
     /// <summary>
     /// The response state returned from a cut/fill statistics request
     /// </summary>
-    public class CutFillStatisticsResponse : BaseAnalyticsResponse, IResponseAggregateWith<CutFillStatisticsResponse>
+    public class CutFillStatisticsResponse : BaseAnalyticsResponse, IAggregateWith<CutFillStatisticsResponse>
     {
         /// <summary>
         /// An array (or always 7) values represnting the counts of cells within each of the cut fill bands defined in the request.

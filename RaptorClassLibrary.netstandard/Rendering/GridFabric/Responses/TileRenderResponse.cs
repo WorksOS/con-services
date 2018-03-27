@@ -9,7 +9,7 @@ namespace RaptorClassLibrary.netstandard.Rendering.GridFabric.Responses
     /// <summary>
     /// Contains the response bitmap for a tile request. Supports compositing of another bitmap with this one
     /// </summary>
-    public class TileRenderResponse : IResponseAggregateWith<TileRenderResponse>
+    public class TileRenderResponse : IAggregateWith<TileRenderResponse>
     {
         public IBitmap Bitmap { get; set; } = null;
 

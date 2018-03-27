@@ -13,7 +13,7 @@ namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Responses
     /// <summary>
     /// Describes the result of a simple volumes computation in terms of cut, fill and total volumes plus coverage areas
     /// </summary>
-    public class SimpleVolumesResponse : SubGridRequestsResponse, IResponseAggregateWith<SimpleVolumesResponse>
+    public class SimpleVolumesResponse : SubGridRequestsResponse, IAggregateWith<SimpleVolumesResponse>
     {
         /// <summary>
         /// Cut volume, expressed in cubic meters

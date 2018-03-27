@@ -17,7 +17,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
     /// <typeparam name="TResponse"></typeparam>
     public class GenericPSNodeBroadcastRequest<TArgument, TComputeFunc, TResponse> : CacheComputePoolRequest<TArgument, TResponse>
         where TComputeFunc : IComputeFunc<TArgument, TResponse>, new()
-        where TResponse : class, IResponseAggregateWith<TResponse>
+        where TResponse : class, IAggregateWith<TResponse>
     {
         /// <summary>
         /// Executes a request genericised through it's templated types
