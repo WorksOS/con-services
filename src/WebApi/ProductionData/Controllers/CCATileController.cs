@@ -201,41 +201,16 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         geometry = RaptorConverters.geometryToPoints(geometryWKT).ToList();
       }
 
-      var filter = FilterResult.CreateFilter
+      var filter = FilterResult.CreateFilterForCCATileRequest
       (
-        null,
-        null,
-        null,
         startUtc,
         endUtc,
-        null,
         new List<long> { assetId },
-        null,
-        null,
-        null,
         geometry,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
         liftId.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None,
-        null,
-        null,
         liftId,
-        null,
-        new List<MachineDetails> { MachineDetails.CreateMachineDetails(assetId, machineName, isJohnDoe) },
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null);
+        new List<MachineDetails> { MachineDetails.CreateMachineDetails(assetId, machineName, isJohnDoe) }
+       );
 
       var request = TileRequest.CreateTileRequest
       (
