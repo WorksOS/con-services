@@ -50,7 +50,7 @@ namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.Executors
             request.projectId ?? -1, 0, 0, request.machineId ?? -1,
             request.boundary != null
               ? RaptorConverters.convertWGS84Fence(request.boundary)
-              : TWGS84FenceContainer.Null());
+              : TWGS84FenceContainer.Null(),request.tccOrgId);
 
         if (returnResult == TTAGProcServerProcessResult.tpsprOK)
           return TAGFilePostResult.CreateTAGFilePostResult();
