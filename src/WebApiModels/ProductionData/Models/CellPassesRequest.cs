@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
-using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -82,7 +82,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// May be null.
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public Filter filter { get; private set; }
+    public FilterResult filter { get; private set; }
 
     /// <summary>
     /// Validation of CellPassRequest
@@ -90,30 +90,19 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     public override void Validate()
     {
       base.Validate();
+
       if (this.cellAddress == null && this.probePositionGrid == null && this.probePositionLL == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "cellAddress, probePositionGrid, probePositionLL one must be set"));
       }
-
-
-      //  throw new NotImplementedException();
     }
 
     /// <summary>
     /// Create instance of CellPassRequest
     /// </summary>
-    /// <param name="projectId"></param>
-    /// <param name="cellAddress"></param>
-    /// <param name="probePositionGrid"></param>
-    /// <param name="probePositionLL"></param>
-    /// <param name="liftBuildSettings"></param>
-    /// <param name="gridDataType"></param>
-    /// <param name="filterId"></param>
-    /// <param name="filter"></param>
-    /// <returns></returns>
     public static CellPassesRequest CreateCellPassRequest(long projectId, CellAddress cellAddress, Point probePositionGrid,
-     WGSPoint probePositionLL, LiftBuildSettings liftBuildSettings, int gridDataType, long filterId, Filter filter)
+     WGSPoint probePositionLL, LiftBuildSettings liftBuildSettings, int gridDataType, long filterId, FilterResult filter)
     {
       return new CellPassesRequest
       {

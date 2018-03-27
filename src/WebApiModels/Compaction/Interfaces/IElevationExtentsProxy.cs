@@ -5,7 +5,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Interfaces
 {
   public interface IElevationExtentsProxy
   {
-    ElevationStatisticsResult GetElevationRange(long projectId, Filter filter,
-      CompactionProjectSettings projectSettings);
+    ElevationStatisticsResult GetElevationRange(long projectId, FilterResult filter, CompactionProjectSettings projectSettings);
   }
 }

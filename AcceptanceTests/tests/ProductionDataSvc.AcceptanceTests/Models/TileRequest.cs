@@ -74,7 +74,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
         /// <summary>
         /// The base or earliest filter to be used.
         /// </summary>
-        public Filter filter1 { get; set; }
+        public FilterResult filter1 { get; set; }
 
         /// <summary>
         /// The ID of the base or earliest filter to be used.
@@ -84,7 +84,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
         /// <summary>
         /// The top or latest filter to be used.
         /// </summary>
-        public Filter filter2 { get; set; }
+        public FilterResult filter2 { get; set; }
 
         /// <summary>
         /// The ID of the top or latest filter to be used.

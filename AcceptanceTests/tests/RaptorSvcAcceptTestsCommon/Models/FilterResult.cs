@@ -9,7 +9,7 @@ namespace RaptorSvcAcceptTestsCommon.Models
   /// Defines all the filter parameters that may be supplied as a part of a request. Filters control spatial, temporal and attribute aspects of the info
   /// This is copied from ...\RaptorServicesCommon\Models\Filter.cs 
   /// </summary>
-  public class Filter : IEquatable<Filter>
+  public class FilterResult : IEquatable<FilterResult>
   {
       #region Members
       /// <summary>
@@ -192,7 +192,7 @@ namespace RaptorSvcAcceptTestsCommon.Models
       //public Filter()
       //{ }
 
-      public Filter(
+      public FilterResult(
         long? ID = null,
         string name = null,
         string description = null,
@@ -264,7 +264,7 @@ namespace RaptorSvcAcceptTestsCommon.Models
       #endregion
 
       #region Equality test
-      public bool Equals(Filter other)
+      public bool Equals(FilterResult other)
       {
           if (other == null)
               return false;
@@ -303,7 +303,7 @@ namespace RaptorSvcAcceptTestsCommon.Models
               this.wheelMapping == other.wheelMapping;
       }
 
-      public static bool operator ==(Filter a, Filter b)
+      public static bool operator ==(FilterResult a, FilterResult b)
       {
           if ((object)a == null || (object)b == null)
               return Object.Equals(a, b);
@@ -311,14 +311,14 @@ namespace RaptorSvcAcceptTestsCommon.Models
           return a.Equals(b);
       }
 
-      public static bool operator !=(Filter a, Filter b)
+      public static bool operator !=(FilterResult a, FilterResult b)
       {
           return !(a == b);
       }
 
       public override bool Equals(object obj)
       {
-          return obj is Filter && this == (Filter)obj;
+          return obj is FilterResult && this == (FilterResult)obj;
       }
 
       public override int GetHashCode()

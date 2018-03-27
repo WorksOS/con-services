@@ -39,7 +39,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     /// Value may be null.
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public Filter filter { get; private set; }
+    public FilterResult filter { get; private set; }
 
     /// <summary>
     /// The filter ID to used in the request.
@@ -70,21 +70,20 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     public List<long> overrideAssetIds { get; private set; }
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor.
     /// </summary>
     private TemperatureRequest()
-    {
-    }
+    { }
 
     /// <summary>
-    /// Create instance of TemperatureRequest
+    /// Static constructor.
     /// </summary>
     public static TemperatureRequest CreateTemperatureRequest(
       long projectID,
       Guid? callId,
       TemperatureSettings temperatureSettings,
       LiftBuildSettings liftBuildSettings,
-      Filter filter,
+      FilterResult filter,
       long filterID,
       DateTime? overrideStartUTC,
       DateTime? overrideEndUTC,

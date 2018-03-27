@@ -14,8 +14,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
   /// </summary>
   public class TileRequestHelper : DataRequestBase, ITileRequestHelper
   {
-    private Filter baseFilter;
-    private Filter topFilter;
+    private FilterResult baseFilter;
+    private FilterResult topFilter;
     private VolumeCalcType? volCalcType;
     private DesignDescriptor volumeDesign;
 
@@ -43,13 +43,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       return this;
     }
 
-    public TileRequestHelper SetBaseFilter(Filter baseFilter)
+    public TileRequestHelper SetBaseFilter(FilterResult baseFilter)
     {
       this.baseFilter = baseFilter;
       return this;
     }
 
-    public TileRequestHelper SetTopFilter(Filter topFilter)
+    public TileRequestHelper SetTopFilter(FilterResult topFilter)
     {
       this.topFilter = topFilter;
       return this;
@@ -70,11 +70,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
                                                                 volCalcType == VolumeCalcType.DesignToGround)
         ? volumeDesign
         : DesignDescriptor;
-      Filter filter1 = mode == DisplayMode.CutFill && (volCalcType == VolumeCalcType.GroundToGround ||
+      FilterResult filter1 = mode == DisplayMode.CutFill && (volCalcType == VolumeCalcType.GroundToGround ||
                                                        volCalcType == VolumeCalcType.GroundToDesign)
         ? baseFilter
         : Filter;
-      Filter filter2 = mode == DisplayMode.CutFill && (volCalcType == VolumeCalcType.GroundToGround ||
+      FilterResult filter2 = mode == DisplayMode.CutFill && (volCalcType == VolumeCalcType.GroundToGround ||
                                                        volCalcType == VolumeCalcType.DesignToGround)
         ? topFilter
         : null;

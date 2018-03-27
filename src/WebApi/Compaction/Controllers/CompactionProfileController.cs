@@ -97,8 +97,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var cutFillDesign = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid, true);
 
-      Filter baseFilter = null;
-      Filter topFilter = null;
+      FilterResult baseFilter = null;
+      FilterResult topFilter = null;
       DesignDescriptor volumeDesign = null;
       if (volumeCalcType.HasValue)
       {

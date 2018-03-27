@@ -39,7 +39,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
         /// The filter to be used to govern selection of the cell/cell pass. 
         /// May be null.
         /// </summary>
-        public Filter filter;
+        public FilterResult filter;
 
         /// <summary>
         /// The ID of the filter to be used.
@@ -65,7 +65,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
         { }
 
         public CellDatumRequest(long projectId, DisplayMode displayMode, WGSPoint llPoint,
-            Filter filter = null, long filterId = -1, LiftBuildSettings liftBuildSettings = null, DesignDescriptor design = null)
+            FilterResult filter = null, long filterId = -1, LiftBuildSettings liftBuildSettings = null, DesignDescriptor design = null)
         {
             this.projectId = projectId;
             this.displayMode = displayMode;
@@ -78,7 +78,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
         }
 
         public CellDatumRequest(long projectId, DisplayMode displayMode, Point gridPoint,
-            Filter filter = null, long filterId = -1, LiftBuildSettings liftBuildSettings = null, DesignDescriptor design = null)
+            FilterResult filter = null, long filterId = -1, LiftBuildSettings liftBuildSettings = null, DesignDescriptor design = null)
         {
             this.projectId = projectId;
             this.displayMode = displayMode;

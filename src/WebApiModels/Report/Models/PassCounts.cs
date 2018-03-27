@@ -36,7 +36,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     /// Value may be null.
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public Filter filter { get; protected set; }
+    public FilterResult filter { get; protected set; }
 
     /// <summary>
     /// The filter ID to used in the request.
@@ -79,7 +79,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
         Guid? callId,
         PassCountSettings passCountSettings,
         LiftBuildSettings liftBuildSettings,
-        Filter filter,
+        FilterResult filter,
         long filterID,
         DateTime? overrideStartUTC,
         DateTime? overrideEndUTC,

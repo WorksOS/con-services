@@ -13,7 +13,6 @@ using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.Models;
-using Filter = VSS.Productivity3D.Common.Models.Filter;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 {
@@ -82,7 +81,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// <param name="filter">Compaction filter</param>
     /// <param name="projectSettings">Project settings</param>
     /// <returns>Elevation statistics</returns>
-    public ElevationStatisticsResult GetElevationRange(long projectId, Filter filter,
+    public ElevationStatisticsResult GetElevationRange(long projectId, FilterResult filter,
       CompactionProjectSettings projectSettings)
     {
       var cacheKey = ElevationCacheKey(projectId, filter);
@@ -142,7 +141,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// <param name="projectId">project ID</param>
     /// <param name="filter">Compaction filter</param>
     /// <returns>Cache key</returns>
-    private string ElevationCacheKey(long projectId, Filter filter)
+    private string ElevationCacheKey(long projectId, FilterResult filter)
     {
       var filterHash = filter == null ? 0 : filter.GetHashCode();
       return $"{projectId},{filterHash}";

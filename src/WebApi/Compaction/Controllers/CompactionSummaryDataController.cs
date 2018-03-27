@@ -301,8 +301,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       DesignDescriptor baseDesign = null;
       DesignDescriptor topDesign = null;
-      Filter baseFilter = null;
-      Filter topFilter = null;
+      FilterResult baseFilter = null;
+      FilterResult topFilter = null;
 
       var baseFilterDescriptor = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetFilterDescriptor(projectUid, baseUid));
 

@@ -84,7 +84,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
         /// The lift/layer build settings to be used.
         /// May be null.
         /// </summary>
-        public Filter filter { get; set; }
+        public FilterResult filter { get; set; }
     } 
     #endregion
 

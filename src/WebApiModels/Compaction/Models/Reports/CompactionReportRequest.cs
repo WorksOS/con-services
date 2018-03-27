@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     /// </summary>
     /// 
     [JsonProperty(Required = Required.Default)]
-    public Filter Filter { get; protected set; }
+    public FilterResult Filter { get; protected set; }
 
     /// <summary>
     /// The filter ID to be used in the request.

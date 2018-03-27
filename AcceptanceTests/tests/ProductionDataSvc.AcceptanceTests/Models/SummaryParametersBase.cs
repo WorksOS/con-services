@@ -21,7 +21,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
         /// <summary>
         /// The base or earliest filter to be used for filter-filter and filter-design volumes.
         /// </summary>
-        public Filter baseFilter { get; set; }
+        public FilterResult baseFilter { get; set; }
 
         /// <summary>
         /// The ID of the base or earliest filter to be used for filter-filter and filter-design volumes.
@@ -31,7 +31,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
         /// <summary>
         /// The top or latest filter to be used for filter-filter and design-filter volumes
         /// </summary>
-        public Filter topFilter { get; set; }
+        public FilterResult topFilter { get; set; }
 
         /// <summary>
         /// The ID of the top or latest filter to be used for filter-filter and design-filter volumes
@@ -41,7 +41,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
         /// <summary>
         /// An additional spatial constraining filter that may be used to provide additional control over the area the summary volumes are being calculated over.
         /// </summary>
-        public Filter additionalSpatialFilter { get; set; }
+        public FilterResult additionalSpatialFilter { get; set; }
 
         /// <summary>
         /// The ID of an additional spatial constraining filter that may be used to provide additional control over the area the summary volumes are being calculated over.

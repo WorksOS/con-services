@@ -39,7 +39,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
         /// May be null.
         /// </summary>
       [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-      public Filter filter { get; private set; }
+      public FilterResult filter { get; private set; }
 
         /// <summary>
         /// The ID of the filter to be used.
@@ -69,8 +69,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
         long projectId, 
         DisplayMode displayMode, 
         WGSPoint llPoint, 
-        Point gridPoint, 
-        Filter filter, 
+        Point gridPoint,
+        FilterResult filter, 
         long filterId, 
         LiftBuildSettings liftBuildSettings, 
         DesignDescriptor design)
@@ -91,8 +91,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
       public override void Validate()
       {
         base.Validate();
-        if (llPoint != null)
-          llPoint.Validate();
+        llPoint?.Validate();
 
         if (gridPoint != null)
           gridPoint.Validate();
@@ -100,8 +99,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
         if (filter != null)
           filter.Validate();
 
-        if (liftBuildSettings != null)
-          liftBuildSettings.Validate();
+        liftBuildSettings?.Validate();
 
         if (design != null)
           design.Validate();

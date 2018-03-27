@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
+using System.Runtime.Serialization;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -15,7 +16,8 @@ namespace VSS.Productivity3D.Common.Models
   /// Defines all the filter parameters that may be supplied as a part of a request. Filters control spatial, temporal and attribute aspects of the info
   /// Filter will override filter ID, if both are selected.
   /// </summary>
-  public class Filter : IValidatable, IEquatable<Filter>
+  [DataContract(Name = "Filter")]
+  public class FilterResult : IValidatable, IEquatable<FilterResult>
   {
     /// <summary>
     /// The ID for a filter if stored in the Filters service. Not required or used in the proper functioning of a filter.
@@ -248,17 +250,15 @@ namespace VSS.Productivity3D.Common.Models
     [JsonProperty(PropertyName = "designFile", Required = Required.Default)]
     public DesignDescriptor DesignFile { get; private set; }
 
-
     public bool isFilterContainsSSOnly { get; private set; } = false;
 
     public bool IsFilterEmpty => isFilterEmpty();
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor.
     /// </summary>
-    private Filter()
+    private FilterResult()
     { }
-
 
     private bool isFilterEmpty()
     {
@@ -266,12 +266,12 @@ namespace VSS.Productivity3D.Common.Models
         !StartUtc.HasValue &&
         !EndUtc.HasValue &&
         !OnMachineDesignId.HasValue &&
-        (AssetIDs == null || AssetIDs.Count==0) &&
+        (AssetIDs == null || AssetIDs.Count == 0) &&
         !VibeStateOn.HasValue &&
         !CompactorDataOnly.HasValue &&
         !ElevationType.HasValue &&
-        (PolygonLL == null || PolygonLL.Count==0) &&
-        (PolygonGrid == null || PolygonGrid.Count==0) &&
+        (PolygonLL == null || PolygonLL.Count == 0) &&
+        (PolygonGrid == null || PolygonGrid.Count == 0) &&
         !ForwardDirection.HasValue &&
         AlignmentFile == null &&
         !StartStation.HasValue &&
@@ -284,8 +284,8 @@ namespace VSS.Productivity3D.Common.Models
         !BenchElevation.HasValue &&
         !LayerNumber.HasValue &&
         !LayerThickness.HasValue &&
-        (ContributingMachines == null || ContributingMachines.Count==0) &&
-        (SurveyedSurfaceExclusionList == null || SurveyedSurfaceExclusionList.Count==0) &&
+        (ContributingMachines == null || ContributingMachines.Count == 0) &&
+        (SurveyedSurfaceExclusionList == null || SurveyedSurfaceExclusionList.Count == 0) &&
         !ReturnEarliest.HasValue &&
         !GpsAccuracy.HasValue &&
         !GpsAccuracyIsInclusive.HasValue &&
@@ -299,8 +299,7 @@ namespace VSS.Productivity3D.Common.Models
     /// <summary>
     /// Create instance of Filter
     /// </summary>
-    public static Filter CreateFilter
-        (
+    public static FilterResult CreateFilter(
         long? id,
         string name,
         string description,
@@ -336,7 +335,7 @@ namespace VSS.Productivity3D.Common.Models
         DesignDescriptor designFile
         )
     {
-      return new Filter
+      return new FilterResult
       {
         Id = id,
         Name = name,
@@ -377,9 +376,9 @@ namespace VSS.Productivity3D.Common.Models
     /// <summary>
     /// Create instance of Filter specifically for excluding surveyed surfaces only
     /// </summary>
-    public static Filter CreateFilter(List<long> surveyedSurfaceExclusionList)
+    public static FilterResult CreateFilter(List<long> surveyedSurfaceExclusionList)
     {
-      return new Filter
+      return new FilterResult
       {
         isFilterContainsSSOnly = true,
         SurveyedSurfaceExclusionList = surveyedSurfaceExclusionList
@@ -524,7 +523,7 @@ namespace VSS.Productivity3D.Common.Models
     }
 
     #region IEquatable
-    public bool Equals(Filter other)
+    public bool Equals(FilterResult other)
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
@@ -571,7 +570,8 @@ namespace VSS.Productivity3D.Common.Models
       if (ReferenceEquals(null, obj)) return false;
       if (ReferenceEquals(this, obj)) return true;
       if (obj.GetType() != this.GetType()) return false;
-      return Equals((Filter)obj);
+
+      return Equals((FilterResult)obj);
     }
 
     public override int GetHashCode()
@@ -621,19 +621,19 @@ namespace VSS.Productivity3D.Common.Models
       return (totalHashCode * 397) ^ singleHashCode;
     }
 
-    private int GetListHashCode<T>(List<T> list) => list != null ? list.GetListHashCode() : 0;
+    private int GetListHashCode<T>(List<T> list) => list?.GetListHashCode() ?? 0;
 
     private int GetNullableHashCode<T>(T nullable)
     {
       return nullable == null ? 0 : nullable.GetHashCode();
     }
 
-    public static bool operator ==(Filter left, Filter right)
+    public static bool operator ==(FilterResult left, FilterResult right)
     {
       return Equals(left, right);
     }
 
-    public static bool operator !=(Filter left, Filter right)
+    public static bool operator !=(FilterResult left, FilterResult right)
     {
       return !Equals(left, right);
     }

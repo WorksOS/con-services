@@ -1,15 +1,13 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using RaptorSvcAcceptTestsCommon.Models;
+using RaptorSvcAcceptTestsCommon.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RaptorSvcAcceptTestsCommon.Models;
-using Newtonsoft.Json;
-using RaptorSvcAcceptTestsCommon.Utils;
 
 namespace ProductionDataSvc.AcceptanceTests.Models
 {
-    public class FiltersResult : RequestResult, IEquatable<FiltersResult>
+  public class FiltersResult : RequestResult, IEquatable<FiltersResult>
     {
         #region Members
         /// <summary>
@@ -26,7 +24,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
         /// <value>
         ///   The filters array.
         /// </value>
-        public Filter[] FiltersArray { get; set; } 
+        public FilterResult[] FiltersArray { get; set; } 
         #endregion
 
         #region Constructors
@@ -44,8 +42,8 @@ namespace ProductionDataSvc.AcceptanceTests.Models
             if (other == null)
                 return false;
 
-            List<Filter> thisFilterList = this.FiltersArray.ToList();
-            List<Filter> otherFilterList = other.FiltersArray.ToList();
+            List<FilterResult> thisFilterList = this.FiltersArray.ToList();
+            List<FilterResult> otherFilterList = other.FiltersArray.ToList();
 
             return this.FilterId == other.FilterId &&
                 Common.ListsAreEqual(thisFilterList, otherFilterList) &&
