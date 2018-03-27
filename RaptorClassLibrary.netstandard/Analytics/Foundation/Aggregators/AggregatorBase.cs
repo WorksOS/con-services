@@ -63,11 +63,11 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
         /// </summary>
         public bool RequiresSerialisation { get; set; } = false;
 
-        public double ValueAtTargetPercent => SummaryCellsScanned > 0 ? CellsScannedAtTarget / SummaryCellsScanned * 100 : 0;
+        public double ValueAtTargetPercent => SummaryCellsScanned > 0 ? (double)CellsScannedAtTarget / SummaryCellsScanned * 100 : 0;
 
-        public double ValueOverTargetPercent => SummaryCellsScanned > 0 ? CellsScannedOverTarget / SummaryCellsScanned * 100 : 0;
+        public double ValueOverTargetPercent => SummaryCellsScanned > 0 ? (double)CellsScannedOverTarget / SummaryCellsScanned * 100 : 0;
 
-        public double ValueUnderTargetPercent => SummaryCellsScanned > 0 ? CellsScannedUnderTarget / SummaryCellsScanned * 100 : 0;
+        public double ValueUnderTargetPercent => SummaryCellsScanned > 0 ? (double)CellsScannedUnderTarget / SummaryCellsScanned * 100 : 0;
 
         public double SummaryProcessedArea => SummaryCellsScanned * (CellSize * CellSize);
 

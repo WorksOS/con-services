@@ -63,13 +63,13 @@ namespace VSS.VisionLink.Raptor.Tests.Analytics.Foundation
             Assert.True(aggregator1.CellsScannedUnderTarget == 30, "CellsScannedUnderTarget incorrect");
 
             Assert.False(aggregator1.IsTargetValueConstant, "IsTargetValueConstant incorrect");
-            Assert.False(aggregator1.MissingTargetValue, "MissingTargetValue incorrect");
+            Assert.True(aggregator1.MissingTargetValue, "MissingTargetValue incorrect");
 
             Assert.True(aggregator1.SummaryCellsScanned == 60, "SummaryCellsScanned incorrect");
             Assert.True(Math.Abs(aggregator1.SummaryProcessedArea - 60.0) < Epsilon, "SummaryCellsScanned incorrect");
-            Assert.True(Math.Abs(aggregator1.ValueAtTargetPercent - 10 / 60.0) < Epsilon, "ValueAtTargetPercent  incorrect");
-            Assert.True(Math.Abs(aggregator1.ValueOverTargetPercent- 20 / 60.0) < Epsilon, "ValueOverTargetPercent incorrect");
-            Assert.True(Math.Abs(aggregator1.ValueUnderTargetPercent - 30 / 60.0) < Epsilon, "ValueUnderTargetPercent incorrect");
+            Assert.True(Math.Abs(aggregator1.ValueAtTargetPercent - (10 / 60.0) * 100) < Epsilon, "ValueAtTargetPercent  incorrect");
+            Assert.True(Math.Abs(aggregator1.ValueOverTargetPercent - (20 / 60.0) * 100) < Epsilon, "ValueOverTargetPercent incorrect");
+            Assert.True(Math.Abs(aggregator1.ValueUnderTargetPercent - (30 / 60.0) * 100) < Epsilon, "ValueUnderTargetPercent incorrect");
         }
     }
 }
