@@ -106,7 +106,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
     {
       string logFileName = System.Diagnostics.Process.GetCurrentProcess().ProcessName + ".log";
       log4net.GlobalContext.Properties["LogName"] = logFileName;
-      log4net.Config.XmlConfigurator.Configure();
+      //log4net.Config.XmlConfigurator.Configure();
 
       Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 

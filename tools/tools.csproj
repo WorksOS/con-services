@@ -6,4 +6,11 @@
   <ItemGroup>
     <DotNetCliToolReference Include="MiniCover" Version="2.0.0-ci-20180319221328" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="log4net" Version="2.0.8" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RaptorClassLibrary.netstandard\RaptorClassLibrary.netstandard.csproj" />
+    <ProjectReference Include="..\tests\Tests.Common\Tests.Common.csproj" />
+  </ItemGroup>
 </Project>
