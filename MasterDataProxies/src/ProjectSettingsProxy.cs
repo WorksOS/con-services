@@ -49,7 +49,7 @@ namespace VSS.MasterData.Proxies
           throw new ServiceException(HttpStatusCode.BadRequest,new ContractExecutionResult(-10,"Unsupported project settings type."));
       }
 
-      var result = await GetMasterDataItem<ProjectSettingsDataResult>(projectUid, userId,
+      var result = await GetMasterDataItem<ProjectSettingsDataResult>(projectUid + settingsType, userId,
         "PROJECT_SETTINGS_CACHE_LIFE", "PROJECT_SETTINGS_API_URL", customHeaders, uri);
 
       if (result.Code == 0)
