@@ -65,6 +65,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
     }
 
     [TestMethod]
+    [Ignore]
     public void TagP_TagFileSubmitterException()
     {
       byte[] tagData = new byte[] { 0x1, 0x2, 0x3 };
