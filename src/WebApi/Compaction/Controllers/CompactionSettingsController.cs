@@ -111,8 +111,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         }
         //It is assumed that the settings are about to be saved.
         //Clear the cache for these updated settings so we get the updated settings for compaction requests.
-        log.LogDebug($"About to clear settings for project {projectUid}");
+        log.LogDebug($"About to clear settings for project {projectUid + settingsType}");
         ClearProjectSettingsCaches(projectUid + settingsType, Request.Headers.GetCustomHeaders());
+        log.LogDebug($"About to clear response cache for project PRJUID={projectUid.ToUpperInvariant()}");
         cache.InvalidateReponseCacheForProject(projectUid);
       }
       log.LogInformation("ValidateProjectSettings returned: " + Response.StatusCode);
