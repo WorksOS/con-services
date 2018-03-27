@@ -69,7 +69,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("ValidateProjectSettings: " + Request.QueryString);
 
-      return await ValidateProjectSettingsEx(projectUid.ToString(), projectSettings, settingsType);
+      return ValidateProjectSettingsEx(projectUid.ToString(), projectSettings, settingsType);
     }
 
     /// <summary>
@@ -85,10 +85,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       request.Validate();
 
-      return await ValidateProjectSettingsEx(request.projectUid, request.Settings, request.ProjectSettingsType);
+      return ValidateProjectSettingsEx(request.projectUid, request.Settings, request.ProjectSettingsType);
     }
 
-    private async Task<ContractExecutionResult> ValidateProjectSettingsEx(string projectUid, string projectSettings, ProjectSettingsType? settingsType)
+    private ContractExecutionResult ValidateProjectSettingsEx(string projectUid, string projectSettings, ProjectSettingsType? settingsType)
     {
       if (!string.IsNullOrEmpty(projectSettings))
       {

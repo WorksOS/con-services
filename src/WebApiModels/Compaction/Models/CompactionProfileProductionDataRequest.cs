@@ -28,13 +28,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     /// The base filter to use for a summary volumes profile. 
     /// </summary>
     [JsonProperty(PropertyName = "topFilter", Required = Required.Default)]
-    public Filter baseFilter { get; private set; }
+    public FilterResult baseFilter { get; private set; }
 
     /// <summary>
     /// The top filter to use for a summary volumes profile. 
     /// </summary>
     [JsonProperty(PropertyName = "topFilter", Required = Required.Default)]
-    public Filter topFilter { get; private set; }
+    public FilterResult topFilter { get; private set; }
 
     /// <summary>
     /// The calculation type to use for a summary volumes profile. 
@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
       long? projectID,
       Guid? callId,
       ProductionDataType profileType,
-      Filter filter,
+      FilterResult filter,
       long? filterID,
       DesignDescriptor alignmentDesign,
       ProfileGridPoints gridPoints,
@@ -64,8 +64,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
       LiftBuildSettings liftBuildSettings,
       bool returnAllPassesAndLayers,
       DesignDescriptor cutFillDesignDescriptor,
-      Filter baseFilter,
-      Filter topFilter,
+      FilterResult baseFilter,
+      FilterResult topFilter,
       VolumeCalcType? volumeCalcType,
       DesignDescriptor volumeDesignDescriptor
     )

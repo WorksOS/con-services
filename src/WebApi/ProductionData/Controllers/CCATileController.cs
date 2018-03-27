@@ -20,9 +20,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
-using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
-using Filter = VSS.Productivity3D.Common.Models.Filter;
 using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
@@ -203,7 +201,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         geometry = RaptorConverters.geometryToPoints(geometryWKT).ToList();
       }
 
-      var filter = Filter.CreateFilter
+      var filter = FilterResult.CreateFilter
       (
         null,
         null,
@@ -229,7 +227,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         null,
         liftId,
         null,
-        new List<MachineDetails> { MachineLiftDetails.CreateMachineDetails(assetId, machineName, isJohnDoe) },
+        new List<MachineDetails> { MachineDetails.CreateMachineDetails(assetId, machineName, isJohnDoe) },
         null,
         null,
         null,

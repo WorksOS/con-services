@@ -5,7 +5,6 @@ using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApi.Compaction.ActionServices;
-using Filter = VSS.Productivity3D.Common.Models.Filter;
 using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
@@ -17,12 +16,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     public class GetVolumesTypeTests : VolumeSummaryHelperTests
     {
       private readonly SummaryDataHelper volumeSummaryDataHelper = new SummaryDataHelper();
-      private static Filter filter;
+      private static FilterResult filter;
 
       [ClassInitialize]
       public static void ClassInit(TestContext context)
       {
-        filter = Filter.CreateFilter(
+        filter = FilterResult.CreateFilter(
           0, "name", "desc", DateTime.Now, DateTime.Now, 1, null, false, false, ElevationType.Highest,
           new List<WGSPoint>(), new List<Point>(), false, null, 0, 0, 0, 0, "designName",
           FilterLayerMethod.None, null, 0, 0, 0, new List<MachineDetails>(), new List<long>(),
@@ -54,13 +53,13 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       [TestMethod]
       public void Should_return_False_When_baseFilter_is_null()
       {
-        Assert.IsFalse(SummaryDataHelper.DoGroundToGroundComparison(null, new MasterData.Models.Models.Filter()));
+        Assert.IsFalse(SummaryDataHelper.DoGroundToGroundComparison(null, new Filter()));
       }
 
       [TestMethod]
       public void Should_return_False_When_topFilter_is_null()
       {
-        Assert.IsFalse(SummaryDataHelper.DoGroundToGroundComparison(new MasterData.Models.Models.Filter(), null));
+        Assert.IsFalse(SummaryDataHelper.DoGroundToGroundComparison(new Filter(), null));
       }
     }
   }

@@ -116,7 +116,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         //All other cases - rpoceed further
         return true;
       }
-      catch (Exception exception)
+      catch
       {
         //Some expcetion - do not proceed further
         return false;

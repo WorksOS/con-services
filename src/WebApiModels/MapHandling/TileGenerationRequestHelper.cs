@@ -9,7 +9,6 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
-using Filter = VSS.Productivity3D.Common.Models.Filter;
 
 namespace VSS.Productivity3D.WebApiModels.MapHandling
 {
@@ -18,8 +17,8 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
   /// </summary>
   public class TileGenerationRequestHelper : DataRequestBase, ITileGenerationRequestHelper
   {
-    private Filter baseFilter;
-    private Filter topFilter;
+    private FilterResult baseFilter;
+    private FilterResult topFilter;
     private VolumeCalcType? volCalcType;
 
     private IEnumerable<GeofenceData> geofences;
@@ -46,13 +45,13 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
       return this;
     }
 
-    public TileGenerationRequestHelper SetBaseFilter(Filter baseFilter)
+    public TileGenerationRequestHelper SetBaseFilter(FilterResult baseFilter)
     {
       this.baseFilter = baseFilter;
       return this;
     }
 
-    public TileGenerationRequestHelper SetTopFilter(Filter topFilter)
+    public TileGenerationRequestHelper SetTopFilter(FilterResult topFilter)
     {
       this.topFilter = topFilter;
       return this;

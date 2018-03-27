@@ -15,7 +15,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [Binding, Scope(Feature = "FilterServices")]
     public class FilterServicesSteps
     {
-        private Poster<Filter, FiltersResult> filterPoster;
+        private Poster<FilterResult, FiltersResult> filterPoster;
         private Getter<FiltersResult> allFilterGetter;
         private Getter<FiltersResult> singleFilterGetter;
 
@@ -24,7 +24,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         [Given(@"the Filter service URI ""(.*)"" with a test project ID (.*)")]
         public void GivenTheFilterServiceURIWithATestProjectID(string filterSvcUri, long pId)
         {
-            filterPoster = new Poster<Filter, FiltersResult>(RaptorClientConfig.ProdSvcBaseUri + string.Format(filterSvcUri, pId));
+            filterPoster = new Poster<FilterResult, FiltersResult>(RaptorClientConfig.ProdSvcBaseUri + string.Format(filterSvcUri, pId));
             allFilterGetter = new Getter<FiltersResult>(RaptorClientConfig.ProdSvcBaseUri + string.Format(filterSvcUri, pId));
             singleFilterGetter = new Getter<FiltersResult>(RaptorClientConfig.ProdSvcBaseUri + string.Format(filterSvcUri, pId));
         }
@@ -32,7 +32,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         [Given(@"a unique filter")]
         public void GivenAUniqueFilter()
         {
-            Filter uniqueFilter = new Filter();
+            FilterResult uniqueFilter = new FilterResult();
             uniqueFilter.name = DateTime.Now.ToString("s"); // Format "2008-06-15T21:15:07"
             uniqueFilter.polygonGrid = new List<Point>() {
                 new Point() { x = 2321.520, y = 1206.662 },

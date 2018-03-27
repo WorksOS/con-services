@@ -63,7 +63,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
 
     public static CompactionReportGridRequest CreateCompactionReportGridRequest(
       long projectId,
-      Filter filter,
+      FilterResult filter,
       long filterId,
       LiftBuildSettings liftBuildSettings,
       bool reportElevation,
@@ -81,7 +81,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
       double endEasting,
       double azimuth)
     {
-      return new CompactionReportGridRequest()
+      return new CompactionReportGridRequest
       {
         projectId = projectId,
         Filter = filter,

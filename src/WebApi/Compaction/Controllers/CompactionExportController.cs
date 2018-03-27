@@ -22,7 +22,6 @@ using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Models;
-using Filter = VSS.Productivity3D.Common.Models.Filter;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -103,7 +102,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       tolerance = tolerance ?? surfaceExportTollerance;
 
-      var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
+      var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectId(projectId)
           .Headers(this.CustomHeaders)
           .ProjectSettings(projectSettings)
@@ -255,7 +254,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var userPreferences = await GetUserPreferences();
       var startEndDate = GetDateRange(projectId, filter);
 
-      var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
+      var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectId(projectId)
           .Headers(this.CustomHeaders)
           .ProjectSettings(projectSettings)
@@ -314,7 +313,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var userPreferences = await GetUserPreferences();
       var startEndDate = GetDateRange(projectId, filter);
 
-      var exportRequest = await requestFactory.Create<ExportRequestHelper>(r => r
+      var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectId(projectId)
           .Headers(this.CustomHeaders)
           .ProjectSettings(projectSettings)
@@ -360,7 +359,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the date range for the export.
     /// </summary>
-    private Tuple<DateTime, DateTime> GetDateRange(long projectId, Filter filter)
+    private Tuple<DateTime, DateTime> GetDateRange(long projectId, FilterResult filter)
     {
       if (filter?.StartUtc == null || !filter.EndUtc.HasValue)
       {

@@ -60,7 +60,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     /// Creates a <see cref="SummaryVolumesRequest"/> object for use with the v2 API.
     /// </summary>
     /// <returns>New instance of <see cref="SummaryVolumesRequest"/>.</returns>
-    public static SummaryVolumesRequest CreateAndValidate(long projectId, Filter baseFilter, Filter topFilter, DesignDescriptor baseDesignDescriptor, DesignDescriptor topDesignDescriptor, RaptorConverters.VolumesType volumeCalcType)
+    public static SummaryVolumesRequest CreateAndValidate(long projectId, FilterResult baseFilter, FilterResult topFilter, DesignDescriptor baseDesignDescriptor, DesignDescriptor topDesignDescriptor, RaptorConverters.VolumesType volumeCalcType)
     {
       var request = new SummaryVolumesRequest
       {

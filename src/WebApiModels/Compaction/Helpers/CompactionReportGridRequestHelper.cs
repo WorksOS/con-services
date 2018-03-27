@@ -1,11 +1,10 @@
-﻿using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
+using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 {
@@ -29,7 +28,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       SettingsManager = settingsManager;
     }
 
-    public async Task<CompactionReportGridRequest> CreateCompactionReportGridRequest(
+    public CompactionReportGridRequest CreateCompactionReportGridRequest(
       bool reportElevation,
       bool reportCmv,
       bool reportMdp,

@@ -9,7 +9,7 @@
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <RootNamespace>VSS.Productivity3D.WebApi.Models</RootNamespace>
     <DependsOnNETStandard>netstandard2.0</DependsOnNETStandard>
-    <Platforms>x64</Platforms>
+    <Platforms>x64;x86</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -42,7 +42,14 @@
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>
     <WarningsAsErrors />
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>True</DebugSymbols>
+    <WarningsAsErrors />
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">

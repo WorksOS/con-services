@@ -22,7 +22,6 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using Filter = VSS.Productivity3D.Common.Models.Filter;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -307,7 +306,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Creates an instance of the Filter class and populate it with data.
     /// </summary>
     /// <returns>An instance of the Filter class.</returns>
-    protected async Task<Filter> GetCompactionFilter(Guid projectUid, Guid? filterUid)
+    protected async Task<FilterResult> GetCompactionFilter(Guid projectUid, Guid? filterUid)
     {
       var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid);
       bool haveExcludedIds = excludedIds != null && excludedIds.Count > 0;
@@ -349,7 +348,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
                 returnEarliest = true;
               }
 
-              var raptorFilter = Filter.CreateFilter(null, null, null, filterData.StartUtc, filterData.EndUtc,
+              var raptorFilter = FilterResult.CreateFilter(null, null, null, filterData.StartUtc, filterData.EndUtc,
                 filterData.OnMachineDesignId, null, filterData.VibeStateOn, null, filterData.ElevationType,
                 polygonPoints, null, filterData.ForwardDirection,
                 alignmentDescriptor, filterData.StartStation, filterData.EndStation, filterData.LeftOffset, filterData.RightOffset,
@@ -373,7 +372,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         }
       }
 
-      return haveExcludedIds ? Filter.CreateFilter(excludedIds) : null;
+      return haveExcludedIds ? FilterResult.CreateFilter(excludedIds) : null;
     }
 
     /// <summary>
@@ -384,7 +383,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="projectUid">The project UID</param>
     /// <param name="filter">The filter containg the date range type</param>
     /// <returns>The filter with the date range set</returns>
-    private MasterData.Models.Models.Filter ApplyDateRange(Guid projectUid, MasterData.Models.Models.Filter filter)
+    private Filter ApplyDateRange(Guid projectUid, Filter filter)
     {
       if (!filter.DateRangeType.HasValue || filter.DateRangeType.Value == DateRangeType.Custom)
       {
@@ -412,7 +411,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         endUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, false);
       }
 
-      return MasterData.Models.Models.Filter.CreateFilter(
+      return Filter.CreateFilter(
         startUtc, endUtc, filter.DesignUid, filter.ContributingMachines, filter.OnMachineDesignId, filter.ElevationType,
         filter.VibeStateOn, filter.PolygonLL, filter.ForwardDirection, filter.LayerNumber, filter.PolygonUid, filter.PolygonName,
         filter.AlignmentUid, filter.StartStation, filter.EndStation, filter.LeftOffset, filter.RightOffset
@@ -422,13 +421,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the <see cref="FilterDescriptor"/> for a given Filter Uid (by project).
     /// </summary>
-    public async Task<MasterData.Models.Models.Filter> GetFilterDescriptor(Guid projectUid, Guid filterUid)
+    public async Task<Filter> GetFilterDescriptor(Guid projectUid, Guid filterUid)
     {
       var filterDescriptor = await this.FilterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), Request.Headers.GetCustomHeaders(true));
 
       return filterDescriptor == null
         ? null
-        : JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterDescriptor.FilterJson);
+        : JsonConvert.DeserializeObject<Filter>(filterDescriptor.FilterJson);
     }
 
     /// <summary>
@@ -439,10 +438,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="volumeBaseUid">Base Design or Filter UID for summary volumes determined by volumeCalcType</param>
     /// <param name="volumeTopUid">Top Design or Filter UID for summary volumes determined by volumeCalcType</param>
     /// <returns>Tuple of base filter, top filter and volume design descriptor</returns>
-    protected async Task<Tuple<Filter, Filter, DesignDescriptor>> GetSummaryVolumesParameters(Guid projectUid, VolumeCalcType? volumeCalcType, Guid? volumeBaseUid, Guid? volumeTopUid)
+    protected async Task<Tuple<FilterResult, FilterResult, DesignDescriptor>> GetSummaryVolumesParameters(Guid projectUid, VolumeCalcType? volumeCalcType, Guid? volumeBaseUid, Guid? volumeTopUid)
     {
-      Filter baseFilter = null;
-      Filter topFilter = null;
+      FilterResult baseFilter = null;
+      FilterResult topFilter = null;
       DesignDescriptor volumeDesign = null;
 
       if (volumeCalcType.HasValue)
@@ -464,7 +463,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         }
       }
 
-      return new Tuple<Filter, Filter, DesignDescriptor>(baseFilter, topFilter, volumeDesign);
+      return new Tuple<FilterResult, FilterResult, DesignDescriptor>(baseFilter, topFilter, volumeDesign);
     }
   }
 }

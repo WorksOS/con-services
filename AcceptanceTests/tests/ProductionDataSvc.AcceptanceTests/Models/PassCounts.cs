@@ -36,7 +36,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
         /// The filter instance to use in the request
         /// Value may be null.
         /// </summary>
-        public Filter filter { get; set; }
+        public FilterResult filter { get; set; }
 
         /// <summary>
         /// The filter ID to used in the request.

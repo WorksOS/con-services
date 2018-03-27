@@ -1,5 +1,6 @@
 ﻿using BoundingExtents;
 using Fences;
+using Microsoft.Extensions.Logging;
 using SubGridTreesDecls;
 using SVOICDecls;
 using SVOICFiltersDecls;
@@ -10,13 +11,10 @@ using SVOICVolumeCalculationsDecls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VLPDDecls;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
 using __Global = ProductionServer_TLB.__Global;
-using Filter = VSS.Productivity3D.Common.Models.Filter;
 using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
 
 namespace VSS.Productivity3D.Common.Proxies
@@ -394,7 +392,7 @@ namespace VSS.Productivity3D.Common.Proxies
 
     public static TWGS84Point convertWGSPoint(WGSPoint point)
     {
-      return new TWGS84Point()
+      return new TWGS84Point
       {
         Lat = point.Lat,
         Lon = point.Lon
@@ -408,15 +406,15 @@ namespace VSS.Productivity3D.Common.Proxies
     /// <returns></returns>
     public static TWGS84FenceContainer convertWGS84Fence(WGS84Fence fence)
     {
-      TWGS84FenceContainer fenceContainer = new TWGS84FenceContainer()
+      TWGS84FenceContainer fenceContainer = new TWGS84FenceContainer
       {
-        FencePoints = fence.Points.ToList().ConvertAll(p => { return new TWGS84Point() { Lat = p.Lat, Lon = p.Lon }; }).ToArray()
+        FencePoints = fence.Points.ToList().ConvertAll(p => new TWGS84Point { Lat = p.Lat, Lon = p.Lon }).ToArray()
       };
 
       return fenceContainer;
     }
 
-    public static TICFilterSettings ConvertFilter(long? filterID, Filter filter, long? projectid, DateTime? overrideStartUTC = null,
+    public static TICFilterSettings ConvertFilter(long? filterID, FilterResult filter, long? projectid, DateTime? overrideStartUTC = null,
         DateTime? overrideEndUTC = null, List<long> overrideAssetIds = null, string fileSpaceName = null, ILogger log = null)
     {
       if (filter != null)
@@ -438,15 +436,12 @@ namespace VSS.Productivity3D.Common.Proxies
       return DefaultRaptorFilter;
     }
 
-    private static TICFilterSettings DefaultRaptorFilter
-    {
-      get { return new TICFilterSettings { LayerMethod = TFilterLayerMethod.flmAutoMapReset }; }
-    }
+    private static TICFilterSettings DefaultRaptorFilter => new TICFilterSettings { LayerMethod = TFilterLayerMethod.flmAutoMapReset };
 
     //TODO split this method
     //TODO think that this method coul be common as will be consumed by others
     //TODO test this
-    public static TICFilterSettings ConvertFilter(Filter pdf, DateTime? overrideStartUTC = null, DateTime? overrideEndUTC = null, List<long> overrideAssetIds = null, string fileSpaceName = null, ILogger log = null)
+    public static TICFilterSettings ConvertFilter(FilterResult pdf, DateTime? overrideStartUTC = null, DateTime? overrideEndUTC = null, List<long> overrideAssetIds = null, string fileSpaceName = null, ILogger log = null)
     {
       const double RADIANS_TO_DEGREES = 180.0 / Math.PI;
 
@@ -685,7 +680,7 @@ namespace VSS.Productivity3D.Common.Proxies
       TICLiftBuildSettings result;
       result = settings == null ?
       new TSVOICOptions().GetLiftBuildSettings(layerMethod) :
-      new TICLiftBuildSettings()
+      new TICLiftBuildSettings
       {
         CCVRange = ConvertCCVRange(settings.cCVRange),
         CCVSummarizeTopLayerOnly = settings.cCVSummarizeTopLayerOnly,
@@ -721,17 +716,17 @@ namespace VSS.Productivity3D.Common.Proxies
 
     public static TCCVRangePercentage ConvertCCVRange(CCVRangePercentage range)
     {
-      return range == null ? new TCCVRangePercentage() { Min = 0, Max = 100 } : new TCCVRangePercentage() { Min = range.min, Max = range.max };
+      return range == null ? new TCCVRangePercentage { Min = 0, Max = 100 } : new TCCVRangePercentage { Min = range.min, Max = range.max };
     }
 
     public static TMDPRangePercentage ConvertMDPRange(MDPRangePercentage range)
     {
-      return range == null ? new TMDPRangePercentage() { Min = 0, Max = 100 } : new TMDPRangePercentage() { Min = range.min, Max = range.max };
+      return range == null ? new TMDPRangePercentage { Min = 0, Max = 100 } : new TMDPRangePercentage { Min = range.min, Max = range.max };
     }
 
     public static TTargetPassCountRange ConvertTargetPassCountRange(TargetPassCountRange range)
     {
-      return range == null ? new TTargetPassCountRange() { Min = 1, Max = ushort.MaxValue } : new TTargetPassCountRange() { Min = range.min, Max = range.max };
+      return range == null ? new TTargetPassCountRange { Min = 1, Max = ushort.MaxValue } : new TTargetPassCountRange { Min = range.min, Max = range.max };
     }
 
     public static TICLiftDetectionType ConvertLiftDetectionType(LiftDetectionType type)
@@ -759,7 +754,7 @@ namespace VSS.Productivity3D.Common.Proxies
 
     public static TTemperatureWarningLevels ConvertTemperatureWarningLevels(TemperatureWarningLevels levels)
     {
-      return levels == null ? new TTemperatureWarningLevels() { Min = 0, Max = 100 } : new TTemperatureWarningLevels() { Min = levels.min, Max = levels.max };
+      return levels == null ? new TTemperatureWarningLevels { Min = 0, Max = 100 } : new TTemperatureWarningLevels { Min = levels.min, Max = levels.max };
     }
 
     public static TICElevationType ConvertElevationType(ElevationType type)
@@ -916,7 +911,7 @@ namespace VSS.Productivity3D.Common.Proxies
     /// <returns></returns>
     public static TSubGridCellAddress convertCellAddress(CellAddress address)
     {
-      return new TSubGridCellAddress()
+      return new TSubGridCellAddress
       {
         X = address.x,
         Y = address.y

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,9 +11,8 @@ using VSS.Productivity3D.WebApiModels.Notification.Executors;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
 using VSS.TCCFileAccess;
 
-namespace VSS.Productivity3D.Common.Services
+namespace VSS.Productivity3D.WebApi.Models.Services
 {
-
   public interface IEnqueueItem<in T>
   {
     bool EnqueueItem(T item);
@@ -22,8 +20,7 @@ namespace VSS.Productivity3D.Common.Services
 
   public class AddFileProcessingService : IHostedService, IEnqueueItem<ProjectFileDescriptor>
   {
-
-    private readonly ConcurrentQueue<ProjectFileDescriptor> _queue = new ConcurrentQueue<ProjectFileDescriptor>();
+    private readonly ConcurrentQueue<ProjectFileDescriptor> queue = new ConcurrentQueue<ProjectFileDescriptor>();
     private ILogger<AddFileProcessingService> log;
     private readonly IConfigurationStore configServiceStore;
     private readonly IFileRepository fileRepo;
@@ -46,17 +43,17 @@ namespace VSS.Productivity3D.Common.Services
       tileServiceGenerator = tileService;
     }
 
-    private async Task<WebApi.Models.Notification.Models.AddFileResult> ProcessItem(ProjectFileDescriptor file)
+    private async Task<Notification.Models.AddFileResult> ProcessItem(ProjectFileDescriptor file)
     {
       var executor = RequestExecutorContainerFactory.Build<AddFileExecutor>(loggingFactory, raptorServiceClient, null,
         configServiceStore, fileRepo, tileServiceGenerator);
-      var result = (await executor.ProcessAsync(file) as WebApi.Models.Notification.Models.AddFileResult);
+      var result = (await executor.ProcessAsync(file) as Notification.Models.AddFileResult);
       log.LogInformation($"Processed file {file.File.fileName} with result {JsonConvert.SerializeObject(result)}");
       var eventAttributes = new Dictionary<string, object>
       {
-        {"file", file.File.fileName.ToString()},
+        {"file", file.File.fileName},
         {"status", result.Code.ToString() },
-        {"result", result.Message.ToString() }
+        {"result", result.Message }
       };
 
       NewRelic.Api.Agent.NewRelic.RecordCustomEvent("3DPM_Request_files", eventAttributes);
@@ -65,7 +62,7 @@ namespace VSS.Productivity3D.Common.Services
 
     public void StartSpinCycle(CancellationToken cancellationToken)
     {
-      log.LogInformation($"Starting file processing thread");
+      log.LogInformation("Starting file processing thread");
       token = cancellationToken;
       var spinnerThread = new Thread(StartThread);
       spinnerThread.Start();
@@ -76,9 +73,9 @@ namespace VSS.Productivity3D.Common.Services
       stopSemaphore.Wait(token);
       while (!token.IsCancellationRequested && !stopRequested)
       {
-        if (_queue.Count > 0)
+        if (queue.Count > 0)
         {
-          if (_queue.TryDequeue(out var descriptor))
+          if (queue.TryDequeue(out var descriptor))
           {
             log.LogInformation($"Processing file {JsonConvert.SerializeObject(descriptor)}");
             ProcessItem(descriptor);
@@ -90,7 +87,6 @@ namespace VSS.Productivity3D.Common.Services
       stopSemaphore.Release();
       log.LogInformation($"Stopped file processing thread");
     }
-
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
@@ -107,7 +103,7 @@ namespace VSS.Productivity3D.Common.Services
 
     public bool EnqueueItem(ProjectFileDescriptor item)
     {
-      _queue.Enqueue(item);
+      queue.Enqueue(item);
       return true;
     }
   }

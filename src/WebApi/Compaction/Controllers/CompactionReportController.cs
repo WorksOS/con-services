@@ -111,7 +111,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var cutFillDesign = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid, true);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
 
-      var reportGridRequest = await requestFactory.Create<CompactionReportGridRequestHelper>(r => r
+      var reportGridRequest = requestFactory.Create<CompactionReportGridRequestHelper>(r => r
           .ProjectId(projectId)
           .Headers(CustomHeaders)
           .ProjectSettings(projectSettings)

@@ -10,7 +10,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
   public class SummaryDataHelper : ISummaryDataHelper
   {
     /// <inheritdoc />
-    public RaptorConverters.VolumesType GetVolumesType(Filter filter1, Filter filter2)
+    public RaptorConverters.VolumesType GetVolumesType(FilterResult filter1, FilterResult filter2)
     {
       if (filter1 != null && filter2 != null) // Ground to Ground
       {

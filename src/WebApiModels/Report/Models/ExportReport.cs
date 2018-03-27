@@ -60,7 +60,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     /// Value may be null.
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public Filter filter { get; protected set; }
+    public FilterResult filter { get; protected set; }
 
 
     /// <summary>
@@ -139,7 +139,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     /// Create instance of CreatePassCountsRequest
     /// </summary>
     public static ExportReport CreateExportReportRequest(long projectId, LiftBuildSettings liftBuildSettings,
-        Filter filter, long filterID, Guid? callid, bool cellSizeRq, string callerID, CoordTypes coordtype,
+                                                         FilterResult filter, long filterID, Guid? callid, bool cellSizeRq, string callerID, CoordTypes coordtype,
         DateTime DateFromUTC, DateTime DateToUTC, bool ZipFile, double Tolerance, bool TimeStampRequired,
         bool RestrictSize, bool RawData, T3DBoundingWorldExtent PrjExtents, bool PrecheckOnly, OutputTypes OutpuType,
         TMachine[] MachineList, bool IncludeSrvSurface, string FileName, ExportTypes ExportType, TASNodeUserPreferences UserPrefs)

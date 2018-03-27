@@ -97,8 +97,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var cutFillDesign = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid, true);
 
-      Filter baseFilter = null;
-      Filter topFilter = null;
+      FilterResult baseFilter = null;
+      FilterResult topFilter = null;
       DesignDescriptor volumeDesign = null;
       if (volumeCalcType.HasValue)
       {
@@ -199,6 +199,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       profileResultHelper.FindCutFillElevations(slicerProductionDataResult, slicerDesignResult, type, volumeCalcType);
     }
 
+    /// <summary>
+    /// Resource to get a profile design slicer.
+    /// </summary>
     [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v2/profiles/design/slicer")]
     [HttpGet]
