@@ -143,7 +143,7 @@ namespace VSS.MasterData.Repositories
           @"INSERT Geofence
                 (GeofenceUID, Name, Description, GeometryWKT, FillColor, IsTransparent, IsDeleted, fk_CustomerUID, UserUID, LastActionedUTC, fk_GeofenceTypeID, AreaSqMeters)
             VALUES
-                (@GeofenceUID, @Name, @Description, @GeometryWKT, @FillColor, IsTransparent, @IsDeleted, @CustomerUID, @UserUID, @LastActionedUTC, @GeofenceType, @AreaSqMeters)";
+                (@GeofenceUID, @Name, @Description, @GeometryWKT, @FillColor, @IsTransparent, @IsDeleted, @CustomerUID, @UserUID, @LastActionedUTC, @GeofenceType, @AreaSqMeters)";
 
         var upsertedCount = await ExecuteWithAsyncPolicy(insert, geofence);
         log.LogDebug($"GeofenceRepository/CreateGeofence upserted {upsertedCount} rows for: geofenceUid:{geofence.GeofenceUID}");
@@ -161,37 +161,46 @@ namespace VSS.MasterData.Repositories
 
       if (existing != null)
       {
-        if (!geofence.IsTransparent.HasValue)
-          geofence.IsTransparent = existing.IsTransparent;
-        if (!geofence.FillColor.HasValue)
-          geofence.FillColor = existing.FillColor;
-        if (string.IsNullOrEmpty(geofence.Name))
-          geofence.Name = existing.Name;
-        if (string.IsNullOrEmpty(geofence.CustomerUID) && !string.IsNullOrEmpty(existing.CustomerUID))
-          geofence.CustomerUID = existing.CustomerUID;
-        // can't change TO generic
-        if (geofence.GeofenceType == GeofenceType.Generic)
-          geofence.GeofenceType = existing.GeofenceType;
-
-        if (!Guid.TryParse(geofence.UserUID, out Guid gotUpdatedGuid) || (gotUpdatedGuid == Guid.Empty))
-          geofence.UserUID = existing.UserUID;
-
-        if (geofence.AreaSqMeters == 0)
-          geofence.AreaSqMeters = existing.AreaSqMeters;
-
         if (geofence.LastActionedUTC >= existing.LastActionedUTC)
         {
+          if (string.IsNullOrEmpty(geofence.Name))
+            geofence.Name = existing.Name;
+          // can't change TO generic
+          if (geofence.GeofenceType == GeofenceType.Generic)
+            geofence.GeofenceType = existing.GeofenceType;
+          if (string.IsNullOrEmpty(geofence.GeometryWKT))
+            geofence.GeometryWKT = existing.GeometryWKT;
+          if (!geofence.FillColor.HasValue)
+            geofence.FillColor = existing.FillColor;
+          if (!geofence.IsTransparent.HasValue)
+            geofence.IsTransparent = existing.IsTransparent;
+          // customerUID is not actually in an UpdateGeofenceEvent, but just to future-proof
+          if (string.IsNullOrEmpty(geofence.CustomerUID))
+            geofence.CustomerUID = existing.CustomerUID;
+          if (!Guid.TryParse(geofence.UserUID, out Guid gotUpdatedGuid) || (gotUpdatedGuid == Guid.Empty))
+            geofence.UserUID = existing.UserUID;
+          if (string.IsNullOrEmpty(geofence.Description))
+            geofence.Description = existing.Description;
+
+          // Note that AreaSqMeters is stored as 0 dp in database
+          if (Math.Abs(geofence.AreaSqMeters) < 0.0001)
+          {
+            geofence.AreaSqMeters = existing.AreaSqMeters;
+          }
+
           log.LogDebug($"GeofenceRepository/UpdateGeofence: going to update geofence={geofence.GeofenceUID}");
 
           const string update =
             @"UPDATE Geofence                
-                  SET Name = @Name, fk_GeofenceTypeID = @GeofenceType, GeometryWKT = @GeometryWKT, FillColor = @FillColor, IsTransparent = @IsTransparent, fk_CustomerUID = @CustomerUID, Description = @Description, LastActionedUTC = @LastActionedUTC, AreaSqMeters = @AreaSqMeters                  
+                  SET Name = @Name, fk_GeofenceTypeID = @GeofenceType, GeometryWKT = @GeometryWKT, FillColor = @FillColor, IsTransparent = @IsTransparent, fk_CustomerUID = @CustomerUID, UserUID = @UserUID, Description = @Description, LastActionedUTC = @LastActionedUTC, AreaSqMeters = @AreaSqMeters                  
                 WHERE GeofenceUID = @GeofenceUID";
 
           upsertedCount = await ExecuteWithAsyncPolicy(update, geofence);
-          log.LogDebug($"UpdateGeofence (update): upserted {upsertedCount} rows for: geofenceUid:{geofence.GeofenceUID}");
+          log.LogDebug(
+            $"UpdateGeofence (update): upserted {upsertedCount} rows for: geofenceUid:{geofence.GeofenceUID}");
           return upsertedCount;
         }
+
         log.LogDebug($"GeofenceRepository/UpdateGeofence: old update event ignored geofence={geofence.GeofenceUID}");
       }
       else
