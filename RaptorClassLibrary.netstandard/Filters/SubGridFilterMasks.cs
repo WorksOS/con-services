@@ -26,10 +26,6 @@ namespace VSS.VisionLink.Raptor.Filters
                                                                     ref SubGridTreeBitmapSubGridBits PDMask,
                                                                     ref SubGridTreeBitmapSubGridBits FilterMask)
         {
-            double OX, OY;
-            double CX, CY;
-            uint OriginXPlusI;
-
             if ((Filter == null) || !Filter.SpatialFilter.HasSpatialOrPostionalFilters)
             {
                 PDMask.Fill();
@@ -43,7 +39,7 @@ namespace VSS.VisionLink.Raptor.Filters
             double cellSize = SiteModel.Grid.CellSize;
 
             // Get the world location of the origin position
-            SiteModel.Grid.GetCellCenterPosition(originX, originY, out OX, out OY);
+            SiteModel.Grid.GetCellCenterPosition(originX, originY, out double OX, out double OY);
 
             CellSpatialFilter SpatialFilter = Filter.SpatialFilter;
 
@@ -83,12 +79,12 @@ namespace VSS.VisionLink.Raptor.Filters
                 FilterMask.Clear();
 
                 // Construct the filter mask based on the spatial and location (square/circle/polygonal) filtering
-                CX = OX;
+                double CX = OX;
 
                 for (byte I = 0; I < SubGridTree.SubGridTreeDimension; I++)
                 {
-                    OriginXPlusI = originX + I;
-                    CY = OY; // Set to the first row in the column about to be processed
+                    uint OriginXPlusI = originX + I;
+                    double CY = OY; // Set to the first row in the column about to be processed
 
                     for (byte J = 0; J < SubGridTree.SubGridTreeDimension; J++)
                     {

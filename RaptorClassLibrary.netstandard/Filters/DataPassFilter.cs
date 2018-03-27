@@ -271,11 +271,11 @@ namespace VSS.VisionLink.Raptor.Filters
         /// <PassValues> where <PassValues> contains the entire list of passes for
         /// a cell in the database.
         /// </summary>
-        /// <param name="FilteredPassValues"></param>
-        /// <param name="PassValueCount"></param>
-        /// <param name="WantEarliestPass"></param>
-        /// <param name="FilteredPassInfo"></param>
-        /// <param name="PerformAttributeSubFilter"></param>
+        /// <param name="filteredPassValues"></param>
+        /// <param name="passValueCount"></param>
+        /// <param name="wantEarliestPass"></param>
+        /// <param name="filteredPassInfo"></param>
+        /// <param name="performAttributeSubFilter"></param>
         /// <returns></returns>
         public bool FilterSinglePass(FilteredPassData[] filteredPassValues,
                                      int passValueCount,
@@ -285,7 +285,6 @@ namespace VSS.VisionLink.Raptor.Filters
                                      bool performAttributeSubFilter)
         {
             bool Accept;
-            int AcceptedIndex = -1;
             bool CheckAttributes = false;
             bool Result = false;
 
@@ -295,7 +294,7 @@ namespace VSS.VisionLink.Raptor.Filters
             }
 
             CheckAttributes = performAttributeSubFilter && AnyFilterSelections;
-            AcceptedIndex = -1;
+            int AcceptedIndex = -1;
 
             if (wantEarliestPass)
             {

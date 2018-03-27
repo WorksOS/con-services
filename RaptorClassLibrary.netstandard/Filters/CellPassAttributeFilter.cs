@@ -240,7 +240,7 @@ namespace VSS.VisionLink.Raptor.Filters
         /// <param name="Left"></param>
         /// <param name="Right"></param>
         /// <returns></returns>
-        private int FlagCheck2(bool Left, bool Right) => Left ? Right ? 0 : -1 : Right ? 1 : 0;
+        private static int FlagCheck2(bool Left, bool Right) => Left ? Right ? 0 : -1 : Right ? 1 : 0;
 
         /// <summary>
         /// Compare one filter with another for the purpose of ordering them in caching lists
@@ -1136,7 +1136,6 @@ FAvoidZoneUndergroundServiceZones = false;
                     return false;
             }
 
-
             if (HasGPSToleranceFilter)
             {
                 if (!(PassValue.EventValues.GPSTolerance != CellPass.NullGPSTolerance &&
@@ -1761,12 +1760,11 @@ FAvoidZoneUndergroundServiceZones = false;
                 return base.FilterMultiplePasses(passValues, PassValueCount, ref filteredPassInfo);
             }
 
-            CellPass PassValue;
             bool Result = false;
 
             for (int i = 0; i < PassValueCount; i++)
             {
-                PassValue = passValues[i];
+                CellPass PassValue = passValues[i];
 
                 if (FilterPass(ref PassValue))
                 {

@@ -21,25 +21,25 @@ namespace VSS.VisionLink.Raptor.Compression
         /// <summary>
         /// Read this many bytes at a time from the BitFieldArray storage when reading values into elements in the internal storage array
         /// </summary>
-        public const int kNBytesReadAtATime = 8; // was 1
+        private const int kNBytesReadAtATime = 8; // was 1
 
         /// <summary>
         /// Read this many bits at a time from the BitFieldArray storage when reading values
         /// </summary>
-        public const int kNBitsReadAtATime = kNBytesReadAtATime * 8;
+        private const int kNBitsReadAtATime = kNBytesReadAtATime * 8;
 
         /// <summary>
         /// The number of bits necessary to shift the offset address for a field in a bit field array to 
         /// convert the the bit address into logical blocks (ie: the block size at which bits are read from memory
         /// when reading or writing values)
         /// </summary>
-        public const int kBitLocationToBlockShift = 6; // 1 Byte : 3, 2 Bytes : 4, 4 Bytes : 5, 8 bytes : 6
+        private const int kBitLocationToBlockShift = 6; // 1 Byte : 3, 2 Bytes : 4, 4 Bytes : 5, 8 bytes : 6
 
         /// <summary>
         /// The number of bits required to express the power of 2 sized block of bits, eg: a block of 8 bits needs
         /// 3 bits to express the number range 0..7m so the mask if 0x7 (0b111), etc
         /// </summary>
-        public const int kBitsRemainingInStorageBlockMask = 0x3f; // 1 Byte : $7, 2 bytes : $f, 4 bytes : $1f, 8 bytes : $3f
+        private const int kBitsRemainingInStorageBlockMask = 0x3f; // 1 Byte : $7, 2 bytes : $f, 4 bytes : $1f, 8 bytes : $3f
 
         /// <summary>
         /// Storage is the memory allocated to storing the bit field array.
@@ -52,7 +52,6 @@ namespace VSS.VisionLink.Raptor.Compression
         private uint StreamWriteBitPos;
 
         // FNumBits indicates the total number of bits stored in the bit field array
-        private uint FNumBits;
 
         /// <summary>
         /// Allocates a block of memory large enough to store the number of bits required (See FNumBits * MemorySize())
@@ -82,13 +81,13 @@ namespace VSS.VisionLink.Raptor.Compression
         /// <summary>
         /// The total number of bits required to be stored in the bit field array
         /// </summary>
-        public uint NumBits { get { return FNumBits; } }
+        public uint NumBits { get; private set; }
 
         /// <summary>
         /// MemorySize returns the total number of bytes required to store the information in the bit field array
         /// </summary>
         /// <returns></returns>
-        public uint MemorySize() => (FNumBits & 0x7) != 0 ? (FNumBits >> 3) + 1 : FNumBits >> 3;
+        public uint MemorySize() => (NumBits & 0x7) != 0 ? (NumBits >> 3) + 1 : NumBits >> 3;
 
         /// <summary>
         /// Determines the number of elements required in the storage array depending on the 'read/write block size'
@@ -105,11 +104,11 @@ namespace VSS.VisionLink.Raptor.Compression
         /// <summary>
         /// Initialise the bit field array ready to store NumRecords each requiring BitsPerRecord storage
         /// </summary>
-        /// <param name="BitsPerRecord"></param>
-        /// <param name="NumRecords"></param>
+        /// <param name="bitsPerRecord"></param>
+        /// <param name="numRecords"></param>
         public void Initialise(int bitsPerRecord, int numRecords)
         {
-            FNumBits = (uint)((long)bitsPerRecord * numRecords);
+            NumBits = (uint)((long)bitsPerRecord * numRecords);
 
             AllocateBuffer();
         }
@@ -120,11 +119,11 @@ namespace VSS.VisionLink.Raptor.Compression
         /// <param name="RecordsArray"></param>
         public void Initialise(BitFieldArrayRecordsDescriptor[] RecordsArray)
         {
-            FNumBits = 0;
+            NumBits = 0;
 
             foreach (BitFieldArrayRecordsDescriptor descriptor in RecordsArray)
             {
-                FNumBits += (uint)((long)(descriptor.NumRecords) * descriptor.BitsPerRecord);
+                NumBits += (uint)((long)(descriptor.NumRecords) * descriptor.BitsPerRecord);
             }
 
             AllocateBuffer();
@@ -136,15 +135,15 @@ namespace VSS.VisionLink.Raptor.Compression
         /// <param name="writer"></param>
         public void Write(BinaryWriter writer)
         {
-            writer.Write(FNumBits);
+            writer.Write(NumBits);
 
-            if (FNumBits == 0)
+            if (NumBits == 0)
             {
                 return;
             }
 
-            byte[] buffer = new byte[Storage.Count() * sizeof(ulong)];
-            Buffer.BlockCopy(Storage, 0, buffer, 0, Storage.Count() * sizeof(ulong));
+            byte[] buffer = new byte[Storage.Length * sizeof(ulong)];
+            Buffer.BlockCopy(Storage, 0, buffer, 0, Storage.Length * sizeof(ulong));
             writer.Write(buffer);
 
             /*
@@ -162,18 +161,18 @@ namespace VSS.VisionLink.Raptor.Compression
         public void Read(BinaryReader reader)
         {
             Storage = null;
-            FNumBits = reader.ReadUInt32();
+            NumBits = reader.ReadUInt32();
 
-            if (FNumBits == 0)
+            if (NumBits == 0)
             {
                 return;
             }
 
             Storage = NewStorage();
 
-            byte[] buffer = new byte[Storage.Count() * sizeof(ulong)];
-            reader.Read(buffer, 0, buffer.Count());
-            Buffer.BlockCopy(buffer, 0, Storage, 0, buffer.Count());
+            byte[] buffer = new byte[Storage.Length * sizeof(ulong)];
+            reader.Read(buffer, 0, buffer.Length);
+            Buffer.BlockCopy(buffer, 0, Storage, 0, buffer.Length);
 
             /*
             for (int i = 0; i < NumStorageElements(); i++)
@@ -326,7 +325,7 @@ namespace VSS.VisionLink.Raptor.Compression
 
         public void StreamWriteEnd()
         {
-            Debug.Assert(StreamWriteBitPos == FNumBits, String.Format("BitFieldArray.StreamWriteEnd: Stream bit position is not after last bit in Storage (FStreamWriteBitPos={0}, FNumBits={1})", StreamWriteBitPos, NumBits));
+            Debug.Assert(StreamWriteBitPos == NumBits, String.Format("BitFieldArray.StreamWriteEnd: Stream bit position is not after last bit in Storage (FStreamWriteBitPos={0}, FNumBits={1})", StreamWriteBitPos, NumBits));
         }
 
         /// <summary>
@@ -368,7 +367,7 @@ namespace VSS.VisionLink.Raptor.Compression
                 return 0;
             }
 
-            if (ABitLocation + ValueBits > FNumBits)
+            if (ABitLocation + ValueBits > NumBits)
             {
                 // TODO readd when logging available
                 // SIGLogMessage.PublishNoODS(Nil, Format('BitFieldArray: Read request at %d of %d bits will read past end of data at %d', [ABitLocation, ValueBits, FNumBits]), slmcAssert);
@@ -453,7 +452,7 @@ namespace VSS.VisionLink.Raptor.Compression
                 return 0;
             }
 
-            if ((ABitLocation + AValueBits) > FNumBits)
+            if ((ABitLocation + AValueBits) > NumBits)
             {
                 // TODO read when logging available
                 // SIGLogMessage.PublishNoODS(Nil, Format('BitFieldArray: Read request at %d of %d bits will read past end of data at %d', [ABitLocation, AValueBits, FNumBits]), slmcAssert);

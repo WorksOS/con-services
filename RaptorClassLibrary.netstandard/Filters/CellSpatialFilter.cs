@@ -161,8 +161,8 @@ namespace VSS.VisionLink.Raptor.Filters
 
         /// <summary>
         /// Clears all filter state to a state that will pass (accept) all cells
-        public void Clear()
         /// </summary>
+        public void Clear()
         {
             ClearPositional();
             ClearSpatial();

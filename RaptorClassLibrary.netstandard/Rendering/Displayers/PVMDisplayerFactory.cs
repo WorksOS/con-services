@@ -21,7 +21,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
                 case DisplayMode.CutFill: return new PVMDisplayer_CutFill();
                     
                 default:
-                    Debug.Assert(false, String.Format("Unknown display mode to create a displayer for: {0}", Mode));
+                    Debug.Assert(false, $"Unknown display mode to create a displayer for: {Mode}");
                     return null;
             }
 

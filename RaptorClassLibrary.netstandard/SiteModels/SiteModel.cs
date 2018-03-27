@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
-using VSS.VisionLink.Raptor.GridFabric.Events;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.Services.Surfaces;
@@ -463,14 +460,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
         {
             if (existanceMap == null)
             {
-                if (LoadProductionDataExistanceMapFromStorage() == FileSystemErrorStatus.OK)
-                {
-                    return existanceMap;
-                }
-                else
-                {
-                    return null;
-                }
+                return LoadProductionDataExistanceMapFromStorage() == FileSystemErrorStatus.OK ? existanceMap : null;
             }
 
             return existanceMap;
