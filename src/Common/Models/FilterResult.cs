@@ -297,7 +297,32 @@ namespace VSS.Productivity3D.Common.Models
     }
 
     /// <summary>
-    /// Create instance of Filter
+    /// Static constructor for use with the CCATileController class.
+    /// </summary>
+    public static FilterResult CreateFilterForCCATileRequest(
+        DateTime? startUtc,
+        DateTime? endUtc,
+        List<long> assetIDs,
+        List<WGSPoint> polygonLL,
+        FilterLayerMethod? layerType,
+        int? layerNumber,
+        List<MachineDetails> contributingMachines)
+    {
+      return new FilterResult
+      {
+        StartUtc = startUtc,
+        EndUtc = endUtc,
+        AssetIDs = assetIDs,
+        PolygonLL = polygonLL,
+        LayerType = layerType,
+        LayerNumber = layerNumber,
+        ContributingMachines = contributingMachines,
+      };
+    }
+
+    // TODO (Aaron) Refactor the constructors for this object. The following is only used for unit testing.
+    /// <summary>
+    /// Static constructor.
     /// </summary>
     public static FilterResult CreateFilter(
         long? id,
@@ -310,7 +335,7 @@ namespace VSS.Productivity3D.Common.Models
         bool? vibeStateOn,
         bool? compactorDataOnly,
         ElevationType? elevationType,
-        List<WGSPoint> polygonLl,
+        List<WGSPoint> polygonLL,
         List<Point> polygonGrid,
         bool? forwardDirection,
         DesignDescriptor alignmentFile,
@@ -347,7 +372,7 @@ namespace VSS.Productivity3D.Common.Models
         VibeStateOn = vibeStateOn,
         CompactorDataOnly = compactorDataOnly,
         ElevationType = elevationType,
-        PolygonLL = polygonLl,
+        PolygonLL = polygonLL,
         PolygonGrid = polygonGrid,
         ForwardDirection = forwardDirection,
         AlignmentFile = alignmentFile,
@@ -374,7 +399,7 @@ namespace VSS.Productivity3D.Common.Models
     }
 
     /// <summary>
-    /// Create instance of Filter specifically for excluding surveyed surfaces only
+    /// Static constructor specifically for excluding surveyed surfaces only
     /// </summary>
     public static FilterResult CreateFilter(List<long> surveyedSurfaceExclusionList)
     {
@@ -382,6 +407,41 @@ namespace VSS.Productivity3D.Common.Models
       {
         isFilterContainsSSOnly = true,
         SurveyedSurfaceExclusionList = surveyedSurfaceExclusionList
+      };
+    }
+
+    /// <summary>
+    /// Static constructor.
+    /// </summary>
+    public static FilterResult CreateFilter(
+      Filter filter,
+      List<WGSPoint> polygonLL,
+      DesignDescriptor alignmentFile,
+      FilterLayerMethod? layerType,
+      List<long> surveyedSurfaceExclusionList,
+      bool? returnEarliest,
+      DesignDescriptor designFile)
+    {
+      return new FilterResult
+      {
+        StartUtc = filter.StartUtc,
+        EndUtc = filter.EndUtc,
+        OnMachineDesignId = filter.OnMachineDesignId,
+        VibeStateOn = filter.VibeStateOn,
+        ElevationType = filter.ElevationType,
+        PolygonLL = polygonLL,
+        ForwardDirection = filter.ForwardDirection,
+        AlignmentFile = alignmentFile,
+        StartStation = filter.StartStation,
+        EndStation = filter.EndStation,
+        LeftOffset = filter.LeftOffset,
+        RightOffset = filter.RightOffset,
+        LayerType = layerType,
+        LayerNumber = filter.LayerNumber,
+        ContributingMachines = filter.ContributingMachines,
+        SurveyedSurfaceExclusionList = surveyedSurfaceExclusionList,
+        ReturnEarliest = returnEarliest,
+        DesignFile = designFile
       };
     }
 

@@ -333,7 +333,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
             if (filterData.HasData() || haveExcludedIds || designDescriptor != null)
             {
-              filterData = ApplyDateRange(projectUid, filterData);
+              ApplyDateRange(projectUid, filterData);
 
               var polygonPoints = filterData.PolygonLL?.ConvertAll(p =>
                 Common.Models.WGSPoint.CreatePoint(p.Lat.LatDegreesToRadians(), p.Lon.LonDegreesToRadians()));
@@ -348,13 +348,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
                 returnEarliest = true;
               }
 
-              var raptorFilter = FilterResult.CreateFilter(null, null, null, filterData.StartUtc, filterData.EndUtc,
-                filterData.OnMachineDesignId, null, filterData.VibeStateOn, null, filterData.ElevationType,
-                polygonPoints, null, filterData.ForwardDirection,
-                alignmentDescriptor, filterData.StartStation, filterData.EndStation, filterData.LeftOffset, filterData.RightOffset,
-                null,
-                layerMethod, null, null, filterData.LayerNumber, null, filterData.ContributingMachines,
-                excludedIds, returnEarliest, null, null, null, null, null, designDescriptor);
+              var raptorFilter = FilterResult.CreateFilter(filterData, polygonPoints, alignmentDescriptor, layerMethod, excludedIds, returnEarliest, designDescriptor);
+
               Log.LogDebug($"Filter after filter conversion: {JsonConvert.SerializeObject(raptorFilter)}");
               return raptorFilter;
             }
@@ -376,19 +371,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     /// <summary>
-    /// Dynamically set the date range according to the date range type.
-    /// Custom date range is unaltered. Project extents is always null.
-    /// Other types are calculated in the project time zone.
+    /// Dynamically set the date range according to the <see cref="Filter.DateRangeType"/> property.
     /// </summary>
-    /// <param name="projectUid">The project UID</param>
-    /// <param name="filter">The filter containg the date range type</param>
-    /// <returns>The filter with the date range set</returns>
-    private Filter ApplyDateRange(Guid projectUid, Filter filter)
+    /// <remarks>
+    /// Custom date range is unaltered. Project extents is always null. Other types are calculated in the project time zone.
+    /// </remarks>
+    private void ApplyDateRange(Guid projectUid, Filter filter)
     {
       if (!filter.DateRangeType.HasValue || filter.DateRangeType.Value == DateRangeType.Custom)
       {
         Log.LogTrace("Filter provided doesn't have dateRangeType set or it is set to Custom. Returning without setting filter start and end dates.");
-        return filter;
+        return;
       }
 
       var project = (this.User as RaptorPrincipal)?.GetProject(projectUid);
@@ -401,7 +394,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var utcNow = DateTime.UtcNow;
 
-      //Force daterange filters to be null if ProjectExtents is specified
+      // Force date range filters to be null if ProjectExtents is specified.
       DateTime? startUtc = null;
       DateTime? endUtc = null;
 
@@ -411,11 +404,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         endUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, false);
       }
 
-      return Filter.CreateFilter(
-        startUtc, endUtc, filter.DesignUid, filter.ContributingMachines, filter.OnMachineDesignId, filter.ElevationType,
-        filter.VibeStateOn, filter.PolygonLL, filter.ForwardDirection, filter.LayerNumber, filter.PolygonUid, filter.PolygonName,
-        filter.AlignmentUid, filter.StartStation, filter.EndStation, filter.LeftOffset, filter.RightOffset
-      );
+      filter.SetDates(startUtc, endUtc);
     }
 
     /// <summary>
