@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Common;
 using VSS.TRex.Rendering.Abstractions;
+using Microsoft.Extensions.DependencyInjection.Abstractions;
+using RaptorClassLibrary.netstandard.DI;
 
 namespace VSS.VisionLink.Raptor.Rendering.Displayers
 {
@@ -265,7 +267,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
         //DrawCanvas : TCanvas; { The canvas being displayed on, screen or printer }
 
         public IBitmap BitmapCanvas = null;
-        public IRenderingFactory RenderingFactory=null;
+        public IRenderingFactory RenderingFactory = DIContext.RenderingFactory;
         public IGraphics DrawCanvas = null;
 
         public int ClipHeight = 0; // Viewport height 
