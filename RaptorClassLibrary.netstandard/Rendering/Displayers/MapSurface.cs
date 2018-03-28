@@ -6,8 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Common;
 using VSS.TRex.Rendering.Abstractions;
-using Microsoft.Extensions.DependencyInjection.Abstractions;
-using RaptorClassLibrary.netstandard.DI;
+using VSS.VisionLink.Raptor.DI;
 
 namespace VSS.VisionLink.Raptor.Rendering.Displayers
 {
@@ -270,8 +269,8 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
         public IRenderingFactory RenderingFactory = DIContext.RenderingFactory;
         public IGraphics DrawCanvas = null;
 
-        public int ClipHeight = 0; // Viewport height 
-        public int ClipWidth = 0; // Viewport width 
+        public int ClipHeight = 0; // Viewport height
+        public int ClipWidth = 0; // Viewport width
 
         //    { This is the view of the map as seen on the screen }
 
