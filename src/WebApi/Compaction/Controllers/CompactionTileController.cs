@@ -50,22 +50,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IFileRepository fileRepo;
 
     /// <summary>
-    /// Constructor with injected raptor client, loggerFactory and authenticated projects
+    /// Default constructor.
     /// </summary>
-    /// <param name="raptorClient">Raptor client</param>
-    /// <param name="loggerFactory">LoggerFactory</param>
-    /// <param name="configStore">Configuration store</param>
-    /// <param name="fileRepo">Imported file repository</param>
-    /// <param name="fileListProxy">File list proxy</param>
-    /// <param name="projectSettingsProxy">Project settings proxy</param>
-    /// <param name="settingsManager">Compaction settings manager</param>
-    /// <param name="exceptionHandler">Service exception handler</param>
-    /// <param name="filterServiceProxy">Filter service proxy</param>
-    /// <param name="tileService">Map tile generator</param>
     public CompactionTileController(IASNodeClient raptorClient, ILoggerFactory loggerFactory, IConfigurationStore configStore,
-      IFileRepository fileRepo, IFileListProxy fileListProxy,
-      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
-      IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IProductionDataTileService tileService) :
+      IFileRepository fileRepo, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IProductionDataTileService tileService) :
       base(loggerFactory, loggerFactory.CreateLogger<CompactionTileController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;

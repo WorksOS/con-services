@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
@@ -81,10 +83,19 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     protected long GetLegacyProjectId(Guid projectUid) => ((RaptorPrincipal)this.User).GetLegacyProjectId(projectUid);
 
     /// <summary>
+    /// Gets the memory cache of previously fetched, and valid, <see cref="FilterResult"/> objects
+    /// </summary>
+    private IMemoryCache FilterCache => HttpContext.RequestServices.GetService<IMemoryCache>();
+
+    private readonly MemoryCacheEntryOptions filterCacheOptions = new MemoryCacheEntryOptions
+    {
+      SlidingExpiration = TimeSpan.FromDays(3)
+    };
+
+    /// <summary>
     /// Default constructor.
     /// </summary>
-    protected BaseController(ILoggerFactory loggerFactory, ILogger log, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore, IFileListProxy fileListProxy,
-      IProjectSettingsProxy projectSettingsProxy, IFilterServiceProxy filterServiceProxy, ICompactionSettingsManager settingsManager)
+    protected BaseController(ILoggerFactory loggerFactory, ILogger log, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, IFilterServiceProxy filterServiceProxy, ICompactionSettingsManager settingsManager)
     {
       this.LoggerFactory = loggerFactory;
       this.Log = log;
@@ -109,7 +120,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       throw new ArgumentException("Incorrect UserId in request context principal.");
     }
-
 
     /// <summary>
     /// With the service exception try execute.
@@ -140,7 +150,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     /// <summary>
-    /// Asynch form of WithServiceExceptionTryExecute
+    /// Async form of WithServiceExceptionTryExecute
     /// </summary>
     protected async Task<TResult> WithServiceExceptionTryExecuteAsync<TResult>(Func<Task<TResult>> action) where TResult : ContractExecutionResult
     {
@@ -303,11 +313,21 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     /// <summary>
-    /// Creates an instance of the Filter class and populate it with data.
+    /// Creates an instance of the <see cref="FilterResult"/> class and populates it with data from the <see cref="Filter"/> model class.
     /// </summary>
-    /// <returns>An instance of the Filter class.</returns>
+    /// <returns>An instance of the <see cref="FilterResult"/> class.</returns>
     protected async Task<FilterResult> GetCompactionFilter(Guid projectUid, Guid? filterUid)
     {
+      // Filter models are immutable except for their Name.
+      // This service doesn't consider the Name in any of it's operations so we don't mind if our 
+      // cached object is out of date in this regard.
+      if (filterUid.HasValue && this.FilterCache.TryGetValue(filterUid, out FilterResult cachedFilter))
+      {
+        ApplyDateRange(projectUid, cachedFilter);
+
+        return cachedFilter;
+      }
+
       var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid);
       bool haveExcludedIds = excludedIds != null && excludedIds.Count > 0;
       DesignDescriptor designDescriptor = null;
@@ -351,6 +371,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
               var raptorFilter = FilterResult.CreateFilter(filterData, polygonPoints, alignmentDescriptor, layerMethod, excludedIds, returnEarliest, designDescriptor);
 
               Log.LogDebug($"Filter after filter conversion: {JsonConvert.SerializeObject(raptorFilter)}");
+
+              FilterCache.Set(filterUid, raptorFilter, filterCacheOptions);
+
               return raptorFilter;
             }
           }
@@ -371,12 +394,43 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     /// <summary>
-    /// Dynamically set the date range according to the <see cref="Filter.DateRangeType"/> property.
+    /// Dynamically set the date range according to the<see cref= "Filter.DateRangeType" /> property.
     /// </summary>
     /// <remarks>
-    /// Custom date range is unaltered. Project extents is always null. Other types are calculated in the project time zone.
+    /// Custom date range is unaltered.Project extents is always null. Other types are calculated in the project time zone.
     /// </remarks>
     private void ApplyDateRange(Guid projectUid, Filter filter)
+    {
+      if (!filter.DateRangeType.HasValue || filter.DateRangeType.Value == DateRangeType.Custom)
+      {
+        Log.LogTrace("Filter provided doesn't have dateRangeType set or it is set to Custom. Returning without setting filter start and end dates.");
+        return;
+      }
+
+      var project = (this.User as RaptorPrincipal)?.GetProject(projectUid);
+      if (project == null)
+      {
+        throw new ServiceException(
+          HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to retrieve project."));
+      }
+
+      var utcNow = DateTime.UtcNow;
+
+      // Force date range filters to be null if ProjectExtents is specified.
+      DateTime? startUtc = null;
+      DateTime? endUtc = null;
+
+      if (filter.DateRangeType.Value != DateRangeType.ProjectExtents)
+      {
+        startUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, true);
+        endUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, false);
+      }
+
+      filter.SetDates(startUtc, endUtc);
+    }
+
+    private void ApplyDateRange(Guid projectUid, FilterResult filter)
     {
       if (!filter.DateRangeType.HasValue || filter.DateRangeType.Value == DateRangeType.Custom)
       {

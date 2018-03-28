@@ -45,18 +45,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IProductionDataRequestFactory requestFactory;
 
     /// <summary>
-    /// Constructor with injection
+    /// Default constructor.
     /// </summary>
-    /// <param name="raptorClient">Raptor client</param>
-    /// <param name="loggerFactory">LoggerFactory</param>
-    /// <param name="configStore">Configuration store</param>
-    /// <param name="elevProxy">Elevation extents proxy</param>
-    /// <param name="fileListProxy">File list proxy</param>
-    /// <param name="projectSettingsProxy">Project settings proxy</param>
-    /// <param name="settingsManager">Compaction settings manager</param>
-    /// <param name="exceptionHandler">Service exception handler</param>
-    /// <param name="filterServiceProxy">Filter service proxy</param>
-    /// <param name="productionDataRequestFactory"></param>
     public CompactionElevationController(IASNodeClient raptorClient, ILoggerFactory loggerFactory, IConfigurationStore configStore,
       IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy,
       ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, 

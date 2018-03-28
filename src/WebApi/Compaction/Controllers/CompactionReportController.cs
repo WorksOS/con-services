@@ -44,19 +44,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    /// <param name="raptorClient">The raptor client</param>
-    /// <param name="loggerFactory">The loggerFactory.</param>
-    /// <param name="exceptionHandler">The exception handler.</param>
-    /// <param name="configStore">Configuration store.</param>
-    /// <param name="fileListProxy">The file list proxy.</param>
-    /// <param name="projectSettingsProxy">The project settings proxy.</param>
-    /// <param name="filterServiceProxy">The filter service proxy.</param>
-    /// <param name="settingsManager">The compaction settings manager.</param>
-    /// <param name="requestFactory">The request factory.</param>
-    /// <param name="prefProxy">The User Preferences proxy.</param>
-    public CompactionReportController(IASNodeClient raptorClient, ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler, IConfigurationStore configStore,
-      IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, IFilterServiceProxy filterServiceProxy, ICompactionSettingsManager settingsManager,
-      IProductionDataRequestFactory requestFactory, IPreferenceProxy prefProxy) :
+    public CompactionReportController(IASNodeClient raptorClient, ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler, IConfigurationStore configStore, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, IFilterServiceProxy filterServiceProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory, IPreferenceProxy prefProxy) :
       base(loggerFactory, loggerFactory.CreateLogger<CompactionReportController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;

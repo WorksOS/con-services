@@ -60,19 +60,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IMapTileGenerator tileGenerator;
 
     /// <summary>
-    /// Constructor with injection
+    /// Default constructor.
     /// </summary>
-    /// <param name="loggerFactory">LoggerFactory</param>
-    /// <param name="configStore">Configuration store</param>
-    /// <param name="geofenceProxy">Geofence proxy</param>
-    /// <param name="fileListProxy">File list proxy</param>
-    /// <param name="projectSettingsProxy">Project settings proxy</param>
-    /// <param name="settingsManager">Compaction settings manager</param>
-    /// <param name="exceptionHandler">Service exception handler</param>
-    /// <param name="filterServiceProxy">Filter service proxy</param>
-    /// <param name="tileGenerator">Tile generator</param>
-    /// <param name="prefProxy">User preferences proxy</param>
-    /// <param name="requestFactory">The request factory.</param>
     public CompactionReportTileController(ILoggerFactory loggerFactory, IConfigurationStore configStore, IGeofenceProxy geofenceProxy,
       IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
       IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IMapTileGenerator tileGenerator,

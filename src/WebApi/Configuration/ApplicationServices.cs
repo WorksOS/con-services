@@ -69,8 +69,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<ISchedulerProxy, SchedulerProxy>();
       services.AddScoped<ITransferProxy, TransferProxy>();
       services.AddSingleton<IHostedService, AddFileProcessingService>();
-      services.AddSingleton<IEnqueueItem<ProjectFileDescriptor>>(provider =>
-        (IEnqueueItem<ProjectFileDescriptor>)provider.GetService<IHostedService>());
+      services.AddSingleton(provider => (IEnqueueItem<ProjectFileDescriptor>)provider.GetService<IHostedService>());
 
       // Action services
       services.AddSingleton<ISummaryDataHelper, SummaryDataHelper>();

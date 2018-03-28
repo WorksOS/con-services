@@ -31,9 +31,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   public class CompactionSummaryDataController : CompactionDataBaseController
   {
     /// <inheritdoc />
-    public CompactionSummaryDataController(IASNodeClient raptorClient, ILoggerFactory loggerFactory, IConfigurationStore configStore,
-                                           IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
-                                           IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IProductionDataRequestFactory requestFactory)
+    public CompactionSummaryDataController(IASNodeClient raptorClient, ILoggerFactory loggerFactory, IConfigurationStore configStore, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IProductionDataRequestFactory requestFactory)
       : base(raptorClient, loggerFactory, loggerFactory.CreateLogger<CompactionSummaryDataController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager, requestFactory)
     { }
 

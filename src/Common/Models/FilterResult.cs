@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Runtime.Serialization;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -254,6 +255,9 @@ namespace VSS.Productivity3D.Common.Models
 
     public bool IsFilterEmpty => isFilterEmpty();
 
+    [JsonIgnore]
+    public DateRangeType? DateRangeType { get; private set; }
+
     /// <summary>
     /// Default private constructor.
     /// </summary>
@@ -441,7 +445,8 @@ namespace VSS.Productivity3D.Common.Models
         ContributingMachines = filter.ContributingMachines,
         SurveyedSurfaceExclusionList = surveyedSurfaceExclusionList,
         ReturnEarliest = returnEarliest,
-        DesignFile = designFile
+        DesignFile = designFile,
+        DateRangeType = filter.DateRangeType
       };
     }
 
@@ -698,5 +703,11 @@ namespace VSS.Productivity3D.Common.Models
       return !Equals(left, right);
     }
     #endregion
+
+    public void SetDates(DateTime? startUtc, DateTime? endUtc)
+    {
+      this.StartUtc = startUtc;
+      this.EndUtc = endUtc;
+    }
   }
 }
