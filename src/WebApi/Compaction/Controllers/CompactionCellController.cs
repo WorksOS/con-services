@@ -6,6 +6,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Executors;
+using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -85,8 +86,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetProductionDataCellsDatum: " + Request.QueryString);
 
-      const double RADIANS = Math.PI / 180;
-
       var projectId = ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
@@ -96,7 +95,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       CellDatumRequest request = CellDatumRequest.CreateCellDatumRequest(
         projectId, 
         displayMode,
-        WGSPoint.CreatePoint(lat * RADIANS, lon * RADIANS), 
+        WGSPoint.CreatePoint(lat.LatDegreesToRadians(), lon.LonDegreesToRadians()), 
         null, 
         filter, 
         filter?.Id ?? -1, 

@@ -23,8 +23,15 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
     protected override bool GetCellDatumData(CellDatumRequest request, out TCellProductionData data)
     {
+      if (request.llPoint == null)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+          "No WGS84 coordinates provided"));
+      }
+
       // Gett grid coordinates...
       TCoordPointList pointList = GetGridCoordinates(request.projectId ?? -1, request.llPoint);
+
 
       _northing = pointList.Points.Coords[0].Y;
       _easting = pointList.Points.Coords[0].X;
@@ -34,13 +41,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
     protected override CellDatumResponse ConvertCellDatumResult(TCellProductionData result/*, CellDatumRequest request*/)
     {
-/*
-      // Gett grid coordinates...
-      TCoordPointList pointList = GetGridCoordinates(request.projectId ?? -1, request.llPoint);
-   
-      var northing = pointList.Points.Coords[0].Y;
-      var easting = pointList.Points.Coords[0].X;
-*/
       return CompactionCellDatumResult.CreateCompactionCellDatumResult(
         RaptorConverters.convertDisplayMode((TICDisplayMode)result.DisplayMode),
         result.ReturnCode,
@@ -65,7 +65,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       if (code != TCoordReturnCode.nercNoError || pointList.Points.Coords == null || pointList.Points.Coords.Length == 0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-          $"On Cell Datum request. Failed to process coordinate conversion request with error: {ContractExecutionStates.FirstNameWithOffset((int) code)}."));
+          "On Cell Datum request. Failed to process coordinate conversion request."));
       }
 
       return pointList;
