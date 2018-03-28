@@ -101,7 +101,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
 
       }
 //      var boundary = WGS84Fence.CreateWGS84Fence(RaptorConverters.geometryToPoints(projectDescr.projectGeofenceWKT).ToArray());
-      TagFileRequest tfRequest = TagFileRequest.CreateTagFile(request.fileName, request.data, projectId, null /*boundary*/, -1, false, false);
+      TagFileRequest tfRequest = TagFileRequest.CreateTagFile(request.fileName, request.data, projectId, null /*boundary*/, -1, false, false,request.OrgID);
       tfRequest.Validate();
       return RequestExecutorContainerFactory.Build<TagFileExecutor>(logger, raptorClient, tagProcessor).Process(tfRequest);
     }
