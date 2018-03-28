@@ -17,6 +17,7 @@ using VSS.VisionLink.Analytics.Operations;
 using VSS.VisionLink.Raptor;
 using VSS.VisionLink.Raptor.Analytics.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Analytics.Models;
+using VSS.VisionLink.Raptor.Designs;
 using VSS.VisionLink.Raptor.Designs.Storage;
 using VSS.VisionLink.Raptor.Executors;
 using VSS.VisionLink.Raptor.Filters;
@@ -26,6 +27,8 @@ using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Events;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.GridFabric.Queues;
+using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
+using VSS.VisionLink.Raptor.Rendering.GridFabric.Responses;
 using VSS.VisionLink.Raptor.Rendering.Servers.Client;
 using VSS.VisionLink.Raptor.Servers.Client;
 using VSS.VisionLink.Raptor.Services.Designs;
@@ -96,8 +99,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                     Fence = new Fence(extents)
                 };
 
-                //TODO Fix it with DI
-                return null; /*tileRenderServer.RenderTile(new TileRenderRequestArgument
+                TileRenderResponse response = tileRenderServer.RenderTile(new TileRenderRequestArgument
                 (ID(),
                  displayMode,
                  extents,
@@ -107,7 +109,9 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                  new CombinedFilter(AttributeFilter, SpatialFilter), // Filter1
                  null, // filter 2
                  (cmbDesigns.Items.Count == 0) ? long.MinValue : (cmbDesigns.SelectedValue as Design).ID// DesignDescriptor
-                ));*/
+                ));
+
+                return (Bitmap)(response.Bitmap.GetBitmap());
             }
             catch (Exception E)
             {
@@ -644,7 +648,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             }
             catch (Exception E)
             {
-                MessageBox.Show(String.Format("Exception: {0}", E));
+                MessageBox.Show($@"Exception: {E}");
                 return null;
             }
         }
@@ -747,7 +751,8 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
         private void button6_Click(object sender, EventArgs e)
         {
-            // Tests the time taken to perform 100,000 full TTM patch requests for a test design 
+            // Tests the time taken to perform 10,000 full TTM patch requests for a test design, both locally, and by accessing a 
+            // remote DesignElevation service
 
             TTMDesign design = new TTMDesign(SubGridTree.DefaultCellSize);
             design.LoadFromFile(@"C:\Temp\Bug36372.ttm");
@@ -756,6 +761,17 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
 
             Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            for (int i = 0; i < numPatches; i++)
+            {
+                bool result = design.InterpolateHeights(Patch, 247500.0, 193350.0, SubGridTree.DefaultCellSize, 0);
+            }
+
+            MessageBox.Show($"{numPatches} patches requested in {sw.Elapsed}, {(numPatches * 1024.0) / (sw.ElapsedMilliseconds / 1000.0)} per second");
+
+            Design ttmDesign = new Design(-1, new DesignDescriptor(-1, "", "", @"C:\Temp\", "Bug36372.ttm", 0.0), extents);
+            sw.Reset();
             sw.Start();
 
             for (int i = 0; i < numPatches; i++)

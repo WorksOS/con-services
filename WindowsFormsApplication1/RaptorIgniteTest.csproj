@@ -129,6 +129,10 @@
       <Project>{F1D135BE-638E-4E1C-9D8B-06F2A618C2F9}</Project>
       <Name>VSS.TRex.Rendering.Abstractions</Name>
     </ProjectReference>
+    <ProjectReference Include="..\VSS.TRex.Rendering.Implementations.Framework\VSS.TRex.Rendering.Implementations.Framework.csproj">
+      <Project>{663cdd68-0934-4ccb-b0ac-a47414c6b5db}</Project>
+      <Name>VSS.TRex.Rendering.Implementations.Framework</Name>
+    </ProjectReference>
     <ProjectReference Include="..\VSS.Velociraptor.Geometry.netstandard\VSS.Velociraptor.Geometry.netstandard.csproj">
       <Project>{bac0b22f-b4fd-406a-9196-2e864416ef4e}</Project>
       <Name>VSS.Velociraptor.Geometry.netstandard</Name>
