@@ -4,7 +4,7 @@ using System.Text;
 using VSS.TRex.Rendering.Abstractions;
 using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
 
-namespace RaptorClassLibrary.netstandard.Rendering.GridFabric.Responses
+namespace VSS.VisionLink.Raptor.Rendering.GridFabric.Responses
 {
     /// <summary>
     /// Contains the response bitmap for a tile request. Supports compositing of another bitmap with this one

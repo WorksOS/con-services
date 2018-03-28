@@ -53,10 +53,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tools", "tools\tools.csproj
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{65F8F75F-688E-4C58-99BE-6BEB7EAC8C01}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.TRex.Rendering.Implementations.Framework", "VSS.TRex.Rendering.Implementations.Framework\VSS.TRex.Rendering.Implementations.Framework.csproj", "{663CDD68-0934-4CCB-B0AC-A47414C6B5DB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "framework", "framework", "{93A4E212-50CA-4A87-9F58-00113D35E036}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "rendering", "rendering", "{318EDF61-9C6B-4FE1-B2D5-62CB105D4A02}"
+EndProject
 Global
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
@@ -232,6 +235,14 @@ Global
 		{CCB88D68-827C-436D-9422-0C3FED3649C2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CCB88D68-827C-436D-9422-0C3FED3649C2}.Release|x64.ActiveCfg = Release|Any CPU
 		{CCB88D68-827C-436D-9422-0C3FED3649C2}.Release|x64.Build.0 = Release|Any CPU
+		{663CDD68-0934-4CCB-B0AC-A47414C6B5DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{663CDD68-0934-4CCB-B0AC-A47414C6B5DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{663CDD68-0934-4CCB-B0AC-A47414C6B5DB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{663CDD68-0934-4CCB-B0AC-A47414C6B5DB}.Debug|x64.Build.0 = Debug|Any CPU
+		{663CDD68-0934-4CCB-B0AC-A47414C6B5DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{663CDD68-0934-4CCB-B0AC-A47414C6B5DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{663CDD68-0934-4CCB-B0AC-A47414C6B5DB}.Release|x64.ActiveCfg = Release|Any CPU
+		{663CDD68-0934-4CCB-B0AC-A47414C6B5DB}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -252,9 +263,14 @@ Global
 		{00400CF0-8011-4B1E-8AC6-2A752A79F527} = {34164EB1-38C2-4301-AEF3-83E3A0DFA8F3}
 		{CCB88D68-827C-436D-9422-0C3FED3649C2} = {65F8F75F-688E-4C58-99BE-6BEB7EAC8C01}
 		{65F8F75F-688E-4C58-99BE-6BEB7EAC8C01} = {60739A56-DAB5-4BDD-B54E-1ACA0FF82092}
+		{663CDD68-0934-4CCB-B0AC-A47414C6B5DB} = {318EDF61-9C6B-4FE1-B2D5-62CB105D4A02}
+		{318EDF61-9C6B-4FE1-B2D5-62CB105D4A02} = {93A4E212-50CA-4A87-9F58-00113D35E036}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C2E7378F-4D70-4EA4-8A6C-A96934CBABD8}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true

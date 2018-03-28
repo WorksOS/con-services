@@ -11,7 +11,7 @@ using VSS.VisionLink.Raptor.Rendering.Executors;
 using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Servers;
 using VSS.TRex.Rendering.Abstractions;
-using RaptorClassLibrary.netstandard.Rendering.GridFabric.Responses;
+using VSS.VisionLink.Raptor.Rendering.GridFabric.Responses;
 
 namespace VSS.VisionLink.Raptor.Rendering.GridFabric.ComputeFuncs
 {

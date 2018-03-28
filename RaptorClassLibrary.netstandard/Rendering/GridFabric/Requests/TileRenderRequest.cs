@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Requests;
 using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Rendering.GridFabric.ComputeFuncs;
-using RaptorClassLibrary.netstandard.Rendering.GridFabric.Responses;
+using VSS.VisionLink.Raptor.Rendering.GridFabric.Responses;
 
 namespace VSS.VisionLink.Raptor.Rendering.GridFabric.Requests
 {

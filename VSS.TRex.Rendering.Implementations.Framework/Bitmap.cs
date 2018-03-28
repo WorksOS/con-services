@@ -2,7 +2,7 @@
 using CC = System.Drawing;
 using VSS.TRex.Rendering.Abstractions;
 
-namespace VSS.TRex.Rendering.Implementations.Core2
+namespace VSS.TRex.Rendering.Implementations.Framework
 {
   public class Bitmap : IBitmap, IDisposable
   {

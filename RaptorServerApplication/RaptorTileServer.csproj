@@ -82,6 +82,12 @@
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.2.0.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.2.0.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -96,6 +102,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DIImplementation.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -151,6 +158,14 @@
     <ProjectReference Include="..\RaptorClassLibrary.netstandard\RaptorClassLibrary.netstandard.csproj">
       <Project>{40db7cf3-5817-45a5-9f90-29baa80e2c7a}</Project>
       <Name>RaptorClassLibrary.netstandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSS.TRex.Rendering.Abstractions\VSS.TRex.Rendering.Abstractions.csproj">
+      <Project>{f1d135be-638e-4e1c-9d8b-06f2a618c2f9}</Project>
+      <Name>VSS.TRex.Rendering.Abstractions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSS.TRex.Rendering.Implementations.Framework\VSS.TRex.Rendering.Implementations.Framework.csproj">
+      <Project>{663cdd68-0934-4ccb-b0ac-a47414c6b5db}</Project>
+      <Name>VSS.TRex.Rendering.Implementations.Framework</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

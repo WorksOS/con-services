@@ -4,7 +4,7 @@ using VSS.VisionLink.Raptor.Rendering.GridFabric.Requests;
 using VSS.VisionLink.Raptor.Servers;
 using VSS.VisionLink.Raptor.Servers.Client;
 using VSS.TRex.Rendering.Abstractions;
-using RaptorClassLibrary.netstandard.Rendering.GridFabric.Responses;
+using VSS.VisionLink.Raptor.Rendering.GridFabric.Responses;
 
 namespace VSS.VisionLink.Raptor.Rendering.Servers.Client
 {
