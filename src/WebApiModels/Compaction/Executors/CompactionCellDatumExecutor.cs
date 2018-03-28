@@ -18,21 +18,36 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
   public class CompactionCellDatumExecutor : CellDatumExecutor
   {
-    protected override CellDatumResponse ConvertCellDatumResult(TCellProductionData result, CellDatumRequest request)
+    private double _northing;
+    private double _easting;
+
+    protected override bool GetCellDatumData(CellDatumRequest request, out TCellProductionData data)
     {
+      // Gett grid coordinates...
+      TCoordPointList pointList = GetGridCoordinates(request.projectId ?? -1, request.llPoint);
+
+      _northing = pointList.Points.Coords[0].Y;
+      _easting = pointList.Points.Coords[0].X;
+
+      return base.GetCellDatumData(request, out data);
+    }
+
+    protected override CellDatumResponse ConvertCellDatumResult(TCellProductionData result/*, CellDatumRequest request*/)
+    {
+/*
       // Gett grid coordinates...
       TCoordPointList pointList = GetGridCoordinates(request.projectId ?? -1, request.llPoint);
    
       var northing = pointList.Points.Coords[0].Y;
       var easting = pointList.Points.Coords[0].X;
-
+*/
       return CompactionCellDatumResult.CreateCompactionCellDatumResult(
         RaptorConverters.convertDisplayMode((TICDisplayMode)result.DisplayMode),
         result.ReturnCode,
         result.Value,
         result.TimeStampUTC,
-        northing,
-        easting);
+        _northing,
+        _easting);
     }
 
     private TCoordPointList GetGridCoordinates(long projectId, WGSPoint latLon)
