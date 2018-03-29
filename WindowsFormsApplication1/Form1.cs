@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -40,6 +41,8 @@ using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Volumes;
 using VSS.VisionLink.Raptor.Volumes.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Volumes.GridFabric.Responses;
+using VSS.TRex.Rendering.Implementations.Framework;
+using VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses;
 
 namespace VSS.Raptor.IgnitePOC.TestApp
 {
@@ -70,7 +73,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             }
         }
 
-        private Bitmap PerformRender(DisplayMode displayMode, int width, int height, bool returnEarliestFilteredCellPass, BoundingWorldExtent3D extents)
+        private System.Drawing.Bitmap PerformRender(DisplayMode displayMode, int width, int height, bool returnEarliestFilteredCellPass, BoundingWorldExtent3D extents)
         {
             // Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
             // SiteModel siteModel = RaptorGenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
@@ -99,7 +102,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                     Fence = new Fence(extents)
                 };
 
-                TileRenderResponse response = tileRenderServer.RenderTile(new TileRenderRequestArgument
+                TileRenderResponse_Framework response = tileRenderServer.RenderTile(new TileRenderRequestArgument
                 (ID(),
                  displayMode,
                  extents,
@@ -109,13 +112,13 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                  new CombinedFilter(AttributeFilter, SpatialFilter), // Filter1
                  null, // filter 2
                  (cmbDesigns.Items.Count == 0) ? long.MinValue : (cmbDesigns.SelectedValue as Design).ID// DesignDescriptor
-                ));
+                )) as TileRenderResponse_Framework;
 
-                return (Bitmap)(response.Bitmap.GetBitmap());
+                return response?.TileBitmap;
             }
             catch (Exception E)
             {
-                MessageBox.Show(String.Format("Exception: {0}", E));
+                MessageBox.Show($"Exception: {E}");
                 return null;
             }
         }
@@ -205,10 +208,11 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         {
             fitExtentsToView(pictureBox1.Width, pictureBox1.Height);
 
-            Bitmap bmp = PerformRender((DisplayMode)displayMode.SelectedIndex, pictureBox1.Width, pictureBox1.Height, chkSelectEarliestPass.Checked, extents);
+            System.Drawing.Bitmap bmp = PerformRender((DisplayMode)displayMode.SelectedIndex, pictureBox1.Width, pictureBox1.Height, chkSelectEarliestPass.Checked, extents);
 
             if (bmp != null)
             {
+                bmp.Save(@"C:\temp\renderedtile.bmp", ImageFormat.Bmp);
                 pictureBox1.Image = bmp;
                 pictureBox1.Show();
             }
@@ -216,9 +220,9 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
         private void DoUpdateLabels()
         {
-            lblViewHeight.Text = String.Format("View height: {0:F3}m", extents.SizeY);
-            lblViewWidth.Text = String.Format("View width: {0:F3}m", extents.SizeX);
-            lblCellsPerPixel.Text = String.Format("Cells Per Pixel (X): {0:F3}", (extents.SizeX / pictureBox1.Width) / 0.34);
+            lblViewHeight.Text = $"View height: {extents.SizeY:F3}m";
+            lblViewWidth.Text = $"View width: {extents.SizeX:F3}m";
+            lblCellsPerPixel.Text = $"Cells Per Pixel (X): {(extents.SizeX / pictureBox1.Width) / 0.34:F3}";
         }
 
         private void DoUpdateDesignsAndSurveyedSurfaces()
@@ -345,7 +349,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 // Parallel
                 Parallel.For(0, nImages, x =>
                 {
-                    using (Bitmap b = PerformRender(displayMode, width, height, selectEarliestPass, extents))
+                    using (System.Drawing.Bitmap b = PerformRender(displayMode, width, height, selectEarliestPass, extents))
                     {
                     }
                 });
@@ -360,16 +364,16 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
                 sw.Stop();
 
-                results.Append(String.Format("Run {0}: Images:{1}, Time:{2}\n", i, nImages, sw.Elapsed));
+                results.Append($"Run {i}: Images:{nImages}, Time:{sw.Elapsed}\n");
             }
 
-            MessageBox.Show(String.Format("Results:\n{0}", results.ToString()));
+            MessageBox.Show($"Results:\n{results.ToString()}");
             //MessageBox.Show(String.Format("Images:{0}, Time:{1}", nImages, sw.Elapsed));
         }
 
         private void writeCacheMetrics(StreamWriter writer, ICacheMetrics metrics)
         {
-            writer.WriteLine(String.Format("Number of items in cache: {0}", metrics.Size));
+            writer.WriteLine($"Number of items in cache: {metrics.Size}");
         }
 
         private void writeKeys(string title, StreamWriter writer, ICache<String, byte[]> cache)
@@ -400,7 +404,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             writer.WriteLine();
         }
 
-        private void writeKeysSpatial(string title, StreamWriter writer, ICache<SubGridSpatialAffinityKey, byte[]> cache)
+        private void WriteKeysSpatial(string title, StreamWriter writer, ICache<SubGridSpatialAffinityKey, byte[]> cache)
         {
             int count = 0;
 
@@ -424,7 +428,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
             foreach (ICacheEntry<SubGridSpatialAffinityKey, byte[]> cacheEntry in queryCursor)
             {
-                writer.WriteLine(String.Format("{0}:{1}", count++, cacheEntry.Key.ToString()));
+                writer.WriteLine($"{count++}:{cacheEntry.Key.ToString()}");
                 // writeCacheMetrics(writer, cache.GetMetrics());
             }
 
@@ -477,12 +481,12 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                         {
                             writeKeys(RaptorCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<string, Byte[]>(RaptorCaches.ImmutableNonSpatialCacheName()));
                             writeKeys(RaptorCaches.DesignTopologyExistenceMapsCacheName(), writer, ignite.GetCache<string, Byte[]>(RaptorCaches.DesignTopologyExistenceMapsCacheName()));
-                            writeKeysSpatial(RaptorCaches.ImmutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.ImmutableSpatialCacheName()));
+                            WriteKeysSpatial(RaptorCaches.ImmutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.ImmutableSpatialCacheName()));
                         }
                         if (mutability == StorageMutability.Mutable)
                         {
                             writeKeys(RaptorCaches.MutableNonSpatialCacheName(), writer, ignite.GetCache<string, Byte[]>(RaptorCaches.MutableNonSpatialCacheName()));
-                            writeKeysSpatial(RaptorCaches.MutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.MutableSpatialCacheName()));
+                            WriteKeysSpatial(RaptorCaches.MutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.MutableSpatialCacheName()));
                         }
                     }
                 }
