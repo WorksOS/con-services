@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.TRex.Rendering.Abstractions;
+using VSS.TRex.Rendering.Abstractions.GridFabric.Factories;
+using VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses;
 
 namespace VSS.TRex.Rendering.Implementations.Framework
 {
@@ -28,6 +30,14 @@ namespace VSS.TRex.Rendering.Implementations.Framework
         public IBrush CreateBrush(System.Drawing.Color color)
         {
             return new Brush(color);
+        }
+
+        public ITileRenderResponse CreateTileRenderResponse(object bitmap)
+        {
+            return new TileRenderResponse_Framework()
+            {
+                TileBitmap = (System.Drawing.Bitmap)bitmap
+            };
         }
     }
 }

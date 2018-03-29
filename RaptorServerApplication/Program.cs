@@ -21,6 +21,10 @@ namespace RaptorServerApplication
                     // Inject the renderer factory that allows tile rendering services access Bitmap etc pltform depenendent constructs
                     collection.AddSingleton<IRenderingFactory>(new RenderingFactory());
 
+//                    collection
+//                        .AddScoped<VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses.
+//                            TileRenderResponse_Framework>();
+
                     // Microsoft.Dependencies.Logging related DI. Currently Trec uses Log4net...
                     // Make a logger factory for when a new logger is required
                     //      ILoggerFactory loggerFactory = new  LoggerFactory();

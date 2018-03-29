@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Common;
 using VSS.TRex.Rendering.Abstractions;
 using VSS.VisionLink.Raptor.DI;
@@ -354,8 +351,8 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
             DrawNonSquareAspectScale = true;
             DrawNonSquareAspectScaleAsVerticalDistanceBar = false;
 
-            IPen DrawCanvasPen = RenderingFactory.CreatePen(Color.Black);
-            IBrush DrawCanvasBrush = RenderingFactory.CreateBrush(Color.Black);
+            DrawCanvasPen = RenderingFactory.CreatePen(Color.Black);
+            DrawCanvasBrush = RenderingFactory.CreateBrush(Color.Black);
 
             BitmapCanvas = RenderingFactory.CreateBitmap(100, 100);
             DrawCanvas = RenderingFactory.CreateGraphics(BitmapCanvas);

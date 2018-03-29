@@ -17,8 +17,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
     /// <typeparam name="TSubGridsRequestArgument"></typeparam>
     /// <typeparam name="TSubGridRequestsResponse"></typeparam>
     public class SubGridPipelineAggregative<TSubGridsRequestArgument, TSubGridRequestsResponse> : SubGridPipelineBase<TSubGridsRequestArgument, TSubGridRequestsResponse, 
-        SubGridRequestsAggregative<TSubGridsRequestArgument, TSubGridRequestsResponse>,
-        SubGridsRequestComputeFuncAggregative<TSubGridsRequestArgument, TSubGridRequestsResponse>>
+        SubGridRequestsAggregative<TSubGridsRequestArgument, TSubGridRequestsResponse>>
         where TSubGridsRequestArgument : SubGridsRequestArgument, new()
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {

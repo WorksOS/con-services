@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\RaptorClassLibrary.netstandard\RaptorClassLibrary.netstandard.csproj" />
     <ProjectReference Include="..\VSS.TRex.Rendering.Abstractions\VSS.TRex.Rendering.Abstractions.csproj" />
   </ItemGroup>
 

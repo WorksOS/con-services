@@ -1,5 +1,4 @@
-﻿using Apache.Ignite.Core;
-using Apache.Ignite.Core.Compute;
+﻿using Apache.Ignite.Core.Compute;
 using log4net;
 using System;
 using System.Drawing;
@@ -11,6 +10,7 @@ using VSS.VisionLink.Raptor.Rendering.Executors;
 using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Servers;
 using VSS.TRex.Rendering.Abstractions;
+using VSS.VisionLink.Raptor.DI;
 using VSS.VisionLink.Raptor.Rendering.GridFabric.Responses;
 
 namespace VSS.VisionLink.Raptor.Rendering.GridFabric.ComputeFuncs
@@ -66,10 +66,7 @@ namespace VSS.VisionLink.Raptor.Rendering.GridFabric.ComputeFuncs
                     Log.Info("Null bitmap returned by executor");
                 }
 
-                return new TileRenderResponse()
-                {
-                    Bitmap = bmp
-                };
+                return DIContext.RenderingFactory.CreateTileRenderResponse(bmp?.GetBitmap()) as TileRenderResponse;
             }
             finally
             {

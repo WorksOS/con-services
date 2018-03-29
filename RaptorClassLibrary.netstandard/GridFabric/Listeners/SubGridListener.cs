@@ -45,7 +45,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Listeners
         /// The memory stream to be used for deserialising message packets when they arrive
         /// </summary>
         [NonSerialized]
-        [ThreadStaticAttribute]
+        [ThreadStatic]
         private static MemoryStream MS = null; //= new MemoryStream();
 
         /// <summary>

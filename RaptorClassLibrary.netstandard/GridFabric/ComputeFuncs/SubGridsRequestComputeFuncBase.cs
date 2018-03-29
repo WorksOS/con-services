@@ -1,6 +1,4 @@
-﻿using Apache.Ignite.Core;
-using Apache.Ignite.Core.Compute;
-using Apache.Ignite.Core.Messaging;
+﻿using Apache.Ignite.Core.Compute;
 using System;
 using System.IO;
 using System.Linq;
@@ -15,11 +13,8 @@ using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.SiteModels;
 using log4net;
 using System.Reflection;
-using Apache.Ignite.Core.Cluster;
 using System.Diagnostics;
-using VSS.VisionLink.Raptor.Analytics.Aggregators;
 using VSS.VisionLink.Raptor.Utilities;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Designs.Storage;
 using VSS.VisionLink.Raptor.Services.Designs;
 using VSS.Velociraptor.DesignProfiling;
@@ -122,7 +117,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         {
             if (SubgridResultArray != null)
             {
-                ClientLeafSubGridFactory.ReturnClientSubGrids(SubgridResultArray, SubgridResultArray.Count());
+                ClientLeafSubGridFactory.ReturnClientSubGrids(SubgridResultArray, SubgridResultArray.Length);
             }
         }
 
@@ -335,8 +330,6 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// <summary>
         /// Transforms the internal aggregation state into the desired response for the request
         /// </summary>
-        /// <param name="results"></param>
-        /// <param name="resultCount"></param>
         /// <returns></returns>
         public abstract TSubGridRequestsResponse AcquireComputationResult();
 
@@ -464,7 +457,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// <returns></returns>
         public TSubGridRequestsResponse Invoke(TSubGridsRequestArgument arg)
         {
-            TSubGridRequestsResponse result = null;
+            TSubGridRequestsResponse result;
 
             Log.Info("In SubGridsRequestComputeFunc.invoke()");
 
@@ -473,14 +466,13 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                 try
                 {
                     Debug.Assert(Range.InRange(spatialSubdivisionDescriptor, 0, numSpatialProcessingDivisions),
-                                 String.Format($"Invalid spatial sub division descriptor (must in be in range {spatialSubdivisionDescriptor} -> [0, {numSpatialProcessingDivisions}])"));
+                                 $"Invalid spatial sub division descriptor (must in be in range {spatialSubdivisionDescriptor} -> [0, {numSpatialProcessingDivisions}])");
 
                     UnpackArgument(arg);
 
-                    long NumSubgridsToBeExamined = (ProdDataMask != null ? ProdDataMask.CountBits() : 0) +
-                                                    (SurveyedSurfaceOnlyMask != null ? SurveyedSurfaceOnlyMask.CountBits() : 0);
+                    long NumSubgridsToBeExamined = ProdDataMask?.CountBits() ?? 0 + SurveyedSurfaceOnlyMask?.CountBits() ?? 0;
 
-                    Log.Info(String.Format("Num subgrids present in request = {0} [All divisions]", NumSubgridsToBeExamined));
+                    Log.Info($"Num subgrids present in request = {NumSubgridsToBeExamined} [All divisions]");
 
                     if (!EstablishRequiredIgniteContext(out SubGridRequestsResponseResult contextEstablishmentResponse))
                     {
@@ -508,7 +500,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
             return result;
         }
 
-        public virtual void DoDispose()
+        protected virtual void DoDispose()
         {
            // No dispose behaviour for base compute function
         }

@@ -1,4 +1,5 @@
 using System.Drawing;
+using VSS.TRex.Rendering.Abstractions.GridFabric.Factories;
 
 namespace VSS.TRex.Rendering.Abstractions
 {
@@ -8,5 +9,7 @@ namespace VSS.TRex.Rendering.Abstractions
     IGraphics CreateGraphics(IBitmap bitmap);
     IPen CreatePen(Color color);
     IBrush CreateBrush(Color color);
+
+    ITileRenderResponse CreateTileRenderResponse(object bmp);
   }
 }

@@ -8,7 +8,6 @@ using VSS.VisionLink.Raptor.Executors.Tasks;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
 using VSS.VisionLink.Raptor.GridFabric.Requests;
 using VSS.VisionLink.Raptor.GridFabric.Responses;
 using VSS.VisionLink.Raptor.GridFabric.Types;
@@ -21,11 +20,10 @@ namespace VSS.VisionLink.Raptor.Pipelines
     /// <summary>
     /// Derived from TSVOICSubGridPipelineBase = class(TObject)
     /// </summary>
-    public class SubGridPipelineBase<TSubGridsRequestArgument, TSubGridRequestsResponse, TSubGridRequestor, TSubGridRequestComputeFunc> : ISubGridPipelineBase
+    public class SubGridPipelineBase<TSubGridsRequestArgument, TSubGridRequestsResponse, TSubGridRequestor> : ISubGridPipelineBase
         where TSubGridsRequestArgument : SubGridsRequestArgument, new()
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
         where TSubGridRequestor : SubGridRequestsBase<TSubGridsRequestArgument, TSubGridRequestsResponse>, new() 
-        where TSubGridRequestComputeFunc : SubGridsRequestComputeFuncBase<TSubGridsRequestArgument, TSubGridRequestsResponse>, new()
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -133,7 +131,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
         /// </summary>
         public void SubgridProcessed()
         {
-            if (System.Threading.Interlocked.Decrement(ref SubgridsRemainingToProcess) <= 0)
+            if (Interlocked.Decrement(ref SubgridsRemainingToProcess) <= 0)
             {
                 AllSubgridsProcessed();
             }
@@ -147,7 +145,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
         /// </summary>
         public void SubgridsProcessed(long numProcessed)
         {
-            if (System.Threading.Interlocked.Add(ref SubgridsRemainingToProcess, numProcessed) <= 0)
+            if (Interlocked.Add(ref SubgridsRemainingToProcess, numProcessed) <= 0)
             {
                 AllSubgridsProcessed();
             }
@@ -218,12 +216,12 @@ namespace VSS.VisionLink.Raptor.Pipelines
             if (analyser.TotalNumberOfSubgridsAnalysed == 0)
             {
                 // There are no subgrids to be requested, leave quietly
-                Log.InfoFormat("No subgrids analysed from request to be submitted to processign engine");
+                Log.InfoFormat("No subgrids analysed from request to be submitted to processing engine");
 
                 return false;
             }
 
-            Log.InfoFormat($"START: Request for {analyser.TotalNumberOfSubgridsAnalysed } subgrids");
+            Log.InfoFormat($"START: Request for {analyser.TotalNumberOfSubgridsAnalysed} subgrids");
 
             // Send the subgrid request mask to the grid fabric layer for processing
             TSubGridRequestor gridFabricRequest = new TSubGridRequestor()

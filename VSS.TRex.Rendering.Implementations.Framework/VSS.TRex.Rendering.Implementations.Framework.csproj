@@ -44,11 +44,16 @@
     <Compile Include="Bitmap.cs" />
     <Compile Include="Brush.cs" />
     <Compile Include="Graphics.cs" />
+    <Compile Include="GridFabric\Responses\TileRenderResponse_Framework.cs" />
     <Compile Include="Pen.cs" />
     <Compile Include="RenderingFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\RaptorClassLibrary.netstandard\RaptorClassLibrary.netstandard.csproj">
+      <Project>{40DB7CF3-5817-45A5-9F90-29BAA80E2C7A}</Project>
+      <Name>RaptorClassLibrary.netstandard</Name>
+    </ProjectReference>
     <ProjectReference Include="..\VSS.TRex.Rendering.Abstractions\VSS.TRex.Rendering.Abstractions.csproj">
       <Project>{F1D135BE-638E-4E1C-9D8B-06F2A618C2F9}</Project>
       <Name>VSS.TRex.Rendering.Abstractions</Name>

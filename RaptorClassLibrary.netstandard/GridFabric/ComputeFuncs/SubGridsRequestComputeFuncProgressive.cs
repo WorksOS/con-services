@@ -3,17 +3,13 @@ using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Messaging;
 using log4net;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.GridFabric.Responses;
 using VSS.VisionLink.Raptor.GridFabric.Types;
-using VSS.VisionLink.Raptor.Servers;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
 namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
@@ -30,13 +26,16 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         [NonSerialized]
-        protected IMessaging rmtMsg = null;
+        private IMessaging rmtMsg;
 
         [NonSerialized]
-        protected string raptorNodeIDAsString = String.Empty;
+        private string raptorNodeIDAsString = String.Empty;
 
         [NonSerialized]
-        private MemoryStream MS = new MemoryStream();
+        private MemoryStream MS;
+
+        [NonSerialized]
+        private byte[] buffer;
 
         /// <summary>
         /// Capture elements from the argument relevant to progressive subgrid requests
@@ -44,7 +43,12 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// <param name="arg"></param>
         protected override void UnpackArgument(SubGridsRequestArgument arg)
         {
-            raptorNodeIDAsString = arg.RaptorNodeID.ToString();
+            base.UnpackArgument(arg);
+
+            raptorNodeIDAsString = arg.RaptorNodeID;
+
+            MS = new MemoryStream();
+            buffer = new byte[10000];
 
             Log.InfoFormat("RaptorNodeIDAsString is {0} in UnpackArgument()", raptorNodeIDAsString);
         }
@@ -90,8 +94,6 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
             using (BinaryWriter writer = new BinaryWriter(MS, Encoding.UTF8, true))
             {
-                byte[] buffer = new byte[10000];
-
                 writer.Write(resultCount);
 
                 for (int i = 0; i < resultCount; i++)
@@ -126,8 +128,6 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// <summary>
         /// Transforms the internal aggregation state into the desired response for the request
         /// </summary>
-        /// <param name="results"></param>
-        /// <param name="resultCount"></param>
         /// <returns></returns>
         public override TSubGridRequestsResponse AcquireComputationResult()
         {
@@ -137,7 +137,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// <summary>
         /// Perform dispose activities necessary for the progressive subgrid request compute function
         /// </summary>
-        public override void DoDispose()
+        protected override void DoDispose()
         {
             // Diospose the memory stream nicely
             MS?.Dispose();
