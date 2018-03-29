@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Security.Principal;
-using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -62,7 +61,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/validatesettings")]
     [HttpGet]
-    public async Task<ContractExecutionResult> ValidateProjectSettings(
+    public ContractExecutionResult ValidateProjectSettings(
       [FromQuery] Guid projectUid,
       [FromQuery] string projectSettings,
       [FromQuery] ProjectSettingsType? settingsType)
@@ -79,7 +78,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>ContractExecutionResult</returns>
     [Route("api/v2/validatesettings")]
     [HttpPost]
-    public async Task<ContractExecutionResult> ValidateProjectSettings([FromBody] ProjectSettingsRequest request)
+    public ContractExecutionResult ValidateProjectSettings([FromBody] ProjectSettingsRequest request)
     {
       log.LogDebug($"UpsertProjectSettings: {JsonConvert.SerializeObject(request)}");
 

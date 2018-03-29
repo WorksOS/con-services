@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -80,7 +79,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectIdVerifier]
     [Route("api/v1/ccatiles/png")]
     [HttpGet]
-    public async Task<FileResult> Get
+    public FileResult Get
     (
       [FromQuery] long projectId,
       [FromQuery] long assetId,
@@ -121,7 +120,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v2/ccatiles/png")]
     [HttpGet]
-    public async Task<FileResult> Get
+    public FileResult Get
     (
       [FromQuery] Guid projectUid,
       [FromQuery] long assetId,

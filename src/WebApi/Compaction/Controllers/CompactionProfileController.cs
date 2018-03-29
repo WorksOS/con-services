@@ -39,15 +39,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    /// <param name="raptorClient">The raptor client.</param>
-    /// <param name="loggerFactory">The loggerFactory.</param>
-    /// <param name="configStore">Configuration store</param>/// 
-    /// <param name="fileListProxy">The file list proxy.</param>
-    /// <param name="projectSettingsProxy">The project settings proxy.</param>
-    /// <param name="settingsManager">Compaction settings manager</param>
-    /// <param name="requestFactory">The request factory.</param>
-    /// <param name="exceptionHandler">The exception handler.</param>
-    /// <param name="filterServiceProxy">Filter service proxy</param>
     public CompactionProfileController(IASNodeClient raptorClient, ILoggerFactory loggerFactory, IConfigurationStore configStore,
       IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
       IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy) :

@@ -29,9 +29,8 @@ namespace VSS.Productivity3D.WebApi
     private IServiceCollection serviceCollection;
 
     /// <summary>
-    /// 
+    /// Default constructor.
     /// </summary>
-    /// <param name="env"></param>
     public Startup(IHostingEnvironment env)
     {
       var builder = new ConfigurationBuilder()
@@ -48,7 +47,7 @@ namespace VSS.Productivity3D.WebApi
     }
 
     /// <summary>
-    /// 
+    /// Gets the default configuration object.
     /// </summary>
     public IConfigurationRoot Configuration { get; }
 

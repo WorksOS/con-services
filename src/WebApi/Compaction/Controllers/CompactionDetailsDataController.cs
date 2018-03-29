@@ -31,10 +31,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   public class CompactionDetailsDataController : CompactionDataBaseController
   {
-    /// <inheritdoc />
-    public CompactionDetailsDataController(IASNodeClient raptorClient, ILoggerFactory loggerFactory, IConfigurationStore configStore,
-                                    IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
-                                    IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IProductionDataRequestFactory requestFactory)
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
+    public CompactionDetailsDataController(IASNodeClient raptorClient, ILoggerFactory loggerFactory, IConfigurationStore configStore, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IProductionDataRequestFactory requestFactory)
       : base(raptorClient, loggerFactory, loggerFactory.CreateLogger<CompactionDetailsDataController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager, requestFactory)
     { }
 

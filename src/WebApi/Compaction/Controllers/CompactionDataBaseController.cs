@@ -113,12 +113,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         if (filter.StartUtc != null && filter.EndUtc != null)
           return projectExtents.startTime <= filter.EndUtc && filter.StartUtc <= projectExtents.endTime;
 
-        //All other cases - rpoceed further
+        //All other cases - proceed further
         return true;
       }
       catch
       {
-        //Some expcetion - do not proceed further
+        //Some exception - do not proceed further
         return false;
       }
     }
