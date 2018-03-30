@@ -16,8 +16,7 @@ namespace VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses
         public override ITileRenderResponse AggregateWith(ITileRenderResponse other)
         {
             // Composite the bitmap held in this response with the bitmap held in 'other'
-
-            //            throw new NotImplementedException("Bitmap compositing not implemented");
+            //  throw new NotImplementedException("Bitmap compositing not implemented");
 
             return null;
         }

@@ -262,12 +262,12 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
         //DisplaySurface : TPaintBox;
         //DrawCanvas : TCanvas; { The canvas being displayed on, screen or printer }
 
-        public IBitmap BitmapCanvas = null;
+        public IBitmap BitmapCanvas;
         public IRenderingFactory RenderingFactory = DIContext.RenderingFactory;
-        public IGraphics DrawCanvas = null;
+        public IGraphics DrawCanvas;
 
-        public int ClipHeight = 0; // Viewport height
-        public int ClipWidth = 0; // Viewport width
+        public int ClipHeight; // Viewport height
+        public int ClipWidth; // Viewport width
 
         //    { This is the view of the map as seen on the screen }
 
@@ -277,12 +277,12 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
         /* All drawing takes place on the offscreen bitmap.This is periodically
           drawn on to the display surface */
 
-        public bool DrawNonSquareAspectScale = false;
-        public bool DrawNonSquareAspectScaleAsVerticalDistanceBar = false;
+        public bool DrawNonSquareAspectScale;
+        public bool DrawNonSquareAspectScaleAsVerticalDistanceBar;
 
         // ScaleBarRHSIndent records how many pixels from the RHS of the view the scale
         // bar should be drawn.
-        public int ScaleBarRHSIndent = 0;
+        public int ScaleBarRHSIndent;
 
         // The following methods with _ prefixes are ghosted versions of the
         // matching canvas methods which are aware of the offscreenbitmap. These
@@ -305,13 +305,13 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
 
         //    property PrintScaleFactor: Float read FPrintScaleFactor;
 
-        public double CenterX { get { return centerX; } }
-        public double CenterY { get { return centerY; } }
+        public double CenterX => centerX;
+        public double CenterY => centerY;
 
         //    Property RePaintCount : LongWord read FRePaintCount;
         //    Property Displayer : TMapDisplayBase read FDisplayer write FDisplayer;
 
-        double PixelSize { get { return XPixelSize; } }
+        double PixelSize => XPixelSize;
         //    property XPixelSize : FLOAT read FXPixelSize;
         //    property YPixelSize : FLOAT read FYPixelSize;
 
@@ -423,19 +423,19 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
         //Procedure ClearZoomlist;
         //Function ViewIsZoomed : Boolean;
 
-        void SetScale(double Scale)
+        void SetScale(double scale)
         {
             /*We are given a scale value of the form 1:n where n = scale.
               We need to calculate a scale value that will convert the range of world
               coordinates that will be displayed on the canvas into the canvas pixel
               coordinates. For the time being we will assume that n represents a distance
               in world units that the X - axis is to represent. */
-            double MinX, MinY, MaxX, MaxY;
 
-            MinX = OriginX;
-            MinY = OriginY;
-            MaxX = OriginX + Scale;
-            MaxY = OriginY + (WidthY / WidthX) * Scale;
+            double MinX = OriginX;
+            double MinY = OriginY;
+            double MaxX = OriginX + scale;
+            double MaxY = OriginY + (WidthY / WidthX) * scale;
+
             FitBoundsToView(ref MinX, ref MinY, ref MaxX, ref MaxY);
             SetWorldBounds(MinX, MinY, MaxX, MaxY, 0);
         }
@@ -473,11 +473,12 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
         //    function GetLimitX : FLOAT;
         //    function GetLimitY : FLOAT;
 
-        public void SetCenter(double CenterX, double CenterY)
+        public void SetCenter(double centerX, double centerY)
         {
-            SetOrigin(CenterX - WidthX / 2, CenterY - WidthY / 2);
+            SetOrigin(centerX - WidthX / 2, centerY - WidthY / 2);
         }
-        public void GetCenter(ref double centerX, ref double centerY)
+
+        public void GetCenter(out double centerX, out double centerY)
         {
             centerX = CenterX;
             centerY = CenterY;
@@ -1031,7 +1032,7 @@ double BorderSize)
 
         public double GetTransformScale() => DQMScaleX;
 
-        public void TransformToDisplay(double X, double Y, ref int DX, ref double DY)
+        public void TransformToDisplay(double X, double Y, out int DX, out double DY)
         {
             // This transforms a world coordinate into a screen pixel coordinate with
             //  World Y increasing up the screen.Note that this function per se is not
@@ -1050,7 +1051,7 @@ double BorderSize)
             }
         }
 
-        public void TransformFromDisplay(int DX, int DY, ref double X, ref double Y)
+        public void TransformFromDisplay(int DX, int DY, out double X, out double Y)
         {
             // This transforms a screen pixel coordinate into a world coordinate with
             // world Y increasing up the screen 
