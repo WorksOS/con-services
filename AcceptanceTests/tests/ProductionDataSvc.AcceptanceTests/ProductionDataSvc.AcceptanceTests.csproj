@@ -107,6 +107,13 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="CompactionCellDatum.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CompactionCellDatum.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Models\CompactionCellDatumResult.cs" />
+    <Compile Include="StepDefinitions\CompactionCellDatumSteps.cs" />
     <Compile Include="CompactionCmv.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -517,6 +524,10 @@
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>CMVSummary.feature.cs</LastGenOutput>
     </None>
+    <None Include="CompactionCellDatum.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>CompactionCellDatum.feature.cs</LastGenOutput>
+    </None>
     <None Include="CompactionCmv.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>CompactionCmv.feature.cs</LastGenOutput>
@@ -735,6 +746,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\CCASummaryResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CompactionCellDatumResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\CMVChangeRequest.json">
