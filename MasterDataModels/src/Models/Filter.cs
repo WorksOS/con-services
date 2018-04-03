@@ -8,6 +8,8 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Interfaces;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Utilities;
+using NodaTime;
+using NodaTime.Extensions;
 
 namespace VSS.MasterData.Models.Models
 {
@@ -427,10 +429,31 @@ namespace VSS.MasterData.Models.Models
       return !Equals(left, right);
     }
 
-    public void SetDates(DateTime? startUtc, DateTime? endUtc)
+    /// <summary>
+    /// Apply the date range type to the start and end UTC.
+    /// </summary>
+    /// <param name="ianaTimeZoneName">The project time zone to use (IANA name)</param>
+    /// <param name="useEndOfCurrentDay">True if the current date range types should use the end of the day rather than now for the end of the period.
+    /// The filter service uses 'now' as the value is returned to the client and displayed in the UI. The 3dpm service uses the end of the day to pass 
+    /// to Raptor so that Raptor's cache works properly.</param>
+    public void ApplyDateRange(string ianaTimeZoneName, bool useEndOfCurrentDay=false)
     {
-      this.StartUtc = startUtc;
-      this.EndUtc = endUtc;
+      if (!string.IsNullOrEmpty(ianaTimeZoneName) &&
+          DateRangeType != null &&
+          DateRangeType != Internal.DateRangeType.Custom)
+      {
+        // Force date range filters to be null if ProjectExtents is specified.
+        if (DateRangeType == Internal.DateRangeType.ProjectExtents)
+        {
+          StartUtc = null;
+          EndUtc = null;
+        }
+        else
+        {
+          StartUtc = DateRangeType?.UtcForDateRangeType(ianaTimeZoneName, true, useEndOfCurrentDay);
+          EndUtc = DateRangeType?.UtcForDateRangeType(ianaTimeZoneName, false, useEndOfCurrentDay);
+        }
+      }
     }
   }
 }

@@ -6,7 +6,7 @@
     <Company>VSS</Company>
     <Product>VSS.MasterData.Models.netcore</Product>
     <Description>Shared models for 3D Productivity</Description>
-    <VersionPrefix>2.16.4</VersionPrefix>
+    <VersionPrefix>2.17.0</VersionPrefix>
     <TargetFrameworks>netstandard1.6</TargetFrameworks>
     <AssemblyName>VSS.MasterData.Models</AssemblyName>
     <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
@@ -31,6 +31,7 @@
     <PackageReference Include="Microsoft.AspNetCore.MVC.Core" Version="1.1.2" />
     <PackageReference Include="System.Net.Security" Version="4.3.0" />
     <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.0.*" />
+    <PackageReference Include="NodaTime" Version="2.2.0" />
 
   </ItemGroup>
 
