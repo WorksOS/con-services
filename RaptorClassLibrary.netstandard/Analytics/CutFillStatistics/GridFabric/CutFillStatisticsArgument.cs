@@ -30,7 +30,7 @@ namespace VSS.VisionLink.Raptor.Analytics.GridFabric.Arguments
         /// Current this is always 7 elements in array and assumes grade is set at zero
         /// eg: 0.5, 0.2, 0.1, 0.0, -0.1, -0.2, -0.5
         /// </summary>
-        public Double[] Offsets { get; set; }
+        public double[] Offsets { get; set; }
 
         /// <summary>
         /// The ID of the design to compute cut fill values between it and the production data elevatoins

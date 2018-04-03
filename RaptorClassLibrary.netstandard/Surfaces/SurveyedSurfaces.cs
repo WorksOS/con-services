@@ -171,7 +171,7 @@ namespace VSS.VisionLink.Raptor.Surfaces
         /// </summary>
         /// <param name="TimeStamp"></param>
         /// <returns></returns>
-        public bool HasSurfaceLaterThan(Int64 TimeStamp)
+        public bool HasSurfaceLaterThan(long TimeStamp)
         {
             DateTime _TimeStamp = DateTime.FromBinary(TimeStamp);
 
@@ -211,7 +211,7 @@ namespace VSS.VisionLink.Raptor.Surfaces
         /// </summary>
         /// <param name="TimeStamp"></param>
         /// <returns></returns>
-        public bool HasSurfaceEarlierThan(Int64 TimeStamp)
+        public bool HasSurfaceEarlierThan(long TimeStamp)
         {
             DateTime _TimeStamp = DateTime.FromBinary(TimeStamp);
 

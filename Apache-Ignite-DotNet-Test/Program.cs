@@ -21,17 +21,17 @@ namespace Apache_Ignite_DotNet_Test
 
 
     [Serializable]
-    class AffinityComputeFunc : Apache.Ignite.Core.Compute.IComputeFunc<String>
+    class AffinityComputeFunc : Apache.Ignite.Core.Compute.IComputeFunc<string>
     {
-        private String s = null;
+        private string s = null;
 
-        public String Invoke()
+        public string Invoke()
         {
             IIgnite ignite = Ignition.TryGetIgnite("Raptor");
 
             if (ignite != null)
             {
-                ICache<String, MyCacheClass> cache = ignite.GetCache<String, MyCacheClass>("TestCache");
+                ICache<string, MyCacheClass> cache = ignite.GetCache<string, MyCacheClass>("TestCache");
                 MyCacheClass c = cache.Get(s);
                 return "Affinity: " + c.name;
             }
@@ -44,28 +44,28 @@ namespace Apache_Ignite_DotNet_Test
             //return "Affinity: " + Ignition.TryGetIgnite().GetCache<String, MyCacheClass>("TestCache").Get(s).name;
         }
 
-        public AffinityComputeFunc(String _s)
+        public AffinityComputeFunc(string _s)
         {
             s = _s;
         }
     }
 
     [Serializable]
-    class MyComputeJob : IComputeJob<String>
+    class MyComputeJob : IComputeJob<string>
     {
-        private String _arg = null;
+        private string _arg = null;
 
         public void Cancel()
         {
             // Do nothing
         }
 
-        public String Execute()
+        public string Execute()
         {
             return _arg + ":" + (new Random()).NextDouble().ToString();
         }
 
-        public MyComputeJob(String arg)
+        public MyComputeJob(string arg)
         {
             _arg = arg;
         }
@@ -73,18 +73,18 @@ namespace Apache_Ignite_DotNet_Test
 
     [Serializable]
     [ComputeTaskNoResultCache]
-    class MyComputeTask : IComputeTask<String, String, String>
+    class MyComputeTask : IComputeTask<string, string, string>
     {
         // <in TArg, TJobRes, out TRes>
         //IDictionary<IComputeJob<TJobRes>, IClusterNode> Map(IList<IClusterNode> subgrid, TArg arg);
         //ComputeJobResultPolicy OnResult(IComputeJobResult<TJobRes> res, IList<IComputeJobResult<TJobRes>> rcvd);   
         // TRes Reduce(IList<IComputeJobResult<TJobRes>> results);
 
-        String result = String.Empty;
+        string result = string.Empty;
 
-        public IDictionary<IComputeJob<String>, IClusterNode> Map(IList<IClusterNode> subgrid, String arg)
+        public IDictionary<IComputeJob<string>, IClusterNode> Map(IList<IClusterNode> subgrid, string arg)
         {
-            var map = new Dictionary<IComputeJob<String>, IClusterNode>();
+            var map = new Dictionary<IComputeJob<string>, IClusterNode>();
 
             foreach (var s in subgrid)
             {
@@ -94,14 +94,14 @@ namespace Apache_Ignite_DotNet_Test
             return map;
         }
 
-        public ComputeJobResultPolicy OnResult(IComputeJobResult<String> res, IList<IComputeJobResult<String>> rcvd)
+        public ComputeJobResultPolicy OnResult(IComputeJobResult<string> res, IList<IComputeJobResult<string>> rcvd)
         {
             result += res.Data;
 
             return ComputeJobResultPolicy.Wait;
         }
 
-        public String Reduce(IList<IComputeJobResult<String>> results)
+        public string Reduce(IList<IComputeJobResult<string>> results)
         {
             // Aggregate all the response strings (converting from the IComputeJobResult wrapper first)
 
@@ -113,11 +113,11 @@ namespace Apache_Ignite_DotNet_Test
     public class MyCacheClass
     {
         [AffinityKeyMapped]
-        public String name = String.Empty;
+        public string name = string.Empty;
 
         public byte[] localData = null;
 
-        public MyCacheClass(String _name)
+        public MyCacheClass(string _name)
         {
             name = _name;
             localData = new byte[30000];
@@ -128,7 +128,7 @@ namespace Apache_Ignite_DotNet_Test
     {
         static void Main(string[] args)
         {
-            String s;
+            string s;
             DateTime startTime;
             DateTime endTime;
 
@@ -143,7 +143,7 @@ namespace Apache_Ignite_DotNet_Test
             IIgnite ignite = Ignition.Start(cfg);
          
             // Add a cache to Ignite
-            ICache<String, MyCacheClass> cache = ignite.CreateCache<String, MyCacheClass>
+            ICache<string, MyCacheClass> cache = ignite.CreateCache<string, MyCacheClass>
                 (new CacheConfiguration()
                 {
                     Name = "TestCache",
@@ -195,7 +195,7 @@ namespace Apache_Ignite_DotNet_Test
             s = string.Format("{0}", endTime - startTime);
             Console.WriteLine("Time to query cache items with serialisation: {0}, sum = {1}", s, sumsum);
 
-            var binCache = cache.WithKeepBinary<String, IBinaryObject>();
+            var binCache = cache.WithKeepBinary<string, IBinaryObject>();
             //            IBinaryObject binCacheItem = binCache["First"];
             //            Console.WriteLine(binCacheItem.GetField<string>("Name"));
 
@@ -231,7 +231,7 @@ namespace Apache_Ignite_DotNet_Test
             {
                 try
                 {
-                    String mapReduceResult = ignite.GetCompute().Execute<String, String, String>(new MyComputeTask(), "Bob");
+                    string mapReduceResult = ignite.GetCompute().Execute<string, string, string>(new MyComputeTask(), "Bob");
                     Console.WriteLine("Mapreduce result = '{0}'", mapReduceResult);
                 }
                 catch (Exception e)
@@ -247,7 +247,7 @@ namespace Apache_Ignite_DotNet_Test
             // Execute a command using affinity on the cluster
             try
             {
-                String affinityResult = ignite.GetCompute().AffinityCall<String>("TestCache", "First", new AffinityComputeFunc("First"));
+                string affinityResult = ignite.GetCompute().AffinityCall<string>("TestCache", "First", new AffinityComputeFunc("First"));
                 Console.WriteLine("Affinity result = '{0}'", affinityResult);
             }
             catch (Exception e)

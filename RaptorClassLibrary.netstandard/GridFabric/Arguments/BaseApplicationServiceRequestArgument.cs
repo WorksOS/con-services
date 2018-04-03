@@ -17,6 +17,6 @@ namespace VSS.VisionLink.Raptor.GridFabric.Arguments
         /// The identifier of the Raptor node responsible for issuing a request and to which messages containing responses
         /// should be sent on a message topic contained within the derived request. 
         /// </summary>
-        public string RaptorNodeID { get; set; } = String.Empty;
+        public string RaptorNodeID { get; set; } = string.Empty;
     }
 }

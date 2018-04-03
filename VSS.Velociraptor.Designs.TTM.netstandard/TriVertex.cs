@@ -124,7 +124,7 @@ namespace VSS.Velociraptor.Designs.TTM
         /// <returns></returns>
         public string AsText()
         {
-            return String.Format("Tag:{0}, X={1:F3}, Y={2:F3}, Z={3:F3}", Tag, X, Y, Z);
+            return string.Format("Tag:{0}, X={1:F3}, Y={2:F3}, Z={3:F3}", Tag, X, Y, Z);
         }
 
         /// <summary>

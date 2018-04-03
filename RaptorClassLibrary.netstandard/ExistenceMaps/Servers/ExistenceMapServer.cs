@@ -35,7 +35,7 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.Servers
         /// Each existence map is stored in it's serialised byte stream from. It does not define the grid per se, but does
         /// define a cache that is used within the grid to stored existence maps
         /// </summary>
-        protected ICache<String, byte[]> DesignTopologyExistanceMapsCache = null;
+        protected ICache<string, byte[]> DesignTopologyExistanceMapsCache = null;
 
         /// <summary>
         /// Internal static instance variable for the server
@@ -63,11 +63,11 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.Servers
 
             try
             {
-                DesignTopologyExistanceMapsCache = ignite.GetCache<String, byte[]>(RaptorCaches.DesignTopologyExistenceMapsCacheName());
+                DesignTopologyExistanceMapsCache = ignite.GetCache<string, byte[]>(RaptorCaches.DesignTopologyExistenceMapsCacheName());
             }
             catch // Exception is thrown if the cache does not exist
             {
-                DesignTopologyExistanceMapsCache = ignite.GetOrCreateCache<String, byte[]>(ConfigureDesignTopologyExistanceMapsCache());
+                DesignTopologyExistanceMapsCache = ignite.GetOrCreateCache<string, byte[]>(ConfigureDesignTopologyExistanceMapsCache());
             }
 
             if (DesignTopologyExistanceMapsCache == null)

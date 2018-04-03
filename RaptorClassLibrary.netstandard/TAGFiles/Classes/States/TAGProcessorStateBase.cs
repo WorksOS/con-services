@@ -407,8 +407,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 
         public string Design { get { return _Design; } set { SetDesign(value); } }
 
-        public string MachineID { get; set; } = String.Empty;
-        public string HardwareID { get; set; } = String.Empty;
+        public string MachineID { get; set; } = string.Empty;
+        public string HardwareID { get; set; } = string.Empty;
         public uint Sequence { get; set; } = 0;
 
         public AccumulatedAttributes ICCCVValues { get; set; } = new AccumulatedAttributes();

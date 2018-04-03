@@ -63,7 +63,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public string FileName(SubGridCellAddress Origin)
         {
-            return String.Format("{0:d10}-{1:d10}-({2:F6}-{3:F6}).sgs", // '%.10d-%.10d(%s-%s).sgs'
+            return string.Format("{0:d10}-{1:d10}-({2:F6}-{3:F6}).sgs", // '%.10d-%.10d(%s-%s).sgs'
                                  Origin.X, Origin.Y, StartTime.ToOADate(), EndTime.ToOADate());
         }
 

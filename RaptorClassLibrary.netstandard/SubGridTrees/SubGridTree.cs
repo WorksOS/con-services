@@ -218,7 +218,7 @@ namespace VSS.VisionLink.Raptor
             if (numLevels < 1 || numLevels > SubGridTree.SubGridTreeLevels)
             {
                 // Invalid number of tree levels
-                throw new ArgumentException(String.Format("Number of levels must be between 1 and {0}", SubGridTreeLevels), "numLevels");
+                throw new ArgumentException(string.Format("Number of levels must be between 1 and {0}", SubGridTreeLevels), "numLevels");
             }
 
             if (cellSize < 0.01 || cellSize > 1000000)

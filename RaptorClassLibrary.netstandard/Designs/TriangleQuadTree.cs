@@ -14,14 +14,14 @@ namespace VSS.VisionLink.Raptor.Designs
         /// <summary>
         /// A block index ued to indicate no block
         /// </summary>
-        private const Int32 nilptr = -1;
+        private const int nilptr = -1;
 
         private const int elements_per_block = 50;
         private const int tree_splits = 10; //  case keytype of longint: (max = 10); Smallint: (max = 5) 
         private const int tree_divisions = 1 << tree_splits; // Number of divisions in each axis 
         private const int max_Btree_levels = 5; // Should be enough = ~34,000,000 elements!
 
-        private const UInt32 outside_quadtree = 0xffffffff;
+        private const uint outside_quadtree = 0xffffffff;
 
         /// <summary>
         /// Stores keys generated from the bounding box of an element within the quadtree extents
@@ -29,14 +29,14 @@ namespace VSS.VisionLink.Raptor.Designs
         public struct key_list_rec
         {
             public byte num_keys;
-            public UInt32[] key; // : array[1..4] of keytype;
+            public uint[] key; // : array[1..4] of keytype;
 
             public static key_list_rec Init()
             {
                 return new key_list_rec()
                 {
                     num_keys = 0,
-                    key = new UInt32[4]
+                    key = new uint[4]
                 };
             }
         }
@@ -46,9 +46,9 @@ namespace VSS.VisionLink.Raptor.Designs
         /// </summary>
         public struct Tentity_element
         {
-            public UInt32 key;
-            public Int32 entity_index; // : longint; //entity_key;
-            public Int32 next; // : block_index_type;
+            public uint key;
+            public int entity_index; // : longint; //entity_key;
+            public int next; // : block_index_type;
         }
 
         /// <summary>
@@ -56,9 +56,9 @@ namespace VSS.VisionLink.Raptor.Designs
         /// </summary>
         public class Ttree_block_type
         {
-            public Int32 block_nbr; //: block_index_type;
+            public int block_nbr; //: block_index_type;
             public int Count; // : Integer; //0..elements_per_block;
-            public Int32 back_pointer; // : block_index_type;
+            public int back_pointer; // : block_index_type;
             public Tentity_element[] element; // : array[1..elements_per_block] of Tentity_element;
 
             public Ttree_block_type()
@@ -77,14 +77,14 @@ namespace VSS.VisionLink.Raptor.Designs
         {
             public key_list_rec key_list;
             public int list_index; // : Integer;
-            public UInt32 quadtree_key; // : keytype;
+            public uint quadtree_key; // : keytype;
             public int current_level; // : level_index_type;
             public int current_block; // : block_index_type;
             public int current_index; // : element_index_type;
             public Ttree_block_type[] cache_state; // : Tpath_cache_type;
             public bool scanning_key_group; // : boolean;
             public bool search_started; // : boolean;
-            public UInt32 current_resolved_square,
+            public uint current_resolved_square,
                        resolution_mask,
                        square_size_mask; // : keytype;
             public bool return_all; // : boolean;
@@ -108,13 +108,13 @@ namespace VSS.VisionLink.Raptor.Designs
                 cache_state[0] = tree.non_search_path_cache[0];
             }
 
-            public void start_search(Double x1, Double y1, Double x2, Double y2,
+            public void start_search(double x1, double y1, double x2, double y2,
                                      bool return_all_entities,
                                      TriangleQuadTree tree)
             // Initializes a search of the quadtree for entities whose keys overlap the search key. 
             {
-                Double resolution, square_size;
-                Double min_x, min_y, max_x, max_y;
+                double resolution, square_size;
+                double min_x, min_y, max_x, max_y;
 
                 Raptor.Utilities.MinMax.SetMinMax(ref x1, ref x2);
                 Raptor.Utilities.MinMax.SetMinMax(ref y1, ref y2);
@@ -160,8 +160,8 @@ namespace VSS.VisionLink.Raptor.Designs
                 {
                     // Change X/Y resolution to place constraints on how deep in the quadtree
                     // the search will progress
-                    Double Xresolution = 0;
-                    Double Yresolution = 0;
+                    double Xresolution = 0;
+                    double Yresolution = 0;
 
                     if (Xresolution / tree.Xeps < Yresolution / tree.Yeps)
                     {
@@ -197,26 +197,26 @@ namespace VSS.VisionLink.Raptor.Designs
         private int num_Btree_blocks; // : Integer; //0..MaxTreeBlocksLimit;
         private int Btree_levels; // : Integer; //1..max_Btree_levels;
 
-        private Double local_tree_min_x, local_tree_max_x, local_tree_min_y, local_tree_max_y;
-        private Double local_tree_x_diff, local_tree_y_diff;
-        private Double local_tree_x_diff_div_divisions, local_tree_y_diff_div_divisions;
+        private double local_tree_min_x, local_tree_max_x, local_tree_min_y, local_tree_max_y;
+        private double local_tree_x_diff, local_tree_y_diff;
+        private double local_tree_x_diff_div_divisions, local_tree_y_diff_div_divisions;
 
         bool tree_range_initialized; // : boolean;
 
-        public Double Xeps, Yeps; // : Double; { < minimum x or y cell dimension }
+        public double Xeps, Yeps; // : Double; { < minimum x or y cell dimension }
 
         public List<Ttree_block_type> BATree;
 
-        public Double tree_min_x { get { return local_tree_min_x; } }
-        public Double tree_min_y { get { return local_tree_min_y; } }
-        public Double tree_max_x { get { return local_tree_max_x; } }
-        public Double tree_max_y { get { return local_tree_max_y; } }
+        public double tree_min_x { get { return local_tree_min_x; } }
+        public double tree_min_y { get { return local_tree_min_y; } }
+        public double tree_max_x { get { return local_tree_max_x; } }
+        public double tree_max_y { get { return local_tree_max_y; } }
 
 
-        public abstract void resize_quadtree(Double min_x, Double min_y, Double max_x, Double max_y);
-        public abstract Object ReadEntityRef(int index);
-        public abstract bool InsideTriangle(Object tri, Double world_x, Double world_y);
-        public abstract void find_tri_keys(Object data, ref key_list_rec key_list);
+        public abstract void resize_quadtree(double min_x, double min_y, double max_x, double max_y);
+        public abstract object ReadEntityRef(int index);
+        public abstract bool InsideTriangle(object tri, double world_x, double world_y);
+        public abstract void find_tri_keys(object data, ref key_list_rec key_list);
 
         public bool tree_empty()
         {
@@ -230,7 +230,7 @@ namespace VSS.VisionLink.Raptor.Designs
             return Result == 0 ? a.entity_index.CompareTo(b.entity_index) : Result;
         }
 
-        bool keys_overlap(UInt32 key1, UInt32 key2)
+        bool keys_overlap(uint key1, uint key2)
         //{   Repeatedly remove "don't care"s from keys until there are no more "don't care"s or the keys match. }
         {
             if ((key1 == outside_quadtree) || (key2 == outside_quadtree))
@@ -259,7 +259,7 @@ namespace VSS.VisionLink.Raptor.Designs
                 Yeps = 1;
         }
 
-        protected void set_tree_range(Double min_x, Double min_y, Double max_x, Double max_y)
+        protected void set_tree_range(double min_x, double min_y, double max_x, double max_y)
         // { call to set up the quadtree extents. Allow 20 % extra in each direction 
         {
             if (!tree_range_initialized)
@@ -281,34 +281,34 @@ namespace VSS.VisionLink.Raptor.Designs
             }
         }
 
-        void initialize_tree_range(Double min_x, Double min_y, Double max_x, Double max_y)
+        void initialize_tree_range(double min_x, double min_y, double max_x, double max_y)
         {
             set_tree_range(min_x, min_y, max_x, max_y);
         }
 
-        public UInt32 rectangle_key(Double min_x, Double min_y, Double max_x, Double max_y)
+        public uint rectangle_key(double min_x, double min_y, double max_x, double max_y)
         //{ Returns the key of the quadtree rectangle bounding the given coords }
         {
-            UInt32 key; //: keytype;
-            UInt32 x1, x2, y1, y2;
+            uint key; //: keytype;
+            uint x1, x2, y1, y2;
             int shift = 0;
-            UInt32 square_num;
+            uint square_num;
 
-            void integerize_coords(Double x, Double y, out UInt32 i, out UInt32 j)
+            void integerize_coords(double x, double y, out uint i, out uint j)
             {
                 if (x < local_tree_min_x)
                     i = outside_quadtree;
                 else if (x >= local_tree_max_x)
                     i = outside_quadtree;
                 else
-                    i = (UInt32)Math.Truncate(tree_divisions * (x - local_tree_min_x) / local_tree_x_diff);
+                    i = (uint)Math.Truncate(tree_divisions * (x - local_tree_min_x) / local_tree_x_diff);
 
                 if (y < local_tree_min_y)
                     j = outside_quadtree;
                 else if (y >= local_tree_max_y)
                     j = outside_quadtree;
                 else
-                    j = (UInt32)Math.Truncate(tree_divisions * (y - local_tree_min_y) / local_tree_y_diff);
+                    j = (uint)Math.Truncate(tree_divisions * (y - local_tree_min_y) / local_tree_y_diff);
             }
 
             if (!tree_range_initialized)
@@ -361,8 +361,8 @@ namespace VSS.VisionLink.Raptor.Designs
             return key;
         }
 
-        void key_rectangle(UInt32 key, // : keytype;
-        ref Double minX, ref Double minY, ref Double maxX, ref Double maxY)
+        void key_rectangle(uint key, // : keytype;
+        ref double minX, ref double minY, ref double maxX, ref double maxY)
         //{ Returns the coordinates of the quadtree rectangle corresponding to the key  }
         {
             int x1, y1, x2, y2, xbit, ybit;
@@ -412,8 +412,8 @@ namespace VSS.VisionLink.Raptor.Designs
             }
         }
 
-        bool split_rectangle(UInt32 key, // : keytype;
-        ref Double x0, ref Double y0, ref Double x1, ref Double y1, ref Double x2, ref Double y2)
+        bool split_rectangle(uint key, // : keytype;
+        ref double x0, ref double y0, ref double x1, ref double y1, ref double x2, ref double y2)
         //        Splits the rectangle given by the key into 4.
         //        x0,y0 = min, x1,y1 = middle, x2,y2 = max.
         //        shift = position of split in key.
@@ -434,15 +434,15 @@ namespace VSS.VisionLink.Raptor.Designs
             }
         }
 
-        bool rectangles_overlap(Double rx0, Double ry0, Double rx1, Double ry1,        // { first rectangle }
-        Double sx0, Double sy0, Double sx1, Double sy1) // { 2nd rectangle }
+        bool rectangles_overlap(double rx0, double ry0, double rx1, double ry1,        // { first rectangle }
+        double sx0, double sy0, double sx1, double sy1) // { 2nd rectangle }
                                                         //{ Returns true if the rectangles overlap. }
                                                         //{ This function requires that rx0 <= rx1, ry0 <= ry1, sx0 <= sx1 & sy0 <= sy1 }
         {
             return (sx0 <= rx1) && (rx0 <= sx1) && (sy0 <= ry1) && (ry0 <= sy1);
         }
 
-        void find_minimum_key(Double x1, Double y1, Double x2, Double y2, Double minX, Double minY, Double maxX, Double maxY,
+        void find_minimum_key(double x1, double y1, double x2, double y2, double minX, double minY, double maxX, double maxY,
                  ref key_list_rec key_list)
         //  Finds the key of the part of the rectangle x1..y2 enclosed by minX..maxY 
         {
@@ -469,12 +469,12 @@ namespace VSS.VisionLink.Raptor.Designs
             }
         }
 
-        public void calc_rectangle_keys(Double x1, Double y1, Double x2, Double y2,
+        public void calc_rectangle_keys(double x1, double y1, double x2, double y2,
                                         ref key_list_rec key_list)
         //{ Find the set of up to four quadtree keys which enclose the given rectangle
         //  in minimum total area. }
         {
-            UInt32 key;// : keytype;
+            uint key;// : keytype;
 
             // { check that none of the coordinates are nullreal }
             if ((x1 == Consts.NullDouble) || (y1 == Consts.NullDouble) ||
@@ -491,7 +491,7 @@ namespace VSS.VisionLink.Raptor.Designs
             // { Get the associated key }
             key = rectangle_key(x1, y1, x2, y2);
 
-            Double minX = 0, minY = 0, midX = 0, midY = 0, maxX = 0, maxY = 0;
+            double minX = 0, minY = 0, midX = 0, midY = 0, maxX = 0, maxY = 0;
 
             // { Check if the rectangle can be split }
             if (!split_rectangle(key, ref minX, ref minY, ref midX, ref midY, ref maxX, ref maxY))
@@ -533,7 +533,7 @@ namespace VSS.VisionLink.Raptor.Designs
         /// <param name="key_block"></param>
         /// <param name="key_index"></param>
         /// <returns></returns>
-        bool find_first_key(UInt32 key,// : keytype;
+        bool find_first_key(uint key,// : keytype;
                             Ttree_block_type[] search_path_cache, // : Tpath_cache_type;
                             ref int tree_level, // : level_index_type;
                             ref int key_block, // : block_index_type;
@@ -662,7 +662,7 @@ namespace VSS.VisionLink.Raptor.Designs
             return result;
         }
 
-        bool find_key(UInt32 key,
+        bool find_key(uint key,
                       Ttree_block_type[] search_path_cache,
                       ref int tree_level, // : level_index_type;
                       ref int key_block, // : block_index_type;
@@ -775,7 +775,7 @@ namespace VSS.VisionLink.Raptor.Designs
             }
         }
 
-        bool next_matching_key(UInt32 current_key, // : keytype;
+        bool next_matching_key(uint current_key, // : keytype;
                                Ttree_block_type[] search_path_cache, // var search_path_cache : Tpath_cache_type;
                                ref int tree_level, // : level_index_type;
                                ref int block_index, //: block_index_type;
@@ -812,14 +812,14 @@ namespace VSS.VisionLink.Raptor.Designs
 
         public bool next_entity(ref Tsearch_state_rec searchState,
                                 ref int ent_index,
-                                ref Object data)
+                                ref object data)
         //{ Search for the next entity whose keys overlap the search key.
         //  'start_search' must be called before this function. }
         {
             bool entity_found;
-            UInt32 current_key = outside_quadtree;
+            uint current_key = outside_quadtree;
 
-            UInt32 next_key(UInt32 original_key, UInt32 last_key)
+            uint next_key(uint original_key, uint last_key)
             {
                 //{ Find the most significant "don't care" digit in the last_key, and
                 //  set this digit to the corresponding digit in the original_key.}
@@ -827,12 +827,12 @@ namespace VSS.VisionLink.Raptor.Designs
                 const int tree_splits_Times3 = tree_splits * 3;
 
                 int shift = 0;
-                UInt32 mask = 0, new_key = last_key;
+                uint mask = 0, new_key = last_key;
 
                 while ((new_key & 7) == 0 && shift < tree_splits_Times3)
                 {
                     new_key >>= 3;
-                    mask = mask | ((UInt32)7 << shift);
+                    mask = mask | ((uint)7 << shift);
                     shift += 3;
                 }
                 new_key = original_key & ~(mask >> 3);
@@ -951,14 +951,14 @@ namespace VSS.VisionLink.Raptor.Designs
             return entity_found;
         } 
 
-        bool find_nearest(Double world_x, Double world_y,
-                          Double proximity_dist,
-                          ref Object best_data)
+        bool find_nearest(double world_x, double world_y,
+                          double proximity_dist,
+                          ref object best_data)
         {
             Tsearch_state_rec searchState = Tsearch_state_rec.Init();
 
             int index = -1;
-            Object data = null;
+            object data = null;
 
             if (tree_empty())
                 return false;
@@ -977,7 +977,7 @@ namespace VSS.VisionLink.Raptor.Designs
             return false;
         }
 
-        bool find_unique_key(UInt32 key, // : keytype;
+        bool find_unique_key(uint key, // : keytype;
                              Ttree_block_type[] search_path_cache, // var search_path_cache : Tpath_cache_type;
                              int ent_index, // : longint;
                              ref int tree_level, // : level_index_type;
@@ -1187,7 +1187,7 @@ namespace VSS.VisionLink.Raptor.Designs
             load_block(non_search_path_cache, tree_level, new_block_index);
         }
 
-        public void add_entity_key(UInt32 key, // : keytype;
+        public void add_entity_key(uint key, // : keytype;
                                    int ent_index) // : longint );
         {
             Tentity_element entity_key;
@@ -1268,12 +1268,12 @@ namespace VSS.VisionLink.Raptor.Designs
         /// </summary>
         /// <param name="data"></param>
         /// <param name="key_list"></param>
-        void find_entity_keys(Object data, ref key_list_rec key_list)
+        void find_entity_keys(object data, ref key_list_rec key_list)
         {
             find_tri_keys(data, ref key_list);
         }
 
-        void add_entity_keys(int ent_index, Object data)
+        void add_entity_keys(int ent_index, object data)
         {
             key_list_rec key_list = new key_list_rec();
 

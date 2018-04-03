@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace VSS.VisionLink.Raptor.GridFabric.Caches
 {
-    public class RaptorNonSpatialCacheStore : CacheStoreAdapter<String, MemoryStream>
+    public class RaptorNonSpatialCacheStore : CacheStoreAdapter<string, MemoryStream>
     {
         private RaptorCacheStoreUtilities Utilities = null;
 

@@ -15,7 +15,7 @@ namespace RaptorPSNodeServer
         [STAThread]
         static void Main()
         {
-            string logFileName = System.Diagnostics.Process.GetCurrentProcess().ProcessName + String.Format("({0})", RaptorServerConfig.Instance().SpatialSubdivisionDescriptor) + ".log";
+            string logFileName = System.Diagnostics.Process.GetCurrentProcess().ProcessName + string.Format("({0})", RaptorServerConfig.Instance().SpatialSubdivisionDescriptor) + ".log";
             log4net.GlobalContext.Properties["LogName"] = logFileName;
             log4net.Config.XmlConfigurator.Configure();
 

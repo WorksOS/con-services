@@ -19,7 +19,7 @@ namespace VSS.VisionLink.Raptor.Geometry
         /// <summary>
         /// The Min/Max X/Y/Z values describing the 3D bounding extent
         /// </summary>
-        public Double MinX, MinY, MaxX, MaxY, MinZ, MaxZ;
+        public double MinX, MinY, MaxX, MaxY, MinZ, MaxZ;
 
         /// <summary>
         /// Calculates the area in square meters of the X/Y plan extent
@@ -44,9 +44,9 @@ namespace VSS.VisionLink.Raptor.Geometry
         /// Provide human readable version of instance state
         /// </summary>
         /// <returns></returns>
-        public override String ToString()
+        public override string ToString()
         {
-            return String.Format("MinX: {0}, MaxX:{1}, MinY:{2}, MaxY:{3}, MinZ: {4}, MaxZ:{5}",
+            return string.Format("MinX: {0}, MaxX:{1}, MinY:{2}, MaxY:{3}, MinZ: {4}, MaxZ:{5}",
                            MinX, MaxX, MinY, MaxY, MinZ, MaxZ);
 
         }

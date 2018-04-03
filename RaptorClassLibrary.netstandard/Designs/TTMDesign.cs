@@ -40,8 +40,8 @@ namespace VSS.Velociraptor.DesignProfiling
 
         public struct TriangleArrayReference
         {
-            public UInt32 TriangleArrayIndex;
-            public UInt32 Count;
+            public uint TriangleArrayIndex;
+            public uint Count;
         }
 
         Triangle[] FSpatialIndexOptimisedTriangles = null;
@@ -701,7 +701,7 @@ namespace VSS.Velociraptor.DesignProfiling
 
         public override bool HasFiltrationDataForSubGridPatch(uint SubGridX, uint SubgridY) => false;
 
-        private bool CheckHint(ref Object hint, double x, double y, double offset, out double z)
+        private bool CheckHint(ref object hint, double x, double y, double offset, out double z)
         {
             if (hint == null)
             {
@@ -1109,7 +1109,7 @@ namespace VSS.Velociraptor.DesignProfiling
                                               tri,
                                               (tree, x, y) => false,
                                               (tree, x, y, t) => IncludeTriangleInSubGridTreeIndex(tree as GenericSubGridTree<List<Triangle>>, x, y, t),
-                                              (Index, leafSatisfied, includeTriangle, T, H1, H2, V, SingleRowOnly) => AddTrianglePieceToSubgridIndex(Index, leafSatisfied, includeTriangle, T, H1, H2, V, SingleRowOnly),
+                                              AddTrianglePieceToSubgridIndex,
                                               new TriVertex(0, 0, 0));
                     }
 
@@ -1147,7 +1147,7 @@ namespace VSS.Velociraptor.DesignProfiling
                             SpatialIndexOptimised[leaf.OriginX + x, leaf.OriginY + y] = new TriangleArrayReference()
                             {
                                 TriangleArrayIndex = copiedCount,
-                                Count = (UInt32)triList.Count()
+                                Count = (uint)triList.Count()
                             };
 
                             // Keep track of how may have been copied

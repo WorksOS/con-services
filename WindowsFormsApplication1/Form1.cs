@@ -376,7 +376,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             writer.WriteLine($"Number of items in cache: {metrics.Size}");
         }
 
-        private void writeKeys(string title, StreamWriter writer, ICache<String, byte[]> cache)
+        private void writeKeys(string title, StreamWriter writer, ICache<string, byte[]> cache)
         {
             int count = 0;
 
@@ -391,11 +391,11 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
             //            writeCacheMetrics(writer, cache.GetMetrics());
 
-            var scanQuery = new ScanQuery<String, byte[]>();
-            IQueryCursor<ICacheEntry<String, byte[]>> queryCursor = cache.Query(scanQuery);
+            var scanQuery = new ScanQuery<string, byte[]>();
+            IQueryCursor<ICacheEntry<string, byte[]>> queryCursor = cache.Query(scanQuery);
             scanQuery.PageSize = 1; // Restrict the number of keys requested in each page to reduce memory consumption
 
-            foreach (ICacheEntry<String, byte[]> cacheEntry in queryCursor)
+            foreach (ICacheEntry<string, byte[]> cacheEntry in queryCursor)
             {
                 writer.WriteLine($"{count++}:{cacheEntry.Key}, size = {cacheEntry.Value.Length}");
                 //                writeCacheMetrics(writer, cache.GetMetrics());
@@ -479,14 +479,14 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                     {
                         if (mutability == StorageMutability.Immutable)
                         {
-                            writeKeys(RaptorCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<string, Byte[]>(RaptorCaches.ImmutableNonSpatialCacheName()));
-                            writeKeys(RaptorCaches.DesignTopologyExistenceMapsCacheName(), writer, ignite.GetCache<string, Byte[]>(RaptorCaches.DesignTopologyExistenceMapsCacheName()));
-                            WriteKeysSpatial(RaptorCaches.ImmutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.ImmutableSpatialCacheName()));
+                            writeKeys(RaptorCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<string, byte[]>(RaptorCaches.ImmutableNonSpatialCacheName()));
+                            writeKeys(RaptorCaches.DesignTopologyExistenceMapsCacheName(), writer, ignite.GetCache<string, byte[]>(RaptorCaches.DesignTopologyExistenceMapsCacheName()));
+                            WriteKeysSpatial(RaptorCaches.ImmutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, byte[]>(RaptorCaches.ImmutableSpatialCacheName()));
                         }
                         if (mutability == StorageMutability.Mutable)
                         {
-                            writeKeys(RaptorCaches.MutableNonSpatialCacheName(), writer, ignite.GetCache<string, Byte[]>(RaptorCaches.MutableNonSpatialCacheName()));
-                            WriteKeysSpatial(RaptorCaches.MutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, Byte[]>(RaptorCaches.MutableSpatialCacheName()));
+                            writeKeys(RaptorCaches.MutableNonSpatialCacheName(), writer, ignite.GetCache<string, byte[]>(RaptorCaches.MutableNonSpatialCacheName()));
+                            WriteKeysSpatial(RaptorCaches.MutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, byte[]>(RaptorCaches.MutableSpatialCacheName()));
                         }
                     }
                 }
@@ -520,7 +520,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         /// <param name="title"></param>
         /// <param name="cache"></param>
         /// <returns></returns>
-        private string CalculateCacheStatistics(string title, ICache<Object, byte[]> cache)
+        private string CalculateCacheStatistics(string title, ICache<object, byte[]> cache)
         {
 
             if (cache == null)
@@ -528,7 +528,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 return $"Cache {title} is null";
             }
 
-            var scanQuery = new ScanQuery<Object, byte[]>
+            var scanQuery = new ScanQuery<object, byte[]>
             {
                 PageSize = 1 // Restrict the number of keys requested in each page to reduce memory consumption
             };
@@ -538,9 +538,9 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             long smallestBytes = long.MaxValue;
             long largestBytes = long.MinValue;
 
-            IQueryCursor<ICacheEntry<Object, byte[]>> queryCursor = cache.Query(scanQuery);
+            IQueryCursor<ICacheEntry<object, byte[]>> queryCursor = cache.Query(scanQuery);
 
-            foreach (ICacheEntry<Object, byte[]> cacheEntry in queryCursor)
+            foreach (ICacheEntry<object, byte[]> cacheEntry in queryCursor)
             {
                 count++;
                 sumBytes += cacheEntry.Value.Length;
@@ -571,8 +571,8 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
                 if (ignite != null)
                 {
-                    string result = CalculateCacheStatistics(RaptorCaches.MutableNonSpatialCacheName(), ignite.GetCache<Object, Byte[]>(RaptorCaches.MutableNonSpatialCacheName())) + "\n" +
-                                    CalculateCacheStatistics(RaptorCaches.MutableSpatialCacheName(), ignite.GetCache<Object, Byte[]>(RaptorCaches.MutableSpatialCacheName()));
+                    string result = CalculateCacheStatistics(RaptorCaches.MutableNonSpatialCacheName(), ignite.GetCache<object, byte[]>(RaptorCaches.MutableNonSpatialCacheName())) + "\n" +
+                                    CalculateCacheStatistics(RaptorCaches.MutableSpatialCacheName(), ignite.GetCache<object, byte[]>(RaptorCaches.MutableSpatialCacheName()));
                     MessageBox.Show(result, "Mutable Statistics");
                 }
                 else
@@ -583,8 +583,8 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 ignite = RaptorGridFactory.Grid(RaptorGrids.RaptorImmutableGridName());
                 if (ignite != null)
                 {
-                    string result = CalculateCacheStatistics(RaptorCaches.ImmutableNonSpatialCacheName(), ignite.GetCache<Object, Byte[]>(RaptorCaches.ImmutableNonSpatialCacheName())) + "\n" +
-                                    CalculateCacheStatistics(RaptorCaches.ImmutableSpatialCacheName(), ignite.GetCache<Object, Byte[]>(RaptorCaches.ImmutableSpatialCacheName()));
+                    string result = CalculateCacheStatistics(RaptorCaches.ImmutableNonSpatialCacheName(), ignite.GetCache<object, byte[]>(RaptorCaches.ImmutableNonSpatialCacheName())) + "\n" +
+                                    CalculateCacheStatistics(RaptorCaches.ImmutableSpatialCacheName(), ignite.GetCache<object, byte[]>(RaptorCaches.ImmutableSpatialCacheName()));
                     MessageBox.Show(result, "Immutable Statistics");
                 }
                 else

@@ -24,7 +24,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Responses
         /// <summary>
         /// The moniker of the cluster node making the response
         /// </summary>
-        public string ClusterNode { get; set; } = String.Empty;
+        public string ClusterNode { get; set; } = string.Empty;
 
         /// <summary>
         /// The number of subgrids in the total subgrids request processed by the responding cluster node

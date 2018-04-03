@@ -33,7 +33,7 @@ namespace VSS.Velociraptor.Designs.TTM
                 }
                 catch (Exception E)
                 {
-                    throw new Exception(String.Format("Failed to read start point {0}\n{1}", i + 1, E));
+                    throw new Exception(string.Format("Failed to read start point {0}\n{1}", i + 1, E));
                 }
             }
         }

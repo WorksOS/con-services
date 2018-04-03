@@ -38,7 +38,7 @@ namespace VSS.VisionLink.Raptor.Tests.Analytics.CutFillStatistics
             CutFillResult r = new CutFillResult();
 
             Assert.Throws<ArgumentException>("Response", () => { r.PopulateFromClusterComputeResponse(null); });
-            Assert.Throws<ArgumentException>("Response", () => { r.PopulateFromClusterComputeResponse(new Object()); });
+            Assert.Throws<ArgumentException>("Response", () => { r.PopulateFromClusterComputeResponse(new object()); });
         }
     }
 }

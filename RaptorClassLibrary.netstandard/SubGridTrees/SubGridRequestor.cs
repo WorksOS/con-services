@@ -403,7 +403,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 // surveyed surfaces later (or earlier) than the cell production data
                 // pass time (depending on PassFilter.ReturnEarliestFilteredCellPass)
                 // then there's no point in asking the Design Profiler service for an elevation
-                Int64[,] Times = ClientGridAsHeightAndTime.Times;
+                long[,] Times = ClientGridAsHeightAndTime.Times;
 
                 ProcessingMap.ForEachSetBit((x, y) =>
                 {
@@ -480,9 +480,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 // update the cell elevation if a non null surveyed surface of appropriate
                 // time was computed
                 float ProdHeight;
-                Int64 ProdTime;
+                long ProdTime;
                 float SurveyedSurfaceCellHeight;
-                Int64 SurveyedSurfaceCellTime;
+                long SurveyedSurfaceCellTime;
 
                 // Note: The surveyed surface will return all cells in the requested subgrid, not just the ones indicated in the processing map
                 // IE: It is unsafe to test for null top indicate not-filtered, use the processing map iterators to cover only those cells required

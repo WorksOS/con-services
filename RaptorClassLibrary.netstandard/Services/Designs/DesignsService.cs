@@ -38,7 +38,7 @@ namespace VSS.VisionLink.Raptor.Services.Designs
         /// <summary>
         /// Cache storing sitemodel instances
         /// </summary>
-        private ICache<String, Byte[]> mutableNonSpatialCache;
+        private ICache<string, byte[]> mutableNonSpatialCache;
 
         /// <summary>
         /// Service name.

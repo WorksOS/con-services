@@ -82,7 +82,7 @@ namespace VSS.VisionLink.Raptor.Types
                 case DisplayMode.CCA: return GridDataType.CCA;
                 case DisplayMode.CCASummary: return GridDataType.CCA;
                 default:
-                    Debug.Assert(false, String.Format("Unknown mode ({0}) in ICGridDataTypeForDisplayMode", Mode));
+                    Debug.Assert(false, string.Format("Unknown mode ({0}) in ICGridDataTypeForDisplayMode", Mode));
                     return GridDataType.Height;  // For modes that are not supported yet, we will use heights
             }
         }

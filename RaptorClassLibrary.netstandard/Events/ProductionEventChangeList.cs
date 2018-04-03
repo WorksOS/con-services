@@ -385,7 +385,7 @@ namespace VSS.VisionLink.Raptor.Events
             }
         }
 
-        public string EventChangeListPersistantFileName() => String.Format("Events-{0}-{1}", EventListType.ToString(), "Summary.evt");
+        public string EventChangeListPersistantFileName() => string.Format("Events-{0}-{1}", EventListType.ToString(), "Summary.evt");
 
         public void SaveToStore(IStorageProxy storageProxy)
         {

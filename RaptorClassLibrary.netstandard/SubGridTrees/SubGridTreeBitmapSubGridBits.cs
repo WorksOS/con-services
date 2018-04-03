@@ -642,7 +642,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         public string RowToString(int Row)
         {
             // Initialise a string builder with appropriate number of spaces
-            StringBuilder sb = new StringBuilder(new String(' ', 2 * SubGridTree.SubGridTreeDimension));
+            StringBuilder sb = new StringBuilder(new string(' ', 2 * SubGridTree.SubGridTreeDimension));
 
             // Set each alternate space in the string with a 0 or 1 for each bit
             uint RowBits = Bits[Row];

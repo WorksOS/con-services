@@ -29,18 +29,18 @@ namespace VSS.Velociraptor.Designs.TTM
 
         public void SnapToOutputResolution( TTMHeader header)
         {
-            Single s;
+            float s;
 
-            if (header.VertexCoordinateSize == sizeof(Single))
+            if (header.VertexCoordinateSize == sizeof(float))
             {
-                s = (Single)(X - header.EastingOffsetValue);
+                s = (float)(X - header.EastingOffsetValue);
                 X = s + header.EastingOffsetValue;
-                s = (Single)(Y - header.NorthingOffsetValue);
+                s = (float)(Y - header.NorthingOffsetValue);
                 Y = s + header.NorthingOffsetValue;
             }
-            if (header.VertexValueSize == sizeof(Single))
+            if (header.VertexValueSize == sizeof(float))
             {
-                s = (Single)Z;
+                s = (float)Z;
                 Z = s;
             }
         }

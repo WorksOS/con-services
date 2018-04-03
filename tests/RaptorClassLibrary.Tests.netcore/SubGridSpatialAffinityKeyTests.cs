@@ -11,7 +11,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         public void Test_SubGridSpatialAffinityKey_NullConstructor()
         {
             SubGridSpatialAffinityKey key = new SubGridSpatialAffinityKey();
-            Assert.True(key.ProjectID == 0 && key.SubGridX == 0 && key.SubGridY == 0 && key.SegmentIdentifier == String.Empty,
+            Assert.True(key.ProjectID == 0 && key.SubGridX == 0 && key.SubGridY == 0 && key.SegmentIdentifier == string.Empty,
                 "Default constructor subgrid spatial affinity key produced unexpected result");
         }
 
@@ -50,7 +50,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         [Fact]
         public void Test_SubGridSpatialAffinityKey_ToStringSubgrid()
         {
-            SubGridSpatialAffinityKey key = new SubGridSpatialAffinityKey(1234, new SubGridCellAddress(12345678, 34567890), String.Empty);
+            SubGridSpatialAffinityKey key = new SubGridSpatialAffinityKey(1234, new SubGridCellAddress(12345678, 34567890), string.Empty);
             Assert.Equal("1234-12345678-34567890", key.ToString());
         }
 

@@ -271,7 +271,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
                 if (result != ServerRequestResult.NoError)
                 {
-                    Log.Info(String.Format("Request for subgrid {0} request failed with code {1}", address, result));
+                    Log.Info(string.Format("Request for subgrid {0} request failed with code {1}", address, result));
                 }
 
                 // Some request types require additional processing of the subgrid results prior to repatriating the answers back to the caller

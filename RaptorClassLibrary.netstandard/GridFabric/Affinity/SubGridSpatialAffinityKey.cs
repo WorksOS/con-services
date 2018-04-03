@@ -93,9 +93,9 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
         /// <returns></returns>
         public override string ToString()
         {
-            return SegmentIdentifier == String.Empty
-                ? String.Format("{0}-{1}-{2}", ProjectID, SubGridX, SubGridY)
-                : String.Format("{0}-{1}-{2}-{3}", ProjectID, SubGridX, SubGridY, SegmentIdentifier);
+            return SegmentIdentifier == string.Empty
+                ? string.Format("{0}-{1}-{2}", ProjectID, SubGridX, SubGridY)
+                : string.Format("{0}-{1}-{2}-{3}", ProjectID, SubGridX, SubGridY, SegmentIdentifier);
         }
     }
 }

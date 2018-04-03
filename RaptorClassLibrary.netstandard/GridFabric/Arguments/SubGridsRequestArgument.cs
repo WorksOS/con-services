@@ -33,12 +33,12 @@ namespace VSS.VisionLink.Raptor.GridFabric.Arguments
         /// <summary>
         /// The serialised contents of the SubGridTreeSubGridExistenceBitMask that notes the address of all subgrids that need to be requested for production data
         /// </summary>
-        public Byte[] ProdDataMaskBytes { get; set; } = null;
+        public byte[] ProdDataMaskBytes { get; set; } = null;
 
         /// <summary>
         /// The serialised contents of the SubGridTreeSubGridExistenceBitMask that notes the address of all subgrids that need to be requested for surveyed surface data ONLY
         /// </summary>
-        public Byte[] SurveyedSurfaceOnlyMaskBytes { get; set; } = null;
+        public byte[] SurveyedSurfaceOnlyMaskBytes { get; set; } = null;
 
         /// <summary>
         /// The set of filters to be applied to the requested subgrids
@@ -49,7 +49,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Arguments
         /// <summary>
         /// The name of the message topic that subgrid responses should be sent to
         /// </summary>
-        public string MessageTopic { get; set; } = String.Empty;
+        public string MessageTopic { get; set; } = string.Empty;
 
         /// <summary>
         /// Denotes whether results of these requests should include any surveyed surfaces in the site model

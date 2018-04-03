@@ -6,6 +6,6 @@ namespace VSS.TRex.Rendering.Abstractions
   {
     int Width { get; }
     int Height { get; }
-      Object GetBitmap();
+      object GetBitmap();
   }
 }

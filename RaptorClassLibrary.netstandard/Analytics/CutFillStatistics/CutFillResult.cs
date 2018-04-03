@@ -73,7 +73,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Models
         ///  Takes a response from the cluster compuet layer and transforms it into the model to be handed back to the client context
         /// </summary>
         /// <param name="response"></param>
-        public override void PopulateFromClusterComputeResponse(Object response)
+        public override void PopulateFromClusterComputeResponse(object response)
         {
             CutFillStatisticsResponse statisticsResponse = response as CutFillStatisticsResponse;
 

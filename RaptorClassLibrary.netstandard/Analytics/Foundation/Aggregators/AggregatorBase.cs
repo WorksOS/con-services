@@ -18,7 +18,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
         /// <summary>
         /// The project the aggregation is operating on
         /// </summary>
-        public Int64 SiteModelID { get; set; } = 0;
+        public long SiteModelID { get; set; } = 0;
 
         /// <summary>
         /// The cell size of the site model the aggregation is being performed over

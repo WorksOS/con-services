@@ -41,7 +41,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Types
                     return 8;
 
                 default:
-                    throw new ArgumentOutOfRangeException(String.Format("Unknown integer TAG field type {0}", field), "field");
+                    throw new ArgumentOutOfRangeException(string.Format("Unknown integer TAG field type {0}", field), "field");
             }
         }
     }

@@ -26,7 +26,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Caches
         /// <summary>
         /// Returns the name of the spatial grid cache to use to locate cell and cell pass information
         /// </summary>
-        public static String MutableSpatialCacheName() => kSpatialMutable;
+        public static string MutableSpatialCacheName() => kSpatialMutable;
 /*
          {
             if (RaptorServerConfig.Instance().UseMutableSpatialData)
@@ -59,7 +59,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Caches
         /// <summary>
         /// Returns the name of the event grid cache to use to locate machine event and other non spatial information
         /// </summary>
-        public static String MutableNonSpatialCacheName() => kNonSpatialMutable;
+        public static string MutableNonSpatialCacheName() => kNonSpatialMutable;
 /*
          {
             if (RaptorServerConfig.Instance().UseMutableNonSpatialData)

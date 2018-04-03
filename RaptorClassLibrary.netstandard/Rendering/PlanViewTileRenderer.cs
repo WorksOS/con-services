@@ -23,7 +23,7 @@ namespace VSS.VisionLink.Raptor.Rendering
         /// <summary>
         /// The Raptor application service node performing the request
         /// </summary>
-        string RequestingRaptorNodeID { get; set; } = String.Empty;
+        string RequestingRaptorNodeID { get; set; } = string.Empty;
 
         public long RequestDescriptor;
         // FExternalDescriptor : TASNodeRequestDescriptor;

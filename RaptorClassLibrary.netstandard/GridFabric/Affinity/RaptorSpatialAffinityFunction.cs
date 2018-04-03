@@ -143,7 +143,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
             if (!(key is SubGridSpatialAffinityKey))
             {
                 Log.InfoFormat("Unknown key type to compute spatial affinity partition key for: {0}", key.ToString());
-                throw new ArgumentException(String.Format("Unknown key type to compute spatial affinity partition key for: {0}", key.ToString()));
+                throw new ArgumentException(string.Format("Unknown key type to compute spatial affinity partition key for: {0}", key.ToString()));
             }
 
             SubGridSpatialAffinityKey value = (SubGridSpatialAffinityKey)key;

@@ -15,7 +15,7 @@ namespace VSS.VisionLink.Raptor.Utilities
         /// <param name="dateTime"></param>
         public static string FormatCellPassTime(DateTime dateTime, bool offset = true)
         {
-            return String.Format("{0:yyyy/MMM/dd HH:mm:ss.zzz}", offset ? dateTime + Time.GPS.GetLocalGMTOffset() : dateTime);
+            return string.Format("{0:yyyy/MMM/dd HH:mm:ss.zzz}", offset ? dateTime + Time.GPS.GetLocalGMTOffset() : dateTime);
         }
     }
 }

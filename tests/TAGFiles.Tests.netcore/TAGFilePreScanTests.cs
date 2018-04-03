@@ -24,11 +24,11 @@ namespace VSS.VisionLink.Raptor.Executors.Tests
                 preScan.ReadResult == TAGReadResult.NoError &&
                 preScan.SeedLatitude == null &&
                 preScan.SeedLongitude == null &&
-                preScan.RadioType == String.Empty &&
-                preScan.RadioSerial == String.Empty &&
+                preScan.RadioType == string.Empty &&
+                preScan.RadioSerial == string.Empty &&
                 preScan.MachineType == CellPass.MachineTypeNull &&
-                preScan.MachineID == String.Empty &&
-                preScan.HardwareID == String.Empty,
+                preScan.MachineID == string.Empty &&
+                preScan.HardwareID == string.Empty,
                 "TAGFilePreScan not constructed as expected");
         }
 

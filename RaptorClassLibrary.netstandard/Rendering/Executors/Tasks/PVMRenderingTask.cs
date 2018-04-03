@@ -55,7 +55,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors.Tasks
         /// <returns></returns>
         public override bool TransferResponses(object [] responses)
         {
-            foreach (Object response in responses)
+            foreach (object response in responses)
             {
                 if (!TransferResponse(response))
                 {

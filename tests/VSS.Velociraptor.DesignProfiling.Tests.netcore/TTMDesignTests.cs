@@ -183,7 +183,7 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
 
         [Theory()]
         [InlineData(247500.0, 193350.0)]
-        public void InterpolateHeightsTest(Double probeX, Double probeY)
+        public void InterpolateHeightsTest(double probeX, double probeY)
         {
             float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
 
@@ -194,7 +194,7 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
 
         [Theory(Skip = "Performance Test")]
         [InlineData(247500.0, 193350.0)]
-        public void InterpolateHeightsTestPerf(Double probeX, Double probeY)
+        public void InterpolateHeightsTestPerf(double probeX, double probeY)
         {
 
             float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
@@ -209,7 +209,7 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
 
         [Theory(Skip = "Performance Test")]
         [InlineData(247500.0, 193350.0)]
-        public void InterpolateHeightsTest2Perf(Double probeX, Double probeY)
+        public void InterpolateHeightsTest2Perf(double probeX, double probeY)
         {
 
             float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
@@ -224,7 +224,7 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
 
         [Theory(Skip = "Performance Test")]
         [InlineData(247500.0, 193350.0)]
-        public void InterpolateHeightsTest3Perf(Double probeX, Double probeY)
+        public void InterpolateHeightsTest3Perf(double probeX, double probeY)
         {
 
             float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];

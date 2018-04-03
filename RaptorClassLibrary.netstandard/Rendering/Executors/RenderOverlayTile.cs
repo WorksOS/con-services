@@ -35,7 +35,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
         /// <summary>
         /// The Raptor application service node performing the request
         /// </summary>
-        string RequestingRaptorNodeID { get; set; } = String.Empty;
+        string RequestingRaptorNodeID { get; set; } = string.Empty;
 
         long DataModelID = -1;
         // long MachineID = -1;
@@ -491,7 +491,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
             SiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(DataModelID);
             if (SiteModel == null)
             {
-                throw new ArgumentException(String.Format("Unable to acquire site model instance for ID:{0}", DataModelID));
+                throw new ArgumentException(string.Format("Unable to acquire site model instance for ID:{0}", DataModelID));
             }
 
             SpatialExtents = SiteModel.GetAdjustedDataModelSpatialExtents(SurveyedSurfaceExclusionList);

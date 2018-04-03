@@ -117,7 +117,7 @@ namespace VSS.VisionLink.Raptor.Surfaces.Executors
                                     continue;
                                 }
 
-                                Int64 AsAtDate = ThisSurveyedSurface.AsAtDate.ToBinary();
+                                long AsAtDate = ThisSurveyedSurface.AsAtDate.ToBinary();
                                 double Offset = ThisSurveyedSurface.DesignDescriptor.Offset;
 
                                 // Walk across the subgrid checking for a design elevation for each appropriate cell

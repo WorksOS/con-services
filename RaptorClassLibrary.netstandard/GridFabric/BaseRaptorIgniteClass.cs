@@ -105,7 +105,7 @@ namespace VSS.VisionLink.Raptor.GridFabric
         /// </summary>
         public void AcquireIgniteTopologyProjections()
         {
-            if (!String.IsNullOrEmpty(Role))
+            if (!string.IsNullOrEmpty(Role))
             {
                 _group = _ignite?.GetCluster().ForRemotes().ForAttribute($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{Role}", "True");
                 _compute = _group?.GetCompute();

@@ -281,7 +281,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                   cellPass.MaterialTemperature = _GlobalLatestCells.ReadTemperature(x, y);
                   break;
 
-        default: Debug.Assert(false, String.Format("Unsupported grid data type in AssignRequiredFilteredPassAttributesFromGlobalLatestCells: {0}", _GridDataType));
+        default: Debug.Assert(false, string.Format("Unsupported grid data type in AssignRequiredFilteredPassAttributesFromGlobalLatestCells: {0}", _GridDataType));
                     break;
             }
         }

@@ -18,7 +18,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
         /// <summary>
         /// The array of height offsets representing the cut and fill bands of the cut-fill isopac surface being analysed
         /// </summary>
-        public Double[] Offsets { get; set; }
+        public double[] Offsets { get; set; }
 
         /// <summary>
         /// The set of counters relevant to the supplied cut fill offsets
@@ -37,7 +37,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
         /// Determines which cut/fill band to allocate the height value for a cell
         /// </summary>
         /// <param name="value"></param>
-        void IncrementCountOfCutFillTransition(Double value)
+        void IncrementCountOfCutFillTransition(double value)
         {
             // Works out what percentage of cutfill map colours are used
             // always 7 elements in array and assumes grade is set at zero
@@ -89,7 +89,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
         {
             // Works out the percentage each colour on the map represents
             ClientHeightLeafSubGrid SubGrid = subGrids[0][0] as ClientHeightLeafSubGrid;
-            Single Value;
+            float Value;
 
             SubGridUtilities.SubGridDimensionalIterator((I, J) =>
                             {

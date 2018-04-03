@@ -194,7 +194,7 @@ namespace VSS.VisionLink.Raptor.Cells
                         }
                     default:
                         {
-                            throw new ArgumentException(String.Format("Unknown pass type supplied to SetPassType {0}", _passType), "_passType");
+                            throw new ArgumentException(string.Format("Unknown pass type supplied to SetPassType {0}", _passType), "_passType");
                         }
                 }
 
@@ -374,7 +374,7 @@ namespace VSS.VisionLink.Raptor.Cells
         /// Produce a human readable text version of the information contained in a cell pass
         /// </summary>
         /// <returns></returns>
-        public override String ToString()
+        public override string ToString()
         {
             return  $"Time:{Time} MachineID:{MachineID}, Height:{Height}, CCV:{CCV}, RadioLatency:{RadioLatency}, RMV:{RMV}, GPSMode:{gpsMode}, Freq:{Frequency}, Amp:{Amplitude}, Temperature:{MaterialTemperature}, Speed:{MachineSpeed}, MDP:{MDP}, CCA:{CCA}";
         }

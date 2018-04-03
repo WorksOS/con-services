@@ -23,7 +23,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tests
                                                              null, // Filter2
                                                              long.MinValue, // DesignDescriptor.Null(),
                                                              Color.Black,
-                                                             String.Empty);
+                                                             string.Empty);
 
             Assert.NotNull(render);
         }

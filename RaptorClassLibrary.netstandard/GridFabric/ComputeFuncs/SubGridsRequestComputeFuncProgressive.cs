@@ -29,7 +29,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         private IMessaging rmtMsg;
 
         [NonSerialized]
-        private string raptorNodeIDAsString = String.Empty;
+        private string raptorNodeIDAsString = string.Empty;
 
         [NonSerialized]
         private MemoryStream MS;

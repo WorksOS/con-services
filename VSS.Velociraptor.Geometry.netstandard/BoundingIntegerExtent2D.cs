@@ -9,7 +9,7 @@ namespace VSS.VisionLink.Raptor.Geometry
     [Serializable]
     public struct BoundingIntegerExtent2D : IEquatable<BoundingIntegerExtent2D>
     {
-        public Int32 MinX, MinY, MaxX, MaxY;
+        public int MinX, MinY, MaxX, MaxY;
 
         /// <summary>
         /// Calculates the area in square meters of the X/Y plan extent. If the extent is too large to represent
@@ -43,7 +43,7 @@ namespace VSS.VisionLink.Raptor.Geometry
         /// Produce as human readable form of the state in this bounding extent
         /// </summary>
         /// <returns></returns>
-        public override String ToString() => String.Format("MinX: {0}, MinY:{1}, MaxX: {2}, MaxY:{3}", MinX, MinY, MaxX, MaxY);
+        public override string ToString() => string.Format("MinX: {0}, MinY:{1}, MaxX: {2}, MaxY:{3}", MinX, MinY, MaxX, MaxY);
 
         /// <summary>
         /// Construct a 2D bounding extent from the supplied parameters
@@ -52,7 +52,7 @@ namespace VSS.VisionLink.Raptor.Geometry
         /// <param name="AMinY"></param>
         /// <param name="AMaxX"></param>
         /// <param name="AMaxY"></param>
-        public BoundingIntegerExtent2D(Int32 AMinX, Int32 AMinY, Int32 AMaxX, Int32 AMaxY)
+        public BoundingIntegerExtent2D(int AMinX, int AMinY, int AMaxX, int AMaxY)
         {
             MinX = AMinX;
             MinY = AMinY;
@@ -76,7 +76,7 @@ namespace VSS.VisionLink.Raptor.Geometry
         /// Expand the extent covered in X & Y isotropically using the supplied Delta
         /// </summary>
         /// <param name="Delta"></param>
-        public void Expand(Int32 Delta)
+        public void Expand(int Delta)
         {
             MinX -= Delta;
             MaxX += Delta;
@@ -89,7 +89,7 @@ namespace VSS.VisionLink.Raptor.Geometry
         /// </summary>
         /// <param name="X"></param>
         /// <param name="Y"></param>
-        public void Include(Int32 X, Int32 Y)
+        public void Include(int X, int Y)
         {
             if (MinX > X) MinX = X;
             if (MaxX < X) MaxX = X;
@@ -116,7 +116,7 @@ namespace VSS.VisionLink.Raptor.Geometry
         /// <param name="X"></param>
         /// <param name="Y"></param>
         /// <returns>A boolean indicating where the boundign extent includes the given position</returns>
-        public bool Includes(Int32 x, Int32 y) => (x >= MinX) && (x <= MaxX) && (y >= MinY) && (y <= MaxY);
+        public bool Includes(int x, int y) => (x >= MinX) && (x <= MaxX) && (y >= MinY) && (y <= MaxY);
 
         public bool Includes(uint x, uint y) => (x >= MinX) && (x <= MaxX) && (y >= MinY) && (y <= MaxY);
 
@@ -130,7 +130,7 @@ namespace VSS.VisionLink.Raptor.Geometry
         /// </summary>
         /// <param name="DX"></param>
         /// <param name="DY"></param>
-        public void Offset(Int32 DX, Int32 DY)
+        public void Offset(int DX, int DY)
         {
             MinX += DX;
             MaxX += DX;
@@ -140,10 +140,10 @@ namespace VSS.VisionLink.Raptor.Geometry
 
         public void SetInverted()
         {
-            MinX = Int32.MaxValue;
-            MaxX = Int32.MinValue;
-            MinY = Int32.MaxValue;
-            MaxY = Int32.MinValue;
+            MinX = int.MaxValue;
+            MaxX = int.MinValue;
+            MinY = int.MaxValue;
+            MaxY = int.MinValue;
         }
 
         /// <summary>

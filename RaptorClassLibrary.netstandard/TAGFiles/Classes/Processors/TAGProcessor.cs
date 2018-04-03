@@ -111,11 +111,11 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         protected bool ProcessProofingPassInformation()
         {
             bool Result = true;
-            string TempStr = EndProofingName != String.Empty ? EndProofingName : Design == String.Empty ? "No Design" : Design;
+            string TempStr = EndProofingName != string.Empty ? EndProofingName : Design == string.Empty ? "No Design" : Design;
 
             DateTime LocalTime = StartProofingDataTime + Time.GPS.GetLocalGMTOffset();
 
-            EndProofingName = String.Format("{0} ({1:YYYY:MM:DD} {1:HH:mm:ss})", TempStr, LocalTime);
+            EndProofingName = string.Format("{0} ({1:YYYY:MM:DD} {1:HH:mm:ss})", TempStr, LocalTime);
 
 /* TODO add when proofing runs are supported
             // Create a new proofing run entry to represent this run
@@ -271,7 +271,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
             }
 
             // Update the design extent...
-            if (Design != String.Empty)
+            if (Design != string.Empty)
             {
                 // TODO readd when designs are implemented
                 // UpdateCurrentDesignExtent;

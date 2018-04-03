@@ -62,7 +62,7 @@ namespace VSS.VisionLink.Raptor.Compression
             if (MemorySize() > (256 * 1024 * 1024))
             {
                 // SIGLogMessage.PublishNoODS(Nil, Format('BitFieldArray.AllocateBuffer limited to 256Mb in size (%d bytes requested)', [MemorySize]), slmcError);
-                throw new Exception(String.Format("BitFieldArray.AllocateBuffer limited to 256Mb in size ({0}Mb requested)", MemorySize() / (1024 * 1024)));
+                throw new Exception(string.Format("BitFieldArray.AllocateBuffer limited to 256Mb in size ({0}Mb requested)", MemorySize() / (1024 * 1024)));
             }
 
             Storage = NewStorage();
@@ -70,7 +70,7 @@ namespace VSS.VisionLink.Raptor.Compression
             if (Storage == null)
             {
                 // SIGLogMessage.PublishNoODS(Nil, Format('BitFieldArray.AllocateBuffer failed to allocate a buffer of %d bytes', [MemorySize]), slmcError);
-                throw new Exception(String.Format("BitFieldArray.AllocateBuffer failed to allocate a buffer of {0} bytes", MemorySize()));
+                throw new Exception(string.Format("BitFieldArray.AllocateBuffer failed to allocate a buffer of {0} bytes", MemorySize()));
             }
         }
 
@@ -321,7 +321,7 @@ namespace VSS.VisionLink.Raptor.Compression
 
         public void StreamWriteEnd()
         {
-            Debug.Assert(StreamWriteBitPos == NumBits, String.Format("BitFieldArray.StreamWriteEnd: Stream bit position is not after last bit in Storage (FStreamWriteBitPos={0}, FNumBits={1})", StreamWriteBitPos, NumBits));
+            Debug.Assert(StreamWriteBitPos == NumBits, string.Format("BitFieldArray.StreamWriteEnd: Stream bit position is not after last bit in Storage (FStreamWriteBitPos={0}, FNumBits={1})", StreamWriteBitPos, NumBits));
         }
 
         /// <summary>

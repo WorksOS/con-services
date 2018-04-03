@@ -63,8 +63,8 @@ namespace VSS.VisionLink.Raptor.Designs
 
         void FindTriKeys(Triangle Tri, ref key_list_rec key_list)
         {
-            Double xmin, ymin, xmax, ymax;
-            Double x, y;
+            double xmin, ymin, xmax, ymax;
+            double x, y;
 
             xmin = 1E100;
             xmax = -1E100;
@@ -85,7 +85,7 @@ namespace VSS.VisionLink.Raptor.Designs
             calc_rectangle_keys(xmin, ymin, xmax, ymax, ref key_list);
         }
 
-        public override void find_tri_keys(Object triangle, ref key_list_rec key_list)
+        public override void find_tri_keys(object triangle, ref key_list_rec key_list)
         {
             FindTriKeys((Triangle)triangle, ref key_list);
         }
@@ -122,11 +122,11 @@ namespace VSS.VisionLink.Raptor.Designs
                             TTM.Header.MaximumEasting + 100, TTM.Header.MaximumNorthing + 100);
         }
 
-        public override bool InsideTriangle(Object Tri, Double world_x, Double world_y) => ((Triangle)Tri).PointInTriangle(world_x, world_y);
+        public override bool InsideTriangle(object Tri, double world_x, double world_y) => ((Triangle)Tri).PointInTriangle(world_x, world_y);
 
-        public override Object ReadEntityRef(int index) => TTM.Triangles[index];
+        public override object ReadEntityRef(int index) => TTM.Triangles[index];
 
-        public override void resize_quadtree(Double min_x, Double min_y, Double max_x, Double max_y)
+        public override void resize_quadtree(double min_x, double min_y, double max_x, double max_y)
         {
             BATree = null;
 

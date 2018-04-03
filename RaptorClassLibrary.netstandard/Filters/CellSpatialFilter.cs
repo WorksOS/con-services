@@ -156,7 +156,7 @@ namespace VSS.VisionLink.Raptor.Filters
         /// <returns></returns>
         public string ActiveFiltersString()
         {
-            return String.Format("Spatial:{0}, Positional:{1}, DesignMask:{2}, AlignmentMask:{3}", IsSpatial, IsPositional, IsDesignMask, IsAlignmentMask);
+            return string.Format("Spatial:{0}, Positional:{1}, DesignMask:{2}, AlignmentMask:{3}", IsSpatial, IsPositional, IsDesignMask, IsAlignmentMask);
         }
 
         /// <summary>

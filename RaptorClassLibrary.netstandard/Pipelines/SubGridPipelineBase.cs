@@ -43,7 +43,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
         public PipelinedSubGridTask PipelineTask = null;
         public bool Aborted { get; set; } = false;
 
-        public UInt32 TimeToLiveSeconds = 0;
+        public uint TimeToLiveSeconds = 0;
         DateTime TimeToLiveExpiryTime = DateTime.MaxValue;
 
         // public FExternalDescriptor: TASNodeRequestDescriptor;

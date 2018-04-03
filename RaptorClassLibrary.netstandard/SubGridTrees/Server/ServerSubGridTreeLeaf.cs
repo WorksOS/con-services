@@ -779,7 +779,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             }
 
             Result = storage.WriteSpatialStreamToPersistentStore
-             (Owner.ID, FileName, OriginX, OriginY, String.Empty, //AInvalidatedSpatialStreams,
+             (Owner.ID, FileName, OriginX, OriginY, string.Empty, //AInvalidatedSpatialStreams,
               FileSystemStreamType.SubGridDirectory, out uint StoreGranuleIndex, out uint StoreGranuleCount, MStream) == FileSystemErrorStatus.OK;
             if (Result)
             {
@@ -885,7 +885,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public bool LoadDirectoryFromFile(IStorageProxy storage, string fileName)
         {
-            FileSystemErrorStatus FSError = storage.ReadSpatialStreamFromPersistentStore(Owner.ID, fileName, OriginX, OriginY, String.Empty,
+            FileSystemErrorStatus FSError = storage.ReadSpatialStreamFromPersistentStore(Owner.ID, fileName, OriginX, OriginY, string.Empty,
                                                                                          FileSystemStreamType.SubGridDirectory, 0, out MemoryStream SMS, out uint StoreGranuleIndex, out uint StoreGranuleCount);
 
             bool Result = FSError == FileSystemErrorStatus.OK;
@@ -1025,7 +1025,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// </summary>
         /// <param name="Origin"></param>
         /// <returns></returns>
-        public static string FileNameFromOriginPosition(SubGridCellAddress Origin) => String.Format("{0:D10}-{1:D10}.sgl", Origin.X, Origin.Y);
+        public static string FileNameFromOriginPosition(SubGridCellAddress Origin) => string.Format("{0:D10}-{1:D10}.sgl", Origin.X, Origin.Y);
     }
 }
 

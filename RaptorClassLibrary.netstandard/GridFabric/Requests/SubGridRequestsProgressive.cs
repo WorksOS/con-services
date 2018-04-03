@@ -49,7 +49,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         private void CreateSubGridListener()
         {
             // Create any required listener for periodic responses directly sent from the processing context to this context
-            if (!String.IsNullOrEmpty(arg.MessageTopic))
+            if (!string.IsNullOrEmpty(arg.MessageTopic))
             {
                 Listener = new SubGridListener(Task);
 

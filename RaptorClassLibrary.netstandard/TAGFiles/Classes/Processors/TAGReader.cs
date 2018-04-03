@@ -65,7 +65,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 
             if ((nybblePosition < 0) || (nybblePosition / 2 > GetSize()))
             {
-                throw new IndexOutOfRangeException(String.Format("NybblePosition {0} in file is out of range (size = {1})", nybblePosition, GetSize()));
+                throw new IndexOutOfRangeException(string.Format("NybblePosition {0} in file is out of range (size = {1})", nybblePosition, GetSize()));
             }
 
             if (nybblePosition % 2 == 0)
@@ -197,7 +197,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
             char c;
             StringBuilder sb = new StringBuilder();
 
-            while ((c = ReadUnicodeChar()) != Char.MinValue)
+            while ((c = ReadUnicodeChar()) != char.MinValue)
             {
                 sb.Append(c);
             }

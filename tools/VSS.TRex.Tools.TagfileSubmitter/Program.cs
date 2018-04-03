@@ -133,7 +133,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
                 }
                 catch
                 {
-                    Console.WriteLine(String.Format("Invalid project ID {0} or folder path {1}", args[0], args[1]));
+                    Console.WriteLine(string.Format("Invalid project ID {0} or folder path {1}", args[0], args[1]));
                     return;
                 }
 

@@ -27,15 +27,15 @@ namespace VSS.VisionLink.Raptor.Servers
         /// </summary>
         protected IIgnite immutableRaptorGrid = null;
 
-        protected static ICache<String, byte[]> NonSpatialMutableCache = null;
-        protected static ICache<String, byte[]> NonSpatialImmutableCache = null;
+        protected static ICache<string, byte[]> NonSpatialMutableCache = null;
+        protected static ICache<string, byte[]> NonSpatialImmutableCache = null;
         protected static ICache<SubGridSpatialAffinityKey, byte[]> SpatialMutableCache = null;
         protected static ICache<SubGridSpatialAffinityKey, byte[]> SpatialImmutableCache = null;
 
         /// <summary>
         /// A unique identifier for this server that may be used by business logic executing on other nodes in the grid to locate it if needed for messaging
         /// </summary>
-        public string RaptorNodeID = String.Empty;
+        public string RaptorNodeID = string.Empty;
 
         /// <summary>
         /// Permits configuration of server specific parameters that influence the initialisation of the server type
@@ -79,7 +79,7 @@ namespace VSS.VisionLink.Raptor.Servers
             cfg.DataRegionName = DataRegions.IMMUTABLE_NONSPATIAL_DATA_REGION;
         }
 
-        public abstract ICache<String, byte[]> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg);
+        public abstract ICache<string, byte[]> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg);
 
         /// <summary>
         /// Base configuration for the mutable spatial cache

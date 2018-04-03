@@ -15,7 +15,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// Create a human readable string representing the location and tree level this subgrid occupies in the tree.
         /// </summary>
         /// <returns></returns>
-        public override string ToString() => String.Format("Level:{0}, OriginX:{1}, OriginY:{2}", Level, OriginX, OriginY);
+        public override string ToString() => string.Format("Level:{0}, OriginX:{1}, OriginY:{2}", Level, OriginX, OriginY);
 
         /// <summary>
         /// The sub grid tree instance to which this subgrid belongs
@@ -226,7 +226,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// Returns a moniker string comprised of the X and Y origin ordinates in the sub greid cell address space
         /// separated by a colon, eg: in the form 1234:5678
         /// </summary>
-        public string Moniker() => String.Format("{0}:{1}", OriginX, OriginY);
+        public string Moniker() => string.Format("{0}:{1}", OriginX, OriginY);
 
         /// <summary>
         /// A virtual method representing an access mechanism to request a child subgrid at the X/Y location in this subgrid

@@ -37,7 +37,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
         /// <summary>
         /// The raptor node wanting to recieve the results of task bases subgrid requests to the PSNode clustered processing layer
         /// </summary>
-        public string RaptorNodeID { get; set; } = String.Empty;
+        public string RaptorNodeID { get; set; } = string.Empty;
 
         /// <summary>
         /// Default no-arg constructor

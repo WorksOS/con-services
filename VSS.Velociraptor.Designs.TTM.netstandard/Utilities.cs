@@ -11,9 +11,9 @@ namespace VSS.Velociraptor.Designs.TTM
     {
         public static void WriteFloat(BinaryWriter writer, double Value, short ValueSize)
         {
-            if (ValueSize == sizeof(Single))
+            if (ValueSize == sizeof(float))
             {
-                Single aSingle = (Single)Value;
+                float aSingle = (float)Value;
                 writer.Write(aSingle);
             }
             else
@@ -24,7 +24,7 @@ namespace VSS.Velociraptor.Designs.TTM
 
         public static double ReadFloat(BinaryReader reader, short ValueSize) 
         {
-            return ValueSize == sizeof(Single) ? reader.ReadSingle() : reader.ReadDouble();
+            return ValueSize == sizeof(float) ? reader.ReadSingle() : reader.ReadDouble();
         }
 
         public static void WriteInteger(BinaryWriter writer, int Value, short ValueSize)

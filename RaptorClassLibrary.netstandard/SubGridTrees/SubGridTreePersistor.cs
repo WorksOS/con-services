@@ -140,7 +140,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <param name="tree"></param>
         /// <param name="reader"></param>
         /// <returns></returns>
-        public static bool Read(ISubGridTree tree, BinaryReader reader) => Read(tree, String.Empty, 0, reader);
+        public static bool Read(ISubGridTree tree, BinaryReader reader) => Read(tree, string.Empty, 0, reader);
 
         /// <summary>
         /// Provides Read() semantics for a subgrid tree against a BinaryReader

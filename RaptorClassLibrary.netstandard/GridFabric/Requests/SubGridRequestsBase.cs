@@ -55,7 +55,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         /// The identifier of the Raptor Node that is issuing the request for subgrids and which wants to receive the processed
         /// subgrid responses
         /// </summary>
-        public string RaptorNodeID { get; set; } = String.Empty;
+        public string RaptorNodeID { get; set; } = string.Empty;
 
         /// <summary>
         /// The type of grid data to be retrieved from the subgrid requests
@@ -155,7 +155,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
                         ProdDataMaskBytes = ProdDataMS.ToArray(),
                         SurveyedSurfaceOnlyMaskBytes = SurveyedSurfaceMS.ToArray(),
                         Filters = Filters,
-                        MessageTopic = String.Format("SubGridRequest:{0}", RequestID),
+                        MessageTopic = string.Format("SubGridRequest:{0}", RequestID),
                         RaptorNodeID = RaptorNodeID,
                         CutFillDesignID = CutFillDesignID
                     };

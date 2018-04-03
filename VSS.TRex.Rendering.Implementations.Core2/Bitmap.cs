@@ -19,7 +19,7 @@ namespace VSS.TRex.Rendering.Implementations.Core2
     public int Width => container.Width;
     public int Height => container.Height;
 
-    public Object GetBitmap() => underlyingBitmap;
+    public object GetBitmap() => underlyingBitmap;
 
     public void Dispose()
     {

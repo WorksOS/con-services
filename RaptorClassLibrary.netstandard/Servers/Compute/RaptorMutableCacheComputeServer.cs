@@ -43,7 +43,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
 
             cfg.JvmInitialMemoryMb = 512; // Set to minimum advised memory for Ignite grid JVM of 512Mb
             cfg.JvmMaxMemoryMb = 1 * 1024; // Set max to 1Gb
-            cfg.UserAttributes = new Dictionary<String, object>
+            cfg.UserAttributes = new Dictionary<string, object>
             {
                 { "Owner", RaptorGrids.RaptorMutableGridName() },
                 { "SpatialDivision", RaptorServerConfig.Instance().SpatialSubdivisionDescriptor }
@@ -111,9 +111,9 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.Backups = 0;
         }
 
-        public override ICache<String, byte[]> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg)
+        public override ICache<string, byte[]> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg)
         {
-            return mutableRaptorGrid.GetOrCreateCache<String, byte[]>(CacheCfg);
+            return mutableRaptorGrid.GetOrCreateCache<string, byte[]>(CacheCfg);
         }
 
         public override void ConfigureMutableSpatialCache(CacheConfiguration cfg)

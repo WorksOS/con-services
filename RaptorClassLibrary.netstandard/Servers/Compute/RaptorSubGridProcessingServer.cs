@@ -68,7 +68,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
         /// </summary>
         /// <param name="CacheCfg"></param>
         /// <returns></returns>
-        public override ICache<String, byte[]> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg)
+        public override ICache<string, byte[]> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg)
         {
             return base.InstantiateRaptorCacheReference(CacheCfg);
             // return raptorGrid.GetCache<String, MemoryStream>(CacheCfg.Name);

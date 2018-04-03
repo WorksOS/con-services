@@ -17,9 +17,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
     public struct AccumulatedAttribute
     {
         public DateTime dateTime;
-        public Object value;
+        public object value;
 
-        public AccumulatedAttribute(DateTime dateTime, Object value)
+        public AccumulatedAttribute(DateTime dateTime, object value)
         {
             this.dateTime = dateTime;
             this.value = value;

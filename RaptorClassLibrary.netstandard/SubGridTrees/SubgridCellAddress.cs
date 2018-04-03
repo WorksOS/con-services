@@ -20,12 +20,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <summary>
         /// The X ordinate of the cell address
         /// </summary>
-        public UInt32 X { get; set; }
+        public uint X { get; set; }
 
         /// <summary>
         /// The Y ordinate of the cell address
         /// </summary>
-        public UInt32 Y { get; set; }
+        public uint Y { get; set; }
 
         /// <summary>
         /// Specifies if production data is being requested with respect to this cell address
@@ -45,14 +45,14 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             set { BitFlagHelper.SetBit(ref DataRequestFlags, 1, value); }
         }
 
-        public SubGridCellAddress(UInt32 AX, UInt32 AY)
+        public SubGridCellAddress(uint AX, uint AY)
         {
             X = AX;
             Y = AY;
             DataRequestFlags = 0;
         }
 
-        public SubGridCellAddress(UInt32 AX, UInt32 AY, bool AProdDataRequested, bool ASurveyedSurfaceDataRequested) : this(AX, AY)
+        public SubGridCellAddress(uint AX, uint AY, bool AProdDataRequested, bool ASurveyedSurfaceDataRequested) : this(AX, AY)
         {
             ProdDataRequested = AProdDataRequested;
             SurveyedSurfaceDataRequested = ASurveyedSurfaceDataRequested;
@@ -89,7 +89,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// Constructs a descriptor from a cell address that skips and interleaves alternate bits from each of the 
         /// X and Y components of the cell address.
         /// </summary>
-        public UInt32 ToSkipInterleavedDescriptor => (X & 0xAAAAAAAA) | (Y & 0x55555555);
+        public uint ToSkipInterleavedDescriptor => (X & 0xAAAAAAAA) | (Y & 0x55555555);
 
         /// <summary>
         /// Constructs a spatial division descriptor from a cell address that skips and interleaves alternate bits from each of the 
@@ -113,13 +113,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// of the parent subgrid that contains it. All cell addresses within that subgrid will return the same normalised 
         /// origin descriptor.
         /// </summary>
-        public UInt32 ToSkipInterleavedSubgridOriginDescriptor => ((X >> SubGridTree.SubGridIndexBitsPerLevel) & 0xAAAAAAAA) | ((Y >> SubGridTree.SubGridIndexBitsPerLevel) & 0x55555555);
+        public uint ToSkipInterleavedSubgridOriginDescriptor => ((X >> SubGridTree.SubGridIndexBitsPerLevel) & 0xAAAAAAAA) | ((Y >> SubGridTree.SubGridIndexBitsPerLevel) & 0x55555555);
 
         /// <summary>
         /// Produce a human readable form of the cell address information
         /// </summary>
         /// <returns></returns>
-        public override string ToString() => System.String.Format("{0}:{1}", X, Y);
+        public override string ToString() => string.Format("{0}:{1}", X, Y);
 
         /// <summary>
         /// Sets the state of a cell address struct
@@ -128,7 +128,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <param name="AY"></param>
         /// <param name="AProdDataRequested"></param>
         /// <param name="ASurveyedSurfaceDataRequested"></param>
-        public void Set(UInt32 AX, UInt32 AY, bool AProdDataRequested, bool ASurveyedSurfaceDataRequested)
+        public void Set(uint AX, uint AY, bool AProdDataRequested, bool ASurveyedSurfaceDataRequested)
         {
             X = AX;
             Y = AY;

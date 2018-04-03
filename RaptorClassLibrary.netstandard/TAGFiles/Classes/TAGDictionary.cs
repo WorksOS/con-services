@@ -34,7 +34,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         public bool Read(TAGReader reader)
         {
             string fieldName;
-            while ((fieldName = Encoding.ASCII.GetString(reader.ReadANSIString())) != String.Empty)
+            while ((fieldName = Encoding.ASCII.GetString(reader.ReadANSIString())) != string.Empty)
             {
                 uint tempFieldType = reader.ReadUnSignedIntegerValue(1);
 

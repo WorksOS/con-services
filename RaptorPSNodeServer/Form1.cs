@@ -22,7 +22,7 @@ namespace RaptorPSNodeServer
 
             InitializeComponent();
 
-            Text = String.Format("{0}: Spatial Division {1}", Text, RaptorServerConfig.Instance().SpatialSubdivisionDescriptor);
+            Text = string.Format("{0}: Spatial Division {1}", Text, RaptorServerConfig.Instance().SpatialSubdivisionDescriptor);
         }
     }
 }

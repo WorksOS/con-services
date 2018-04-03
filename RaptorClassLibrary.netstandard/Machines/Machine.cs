@@ -41,7 +41,7 @@ namespace VSS.VisionLink.Raptor.Machines
         public double LastKnownY { get; set; } = Consts.NullDouble;
         public DateTime LastKnownPositionTimeStamp { get; set; } = DateTime.MinValue;
 
-        public string LastKnownDesignName { get; set; } = String.Empty;
+        public string LastKnownDesignName { get; set; } = string.Empty;
 
         public ushort LastKnownLayerId { get; set; } = 0;
 

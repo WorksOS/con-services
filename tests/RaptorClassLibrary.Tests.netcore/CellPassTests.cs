@@ -216,7 +216,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         {
             CellPass cp = ATestCellPass();
 
-            Assert.False(String.IsNullOrEmpty(cp.ToString()), "ToString() result is null or empty");
+            Assert.False(string.IsNullOrEmpty(cp.ToString()), "ToString() result is null or empty");
         }
     }
 }

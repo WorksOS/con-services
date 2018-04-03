@@ -49,7 +49,7 @@ namespace VSS.VisionLink.Raptor.Designs
 
         public string FullPath => Path.Combine(Folder, FileName);
 
-        public bool IsNull => String.IsNullOrEmpty(FileName);
+        public bool IsNull => string.IsNullOrEmpty(FileName);
 
         /// <summary>
         /// Overloaded ToString detailing the state of the Design Descriptor
@@ -57,7 +57,7 @@ namespace VSS.VisionLink.Raptor.Designs
         /// <returns></returns>
         public override string ToString()
         {
-            return String.Format("[{0}:'{1}', '{2}', '{3}', '{4}', '{5}']", DesignID, FileSpace, FileSpaceID, Folder, FileName, Offset);
+            return string.Format("[{0}:'{1}', '{2}', '{3}', '{4}', '{5}']", DesignID, FileSpace, FileSpaceID, Folder, FileName, Offset);
         }
 
         public bool Equals(DesignDescriptor other)

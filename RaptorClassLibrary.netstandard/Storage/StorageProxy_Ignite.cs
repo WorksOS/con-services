@@ -91,7 +91,7 @@ namespace VSS.VisionLink.Raptor.Storage
             }
             catch (Exception e)
             {
-                Log.Info(String.Format("Exception occurred: {0}", e));
+                Log.Info(string.Format("Exception occurred: {0}", e));
 
                 Stream = null;
                 return FileSystemErrorStatus.UnknownErrorReadingFromFS;
@@ -137,7 +137,7 @@ namespace VSS.VisionLink.Raptor.Storage
             }
             catch (Exception e)
             {
-                Log.Info(String.Format("Exception occurred: {0}", e));
+                Log.Info(string.Format("Exception occurred: {0}", e));
 
                 Stream = null;
                 return FileSystemErrorStatus.UnknownErrorReadingFromFS;
@@ -185,7 +185,7 @@ namespace VSS.VisionLink.Raptor.Storage
             {
                 string cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
-                Log.Info(String.Format("Removing key:{0}", cacheKey));
+                Log.Info(string.Format("Removing key:{0}", cacheKey));
 
                 // Remove item from both immutable and mutable caches
                 try
@@ -238,7 +238,7 @@ namespace VSS.VisionLink.Raptor.Storage
 
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
-                    Log.Info(String.Format($"Putting key:{cacheKey} in {spatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}"));
+                    Log.Info(string.Format($"Putting key:{cacheKey} in {spatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}"));
 
                     spatialCache.Put(cacheKey, compressedStream.ToArray());
                 }
@@ -285,7 +285,7 @@ namespace VSS.VisionLink.Raptor.Storage
 
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
-                    Log.Info(String.Format($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}"));
+                    Log.Info(string.Format($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}"));
 
                     // IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorGridName());
                     // ICache<string, byte[]> cache = ignite.GetCache<string, byte[]>(RaptorCaches.MutableNonSpatialCacheName());
@@ -324,7 +324,7 @@ namespace VSS.VisionLink.Raptor.Storage
 
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
-                    Log.Info(String.Format($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}"));
+                    Log.Info(string.Format($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}"));
 
                     nonSpatialCache.Put(cacheKey, compressedStream.ToArray());
                 }

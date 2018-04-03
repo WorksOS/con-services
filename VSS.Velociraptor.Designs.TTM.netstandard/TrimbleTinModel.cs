@@ -21,12 +21,12 @@ namespace VSS.Velociraptor.Designs.TTM
         {
             const int SingleMantissaBits = 24; //  Including implied first bit 
 
-            return (short)(Math.Abs(MaxValue) < (1 << SingleMantissaBits) * Resolution ? sizeof(Single) : sizeof(Double));
+            return (short)(Math.Abs(MaxValue) < (1 << SingleMantissaBits) * Resolution ? sizeof(float) : sizeof(double));
         }
 
         protected short CalcIntSize(int MaxValue)
         {
-            return (short)(Math.Abs(MaxValue) <= Consts.MaxSmallIntValue ? sizeof(Int16) : sizeof(Int32));
+            return (short)(Math.Abs(MaxValue) <= Consts.MaxSmallIntValue ? sizeof(short) : sizeof(int));
         }
 
         protected override void CreateLists(ref TriVertices vertices, ref Triangles triangles)

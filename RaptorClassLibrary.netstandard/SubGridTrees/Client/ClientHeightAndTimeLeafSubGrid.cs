@@ -66,7 +66,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// <summary>
         /// Time values for the heights stored in the height and time structure. Times are expressed as the binary DateTime format to promote efficient copying of arrays
         /// </summary>
-        public Int64[,] Times = new Int64[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+        public long[,] Times = new long[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
 
         /// <summary>
         /// Constructor. Set the grid to HeightAndTime.
@@ -97,11 +97,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// <summary>
         /// An array containing the content of null times for all the cell in the subgrid
         /// </summary>
-        public static Int64[,] nullTimes = NullTimes();
+        public static long[,] nullTimes = NullTimes();
 
-        private static Int64[,] NullTimes()
+        private static long[,] NullTimes()
         {
-            Int64[,] result = new Int64[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+            long[,] result = new long[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
 
             ForEach((x, y) => result[x, y] = DateTime.MinValue.ToBinary());
 
@@ -115,7 +115,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         {
             base.Clear();
 
-            Buffer.BlockCopy(nullTimes, 0, Times, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(Int64));
+            Buffer.BlockCopy(nullTimes, 0, Times, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(long));
         }
 
         /// <summary>
@@ -128,8 +128,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         {
             base.Write(writer, buffer);
 
-            Buffer.BlockCopy(Times, 0, buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(Int64));
-            writer.Write(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(Int64));
+            Buffer.BlockCopy(Times, 0, buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(long));
+            writer.Write(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(long));
         }
 
         /// <summary>
@@ -142,8 +142,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         {
             base.Read(reader, buffer);
 
-            reader.Read(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(Int64));
-            Buffer.BlockCopy(buffer, 0, Times, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(Int64));
+            reader.Read(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(long));
+            Buffer.BlockCopy(buffer, 0, Times, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(long));
         }
     }
 }

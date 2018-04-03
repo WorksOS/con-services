@@ -23,13 +23,13 @@ namespace VSS.VisionLink.Raptor.Executors
 
         public int ProcessedEpochCount { get; set; } = 0;
 
-        public string RadioType { get; set; } = String.Empty;
-        public string RadioSerial { get; set; } = String.Empty;
+        public string RadioType { get; set; } = string.Empty;
+        public string RadioSerial { get; set; } = string.Empty;
 
         public byte MachineType { get; set; } = CellPass.MachineTypeNull;
 
-        public string MachineID { get; set; } = String.Empty;
-        public string HardwareID { get; set; } = String.Empty;
+        public string MachineID { get; set; } = string.Empty;
+        public string HardwareID { get; set; } = string.Empty;
 
 
         public TAGReadResult ReadResult { get; set; } = TAGReadResult.NoError;
@@ -43,13 +43,13 @@ namespace VSS.VisionLink.Raptor.Executors
             SeedLongitude = null;
             ProcessedEpochCount = 0;
 
-            RadioType = String.Empty;
-            RadioSerial = String.Empty;
+            RadioType = string.Empty;
+            RadioSerial = string.Empty;
 
             MachineType = CellPass.MachineTypeNull;
 
-            MachineID = String.Empty;
-            HardwareID = String.Empty;
+            MachineID = string.Empty;
+            HardwareID = string.Empty;
 
             ReadResult = TAGReadResult.NoError;
         }

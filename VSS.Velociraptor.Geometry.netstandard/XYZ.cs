@@ -66,7 +66,7 @@ namespace VSS.VisionLink.Raptor.Geometry
         /// <returns></returns>
         public override string ToString()
         {
-            return String.Format("X:{0:F3}, Y:{1:F3}, Z:{2:F3}", X, Y, Z);
+            return string.Format("X:{0:F3}, Y:{1:F3}, Z:{2:F3}", X, Y, Z);
         }
 
         /// <summary>

@@ -79,7 +79,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 
             Assert.Equal((int)leafSubgrid.OriginX, 10 * SubGridTree.SubGridTreeDimension);
             Assert.Equal((int)leafSubgrid.OriginY, 10 * SubGridTree.SubGridTreeDimension);
-            Assert.Equal(leafSubgrid.Moniker(), String.Format("{0}:{0}", 10 * SubGridTree.SubGridTreeDimension));
+            Assert.Equal(leafSubgrid.Moniker(), string.Format("{0}:{0}", 10 * SubGridTree.SubGridTreeDimension));
         }
 
         [Fact]
