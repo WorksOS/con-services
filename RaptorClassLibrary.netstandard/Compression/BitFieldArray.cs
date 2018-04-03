@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 // This unit implements support for storing attribute values as variable bit field arrays and records 
 
@@ -192,7 +188,7 @@ namespace VSS.VisionLink.Raptor.Compression
 
         /// <summary>
         /// StreamWrite takes a native unsigned integer value value depending on OS,
-        /// plus a number of bits and writes the least significant <ValueBits> of that value
+        /// plus a number of bits and writes the least significant ValueBits of that value
         /// into the bit field array.
         /// The variant that takes a TEncodedBitFieldDescriptor will perform automatic
         /// native to encoded null value conversion and deal with subtracting the minvalue
@@ -260,7 +256,7 @@ namespace VSS.VisionLink.Raptor.Compression
 
         /// <summary>
         /// StreamWrite takes a native unsigned integer value value depending on OS,
-        /// plus a number of bits and writes the least significant <ValueBits> of that value
+        /// plus a number of bits and writes the least significant ValueBits of that value
         /// into the bit field array.
         /// The variant that takes a TEncodedBitFieldDescriptor will perform automatic
         /// native to encoded null value conversion and deal with subtracting the minvalue
@@ -375,14 +371,14 @@ namespace VSS.VisionLink.Raptor.Compression
             }
 #endif
 
-            int BlockPointer = ABitLocation >> BitFieldArray.kBitLocationToBlockShift;
-            int RemainingBitsInCurrentStorageBlock = BitFieldArray.kNBitsReadAtATime - (ABitLocation & BitFieldArray.kBitsRemainingInStorageBlockMask);
+            int BlockPointer = ABitLocation >> kBitLocationToBlockShift;
+            int RemainingBitsInCurrentStorageBlock = kNBitsReadAtATime - (ABitLocation & kBitsRemainingInStorageBlockMask);
             long Result;
 
             // Read initial bits from storage element
             if (RemainingBitsInCurrentStorageBlock >= ValueBits)
             {
-                Result = (long)((Storage[BlockPointer] >> (RemainingBitsInCurrentStorageBlock - ValueBits)) & (ulong)(((ulong)1 << ValueBits) - 1));
+                Result = (long)((Storage[BlockPointer] >> (RemainingBitsInCurrentStorageBlock - ValueBits)) & (((ulong)1 << ValueBits) - 1));
             }
             else
             {
@@ -403,12 +399,12 @@ namespace VSS.VisionLink.Raptor.Compression
                 // Step 3: Read remaining bits from next block in Storage
                 if (BitsToRead > 0)
                 {
-                    Result = (long)(((ulong)Result << BitsToRead) | (Storage[BlockPointer + 1] >> (BitFieldArray.kNBitsReadAtATime - BitsToRead)));
+                    Result = (long)(((ulong)Result << BitsToRead) | (Storage[BlockPointer + 1] >> (kNBitsReadAtATime - BitsToRead)));
                 }
             }
 
             // Compute the true result of the read by taking nullability and the offset of MinValue into account
-            Result = ADescriptor.Nullable && (Result == (ADescriptor.EncodedNullValue - ADescriptor.MinValue)) ? ADescriptor.NativeNullValue : Result + ADescriptor.MinValue;
+            Result = ADescriptor.Nullable && Result == ADescriptor.EncodedNullValue - ADescriptor.MinValue ? ADescriptor.NativeNullValue : Result + ADescriptor.MinValue;
 
             ABitLocation += ValueBits; // Advance the current bit position pointer;
 
@@ -460,9 +456,9 @@ namespace VSS.VisionLink.Raptor.Compression
             }
 #endif
 
-            long Result = 0;
+            long Result;
             int BlockPointer = ABitLocation >> kBitLocationToBlockShift;
-            int RemainingBitsInCurrentStorageBlock = BitFieldArray.kNBitsReadAtATime - (ABitLocation & BitFieldArray.kBitsRemainingInStorageBlockMask);
+            int RemainingBitsInCurrentStorageBlock = kNBitsReadAtATime - (ABitLocation & kBitsRemainingInStorageBlockMask);
 
             // Read initial bits from storage block
             if (RemainingBitsInCurrentStorageBlock >= AValueBits)
@@ -488,7 +484,7 @@ namespace VSS.VisionLink.Raptor.Compression
                 // Step 3: Read remaining bits from next block in Storage
                 if (BitsToRead > 0)
                 {
-                    Result = (long)(((ulong)Result << BitsToRead) | (Storage[BlockPointer + 1] >> (BitFieldArray.kNBitsReadAtATime - BitsToRead)));
+                    Result = (long)(((ulong)Result << BitsToRead) | (Storage[BlockPointer + 1] >> (kNBitsReadAtATime - BitsToRead)));
                 }
             }
 

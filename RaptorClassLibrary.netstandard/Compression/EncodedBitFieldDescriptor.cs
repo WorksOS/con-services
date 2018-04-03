@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace VSS.VisionLink.Raptor.Compression
 {
@@ -64,8 +60,6 @@ namespace VSS.VisionLink.Raptor.Compression
 
         public void CalculateRequiredBitFieldSize()
         {
-            int ValueRange;
-
             AllValuesAreNull = Nullable && ((MinValue == NativeNullValue) || (MaxValue == NativeNullValue));
 
             if (AllValuesAreNull || MinValue == MaxValue) // no storage required, 0 bits to encode this attribute
@@ -74,7 +68,7 @@ namespace VSS.VisionLink.Raptor.Compression
                 return;
             }
 
-            ValueRange = MaxValue - MinValue; // Represented by 0-based indices so no need to add 1. See Bug 24559.
+            int ValueRange = MaxValue - MinValue; // Represented by 0-based indices so no need to add 1. See Bug 24559.
 
             // Calculate the ceiling of the base 2 log of the numeric range from MinValue to MaxValue
             RequiredBits = (byte)(1 + (int)Math.Floor(Math.Log(ValueRange, 2)));
