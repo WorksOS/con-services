@@ -516,11 +516,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <param name="functor"></param>
         public void ForEachSetBit(Action<int, int> functor)
         {
-            uint RowBits;
-
             for (int Row = 0; Row < SubGridTree.SubGridTreeDimension; Row++)
             {
-                RowBits = Bits[Row];
+                uint RowBits = Bits[Row];
 
                 if (RowBits == 0)
                 {
@@ -545,11 +543,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <param name="functor"></param>
         public void ForEachSetBit(Func<int, int, bool> functor)
         {
-            uint RowBits;
-
             for (int Row = 0; Row < SubGridTree.SubGridTreeDimension; Row++)
             {
-                RowBits = Bits[Row];
+                uint RowBits = Bits[Row];
 
                 if (RowBits == 0)
                 {
@@ -576,11 +572,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <param name="functor"></param>
         public void ForEachClearBit(Action<int, int> functor)
         {
-            uint RowBits;
-
             for (byte Row = 0; Row < SubGridTree.SubGridTreeDimension; Row++)
             {
-                RowBits = Bits[Row];
+                uint RowBits = Bits[Row];
 
                 if (RowBits == 0xFFFFFFFF)
                 {
@@ -620,11 +614,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <param name="functor"></param>
         public void ForEach(Func<byte, byte, bool> functor)
         {
-            uint RowBits;
-
             for (byte Row = 0; Row < SubGridTree.SubGridTreeDimension; Row++)
             {
-                RowBits = Bits[Row];
+                uint RowBits = Bits[Row];
 
                 for (byte Column = 0; Column < SubGridTree.SubGridTreeDimension; Column++)
                 {
@@ -687,7 +679,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <returns></returns>
         public bool Equals(SubGridTreeBitmapSubGridBits other)
         {
-            if (other == null)
+            if (other.Bits == null)
             {
                 return false;
             }

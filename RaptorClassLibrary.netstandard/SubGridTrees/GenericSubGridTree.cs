@@ -63,9 +63,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             {
                 Debug.Assert(false, "Unable to create cell subgrid");
             }
-
-            subGrid.GetSubGridCellIndex(cellX, cellY, out byte subGridX, out byte subGridY);
-            ((GenericLeafSubGrid<T>)subGrid).Items[subGridX, subGridY] = value;
+            else
+            {
+                subGrid.GetSubGridCellIndex(cellX, cellY, out byte subGridX, out byte subGridY);
+                ((GenericLeafSubGrid<T>)subGrid).Items[subGridX, subGridY] = value;
+            }
         }
 
         /// <summary>

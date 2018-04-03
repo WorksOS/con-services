@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees
 {
-    public class SubGridTreeNodeBitmapSubGrid : NodeSubGrid, INodeSubGrid
+    public class SubGridTreeNodeBitmapSubGrid : NodeSubGrid
     {
       public SubGridTreeBitmapSubGridBits Bits;
 
@@ -16,6 +11,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// Writes the contents of the subgrid bit mask to the writer
         /// </summary>
         /// <param name="writer"></param>
+        /// <param name="buffer"></param>
         public override void Write(BinaryWriter writer, byte [] buffer)
         {
             Bits.Write(writer, buffer);
@@ -25,6 +21,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// Reads the contents of the subgrid bit mask from the reader
         /// </summary>
         /// <param name="reader"></param>
+        /// <param name="buffer"></param>
         public override void Read(BinaryReader reader, byte [] buffer)
         {
             Bits.Read(reader, buffer);

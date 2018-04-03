@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Types;
@@ -121,12 +117,12 @@ namespace VSS.VisionLink.Raptor
         /// <summary>
         /// The number of bits in the X and Y cell index keys that are used by the grid. The used bits are always the LSB bits.
         /// </summary>
-        private byte NumBitsInKeys => (byte)(NumLevels * SubGridTree.SubGridIndexBitsPerLevel);
+        private byte NumBitsInKeys => (byte)(NumLevels * SubGridIndexBitsPerLevel);
 
         /// <summary>
         /// The maximum (positive and negative) real world value for both X and Y axes that may be encompassed by the grid
         /// </summary>
-        private double MaxOrdinate = 0;
+        private double MaxOrdinate;
 
         /// <summary>
         /// The first (top) subgrid in the tree. All other subgrids in the tree descend via this root node.
@@ -158,12 +154,12 @@ namespace VSS.VisionLink.Raptor
         /// <summary>
         /// Backing store field for the CellSize property
         /// </summary>
-        private double cellSize = 0;
+        private double cellSize;
 
         /// <summary>
         /// Store the 'divide by 2' version of cellsize to reduce compute in operations that use this quantity a lot
         /// </summary>
-        public double CellSizeOver2 = 0;
+        public double CellSizeOver2;
 
         /// <summary>
         /// The real world size on the ground of a cell in the grid. This applies to tree with different numbers of levels.
@@ -404,7 +400,6 @@ namespace VSS.VisionLink.Raptor
         /// extent is passed to the OnProcessLeafSubgrid event for processing 
         /// </summary>
         /// <param name="extent"></param>
-        /// <param name="ScanLevel"></param>
         /// <param name="leafFunctor"></param>
         /// <param name="nodeFunctor"></param>
         /// <returns></returns>
@@ -433,7 +428,6 @@ namespace VSS.VisionLink.Raptor
         /// extent is passed to the OnProcessLeafSubgrid event for processing 
         /// </summary>
         /// <param name="extent"></param>
-        /// <param name="ScanLevel"></param>
         /// <param name="leafFunctor"></param>
         /// <param name="nodeFunctor"></param>
         /// <returns></returns>

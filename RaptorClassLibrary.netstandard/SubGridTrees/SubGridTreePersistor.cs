@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees
@@ -50,7 +46,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <param name="tree"></param>
         /// <param name="writer"></param>
         /// <returns></returns>
-        public static bool Write(ISubGridTree tree, BinaryWriter writer) => Write(tree, String.Empty, 0, writer);
+        public static bool Write(ISubGridTree tree, BinaryWriter writer) => Write(tree, string.Empty, 0, writer);
 
         /// <summary>
         /// Provides Write() semantics for a subgrid tree against a BinaryWriter
@@ -62,9 +58,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <returns></returns>
         public static bool Write(ISubGridTree tree, string header, int version, BinaryWriter writer)
         {
-            long SizePosition;
-            long Size;
-
             bool Result = false;
 
             try
@@ -73,7 +66,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 writer.Write(version);
 
                 // Write place holder for stream size
-                SizePosition = writer.BaseStream.Position;
+                long SizePosition = writer.BaseStream.Position;
                 writer.Write((long) 0);
 
                 Result = SerialiseOut(tree, writer);
@@ -83,7 +76,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 }
 
                 // Write the size of the stream in to the header
-                Size = writer.BaseStream.Position;
+                long Size = writer.BaseStream.Position;
                 writer.BaseStream.Seek(SizePosition, SeekOrigin.Begin);
                 writer.Write(Size);
 

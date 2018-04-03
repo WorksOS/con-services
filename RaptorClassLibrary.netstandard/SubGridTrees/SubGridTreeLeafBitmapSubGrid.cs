@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
@@ -12,7 +7,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
     /// <summary>
     ///  A subgrid variant that contains a bit mask construct to represent a one-bit-per-pixel map
     /// </summary>
-    public class SubGridTreeLeafBitmapSubGrid : SubGrid, ISubGrid, ILeafSubGrid
+    public class SubGridTreeLeafBitmapSubGrid : SubGrid, ILeafSubGrid
     {
         public SubGridTreeBitmapSubGridBits Bits;
 
@@ -20,6 +15,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// Writes the contents of the subgrid bit mask to the writer
         /// </summary>
         /// <param name="writer"></param>
+        /// <param name="buffer"></param>
         public override void Write(BinaryWriter writer, byte [] buffer)
         {
             Bits.Write(writer, buffer);
@@ -29,6 +25,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// Reads the contents of the subgrid bit mask from the reader
         /// </summary>
         /// <param name="reader"></param>
+        /// <param name="buffer"></param>
         public override void Read(BinaryReader reader, byte [] buffer)
         {
             Bits.Read(reader, buffer);
@@ -49,7 +46,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <param name="parent"></param>
         /// <param name="level"></param>
         public SubGridTreeLeafBitmapSubGrid(ISubGridTree owner,
-            SubGrid parent,
+            ISubGrid parent,
             byte level /*,
             double cellSize,
             int indexOriginOffset*/) : base(owner, parent, level /*, cellSize, indexOriginOffset*/)

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Types;
@@ -14,7 +10,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <summary>
         /// The array of sparse cell refernces that form the known cells in this subgrid
         /// </summary>
-        private SubgridTreeSparseCellRecord[] SparseCells = null;
+        private SubgridTreeSparseCellRecord[] SparseCells;
 
         /// <summary>
         /// The number of sparse cells in the subgrid
@@ -24,7 +20,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <summary>
         /// The non-sparse collection of child cell references
         /// </summary>
-        private ISubGrid[,] Cells = null;
+        private ISubGrid[,] Cells;
 
         /// <summary>
         /// Default no-arg constructor
@@ -41,8 +37,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <param name="owner"></param>
         /// <param name="parent"></param>
         /// <param name="level"></param>
-        /// <param name="cellSize"></param>
-        /// <param name="indexOriginOffset"></param>
         public NodeSubGrid(ISubGridTree owner,
                            ISubGrid parent,
                            byte level) : base(owner, parent, level)
@@ -104,10 +98,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
             if (SparseCells != null)
             {
-                SubgridTreeSparseCellRecord sparceCell;
                 for (int I = 0; I < SparseCellCount; I++)
                 {
-                    sparceCell = SparseCells[I];
+                    SubgridTreeSparseCellRecord sparceCell = SparseCells[I];
 
                     if ((sparceCell.CellX == X) && (sparceCell.CellY == Y))
                     {
@@ -158,6 +151,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// Child subgrid references in this subgrid that are null are not presented to functor.
         /// </summary>
         /// <param name="functor"></param>
+        /// <param name="minSubGridCellX"></param>
+        /// <param name="minSubGridCellY"></param>
+        /// <param name="maxSubGridCellX"></param>
+        /// <param name="maxSubGridCellY"></param>
         public void ForEachSubGrid(Func<ISubGrid, SubGridProcessNodeSubGridResult> functor,
             byte minSubGridCellX = 0,
             byte minSubGridCellY = 0,
@@ -165,9 +162,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             byte maxSubGridCellY = SubGridTree.SubGridTreeDimensionMinus1)
         {
             if (minSubGridCellX >= SubGridTree.SubGridTreeDimension ||
-                minSubGridCellY >= SubGridTree.SubGridTreeDimension ||
-                maxSubGridCellX < 0 ||
-                maxSubGridCellY < 0)
+                minSubGridCellY >= SubGridTree.SubGridTreeDimension)
             {
                 throw new ArgumentException("Min/max subgrid cell X/Y bounds are out of range", 
                                              "minSubGridCellX, minSubGridCellY, maxnSubGridCellX, maxnSubGridCellY");
@@ -179,12 +174,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         }
 
         /// <summary>
-        /// Iterate over every child subgrid that is present within this subgrid. Each subgrid is presented to functor
-        /// as a triplet of parameters: The CellX and CellY location in the subgrid that the child subgrid resides at,
-        /// plus an ISubGrid reference to that subgrid. 
-        /// Child subgrid references in this subgrid that are null are not presented to functor.
+        /// <param name="functor"></param>
         /// </summary>
         /// <param name="functor"></param>
+        /// <param name="minSubGridCellX"></param>
+        /// <param name="minSubGridCellY"></param>
+        /// <param name="maxSubGridCellX"></param>
+        /// <param name="maxSubGridCellY"></param>
         public void ForEachSubGrid(Func<byte, byte, ISubGrid, SubGridProcessNodeSubGridResult> functor,
             byte minSubGridCellX = 0, 
             byte minSubGridCellY = 0, 
@@ -192,9 +188,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             byte maxSubGridCellY = SubGridTree.SubGridTreeDimensionMinus1)
         {
             if (minSubGridCellX >= SubGridTree.SubGridTreeDimension ||
-                minSubGridCellY >= SubGridTree.SubGridTreeDimension ||
-                maxSubGridCellX < 0 ||
-                maxSubGridCellY < 0)
+                minSubGridCellY >= SubGridTree.SubGridTreeDimension)
             {
                 throw new ArgumentException("Min/max subgrid cell X/Y bounds are out of range",
                                              "minSubGridCellX, minSubGridCellY, maxnSubGridCellX, maxnSubGridCellY");
@@ -230,7 +224,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                     }
                 }
 
-                return;
+//                return;
             }
         }
 
@@ -244,7 +238,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// from a functor indicates the receiver of the event has requested the scanning process stop.
         /// </summary>
         /// <param name="Extent"></param>
-        /// <param name="ScanLevel"></param>
         /// <param name="leafFunctor"></param>
         /// <param name="nodeFunctor"></param>
         /// <returns>A boolean indicating the ScanSubGrids operation was successful andnot aborted by a functor</returns>
@@ -332,10 +325,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                     // fit into the sparcity constraint
                     Cells = new ISubGrid[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
 
-                    SubgridTreeSparseCellRecord sparceCell;
                     for (int I = 0; I < SparseCellCount; I++)
                     {
-                        sparceCell = SparseCells[I];
+                        SubgridTreeSparseCellRecord sparceCell = SparseCells[I];
                         Cells[sparceCell.CellX, sparceCell.CellY] = sparceCell.Cell;
                     }
 

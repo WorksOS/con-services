@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Types;
@@ -16,13 +12,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
     /// is for tasks such as tracking cells modified since last read, or cells present
     /// in a SubGridTree cache etc. It maintains both per cell and per leaf flags.
     /// </summary>
-    public class SubGridTreeBitMask : SubGridTree, ISubGridTree
+    public class SubGridTreeBitMask : SubGridTree
     {
         /// <summary>
         /// Constructor that defaults levels, cell size and subgrid factory 
         /// </summary>
-        public SubGridTreeBitMask() : base(SubGridTree.SubGridTreeLevels, 
-                                           SubGridTree.DefaultCellSize, 
+        public SubGridTreeBitMask() : base(SubGridTreeLevels, 
+                                           DefaultCellSize, 
                                            new SubGridFactory<SubGridTreeNodeBitmapSubGrid, SubGridTreeLeafBitmapSubGrid>())
         {          
         }
@@ -76,6 +72,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// </summary>
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>
+        /// <param name="Value"></param>
         /// <returns></returns>     
         public void SetCell(uint CellX, uint CellY, bool Value)
         {
@@ -184,7 +181,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
             SubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
 
-            SubGridTreeNodeBitmapSubGrid bitmapSubGrid = (SubGrid as SubGridTreeNodeBitmapSubGrid);
+            SubGridTreeNodeBitmapSubGrid bitmapSubGrid = SubGrid as SubGridTreeNodeBitmapSubGrid;
 
             // Free the node containing the bits for the cells in the leaf
             bitmapSubGrid.Bits.ClearBit(SubGridX, SubGridY);
@@ -202,7 +199,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
             ScanAllSubGrids(x => 
             {
-                totalBits += ((x as SubGridTreeLeafBitmapSubGrid)).Bits.CountBits();
+                totalBits += (x as SubGridTreeLeafBitmapSubGrid).Bits.CountBits();
                 return true;
             });
 
@@ -368,8 +365,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 {
                     (leaf as SubGridTreeLeafBitmapSubGrid).Bits.ForEachSetBit((x, y) =>
                     {
-                        address.X = (uint)(leaf.OriginX + x) << SubGridTree.SubGridIndexBitsPerLevel;
-                        address.Y = (uint)(leaf.OriginY + y) << SubGridTree.SubGridIndexBitsPerLevel;
+                        address.X = (uint)(leaf.OriginX + x) << SubGridIndexBitsPerLevel;
+                        address.Y = (uint)(leaf.OriginY + y) << SubGridIndexBitsPerLevel;
 
                         functor(address);
                     });

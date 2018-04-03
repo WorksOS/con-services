@@ -13,7 +13,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
     /// </summary>
     /// <typeparam name="Node"></typeparam>
     /// <typeparam name="Leaf"></typeparam>
-    public class SubGridFactory<Node, Leaf> : ISubGridFactory where Node : INodeSubGrid, new() where Leaf : ILeafSubGrid, new()
+    public class SubGridFactory<Node, Leaf> : ISubGridFactory 
+        where Node : INodeSubGrid, new() 
+        where Leaf : ILeafSubGrid, new()
     {
         /// <summary>
         /// Construct either a node or a leaf subgrid for the given sub grid tree at the given level using the generic

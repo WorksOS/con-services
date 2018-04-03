@@ -15,7 +15,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
     /// <typeparam name="T"></typeparam>
     public class GenericLeafSubGrid<T> : SubGrid, ILeafSubGrid
     {
-        public T[,] Items = null;
+        public T[,] Items;
 
         /// <summary>
         /// Default no-arg constructor

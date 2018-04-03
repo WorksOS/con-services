@@ -1,15 +1,10 @@
 ﻿using log4net;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.Services.Surfaces;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
@@ -26,22 +21,22 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         [NonSerialized]
-        private SubGridRetriever retriever = null;
+        private SubGridRetriever retriever;
 
         [NonSerialized]
-        SiteModel SiteModel = null;
+        SiteModel SiteModel;
 
         [NonSerialized]
-        CombinedFilter Filter = null;
+        CombinedFilter Filter;
 
         [NonSerialized]
-        SurfaceElevationPatchRequest surfaceElevationPatchRequest = null;
+        SurfaceElevationPatchRequest surfaceElevationPatchRequest;
 
         [NonSerialized]
         byte TreeLevel = SubGridTree.SubGridTreeLevels;
 
         [NonSerialized]
-        bool HasOverrideSpatialCellRestriction = false;
+        bool HasOverrideSpatialCellRestriction;
 
         [NonSerialized]
         BoundingIntegerExtent2D OverrideSpatialCellRestriction;
@@ -62,7 +57,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         private  IClientLeafSubGrid ClientGrid;
 
         [NonSerialized]
-        private SurfaceElevationPatchArgument SurfaceElevationPatchArg = null;
+        private SurfaceElevationPatchArgument SurfaceElevationPatchArg;
 
         [NonSerialized]
         private uint CellX;
@@ -81,10 +76,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         private SubGridTreeBitmapSubGridBits ProcessingMap; // = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
         [NonSerialized]
-        private SurveyedSurfaces FilteredSurveyedSurfaces = null;
+        private SurveyedSurfaces FilteredSurveyedSurfaces;
 
         [NonSerialized]
-        private bool ReturnEarliestFilteredCellPass = false;
+        private bool ReturnEarliestFilteredCellPass;
 
         /// <summary>
         /// Constructor that accepts the common parameters around a set of subgrids the requestor will be asked to process

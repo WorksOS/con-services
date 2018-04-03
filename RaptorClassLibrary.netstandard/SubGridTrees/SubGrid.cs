@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees
@@ -26,17 +20,17 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <summary>
         /// The sub grid tree instance to which this subgrid belongs
         /// </summary>
-        public ISubGridTree Owner { get; set; } = null;
+        public ISubGridTree Owner { get; set; }
 
         /// <summary>
         /// The parent subgrid that owns this subgrid as a cell.
         /// </summary>
-        public ISubGrid Parent { get; set; } = null;
+        public ISubGrid Parent { get; set; }
 
-        public bool Locked { get; set; } = false;
+        public bool Locked { get; set; }
         public int LockToken { get; set; } = -1;
 
-        public bool AcquireLock(int LockToken)
+        public bool AcquireLock(int lockToken)
         {
             lock (this)
             {
@@ -46,39 +40,39 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 }
 
                 Locked = true;
-                this.LockToken = LockToken;
+                LockToken = lockToken;
 
                 return true;
             }
         }
 
-        public void ReleaseLock(int LockToken)
+        public void ReleaseLock(int lockToken)
         {
-            this.LockToken = -1;
+            LockToken = -1;
         }
 
         /// <summary>
         /// ‘Level’ in the subgridtree in which this subgrid resides. Level 1 is the root node in the tree, level 0 is invalid
         /// </summary>
-        public byte Level { get; set; } = 0; // Invalid
+        public byte Level { get; set; } // Invalid
 
         /// <summary>
         /// Grid cell X Origin of the bottom left hand cell in this subgrid. 
         /// Origin is wrt to cells of the spatial dimension held by this subgrid
         /// </summary>
-        public uint OriginX { get; set; } = 0; // int.MinValue;
+        public uint OriginX { get; set; } // int.MinValue;
 
         /// <summary>
         /// Grid cell Y Origin of the bottom left hand cell in this subgrid. 
         /// Origin is wrt to cells of the spatial dimension held by this subgrid
         /// </summary>
-        public uint OriginY { get; set; } = 0; // int.MinValue;
+        public uint OriginY { get; set; } // int.MinValue;
 
         /// <summary>
         /// Private backign store for the Dirty property. Descendent classes can override the GetDirty/SetDirty virtual methods
         /// to additional semantics to setting the dirty flag if required
         /// </summary>
-        private bool dirty = false;
+        private bool dirty;
 
         /// <summary>
         /// Dirty property used to indicate the presence of changes that are not persisted.
@@ -105,7 +99,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// </summary>
         public SubGrid()
         {
-
         }
 
         /// <summary>
@@ -152,7 +145,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                throw new ArgumentException("Cannot set origin position without parent");
             }
 
-            if (CellX < 0 || CellY < 0 || CellX >= SubGridTree.SubGridTreeDimension || CellY >= SubGridTree.SubGridTreeDimension)
+            if (CellX >= SubGridTree.SubGridTreeDimension || CellY >= SubGridTree.SubGridTreeDimension)
             {
                 throw new ArgumentException("Cell X, Y location is not in the valid cell address range for the subgrid");
             }
@@ -253,6 +246,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// </summary>
         /// <param name="X"></param>
         /// <param name="Y"></param>
+        /// <param name="value"></param>
         /// <returns></returns>
         public virtual void SetSubGrid(byte X, byte Y, ISubGrid value)
         {
@@ -305,10 +299,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             if (Parent == null)
                 return;
 
-            byte SubGridX;
-            byte SubGridY;
-
-            Parent.GetSubGridCellIndex(OriginX, OriginY, out SubGridX, out SubGridY);
+            Parent.GetSubGridCellIndex(OriginX, OriginY, out byte SubGridX, out byte SubGridY);
             Parent.SetSubGrid(SubGridX, SubGridY, null);
         }
 
@@ -381,6 +372,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// Override to implement if needed.
         /// </summary>
         /// <param name="writer"></param>
+        /// <param name="buffer"></param>
         public virtual void Write(BinaryWriter writer, byte [] buffer)
         {
             writer.Write(Level);
@@ -394,6 +386,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// Override to implement if needed.
         /// </summary>
         /// <param name="reader"></param>
+        /// <param name="buffer"></param>
         public virtual void Read(BinaryReader reader, byte [] buffer)
         {
             Level = reader.ReadByte();
