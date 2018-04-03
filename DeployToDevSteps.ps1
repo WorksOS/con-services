@@ -1,5 +1,5 @@
 dotnet restore --no-cache VSS.Productivity3D.Service.sln
-& build47.ps1
+#& build47.ps1
 Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)
 docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:latest ./Artifacts/WebApi
 docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:latest
