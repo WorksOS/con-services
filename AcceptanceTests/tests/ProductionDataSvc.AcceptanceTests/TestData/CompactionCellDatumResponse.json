@@ -39,6 +39,16 @@
     "Code": 0,
     "Message": "success"
   },
+  "PassCount2": {
+    "northing": 1180.7573963852324,
+    "easting": 2851.8429421166566,
+    "displayMode": 4,
+    "returnCode": 0,
+    "value": 116.0,
+    "timestamp": "2012-11-07T23:21:23.047",
+    "Code": 0,
+    "Message": "success"
+  },
   "CutFill": {
     "northing": 1208.7283564576142,
     "easting": 2794.2710130345881,
@@ -60,12 +70,22 @@
     "Message": "success"
   },
   "MDP": {
-    "northing": 1165.2625185966872,
-    "easting": 2738.7511710978069,
+    "northing": 1224.4815414342288,
+    "easting": 2861.7340462234906,
     "displayMode": 17,
-    "returnCode": 1,
-    "value": 32767,
-    "timestamp": "2012-10-31T21:56:24.807",
+    "returnCode": 0,
+    "value": 1496.0,
+    "timestamp": "2012-11-07T20:17:44.556",
+    "Code": 0,
+    "Message": "success"
+  },
+  "MDP2": {
+    "northing": 1224.4815414342288,
+    "easting": 2861.7340462234906,
+    "displayMode": 17,
+    "returnCode": 0,
+    "value": 1496.0,
+    "timestamp": "2012-11-07T20:17:44.556",
     "Code": 0,
     "Message": "success"
   },
