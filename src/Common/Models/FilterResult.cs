@@ -704,10 +704,24 @@ namespace VSS.Productivity3D.Common.Models
     }
     #endregion
 
-    public void SetDates(DateTime? startUtc, DateTime? endUtc)
+    public void ApplyDateRange(string ianaTimeZoneName)
     {
-      this.StartUtc = startUtc;
-      this.EndUtc = endUtc;
+      if (!string.IsNullOrEmpty(ianaTimeZoneName) &&
+          DateRangeType != null &&
+          DateRangeType != VSS.MasterData.Models.Internal.DateRangeType.Custom)
+      {
+        // Force date range filters to be null if ProjectExtents is specified.
+        if (DateRangeType == VSS.MasterData.Models.Internal.DateRangeType.ProjectExtents)
+        {
+          StartUtc = null;
+          EndUtc = null;
+        }
+        else
+        {
+          StartUtc = DateRangeType?.UtcForDateRangeType(ianaTimeZoneName, true, true);
+          EndUtc = DateRangeType?.UtcForDateRangeType(ianaTimeZoneName, false, true);
+        }
+      }
     }
   }
 }
