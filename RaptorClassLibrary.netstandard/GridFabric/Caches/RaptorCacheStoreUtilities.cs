@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 
 namespace VSS.VisionLink.Raptor.GridFabric.Caches
@@ -76,12 +70,12 @@ namespace VSS.VisionLink.Raptor.GridFabric.Caches
                 }
                 catch (FileNotFoundException)
                 {
-                    Console.WriteLine("Cache Get() for key {0}, filename {1} resulted in file not found, returning null", key.ToString(), fileName);
+                    Console.WriteLine("Cache Get() for key {0}, filename {1} resulted in file not found, returning null", key, fileName);
                     return null;
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine("Cache Get() blocked on key {0}, waiting 1 second.", key.ToString());
+                    Console.WriteLine("Cache Get() blocked on key {0}, waiting 1 second.", key);
                     System.Threading.Thread.Sleep(1000);
                 }
             }

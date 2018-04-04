@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.SiteModels;
 
 namespace VSS.VisionLink.Raptor.Filters
 {
@@ -16,12 +11,12 @@ namespace VSS.VisionLink.Raptor.Filters
         /// <summary>
         /// The filter reponsible for selection of cell passes based on attribute filtering criteria related to cell passes
         /// </summary>
-        public CellPassAttributeFilter AttributeFilter = null;
+        public CellPassAttributeFilter AttributeFilter;
 
         /// <summary>
         /// The filter responsible for selection of cells based on spatial filtering criteria related to cell location
         /// </summary>
-        public CellSpatialFilter SpatialFilter = null;
+        public CellSpatialFilter SpatialFilter;
 
         /// <summary>
         /// Defautl no-arg constructor

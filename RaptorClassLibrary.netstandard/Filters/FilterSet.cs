@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace VSS.VisionLink.Raptor.Filters
 {
@@ -15,7 +11,7 @@ namespace VSS.VisionLink.Raptor.Filters
         /// <summary>
         /// The list of combined attribute and spatial filters to be used
         /// </summary>
-        public CombinedFilter[] Filters { get; set; } = null;
+        public CombinedFilter[] Filters { get; set; }
 
         /// <summary>
         /// Default no-arg constructor that creates a zero-sized array of combined filters

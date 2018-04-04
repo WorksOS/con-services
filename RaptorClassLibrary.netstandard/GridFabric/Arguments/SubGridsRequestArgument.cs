@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Types;
 
@@ -33,18 +28,18 @@ namespace VSS.VisionLink.Raptor.GridFabric.Arguments
         /// <summary>
         /// The serialised contents of the SubGridTreeSubGridExistenceBitMask that notes the address of all subgrids that need to be requested for production data
         /// </summary>
-        public byte[] ProdDataMaskBytes { get; set; } = null;
+        public byte[] ProdDataMaskBytes { get; set; }
 
         /// <summary>
         /// The serialised contents of the SubGridTreeSubGridExistenceBitMask that notes the address of all subgrids that need to be requested for surveyed surface data ONLY
         /// </summary>
-        public byte[] SurveyedSurfaceOnlyMaskBytes { get; set; } = null;
+        public byte[] SurveyedSurfaceOnlyMaskBytes { get; set; }
 
         /// <summary>
         /// The set of filters to be applied to the requested subgrids
         /// </summary>
         /// 
-        public FilterSet Filters { get; set; } = null;
+        public FilterSet Filters { get; set; }
 
         /// <summary>
         /// The name of the message topic that subgrid responses should be sent to
@@ -54,7 +49,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Arguments
         /// <summary>
         /// Denotes whether results of these requests should include any surveyed surfaces in the site model
         /// </summary>
-        public bool IncludeSurveyedSurfaceInformation { get; set; } = false;
+        public bool IncludeSurveyedSurfaceInformation { get; set; }
 
         /// <summary>
         /// The design to be used in cases of cut/fill subgrid requests

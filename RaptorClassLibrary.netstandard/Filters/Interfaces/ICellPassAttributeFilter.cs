@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor.Filters.Interfaces
+﻿namespace VSS.VisionLink.Raptor.Filters.Interfaces
 {
-    interface ICellPassAttributeFilter
+    public interface ICellPassAttributeFilter
     {
     }
 }

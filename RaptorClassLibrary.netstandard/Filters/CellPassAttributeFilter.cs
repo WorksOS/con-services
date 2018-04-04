@@ -5,44 +5,43 @@ using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Machines;
-using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Utilities;
 
 namespace VSS.VisionLink.Raptor.Filters
 {
- /*
- This unit defines support for filtering information stored in the data grid.
+    /*
+    This unit defines support for filtering information stored in the data grid.
 
-  There are two varieties of filtering used.
-    - Cell selection filtering
+     There are two varieties of filtering used.
+       - Cell selection filtering
 
-      Based on:
-        Spatial: Arbitrary fence specifying inclusion area
-        Positional: Point and radius for inclusion area
+         Based on:
+           Spatial: Arbitrary fence specifying inclusion area
+           Positional: Point and radius for inclusion area
 
 
-      The result of ElevationangeOffset filter is <YES> the cell may be used for cell pass
-      filtering, or<NO> the cell should not be considered for cell pass
-      filtering.
+         The result of ElevationangeOffset filter is <YES> the cell may be used for cell pass
+         filtering, or<NO> the cell should not be considered for cell pass
+         filtering.
 
-    - Cell pass filtering
-      Intended to choose a single cell pass from the cell passes collected for a
-      cell.
+       - Cell pass filtering
+         Intended to choose a single cell pass from the cell passes collected for a
+         cell.
 
-        Based on:
-           - Machine(s)
-           - Time ranges
-           - many other attributes
+           Based on:
+              - Machine(s)
+              - Time ranges
+              - many other attributes
 
-      The result of this filter is either <NOTHING>, or a single cell pass.
+         The result of this filter is either <NOTHING>, or a single cell pass.
 
-  Filtering is accomplished via the use of filters (a set of parameters that
-  govern how cells are to be included/excluded from the filter).
+     Filtering is accomplished via the use of filters (a set of parameters that
+     govern how cells are to be included/excluded from the filter).
 
-  <DataPassFilter> Represents a base class from which filter classes may be derived 
-  */
+     <DataPassFilter> Represents a base class from which filter classes may be derived 
+     */
 
     /// <summary>
     /// TICGridDataFilter provides filtering support for grid data requested by the client

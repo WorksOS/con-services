@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.SubGridTrees;
 
 namespace VSS.VisionLink.Raptor.GridFabric.Affinity
@@ -43,6 +39,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
         /// <param name="projectID"></param>
         /// <param name="subGridX"></param>
         /// <param name="subGridY"></param>
+        /// <param name="segmentIdentifier"></param>
         public SubGridSpatialAffinityKey(long projectID, uint subGridX, uint subGridY, string segmentIdentifier)
         {
             ProjectID = projectID;
@@ -57,6 +54,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
         /// </summary>
         /// <param name="projectID"></param>
         /// <param name="address"></param>
+        /// <param name="segmentIdentifier"></param>
         public SubGridSpatialAffinityKey(long projectID, SubGridCellAddress address, string segmentIdentifier)
         {
             ProjectID = projectID;

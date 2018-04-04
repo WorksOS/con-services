@@ -57,8 +57,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// It is marked as non serialised so the Ignite GridCompute Broadcast method does not attempt 
         /// to serialise this member as an aspect of the compute func.
         /// </summary>
-        [NonSerialized]
-        private SubGridTreeSubGridExistenceBitMask ProdDataMask = null;
+        [NonSerialized] private SubGridTreeSubGridExistenceBitMask ProdDataMask;
 
         /// <summary>
         /// Mask is the internal sub grid bit mask tree created from the serialised mask contained in the 
@@ -66,32 +65,25 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// It is marked as non serialised so the Ignite GridCompute Broadcast method does not attempt 
         /// to serialise this member as an aspect of the compute func.
         /// </summary>
-        [NonSerialized]
-        private SubGridTreeSubGridExistenceBitMask SurveyedSurfaceOnlyMask = null;
+        [NonSerialized] private SubGridTreeSubGridExistenceBitMask SurveyedSurfaceOnlyMask;
 
-        [NonSerialized]
-        protected SubGridsRequestArgument localArg = null;
+        [NonSerialized] protected SubGridsRequestArgument localArg;
 
-        [NonSerialized]
-        private SiteModel siteModel = null;
+        [NonSerialized] private SiteModel siteModel;
 
-        [NonSerialized]
-        private IClientLeafSubGrid[][] clientGrids = null;
+        [NonSerialized] private IClientLeafSubGrid[][] clientGrids;
 
         /// <summary>
         /// The list of address being constructed prior to summission to the processing engine
         /// </summary>
-        [NonSerialized]
-        private SubGridCellAddress[] addresses = null;
+        [NonSerialized] private SubGridCellAddress[] addresses;
 
         /// <summary>
         /// The number of subgrids currently present in the process pending list
         /// </summary>
-        [NonSerialized]
-        private int listCount = 0;
+        [NonSerialized] private int listCount;
 
-        [NonSerialized]
-        private SubGridRequestor[] Requestors = null;
+        [NonSerialized] private SubGridRequestor[] Requestors;
 
         [NonSerialized]
         private AreaControlSet AreaControlSet = AreaControlSet.Null();
@@ -99,8 +91,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// <summary>
         /// The Design to be used for querying elevation information from in the process of calculating cut-fill values
         /// </summary>
-        [NonSerialized]
-        private Design CutFillDesign = null;
+        [NonSerialized] private Design CutFillDesign;
 
         /// <summary>
         /// Default no-arg constructor
@@ -246,7 +237,9 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// <summary>
         /// Take a subgrid address and request the required client subgrid depending on GridDataType
         /// </summary>
+        /// <param name="requestor"></param>
         /// <param name="address"></param>
+        /// <param name="clientGrid"></param>
         private ServerRequestResult PerformSubgridRequest(SubGridRequestor requestor, 
                                                           SubGridCellAddress address, 
                                                           out IClientLeafSubGrid clientGrid)
@@ -279,7 +272,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                 if (clientGrid?.GridDataType != localArg.GridDataType)
                 {
                     // Convert to an array to preserve the multiple filter semantic giving a list of subgrids to be converted (eg: volumes)
-                    IClientLeafSubGrid[] ClientArray = new IClientLeafSubGrid[1] { clientGrid };
+                    IClientLeafSubGrid[] ClientArray = { clientGrid };
                     ConvertIntermediarySubgridsToResult(localArg.GridDataType, ref ClientArray);
 
                     // If the requested data is cut fill derived from elevation data previously calculated, 

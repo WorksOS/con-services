@@ -1,19 +1,15 @@
 ﻿using Apache.Ignite.Core.Cache.Store;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Affinity;
 
 namespace VSS.VisionLink.Raptor.GridFabric.Caches
 {
     public class RaptorSpatialCacheStore : CacheStoreAdapter<SubGridSpatialAffinityKey, MemoryStream>
     {
-        private RaptorCacheStoreUtilities Utilities = null;
+        private RaptorCacheStoreUtilities Utilities;
 
-        public RaptorSpatialCacheStore(string mutabilitySuffix) : base()
+        public RaptorSpatialCacheStore(string mutabilitySuffix)
         {
             Utilities = new RaptorCacheStoreUtilities(mutabilitySuffix);
         }

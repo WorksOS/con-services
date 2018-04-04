@@ -1,29 +1,26 @@
 ﻿using Apache.Ignite.Core.Cache.Store;
 using Apache.Ignite.Core.Common;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace VSS.VisionLink.Raptor.GridFabric.Caches
 {
+    /// <summary>
     /// The cache store factory responsible for creating a cache store tailored for storing immutable representations
     /// of information in data models
     /// </summary>
     [Serializable]
     public class RaptorCacheStoreFactory : IFactory<ICacheStore>
     {
-        private bool IsMutable { get; set; } = false;
-        private bool IsSpatial { get; set; } = false;
+        private bool IsMutable { get; set; }
+        private bool IsSpatial { get; set; }
 
-        public RaptorCacheStoreFactory() : base()
+        public RaptorCacheStoreFactory()
         {
         }
 
         public RaptorCacheStoreFactory(bool isSpatial, bool isMutable) : this()
         {
-            IsMutable = IsMutable;
+            IsMutable = isMutable;
             IsSpatial = isSpatial;
         }
 

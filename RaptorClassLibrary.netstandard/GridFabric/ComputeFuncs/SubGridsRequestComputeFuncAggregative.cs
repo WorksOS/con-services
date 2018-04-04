@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Executors.Tasks.Interfaces;
 using VSS.VisionLink.Raptor.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.GridFabric.Responses;
@@ -24,12 +20,12 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// <summary>
         /// The Task responsible for handling further processing of subgrid query responses
         /// </summary>
-        public ITask Task { get; set; } = null;
+        public ITask Task { get; set; }
 
         /// <summary>
         /// Default no-arg constructor
         /// </summary>
-        public SubGridsRequestComputeFuncAggregative() : base()
+        public SubGridsRequestComputeFuncAggregative()
         {
         }
 
@@ -51,8 +47,6 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// <summary>
         /// Transforms the internal aggregation state into the desired response for the request
         /// </summary>
-        /// <param name="results"></param>
-        /// <param name="resultCount"></param>
         /// <returns></returns>
         public override TSubGridRequestsResponse AcquireComputationResult()
         {

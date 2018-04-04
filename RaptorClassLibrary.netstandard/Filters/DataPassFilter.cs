@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.Filters.Interfaces;
 using VSS.VisionLink.Raptor.SiteModels;
@@ -19,11 +15,11 @@ namespace VSS.VisionLink.Raptor.Filters
     public abstract class DataPassFilter : ICellPassAttributeFilter
     {
         /// <summary>
-        /// Owner is the <SiteModel> instance to which this filter relates and is used in cases where machine related
+        /// Owner is the SiteModel instance to which this filter relates and is used in cases where machine related
         /// attriutes are included in the filter
         /// </summary>
         [NonSerialized]
-        public SiteModel siteModel = null;
+        public SiteModel siteModel;
 
         /// <summary>
         /// RequestedGridDataType stores the type of grid data being requested at
@@ -45,26 +41,26 @@ namespace VSS.VisionLink.Raptor.Filters
         }
 */
 
-        public bool HasTimeFilter { get; set; } = false;
-        public bool HasMachineFilter { get; set; } = false;
-        public bool HasMachineDirectionFilter { get; set; } = false;
-        public bool HasDesignFilter { get; set; } = false;
-        public bool HasVibeStateFilter { get; set; } = false;
-        public bool HasLayerStateFilter { get; set; } = false;
-        public bool HasMinElevMappingFilter { get; set; } = false;
-        //        public bool HasAvoidZoneStateFilter { get; set; } = false;
-        public bool HasElevationTypeFilter { get; set; } = false;
-        public bool HasGCSGuidanceModeFilter { get; set; } = false;
-        public bool HasGPSAccuracyFilter { get; set; } = false;
-        public bool HasGPSToleranceFilter { get; set; } = false;
-        public bool HasPositioningTechFilter { get; set; } = false;
-        public bool HasLayerIDFilter { get; set; } = false;
-        public bool HasElevationRangeFilter { get; set; } = false;
-        public bool HasPassTypeFilter { get; set; } = false;
+        public bool HasTimeFilter { get; set; }
+        public bool HasMachineFilter { get; set; }
+        public bool HasMachineDirectionFilter { get; set; }
+        public bool HasDesignFilter { get; set; }
+        public bool HasVibeStateFilter { get; set; }
+        public bool HasLayerStateFilter { get; set; }
+        public bool HasMinElevMappingFilter { get; set; }
+        //        public bool HasAvoidZoneStateFilter { get; set; }
+        public bool HasElevationTypeFilter { get; set; }
+        public bool HasGCSGuidanceModeFilter { get; set; } 
+        public bool HasGPSAccuracyFilter { get; set; }
+        public bool HasGPSToleranceFilter { get; set; }
+        public bool HasPositioningTechFilter { get; set; } 
+        public bool HasLayerIDFilter { get; set; }
+        public bool HasElevationRangeFilter { get; set; }
+        public bool HasPassTypeFilter { get; set; }
 
         public virtual bool IsTimeRangeFilter() => false;
 
-        public bool HasCompactionMachinesOnlyFilter { get; set; } = false;
+        public bool HasCompactionMachinesOnlyFilter { get; set; } 
 
         public bool ExcludeSurveyedSurfaces()
         {
@@ -112,11 +108,11 @@ namespace VSS.VisionLink.Raptor.Filters
             }
         }
 
-        public bool AnyFilterSelections { get; set; } = false;
+        public bool AnyFilterSelections { get; set; }
 
-        public bool AnyMachineEventFilterSelections { get; set; } = false;
+        public bool AnyMachineEventFilterSelections { get; set; }
 
-        public bool AnyNonMachineEventFilterSelections { get; set; } = false;
+        public bool AnyNonMachineEventFilterSelections { get; set; }
 
         /// <summary>
         /// Performs operations that prepares the filter for active use. Prepare() must be called prior to
@@ -175,8 +171,6 @@ namespace VSS.VisionLink.Raptor.Filters
                                      bool performAttributeSubFilter)
         {
             bool Accept;
-            int AcceptedIndex = -1;
-            bool CheckAttributes = false;
             bool Result = false;
 
             if (passValueCount == 0)
@@ -184,8 +178,8 @@ namespace VSS.VisionLink.Raptor.Filters
                 return false;
             }
 
-            CheckAttributes = performAttributeSubFilter && AnyFilterSelections;
-            AcceptedIndex = -1;
+            bool CheckAttributes = performAttributeSubFilter && AnyFilterSelections;
+            int AcceptedIndex = -1;
 
             if (wantEarliestPass)
             {
@@ -268,7 +262,7 @@ namespace VSS.VisionLink.Raptor.Filters
 
         /// <summary>
         /// FilterSinglePass selects a single passes from the list of passes in
-        /// <PassValues> where <PassValues> contains the entire list of passes for
+        /// PassValues where PassValues contains the entire list of passes for
         /// a cell in the database.
         /// </summary>
         /// <param name="filteredPassValues"></param>
@@ -285,7 +279,6 @@ namespace VSS.VisionLink.Raptor.Filters
                                      bool performAttributeSubFilter)
         {
             bool Accept;
-            bool CheckAttributes = false;
             bool Result = false;
 
             if (passValueCount == 0)
@@ -293,7 +286,7 @@ namespace VSS.VisionLink.Raptor.Filters
                 return false;
             }
 
-            CheckAttributes = performAttributeSubFilter && AnyFilterSelections;
+            bool CheckAttributes = performAttributeSubFilter && AnyFilterSelections;
             int AcceptedIndex = -1;
 
             if (wantEarliestPass)

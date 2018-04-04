@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor.Filters
+﻿namespace VSS.VisionLink.Raptor.Filters
 {
     /// <summary>
     /// FilteredValueAssignmentContext provides a context for collecting filtered values from production data in the 
@@ -47,7 +41,7 @@ namespace VSS.VisionLink.Raptor.Filters
         /// As many queries do not need access to probe positions the arfray is created
         /// only if InitialiseProbePositions() is called
         /// </summary>
-        public ProbePoint[,] ProbePositions = null;
+        public ProbePoint[,] ProbePositions;
 
         /// <summary>
         /// Constructor...

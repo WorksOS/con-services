@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Cells;
+﻿using VSS.VisionLink.Raptor.Cells;
 
 namespace VSS.VisionLink.Raptor.Filters
 {

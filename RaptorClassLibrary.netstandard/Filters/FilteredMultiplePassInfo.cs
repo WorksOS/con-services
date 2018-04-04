@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.Common;
 
@@ -105,7 +102,7 @@ namespace VSS.VisionLink.Raptor.Filters
         {
             PassCount = Source.PassCount;
 
-            System.Array.Copy(Source.FilteredPassData, FilteredPassData, PassCount);
+            Array.Copy(Source.FilteredPassData, FilteredPassData, PassCount);
         }
 
         /// <summary>

@@ -1,6 +1,5 @@
 ﻿using System;
 using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.Designs;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.Interfaces;
 
@@ -30,8 +29,8 @@ namespace VSS.VisionLink.Raptor.Filters
     ///     Spatial: Arbitrary fence specifying inclusion area
     ///     Positional: Point and radius for inclusion area
     ///
-    ///   The result of this filter is <YES> the cell may be used for cell pass
-    ///   filtering, or<NO> the cell should not be considered for cell pass filtering.
+    ///   The result of this filter is YES the cell may be used for cell pass
+    ///   filtering, or NO the cell should not be considered for cell pass filtering.
     /// </summary>
     [Serializable]
     public class CellSpatialFilter : ICellSpatialFilter
@@ -67,7 +66,7 @@ namespace VSS.VisionLink.Raptor.Filters
         /// <summary>
         /// Determines if the point-radius shoudl be applied as a square rather than a circle
         /// </summary>
-        public bool IsSquare { get; set; } = false;
+        public bool IsSquare { get; set; }
 
         /// <summary>
         /// OverrideSpatialCellRestriction provides a rectangular, cell address based,
@@ -115,32 +114,32 @@ namespace VSS.VisionLink.Raptor.Filters
         /// CoordsAreGrid controls whether the plan (XY/NE) coordinates in the spatial filters are to 
         /// be interpreted as rectangular cartesian coordinates or as WGS84 latitude/longitude coordinates
         /// </summary>
-        public bool CoordsAreGrid { get; set; } = false;
+        public bool CoordsAreGrid { get; set; }
 
         /// <summary>
         /// Restricts cells to spatial fence
         /// </summary>
-        public bool IsSpatial { get; set; } = false;      
+        public bool IsSpatial { get; set; }
 
         /// <summary>
         /// Restricts cells to spatial fence
         /// </summary>
-        public bool IsPositional { get; set; } = false;
+        public bool IsPositional { get; set; }
 
         /// <summary>
         /// Using a loaded surface design to 'mask' the cells that should be included in the filter
         /// </summary>
-        public bool IsDesignMask { get; set; } = false;
+        public bool IsDesignMask { get; set; }
 
         /// <summary>
         /// Using a load alignment design to 'mask' the cells that should be included in the filter
         /// </summary>
-        public bool IsAlignmentMask { get; set; } = false;
+        public bool IsAlignmentMask { get; set; }
 
         /// <summary>
         /// Using a design to spatiall cut-out the cells to be included in the filter. This appears similar to DesignMask (TODO: Resolve this).
         /// </summary>
-        public bool IsDesignFilter { get; set; } = false;
+        public bool IsDesignFilter { get; set; }
 
         /// <summary>
         ///  Spatial cell fitler constructor
