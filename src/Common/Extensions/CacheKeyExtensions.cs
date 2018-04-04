@@ -26,8 +26,8 @@ namespace VSS.Productivity3D.Common.Extensions
 
       cache.Set(key, null, TimeSpan.FromTicks(1));
 
-      // Response caching behaves as an HTTP cache.
-      // To invalidate the removed item now rather than wait for the natural cleanup we need to try to Get the item, forcing it to be invalidated.
+      // Response caching behaves as an HTTP cache with the framework default for _expirationScanFrequency set to one minute.
+      // To invalidate the expired item now rather than wait for the next scan we need to try to read or get the object. This forces the framework to scan for expired items.
       cache.Get(key);
     }
   }
