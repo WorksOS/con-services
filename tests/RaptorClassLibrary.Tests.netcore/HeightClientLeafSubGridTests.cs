@@ -6,47 +6,47 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 {
         public class HeightClientLeafSubGridTests
     {
-        [Fact]
+        [Fact(Skip = "Not Implemented")]
         public void Test_HeightClientLeafSubGridTests_Creation()
         {
             Assert.True(false,"Not implemented");
         }
 
-        [Fact]
+        [Fact(Skip = "Not Implemented")]
         public void Test_HeightClientLeafSubGridTests_Assign()
         {
             Assert.True(false,"Not implemented");
         }
 
-        [Fact]
+        [Fact(Skip = "Not Implemented")]
         public void Test_HeightClientLeafSubGridTests_AssignableFilteredValueIsNull()
         {
             Assert.True(false,"Not implemented");
         }
 
-        [Fact]
+        [Fact(Skip = "Not Implemented")]
         public void Test_HeightClientLeafSubGridTests_CellHasValue()
         {
             Assert.True(false,"Not implemented");
         }
 
-        [Fact]
+        [Fact(Skip = "Not Implemented")]
         public void Test_HeightClientLeafSubGridTests_Clear()
         {
             Assert.True(false,"Not implemented");
         }
 
-        [Fact]
+        [Fact(Skip = "Not Implemented")]
         public void Test_HeightClientLeafSubGridTests_DumpToLog()
         {
             Assert.True(false,"Not implemented");
         }
-        [Fact]
+        [Fact(Skip = "Not Implemented")]
         public void Test_HeightClientLeafSubGridTests_Read()
         {
             Assert.True(false,"Not implemented");
         }
-        [Fact]
+        [Fact(Skip = "Not Implemented")]
         public void Test_HeightClientLeafSubGridTests_Write()
         {
             Assert.True(false,"Not implemented");

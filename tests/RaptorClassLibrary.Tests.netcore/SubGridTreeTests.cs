@@ -133,19 +133,19 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Not Implemented")]
         public void Test_SubGridTree_ScanSubGrids_WorldExtent()
         {
             Assert.True(false,"Not Implemented");
         }
 
-        [Fact]
+        [Fact(Skip = "Not Implemented")]
         public void Test_SubGridTree_ScanSubGrids_CellExtent()
         {
             Assert.True(false,"Not Implemented");
         }
 
-        [Fact]
+        [Fact(Skip = "Not Implemented")]
         public void Test_SubGridTree_ScanSubGrids_All()
         {
             Assert.True(false,"Not Implemented");
@@ -262,19 +262,19 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
                           "Cell location not at the origin [IndexOriginOffset, IndexOriginOffset] as expected");
         }
 
-        [Fact]
+        [Fact(Skip = "Not Implemented")]
         public void Test_SubGridTree_LocateSubGridContaining_SpecificLevel()
         {
             Assert.True(false,"Not Implemented");
         }
 
-        [Fact]
+        [Fact(Skip = "Not Implemented")]
         public void Test_SubGridTree_LocateSubGridContaining_BottomLevel()
         {
             Assert.True(false,"Not Implemented");
         }
 
-        [Fact]
+        [Fact(Skip = "Not Implemented")]
         public void Test_SubGridTree_LocateSubGridContaining_LocateClosestSubGridContaining()
         {
             Assert.True(false,"Not Implemented");

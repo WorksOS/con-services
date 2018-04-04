@@ -22,13 +22,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator.Tests
 {
         public class AggregatedDataIntegratorWorkerTests
     {
-        [Fact()]
+        [Fact(Skip = "Not Implemented")]
         public void Test_AggregatedDataIntegratorWorker_AggregatedDataIntegratorWorkerTest()
         {
             Assert.True(false);
         }
 
-        [Fact()]
+        [Fact(Skip = "Not Implemented")]
         public void Test_AggregatedDataIntegratorWorker_AggregatedDataIntegratorWorkerTest1()
         {
             Assert.True(false);

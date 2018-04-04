@@ -55,13 +55,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators.Tests
             iterator.Initialise();
         }
 
-        [Fact()]
+        [Fact(Skip = "Not Implemented")]
         public void Test_SubGridSegmentCellPassIterator_NonStaticTests_GetNextCellPass()
         {
             Assert.True(false);
         }
 
-        [Fact()]
+        [Fact(Skip = "Not Implemented")]
         public void Test_SubGridSegmentCellPassIterator_NonStaticTests_MayHaveMoreFilterableCellPasses()
         {
             Assert.True(false);

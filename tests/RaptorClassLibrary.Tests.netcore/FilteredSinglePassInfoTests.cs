@@ -14,7 +14,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             Assert.Equal(0, info.PassCount);
         }
 
-        [Fact]
+        [Fact(Skip = "Not Implemented")]
         public void Test_FilteredSinglePass_Clear()
         {
             Assert.True(false);

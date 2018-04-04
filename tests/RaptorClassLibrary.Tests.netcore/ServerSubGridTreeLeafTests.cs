@@ -240,7 +240,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
             Assert.True(latestPass.Equals(pass), "Latest cell pass does not match pass");
         }
 
-        [Fact()]
+        [Fact(Skip = "Not Implemented")]
         public void Test_ServerSubGridTreeLeaf_LoadSegmentFromStorage()
         {
             Assert.True(false);

@@ -38,25 +38,25 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators.Tests
                 "Start and end time not set correctly");
         }
 
-        [Fact()]
+        [Fact(Skip = "Not Implemented")]
         public void Test_SubGridSegmentIterator_MoveNext()
         {
             Assert.True(false);
         }
 
-        [Fact()]
+        [Fact(Skip = "Not Implemented")]
         public void Test_SubGridSegmentIterator_MoveToFirstSubGridSegment()
         {
             Assert.True(false);
         }
 
-        [Fact()]
+        [Fact(Skip = "Not Implemented")]
         public void Test_SubGridSegmentIterator_MoveToNextSubGridSegment()
         {
             Assert.True(false);
         }
 
-        [Fact()]
+        [Fact(Skip = "Not Implemented")]
         public void Test_SubGridSegmentIterator_CurrentSubgridSegmentDestroyed()
         {
             Assert.True(false);
@@ -80,13 +80,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators.Tests
             Assert.Equal(iterator.IterationState.Idx, leaf.Directory.SegmentDirectory.Count());
         }
 
-        [Fact()]
+        [Fact(Skip = "Not Implemented")]
         public void Test_SubGridSegmentIterator_SegmentListExtended()
         {
             Assert.True(false);
         }
 
-        [Fact()]
+        [Fact(Skip = "Not Implemented")]
         public void Test_SubGridSegmentIterator_MarkCacheStamp()
         {
             Assert.True(false);

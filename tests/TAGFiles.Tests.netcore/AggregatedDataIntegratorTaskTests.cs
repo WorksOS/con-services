@@ -10,13 +10,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator.Tests
 {
         public class AggregatedDataIntegratorTaskTests
     {
-        [Fact()]
+        [Fact(Skip = "Not Implemented")]
         public void Test_AggregatedDataIntegratorTask_OnAdditionToFinalizationQueue()
         {
             Assert.True(false);
         }
 
-        [Fact()]
+        [Fact(Skip = "Not Implemented")]
         public void Test_AggregatedDataIntegratorTask_SetAggregateModifiedSubgrids()
         {
             Assert.True(false);

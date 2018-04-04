@@ -22,55 +22,55 @@ namespace VSS.VisionLink.Raptor.Storage.Tests
             Assert.NotNull(proxy);
         }
 
-        [Fact()]
+        [Fact(Skip = "Not Implemented")]
         public void Test_StorageProxy_Ignite_Instance()
         {
             Assert.True(false);
         }
 
-        [Fact()]
+        [Fact(Skip = "Not Implemented")]
         public void Test_StorageProxy_Ignite_ReadSpatialStreamFromPersistentStore()
         {
             Assert.True(false);
         }
 
-        [Fact()]
+        [Fact(Skip = "Not Implemented")]
         public void Test_StorageProxy_Ignite_ReadStreamFromPersistentStore()
         {
             Assert.True(false);
         }
 
-        [Fact()]
+        [Fact(Skip = "Not Implemented")]
         public void Test_StorageProxy_Ignite_ReadStreamFromPersistentStoreTest1()
         {
             Assert.True(false);
         }
 
-        [Fact()]
+        [Fact(Skip = "Not Implemented")]
         public void Test_StorageProxy_Ignite_ReadStreamFromPersistentStoreDirect()
         {
             Assert.True(false);
         }
 
-        [Fact()]
+        [Fact(Skip = "Not Implemented")]
         public void Test_StorageProxy_Ignite_RemoveStreamFromPersistentStore()
         {
             Assert.True(false);
         }
 
-        [Fact()]
+        [Fact(Skip = "Not Implemented")]
         public void Test_StorageProxy_Ignite_WriteSpatialStreamToPersistentStore()
         {
             Assert.True(false);
         }
 
-        [Fact()]
+        [Fact(Skip = "Not Implemented")]
         public void Test_StorageProxy_Ignite_WriteStreamToPersistentStore()
         {
             Assert.True(false);
         }
 
-        [Fact()]
+        [Fact(Skip = "Not Implemented")]
         public void Test_StorageProxy_Ignite_WriteStreamToPersistentStoreDirect()
         {
             Assert.True(false);
