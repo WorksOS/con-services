@@ -150,8 +150,91 @@ namespace ExecutorTests
       var filterToTest = new FilterDescriptorListResult
       {
         FilterDescriptors = ImmutableList<FilterDescriptor>.Empty
-                                                           .Add(new FilterDescriptor {FilterUid = filterUid1, Name = name1, FilterType = filterType, FilterJson = filterJson1})
-                                                           .Add(new FilterDescriptor {FilterUid = filterUid2, Name = name2, FilterType = filterType, FilterJson = filterJson2})
+                                                           .Add(new FilterDescriptor { FilterUid = filterUid1, Name = name1, FilterType = filterType, FilterJson = filterJson1 })
+                                                           .Add(new FilterDescriptor { FilterUid = filterUid2, Name = name2, FilterType = filterType, FilterJson = filterJson2 })
+      };
+
+      Assert.IsNotNull(result, Responses.ShouldReturnResult);
+      if (filterType == FilterType.Persistent)
+      {
+        Assert.AreEqual(2, result.FilterDescriptors.Count, "should be 2 filter2");
+        Assert.AreEqual(filterToTest.FilterDescriptors[0].FilterUid, result.FilterDescriptors[0].FilterUid,
+          Responses.IncorrectFilterDescriptorFilterUid);
+        Assert.AreEqual(filterToTest.FilterDescriptors[0].Name, result.FilterDescriptors[0].Name,
+          Responses.IncorrectFilterDescriptorName);
+        Assert.AreEqual("{\"dateRangeType\":0,\"dateRangeName\":\"Today\"}", result.FilterDescriptors[0].FilterJson,
+          Responses.IncorrectFilterDescriptorFilterJson);
+        Assert.AreEqual(filterToTest.FilterDescriptors[0].FilterType, result.FilterDescriptors[0].FilterType,
+          Responses.IncorrectFilterDescriptorFilterType);
+        Assert.AreEqual(filterToTest.FilterDescriptors[1].FilterUid, result.FilterDescriptors[1].FilterUid,
+          Responses.IncorrectFilterDescriptorFilterUid);
+        Assert.AreEqual(filterToTest.FilterDescriptors[1].Name, result.FilterDescriptors[1].Name,
+          Responses.IncorrectFilterDescriptorName);
+        Assert.AreEqual("{\"dateRangeType\":1,\"dateRangeName\":\"Yesterday\"}", result.FilterDescriptors[1].FilterJson,
+          Responses.IncorrectFilterDescriptorFilterJson);
+        Assert.AreEqual(filterToTest.FilterDescriptors[1].FilterType, result.FilterDescriptors[1].FilterType,
+          Responses.IncorrectFilterDescriptorFilterType);
+      }
+      else
+      {
+        Assert.AreEqual(0, result.FilterDescriptors.Count, "should be 0 filter2");
+      }
+    }
+
+
+    [TestMethod]
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Transient)]
+    [DataRow(FilterType.Report)]
+    public async Task GetFiltersExecutor_ExistingFilters2ApplicationContext(FilterType filterType)
+    {
+      string custUid = Guid.NewGuid().ToString();
+      string userId = Guid.NewGuid().ToString();
+      string projectUid = Guid.NewGuid().ToString();
+      string filterUid1 = Guid.NewGuid().ToString();
+      string filterUid2 = Guid.NewGuid().ToString();
+      string name1 = "blah1";
+      string name2 = "blah2";
+      string filterJson1 = "{\"dateRangeType\":0,\"elevationType\":null}";
+      string filterJson2 = "{\"dateRangeType\":1,\"elevationType\":null}";
+
+      WriteEventToDb(new CreateFilterEvent
+      {
+        CustomerUID = Guid.Parse(custUid),
+        UserID = userId,
+        ProjectUID = Guid.Parse(projectUid),
+        FilterUID = Guid.Parse(filterUid1),
+        Name = name1,
+        FilterType = filterType,
+        FilterJson = filterJson1,
+        ActionUTC = DateTime.UtcNow.AddMinutes(-5),
+        ReceivedUTC = DateTime.UtcNow.AddMinutes(-5)
+      });
+
+      WriteEventToDb(new CreateFilterEvent
+      {
+        CustomerUID = Guid.Parse(custUid),
+        UserID = userId,
+        ProjectUID = Guid.Parse(projectUid),
+        FilterUID = Guid.Parse(filterUid2),
+        Name = name2,
+        FilterType = filterType,
+        FilterJson = filterJson2,
+        ActionUTC = DateTime.UtcNow,
+        ReceivedUTC = DateTime.UtcNow
+      });
+
+      var request = CreateAndValidateRequest(customerUid: custUid, isApplicationContext: true, projectUid: projectUid);
+
+      var executor =
+        RequestExecutorContainer.Build<GetFiltersExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null);
+      var result = await executor.ProcessAsync(request) as FilterDescriptorListResult;
+
+      var filterToTest = new FilterDescriptorListResult
+      {
+        FilterDescriptors = ImmutableList<FilterDescriptor>.Empty
+                                                           .Add(new FilterDescriptor { FilterUid = filterUid1, Name = name1, FilterType = filterType, FilterJson = filterJson1 })
+                                                           .Add(new FilterDescriptor { FilterUid = filterUid2, Name = name2, FilterType = filterType, FilterJson = filterJson2 })
       };
 
       Assert.IsNotNull(result, Responses.ShouldReturnResult);
