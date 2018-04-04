@@ -9,6 +9,6 @@ $env:DOCKER_HOST="tcp://10.97.96.42:2376"
 $currentFolder = (Resolve-Path .\).Path
 $env:DOCKER_CERT_PATH="$currentFolder/certs"
 
-docker-compose -f ./docker-compose-dev.yml down
-docker-compose -f ./docker-compose-dev.yml pull
-docker-compose -f ./docker-compose-dev.yml up --build -d
+docker-compose --verbose -f ./docker-compose-dev.yml down
+docker-compose --verbose -f ./docker-compose-dev.yml pull
+docker-compose --verbose -f ./docker-compose-dev.yml up --build -d
