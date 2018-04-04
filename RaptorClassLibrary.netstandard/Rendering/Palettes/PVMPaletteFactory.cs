@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Geometry;
+﻿using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.Rendering.Palettes.Interfaces;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.Types;

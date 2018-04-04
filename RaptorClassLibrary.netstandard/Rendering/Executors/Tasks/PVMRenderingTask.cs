@@ -1,9 +1,9 @@
-﻿using log4net;
+﻿using System.Linq;
+using log4net;
 using System.Reflection;
+using VSS.VisionLink.Raptor.Executors.Tasks;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.Types;
-using VSS.VisionLink.Raptor.Executors.Tasks;
-using System;
 
 namespace VSS.VisionLink.Raptor.Rendering.Executors.Tasks
 {
@@ -17,7 +17,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors.Tasks
         /// <summary>
         /// The tile renderer responsible for processing subgrid information into tile based thematic rendering
         /// </summary>
-        public PlanViewTileRenderer TileRenderer { get; set; } = null;
+        public PlanViewTileRenderer TileRenderer { get; set; }
 
         /// <summary>
         /// Constructs the PVM renderer as well as an argument and request to be used if needing to request elevations to support cut/fill operations
@@ -26,7 +26,6 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors.Tasks
         /// <param name="raptorNodeID"></param>
         /// <param name="gridDataType"></param>
         /// <param name="tileRenderer"></param>
-        /// <param name="cutFillDesignID"></param>
         public PVMRenderingTask(long requestDescriptor, 
                                 string raptorNodeID, 
                                 GridDataType gridDataType, 
@@ -53,17 +52,6 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors.Tasks
         /// </summary>
         /// <param name="responses"></param>
         /// <returns></returns>
-        public override bool TransferResponses(object [] responses)
-        {
-            foreach (object response in responses)
-            {
-                if (!TransferResponse(response))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
+        public override bool TransferResponses(object [] responses) => responses.All(TransferResponse);
     }
 }

@@ -1,10 +1,8 @@
-﻿using System.Drawing;
-using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
+﻿using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Rendering.GridFabric.Requests;
+using VSS.VisionLink.Raptor.Rendering.GridFabric.Responses;
 using VSS.VisionLink.Raptor.Servers;
 using VSS.VisionLink.Raptor.Servers.Client;
-using VSS.TRex.Rendering.Abstractions;
-using VSS.VisionLink.Raptor.Rendering.GridFabric.Responses;
 
 namespace VSS.VisionLink.Raptor.Rendering.Servers.Client
 {
@@ -16,7 +14,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Servers.Client
         /// <summary>
         /// Default no-arg constructor that creates a server with the default Application Service role and the specialise tile rendering role.
         /// </summary>
-        public RaptorTileRenderingServer() : base(new string[] { RaptorApplicationServiceServer.DEFAULT_ROLE, ServerRoles.TILE_RENDERING_NODE })
+        public RaptorTileRenderingServer() : base(new [] { RaptorApplicationServiceServer.DEFAULT_ROLE, ServerRoles.TILE_RENDERING_NODE })
         {
         }
 

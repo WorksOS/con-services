@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.Rendering.Displayers

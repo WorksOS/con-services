@@ -43,20 +43,20 @@ namespace VSS.VisionLink.Raptor.Rendering
         public ushort NPixelsX;
         public ushort NPixelsY;
 
-        public PVMDisplayerBase Displayer = null;
+        public PVMDisplayerBase Displayer;
 
-        public SubGridTreeSubGridExistenceBitMask OverallExistenceMap = null;
-        public SubGridTreeSubGridExistenceBitMask ProdDataExistenceMap = null;
-        public SubGridTreeSubGridExistenceBitMask DesignSubgridOverlayMap = null;
+        public SubGridTreeSubGridExistenceBitMask OverallExistenceMap;
+        public SubGridTreeSubGridExistenceBitMask ProdDataExistenceMap;
+        public SubGridTreeSubGridExistenceBitMask DesignSubgridOverlayMap;
 
         // DisplayPalettes : TICDisplayPalettes;
 
         // Palette : TICDisplayPaletteBase;
-        IPlanViewPalette Palette = null;
+        IPlanViewPalette Palette;
 
         // ICOptions : TSVOICOptions;
 
-        private SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse> PipeLine = null;
+        private SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse> PipeLine;
 
         // LiftBuildSettings : TICLiftBuildSettings;
 
@@ -159,7 +159,7 @@ namespace VSS.VisionLink.Raptor.Rendering
             PipeLine.GridDataType = GridDataFromModeConverter.Convert(Mode);
 
             // Construct and assign the filter set into the pipeline
-            PipeLine.FilterSet = new FilterSet(Filter2 == null ? new CombinedFilter[] { Filter1 } : new CombinedFilter[] { Filter1, Filter2 });
+            PipeLine.FilterSet = new FilterSet(Filter2 == null ? new [] { Filter1 } : new [] { Filter1, Filter2 });
 
             PipeLine.IncludeSurveyedSurfaceInformation = Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode) && !SurveyedSurfacesExludedViaTimeFiltering;
             if (PipeLine.IncludeSurveyedSurfaceInformation)  // if required then check if filter turns off requirement due to filters used
@@ -224,7 +224,7 @@ namespace VSS.VisionLink.Raptor.Rendering
 
         protected RequestErrorStatus ExecutePipeline()
         {
-            PipelinedSubGridTask PipelinedTask = null;
+            PipelinedSubGridTask PipelinedTask;
 
             RequestErrorStatus Result = RequestErrorStatus.Unknown;
 
@@ -374,7 +374,7 @@ namespace VSS.VisionLink.Raptor.Rendering
         /// to send responses to
         /// </summary>
         /// <param name="requestingRaptorNodeID"></param>
-        public PlanViewTileRenderer(string requestingRaptorNodeID) : base()
+        public PlanViewTileRenderer(string requestingRaptorNodeID)
         {
             RequestingRaptorNodeID = requestingRaptorNodeID;
 

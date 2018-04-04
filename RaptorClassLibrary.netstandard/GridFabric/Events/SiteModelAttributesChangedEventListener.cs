@@ -1,14 +1,8 @@
 ﻿using Apache.Ignite.Core;
-using Apache.Ignite.Core.Events;
 using Apache.Ignite.Core.Messaging;
 using log4net;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
 
 namespace VSS.VisionLink.Raptor.GridFabric.Events
 {
@@ -20,14 +14,12 @@ namespace VSS.VisionLink.Raptor.GridFabric.Events
         /// <summary>
         ///  Message group the listener has been added to
         /// </summary>
-        [NonSerialized]
-        private IMessaging MsgGroup = null;
+        [NonSerialized] private IMessaging MsgGroup;
 
         [NonSerialized]
         private string MessageTopicName = "SiteModelAttributesChangedEventListener";
 
-        [NonSerialized]
-        private string GridName = null;
+        [NonSerialized] private string GridName;
 
         public bool Invoke(Guid nodeId, SiteModelAttributesChangedEvent message)
         {
@@ -56,6 +48,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Events
         /// Constructor accepting an override for the default message topi cname used for site model
         /// attribute changed messages
         /// </summary>
+        /// <param name="gridName"></param>
         /// <param name="messageTopicName"></param>
         public SiteModelAttributesChangedEventListener(string gridName, string messageTopicName) : this(gridName)
         {
@@ -90,7 +83,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Events
         }
 
         #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+        private bool disposedValue; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {

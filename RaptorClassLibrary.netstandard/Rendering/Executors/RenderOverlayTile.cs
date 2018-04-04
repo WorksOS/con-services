@@ -1,22 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using log4net;
+using System;
 using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
+using VSS.TRex.Rendering.Abstractions;
+using VSS.VisionLink.Raptor.Designs;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.Rendering.Displayers;
+using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.SubGridTrees;
+using VSS.VisionLink.Raptor.Surfaces;
 using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Utilities;
-using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.Surfaces;
-using VSS.VisionLink.Raptor.Designs;
-using VSS.VisionLink.Raptor.Rendering.Displayers;
-using VSS.TRex.Rendering.Abstractions;
-using log4net;
-using System.Reflection;
 
 namespace VSS.VisionLink.Raptor.Rendering.Executors
 {
@@ -35,30 +30,30 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
         /// <summary>
         /// The Raptor application service node performing the request
         /// </summary>
-        string RequestingRaptorNodeID { get; set; } = string.Empty;
+        private string RequestingRaptorNodeID { get; set; } = string.Empty;
 
-        long DataModelID = -1;
+        private long DataModelID = -1;
         // long MachineID = -1;
         // FExternalDescriptor :TASNodeRequestDescriptor;
 
-        DisplayMode Mode = DisplayMode.Height;
+        private DisplayMode Mode = DisplayMode.Height;
 
-        bool CoordsAreGrid = true;
+        private bool CoordsAreGrid = true;
 
-        XYZ BLPoint; // : TWGS84Point;
-        XYZ TRPoint; // : TWGS84Point;
+        private XYZ BLPoint; // : TWGS84Point;
+        private XYZ TRPoint; // : TWGS84Point;
 
-        XYZ[] NEECoords = null;
-        XYZ[] LLHCoords = null;
+        private XYZ[] NEECoords;
+        private XYZ[] LLHCoords;
 
-        ushort NPixelsX = 0;
-        ushort NPixelsY = 0;
+        private ushort NPixelsX;
+        private ushort NPixelsY;
 
-        double TileRotation;
-        double WorldTileWidth, WorldTileHeight;
+        private double TileRotation;
+        private double WorldTileWidth, WorldTileHeight;
 
-        CombinedFilter Filter1 = null;
-        CombinedFilter Filter2 = null;
+        private CombinedFilter Filter1;
+        private CombinedFilter Filter2;
 
         /// <summary>
         /// The identifier for the design held in the designs list ofr the project to be used to calculate cut/fill values
@@ -71,7 +66,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
         // ICOptions ICOptions = new ICOptions();
         Color RepresentColor = Color.Black;
 
-        PlanViewTileRenderer Renderer = null;
+        private PlanViewTileRenderer Renderer;
 
         /// <summary>
         /// Constructor for the renderer
@@ -85,7 +80,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
         /// <param name="ANPixelsY"></param>
         /// <param name="AFilter1"></param>
         /// <param name="AFilter2"></param>
-        /// <param name="ACutFillDesign"></param>
+        /// <param name="ACutFillDesignID"></param>
         /// <param name="ARepresentColor"></param>
         /// <param name="requestingRaptorNodeID"></param>
         public RenderOverlayTile(long ADataModelID,
@@ -124,9 +119,9 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
             RequestingRaptorNodeID = requestingRaptorNodeID;
         }
 
-        SubGridTreeSubGridExistenceBitMask OverallExistenceMap = null;
+        private SubGridTreeSubGridExistenceBitMask OverallExistenceMap;
 
-        BoundingWorldExtent3D RotatedTileBoundingExtents;
+        private BoundingWorldExtent3D RotatedTileBoundingExtents;
 
         bool SurveyedSurfacesExludedViaTimeFiltering = true;
 
@@ -333,7 +328,6 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
             // CoordConversionResult : TCoordServiceErrorStatus;
             long RequestDescriptor;
             // bool ScheduledWithGovernor = false;
-            SubGridTreeSubGridExistenceBitMask ProdDataExistenceMap = null;
             SubGridTreeSubGridExistenceBitMask DesignSubgridOverlayMap = null;
             long[] SurveyedSurfaceExclusionList = new long[0];
 
@@ -444,7 +438,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
             // given the coordinate system assigned to the project. If there is no coordinate system
             // then this is where we exit
 
-            LLHCoords = new XYZ[4]
+            LLHCoords = new []
             {
               new XYZ(BLPoint.X, BLPoint.Y),    // BL
               new XYZ(TRPoint.X, TRPoint.Y),    // TR
@@ -503,7 +497,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
             }
 
             // Get the current production data existance map from the sitemodel
-            ProdDataExistenceMap = SiteModel.GetProductionDataExistanceMap();
+            var ProdDataExistenceMap = SiteModel.GetProductionDataExistanceMap();
 
             if (ProdDataExistenceMap == null)
             {
@@ -528,7 +522,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
                 CellSize = SubGridTree.SubGridTreeDimension * SiteModel.Grid.CellSize
             };
 
-            if (Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode))
+            if (Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode))
             {
                 // Obtain local reference to surveyed surfaces (lock free access)
                 SurveyedSurfaces LocalSurveyedSurfaces = SiteModel.SurveyedSurfaces;
@@ -539,7 +533,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
                 {
                     ResultStatus = RequestErrorStatus.FailedToRequestSubgridExistenceMap;
                     return null;
-                };
+                }
 
                 if (Filter2 != null)
                 {
@@ -550,7 +544,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
                     }
                 }
 
-                SurveyedSurfacesExludedViaTimeFiltering = !(Filter1SurveyedSurfaces?.Count > 0) || (Filter2SurveyedSurfaces?.Count > 0);
+                SurveyedSurfacesExludedViaTimeFiltering = !(Filter1SurveyedSurfaces.Count > 0 || Filter2SurveyedSurfaces.Count > 0);
             }
 
             OverallExistenceMap.SetOp_OR(ProdDataExistenceMap);
@@ -566,7 +560,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
             // cannot meaningfully render the data). If the size of s subgrid is smaller than
             // the size of a pixel in the requested tile then do this. Just check the X dimension
             // as the data display is isotropic.
-            if (Rendering.Utilities.SubgridShouldBeRenderedAsRepresentationalDueToScale(WorldTileWidth, WorldTileHeight, NPixelsX, NPixelsY, OverallExistenceMap.CellSize))
+            if (Utilities.SubgridShouldBeRenderedAsRepresentationalDueToScale(WorldTileWidth, WorldTileHeight, NPixelsX, NPixelsY, OverallExistenceMap.CellSize))
             {
                 return RenderTileAsRepresentationalDueToScale(); // There is no need to do anything else
             }
@@ -619,7 +613,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
             // If this render involves a relationship with a design then ensure the existance map
             // for the design is loaded in to memory to allow the request pipeline to confine
             // subgrid requests that overlay the actual design
-            if (Rendering.Utilities.RequestRequiresAccessToDesignFileExistanceMap(Mode /*, ReferenceVolumeType*/))
+            if (Utilities.RequestRequiresAccessToDesignFileExistanceMap(Mode /*, ReferenceVolumeType*/))
             {
                 /*if (CutFillDesign.IsNull)
                 {

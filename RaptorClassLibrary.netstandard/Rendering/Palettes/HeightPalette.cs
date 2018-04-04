@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Rendering.Palettes.Interfaces;
 using VSS.VisionLink.Raptor.Utilities;
@@ -12,11 +9,11 @@ namespace VSS.VisionLink.Raptor.Rendering.Palettes
 {
     public class HeightPalette : IPlanViewPalette
     {
-        private double MinElevation = Consts.NullDouble;
-        private double MaxElevation = Consts.NullDouble;
-        private double ElevationPerBand = Consts.NullDouble;
+        private double MinElevation;// = Consts.NullDouble;
+        private double MaxElevation;// = Consts.NullDouble;
+        private double ElevationPerBand;// = Consts.NullDouble;
 
-        private static Color[] ElevationPalette = new Color[]
+        private static Color[] ElevationPalette = new []
         {
         Color.Aqua,
         Color.Yellow,

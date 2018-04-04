@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using VSS.TRex.Rendering.Abstractions;
-using VSS.TRex.Rendering.Abstractions.GridFabric.Factories;
+﻿using VSS.TRex.Rendering.Abstractions.GridFabric.Factories;
 using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
 
 namespace VSS.VisionLink.Raptor.Rendering.GridFabric.Responses
