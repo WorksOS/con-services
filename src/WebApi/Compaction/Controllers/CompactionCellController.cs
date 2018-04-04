@@ -1,11 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -21,7 +20,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// Controller for getting production data cell value from Raptor
   /// </summary>
   [ProjectUidVerifier]
-  [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
+  //[ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })] (Aaron) Disabled temporarily until we can resolve the cache invalidation problem
+  [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
   public class CompactionCellController : BaseController
   {
     /// <summary>
