@@ -4,7 +4,6 @@ I should be able to request production data export report for import to VETA.
 Background: 
 Given the Export Report To VETA service URI "/api/v2/export/veta" and the result file "ExportReportToVETAResponse.json"
 
-@Ignore
 Scenario Outline: ExportReportToVETA - Good Request
 And projectUid "<ProjectUID>"
 And filterUid "<FilterUID>"
@@ -17,7 +16,6 @@ Examples:
 | Selected Machines | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | d15e65e0-3cb1-476f-8fc6-08507a14a269 | D61 SATD PE,KOMATSU PC210,ACOM,LIEBHERR 924C,CAT CS56B,VOLVO G946B,CASE CX160C,LIEBHERR724,JD 764 CV | Test     | AllMachinesLongDates |
 | All Machines      | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | d15e65e0-3cb1-476f-8fc6-08507a14a269 | All                                                                                                  | Test     | AllMachinesLongDates |
 
-@Ignore
 Scenario Outline: ExportReportToVETA - Good Request - No Machines
 And projectUid "<ProjectUID>"
 And filterUid "<FilterUID>"
@@ -38,7 +36,6 @@ Examples:
 | RequestName | FilterUID                            | MachineNames | FileName | ErrorCode | ErrorMessage                                                                                         |
 |             | d15e65e0-3cb1-476f-8fc6-08507a14a269 | All          | Test     |  -5       | Missing Project or project does not belong to specified customer or don't have access to the project |
 
-@Ignore
 Scenario Outline: ExportReportToVETA - Good Request - NoDateRange
 And projectUid "<ProjectUID>"
 And machineNames "<MachineNames>"
@@ -68,7 +65,6 @@ Examples:
 | RequestName | ProjectUID                           | FilterUID                            | FileName | ErrorCode | ErrorMessage                                                       |
 |             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1cf81668-1739-42d5-b068-ea025588796a | Test     | 2002      | Failed to get requested export data with error: No data for export |
 
-@Ignore
 Scenario Outline: ExportReportToVETA - Good Request with Filter - No Machines
 And projectUid "<ProjectUID>"
 And filterUid "<FilterUID>"
