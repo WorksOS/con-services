@@ -138,7 +138,7 @@ namespace VSS.Productivity3D.Filter.Common.Filters.Authentication
         //Set calling context Principal
         context.User = new TIDCustomPrincipal(new GenericIdentity(userUid), customerUid, userEmail,
           customerResult.customer.First(x => string.Equals(x.uid, customerUid, StringComparison.OrdinalIgnoreCase)).name,
-          ProjectListProxy, context.Request.Headers.GetCustomHeaders(), isApplication: true);
+          ProjectListProxy, context.Request.Headers.GetCustomHeaders(), isApplication: isApplicationContext);
       }
 
       await this.NextRequestDelegate.Invoke(context);
