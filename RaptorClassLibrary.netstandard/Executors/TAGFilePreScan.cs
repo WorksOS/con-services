@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.TAGFiles.Classes;
 using VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks;
@@ -18,10 +13,10 @@ namespace VSS.VisionLink.Raptor.Executors
     /// </summary>
     public class TAGFilePreScan
     {
-        public double? SeedLatitude { get; set; } = null;
-        public double? SeedLongitude { get; set; } = null;
+        public double? SeedLatitude { get; set; }
+        public double? SeedLongitude { get; set; }
 
-        public int ProcessedEpochCount { get; set; } = 0;
+        public int ProcessedEpochCount { get; set; }
 
         public string RadioType { get; set; } = string.Empty;
         public string RadioSerial { get; set; } = string.Empty;

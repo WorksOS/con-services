@@ -25,7 +25,7 @@ namespace VSS.Velociraptor.DesignProfiling
 
         private TrimbleTINModel FData;
         private GenericSubGridTree<List<Triangle>> FSpatialIndex;
-        public TTMQuadTree QuadTreeSpatialIndex = null; 
+        public TTMQuadTree QuadTreeSpatialIndex; 
 
         private double FMinHeight;
         private double FMaxHeight;
@@ -44,9 +44,9 @@ namespace VSS.Velociraptor.DesignProfiling
             public uint Count;
         }
 
-        Triangle[] FSpatialIndexOptimisedTriangles = null;
+        private Triangle[] FSpatialIndexOptimisedTriangles;
 
-        private GenericSubGridTree<TriangleArrayReference> FSpatialIndexOptimised = null;
+        private GenericSubGridTree<TriangleArrayReference> FSpatialIndexOptimised;
         public GenericSubGridTree<TriangleArrayReference> SpatialIndexOptimised { get { return FSpatialIndexOptimised; } }
 
         
@@ -292,7 +292,7 @@ namespace VSS.Velociraptor.DesignProfiling
                                                     Action<SubGridTree, uint, uint, Triangle> includeTriangleInLeaf,
                                                     TriVertex H1, TriVertex H2, TriVertex V, bool SingleRowOnly)
         {
-            uint TestLeftSubGridX, TestRightSubGridX; ;
+            uint TestLeftSubGridX, TestRightSubGridX; 
             double H1Slope, H2Slope;
             bool LastRow = false;
             bool WasLastRow = false;
@@ -393,7 +393,7 @@ namespace VSS.Velociraptor.DesignProfiling
                             {
                                 includeTriangleInLeaf(index, I, OverrideSubGridY, sourceTriangle);
                             }
-                        };
+                        }
                     }
 
                     // Scan to the left from the left most point until subgrids no longer intersect the triangle
@@ -473,7 +473,7 @@ namespace VSS.Velociraptor.DesignProfiling
             // Split triangle into two pieces, a 'top' piece and a 'bottom' piece to simplify
             // scanning across the triangle. Split is always with a horizontal line
 
-            TriVertex[] SortVertices = new TriVertex[3] { Tri.Vertices[0], Tri.Vertices[1], Tri.Vertices[2] };
+            TriVertex[] SortVertices = new TriVertex[] { Tri.Vertices[0], Tri.Vertices[1], Tri.Vertices[2] };
 
             if (SortVertices[0].Y > SortVertices[1].Y) SwapVertices(ref SortVertices[0], ref SortVertices[1]);
             if (SortVertices[1].Y > SortVertices[2].Y) SwapVertices(ref SortVertices[1], ref SortVertices[2]);
@@ -617,7 +617,7 @@ namespace VSS.Velociraptor.DesignProfiling
         /// Constructor for a TTMDesign that takes the underlying cell size for the site model that will be used when interpolating heights from the design surface
         /// </summary>
         /// <param name="ACellSize"></param>
-        public TTMDesign(double ACellSize) : base()
+        public TTMDesign(double ACellSize)
         {
             FData = new TrimbleTINModel();
             FCellSize = ACellSize;

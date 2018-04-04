@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Events;
-using VSS.VisionLink.Raptor.Types;
-using VSS.VisionLink.Raptor.Events.Interfaces;
+﻿using VSS.VisionLink.Raptor.Events.Interfaces;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.SiteModels;
+using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.Events
 {
@@ -20,65 +14,65 @@ namespace VSS.VisionLink.Raptor.Events
         /// <summary>
         /// The SiteModel these events relate to
         /// </summary>
-        SiteModel SiteModel { get; set; } = null;
+        private SiteModel SiteModel { get; set; }
 
         /// <summary>
         /// The ID of the machine these events were recorded by
         /// </summary>
-        public long MachineID { get; set; } = 0;
+        public long MachineID { get; set; }
 
         /// <summary>
         /// Events recording the Start and Stop events for recording production data on a machine
         /// </summary>
         /// 
-        public StartEndRecordedDataChangeList StartEndRecordedDataEvents = null;
+        public StartEndRecordedDataChangeList StartEndRecordedDataEvents;
         
         /// <summary>
         /// Events recording vibration state changes for vibratory drum compactor operation
         /// </summary>
-        public ProductionEventChangeList<ProductionEventChangeBase<VibrationState>, VibrationState> VibrationStateEvents = null;
+        public ProductionEventChangeList<ProductionEventChangeBase<VibrationState>, VibrationState> VibrationStateEvents;
 
         /// <summary>
         /// Events recording changes to the prevailing GPSMode (eg: RTK Fixed, RTK Float, Differential etc) at the time 
         /// production measurements were being made
         /// </summary>
-        public ProductionEventChangeList<ProductionEventChangeBase<GPSMode>, GPSMode> GPSModeStateEvents = null;
+        public ProductionEventChangeList<ProductionEventChangeBase<GPSMode>, GPSMode> GPSModeStateEvents;
 
         /// <summary>
         /// Records the positioning technology (eg: GPS or UTS) being used at the time 
         /// production measurements were being made
         /// </summary>
-        public ProductionEventChangeList<ProductionEventChangeBase<PositioningTech>, PositioningTech> PositioningTechStateEvents = null;
+        public ProductionEventChangeList<ProductionEventChangeBase<PositioningTech>, PositioningTech> PositioningTechStateEvents;
 
         /// <summary>
         /// Records the IDs of the designs selected on a machine at the time production measurements were being made
         /// </summary>
-        public ProductionEventChangeList<ProductionEventChangeBase<int>, int> DesignNameIDStateEvents = null;
+        public ProductionEventChangeList<ProductionEventChangeBase<int>, int> DesignNameIDStateEvents;
 
         /// <summary>
         /// Records the state of the automatic machine control on the machine at the time measurements were being made.
         /// </summary>
-        public ProductionEventChangeList<ProductionEventChangeBase<MachineAutomaticsMode>, MachineAutomaticsMode> MachineAutomaticsStateEvents = null;
+        public ProductionEventChangeList<ProductionEventChangeBase<MachineAutomaticsMode>, MachineAutomaticsMode> MachineAutomaticsStateEvents;
 
         /// <summary>
         /// Records the state of the selected machine gear at the time measurements were being made
         /// </summary>
-        public ProductionEventChangeList<ProductionEventChangeBase<MachineGear>, MachineGear> MachineGearStateEvents = null;
+        public ProductionEventChangeList<ProductionEventChangeBase<MachineGear>, MachineGear> MachineGearStateEvents;
 
         /// <summary>
         /// Records the state of minimum elevation mapping on the machine at the time measurements were being made
         /// </summary>
-        public ProductionEventChangeList<ProductionEventChangeBase<bool>, bool> MinElevMappingStateEvents = null;
+        public ProductionEventChangeList<ProductionEventChangeBase<bool>, bool> MinElevMappingStateEvents;
 
         /// <summary>
         /// Records the state of GPSAccuracy and accompanying GPSTolerance on the machine at the time measurements were being made
         /// </summary>
-        public ProductionEventChangeList<ProductionEventChangeBase<GPSAccuracyAndTolerance>, GPSAccuracyAndTolerance> GPSAccuracyAndToleranceStateEvents = null;
+        public ProductionEventChangeList<ProductionEventChangeBase<GPSAccuracyAndTolerance>, GPSAccuracyAndTolerance> GPSAccuracyAndToleranceStateEvents;
 
         /// <summary>
         /// Records the selected Layer ID on the machine at the time measurements were being made
         /// </summary>
-        public ProductionEventChangeList<ProductionEventChangeBase<ushort>, ushort> LayerIDStateEvents = null;
+        public ProductionEventChangeList<ProductionEventChangeBase<ushort>, ushort> LayerIDStateEvents;
 
         /// <summary>
         /// Create all defined event lists in one operation.

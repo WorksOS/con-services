@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using VSS.VisionLink.Raptor.ExistenceMaps.Servers;
 using VSS.VisionLink.Raptor.SubGridTrees;
 
@@ -28,7 +23,7 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public SubGridTreeSubGridExistenceBitMask Execute(string key)
+        public static SubGridTreeSubGridExistenceBitMask Execute(string key)
         {
             byte[] bytes = ExistenceMapServer.Instance().GetExistenceMap(key);
 
@@ -54,9 +49,11 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
         /// <summary>
         /// Executes the request to retrieve an existence map given it's type descriptor and ID
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="siteModeID"></param>
+        /// <param name="descriptor"></param>
+        /// <param name="ID"></param>
         /// <returns></returns>
-        public SubGridTreeSubGridExistenceBitMask Execute(long siteModeID, long descriptor, long ID) => Execute(CacheKey(siteModeID, descriptor, ID));
+        public static SubGridTreeSubGridExistenceBitMask Execute(long siteModeID, long descriptor, long ID) => Execute(CacheKey(siteModeID, descriptor, ID));
         
     }
 }

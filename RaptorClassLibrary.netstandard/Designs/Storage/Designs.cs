@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.Utilities.Interfaces;
 
@@ -20,14 +17,13 @@ namespace VSS.VisionLink.Raptor.Designs.Storage
         /// </summary>
         public Designs()
         {
-
         }
 
         /// <summary>
         /// Constructor accepting a Binary Reader instance from which to instantiate itself
         /// </summary>
         /// <param name="reader"></param>
-        public Designs(BinaryReader reader) : base()
+        public Designs(BinaryReader reader)
         {
             Read(reader);
         }
@@ -87,7 +83,7 @@ namespace VSS.VisionLink.Raptor.Designs.Storage
                                        DesignDescriptor ADesignDescriptor,
                                        BoundingWorldExtent3D AExtents)
         {
-            Design match = this.Find(x => x.ID == ADesignID);
+            Design match = Find(x => x.ID == ADesignID);
 
             if (match != null)
             {
@@ -107,12 +103,12 @@ namespace VSS.VisionLink.Raptor.Designs.Storage
         /// <returns></returns>
         public bool RemoveDesign(long ADesignID)
         {
-            Design match = this.Find(x => x.ID == ADesignID);
+            Design match = Find(x => x.ID == ADesignID);
 
-            return match == null ? false : this.Remove(match);
+            return match != null && Remove(match);
         }
 
-        public Design Locate(long AID) => this.Find(x => x.ID == AID);
+        public Design Locate(long AID) => Find(x => x.ID == AID);
 
         public void Assign(Designs source)
         {

@@ -8,7 +8,8 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps
     public class ProductionDataExistanceMap
     {
         public long DataModelID { get; set; } = -1;
-        public SubGridTreeSubGridExistenceBitMask Map { get; set; } = null;
+
+        public SubGridTreeSubGridExistenceBitMask Map { get; set; }
 
         public ProductionDataExistanceMap(long dataModelID, double cellSize)
         {

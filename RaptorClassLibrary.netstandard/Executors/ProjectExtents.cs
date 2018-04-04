@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.Servers;
+﻿using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.Servers.Client;
 using VSS.VisionLink.Raptor.SiteModels;
 
@@ -24,7 +18,7 @@ namespace VSS.VisionLink.Raptor.Executors
         {
             SiteModel SiteModel = RaptorGenericApplicationServiceServer.PerformAction(() => SiteModels.SiteModels.Instance().GetSiteModel(ID, false));
 
-            return SiteModel == null ? BoundingWorldExtent3D.Inverted() : SiteModel.SiteModelExtent;
+            return SiteModel?.SiteModelExtent ?? BoundingWorldExtent3D.Inverted();
         }
 
         /// <summary>
@@ -36,7 +30,7 @@ namespace VSS.VisionLink.Raptor.Executors
         {
             SiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID, false);
 
-            return SiteModel == null ? BoundingWorldExtent3D.Inverted() : SiteModel.GetAdjustedDataModelSpatialExtents(new long[0]);
+            return SiteModel?.GetAdjustedDataModelSpatialExtents(new long[0]) ?? BoundingWorldExtent3D.Inverted();
         }
 
         /// <summary>
@@ -50,7 +44,7 @@ namespace VSS.VisionLink.Raptor.Executors
         {
             SiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID, false);
 
-            return SiteModel == null ? BoundingWorldExtent3D.Inverted() : SiteModel.GetAdjustedDataModelSpatialExtents(SurveydSurfaceExclusionList);
+            return SiteModel?.GetAdjustedDataModelSpatialExtents(SurveydSurfaceExclusionList) ?? BoundingWorldExtent3D.Inverted();
         }
     }
 }

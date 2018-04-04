@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Events.Interfaces;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.Types;
@@ -17,11 +14,11 @@ namespace VSS.VisionLink.Raptor.Events
     [Serializable]
     public class ProductionEventChangeList<T> : List<T>, IProductionEventChangeList where T : ProductionEventChangeBase, new()
     {
-        public long SiteModelID { get; set; } = 0;
-        public long MachineID { get; set; } = 0;
+        public long SiteModelID { get; set; }
+        public long MachineID { get; set; }
 
         [NonSerialized]
-        public ProductionEventChanges Container = null;
+        public ProductionEventChanges Container;
 
         // FLastUpdateTimeUTC records the time at which this event change list was last updated
         // in the persistent store
@@ -29,9 +26,9 @@ namespace VSS.VisionLink.Raptor.Events
 
         ProductionEventType EventListType { get; set; } = ProductionEventType.Unknown;
 
-        private bool eventsListIsOutOfDate = false;
+        private bool eventsListIsOutOfDate;
 
-        public ProductionEventChangeList() : base()
+        public ProductionEventChangeList()
         {
         }
 
@@ -123,7 +120,7 @@ namespace VSS.VisionLink.Raptor.Events
         /// will be returned, otherwise passed event will be returned. 
         /// The method returns the event instance that was added to the list
         /// </summary>
-        /// <param name="Event"></param>
+        /// <param name="dateTime"></param>
         /// <returns>The event instance that was added to the list</returns>
         public T PutValueAtDate(DateTime dateTime)
         {
@@ -145,7 +142,6 @@ namespace VSS.VisionLink.Raptor.Events
         public T PutValueAtDate(T Event)
         {
             int EventIndex = Count;
-            bool CorrectInsertLocationIdentified;
 
             bool ExistingEventFound = Find((T)Event, out EventIndex);
 
@@ -158,6 +154,7 @@ namespace VSS.VisionLink.Raptor.Events
                 "Have determined two events are the same but that they have different dates!!!");
 
                 // If we find an event with the same date then delete the existing one and replace it with the new one.
+                bool CorrectInsertLocationIdentified;
                 do
                 {
                     CorrectInsertLocationIdentified = true;
@@ -393,7 +390,7 @@ namespace VSS.VisionLink.Raptor.Events
             {
                 SaveToStream(MS);
 
-                storageProxy.WriteStreamToPersistentStoreDirect(SiteModelID, EventChangeListPersistantFileName(), Types.FileSystemStreamType.Events, MS);
+                storageProxy.WriteStreamToPersistentStoreDirect(SiteModelID, EventChangeListPersistantFileName(), FileSystemStreamType.Events, MS);
             }
         }
 
@@ -442,7 +439,8 @@ namespace VSS.VisionLink.Raptor.Events
         /// the existing duplicate event will be returned, otherwise passed event will be returned.
         /// The method returns the event instance that was added to the list
         /// </summary>
-        /// <param name="Event"></param>
+        /// <param name="dateTime"></param>
+        /// <param name="value"></param>
         /// <returns>The event instance that was added to the list</returns>
         public virtual T PutValueAtDate(DateTime dateTime, V value)
         {

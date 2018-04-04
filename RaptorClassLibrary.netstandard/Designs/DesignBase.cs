@@ -6,7 +6,7 @@ namespace VSS.Velociraptor.DesignProfiling
 {
     public abstract class DesignBase
     {
-        private int FLockCount = 0;
+        private int FLockCount;
 
         //      function GetMemorySizeInKB: Integer; Virtual; Abstract;
 
@@ -51,9 +51,9 @@ namespace VSS.Velociraptor.DesignProfiling
                                   double CellSize,
                                   DesignDescriptor DesignDescriptor);
 
-        public void WindLock() => System.Threading.Interlocked.Increment(ref FLockCount);
+        public void WindLock() => Interlocked.Increment(ref FLockCount);
 
-        public void UnWindLock() => System.Threading.Interlocked.Decrement(ref FLockCount);
+        public void UnWindLock() => Interlocked.Decrement(ref FLockCount);
 
         public bool IsStale { get; set; }
 

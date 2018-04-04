@@ -62,21 +62,19 @@ namespace VSS.Velociraptor.DesignProfiling
                 return false;
             }
 
-            if (designs.TryGetValue(designDescriptor, out DesignBase Design))
+            if (designs.TryGetValue(designDescriptor, out DesignBase _))
             {
                 return designs.Remove(designDescriptor);
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
         public void AddDesignToCache(DesignDescriptor designDescriptor, DesignBase design)
         {
             lock (designs)
             {
-                if (designs.TryGetValue(designDescriptor, out DesignBase Design))
+                if (designs.TryGetValue(designDescriptor, out DesignBase _))
                 {
                     // The design is already there...
                     Debug.Assert(false, $"Error adding design {designDescriptor} to designs, already present.");
@@ -115,7 +113,7 @@ namespace VSS.Velociraptor.DesignProfiling
                 AddDesignToCache(designDescriptor, design);
             }
 
-            LoadResult = design == null ? DesignLoadResult.UnknownFailure : DesignLoadResult.Success;
+            LoadResult = DesignLoadResult.Success;
             return design;
         }
 

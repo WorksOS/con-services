@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.Velociraptor.DesignProfiling;
 using VSS.Velociraptor.DesignProfiling.GridFabric.Arguments;
 using VSS.Velociraptor.DesignProfiling.GridFabric.Requests;
@@ -20,7 +16,6 @@ namespace VSS.VisionLink.Raptor.Designs.Storage
     [Serializable]
     public class Design : IEquatable<Design>, IBinaryReaderWriter
     {
-        long FID = long.MinValue;
         DesignDescriptor FDesignDescriptor;
         BoundingWorldExtent3D FExtents;
 
@@ -36,7 +31,7 @@ namespace VSS.VisionLink.Raptor.Designs.Storage
         /// <param name="writer"></param>
         public void Write(BinaryWriter writer)
         {
-            writer.Write(FID);
+            writer.Write(ID);
             FDesignDescriptor.Write(writer);
             FExtents.Write(writer);
         }
@@ -45,15 +40,16 @@ namespace VSS.VisionLink.Raptor.Designs.Storage
         /// Binary serialization logic
         /// </summary>
         /// <param name="writer"></param>
+        /// <param name="buffer"></param>
         public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
 
         /// <summary>
         /// Binary deserialization logic
         /// </summary>
-        /// <param name="writer"></param>
+        /// <param name="reader"></param>
         public void Read(BinaryReader reader)
         {
-            FID = reader.ReadInt64();
+            ID = reader.ReadInt64();
             FDesignDescriptor.Read(reader);
             FExtents.Read(reader);
         }
@@ -61,7 +57,7 @@ namespace VSS.VisionLink.Raptor.Designs.Storage
         /// <summary>
         /// The intenal identifier of the design
         /// </summary>
-        public long ID { get { return FID; } }
+        public long ID { get; private set; } = long.MinValue;
 
         /// <summary>
         /// The full design descriptior representing the design
@@ -84,7 +80,7 @@ namespace VSS.VisionLink.Raptor.Designs.Storage
         /// Constructor accepting a Binary Reader instance from which to instantiate itself
         /// </summary>
         /// <param name="reader"></param>
-        public Design(BinaryReader reader) : base()
+        public Design(BinaryReader reader)
         {
             Read(reader);
         }
@@ -94,12 +90,12 @@ namespace VSS.VisionLink.Raptor.Designs.Storage
         /// </summary>
         /// <param name="AID"></param>
         /// <param name="ADesignDescriptor"></param>
-        /// <param name="AAsAtDate"></param>
+        /// <param name="AExtents"></param>
         public Design(long AID,
                       DesignDescriptor ADesignDescriptor,
-                      BoundingWorldExtent3D AExtents) : base()
+                      BoundingWorldExtent3D AExtents)
         {
-            FID = AID;
+            ID = AID;
             FDesignDescriptor = ADesignDescriptor;
             FExtents = AExtents;
         }
@@ -108,7 +104,7 @@ namespace VSS.VisionLink.Raptor.Designs.Storage
         /// Produces a deep clone of the design
         /// </summary>
         /// <returns></returns>
-        public Design Clone() => new Design(FID, FDesignDescriptor, FExtents);
+        public Design Clone() => new Design(ID, FDesignDescriptor, FExtents);
 
         /// <summary>
         /// ToString() for Design
@@ -116,7 +112,7 @@ namespace VSS.VisionLink.Raptor.Designs.Storage
         /// <returns></returns>
         public override string ToString()
         {
-            return $"ID:{FID}, DesignID:{FDesignDescriptor.DesignID}; {FDesignDescriptor.FileSpace};{FDesignDescriptor.Folder};{FDesignDescriptor.FileName} {FDesignDescriptor.Offset:F3} [{FExtents}]";
+            return $"ID:{ID}, DesignID:{FDesignDescriptor.DesignID}; {FDesignDescriptor.FileSpace};{FDesignDescriptor.Folder};{FDesignDescriptor.FileName} {FDesignDescriptor.Offset:F3} [{FExtents}]";
         }
 
         /// <summary>

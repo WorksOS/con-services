@@ -1,14 +1,10 @@
 ﻿using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
-using Apache.Ignite.Core.Resource;
 using log4net;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Storage;
@@ -80,7 +76,6 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.Servers
         /// <summary>
         /// Configure the parameters of the existence map cache
         /// </summary>
-        /// <param name="cfg"></param>
         public CacheConfiguration ConfigureDesignTopologyExistanceMapsCache()
         {
             return new CacheConfiguration()

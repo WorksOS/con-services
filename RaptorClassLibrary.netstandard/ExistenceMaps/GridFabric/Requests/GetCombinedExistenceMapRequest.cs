@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.SubGridTrees;
 
 namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
@@ -27,14 +24,13 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
         /// </summary>
         /// <param name="keys"></param>
         /// <returns></returns>
-        public SubGridTreeSubGridExistenceBitMask Execute(string[] keys)
+        public static SubGridTreeSubGridExistenceBitMask Execute(string[] keys)
         {
-            GetSingleExistenceMapRequest request = new GetSingleExistenceMapRequest();
             SubGridTreeSubGridExistenceBitMask combinedMask = null;
 
             foreach (string key in keys)
             {
-                SubGridTreeSubGridExistenceBitMask Mask = request.Execute(key);
+                SubGridTreeSubGridExistenceBitMask Mask = GetSingleExistenceMapRequest.Execute(key);
 
                 if (Mask != null)
                 {
@@ -55,8 +51,9 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
         /// <summary>
         /// Executes the request to retrieve a combined existence map given a list of type descriptors and IDs
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="siteModelID"></param>
+        /// <param name="IDs"></param>
         /// <returns></returns>
-        public SubGridTreeSubGridExistenceBitMask Execute(long siteModelID, Tuple<long, long>[] IDs) => Execute(IDs.Select(x => CacheKey(siteModelID, x.Item1, x.Item2)).ToArray());
+        public static SubGridTreeSubGridExistenceBitMask Execute(long siteModelID, Tuple<long, long>[] IDs) => Execute(IDs.Select(x => CacheKey(siteModelID, x.Item1, x.Item2)).ToArray());
     }
 }

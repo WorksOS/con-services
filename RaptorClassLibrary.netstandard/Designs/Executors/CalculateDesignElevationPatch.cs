@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.Velociraptor.DesignProfiling.GridFabric.Arguments;
+﻿using VSS.Velociraptor.DesignProfiling.GridFabric.Arguments;
 using VSS.VisionLink.Raptor;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 
@@ -21,6 +16,7 @@ namespace VSS.Velociraptor.DesignProfiling.Executors
         /// <summary>
         /// Performs the donkey work of the elevation patch calculation
         /// </summary>
+        /// <param name="Args"></param>
         /// <param name="CalcResult"></param>
         /// <returns></returns>
         private ClientHeightLeafSubGrid Calc(CalculateDesignElevationPatchArgument Args,

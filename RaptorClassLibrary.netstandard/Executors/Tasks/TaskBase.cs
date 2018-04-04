@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Executors.Tasks.Interfaces;
-using VSS.VisionLink.Raptor.GridFabric.Requests;
-using VSS.VisionLink.Raptor.Pipelines;
+﻿using VSS.VisionLink.Raptor.Executors.Tasks.Interfaces;
 using VSS.VisionLink.Raptor.Pipelines.Interfaces;
 using VSS.VisionLink.Raptor.Types;
 
@@ -27,7 +20,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
         /// <summary>
         /// Determines if the processing of the task activities as been cencelled by external control
         /// </summary>
-        public bool IsCancelled = false;
+        public bool IsCancelled;
 
         /// <summary>
         /// The type of grid data being processed by this task
@@ -80,6 +73,6 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
         /// <summary>
         /// A reference to a subgrid processing pipeline associated with this task
         /// </summary>
-        public ISubGridPipelineBase PipeLine { get; set; } = null;
+        public ISubGridPipelineBase PipeLine { get; set; }
     }
 }

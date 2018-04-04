@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor.ExistenceMaps
+﻿namespace VSS.VisionLink.Raptor.ExistenceMaps
 {
     /// <summary>
     /// Constants related to existence maps

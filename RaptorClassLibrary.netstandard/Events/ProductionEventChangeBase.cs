@@ -1,12 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Utilities;
 
@@ -28,7 +21,7 @@ namespace VSS.VisionLink.Raptor.Events
             /// <summary>
             /// Storage for event flags (such as Custom event)
             /// </summary>
-        private byte flags = 0;
+        private byte flags;
 
         /// <summary>
         /// Most events don't care about their type. Typically only those event lists that include 'start' and 'end'
@@ -63,8 +56,8 @@ namespace VSS.VisionLink.Raptor.Events
         //    procedure WriteToStream(const Stream: TStream);
 
         /// <summary>
-        /// EquivalentTo defines equivalency between <Self> and <Source> defined
-        /// as the state of the <Self> event being the same as the <Source> event,
+        /// EquivalentTo defines equivalency between Self and Source defined
+        /// as the state of the Self event being the same as the Source event,
         /// but the time of occurrence need not be.
         /// </summary>
         /// <param name="source"></param>
@@ -77,7 +70,7 @@ namespace VSS.VisionLink.Raptor.Events
         /// <summary>
         /// Base no-arg constructor. 
         /// </summary>
-        public ProductionEventChangeBase() : base()
+        public ProductionEventChangeBase()
         {
             IsCustomEvent = false;
         }
@@ -175,8 +168,8 @@ namespace VSS.VisionLink.Raptor.Events
         }
 
         /// <summary>
-        /// EquivalentTo defines equivalency between <Self> and <Source> defined
-        /// as the state of the <Self> event being the same as the <Source> event,
+        /// EquivalentTo defines equivalency between Self and Source defined
+        /// as the state of the Self event being the same as the Source event,
         /// but the time of occurrence need not be.
         /// </summary>
         /// <param name="source"></param>

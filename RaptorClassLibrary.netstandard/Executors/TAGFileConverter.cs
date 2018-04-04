@@ -1,19 +1,11 @@
-﻿using log4net;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
 using VSS.VisionLink.Raptor.TAGFiles.Classes;
 using VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.States;
 using VSS.VisionLink.Raptor.TAGFiles.Types;
 
 namespace VSS.VisionLink.Raptor.Executors
@@ -24,7 +16,7 @@ namespace VSS.VisionLink.Raptor.Executors
     /// </summary>
     public class TAGFileConverter
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        //private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         /// The overall result of processign the TAG information in the file
@@ -34,35 +26,35 @@ namespace VSS.VisionLink.Raptor.Executors
         /// <summary>
         /// The number of measurement epochs encountered in the TAG data
         /// </summary>
-        public int ProcessedEpochCount { get; set; } = 0;
+        public int ProcessedEpochCount { get; set; }
 
         /// <summary>
         /// The numebr of cell passes generatyed from the cell data
         /// </summary>
-        public int ProcessedCellPassCount { get; set; } = 0;
+        public int ProcessedCellPassCount { get; set; }
 
         /// <summary>
         /// The target site model representing the ultimate recipient of the cell pass and event 
         /// generated from the TAG file
         /// </summary>
-        public SiteModel SiteModel { get; set; } = null;
+        public SiteModel SiteModel { get; set; }
 
         /// <summary>
         /// The target machine within the target site model that generated the TAG file being processed
         /// </summary>
-        public Machine Machine { get; set; } = null;
+        public Machine Machine { get; set; }
 
         /// <summary>
         /// The events from the primary target site model
         /// </summary>
-        public ProductionEventChanges Events = null;
+        public ProductionEventChanges Events;
 
 
         /// <summary>
         // SiteModelGridAggregator is an object that aggregates all the cell passes generated while processing the file. 
         // These are then integrated into the primary site model in a single step at a later point in processing
         /// </summary>
-        public ServerSubGridTree SiteModelGridAggregator { get; set; } = null;
+        public ServerSubGridTree SiteModelGridAggregator { get; set; }
 
         /// <summary>
         // MachineTargetValueChangesAggregator is an object that aggregates all the
@@ -70,7 +62,7 @@ namespace VSS.VisionLink.Raptor.Executors
         // file. These are then integrated into the machine events in a single step
         // at a later point in processing
         /// </summary>
-        public ProductionEventChanges MachineTargetValueChangesAggregator { get; set; } = null;
+        public ProductionEventChanges MachineTargetValueChangesAggregator { get; set; }
 
         /// <summary>
         /// Default no-arg constructor

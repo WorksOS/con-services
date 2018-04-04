@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Events;
-using VSS.VisionLink.Raptor.Interfaces;
+﻿using System.Collections.Generic;
 using VSS.VisionLink.Raptor.Machines.Interfaces;
 using VSS.VisionLink.Raptor.SiteModels;
 
@@ -19,7 +13,7 @@ namespace VSS.VisionLink.Raptor.Events
         /// <summary>
         /// The Sitemodel instance that owns this set of machines target values
         /// </summary>
-        private SiteModel Owner = null;
+        private SiteModel Owner;
 
         /// <summary>
         /// Maps machine IDs (currently as 64 bit integers) to the instance containing all the event lists for all the machines

@@ -1,7 +1,6 @@
 ﻿using System;
 using VSS.VisionLink.Raptor.Designs;
 using VSS.VisionLink.Raptor.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.SubGridTrees;
 
 namespace VSS.Velociraptor.DesignProfiling.GridFabric.Arguments
 {
@@ -53,7 +52,7 @@ namespace VSS.Velociraptor.DesignProfiling.GridFabric.Arguments
         /// <param name="originY"></param>
         /// <param name="cellSize"></param>
         /// <param name="designDescriptor"></param>
-        /// <param name="processingMap"></param>
+        // /// <param name="processingMap"></param>
         public CalculateDesignElevationPatchArgument(long siteModelID,
                                          uint originX,
                                          uint originY,

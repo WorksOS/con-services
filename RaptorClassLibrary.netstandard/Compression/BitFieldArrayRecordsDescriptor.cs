@@ -5,7 +5,14 @@
     /// </summary>
     public struct BitFieldArrayRecordsDescriptor
     {
+        /// <summary>
+        /// The number of records held in the vector
+        /// </summary>
         public int NumRecords;
+
+        /// <summary>
+        /// The number of bits used to encode each record in the vector
+        /// </summary>
         public int BitsPerRecord;
     }
 }

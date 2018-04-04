@@ -15,6 +15,7 @@ namespace VSS.VisionLink.Raptor.Compression
         /// </summary>
         /// <param name="height"></param>
         /// <returns></returns>
+        // ReSharper disable once CompareOfFloatsByEqualityOperator
         public static int ModifiedHeight(float height) => (int)(height == Consts.NullHeight ? int.MaxValue : Math.Round(height * 1000));
 
         /// <summary>
@@ -23,6 +24,7 @@ namespace VSS.VisionLink.Raptor.Compression
         /// a resolution of seconds.
         /// </summary>
         /// <param name="time"></param>
+        /// <param name="timeOrigin"></param>
         /// <returns></returns>
         public static int ModifiedTime(DateTime time, DateTime timeOrigin) => (int)(Math.Floor((time - timeOrigin).TotalSeconds) + 1);
 
