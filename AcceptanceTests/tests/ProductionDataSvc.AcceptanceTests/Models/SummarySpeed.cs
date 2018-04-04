@@ -20,7 +20,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
         /// <summary>
         /// The filter to be used 
         /// </summary>
-        public Filter filter { get; set; }
+        public FilterResult filter { get; set; }
 
         /// <summary>
         /// The set of parameters and configuration information relevant to analysis of compaction material layers information for related profile queries.

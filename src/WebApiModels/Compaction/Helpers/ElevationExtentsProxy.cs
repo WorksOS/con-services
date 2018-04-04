@@ -1,14 +1,9 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using System;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Threading;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
-using VSS.Productivity3D.Common.Extensions;
-using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -18,10 +13,8 @@ using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.Models;
-using Filter = VSS.Productivity3D.Common.Models.Filter;
 
-
-namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
+namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 {
   /// <summary>
   /// Proxy for getting elevation statistics from Raptor. Used by elevation range, elevation palette and elevation tiles requests.
@@ -88,7 +81,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     /// <param name="filter">Compaction filter</param>
     /// <param name="projectSettings">Project settings</param>
     /// <returns>Elevation statistics</returns>
-    public ElevationStatisticsResult GetElevationRange(long projectId, Filter filter,
+    public ElevationStatisticsResult GetElevationRange(long projectId, FilterResult filter,
       CompactionProjectSettings projectSettings)
     {
       var cacheKey = ElevationCacheKey(projectId, filter);
@@ -109,9 +102,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
             RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(logger, raptorClient)
               .Process(projectExtentsRequest) as ProjectExtentsResult;
           result = ElevationStatisticsResult.CreateElevationStatisticsResult(
-            BoundingBox3DGrid.CreatBoundingBox3DGrid(extents.ProjectExtents.minX, extents.ProjectExtents.minY,
-              extents.ProjectExtents.minZ, extents.ProjectExtents.maxX, extents.ProjectExtents.maxY,
-              extents.ProjectExtents.maxZ), extents.ProjectExtents.minZ, extents.ProjectExtents.maxZ, 0);
+            BoundingBox3DGrid.CreatBoundingBox3DGrid(extents.ProjectExtents.MinX, extents.ProjectExtents.MinY,
+              extents.ProjectExtents.MinZ, extents.ProjectExtents.MaxX, extents.ProjectExtents.MaxY,
+              extents.ProjectExtents.MaxZ), extents.ProjectExtents.MinZ, extents.ProjectExtents.MaxZ, 0);
         }
         else
         {
@@ -148,7 +141,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     /// <param name="projectId">project ID</param>
     /// <param name="filter">Compaction filter</param>
     /// <returns>Cache key</returns>
-    private string ElevationCacheKey(long projectId, Filter filter)
+    private string ElevationCacheKey(long projectId, FilterResult filter)
     {
       var filterHash = filter == null ? 0 : filter.GetHashCode();
       return $"{projectId},{filterHash}";

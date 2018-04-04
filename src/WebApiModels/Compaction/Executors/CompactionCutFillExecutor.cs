@@ -5,7 +5,7 @@ using SVOICOptionsDecls;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common.Filters.Interfaces;
+using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
@@ -13,7 +13,7 @@ using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
   /// <summary>
-  /// Processes the request to get cut-fill details
+  /// Processes the request to get cut-fill details.
   /// </summary>
   public class CompactionCutFillExecutor : RequestExecutorContainer
   {

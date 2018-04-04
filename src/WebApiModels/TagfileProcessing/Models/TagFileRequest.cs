@@ -77,22 +77,25 @@ namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.Models
         [JsonProperty(PropertyName = "machineId", Required = Required.Default)]
         public long? machineId { get; private set; }
 
-     /*   /// <summary>
-        /// A flag to indicate if the TAG file should also be converted into a CSV file. Not currently available.
-        /// </summary>
-        [JsonProperty(PropertyName = "convertToCSV", Required = Required.Default)]
-        public bool convertToCSV { get; private set; }
 
-        /// <summary>
-        /// A flag to indicate if the TAG file should also be converted into a DXF file. Not currently available.
-        /// </summary>
-        [JsonProperty(PropertyName = "convertToDXF", Required = Required.Default)]
-        public bool convertToDXF { get; private set; }*/
+      [JsonProperty(PropertyName = "tccOrgId", Required = Required.Default)]
+      public string tccOrgId { get; private set; }
+    /*   /// <summary>
+       /// A flag to indicate if the TAG file should also be converted into a CSV file. Not currently available.
+       /// </summary>
+       [JsonProperty(PropertyName = "convertToCSV", Required = Required.Default)]
+       public bool convertToCSV { get; private set; }
 
-        /// <summary>
-        /// Private constructor
-        /// </summary>
-        private TagFileRequest()
+       /// <summary>
+       /// A flag to indicate if the TAG file should also be converted into a DXF file. Not currently available.
+       /// </summary>
+       [JsonProperty(PropertyName = "convertToDXF", Required = Required.Default)]
+       public bool convertToDXF { get; private set; }*/
+
+    /// <summary>
+    /// Private constructor
+    /// </summary>
+    private TagFileRequest()
         {}
 
       /// <summary>
@@ -114,7 +117,8 @@ namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.Models
             WGS84Fence boundary,
             long machineId,
             bool convertToCSV,
-            bool convertToDXF)
+            bool convertToDXF,
+            string tccOrgId=null)
         {
           return new TagFileRequest
           {
@@ -125,6 +129,7 @@ namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.Models
                      machineId = machineId,
                      /*convertToCSV = convertToCSV,
                      convertToDXF = convertToDXF*/
+                     tccOrgId = tccOrgId
                  };
         }
         

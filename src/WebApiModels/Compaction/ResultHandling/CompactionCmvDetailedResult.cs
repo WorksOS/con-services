@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 {
@@ -17,22 +17,19 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
     public double[] Percents { get; private set; }
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor.
     /// </summary>
     private CompactionCmvDetailedResult()
     { }
 
     /// <summary>
-    /// Creates an instance of the CompactionCmvDetailedResult class.
+    /// Static constructor.
     /// </summary>
-    /// <param name="result">An instance of the CMVDetailedResult class.</param>
-    /// <returns>An instance of the CompactionCmvDetailedResult class.</returns>
     public static CompactionCmvDetailedResult CreateCmvDetailedResult(CMVDetailedResult result)
     {
-      //'No CMV details data' result is all 0 percents so no special handling required
       return new CompactionCmvDetailedResult
       {
-        Percents = result.percents
+        Percents = result.Percents
       };
     }
   }

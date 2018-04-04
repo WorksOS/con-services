@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     /// The base or earliest filter to be used for filter-filter and filter-design volumes.
     /// </summary>
     [JsonProperty(PropertyName = "baseFilter", Required = Required.Default)]
-    public Filter BaseFilter { get; protected set; }
+    public FilterResult BaseFilter { get; protected set; }
 
     /// <summary>
     /// The ID of the base or earliest filter to be used for filter-filter and filter-design volumes.
@@ -34,7 +34,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     /// The top or latest filter to be used for filter-filter and design-filter volumes
     /// </summary>
     [JsonProperty(PropertyName = "topFilter", Required = Required.Default)]
-    public Filter TopFilter { get; protected set; }
+    public FilterResult TopFilter { get; protected set; }
 
     /// <summary>
     /// The ID of the top or latest filter to be used for filter-filter and design-filter volumes
@@ -46,7 +46,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     /// An additional spatial constraining filter that may be used to provide additional control over the area the summary volumes are being calculated over.
     /// </summary>
     [JsonProperty(PropertyName = "additionalSpatialFilter", Required = Required.Default)]
-    public Filter AdditionalSpatialFilter { get; protected set; }
+    public FilterResult AdditionalSpatialFilter { get; protected set; }
 
     /// <summary>
     /// The ID of an additional spatial constraining filter that may be used to provide additional control over the area the summary volumes are being calculated over.

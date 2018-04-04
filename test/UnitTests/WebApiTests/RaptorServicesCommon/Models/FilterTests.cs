@@ -7,7 +7,6 @@ using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Common.Utilities;
-using Filter = VSS.Productivity3D.Common.Models.Filter;
 using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
 
 namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Models
@@ -15,7 +14,7 @@ namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Models
   [TestClass]
   public class FilterTests
   {
-        [TestMethod]
+    [TestMethod]
     public void CanCreateFilterTest()
     {
       var validator = new DataAnnotationsValidator();
@@ -39,72 +38,72 @@ namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Models
                                                     MachineDetails.CreateMachineDetails(12345678, "Acme Compactor 1", false),
                                                 };
 
-      Filter filter = Filter.CreateFilter(null, null, null, new DateTime(2014, 1, 1), new DateTime(2014, 1, 31), 1111, new List<long>{12345678, 87654321}, true,
-          true, ElevationType.First, latLngs, gridPoints, 
+      var filter = FilterResult.CreateFilter(null, null, null, new DateTime(2014, 1, 1), new DateTime(2014, 1, 31), 1111, new List<long> { 12345678, 87654321 }, true,
+          true, ElevationType.First, latLngs, gridPoints,
           true, desc, 5.0, 100.0, 1.0, 2.0, "Acme Compactor", FilterLayerMethod.OffsetFromBench, desc, 0.3, 2,
-          0.35, machines, new List<long> {1, 2, 3, 4}, true,GPSAccuracy.Medium, false, true, false, false, desc);
+          0.35, machines, new List<long> { 1, 2, 3, 4 }, true, GPSAccuracy.Medium, false, true, false, false, desc);
       ICollection<ValidationResult> results;
       Assert.IsTrue(validator.TryValidate(filter, out results));
 
       //null filter
-      filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, true, null, null, null,
+      filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, true, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
       Assert.IsTrue(validator.TryValidate(filter, out results), "null filter failed");
 
       //start station out of range
-      filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null, null, -10001, null,
+      filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null, null, -10001, null,
         null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
       Assert.IsFalse(validator.TryValidate(filter, out results), "start station validate failed");
 
       //end station out of range
-      filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 1000005,
+      filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 1000005,
         null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
       Assert.IsFalse(validator.TryValidate(filter, out results), "end station validate failed");
 
       //left offset out of range
-      filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, 777, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
       Assert.IsFalse(validator.TryValidate(filter, out results), "left offset validate failed");
 
       //right offset out of range
-      filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, 987, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
       Assert.IsFalse(validator.TryValidate(filter, out results), "right offset validate failed");
 
       //bench elevation out of range
-      filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, 111111, null, null, null, null, null, null, null, null, null, null, null);
       Assert.IsFalse(validator.TryValidate(filter, out results), "bench elevation validate failed");
 
       //layer number out of range
-      filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, -9876, null, null, null, null, null, null, null, null, null, null);
       Assert.IsFalse(validator.TryValidate(filter, out results), "layer number validate failed");
 
       //layer thickness out of range
-      filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+      filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, 0.000001, null, null, null, null, null, null, null, null, null);
       Assert.IsFalse(validator.TryValidate(filter, out results), "layer thickness validate failed");
-          
+
     }
 
-        [TestMethod]
-        public void ValidateSuccessTest()
-        {
-          DesignDescriptor desc = DesignDescriptor.CreateDesignDescriptor(1, null, 2.0);
-          Filter filter = Filter.CreateFilter(null, null, null, new DateTime(2014, 1, 1), new DateTime(2014, 1, 31), null, null, 
-            null, null, null, null, null, null, desc, 100.0, 500.0, 1.0, 2.0, null, FilterLayerMethod.OffsetFromDesign, desc,
-            null, 2, 0.5, null, null, null, null, null, null, null, null, desc);
-          filter.Validate();   
-        }
+    [TestMethod]
+    public void ValidateSuccessTest()
+    {
+      DesignDescriptor desc = DesignDescriptor.CreateDesignDescriptor(1, null, 2.0);
+      var filter = FilterResult.CreateFilter(null, null, null, new DateTime(2014, 1, 1), new DateTime(2014, 1, 31), null, null,
+        null, null, null, null, null, null, desc, 100.0, 500.0, 1.0, 2.0, null, FilterLayerMethod.OffsetFromDesign, desc,
+        null, 2, 0.5, null, null, null, null, null, null, null, null, desc);
+      filter.Validate();
+    }
 
- 
+
 
     [TestMethod]
     public void ValidateFailInvalidDateRangeTest()
     {
       //start UTC > end UTC
-      Filter filter = Filter.CreateFilter(null, null, null, new DateTime(2014, 1, 31), new DateTime(2014, 1, 1), null, 
+      var filter = FilterResult.CreateFilter(null, null, null, new DateTime(2014, 1, 31), new DateTime(2014, 1, 1), null,
         null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null);
       Assert.ThrowsException<ServiceException>(() => filter.Validate());
@@ -114,7 +113,7 @@ namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Models
     public void ValidateFailInvalidAlignmentFilterTest()
     {
       //missing alignment filter fields
-      Filter filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null,
+      var filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, 100.0, 500.0, 2.0, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
       Assert.ThrowsException<ServiceException>(() => filter.Validate());
     }
@@ -123,7 +122,7 @@ namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Models
     public void ValidateFailInvalidLayerFilterTest()
     {
       //Invalid layer filter
-      Filter filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null, 
+      var filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, FilterLayerMethod.OffsetFromBench, null, null, null, null, null, null, null,
         null, null, null, null, null, null);
       Assert.ThrowsException<ServiceException>(() => filter.Validate());
@@ -133,7 +132,7 @@ namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Models
     public void ValidateFailInvalidLatLngPointsTest()
     {
       //too few points
-      Filter filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, new List<WGSPoint>(),
+      var filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, new List<WGSPoint>(),
         null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
       Assert.ThrowsException<ServiceException>(() => filter.Validate());
     }
@@ -142,7 +141,7 @@ namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Models
     public void ValidateFailInvalidGridPointsTest()
     {
       //too few points
-      Filter filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, new List<Point>(),
+      var filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, new List<Point>(),
         null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
       Assert.ThrowsException<ServiceException>(() => filter.Validate());
 
@@ -165,7 +164,7 @@ namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Models
                                 Point.CreatePoint(15.2, 45.2),
                                 Point.CreatePoint(21.5, 89.3)
                             };
-      Filter filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, latLngs, gridPoints,
+      var filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, latLngs, gridPoints,
         null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
       Assert.ThrowsException<ServiceException>(() => filter.Validate());
 

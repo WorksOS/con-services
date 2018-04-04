@@ -1,24 +1,18 @@
-
+using System;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
 {
   /// <summary>
   /// Represents result returned by Summary CMV Change request
   /// </summary>
   public class CMVChangeSummaryResult : ContractExecutionResult
   {
-    protected CMVChangeSummaryResult(string message)
-        : base(message)
-    {
-    }
-
     /// <summary>
-    /// Private constructor
+    /// Default private constructor.
     /// </summary>
     private CMVChangeSummaryResult()
-    {
-    }
+    { }
 
     /// <summary>
     /// Percent of the cells meeting values request conditions
@@ -30,19 +24,18 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
     /// </summary>
     public double CoverageArea { get; private set; }
 
+    public bool HasData() => Math.Abs(this.CoverageArea) > 0.001;
 
-    public static CMVChangeSummaryResult CreateSummaryCMVChangeResult(double[] values, double coverageArea)
+    /// <summary>
+    /// Static constructor.
+    /// </summary>
+    public static CMVChangeSummaryResult Create(double[] values, double coverageArea)
     {
       return new CMVChangeSummaryResult
       {
-                 Values = values,
-                 CoverageArea = coverageArea
-             };
-    }
-
-    public static CMVChangeSummaryResult Empty()
-    {
-      return new CMVChangeSummaryResult();
+        Values = values,
+        CoverageArea = coverageArea
+      };
     }
   }
 }

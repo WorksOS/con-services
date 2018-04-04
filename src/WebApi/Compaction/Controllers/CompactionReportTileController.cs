@@ -29,16 +29,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// </summary>
   public class CompactionReportTileController : BaseController
   {
-    private readonly TileOverlayType[] PROJECT_THUMBNAIL_OVERLAYS = {
-      TileOverlayType.BaseMap, TileOverlayType.ProjectBoundary, TileOverlayType.ProductionData };
+    private readonly TileOverlayType[] PROJECT_THUMBNAIL_OVERLAYS =
+    {
+      TileOverlayType.BaseMap,
+      TileOverlayType.ProjectBoundary,
+      TileOverlayType.ProductionData
+    };
 
     private const int PROJECT_THUMBNAIL_WIDTH = 220;
     private const int PROJECT_THUMBNAIL_HEIGHT = 182;
-
-    /// <summary>
-    /// Logger for logging
-    /// </summary>
-    private readonly ILogger log;
 
     /// <summary>
     /// For retrieving user preferences
@@ -61,30 +60,18 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IMapTileGenerator tileGenerator;
 
     /// <summary>
-    /// Constructor with injection
+    /// Default constructor.
     /// </summary>
-    /// <param name="logger">Logger</param>
-    /// <param name="configStore">Configuration store</param>
-    /// <param name="geofenceProxy">Geofence proxy</param>
-    /// <param name="fileListProxy">File list proxy</param>
-    /// <param name="projectSettingsProxy">Project settings proxy</param>
-    /// <param name="settingsManager">Compaction settings manager</param>
-    /// <param name="exceptionHandler">Service exception handler</param>
-    /// <param name="filterServiceProxy">Filter service proxy</param>
-    /// <param name="tileGenerator">Tile generator</param>
-    /// <param name="prefProxy">User preferences proxy</param>
-    /// <param name="requestFactory">The request factory.</param>
-    public CompactionReportTileController(ILoggerFactory logger, IConfigurationStore configStore, IGeofenceProxy geofenceProxy,
+    public CompactionReportTileController(ILoggerFactory loggerFactory, IConfigurationStore configStore, IGeofenceProxy geofenceProxy,
       IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
       IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IMapTileGenerator tileGenerator,
       IPreferenceProxy prefProxy, IProductionDataRequestFactory requestFactory)
-      : base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
+      : base(loggerFactory, loggerFactory.CreateLogger<CompactionReportTileController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.tileGenerator = tileGenerator;
       this.prefProxy = prefProxy;
       this.geofenceProxy = geofenceProxy;
       this.requestFactory = requestFactory;
-      this.log = logger.CreateLogger<CompactionReportTileController>();
     }
 
     /// <summary>
@@ -121,7 +108,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? volumeTopUid,
       [FromQuery] VolumeCalcType? volumeCalcType)
     {
-      log.LogDebug("GetReportTile: " + Request.QueryString);
+      Log.LogDebug("GetReportTile: " + Request.QueryString);
 
       var tileResult = await GetGeneratedTile(projectUid, filterUid, cutFillDesignUid, volumeBaseUid, volumeTopUid,
         volumeCalcType, overlays, width, height, mapType, mode);
@@ -164,7 +151,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? volumeTopUid,
       [FromQuery] VolumeCalcType? volumeCalcType)
     {
-      log.LogDebug("GetReportTileRaw: " + Request.QueryString);
+      Log.LogDebug("GetReportTileRaw: " + Request.QueryString);
 
       var tileResult = await GetGeneratedTile(projectUid, filterUid, cutFillDesignUid, volumeBaseUid, volumeTopUid,
         volumeCalcType, overlays, width, height, mapType, mode);
@@ -176,7 +163,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets a project thumbnail
     /// </summary>
-    /// <param name="projectUid"></param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     [ProjectUidVerifier]
     [Route("api/v2/projectthumbnail")]
@@ -185,18 +171,24 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     public async Task<TileResult> GetProjectThumbnail(
       [FromQuery] Guid projectUid)
     {
-      log.LogDebug("GetProjectThumbnail: " + Request.QueryString);
+      Log.LogDebug("GetProjectThumbnail: " + Request.QueryString);
 
       var tileResult = await GetGeneratedTile(projectUid, null, null, null, null,
         null, PROJECT_THUMBNAIL_OVERLAYS, PROJECT_THUMBNAIL_WIDTH, PROJECT_THUMBNAIL_HEIGHT, MapType.MAP,
         DisplayMode.Height, true);
+
+      // TODO (Aaron) refactor this repeated code
       //Short-circuit cache time for Archived projects
       if ((User as RaptorPrincipal).GetProject(projectUid).isArchived)
         Response.Headers["Cache-Control"] = "public,max-age=31536000";
       Response.Headers.Add("X-Warning", "false");
+
       return tileResult;
     }
 
+    /// <summary>
+    /// Gets a project thumbnail image.
+    /// </summary>
     [ProjectUidVerifier]
     [Route("api/v2/projectthumbnail/png")]
     [HttpGet]
@@ -204,14 +196,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     public async Task<FileResult> GetProjectThumbnailRaw(
       [FromQuery] Guid projectUid)
     {
-      log.LogDebug("GetProjectThumbnailRaw: " + Request.QueryString);
+      Log.LogDebug("GetProjectThumbnailRaw: " + Request.QueryString);
 
       var tileResult = await GetGeneratedTile(projectUid, null, null, null, null,
         null, PROJECT_THUMBNAIL_OVERLAYS, PROJECT_THUMBNAIL_WIDTH, PROJECT_THUMBNAIL_HEIGHT, MapType.MAP, DisplayMode.Height, true);
+
+      // TODO (Aaron) refactor this repeated code
       //Short-circuit cache time for Archived projects
       if ((User as RaptorPrincipal).GetProject(projectUid).isArchived)
         Response.Headers["Cache-Control"] = "public,max-age=31536000";
       Response.Headers.Add("X-Warning", "false");
+
       return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
     }
 
@@ -242,10 +237,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var alignmentDescriptors = overlayTypes.Contains(TileOverlayType.Alignments)
         ? await GetAlignmentDescriptors(projectUid)
         : new List<DesignDescriptor>();
-      var userPreferences = await GetUserPreferences();
-      var geofences = overlayTypes.Contains(TileOverlayType.Geofences)
-        ? await geofenceProxy.GetGeofences((User as RaptorPrincipal).CustomerUid, CustomHeaders)
-        : new List<GeofenceData>();
+      var userPreferences = await GetShortCachedUserPreferences();
+      ////var geofences = overlayTypes.Contains(TileOverlayType.Geofences)
+      ////  ? await geofenceProxy.GetGeofences((User as RaptorPrincipal).CustomerUid, CustomHeaders)
+      ////  : new List<GeofenceData>();
+      var geofences = new List<GeofenceData>();
 
       var request = requestFactory.Create<TileGenerationRequestHelper>(r => r
           .ProjectId(project.projectId)
@@ -277,7 +273,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>List of active imported files of specified type</returns>
     private async Task<List<FileData>> GetFilesOfType(Guid projectUid, ImportedFileType fileType)
     {
-      var fileList = await FileListProxy.GetFiles(projectUid.ToString(), userId, CustomHeaders);
+      var fileList = await FileListProxy.GetFiles(projectUid.ToString(), GetUserId(), CustomHeaders);
       if (fileList == null || fileList.Count == 0)
       {
         return new List<FileData>();
@@ -308,7 +304,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Get user preferences
     /// </summary>
-    private async Task<UserPreferenceData> GetUserPreferences()
+    private async Task<UserPreferenceData> GetShortCachedUserPreferences()
     {
       var userPreferences = await prefProxy.GetShortCachedUserPreferences((User as RaptorPrincipal).UserEmail, TimeSpan.FromSeconds(10), CustomHeaders);
       if (userPreferences == null)

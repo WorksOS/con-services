@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCaching.Internal;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Security.Principal;
-using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -28,7 +27,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   public class CompactionSettingsController : Controller
   {
     /// <summary>
-    /// Logger for logging
+    /// LoggerFactory for logging
     /// </summary>
     private readonly ILogger log;
 
@@ -42,7 +41,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Constructor with dependency injection
     /// </summary>
-    /// <param name="logger">Logger</param>
+    /// <param name="logger">LoggerFactory</param>
     /// <param name="projectSettingsProxy">Project settings proxy</param>
     /// <param name="cache">The memory cache for the controller</param>
     public CompactionSettingsController(ILoggerFactory logger, IProjectSettingsProxy projectSettingsProxy, IResponseCache cache)
@@ -62,14 +61,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/validatesettings")]
     [HttpGet]
-    public async Task<ContractExecutionResult> ValidateProjectSettings(
+    public ContractExecutionResult ValidateProjectSettings(
       [FromQuery] Guid projectUid,
       [FromQuery] string projectSettings,
       [FromQuery] ProjectSettingsType? settingsType)
     {
       log.LogInformation("ValidateProjectSettings: " + Request.QueryString);
 
-      return await ValidateProjectSettingsEx(projectUid.ToString(), projectSettings, settingsType);
+      return ValidateProjectSettingsEx(projectUid.ToString(), projectSettings, settingsType);
     }
 
     /// <summary>
@@ -79,16 +78,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>ContractExecutionResult</returns>
     [Route("api/v2/validatesettings")]
     [HttpPost]
-    public async Task<ContractExecutionResult> ValidateProjectSettings([FromBody] ProjectSettingsRequest request)
+    public ContractExecutionResult ValidateProjectSettings([FromBody] ProjectSettingsRequest request)
     {
       log.LogDebug($"UpsertProjectSettings: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
 
-      return await ValidateProjectSettingsEx(request.projectUid, request.Settings, request.ProjectSettingsType);
+      return ValidateProjectSettingsEx(request.projectUid, request.Settings, request.ProjectSettingsType);
     }
 
-    private async Task<ContractExecutionResult> ValidateProjectSettingsEx(string projectUid, string projectSettings, ProjectSettingsType? settingsType)
+    private ContractExecutionResult ValidateProjectSettingsEx(string projectUid, string projectSettings, ProjectSettingsType? settingsType)
     {
       if (!string.IsNullOrEmpty(projectSettings))
       {
@@ -111,8 +110,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         }
         //It is assumed that the settings are about to be saved.
         //Clear the cache for these updated settings so we get the updated settings for compaction requests.
-        log.LogDebug($"About to clear settings for project {projectUid}");
-        ClearProjectSettingsCaches(projectUid, Request.Headers.GetCustomHeaders());
+        log.LogDebug($"About to clear settings for project {projectUid + settingsType}");
+        ClearProjectSettingsCaches(projectUid + settingsType, Request.Headers.GetCustomHeaders());
+        log.LogDebug($"About to clear response cache for project PRJUID={projectUid.ToUpperInvariant()}");
         cache.InvalidateReponseCacheForProject(projectUid);
       }
       log.LogInformation("ValidateProjectSettings returned: " + Response.StatusCode);

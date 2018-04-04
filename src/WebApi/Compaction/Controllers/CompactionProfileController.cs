@@ -10,7 +10,6 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
-using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -24,23 +23,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting Raptor production data for summary and details requests
   /// </summary>
-  [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
+  // [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })] (Aaron) Disabled temporarily until we can resolve the cache invalidation problem
+  [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
   public class CompactionProfileController : BaseController
   {
     /// <summary>
     /// Raptor client for use by executor
     /// </summary>
     private readonly IASNodeClient raptorClient;
-
-    /// <summary>
-    /// Logger for logging
-    /// </summary>
-    private readonly ILogger log;
-
-    /// <summary>
-    /// Logger factory for use by executor
-    /// </summary>
-    private readonly ILoggerFactory logger;
 
     /// <summary>
     /// The request factory
@@ -50,23 +40,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    /// <param name="raptorClient">The raptor client.</param>
-    /// <param name="logger">The logger.</param>
-    /// <param name="configStore">Configuration store</param>/// 
-    /// <param name="fileListProxy">The file list proxy.</param>
-    /// <param name="projectSettingsProxy">The project settings proxy.</param>
-    /// <param name="settingsManager">Compaction settings manager</param>
-    /// <param name="requestFactory">The request factory.</param>
-    /// <param name="exceptionHandler">The exception handler.</param>
-    /// <param name="filterServiceProxy">Filter service proxy</param>
-    public CompactionProfileController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore,
+    public CompactionProfileController(IASNodeClient raptorClient, ILoggerFactory loggerFactory, IConfigurationStore configStore,
       IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
       IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy) :
-      base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
+      base(loggerFactory, loggerFactory.CreateLogger<CompactionProfileController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
-      this.logger = logger;
-      log = logger.CreateLogger<CompactionProfileController>();
       this.requestFactory = requestFactory;
     }
 
@@ -103,15 +82,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? volumeTopUid,
       [FromQuery] VolumeCalcType? volumeCalcType)
     {
-      log.LogInformation("GetProfileProductionDataSlicer: " + Request.QueryString);
-      var projectId = GetProjectId(projectUid);
+      Log.LogInformation("GetProfileProductionDataSlicer: " + Request.QueryString);
+      var projectId = GetLegacyProjectId(projectUid);
 
       var settings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var cutFillDesign = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid, true);
 
-      Filter baseFilter = null;
-      Filter topFilter = null;
+      FilterResult baseFilter = null;
+      FilterResult topFilter = null;
       DesignDescriptor volumeDesign = null;
       if (volumeCalcType.HasValue)
       {
@@ -149,7 +128,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var slicerProductionDataResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<CompactionProfileExecutor>(logger, raptorClient, null, null, null, null, null, profileResultHelper)
+          .Build<CompactionProfileExecutor>(LoggerFactory, raptorClient, null, null, null, null, null, profileResultHelper)
           .Process(slicerProductionDataProfileRequest) as CompactionProfileResult<CompactionProfileDataResult>
       );
 
@@ -204,7 +183,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var slicerDesignResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<CompactionDesignProfileExecutor>(logger, raptorClient)
+          .Build<CompactionDesignProfileExecutor>(LoggerFactory, raptorClient)
           .Process(slicerDesignProfileRequest) as CompactionProfileResult<CompactionProfileVertex>
       );
 
@@ -212,6 +191,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       profileResultHelper.FindCutFillElevations(slicerProductionDataResult, slicerDesignResult, type, volumeCalcType);
     }
 
+    /// <summary>
+    /// Resource to get a profile design slicer.
+    /// </summary>
     [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v2/profiles/design/slicer")]
     [HttpGet]
@@ -225,9 +207,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid[] importedFileUid,
       [FromQuery] Guid? filterUid = null)
     {
-      log.LogInformation("GetProfileDesignSlicer: " + Request.QueryString);
+      Log.LogInformation("GetProfileDesignSlicer: " + Request.QueryString);
 
-      var projectId = GetProjectId(projectUid);
+      var projectId = GetLegacyProjectId(projectUid);
       var settings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
 
@@ -255,7 +237,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         profileRequest.Validate();
         var slicerDesignResult = WithServiceExceptionTryExecute(() =>
           RequestExecutorContainerFactory
-            .Build<CompactionDesignProfileExecutor>(logger, raptorClient)
+            .Build<CompactionDesignProfileExecutor>(LoggerFactory, raptorClient)
             .Process(profileRequest) as CompactionProfileResult<CompactionProfileVertex>
         );
         results.Add(impFileUid, slicerDesignResult);

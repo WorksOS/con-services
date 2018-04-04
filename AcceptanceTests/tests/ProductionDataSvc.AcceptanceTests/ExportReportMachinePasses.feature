@@ -4,7 +4,6 @@ I should be able to request production data to machine passes export report.
 Background: 
 Given the Machine Passes Export Report service URI "/api/v2/export/machinepasses" and the result file "ExportReportMachinePassesResponse.json"
 
-@Ignore
 Scenario Outline: ExportReportMachinePasses - Good Request
 And projectUid "<ProjectUID>"
 And filterUid "<FilterUID>"
@@ -38,7 +37,6 @@ Examples:
 | RequestName | FilterUID                            | CoordType | OutputType | RestrictOutput | RawDataOutput | FileName | ErrorCode | ErrorMessage        |
 |             | d15e65e0-3cb1-476f-8fc6-08507a14a269 | 0         | 0          | false          | false         | Test     |  -5       | Missing Project or project does not belong to specified customer or don't have access to the project |
 
-@Ignore
 Scenario Outline: ExportReportMachinePasses - Good Request - NoDateRange
 And projectUid "<ProjectUID>"
 And coordType "<CoordType>" 
@@ -67,7 +65,6 @@ Examples:
 | RequestName     | ProjectUID                           | FilterUID                            | CoordType | OutputType | RestrictOutput | RawDataOutput | FileName | ErrorCode | ErrorMessage                                                       |
 |                 | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1cf81668-1739-42d5-b068-ea025588796a | 1         | 1          | false          | false         | Test     | 2002      | Failed to get requested export data with error: No data for export |
 
-@Ignore
 Scenario Outline: ExportReportMachinePasses - Good Request with Filter
 And projectUid "<ProjectUID>"
 And filterUid "<FilterUID>"

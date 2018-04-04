@@ -20,9 +20,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     private readonly ILogger log;
 
     /// <summary>
-    /// Constructor with injection
+    /// Default constructor.
     /// </summary>
-    /// <param name="logger"></param>
     public CompactionProfileResultHelper(ILoggerFactory logger)
     {
       log = logger.CreateLogger<CompactionProfileResultHelper>();

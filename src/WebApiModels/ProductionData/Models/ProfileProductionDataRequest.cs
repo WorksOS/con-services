@@ -37,7 +37,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public Filter filter { get; protected set; }
+    public FilterResult filter { get; protected set; }
 
     /// <summary>
     /// The filter ID to used in the request.
@@ -106,7 +106,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
       long? projectID,
       Guid? callId,
       ProductionDataType profileType,
-      Filter filter,
+      FilterResult filter,
       long? filterID,
       DesignDescriptor alignmentDesign,
       ProfileGridPoints gridPoints,

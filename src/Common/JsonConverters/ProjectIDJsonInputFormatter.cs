@@ -31,7 +31,7 @@ namespace VSS.Productivity3D.Common.JsonConverters
         var projectID = result.Model as ProjectID;
         if (!projectID.projectId.HasValue)
         {
-          projectID.projectId = (context.HttpContext.User as RaptorPrincipal).GetProjectId(projectID.projectUid);
+          projectID.projectId = (context.HttpContext.User as RaptorPrincipal).GetLegacyProjectId(projectID.projectUid);
         }
       }
 

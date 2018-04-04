@@ -1,0 +1,132 @@
+{
+  "Height": {
+    "northing": 1165.2625185966872,
+    "easting": 2738.7511710978069,
+    "displayMode": 0,
+    "returnCode": 0,
+    "value": 594.656005859375,
+    "timestamp": "2012-10-31T21:56:24.807",
+    "Code": 0,
+    "Message": "success"
+  },
+  "CMV": {
+    "northing": 1165.2625185966872,
+    "easting": 2738.7511710978069,
+    "displayMode": 1,
+    "returnCode": 0,
+    "value": 92,
+    "timestamp": "2012-10-31T21:56:24.807",
+    "Code": 0,
+    "Message": "success"
+  },
+  "CMVPercent": {
+    "northing": 1165.2625185966872,
+    "easting": 2738.7511710978069,
+    "displayMode": 2,
+    "returnCode": 0,
+    "value": 13.142857142857142,
+    "timestamp": "2012-10-31T21:56:24.807",
+    "Code": 0,
+    "Message": "success"
+  },
+  "PassCount": {
+    "northing": 1165.2625185966872,
+    "easting": 2738.7511710978069,
+    "displayMode": 4,
+    "returnCode": 0,
+    "value": 11,
+    "timestamp": "2012-10-31T21:56:24.807",
+    "Code": 0,
+    "Message": "success"
+  },
+  "PassCount2": {
+    "northing": 1180.7573963852324,
+    "easting": 2851.8429421166566,
+    "displayMode": 4,
+    "returnCode": 0,
+    "value": 116.0,
+    "timestamp": "2012-11-07T23:21:23.047",
+    "Code": 0,
+    "Message": "success"
+  },
+  "CutFill": {
+    "northing": 1208.7283564576142,
+    "easting": 2794.2710130345881,
+    "displayMode": 8,
+    "returnCode": 1,
+    "value": 597.32501220703125,
+    "timestamp": "2012-11-07T23:16:46.769",
+    "Code": 0,
+    "Message": "success"
+  },
+  "Temperature": {
+    "northing": 1165.2625185966872,
+    "easting": 2738.7511710978069,
+    "displayMode": 10,
+    "returnCode": 0,
+    "value": 18.8,
+    "timestamp": "2012-10-31T21:56:24.807",
+    "Code": 0,
+    "Message": "success"
+  },
+  "MDP": {
+    "northing": 1224.4815414342288,
+    "easting": 2861.7340462234906,
+    "displayMode": 17,
+    "returnCode": 0,
+    "value": 1496.0,
+    "timestamp": "2012-11-07T20:17:44.556",
+    "Code": 0,
+    "Message": "success"
+  },
+  "MDP2": {
+    "northing": 1224.4815414342288,
+    "easting": 2861.7340462234906,
+    "displayMode": 17,
+    "returnCode": 0,
+    "value": 1496.0,
+    "timestamp": "2012-11-07T20:17:44.556",
+    "Code": 0,
+    "Message": "success"
+  },
+  "MachineSpeed": {
+    "northing": 1165.2625185966872,
+    "easting": 2738.7511710978069,
+    "displayMode": 23,
+    "returnCode": 1,
+    "value": 194,
+    "timestamp": "2012-10-31T21:56:24.807",
+    "Code": 0,
+    "Message": "success"
+  },
+  "CMVPercentChange": {
+    "northing": 1165.2625185966872,
+    "easting": 2738.7511710978069,
+    "displayMode": 24,
+    "returnCode": 1,
+    "value": 0,
+    "timestamp": "2012-10-31T21:56:24.807",
+    "Code": 0,
+    "Message": "success"
+  },
+  "HeightOutsideFilter": {
+    "northing": 1165.2625185966872,
+    "easting": 2738.7511710978069,
+    "displayMode": 0,
+    "returnCode": 1,
+    "value": 0,
+    "timestamp": "1899-12-30T00:00:00",
+    "Code": 0,
+    "Message": "success"
+  },
+  "CutFillWithDesign": {
+    "northing": 1208.7283564576142,
+    "easting": 2794.2710130345881,
+    "displayMode": 8,
+    "returnCode": 0,
+    "value": -0.03997802734375,
+    "timestamp": "2012-11-07T23:16:46.769",
+    "Code": 0,
+    "Message": "success"
+  }
+}

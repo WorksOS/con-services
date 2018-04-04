@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
-using System;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
@@ -23,68 +23,34 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
     private CompactionPassCountSummaryResult()
     { }
 
+    public static CompactionPassCountSummaryResult CreateEmptyResult() => new CompactionPassCountSummaryResult();
+
     /// <summary>
-    /// PassCountSummaryResult create instance
+    /// Static constructor.
     /// </summary>
-    /// <param name="result">The pass count results from Raptor</param>
-    /// <returns>An instance of CompactionPassCountSummaryResult</returns>
     public static CompactionPassCountSummaryResult CreatePassCountSummaryResult(PassCountSummaryResult result)
     {
-      const int noPassCountData = 0;
-
-      if (Math.Abs(result.totalAreaCoveredSqMeters - noPassCountData) < 0.001)
+      if (result == null || !result.HasData())
       {
-        return new CompactionPassCountSummaryResult { SummaryData = new PassCountSummaryData { PassCountTarget = new PassCountTargetData() } };
+        return CreateEmptyResult();
       }
 
       return new CompactionPassCountSummaryResult
       {
         SummaryData = new PassCountSummaryData
         {
-          PercentEqualsTarget = result.percentEqualsTarget,
-          PercentGreaterThanTarget = result.percentGreaterThanTarget,
-          PercentLessThanTarget = result.percentLessThanTarget,
-          TotalAreaCoveredSqMeters = result.totalAreaCoveredSqMeters,
+          PercentEqualsTarget = result.PercentEqualsTarget,
+          PercentGreaterThanTarget = result.PercentGreaterThanTarget,
+          PercentLessThanTarget = result.PercentLessThanTarget,
+          TotalAreaCoveredSqMeters = result.TotalAreaCoveredSqMeters,
           PassCountTarget = new PassCountTargetData
           {
-            MinPassCountMachineTarget = result.constantTargetPassCountRange.min,
-            MaxPassCountMachineTarget = result.constantTargetPassCountRange.max,
-            TargetVaries = !result.isTargetPassCountConstant
+            MinPassCountMachineTarget = result.ConstantTargetPassCountRange.min,
+            MaxPassCountMachineTarget = result.ConstantTargetPassCountRange.max,
+            TargetVaries = !result.IsTargetPassCountConstant
           }
         }
       };
-    }
-
-    /// <summary>
-    /// Pass Count summary data returned
-    /// </summary>
-    public class PassCountSummaryData
-    {
-      /// <summary>
-      /// The percentage of pass counts that match the target pass count specified in the passCountTarget member of the request
-      /// </summary>
-      [JsonProperty(PropertyName = "percentEqualsTarget")]
-      public double PercentEqualsTarget { get; set; }
-      /// <summary>
-      /// The percentage of pass counts that are greater than the target pass count specified in the passCountTarget member of the request
-      /// </summary>
-      [JsonProperty(PropertyName = "percentGreaterThanTarget")]
-      public double PercentGreaterThanTarget { get; set; }
-      /// <summary>
-      /// The percentage of pass counts that are less than the target pass count specified in the passCountTarget member of the request
-      /// </summary>
-      [JsonProperty(PropertyName = "percentLessThanTarget")]
-      public double PercentLessThanTarget { get; set; }
-      /// <summary>
-      /// The total area covered by non-null cells in the request area
-      /// </summary>
-      [JsonProperty(PropertyName = "totalAreaCoveredSqMeters")]
-      public double TotalAreaCoveredSqMeters { get; set; }
-      /// <summary>
-      /// Pass count machine target and whether it is constant or varies.
-      /// </summary>
-      [JsonProperty(PropertyName = "passCountTarget")]
-      public PassCountTargetData PassCountTarget { get; set; }
     }
   }
 }

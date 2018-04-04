@@ -5,7 +5,6 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Utilities;
-using Filter = VSS.Productivity3D.Common.Models.Filter;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
 {
@@ -45,7 +44,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
 
     public static CompactionReportStationOffsetRequest CreateRequest(
       long projectId,
-      Filter filter,
+      FilterResult filter,
       long filterId,
       LiftBuildSettings liftBuildSettings,
       bool reportElevation,

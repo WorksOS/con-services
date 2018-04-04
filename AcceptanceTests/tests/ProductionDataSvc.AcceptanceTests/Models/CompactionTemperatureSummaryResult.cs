@@ -1,6 +1,6 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RaptorSvcAcceptTestsCommon.Models;
+using System;
 
 namespace ProductionDataSvc.AcceptanceTests.Models
 {
@@ -28,6 +28,12 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       if (other == null)
         return false;
 
+      if (this.temperatureSummaryData == null)
+      {
+        return this.Code == other.Code &&
+               this.Message == other.Message;
+      }
+
       return this.temperatureSummaryData.Equals(other.temperatureSummaryData) &&
        this.Code == other.Code &&
        this.Message == other.Message;
@@ -36,7 +42,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
     public static bool operator ==(CompactionTemperatureSummaryResult a, CompactionTemperatureSummaryResult b)
     {
       if ((object)a == null || (object)b == null)
-        return Object.Equals(a, b);
+        return Equals(a, b);
 
       return a.Equals(b);
     }

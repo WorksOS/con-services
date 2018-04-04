@@ -5,7 +5,6 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Filters.Authentication;
-using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -15,7 +14,6 @@ using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Contracts;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.Models;
-using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Report.Controllers
 {
@@ -32,7 +30,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     private readonly IASNodeClient raptorClient;
     
     /// <summary>
-    /// Logger factory for use by executor
+    /// LoggerFactory factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
 
@@ -267,12 +265,12 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v1/speed/summary")]
     [HttpPost]
-    public SummarySpeedResult Post([FromBody] SummarySpeedRequest parameters)
+    public SpeedSummaryResult Post([FromBody] SummarySpeedRequest parameters)
     {
       parameters.Validate();
       return
         RequestExecutorContainerFactory.Build<SummarySpeedExecutor>(logger, raptorClient).Process(parameters) as
-          SummarySpeedResult;
+          SpeedSummaryResult;
     }
 
     /// <summary>

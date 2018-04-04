@@ -1,7 +1,8 @@
-﻿
+﻿using System;
+using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
 {
   /// <summary>
   /// The result representation of a summary temperature request
@@ -11,53 +12,63 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
     /// <summary>
     /// If the temperature value is constant, this is the minimum constant value of all temperature targets in the processed data.
     /// </summary>
-    public double minimumTemperature { get; private set; }
+    [JsonProperty(PropertyName = "minimumTemperature")]
+    public double MinimumTemperature { get; private set; }
 
     /// <summary>
     /// If the temperature value is constant, this is the maximum constant value of all temperature targets in the processed data.
     /// </summary>
-    public double maximumTemperature { get; private set; }
+    [JsonProperty(PropertyName = "maximumTemperature")]
+    public double MaximumTemperature { get; private set; }
 
     /// <summary>
     /// Are the temperature target values applying to all processed cells constant?
     /// </summary>
-    public bool isTargetTemperatureConstant { get; private set; }
+    [JsonProperty(PropertyName = "isTargetTemperatureConstant")]
+    public bool IsTargetTemperatureConstant { get; private set; }
 
     /// <summary>
     /// The percentage of the cells that are below the temperature range
     /// </summary>
-    public double belowTemperaturePercent { get; private set; }
+    [JsonProperty(PropertyName = "belowTemperaturePercent")]
+    public double BelowTemperaturePercent { get; private set; }
+
     /// <summary>
     /// The percentage of cells that are within the target range
     /// </summary>
-    public double withinTemperaturePercent { get; private set; }
+    [JsonProperty(PropertyName = "withinTemperaturePercent")]
+    public double WithinTemperaturePercent { get; private set; }
 
     /// <summary>
     /// The percentage of the cells that are above the temperature range
     /// </summary>
-    public double aboveTemperaturePercent { get; private set; }
+    [JsonProperty(PropertyName = "aboveTemperaturePercent")]
+    public double AboveTemperaturePercent { get; private set; }
 
     /// <summary>
     /// The internal result code of the request. Documented elsewhere.
     /// </summary>
-    public short returnCode { get; private set; }
+    [JsonProperty(PropertyName = "returnCode")]
+    public short ReturnCode { get; private set; }
 
     /// <summary>
     /// The total area covered by non-null cells in the request area
     /// </summary>
-    public double totalAreaCoveredSqMeters { get; private set; }
+    [JsonProperty(PropertyName = "totalAreaCoveredSqMeters")]
+    public double TotalAreaCoveredSqMeters { get; private set; }
 
+    public bool HasData() => Math.Abs(this.TotalAreaCoveredSqMeters) > 0.001;
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor.
     /// </summary>
     private TemperatureSummaryResult()
     { }
 
     /// <summary>
-    /// Create instance of CMVSummaryResult
+    /// Static constructor.
     /// </summary>
-    public static TemperatureSummaryResult CreateTemperatureSummaryResult(
+    public static TemperatureSummaryResult Create(
       double minimumTemperature,
       double maximumTemperature,
       bool isTargetTemperatureConstant,
@@ -70,20 +81,15 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
     {
       return new TemperatureSummaryResult
       {
-        minimumTemperature = minimumTemperature,
-        maximumTemperature = maximumTemperature,
-        isTargetTemperatureConstant = isTargetTemperatureConstant,
-        returnCode = returnCode,
-        totalAreaCoveredSqMeters = totalAreaCoveredSqMeters,
-        aboveTemperaturePercent = aboveTemperaturePercent,
-        withinTemperaturePercent = withinTemperaturePercent,
-        belowTemperaturePercent = belowTemperaturePercent
+        MinimumTemperature = minimumTemperature,
+        MaximumTemperature = maximumTemperature,
+        IsTargetTemperatureConstant = isTargetTemperatureConstant,
+        ReturnCode = returnCode,
+        TotalAreaCoveredSqMeters = totalAreaCoveredSqMeters,
+        AboveTemperaturePercent = aboveTemperaturePercent,
+        WithinTemperaturePercent = withinTemperaturePercent,
+        BelowTemperaturePercent = belowTemperaturePercent
       };
-    }
-
-    public static TemperatureSummaryResult Empty()
-    {
-      return new TemperatureSummaryResult();
     }
   }
 }

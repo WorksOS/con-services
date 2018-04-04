@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
 {
   /// <summary>
   /// The result representation of a detailed CMV request
@@ -12,24 +12,23 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
     /// An array of percentages relating to the CMV values encountered in the processed cells.
     /// The percentages are for CMV values below the minimum, between the minimum and target, on target, between the target and the maximum and above the maximum CMV.
     /// </summary>
-    public double[] percents { get; private set; }
-
-       /// <summary>
-    /// Private constructor
-    /// </summary>
-    private CMVDetailedResult() 
-    {}
+    [JsonProperty(PropertyName = "percents")]
+    public double[] Percents { get; private set; }
 
     /// <summary>
-    /// Create instance of CMVDetailedResult
+    /// Default private constructor.
     /// </summary>
-    public static CMVDetailedResult CreateCMVDetailedResult(
-      double[] percents
-    )
+    private CMVDetailedResult()
+    { }
+
+    /// <summary>
+    /// Static constructor.
+    /// </summary>
+    public static CMVDetailedResult Create(double[] percents)
     {
       return new CMVDetailedResult
       {
-        percents = percents
+        Percents = percents
       };
     }
 
@@ -39,7 +38,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
     /// <returns>A comma separated list of the percentages in the array.</returns>
     public override string ToString()
     {
-      return String.Join("%, ", percents) + "%";
+      return string.Join("%, ", Percents) + "%";
     }
   }
 }

@@ -4,7 +4,6 @@ using System;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
-using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -26,7 +25,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     private readonly IASNodeClient raptorClient;
 
     /// <summary>
-    /// Logger factory for use by executor
+    /// LoggerFactory factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
 
@@ -34,7 +33,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
-    /// <param name="logger">Logger</param>
+    /// <param name="logger">LoggerFactory</param>
     public SurveyedSurfaceController(IASNodeClient raptorClient, ILoggerFactory logger)
     {
       this.raptorClient = raptorClient;
@@ -90,7 +89,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [Route("api/v2/projects/{projectUid}/surveyedsurfaces/{surveyedsurfaceId}/delete")]
     public ContractExecutionResult GetDel([FromRoute] Guid projectUid, [FromRoute] long surveyedSurfaceId)
     {
-      long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      long projectId = (User as RaptorPrincipal).GetLegacyProjectId(projectUid);
       ProjectID projId = ProjectID.CreateProjectID(projectId, projectUid);
       projId.Validate();
 
@@ -128,7 +127,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [Route("api/v2/projects/{projectUid}/surveyedsurfaces")]
     public SurveyedSurfaceResult Get([FromRoute] Guid projectUid)
     {
-      long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      long projectId = (User as RaptorPrincipal).GetLegacyProjectId(projectUid);
       ProjectID request = ProjectID.CreateProjectID(projectId, projectUid);
 
       request.Validate();

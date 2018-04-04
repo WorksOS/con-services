@@ -28,7 +28,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     /// The filter to be used for the request
     /// </summary>
     [JsonProperty(PropertyName = "Filter", Required = Required.Default)]
-    public Filter Filter { get; protected set; }
+    public FilterResult Filter { get; protected set; }
 
     /// <summary>
     /// The ID of the filter to be used for the request
@@ -57,7 +57,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     public static ElevationStatisticsRequest CreateElevationStatisticsRequest(
       long projectId,
       Guid? callId,
-      Filter filter,
+      FilterResult filter,
       long filterId,
       LiftBuildSettings liftBuildSettings)
     {

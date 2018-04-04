@@ -1,16 +1,15 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common.Interfaces;
 using VSS.TCCFileAccess;
 
-namespace VSS.Productivity3D.Common.Filters.Interfaces
+namespace VSS.Productivity3D.Common.Interfaces
 {
   /// <summary>
   ///   Represents abstract container for all request executors. Uses abstract factory pattern to seperate executor logic
@@ -111,8 +110,6 @@ namespace VSS.Productivity3D.Common.Filters.Interfaces
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="item"></param>
-    /// <typeparam name="T"></typeparam>
     /// <exception cref="ServiceException"></exception>
     public ContractExecutionResult 
       Process<T>(T item)

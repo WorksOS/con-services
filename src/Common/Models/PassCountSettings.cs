@@ -25,20 +25,19 @@ namespace VSS.Productivity3D.Common.Models
     public int[] passCounts { get; private set; }
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor.
     /// </summary>
     private PassCountSettings()
-    {
-    }
+    { }
 
     /// <summary>
-    /// Create instance of PassCountSettings
+    /// Static constructor.
     /// </summary>
     public static PassCountSettings CreatePassCountSettings(int[] passCounts)
     {
       return new PassCountSettings
       {
-        passCounts = passCounts,
+        passCounts = passCounts
       };
     }
 

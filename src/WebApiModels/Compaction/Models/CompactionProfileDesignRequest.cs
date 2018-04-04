@@ -20,7 +20,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     /// Value may be null.
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public Filter filter { get; private set; }
+    public FilterResult filter { get; private set; }
 
     /// <summary>
     /// The filter ID to used in the request.
@@ -71,7 +71,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     [JsonProperty(PropertyName = "designDescriptor", Required = Required.Always)]
     public DesignDescriptor designDescriptor { get; private set; }
 
-    public static CompactionProfileDesignRequest CreateCompactionProfileDesignRequest(long projectId, DesignDescriptor designDescriptor, Filter filter, long? filterId, DesignDescriptor alignmentDescriptor, ProfileGridPoints gridPoints, ProfileLLPoints wgs84Points, double startStation, double endStation)
+    public static CompactionProfileDesignRequest CreateCompactionProfileDesignRequest(long projectId, DesignDescriptor designDescriptor, FilterResult filter, long? filterId, DesignDescriptor alignmentDescriptor, ProfileGridPoints gridPoints, ProfileLLPoints wgs84Points, double startStation, double endStation)
     {
       return new CompactionProfileDesignRequest
       {

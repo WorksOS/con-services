@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
-using System;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models;
+using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 {
@@ -18,103 +18,40 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
     public CmvSummaryData SummaryData { get; private set; }
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor.
     /// </summary>
     private CompactionCmvSummaryResult()
     { }
+    
+    public static CompactionCmvSummaryResult CreateEmptyResult() => new CompactionCmvSummaryResult();
 
     /// <summary>
-    /// CmvSummaryResult create instance
+    /// Static constructor.
     /// </summary>
-    /// <param name="result">The CMV results from Raptor</param>
-    /// <param name="settings">The CMV settings used by Raptor</param>
-    /// <returns>An instance of CompactionCmvSummaryResult</returns>
-    public static CompactionCmvSummaryResult CreateCmvSummaryResult(CMVSummaryResult result, CMVSettings settings)
+    public static CompactionCmvSummaryResult Create(CMVSummaryResult result, CMVSettings settings)
     {
-      const int noCmvData = 0;
-
-      if (Math.Abs(result.totalAreaCoveredSqMeters - noCmvData) < 0.001)
+      if (result == null || !result.HasData())
       {
-        return new CompactionCmvSummaryResult { SummaryData = new CmvSummaryData { CmvTarget = new CmvTargetData() } };
+        return CreateEmptyResult();
       }
 
       return new CompactionCmvSummaryResult
       {
         SummaryData = new CmvSummaryData
         {
-          PercentEqualsTarget = result.compactedPercent,
-          PercentGreaterThanTarget = result.overCompactedPercent,
-          PercentLessThanTarget = result.underCompactedPercent,
-          TotalAreaCoveredSqMeters = result.totalAreaCoveredSqMeters,
+          PercentEqualsTarget = result.CompactedPercent,
+          PercentGreaterThanTarget = result.OverCompactedPercent,
+          PercentLessThanTarget = result.UnderCompactedPercent,
+          TotalAreaCoveredSqMeters = result.TotalAreaCoveredSqMeters,
           CmvTarget = new CmvTargetData
           {
-            CmvMachineTarget = result.constantTargetCMV / 10,
-            TargetVaries = !result.isTargetCMVConstant
+            CmvMachineTarget = result.ConstantTargetCmv / 10,
+            TargetVaries = !result.IsTargetCmvConstant
           },
           MinCMVPercent = settings.minCMVPercent,
           MaxCMVPercent = settings.maxCMVPercent
         }
       };
-    }
-
-    /// <summary>
-    /// CMV summary data returned
-    /// </summary>
-    public class CmvSummaryData
-    {
-      /// <summary>
-      /// The percentage of cells that are compacted within the target bounds
-      /// </summary>
-      [JsonProperty(PropertyName = "percentEqualsTarget")]
-      public double PercentEqualsTarget { get; set; }
-      /// <summary>
-      /// The percentage of the cells that are over-compacted
-      /// </summary>
-      [JsonProperty(PropertyName = "percentGreaterThanTarget")]
-      public double PercentGreaterThanTarget { get; set; }
-      /// <summary>
-      /// The percentage of the cells that are under compacted
-      /// </summary>
-      [JsonProperty(PropertyName = "percentLessThanTarget")]
-      public double PercentLessThanTarget { get; set; }
-      /// <summary>
-      /// The total area covered by non-null cells in the request area
-      /// </summary>
-      [JsonProperty(PropertyName = "totalAreaCoveredSqMeters")]
-      public double TotalAreaCoveredSqMeters { get; set; }
-      /// <summary>
-      /// CMV machine target and whether it is constant or varies.
-      /// </summary>
-      [JsonProperty(PropertyName = "cmvTarget")]
-      public CmvTargetData CmvTarget { get; set; }
-      /// <summary>
-      /// The minimum percentage the measured CMV may be compared to the cmvTarget from the machine
-      /// </summary>
-      [JsonProperty(PropertyName = "minCMVPercent", Required = Required.Default)]
-      public double MinCMVPercent { get; set; }
-      /// <summary>
-      /// The maximum percentage the measured CMV may be compared to the cmvTarget from the machine
-      /// </summary>
-      [JsonProperty(PropertyName = "maxCMVPercent")]
-      public double MaxCMVPercent { get; set; }
-
-    }
-
-    /// <summary>
-    /// CMV target data returned
-    /// </summary>
-    public class CmvTargetData
-    {
-      /// <summary>
-      /// If the CMV value is constant, this is the constant value of all CMV targets in the processed data.
-      /// </summary>
-      [JsonProperty(PropertyName = "cmvMachineTarget")]
-      public double CmvMachineTarget { get; set; }
-      /// <summary>
-      /// Are the CMV target values applying to all processed cells varying?
-      /// </summary>
-      [JsonProperty(PropertyName = "targetVaries")]
-      public bool TargetVaries { get; set; }
     }
   }
 }

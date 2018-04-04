@@ -74,7 +74,7 @@
     <Compile Include="Models\DisplayMode.cs" />
     <Compile Include="Models\ElevationType.cs" />
     <Compile Include="Models\FileDescriptor.cs" />
-    <Compile Include="Models\Filter.cs" />
+    <Compile Include="Models\FilterResult.cs" />
     <Compile Include="Models\FilterLayerMethod.cs" />
     <Compile Include="Models\GPSAccuracy.cs" />
     <Compile Include="Models\LiftBuildSettings.cs" />
