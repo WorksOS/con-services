@@ -96,6 +96,60 @@ namespace ExecutorTests
 
     }
 
+
+    [TestMethod]
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Transient)]
+    [DataRow(FilterType.Report)]
+    public async Task GetFilterExecutor_ExistingFilterApplicationContext(FilterType filterType)
+    {
+      string custUid = Guid.NewGuid().ToString();
+      string userId = Guid.NewGuid().ToString();
+      string projectUid = Guid.NewGuid().ToString();
+      string filterUid = Guid.NewGuid().ToString();
+      string name = "blah";
+      string filterJson = "{\"dateRangeType\":1,\"elevationType\":null}";
+
+      WriteEventToDb(new CreateFilterEvent
+      {
+        CustomerUID = Guid.Parse(custUid),
+        UserID = userId,
+        ProjectUID = Guid.Parse(projectUid),
+        FilterUID = Guid.Parse(filterUid),
+        Name = name,
+        FilterType = filterType,
+        FilterJson = filterJson,
+        ActionUTC = DateTime.UtcNow,
+        ReceivedUTC = DateTime.UtcNow
+      });
+
+      var request = FilterRequestFull.Create(null, custUid, true, "0", new ProjectData() { ProjectUid = projectUid }, new FilterRequest { FilterUid = filterUid, FilterType = filterType });
+
+      var executor =
+        RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null);
+      var result = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
+
+      var filterToTest = new FilterDescriptorSingleResult(
+        new FilterDescriptor
+        {
+          FilterUid = filterUid,
+          Name = name,
+          FilterType = filterType,
+          FilterJson = filterJson
+        }
+      );
+
+      Assert.IsNotNull(result, Responses.ShouldReturnResult);
+      Assert.AreEqual(filterToTest.FilterDescriptor.FilterUid, result.FilterDescriptor.FilterUid,
+        Responses.IncorrectFilterDescriptorFilterUid);
+      Assert.AreEqual(filterToTest.FilterDescriptor.Name, result.FilterDescriptor.Name,
+        Responses.IncorrectFilterDescriptorName);
+      Assert.AreEqual("{\"dateRangeType\":1,\"dateRangeName\":\"Yesterday\"}", result.FilterDescriptor.FilterJson,
+        Responses.IncorrectFilterDescriptorFilterJson);
+      Assert.AreEqual(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType,
+        Responses.IncorrectFilterDescriptorFilterType);
+    }
+
     [TestMethod]
     [DataRow(FilterType.Persistent)]
     [DataRow(FilterType.Transient)]
