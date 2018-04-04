@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Geometry;
 
 namespace VSS.Velociraptor.Designs.TTM
@@ -38,7 +34,7 @@ namespace VSS.Velociraptor.Designs.TTM
         /// <param name="aX"></param>
         /// <param name="aY"></param>
         /// <param name="aZ"></param>
-        public TriVertex(double aX, double aY, double aZ) : base()
+        public TriVertex(double aX, double aY, double aZ)
         {
             X = aX;
             Y = aY;
@@ -124,7 +120,7 @@ namespace VSS.Velociraptor.Designs.TTM
         /// <returns></returns>
         public string AsText()
         {
-            return string.Format("Tag:{0}, X={1:F3}, Y={2:F3}, Z={3:F3}", Tag, X, Y, Z);
+            return $"Tag:{Tag}, X={X:F3}, Y={Y:F3}, Z={Z:F3}";
         }
 
         /// <summary>

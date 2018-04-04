@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing;
-using VSS.TRex.Rendering.Abstractions.GridFabric.Factories;
+﻿using VSS.TRex.Rendering.Abstractions.GridFabric.Factories;
 using VSS.VisionLink.Raptor.Rendering.GridFabric.Responses;
 
 namespace VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses

@@ -9,7 +9,7 @@ namespace VSS.TRex.Rendering.Implementations.Framework
 
     private readonly CC.Bitmap container;
 
-    internal CC.Bitmap underlyingBitmap => container;
+    internal CC.Bitmap UnderlyingBitmap => container;
 
     internal Bitmap(int x, int y)
     {
@@ -19,7 +19,7 @@ namespace VSS.TRex.Rendering.Implementations.Framework
     public int Width => container.Width;
     public int Height => container.Height;
 
-    public object GetBitmap() => underlyingBitmap;
+    public object GetBitmap() => UnderlyingBitmap;
 
     public void Dispose()
     {

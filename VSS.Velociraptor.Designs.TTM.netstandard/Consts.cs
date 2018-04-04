@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.Velociraptor.Designs.TTM
+﻿namespace VSS.Velociraptor.Designs.TTM
 {
     public static class Consts
     {
@@ -12,7 +6,7 @@ namespace VSS.Velociraptor.Designs.TTM
         public const double NullReal = 1E308;
 
         public const int MaxSmallIntValue = 0x7FFF;
-  public const byte TTMMajorVersion = 1;
+        public const byte TTMMajorVersion = 1;
         public const byte TTMMinorVersion = 0;
 
         public const string TTMFileIdentifier = "TNL TIN DTM FILE";
@@ -24,7 +18,7 @@ namespace VSS.Velociraptor.Designs.TTM
         public const string kCombinedSurfaceSubgridOverlaySubgridIndexHeader = "SpatialExistenceMap";
         public const int kCombinedSurfaceSubgridOverlaySubgridIndexVersion = 2; //= 3; ###RPW### See TFS item 16560
 
-    public const int NoNeighbour = -1;
+        public const int NoNeighbour = -1;
         public const int NullHashIndex = 0;
         public const int PointNotFound = 0;
         public const int NullTriangle = 0;

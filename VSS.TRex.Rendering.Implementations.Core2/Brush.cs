@@ -7,7 +7,7 @@ namespace VSS.TRex.Rendering.Implementations.Core2
   {
     private readonly System.Drawing.SolidBrush container;
 
-    internal System.Drawing.SolidBrush underlyingImplementation => container;
+    internal System.Drawing.SolidBrush UnderlyingImplementation => container;
 
     internal Brush(System.Drawing.Color color)
     {

@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 
 namespace VSS.Velociraptor.Designs.TTM
 {
     public class TTMTriangle : Triangle
     {
-        public TTMTriangle(TriVertex Vertex1, TriVertex Vertex2, TriVertex Vertex3) : base()
+        public TTMTriangle(TriVertex Vertex1, TriVertex Vertex2, TriVertex Vertex3) : base(Vertex1, Vertex2, Vertex3)
         {
 
         }
@@ -41,7 +36,7 @@ namespace VSS.Velociraptor.Designs.TTM
             {
                 int VertIndex = Utilities.ReadInteger(reader, header.VertexNumberSize);
 
-                this.Vertices[i] = (VertIndex < 1 || VertIndex > vertices.Count()) ? null : vertices[VertIndex - 1];
+                Vertices[i] = (VertIndex < 1 || VertIndex > vertices.Count) ? null : vertices[VertIndex - 1];
 
                 //{$ifdef LoadTTMIndices}
                 //VertexIndices[i] := VertexIndex;
@@ -52,7 +47,7 @@ namespace VSS.Velociraptor.Designs.TTM
             {
                 int NeighbourIndex = Utilities.ReadInteger(reader, header.TriangleNumberSize);
 
-                this.Neighbours[i] = (NeighbourIndex < 1 || NeighbourIndex > triangles.Count()) ? null : triangles[NeighbourIndex - 1];
+                Neighbours[i] = (NeighbourIndex < 1 || NeighbourIndex > triangles.Count) ? null : triangles[NeighbourIndex - 1];
 
                 //{$ifdef LoadTTMIndices}
                 //NeighbourIndices[i] := NeighbourIndex;

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace VSS.Velociraptor.Designs.TTM
 {
@@ -12,7 +10,7 @@ namespace VSS.Velociraptor.Designs.TTM
         private HashOrdinate HashOrdinate;
         private double MinHashOrdinate;
         private double MaxHashOrdinate;
-        private List<TriVertex>[] HashArray = null;
+        private List<TriVertex>[] HashArray;
 
         /// <summary>
         /// Computes the hash index for the given vertex location
@@ -91,9 +89,8 @@ namespace VSS.Velociraptor.Designs.TTM
         /// <summary>
         /// Base no-arg constructor
         /// </summary>
-        public TriVertices() : base()
+        public TriVertices()
         {
-
         }
 
         public void GetLimits(ref double MinX, ref double MinY, ref double MinZ, ref double MaxX, ref double MaxY, ref double MaxZ)
@@ -126,7 +123,8 @@ namespace VSS.Velociraptor.Designs.TTM
                 {
                     CollisionList = new List<TriVertex>();
                     HashArray[HashIdx] = CollisionList;
-                };
+                }
+
                 CollisionList.Add(Result);
             }
 
@@ -142,7 +140,7 @@ namespace VSS.Velociraptor.Designs.TTM
         /// <returns></returns>
         public TriVertex FindPoint(double X, double Y, double Z)
         {
-            return SearchForPoint(X, Y, Z, out int HashIdx);
+            return SearchForPoint(X, Y, Z, out int _ /*HashIdx*/);
         }
 
         /// <summary>

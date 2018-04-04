@@ -8,7 +8,7 @@ namespace VSS.TRex.Rendering.Implementations.Framework
 
     private readonly System.Drawing.Pen container;
 
-    internal System.Drawing.Pen underlyingImplementation => container;
+    internal System.Drawing.Pen UnderlyingImplementation => container;
 
     internal Pen(System.Drawing.Color color)
     {

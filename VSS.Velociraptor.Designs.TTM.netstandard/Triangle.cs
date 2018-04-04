@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Geometry;
 
 namespace VSS.Velociraptor.Designs.TTM
@@ -30,12 +26,12 @@ namespace VSS.Velociraptor.Designs.TTM
             Flags = (ushort)(Value ? Flags | (1 << Index) : Flags & ~(1 << Index));
         }
 
-    protected override void Initialise()
+        protected override void Initialise()
         {
             base.Initialise();
         }
 
-        public Triangle() : base()
+        public Triangle()
         {
 
         }
@@ -150,8 +146,8 @@ namespace VSS.Velociraptor.Designs.TTM
             return -1;
         }
 
-        public void GetMinMaxSides(ref int ShortestSide, int LongestSide,
-        ref double MinSideLen, ref double MaxSideLen)
+        public void GetMinMaxSides(out int ShortestSide, out int LongestSide,
+        out double MinSideLen, out double MaxSideLen)
         {
             LongestSide = 0;
             ShortestSide = 0;
@@ -219,7 +215,7 @@ namespace VSS.Velociraptor.Designs.TTM
             return (Vertices[0] == Vertices[1]) || (Vertices[1] == Vertices[2]) || (Vertices[2] == Vertices[0]);
         }
 
-        public void GetExtents(ref double MinX, ref double MinY, ref double MaxX, ref double MaxY)
+        public void GetExtents(out double MinX, out double MinY, out double MaxX, out double MaxY)
         {
             // NB: Not as performant as it could be. Revisit it this method is called often
             MinX = Vertices.Min(x => x.X);

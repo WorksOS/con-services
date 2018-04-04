@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using VSS.VisionLink.Raptor.Geometry;
 
 namespace VSS.Velociraptor.Designs.TTM
@@ -13,10 +9,10 @@ namespace VSS.Velociraptor.Designs.TTM
         private Triangles FTriangles;
 
         //  protected
-        protected virtual void CreateLists(ref TriVertices Vertices, ref Triangles Triangles)
+        protected virtual void CreateLists(out TriVertices vertices, out Triangles triangles)
         {
-            Vertices = new TriVertices();
-            Triangles = new Triangles();
+            vertices = new TriVertices();
+            triangles = new Triangles();
         }
 
         protected virtual void SnapToOutputResolution()
@@ -24,9 +20,9 @@ namespace VSS.Velociraptor.Designs.TTM
             // Descendents should do something here if required
         }
 
-        public TriangleMesh() : base()
+        public TriangleMesh()
         {
-            CreateLists(ref FVertices, ref FTriangles);
+            CreateLists(out FVertices, out FTriangles);
         }
 
         //  public
@@ -78,7 +74,7 @@ namespace VSS.Velociraptor.Designs.TTM
             // Associate triangles with points
             for (int i = 0; i < Triangles.Count; i++)
             {
-                for (int Side = 0; Side < 3; i++)
+                for (int Side = 0; Side < 3; Side++)
                 {
                     Trianglelists[Triangles[i].Vertices[Side].Tag].Add(Triangles[i]);
                 }
@@ -87,7 +83,7 @@ namespace VSS.Velociraptor.Designs.TTM
             // Find the neighbour for each triangle side
             for (int i = 0; i < Triangles.Count; i++)
             {
-                for (int Side = 0; Side < 3; i++)
+                for (int Side = 0; Side < 3; Side++)
                 {
                     if (Triangles[i].Neighbours[Side] != null)
                     {

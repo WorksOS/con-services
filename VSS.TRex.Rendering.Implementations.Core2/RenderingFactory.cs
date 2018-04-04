@@ -13,7 +13,7 @@ namespace VSS.TRex.Rendering.Implementations.Core2
 
         public IGraphics CreateGraphics(IBitmap bitmap)
         {
-            return new Graphics(System.Drawing.Graphics.FromImage(((Bitmap) bitmap).underlyingBitmap));
+            return new Graphics(System.Drawing.Graphics.FromImage(((Bitmap) bitmap).UnderlyingBitmap));
         }
 
         public IPen CreatePen(System.Drawing.Color color)

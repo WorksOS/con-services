@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 
 namespace VSS.Velociraptor.Designs.TTM
 {
@@ -17,7 +12,7 @@ namespace VSS.Velociraptor.Designs.TTM
         //TriangleIndex: Integer;
         //{$endif}
 
-        public TTMStartPoint(double aX, double aY, Triangle aTriangle) : base()
+        public TTMStartPoint(double aX, double aY, Triangle aTriangle)
         {
             FX = aX;
             FY = aY;

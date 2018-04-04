@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace VSS.Velociraptor.Designs.TTM
 {
@@ -28,7 +24,7 @@ namespace VSS.Velociraptor.Designs.TTM
         ///        public
         //          property TriangleClass : TTriangleClass read FTriangleClass write FTriangleClass;
 
-        public Triangles() : base()
+        public Triangles()
         {
             // FTriangleClass = TTriangle;
         }

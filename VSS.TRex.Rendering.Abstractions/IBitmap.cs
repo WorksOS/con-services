@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace VSS.TRex.Rendering.Abstractions
+﻿namespace VSS.TRex.Rendering.Abstractions
 {
-  public interface IBitmap
+    public interface IBitmap
   {
     int Width { get; }
     int Height { get; }

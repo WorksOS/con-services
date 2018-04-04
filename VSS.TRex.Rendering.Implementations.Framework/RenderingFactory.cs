@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.TRex.Rendering.Abstractions;
+﻿using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Abstractions.GridFabric.Factories;
 using VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses;
 
@@ -19,7 +13,7 @@ namespace VSS.TRex.Rendering.Implementations.Framework
 
         public IGraphics CreateGraphics(IBitmap bitmap)
         {
-            return new Graphics(System.Drawing.Graphics.FromImage(((Bitmap)bitmap).underlyingBitmap));
+            return new Graphics(System.Drawing.Graphics.FromImage(((Bitmap)bitmap).UnderlyingBitmap));
         }
 
         public IPen CreatePen(System.Drawing.Color color)

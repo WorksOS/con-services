@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.Velociraptor.Designs.TTM
+﻿namespace VSS.Velociraptor.Designs.TTM
 {
     /// <summary>
     /// Defines the basis for hashed coordinates used to index TriVertex instances

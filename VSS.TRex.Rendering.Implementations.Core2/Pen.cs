@@ -8,7 +8,7 @@ namespace VSS.TRex.Rendering.Implementations.Core2
 
     private readonly System.Drawing.Pen container;
 
-    internal System.Drawing.Pen underlyingImplementation => container;
+    internal System.Drawing.Pen UnderlyingImplementation => container;
 
     internal Pen(System.Drawing.Color color)
     {
@@ -24,7 +24,7 @@ namespace VSS.TRex.Rendering.Implementations.Core2
     public IBrush Brush
     {
       get => new Brush(container.Brush);
-      set => container.Brush = ((Brush)value).underlyingImplementation;
+      set => container.Brush = ((Brush)value).UnderlyingImplementation;
     }
 
     public float Width

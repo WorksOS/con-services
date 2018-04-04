@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Geometry;
 
 namespace VSS.Velociraptor.Designs.TTM
@@ -29,7 +27,7 @@ namespace VSS.Velociraptor.Designs.TTM
             return (short)(Math.Abs(MaxValue) <= Consts.MaxSmallIntValue ? sizeof(short) : sizeof(int));
         }
 
-        protected override void CreateLists(ref TriVertices vertices, ref Triangles triangles)
+        protected override void CreateLists(out TriVertices vertices, out Triangles triangles)
         {
             // Note : Do NOT call inherited here, doing so will cause a memory leak as the
             //        Vertices and Triangles lists create in the inherited method are then lost
