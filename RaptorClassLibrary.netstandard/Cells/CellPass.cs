@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Utilities;
@@ -29,7 +25,7 @@ namespace VSS.VisionLink.Raptor.Cells
        data storage structure used in the gridded level of the main IC data grid.
     */
 
-     /// <summary>
+    /// <summary>
     /// Describes all the 'per-cell' state recorded for a pass recorded by a machine over a cell.
     /// </summary>
     public struct CellPass : IEquatable<CellPass>
@@ -160,7 +156,7 @@ namespace VSS.VisionLink.Raptor.Cells
             /// Sets the appropriate bits in the GPSModeStore corresponding to the desired pass type
             /// </summary>
             /// <param name="value"></param>
-            /// <param name="passType"></param>
+            /// <param name="_passType"></param>
             /// <returns></returns>
             public static byte SetPassType(byte value, PassType _passType)
             {

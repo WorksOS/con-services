@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using VSS.VisionLink.Raptor.Filters;
+﻿using VSS.VisionLink.Raptor.Filters;
 
 namespace VSS.VisionLink.Raptor.Analytics.Coordinators
 {

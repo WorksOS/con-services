@@ -2,17 +2,15 @@
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Query;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
-using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses;
 using VSS.Velociraptor.DesignProfiling;
 using VSS.VisionLink.Analytics.Operations;
 using VSS.VisionLink.Raptor;
@@ -29,7 +27,6 @@ using VSS.VisionLink.Raptor.GridFabric.Events;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.GridFabric.Queues;
 using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.Rendering.GridFabric.Responses;
 using VSS.VisionLink.Raptor.Rendering.Servers.Client;
 using VSS.VisionLink.Raptor.Servers.Client;
 using VSS.VisionLink.Raptor.Services.Designs;
@@ -41,8 +38,6 @@ using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Volumes;
 using VSS.VisionLink.Raptor.Volumes.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Volumes.GridFabric.Responses;
-using VSS.TRex.Rendering.Implementations.Framework;
-using VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses;
 
 namespace VSS.Raptor.IgnitePOC.TestApp
 {
@@ -51,11 +46,11 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         BoundingWorldExtent3D extents = BoundingWorldExtent3D.Inverted();
 
         //        RaptorGenericApplicationServiceServer genericApplicationServiceServer = new RaptorGenericApplicationServiceServer();
-        RaptorTileRenderingServer tileRenderServer = null;
-        RaptorSimpleVolumesServer simpleVolumesServer = null;
-        RaptorMutableClientServer mutableClient = null;
+        RaptorTileRenderingServer tileRenderServer;
+        RaptorSimpleVolumesServer simpleVolumesServer;
+        RaptorMutableClientServer mutableClient;
 
-        SiteModelAttributesChangedEventListener SiteModelAttrubutesChanged = null;
+        SiteModelAttributesChangedEventListener SiteModelAttrubutesChanged;
 
         /// <summary>
         /// Convert the Project ID in the text box into a number. It if is invalid return project ID 2 as a default
@@ -240,7 +235,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 cmbDesigns.DataSource = designs.Select(x => new { Text = x.DesignDescriptor.FullPath, Value = x }).ToArray();
             }
 
-            SurveyedSurfaceService surveyedSurfacesService = new SurveyedSurfaceService(VisionLink.Raptor.Storage.StorageMutability.Immutable);
+            SurveyedSurfaceService surveyedSurfacesService = new SurveyedSurfaceService(StorageMutability.Immutable);
             surveyedSurfacesService.Init(null);
             SurveyedSurfaces surveyedSurfaces = surveyedSurfacesService.List(ID());
 
@@ -730,14 +725,13 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         {
             // Calculate cut fill statistics from the latest elevations to the selected design
 
-            var request = new CutFillOperation();
             var siteModel = SiteModels.Instance().GetSiteModel(ID(), false);
-            var offsets = new double[7] { 0.5, 0.2, 0.1, 0, -0.1, -0.2, -0.5 };
+            var offsets = new [] { 0.5, 0.2, 0.1, 0, -0.1, -0.2, -0.5 };
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            CutFillResult result = request.Execute(new CutFillStatisticsArgument()
+            CutFillResult result = CutFillOperation.Execute(new CutFillStatisticsArgument()
             {
                 DataModelID = siteModel.ID,
                 Filter = new CombinedFilter(),

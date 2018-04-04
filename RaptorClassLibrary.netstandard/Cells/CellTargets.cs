@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Common;
+﻿using VSS.VisionLink.Raptor.Common;
 
 namespace VSS.VisionLink.Raptor.Cells
 {

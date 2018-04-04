@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace VSS.VisionLink.Raptor.Cells
+﻿namespace VSS.VisionLink.Raptor.Cells
 {
     /// <summary>
     /// Internal mapping of remaining GPSMode flag bits into usable fields in the cell pass structure

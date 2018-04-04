@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace VSS.VisionLink.Raptor.Cells
 {
@@ -57,6 +53,7 @@ namespace VSS.VisionLink.Raptor.Cells
         /// exact match the search returns the index in the list where a pass with
         /// the given time should go. 
         /// </summary>
+        /// <param name="Passes"></param>
         /// <param name="time"></param>
         /// <param name="index"></param>
         /// <returns></returns>
@@ -64,13 +61,12 @@ namespace VSS.VisionLink.Raptor.Cells
         {
             int L = (int)CellPassOffset;
             int H = L + (int)PassCount - 1;
-            int I, C;
 
             while (L <= H)
             {
-                I = (L + H) >> 1;
+                var I = (L + H) >> 1;
 
-                C = Passes[I].Time.CompareTo(time);
+                var C = Passes[I].Time.CompareTo(time);
 
                 if (C < 0)
                 {

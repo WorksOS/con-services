@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Analytics.GridFabric.Responses;
 
 namespace VSS.VisionLink.Raptor.Analytics.Models
@@ -12,7 +9,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Models
     /// </summary>
     public class CutFillResult : AnalyticsResult
     {
-        private long[] counts = null;
+        private long[] counts;
 
         /// <summary>
         /// An array (or always 7) values represnting the counts of cells within each of the cut fill bands defined in the request.
@@ -32,7 +29,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Models
         /// <summary>
         /// An array (or always 7) values represnting the percentages of cells within each of the cut fill bands defined in the request.
         /// </summary>
-        public double[] Percents { get; set; } = null;
+        public double[] Percents { get; set; }
 
         /// <summary>
         /// Sets the array of Counts into the result. The array is copied and the percentages are 
@@ -75,9 +72,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Models
         /// <param name="response"></param>
         public override void PopulateFromClusterComputeResponse(object response)
         {
-            CutFillStatisticsResponse statisticsResponse = response as CutFillStatisticsResponse;
-
-            if (statisticsResponse == null)
+            if (!(response is CutFillStatisticsResponse statisticsResponse))
             {
                 throw new ArgumentException($"Response argument is null or not a CutFillStatisticsResponse instance");
             }

@@ -1,14 +1,12 @@
 ﻿using Apache.Ignite.Core.Compute;
 using log4net;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Analytics.Coordinators;
 using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
+using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
+using VSS.VisionLink.Raptor.Servers;
 
 namespace VSS.VisionLink.Raptor.Analytics.GridFabric.ComputeFuncs
 {
@@ -21,6 +19,10 @@ namespace VSS.VisionLink.Raptor.Analytics.GridFabric.ComputeFuncs
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public AnalyticsComputeFunc_ClusterCompute(string gridName, string role) : base(gridName, role)
+        {
+        }
+
+        public AnalyticsComputeFunc_ClusterCompute() : this(RaptorGrids.RaptorImmutableGridName(), ServerRoles.PSNODE)
         {
         }
 

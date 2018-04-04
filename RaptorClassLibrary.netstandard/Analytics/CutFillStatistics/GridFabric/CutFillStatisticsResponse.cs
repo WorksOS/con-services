@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
 
 namespace VSS.VisionLink.Raptor.Analytics.GridFabric.Responses
@@ -13,7 +11,7 @@ namespace VSS.VisionLink.Raptor.Analytics.GridFabric.Responses
         /// <summary>
         /// An array (or always 7) values represnting the counts of cells within each of the cut fill bands defined in the request.
         /// </summary>
-        public long[] Counts { get; set; } = null;
+        public long[] Counts { get; set; }
 
         /// <summary>
         /// Aggregate a set of cut fill statistics into this set and return the result.

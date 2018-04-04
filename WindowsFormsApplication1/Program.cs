@@ -1,9 +1,4 @@
-﻿using log4net;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
+﻿using System;
 using System.Windows.Forms;
 using VSS.Velociraptor.DesignProfiling;
 using VSS.VisionLink.Raptor;

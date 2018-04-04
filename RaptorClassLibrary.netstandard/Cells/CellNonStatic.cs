@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace VSS.VisionLink.Raptor.Cells
 {
@@ -51,7 +48,7 @@ namespace VSS.VisionLink.Raptor.Cells
         /// <param name="passCount"></param>
         public void AllocatePasses(uint passCount)
         {
-            Array.Resize<CellPass>(ref Passes, (int)passCount);
+            Array.Resize(ref Passes, (int)passCount);
         }
 
         /// <summary>
@@ -167,7 +164,7 @@ namespace VSS.VisionLink.Raptor.Cells
         /// Takes a cell pass stack and integrates its contents into this cell pass stack ensuring all duplicates are resolved
         /// and that cell pass ordering on time is preserved
         /// </summary>
-        /// <param name="source"></param>
+        /// <param name="sourcePasses"></param>
         /// <param name="startIndex"></param>
         /// <param name="endIndex"></param>
         /// <param name="addedCount"></param>
@@ -200,7 +197,7 @@ namespace VSS.VisionLink.Raptor.Cells
             // where the actual number of passes are less than the total that are initially set here
             // will be cleaned up when the subgrid next exits the cache, or is integrated with
             // another aggregated subgrid from TAG file processing
-            Array.Resize<CellPass>(ref IntegratedPasses, IntegratedPassCount);
+            Array.Resize(ref IntegratedPasses, IntegratedPassCount);
 
             // Combine the two (sorted) lists of cell passes together to arrive at a single
             // integrated list of passes.
@@ -251,11 +248,10 @@ namespace VSS.VisionLink.Raptor.Cells
                 IntegratedIndex++;
             } while (IntegratedIndex <= IntegratedPassCount - 1);
 
-            // Assign the integrated list of passes to this cell, replacing the previous list of
-            // passes.
+            // Assign the integrated list of passes to this cell, replacing the previous list of passes.
             if (IntegratedPasses.Length > IntegratedPassCount)
             {
-                Array.Resize<CellPass>(ref IntegratedPasses, IntegratedPassCount);
+                Array.Resize(ref IntegratedPasses, IntegratedPassCount);
             }
             else
             {

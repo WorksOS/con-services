@@ -17,7 +17,7 @@ namespace VSS.VisionLink.Analytics.Operations
         /// </summary>
         /// <param name="arg"></param>
         /// <returns></returns>
-        public CutFillResult Execute(CutFillStatisticsArgument arg)
+        public static CutFillResult Execute(CutFillStatisticsArgument arg)
         {
             var request = new CutFillStatisticsRequest_ApplicationService();
 

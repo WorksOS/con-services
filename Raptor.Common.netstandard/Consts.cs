@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor.Common
+﻿namespace VSS.VisionLink.Raptor.Common
 {
-    public class Consts
+    public static class Consts
     {
         /// <summary>
         /// IEEE single/float null value

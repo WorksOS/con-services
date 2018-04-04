@@ -10,7 +10,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Interfaces
     /// <summary>
     /// Interface for state aggrgator
     /// </summary>
-    interface IAggregatorBase
+    public interface IAggregatorBase
     {
         /// <summary>
         /// Performs aggrator summarisation business logic over a set of subgrids derived from the query engine

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Common;
+﻿using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
@@ -37,7 +32,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
         /// Determines which cut/fill band to allocate the height value for a cell
         /// </summary>
         /// <param name="value"></param>
-        void IncrementCountOfCutFillTransition(double value)
+        private void IncrementCountOfCutFillTransition(double value)
         {
             // Works out what percentage of cutfill map colours are used
             // always 7 elements in array and assumes grade is set at zero
@@ -88,12 +83,13 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
         public override void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
         {
             // Works out the percentage each colour on the map represents
-            ClientHeightLeafSubGrid SubGrid = subGrids[0][0] as ClientHeightLeafSubGrid;
-            float Value;
+
+            if (!(subGrids[0][0] is ClientHeightLeafSubGrid SubGrid))
+                return;
 
             SubGridUtilities.SubGridDimensionalIterator((I, J) =>
                             {
-                                Value = SubGrid.Cells[I, J];
+                                float Value = SubGrid.Cells[I, J];
                                 if (Value != Consts.NullHeight) // is there a value to test
                                 {
                                     SummaryCellsScanned++;

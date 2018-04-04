@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace VSS.VisionLink.Raptor.Common
 {
@@ -19,20 +14,9 @@ namespace VSS.VisionLink.Raptor.Common
         private List<T> Items = new List<T>();
 
         /// <summary>
-        /// Internal private counter for the number of elements in the list that contain elements
-        /// </summary>
-        private int count = 0;
-
-        /// <summary>
         /// The number of items contained in the simple concurrent bag
         /// </summary>
-        public int Count
-        {
-            get
-            {
-                return count;
-            }
-        }
+        public int Count { get; private set; }
 
         /// <summary>
         /// Returns the allocated capacity of the internal container in terms of number of elements of type T"/>
@@ -43,7 +27,7 @@ namespace VSS.VisionLink.Raptor.Common
             {
                 lock (Items)
                 {
-                    return Items.Count();
+                    return Items.Count;
                 }
             }
         }
@@ -63,16 +47,16 @@ namespace VSS.VisionLink.Raptor.Common
         {
             lock (Items)
             {
-                if (count < Items.Count)
+                if (Count < Items.Count)
                 {
                     // Reuse an element in the list
-                    Items[count++] = item; // There is another element being stored; include it in count
+                    Items[Count++] = item; // There is another element being stored; include it in count
                 }
                 else
                 {
                     // All list elements are occupied, add the item as a new element in the list
                     Items.Add(item);
-                    count++;
+                    Count++;
                 }
             }
         }
@@ -80,7 +64,8 @@ namespace VSS.VisionLink.Raptor.Common
         /// <summary>
         /// Add an array of elements to the bag. The first [count] elements of the array will be added.
         /// </summary>
-        /// <param name="item"></param>
+        /// <param name="itemArray"></param>
+        /// <param name="itemCount"></param>
         public void Add(T[] itemArray, int itemCount)
         {
             lock (Items)
@@ -92,16 +77,16 @@ namespace VSS.VisionLink.Raptor.Common
                         continue;
                     }
 
-                    if (count < Items.Count)
+                    if (Count < Items.Count)
                     {
                         // Reuse an element in the list
-                        Items[count++] = itemArray[i]; // There is another element being stored; include it in count
+                        Items[Count++] = itemArray[i]; // There is another element being stored; include it in count
                     }
                     else
                     {
                         // All list elements are occupied, add the item as a new element in the list
                         Items.Add(itemArray[i]);
-                        count++;
+                        Count++;
                     }
                 }
             }
@@ -116,14 +101,14 @@ namespace VSS.VisionLink.Raptor.Common
         {
             lock (Items)
             {
-                if (count == 0)
+                if (Count == 0)
                 {
                     item = null;
                 }
                 else
                 {
-                    item = Items[--count];
-                    Items[count] = null;
+                    item = Items[--Count];
+                    Items[Count] = null;
                 }
 
                 return item != null;

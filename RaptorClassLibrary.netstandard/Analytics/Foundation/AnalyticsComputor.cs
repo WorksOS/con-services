@@ -25,12 +25,12 @@ namespace VSS.VisionLink.Raptor.Analytics
         /// <summary>
         /// The Aggregator to use for calculation of analytics
         /// </summary>
-        public ISubGridRequestsAggregator Aggregator { get; set; } = null;
+        public ISubGridRequestsAggregator Aggregator { get; set; }
 
         /// <summary>
         /// The Sitemodel from which the volume is being calculated
         /// </summary>
-        public SiteModel SiteModel { get; set; } = null;
+        public SiteModel SiteModel { get; set; }
 
         /// <summary>
         /// The cell size to be used in the calculation
@@ -49,11 +49,11 @@ namespace VSS.VisionLink.Raptor.Analytics
 
         public BoundingWorldExtent3D Extents = BoundingWorldExtent3D.Inverted(); // No get;set; on purpose
 
-        private SubGridTreeSubGridExistenceBitMask ProdDataExistenceMap = null;
-        private SubGridTreeSubGridExistenceBitMask OverallExistenceMap = null;
-        private SubGridTreeSubGridExistenceBitMask CutFillDesignExistenceMap = null;
-        private SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse> PipeLine = null;
-        private AggregatedPipelinedSubGridTask PipelinedTask = null;
+        private SubGridTreeSubGridExistenceBitMask ProdDataExistenceMap;
+        private SubGridTreeSubGridExistenceBitMask OverallExistenceMap;
+        private SubGridTreeSubGridExistenceBitMask CutFillDesignExistenceMap;
+        private SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse> PipeLine;
+        private AggregatedPipelinedSubGridTask PipelinedTask;
 
         /// <summary>
         ///  Default no-arg constructor
@@ -64,11 +64,11 @@ namespace VSS.VisionLink.Raptor.Analytics
 
         public long RequestDescriptor { get; set; } = -1;
 
-        public CombinedFilter Filter { get; set; } = null;
+        public CombinedFilter Filter { get; set; }
 
         public bool AbortedDueToTimeout { get; set; } = false;
 
-        public bool IncludeSurveyedSurfaces { get; set; } = false;
+        public bool IncludeSurveyedSurfaces { get; set; }
 
         protected void ApplyFilterAndSubsetBoundariesToExtents()
         {
@@ -129,7 +129,7 @@ namespace VSS.VisionLink.Raptor.Analytics
             // TODO Readd when lift build settings are supported
             // PipeLine.LiftBuildSettings = FLiftBuildSettings;
 
-            PipeLine.FilterSet = new FilterSet(new CombinedFilter[] { Filter });
+            PipeLine.FilterSet = new FilterSet(new [] { Filter });
 
             return true;
         }
