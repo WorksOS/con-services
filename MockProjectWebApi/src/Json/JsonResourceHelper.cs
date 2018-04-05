@@ -13,24 +13,36 @@ namespace MockProjectWebApi.Json
 
     public static string GetFilterJson(string resourceName)
     {
-      return GetJsonFromEmbeddedResource($"Filters.{resourceName}");
+      var jObj = GetJsonFromEmbeddedResource($"Filters.{resourceName}");
+      return jObj.ToString(Formatting.None);
     }
 
     public static string GetUserPreferencesJson(string resourceName)
     {
-      return GetJsonFromEmbeddedResource($"UserPreferences.{resourceName}");
+      var jObj = GetJsonFromEmbeddedResource($"UserPreferences.{resourceName}");
+      return jObj.ToString(Formatting.None);
     }
 
     public static string GetGoldenDimensionsFilterJson(string resourceName)
     {
-      return GetJsonFromEmbeddedResource($"Filters.GoldenDimensions.{resourceName}");
+      var jObj = GetJsonFromEmbeddedResource($"Filters.GoldenDimensions.{resourceName}");
+      return jObj.ToString(Formatting.None);
     }
     public static string GetDimensionsFilterJson(string resourceName)
     {
-      return GetJsonFromEmbeddedResource($"Filters.Dimensions.{resourceName}");
+      var jObj = GetJsonFromEmbeddedResource($"Filters.Dimensions.{resourceName}");
+      return jObj.ToString(Formatting.None);
     }
 
-    private static string GetJsonFromEmbeddedResource(string resourceName)
+    /// <summary>
+    /// Gets the color settings JSON for a given project Uid.
+    /// </summary>
+    public static JObject GetColorSettings(string projectUid)
+    {
+      return GetJsonFromEmbeddedResource($"ColorSettings.{projectUid}");
+    }
+
+    private static JObject GetJsonFromEmbeddedResource(string resourceName)
     {
       resourceName = $".Json.{resourceName}.json";
 
@@ -53,16 +65,14 @@ namespace MockProjectWebApi.Json
       }
     }
 
-    private static string DeserializeFromStream(Stream stream)
+    private static JObject DeserializeFromStream(Stream stream)
     {
       var serializer = new JsonSerializer();
 
       using (var sr = new StreamReader(stream))
       using (var jsonTextReader = new JsonTextReader(sr))
       {
-        var obj = serializer.Deserialize<JObject>(jsonTextReader);
-
-        return obj.ToString(Formatting.None);
+        return serializer.Deserialize<JObject>(jsonTextReader);
       }
     }
   }

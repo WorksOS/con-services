@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MockProjectWebApi.Utils;
-using System;
-using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using MockProjectWebApi.Json;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -27,7 +28,7 @@ namespace MockProjectWebApi.Controllers
       return new ProjectDataResult { ProjectDescriptors = this.projectList };
     }
 
-/// <summary>
+    /// <summary>
     /// Gets the project settings targets used in the Raptor service acceptance tests.
     /// The data is mocked.
     /// </summary>
@@ -59,8 +60,19 @@ namespace MockProjectWebApi.Controllers
 
       JObject settings = null;
 
-      if (projectUid == ConstantsUtil.CUSTOM_SETTINGS_DIMENSIONS_PROJECT_UID)
-        settings = JsonConvert.DeserializeObject<JObject>(projectSettingsColors);
+      switch (projectUid)
+      {
+        case ConstantsUtil.CUSTOM_SETTINGS_DIMENSIONS_PROJECT_UID:
+          {
+            settings = JsonConvert.DeserializeObject<JObject>(projectSettingsColors);
+            break;
+          }
+        case ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1:
+          {
+            settings = JsonResourceHelper.GetColorSettings(ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1);
+            break;
+          }
+      }
 
       return new ProjectSettingsDataResult { ProjectUid = projectUid, Settings = settings };
     }
@@ -140,7 +152,7 @@ namespace MockProjectWebApi.Controllers
       new ProjectData {LegacyProjectId = 1000102, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1000450, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1000452, ProjectUid = Guid.NewGuid().ToString()},
-      new ProjectData {LegacyProjectId = 1000544, ProjectUid = Guid.NewGuid().ToString()},
+      new ProjectData {LegacyProjectId = 1000544, ProjectUid = "dc509939-88b5-49b6-8c2c-9e8131122e96"},
       new ProjectData {LegacyProjectId = 1000992, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1001151, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1001152, ProjectUid = Guid.NewGuid().ToString()},

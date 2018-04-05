@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Json\ColorSettings\7925f179-013d-4aaf-aff4-7b9833bb06d6.json" />
     <Content Remove="Json\Filters\DimensionsAlignmentFilter0to200.json" />
     <Content Remove="Json\Filters\DimensionsAlignmentFilter100to200.json" />
     <Content Remove="Json\Filters\DimensionsBoundaryCMV.json" />
@@ -52,6 +53,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Json\ColorSettings\7925f179-013d-4aaf-aff4-7b9833bb06d6.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsAlignmentFilter0to200.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsAlignmentFilter100to200.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryCMV.json" />
