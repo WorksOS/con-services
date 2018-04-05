@@ -15,11 +15,11 @@ Examples:
 | ResultName         | ProjectUID                           | filterUID                            | overlayType                            | mapType   | mode | Difference | language |
 | DxfLinework        | ff91dd40-1569-4765-a2bc-014321f76ace | 7b2bd262-8355-44ba-938a-d50f9712dafc | DxfLinework                            |           |      | 1          |          |
 | Alignments         | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | Alignments                             |           |      | 1          |          |
-| #                  | Geofences                            | ff91dd40-1569-4765-a2bc-014321f76ace |                                        | Geofences |      | 1          |          |
+#| Geofences         | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | Geofences                              |           |      | 1          |          |
 | ProjectBoundary    | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProjectBoundary                        |           |      | 1          |          |
 | BaseMap            | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | BaseMap                                | MAP       |      | 1          |          |
 | BaseMap            | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | BaseMap                                | MAP       |      | 1          |          |  
-| BaseMap            | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | BaseMap                                | MAP       |      | 1          | de-DE    |
+| BaseMap            | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | BaseMap                                | MAP       |      | 1          | zh-CN    |
 | BaseMap            | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | BaseMap                                | MAP       |      | 1          | en_US    |
 | Elevation          | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 0    | 3.5        |          |
 | MDP                | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 20   | 3          |          |
