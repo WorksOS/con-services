@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace VSS.VisionLink.Raptor.Utilities
 {
@@ -19,7 +15,7 @@ namespace VSS.VisionLink.Raptor.Utilities
         {
             if (a > b)
             {
-                Swap<double>(ref a, ref b);
+                Swap(ref a, ref b);
             }
         }
 
@@ -27,7 +23,7 @@ namespace VSS.VisionLink.Raptor.Utilities
         {
             if (a.CompareTo(b) == 1)
             {
-                Swap<T>(ref a, ref b);
+                Swap(ref a, ref b);
             }
         }
     }

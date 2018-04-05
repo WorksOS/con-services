@@ -1,23 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using VSS.Velociraptor.DesignProfiling;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Designs;
 using VSS.VisionLink.Raptor.Designs.Storage;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
+using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Types;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 using VSS.VisionLink.Raptor.Utilities;
-using VSS.VisionLink.Raptor.Interfaces;
 
 namespace VSS.VisionLink.Raptor.Volumes
 {
@@ -43,7 +39,7 @@ namespace VSS.VisionLink.Raptor.Volumes
         /// <summary>
         /// The design being used to compare heights derived from production data against to calculate per-cell volumes
         /// </summary>
-        public Design ActiveDesign { get; set; } = null;
+        public Design ActiveDesign { get; set; }
 
         // References necessary for correct summarisation of aggregated state
 
@@ -56,24 +52,24 @@ namespace VSS.VisionLink.Raptor.Volumes
         // The sum of the aggregated summarised information relating to volumes summary based reports
 
         // CellsUsed records how many cells were used in the volume calculation
-        public long CellsUsed { get; set; } = 0;
-        public long CellsUsedCut { get; set; } = 0;
-        public long CellsUsedFill { get; set; } = 0;
+        public long CellsUsed { get; set; }
+        public long CellsUsedCut { get; set; }
+        public long CellsUsedFill { get; set; }
 
         // FCellsScanned records the total number of cells that were considered by
         // the engine. This includes cells outside of reference design fence boundaries
         // and cells where both base and top values may have been null.
-        public long CellsScanned { get; set; } = 0;
+        public long CellsScanned { get; set; }
 
         // FCellsDiscarded records how many cells were discarded because filtered value was null
-        public long CellsDiscarded { get; set; } = 0;
-        public double CellSize { get; set; } = 0;
+        public long CellsDiscarded { get; set; }
+        public double CellSize { get; set; }
         public VolumeComputationType VolumeType { get; set; } = VolumeComputationType.None;
 
         // Volume is the calculated volume deterimined by simple difference between
         // cells. It does not take into account cut/fill differences (see FCut|FillVolume)
         // This volume is the sole output for operations that apply levels to the surfaces
-        public double Volume { get; set; } = 0;
+        public double Volume { get; set; }
         public double CutVolume { get; set; } = 0;
         public double FillVolume { get; set; } = 0;
 
@@ -86,10 +82,10 @@ namespace VSS.VisionLink.Raptor.Volumes
 
         public double TopLevel { get; set; } = 0;
         public double BaseLevel { get; set; } = 0;
-        public double CoverageArea { get; set; } = 0;
-        public double CutArea { get; set; } = 0;
-        public double FillArea { get; set; } = 0;
-        public double TotalArea { get; set; } = 0;
+        public double CoverageArea { get; set; }
+        public double CutArea { get; set; }
+        public double FillArea { get; set; }
+        public double TotalArea { get; set; }
         public BoundingWorldExtent3D BoundingExtents = BoundingWorldExtent3D.Inverted(); // no {get; set;} intentionally 
 
         // CutTolerance determines the tolerance (in meters) that the 'From' surface
@@ -106,7 +102,7 @@ namespace VSS.VisionLink.Raptor.Volumes
 
         //  TICVolumesCalculationsAggregateStateArray = Array of TICVolumesCalculationsAggregateState;
 
-        public SimpleVolumesCalculationsAggregator() : base()
+        public SimpleVolumesCalculationsAggregator()
         {
             // NOTE: This aggregator state is now single threaded in the context of processing subgrid
             // information into it as the processing threads access independent substate aggregators which
@@ -169,8 +165,6 @@ namespace VSS.VisionLink.Raptor.Volumes
 
             double BelowToleranceToCheck, AboveToleranceToCheck;
             double ElevationDiff;
-
-            DesignHeights = null;
 
             // FCellArea is a handy place to store the cell area, rather than calculate it all the time (value wont change);
             double CellArea = CellSize * CellSize;

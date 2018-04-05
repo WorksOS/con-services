@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks;
 using VSS.VisionLink.Raptor.TAGFiles.Types;
 
@@ -118,8 +114,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 {
     public class TAGFile
     {
-        TAGHeader Header = new TAGHeader();
-        TAGDictionary Dictionary { get; set; } = new TAGDictionary();
+        private TAGHeader Header = new TAGHeader();
+        private TAGDictionary Dictionary { get; set; } = new TAGDictionary();
 
         public TAGFile()
         {
@@ -127,8 +123,6 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 
         public TAGReadResult Read(TAGReader reader, TAGValueSinkBase sink)
         {
-            long StreamPos, DataEndPos;
-
             try
             {
                 if (reader.GetSize() == 0)
@@ -148,11 +142,12 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
                 }
 
                 // If the offset to the dictionary is zero, then it follows immediately after the header
+                long DataEndPos;
                 try
                 {
                     if (Header.FieldAndTypeTableOffset != 0)
                     {
-                        StreamPos = reader.NybblePosition;
+                        long StreamPos = reader.NybblePosition;
                         reader.NybblePosition = Header.FieldAndTypeTableOffset * 2; // FieldAndTypeTableOffset is in bytes
                         Dictionary.Read(reader);
                         reader.NybblePosition = StreamPos;
@@ -241,8 +236,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
                             case TAGDataType.tEmptyType:
                                 sink.ReadEmptyValue(DictionaryEntry);
                                 break;
-                            default:
-                                break;
+                          //  default:
+                          //      break;
                         }
                     }
                     catch // (Exception E)

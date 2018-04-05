@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor.TAGFiles.Types
+﻿namespace VSS.VisionLink.Raptor.TAGFiles.Types
 {
     /// <summary>
     /// Denotes a set of error conditions that the ReadFile method in TagFile can return.

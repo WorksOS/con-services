@@ -1,20 +1,7 @@
-﻿using Apache.Ignite.Core;
-using Apache.Ignite.Core.Cluster;
-using Apache.Ignite.Core.Compute;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.Velociraptor.DesignProfiling;
-using VSS.VisionLink.Raptor.Designs;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
-using VSS.VisionLink.Raptor.SubGridTrees;
+﻿using VSS.Velociraptor.DesignProfiling;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.Surfaces.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.Surfaces.GridFabric.ComputeFuncs;
 
 namespace VSS.VisionLink.Raptor.Surfaces.Executors
 {
@@ -28,7 +15,7 @@ namespace VSS.VisionLink.Raptor.Surfaces.Executors
         /// <summary>
         /// Private reference to the arguments provided to the executor
         /// </summary>
-        private SurfaceElevationPatchArgument Args { get; set; } = null;
+        private SurfaceElevationPatchArgument Args { get; set; }
 
         /// <summary>
         /// Default no-arg constructor
@@ -43,7 +30,7 @@ namespace VSS.VisionLink.Raptor.Surfaces.Executors
         /// <param name="args"></param>
         public CalculateSurfaceElevationPatch(SurfaceElevationPatchArgument args) : this()
         {
-            this.Args = args;
+            Args = args;
         }
 
         /// <summary>
@@ -55,11 +42,10 @@ namespace VSS.VisionLink.Raptor.Surfaces.Executors
         {
             CalcResult = DesignProfilerRequestResult.UnknownError;
 
-            DesignBase Design = null;
-            ClientHeightAndTimeLeafSubGrid Patch = null;
+            DesignBase Design;
+            ClientHeightAndTimeLeafSubGrid Patch;
             object Hint = null;
             DesignLoadResult LockResult;
-            SurveyedSurface ThisSurveyedSurface;
 
             try
             {
@@ -93,7 +79,7 @@ namespace VSS.VisionLink.Raptor.Surfaces.Executors
                             break;
                         }
 
-                        ThisSurveyedSurface = Args.IncludedSurveyedSurfaces[i];
+                        SurveyedSurface ThisSurveyedSurface = Args.IncludedSurveyedSurfaces[i];
 
                         // Lock & load the design
                         Design = DesignFiles.Designs.Lock(ThisSurveyedSurface.DesignDescriptor, Args.SiteModelID, Args.CellSize, out LockResult);

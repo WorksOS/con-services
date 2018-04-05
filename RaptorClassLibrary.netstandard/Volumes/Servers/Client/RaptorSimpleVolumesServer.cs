@@ -1,7 +1,4 @@
-﻿using System.Drawing;
-using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.Rendering.GridFabric.Requests;
-using VSS.VisionLink.Raptor.Servers.Client;
+﻿using VSS.VisionLink.Raptor.Servers.Client;
 using VSS.VisionLink.Raptor.Volumes.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Volumes.GridFabric.Requests;
 using VSS.VisionLink.Raptor.Volumes.GridFabric.Responses;
@@ -16,7 +13,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Servers.Client
         /// <summary>
         /// Default no-arg constructor
         /// </summary>
-        public RaptorSimpleVolumesServer() : base()
+        public RaptorSimpleVolumesServer()
         {
         }
 

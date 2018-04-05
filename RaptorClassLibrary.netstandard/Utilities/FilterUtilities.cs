@@ -17,7 +17,7 @@ namespace VSS.VisionLink.Raptor.Utilities
         public static RequestErrorStatus PrepareFilterForUse(CombinedFilter Filter, long DataModelID)
         {
             // XYZ[] NEECoords = null;
-            XYZ[] LLHCoords = null; //: TCSConversionCoordinates;
+            XYZ[] LLHCoords; //: TCSConversionCoordinates;
             // Fence DesignBoundary = null;
             RequestErrorStatus Result = RequestErrorStatus.OK;
 
@@ -70,7 +70,7 @@ namespace VSS.VisionLink.Raptor.Utilities
                         if (Filter.SpatialFilter.HasSpatialOrPostionalFilters)
                         {
                             // Note: Lat/Lons in filter fence boundaries are supplied to us in decimal degrees, not radians
-                            LLHCoords = new XYZ[1] { new Geometry.XYZ(Filter.SpatialFilter.PositionX * (Math.PI / 180), Filter.SpatialFilter.PositionY * (Math.PI / 180)) };
+                            LLHCoords = new [] { new XYZ(Filter.SpatialFilter.PositionX * (Math.PI / 180), Filter.SpatialFilter.PositionY * (Math.PI / 180)) };
 
                             /* TODO - not yet supported
                             CoordConversionResult = ASNodeImplInstance.CoordService.RequestCoordinateConversion(-1, aDataModelID, cctLLHtoNEE, LLHCoords, EmptyStr, NEECoords);

@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Cells;
-using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.TAGFiles.Types;
 using VSS.VisionLink.Raptor.Types;
@@ -12,7 +9,7 @@ using VSS.VisionLink.Raptor.Types;
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 {
     /// <summary>
-    /// TAGProcessorBase extends <TAGProcessorStateBase>
+    /// TAGProcessorBase extends TAGProcessorStateBase
     /// to provide a processing structure for reading and converting the epoch based
     /// information held in the file into grid (or other) forms of data for use by the
     /// application. Descendant classes must override the following functions:
@@ -252,7 +249,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 
 //                LeftInterpolationFence.UpdateExtents();
                 InterpolationFences[MachineSideConst.None].Add(LeftInterpolationFence); // machineside none
-            };
+            }
 
             Height1 = ADataLeft;
             Height2 = ADataRight;
@@ -281,7 +278,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         }
 
         /// <summary>
-        /// Defines themaximum distance between two epochs that is supported for processing.
+        /// Defines the maximum distance between two epochs that is supported for processing.
         /// Epochs with larger intervals are not processed.
         /// </summary>
         /// <returns></returns>
@@ -318,9 +315,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         public SimpleTriangle FrontTimeInterpolator1 { get; set; }
         public SimpleTriangle FrontTimeInterpolator2 { get; set; }
 
-        public bool HasRearAxleInThisEpoch { get; set; } = false;
-        public bool HasTrackInThisEpoch { get; set; } = false;
-        public bool HasWheelInThisEpoch { get; set; } = false;
+        public bool HasRearAxleInThisEpoch { get; set; }
+        public bool HasTrackInThisEpoch { get; set; }
+        public bool HasWheelInThisEpoch { get; set; }
 
         public SimpleTriangle RearHeightInterpolator1 { get; set; }
         public SimpleTriangle RearHeightInterpolator2 { get; set; }
@@ -337,7 +334,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         public SimpleTriangle WheelTimeInterpolator1 { get; set; }
         public SimpleTriangle WheelTimeInterpolator2 { get; set; }
 
-        DateTime PrevEpochTime { get; set; } = DateTime.MinValue;
+        private DateTime PrevEpochTime { get; set; } = DateTime.MinValue;
 
         XYZ[] FrontHeights = new XYZ[4];  // First and second Epoch points for front axle
         XYZ[] FrontTimes = new XYZ[4];  // First and second Epoch points for front axle
@@ -354,7 +351,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// <summary>
         /// No argument constructor
         /// </summary>
-        public TAGProcessorBase() : base()
+        public TAGProcessorBase()
         {
             ConstructInterpolationState();
         }
@@ -515,7 +512,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
                 if (!HaveFirstEpoch)
                 {
                     return false;
-                };
+                }
 
                 // Get details for second epoch
                 //------------ FRONT AXLE ----------------

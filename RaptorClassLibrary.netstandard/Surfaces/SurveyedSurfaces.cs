@@ -17,8 +17,8 @@ namespace VSS.VisionLink.Raptor.Surfaces
         //    var
         //     FMREWSyncInterlock : TMultiReadExclusiveWriteSynchronizer;
 
-        private bool FSorted = false;
-        private bool FSortDescending = false;
+        private bool FSorted;
+        private bool FSortDescending;
 
         public bool Sorted { get { return FSorted; } }
 
@@ -34,7 +34,7 @@ namespace VSS.VisionLink.Raptor.Surfaces
         /// Constructor accepting a Binary Reader instance from which to instantiate itself
         /// </summary>
         /// <param name="reader"></param>
-        public SurveyedSurfaces(BinaryReader reader) : base()
+        public SurveyedSurfaces(BinaryReader reader)
         {
             Read(reader);
         }
@@ -87,13 +87,14 @@ namespace VSS.VisionLink.Raptor.Surfaces
         /// <param name="ASurveyedSurfaceID"></param>
         /// <param name="ADesignDescriptor"></param>
         /// <param name="AAsAtDate"></param>
+        /// <param name="AExtents"></param>
         /// <returns></returns>
         public SurveyedSurface AddSurveyedSurfaceDetails(long ASurveyedSurfaceID,
                                                        DesignDescriptor ADesignDescriptor,
                                                        DateTime AAsAtDate,
                                                        BoundingWorldExtent3D AExtents)
         {
-            SurveyedSurface match = this.Find(x => x.ID == ASurveyedSurfaceID);
+            SurveyedSurface match = Find(x => x.ID == ASurveyedSurfaceID);
 
             if (match != null)
             {
@@ -115,12 +116,12 @@ namespace VSS.VisionLink.Raptor.Surfaces
         /// <returns></returns>
         public bool RemoveSurveyedSurface(long ASurveyedSurfaceID)
         {
-            SurveyedSurface match = this.Find(x => x.ID == ASurveyedSurfaceID);
+            SurveyedSurface match = Find(x => x.ID == ASurveyedSurfaceID);
 
-            return match == null ? false : this.Remove(match);
+            return match != null && Remove(match);
         }
 
-        public SurveyedSurface Locate(long AID) => this.Find(x => x.ID == AID);
+        public SurveyedSurface Locate(long AID) => Find(x => x.ID == AID);
 
         public void Assign(SurveyedSurfaces source)
         {

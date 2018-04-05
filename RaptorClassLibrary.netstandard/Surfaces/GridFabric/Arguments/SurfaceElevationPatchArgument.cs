@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using VSS.VisionLink.Raptor.SubGridTrees;
 
 namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.Arguments
@@ -60,15 +56,16 @@ namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.Arguments
         /// <param name="oTGCellBottomLeftX"></param>
         /// <param name="oTGCellBottomLeftY"></param>
         /// <param name="cellSize"></param>
-        /// <param name="EarliestSurface"></param>
+        /// <param name="earliestSurface"></param>
         /// <param name="processingMap"></param>
+        /// <param name="includedSurveyedSurfaces"></param>
         public SurfaceElevationPatchArgument(long siteModelID,
                                              uint oTGCellBottomLeftX,
                                              uint oTGCellBottomLeftY,
                                              double cellSize,
                                              bool earliestSurface,
                                              SubGridTreeBitmapSubGridBits processingMap,
-                                             SurveyedSurfaces includedSurveyedSurfaces) : base()
+                                             SurveyedSurfaces includedSurveyedSurfaces)
         {
             SiteModelID = siteModelID;
             OTGCellBottomLeftX = oTGCellBottomLeftX;

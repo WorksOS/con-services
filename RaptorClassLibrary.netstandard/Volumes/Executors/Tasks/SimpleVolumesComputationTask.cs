@@ -19,12 +19,12 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors.Tasks
         /// <summary>
         /// The aggregator performing volumes computation operations
         /// </summary>
-        private ISubGridRequestsAggregator Aggregator = null;
+        private ISubGridRequestsAggregator Aggregator;
 
         /// <summary>
         /// Constructor accepting a simple volumes aggregator that hardwires the expected grid data type to height
         /// </summary>
-        /// <param name="Aggregator"></param>
+        /// <param name="aggregator"></param>
         public SimpleVolumesComputationTask(ISubGridRequestsAggregator aggregator) : base(Guid.NewGuid().GetHashCode(), "", GridDataType.Height)
         {
             Aggregator = aggregator;

@@ -105,7 +105,7 @@ namespace VSS.VisionLink.Raptor.Surfaces
         /// Constructor accepting a Binary Reader instance from which to instantiate itself
         /// </summary>
         /// <param name="reader"></param>
-        public SurveyedSurface(BinaryReader reader) : base()
+        public SurveyedSurface(BinaryReader reader)
         {
             Read(reader);
         }
@@ -119,7 +119,7 @@ namespace VSS.VisionLink.Raptor.Surfaces
         public SurveyedSurface(long AID,
                                DesignDescriptor ADesignDescriptor,
                                DateTime AAsAtDate,
-                               BoundingWorldExtent3D AExtents) : base()
+                               BoundingWorldExtent3D AExtents)
         {
             FID = AID;
             FDesignDescriptor = ADesignDescriptor;

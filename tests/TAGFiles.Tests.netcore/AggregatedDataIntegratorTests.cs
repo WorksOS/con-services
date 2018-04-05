@@ -47,11 +47,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator.Tests
         {
             AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
 
-            int outstandingCellPasses = 0;
-            long totalCellPassesProcessed = 0;
-            int pendingFilesToBeProcessed = 0;
-
-            integrator.GetStatistics(ref outstandingCellPasses, ref totalCellPassesProcessed, ref pendingFilesToBeProcessed);
+            integrator.GetStatistics(out int outstandingCellPasses, out long totalCellPassesProcessed, out int pendingFilesToBeProcessed);
 
             Assert.Equal(0, outstandingCellPasses);
             Assert.Equal(0, pendingFilesToBeProcessed);
@@ -65,11 +61,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator.Tests
 
             integrator.IncrementOutstandingCellPasses(1000);
 
-            int outstandingCellPasses = 0;
-            long totalCellPassesProcessed = 0;
-            int pendingFilesToBeProcessed = 0;
-
-            integrator.GetStatistics(ref outstandingCellPasses, ref totalCellPassesProcessed, ref pendingFilesToBeProcessed);
+            integrator.GetStatistics(out int outstandingCellPasses, out long totalCellPassesProcessed, out int pendingFilesToBeProcessed);
 
             Assert.Equal(1000, outstandingCellPasses);
         }

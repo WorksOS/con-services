@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.SiteModels;
@@ -20,24 +16,24 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
         // This instance of a site model is, however, a transient one constructed for
         // for purpose of processing the individual TAG file and is not the
         // persisted instance, or a reference to it.
-        public SiteModel TargetSiteModel { get; set; } = null;
-        public long TargetSiteModelID { get; set; } = 0;
+        public SiteModel TargetSiteModel { get; set; }
+        public long TargetSiteModelID { get; set; }
 
         // TargetMachine is the IC machine that has produced the compaction data
         // that is being used to populate the IC server grid database.
         // This instance of a machine is, however, a transient one constructed for
         // for purpose of processing the individual TAG file and is not the
         // persisted instance, or a reference to it.
-        public Machine TargetMachine { get; set; } = null;
-        public long TargetMachineID { get; set; } = 0;
+        public Machine TargetMachine { get; set; }
+        public long TargetMachineID { get; set; }
 
-        public ServerSubGridTree AggregatedCellPasses { get; set; } = null;
-        public ProductionEventChanges AggregatedMachineEvents { get; set; } = null;
-        public SubGridTreeSubGridExistenceBitMask AggregateModifiedSubgrids { get; set; } = null;
+        public ServerSubGridTree AggregatedCellPasses { get; set; }
+        public ProductionEventChanges AggregatedMachineEvents { get; set; }
+        public SubGridTreeSubGridExistenceBitMask AggregateModifiedSubgrids { get; set; }
 
         //      Finalizer : TAggregationTaskFinalizer;
 
-        public int AggregatedCellPassCount { get; set; } = 0;
+        public int AggregatedCellPassCount { get; set; } 
 
         public DateTime StartProcessingTime { get; set; } = DateTime.MinValue;
 

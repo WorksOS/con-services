@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor.TAGFiles.Types
+﻿namespace VSS.VisionLink.Raptor.TAGFiles.Types
 {
-  public static class MachineSideConst
+    public static class MachineSideConst
   {
-    public static int None = 0;
-    public static int Left = 1;
-    public static int Right = 2;
+      public const int None = 0;
+      public const int Left = 1;
+      public const int Right = 2;
   }
 
   public enum MachineSide

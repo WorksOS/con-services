@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
 using VSS.VisionLink.Raptor.TAGFiles.Types;
 using VSS.VisionLink.Raptor.Types;
@@ -24,7 +19,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
         /// </summary>
         private const int kMaxNumberCellPassesPerSwathingEpoch = 25000;
 
-        public int ProcessedEpochNumber { get; set; } = 0;
+        public int ProcessedEpochNumber { get; set; }
 
         public TerrainSwather(TAGProcessorBase processor,        
                               ProductionEventChanges machineTargetValueChanges,
@@ -101,7 +96,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
                         {
                             bool haveInterpolation = false;
 
-                            if (!haveInterpolation && TimeInterpolator1.IncludesPoint(GridX, GridY)) 
+                            if (/*!haveInterpolation && */TimeInterpolator1.IncludesPoint(GridX, GridY)) 
                             {
                                 double timeVal = TimeInterpolator1.InterpolateHeight(GridX, GridY);
                                 double heightVal = HeightInterpolator1.InterpolateHeight(GridX, GridY);

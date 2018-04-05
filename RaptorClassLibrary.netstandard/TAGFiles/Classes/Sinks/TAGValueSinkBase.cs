@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks
+﻿namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks
 {
     /// <summary>
     /// TAGValueSink defines a sink where values are sent to as they are parsed from the TAG information
@@ -14,7 +8,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks
         /// <summary>
         /// Internal flag to controll termination of processing
         /// </summary>
-        private bool processingTerminated = false;
+        private bool processingTerminated;
 
         /// <summary>
         /// Accepts an integer value from the TAG file data
@@ -63,7 +57,6 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks
         /// Accepts an empty value from the TAG file data
         /// </summary>
         /// <param name="valueType"></param>
-        /// <param name="value"></param>
         public abstract void ReadEmptyValue(TAGDictionaryItem valueType);
 
         /// <summary>

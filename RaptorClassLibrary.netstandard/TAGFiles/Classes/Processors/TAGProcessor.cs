@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
 using VSS.VisionLink.Raptor.TAGFiles.Classes.Swather;
 using VSS.VisionLink.Raptor.TAGFiles.Types;
@@ -21,7 +16,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
     /// </summary>
     public class TAGProcessor : TAGProcessorBase
     {
-        public TAGProcessor() : base()
+        public TAGProcessor()
         {
         }
         
@@ -56,7 +51,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         }
 
         // SiteModel is the site model that the read data is being contributed to
-        private SiteModel SiteModel = null;
+        private SiteModel SiteModel;
 
         // SiteModelAggregator is the site model that the read data is aggregated into
         // prior to being integrated into the model represented by SiteModel
@@ -65,22 +60,22 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         //    is much faster than in piecemeal fashion.
         // 2. Contention: This reduces contention for the primary server interface lock between
         //    the tag file processor and client applications. }
-        public ServerSubGridTree SiteModelGridAggregator { get; set; } = null;
+        public ServerSubGridTree SiteModelGridAggregator { get; set; }
 
         // Machine is a reference to the intelligent compaction machine that
         // has collected the data being processed.
-        private Machine Machine = null;
+        private Machine Machine;
 
         // MachineTargetValueChanges is a reference to an object that records all the
         // machine state events of interest that we encounter while processing the
         // file
-        private ProductionEventChanges MachineTargetValueChanges = null;
+        private ProductionEventChanges MachineTargetValueChanges;
 
         // FICMachineTargetValueChangesAggregator is an object that aggregates all the
         // machine state events of interest that we encounter while processing the
         // file. These are then integrated into the machine events in a single step
         // at a later point in processing
-        public ProductionEventChanges MachineTargetValueChangesAggregator { get; set; } = null;
+        public ProductionEventChanges MachineTargetValueChangesAggregator { get; set; }
 
         /*
          *      // FOnProgressCheck provides a callback to the owner of the ST processing
@@ -205,6 +200,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// classes must override this function.
         /// </summary>
         /// <param name="InterpolationFence"></param>
+        /// <param name="machineSide"></param>
         /// <returns></returns>
         public override bool DoProcessEpochContext(Fence InterpolationFence, MachineSide machineSide )
         {

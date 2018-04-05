@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.GridFabric.Responses
 {
@@ -11,9 +8,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.GridFabric.Responses
     {
         public string FileName { get; set; }
 
-        public bool Success { get; set; } = false;
+        public bool Success { get; set; }
 
-        public string Exception { get; set; } = null;
+        public string Exception { get; set; }
 
         /// <summary>
         /// Default no-arg constructor

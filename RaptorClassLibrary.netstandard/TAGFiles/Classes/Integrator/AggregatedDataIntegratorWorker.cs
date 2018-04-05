@@ -2,8 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.Machines;
@@ -19,22 +17,22 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
         /// <summary>
         /// A queue of the tasks this worker will process into the Raptor data stores
         /// </summary>
-        private ConcurrentQueue<AggregatedDataIntegratorTask> TasksToProcess = null;
+        private ConcurrentQueue<AggregatedDataIntegratorTask> TasksToProcess;
 
         /// <summary>
         /// A bitmask sub grid tree that tracks all subgrids modified by the tasks this worker has processed
         /// </summary>
-        private SubGridTreeSubGridExistenceBitMask WorkingModelUpdateMap = null;
+        private SubGridTreeSubGridExistenceBitMask WorkingModelUpdateMap;
 
         /// <summary>
         /// The mutable grid storage proxy
         /// </summary>
-        private IStorageProxy storageProxy_Mutable = null;
+        private IStorageProxy storageProxy_Mutable;
 
         /// <summary>
         /// The immutable grid storage proxy
         /// </summary>
-        private IStorageProxy storageProxy_Immutable = null;
+        private IStorageProxy storageProxy_Immutable;
 
         /// <summary>
         /// Worker constructor that obtains the necessary storage proxies
@@ -91,8 +89,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
             // string LastKnownDesignName;
             int Comparison;
 
-            AggregatedDataIntegratorTask Task = null;
-            AggregatedDataIntegratorTask TestTask = null;
+            AggregatedDataIntegratorTask Task;
+            AggregatedDataIntegratorTask TestTask;
 
             EventIntegrator eventIntegrator = new EventIntegrator();
 

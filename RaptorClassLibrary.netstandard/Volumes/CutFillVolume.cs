@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Common;
+﻿using System.Diagnostics;
 
 namespace VSS.VisionLink.Raptor.Volumes
 {
@@ -13,7 +7,7 @@ namespace VSS.VisionLink.Raptor.Volumes
     /// </summary>
     public class CutFillVolume
     {
-        private double? _CutVolume = null;
+        private double? _CutVolume;
         public double CutVolume
         {
             get
@@ -22,7 +16,7 @@ namespace VSS.VisionLink.Raptor.Volumes
             }
         }
 
-        private double? _FillVolume = null;
+        private double? _FillVolume;
         public double FillVolume
         {
             get
@@ -40,8 +34,8 @@ namespace VSS.VisionLink.Raptor.Volumes
 
         public CutFillVolume(double cutVolume, double fillVolume) : this()
         {
-            _CutVolume = CutVolume;
-            _FillVolume = FillVolume;
+            _CutVolume = cutVolume;
+            _FillVolume = fillVolume;
         }
 
         public double AccumulatedVolume()
@@ -64,10 +58,10 @@ namespace VSS.VisionLink.Raptor.Volumes
         public double AccumulatedVolume_BulkShrinkAdjusted(double BulkageFactor, double ShrinkageFactor)
             => CutVolume_BulkageAdjusted(BulkageFactor) + FillVolume_ShrinkageAdjusted(ShrinkageFactor);
 
-        public void AddCutFillVolume(double CutVolume, double FillVolume)
+        public void AddCutFillVolume(double cutVolume, double fillVolume)
         {
-            AddCutVolume(CutVolume);
-            AddFillVolume(FillVolume);
+            AddCutVolume(cutVolume);
+            AddFillVolume(fillVolume);
         }
 
         public void AddCutVolume(double Volume)
@@ -84,13 +78,13 @@ namespace VSS.VisionLink.Raptor.Volumes
             _FillVolume = _FillVolume.HasValue ? _FillVolume + Volume : Volume;
         }
 
-        public void AddVolume(CutFillVolume Volume)
+        public void AddVolume(CutFillVolume volume)
         {
-            if (Volume.HasCutVolume)
-                AddCutVolume(Volume.CutVolume);
+            if (volume.HasCutVolume)
+                AddCutVolume(volume.CutVolume);
 
-            if (Volume.HasFillVolume)
-                AddFillVolume(Volume.FillVolume);
+            if (volume.HasFillVolume)
+                AddFillVolume(volume.FillVolume);
         }
 
         public void Assign(CutFillVolume source)

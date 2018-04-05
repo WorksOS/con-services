@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using VSS.VisionLink.Raptor.Geometry;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.States
@@ -12,14 +7,14 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.States
     /// Handles scanning a TAG value stream and extracting the blade/track/wheel/read positions into a set
     /// of groups to permit recalculation of coordinates between coordinate systems
     /// </summary>
-    class TAGProcessorPreScanACSState : TAGProcessorStateBase
+    public class TAGProcessorPreScanACSState : TAGProcessorStateBase
     {
         public List<UTMCoordPointPair> BladePositions { get; set; } = new List<UTMCoordPointPair>();
         public List<UTMCoordPointPair> RearAxlePositions { get; set; } = new List<UTMCoordPointPair>();
         public List<UTMCoordPointPair> TrackPositions { get; set; } = new List<UTMCoordPointPair>();
         public List<UTMCoordPointPair> WheelPositions { get; set; } = new List<UTMCoordPointPair>();
 
-        public TAGProcessorPreScanACSState() : base()
+        public TAGProcessorPreScanACSState()
         {
 
         }

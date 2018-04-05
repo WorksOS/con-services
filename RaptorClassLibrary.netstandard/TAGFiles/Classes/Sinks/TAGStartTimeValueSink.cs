@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks
-{ 
+﻿namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks
+{
     /// <summary>
     /// Derived TAG value sink that just looks for the first instance of GPS Week and Time values before completing
     /// </summary>
-    class TAGStartTimeValueSink : TAGValueSink
+    public class TAGStartTimeValueSink : TAGValueSink
     {
         /// <summary>
         /// Constructor -> proxied to base

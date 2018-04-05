@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 {
@@ -258,7 +255,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
             {
                 varInt = (short)(ReadUnSignedIntegerValue(3) + 584);
                 return true;
-            };
+            }
 
             // This is an invalid VarInt in the file.
             return false;

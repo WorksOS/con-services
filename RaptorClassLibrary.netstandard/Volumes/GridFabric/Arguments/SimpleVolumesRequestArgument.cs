@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Filters;
+﻿using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.GridFabric.Arguments;
 
 namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Arguments
@@ -35,11 +30,11 @@ namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Arguments
 
         public long BaseDesignID = long.MinValue;
         public long TopDesignID = long.MinValue;
-        
+
         /// <summary>
         /// AdditionalSpatialFilter is an additional boundary specified by the user to bound the result of the query
         /// </summary>
-        public CombinedFilter AdditionalSpatialFilter = null;
+        public CombinedFilter AdditionalSpatialFilter;
 
         /// <summary>
         /// CutTolerance determines the tolerance (in meters) that the 'From' surface

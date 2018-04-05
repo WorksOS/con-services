@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor.Volumes
+﻿namespace VSS.VisionLink.Raptor.Volumes
 {
     /// <summary>
     /// ProdReportSelectionType denotes whether the 'from' or 'to' surface used for the

@@ -33,8 +33,9 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
         /// meaingful for a filter to have a spatial extent, and to denote aa
         /// 'as-at' time only.
         /// </summary>
-        public CombinedFilter BaseFilter = null;
-        public CombinedFilter TopFilter = null;
+        public CombinedFilter BaseFilter;
+
+        public CombinedFilter TopFilter;
 
         /// <summary>
         /// The ID of the 'base' design. This is the design forming the 'from' surface in 
@@ -51,7 +52,7 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
         /// <summary>
         /// AdditionalSpatialFilter is an additional boundary specified by the user to bound the result of the query
         /// </summary>
-        public CombinedFilter AdditionalSpatialFilter = null;
+        public CombinedFilter AdditionalSpatialFilter;
 
         /// <summary>
         /// CutTolerance determines the tolerance (in meters) that the 'From' surface
@@ -72,7 +73,7 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
         /// <summary>
         /// The aggregator to be used to compute the volumes related results
         /// </summary>
-        public SimpleVolumesCalculationsAggregator Aggregator { get; set; } = null;
+        public SimpleVolumesCalculationsAggregator Aggregator { get; set; }
 
         /// <summary>
         /// Performs funcional initialisation of ComnputeVolumes state that is dependent on the initial state
@@ -199,7 +200,7 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
                     // InterlockedIncrement64(ASNodeRequestStats.NumVolumeRequests);
 
                     // Prepare filters for use in the request
-                    ResultStatus = FilterUtilities.PrepareFiltersForUse(new CombinedFilter[] { BaseFilter, TopFilter, AdditionalSpatialFilter }, SiteModelID);
+                    ResultStatus = FilterUtilities.PrepareFiltersForUse(new [] { BaseFilter, TopFilter, AdditionalSpatialFilter }, SiteModelID);
                     if (ResultStatus != RequestErrorStatus.OK)
                         return VolumesResult;
 

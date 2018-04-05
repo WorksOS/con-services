@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Events.Interfaces;
 
@@ -11,10 +7,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 {
     public class EventIntegrator
     {
-        ProductionEventChanges Source = null;
-        ProductionEventChanges Target = null;
-        bool RemoveFromSource = false;
-        bool IntegratingIntoPersistentDataModel = false;
+        private ProductionEventChanges Source;
+        private ProductionEventChanges Target;
+        private bool RemoveFromSource;
+        private bool IntegratingIntoPersistentDataModel;
 
         public EventIntegrator()
         {
@@ -109,17 +105,17 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
         // are machine events only, and do not include custom events.
         //        private void IntegrateList(ProductionEventChangeList<ProductionEventChangeBase> Source,
         //                                   ProductionEventChangeList<ProductionEventChangeBase> Target)
-        private void IntegrateList(IProductionEventChangeList Source,
-                                   IProductionEventChangeList Target)
+        private void IntegrateList(IProductionEventChangeList source,
+                                   IProductionEventChangeList target)
         {
-            if (Source.Count == 0)
+            if (source.Count == 0)
             {
                 return;
             }
 
-            if (Source.Count > 1)
+            if (source.Count > 1)
             {
-                Source.Sort();
+                source.Sort();
             }
 
             if (IntegratingIntoPersistentDataModel)
@@ -130,26 +126,26 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 
             try
             {
-                for (int I = 0; I < Source.Count; I++)
+                for (int I = 0; I < source.Count; I++)
                 {
 
                     // If the numbers of events being added here become significant, then
                     // it may be worth using an event merge process similar to the one done
                     // in cell pass integration
-                    if (Target.PutValueAtDate(Source[I]) != Source[I])
+                    if (target.PutValueAtDate(source[I]) != source[I])
                     {
                         if (!RemoveFromSource)
                         {
                             // TODO readd when logging available
                             //SIGLogMessage.PublishNoODS(null, 'AddAtCorrectTimePoint destroyed an event when RemoveFromSource was false', slmcAssert);
                             return;
-                        };
+                        }
 
-                        Source[I] = null;
+                        source[I] = null;
                     }
                 }
 
-                Target.Collate();
+                target.Collate();
             }
             finally
             {
@@ -164,26 +160,26 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 
         //        private void PerformListIntegration(ProductionEventChangeList<ProductionEventChangeBase> Source,
         //                                          ProductionEventChangeList<ProductionEventChangeBase> Target)
-        private void PerformListIntegration(IProductionEventChangeList Source,
-                                            IProductionEventChangeList Target)
+        private void PerformListIntegration(IProductionEventChangeList source,
+                                            IProductionEventChangeList target)
         {
-            IntegrateList(Source, Target);
-
+            IntegrateList(source, target);
+            
             if (RemoveFromSource)
             {
-                Source.Clear();
+                source.Clear();
             }
         }
 
-        public void IntegrateMachineEvents(ProductionEventChanges Source,
-                                           ProductionEventChanges Target,
-                                           bool RemoveFromSource,
-                                           bool IntegratingIntoPersistentDataModel)
+        public void IntegrateMachineEvents(ProductionEventChanges source,
+                                           ProductionEventChanges target,
+                                           bool removeFromSource,
+                                           bool integratingIntoPersistentDataModel)
         {
-            this.Source = Source;
-            this.Target = Target;
-            this.RemoveFromSource = RemoveFromSource;
-            this.IntegratingIntoPersistentDataModel = IntegratingIntoPersistentDataModel;
+            Source = source;
+            Target = target;
+            RemoveFromSource = removeFromSource;
+            IntegratingIntoPersistentDataModel = integratingIntoPersistentDataModel;
 
             IntegrateMachineEvents();
         }

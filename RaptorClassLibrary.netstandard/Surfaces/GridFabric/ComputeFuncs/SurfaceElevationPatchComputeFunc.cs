@@ -1,12 +1,7 @@
 ﻿using Apache.Ignite.Core.Compute;
 using log4net;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.Surfaces.Executors;
@@ -59,7 +54,7 @@ namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.ComputeFuncs
             }
             catch (Exception E)
             {
-                Log.InfoFormat("Exception:", E);
+                Log.Info($"Exception: {E}");
                 return null; // Todo .....
             }
         }

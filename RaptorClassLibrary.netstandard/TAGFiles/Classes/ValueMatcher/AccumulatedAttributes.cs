@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Types;
-using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Cells;
+using VSS.VisionLink.Raptor.Common;
+using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 {
@@ -88,8 +86,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
                 case 1:
                     value = list[0].value;
                     return true;
-                default:
-                    break;
+            //    default:
+            //        break;
             }
 
             if (dateTime < list[0].dateTime)

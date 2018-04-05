@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
 using VSS.VisionLink.Raptor.SubGridTrees.Types;
 using VSS.VisionLink.Raptor.TAGFiles.Types;
@@ -26,26 +20,26 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
     public class SwatherBase
     {
         // SiteModel is the site model that the read data is being contributed to
-        protected SiteModel SiteModel { get; set; } = null;
+        protected SiteModel SiteModel { get; set; }
 
         // Grid is the grid into which the cell passes are to be aggregated into prior
         // to final insertion into the site model proper
-        protected ServerSubGridTree Grid { get; set; } = null;
+        protected ServerSubGridTree Grid { get; set; }
 
         // MachineID is a reference to the compaction machine that has collected the data being processed.
-        public long MachineID { get; set; } = 0;
+        public long MachineID { get; set; }
 
         //      FMachineConnectionLevel : MachineLevelEnum;
 
         //MachineTargetValueChanges is a reference to an object that records all the
         // machine state events of interest that we encounter while processing the file
-        protected ProductionEventChanges MachineTargetValueChanges { get; set; } = null;
+        protected ProductionEventChanges MachineTargetValueChanges { get; set; }
 
-        protected TAGProcessorBase Processor { get; set; } = null;
+        protected TAGProcessorBase Processor { get; set; }
 
-        protected ServerSubGridTreeLeaf LastInMemoryLeafSubGrid { get; set; } = null;
+        protected ServerSubGridTreeLeaf LastInMemoryLeafSubGrid { get; set; }
 
-        protected Fence InterpolationFence { get; set; } = null;
+        protected Fence InterpolationFence { get; set; }
 
         public void CommitCellPassToModel(uint cellX, uint cellY,
                                           double gridX, double gridY,

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor.Volumes
+﻿namespace VSS.VisionLink.Raptor.Volumes
 {
     /// <summary>
     /// Denotes the different types of volume conputations that may be performed

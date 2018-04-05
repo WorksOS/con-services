@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor
+﻿namespace VSS.VisionLink.Raptor
 {
     /// <summary>
     /// A class to contain a collection of Raptor configuration controls.

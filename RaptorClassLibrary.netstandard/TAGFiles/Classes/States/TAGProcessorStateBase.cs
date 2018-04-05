@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.Types;
-using VSS.VisionLink.Raptor.TAGFiles.Types;
 using VSS.VisionLink.Raptor.Cells;
+using VSS.VisionLink.Raptor.Common;
+using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.TAGFiles.Types;
+using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 {
@@ -20,7 +16,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
     public class TAGProcessorStateBase
     {
         ////////////////////////Private properties
-        private bool HaveSeenFirstDataTime { get; set; } = false;
+        private bool HaveSeenFirstDataTime { get; set; }
         private DateTime DataTimePrevious { get; set; } = DateTime.MinValue;
 
         private XYZ LeftPoint = XYZ.Null;
@@ -111,10 +107,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         private bool GetGPSBaseLLHReceived => (GPSBaseLat != Consts.NullDouble) && (GPSBaseLon != Consts.NullDouble) && (GPSBaseHeight != Consts.NullDouble);
 
         ///////////////////////////////////////// Protected properties
-        protected bool HaveFirstEpoch { get; set; } = false;
-        protected bool HaveFirstRearEpoch { get; set; } = false;
-        protected bool HaveFirstTrackEpoch { get; set; } = false;
-        protected bool HaveFirstWheelEpoch { get; set; } = false;
+        protected bool HaveFirstEpoch { get; set; }
+        protected bool HaveFirstRearEpoch { get; set; }
+        protected bool HaveFirstTrackEpoch { get; set; }
+        protected bool HaveFirstWheelEpoch { get; set; }
 
         // FWorkerID is the ID of this instance of a ST processor. It is used when
         // running multiple processors on different threads. It defaults to -1
@@ -122,7 +118,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 
         ///////////////////// Protected procedures
 
-        protected virtual void InitialiseAttributeAccumulators()
+        protected /*virtual*/ void InitialiseAttributeAccumulators()
         {
             ICMachineSpeedValues.Add(DateTime.MinValue, Consts.NullDouble);
             ICCCVValues.Add(DateTime.MinValue, CellPass.NullCCV);
@@ -351,19 +347,19 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         public XYZ FirstAccurateLeftPoint = XYZ.Null;
         public XYZ FirstAccurateRightPoint = XYZ.Null;
 
-        public bool HaveFirstAccurateGridEpochEndPoints { get; set; } = false;
+        public bool HaveFirstAccurateGridEpochEndPoints { get; set; }
 
-        public int ProcessedEpochCount { get; set; } = 0;
-        public int ProcessedCellPassesCount { get; set; } = 0;
-        public int VisitedEpochCount { get; set; } = 0;
+        public int ProcessedEpochCount { get; set; }
+        public int ProcessedCellPassesCount { get; set; }
+        public int VisitedEpochCount { get; set; } 
 
         public double OriginX { get; set; } = Consts.NullDouble;
         public double OriginY { get; set; } = Consts.NullDouble;
         public double OriginZ { get; set; } = Consts.NullDouble;
         public DateTime OriginTime { get; set; } = DateTime.MinValue;
 
-        public short GPSWeekNumber { get; set; } = 0;
-        public uint GPSWeekTime { get; set; } = 0;
+        public short GPSWeekNumber { get; set; }
+        public uint GPSWeekTime { get; set; }
 
         private DateTime _DataTime = DateTime.MinValue;
         public DateTime DataTime { get { return _DataTime; } set { SetDataTime(value); } }
@@ -391,10 +387,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 
         //  ValidPosition is only used in terms of the most recent epoch and do not need to have the history of these
         // values maintained in a TAccumulatedAttributeList
-        public byte ValidPosition { get; set; } = 0;
+        public byte ValidPosition { get; set; } 
 
-        public bool MinElevMapping { get; set; } = false;
-        public byte InAvoidZone { get; set; } = 0;
+        public bool MinElevMapping { get; set; } 
+        public byte InAvoidZone { get; set; }
 
         public GPSAccuracy GPSAccuracy { get; set; } = GPSAccuracy.Unknown;
         public short GPSAccuracyErrorLimit { get; set; } = CellPass.NullGPSTolerance;
@@ -409,7 +405,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 
         public string MachineID { get; set; } = string.Empty;
         public string HardwareID { get; set; } = string.Empty;
-        public uint Sequence { get; set; } = 0;
+        public uint Sequence { get; set; }
 
         public AccumulatedAttributes ICCCVValues { get; set; } = new AccumulatedAttributes();
         public AccumulatedAttributes ICMachineSpeedValues { get; set; } = new AccumulatedAttributes();
@@ -455,13 +451,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// <summary>
         /// Proofing time is GPS time in milliseconds
         /// </summary>
-        public uint StartProofingTime { get; set; } = 0;
-        public short StartProofingWeek { get; set; } = 0;
+        public uint StartProofingTime { get; set; }
+        public short StartProofingWeek { get; set; }
         public string EndProofingName { get; set; } = "";
 
         public DateTime StartProofingDataTime { get { return _StartProofingDataTime; } set { SetStartProofingDataTime(value); } }
 
-        public bool HaveSeenAProofingStart { get; set; } = false;
+        public bool HaveSeenAProofingStart { get; set; }
 
         public float ICTargetLiftThickness { get { return _ICTargetLiftThickness; } set { SetICTargetLiftThickness(value); } }
 
@@ -479,11 +475,11 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 
         // FMachineWheelWidth records the width of wheels on wheeled machines.
         // Units are meters
-        public double MachineWheelWidth { get; set; } = 0.0;
+        public double MachineWheelWidth { get; set; }
 
         // Indicates that we've received a machine Gear value from the tag file.
         // If not, then if we encounter a Direction value, use that to populate the machine Gear.
-        public bool GearValueReceived { get; set; } = false;
+        public bool GearValueReceived { get; set; }
         public PositioningTech PositioningTech { get; set; } = PositioningTech.Unknown;
 
         // Serial of the IP radio, expected to be unique for a given Radio Type
@@ -504,11 +500,11 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         public double GPSBaseHeight { get; set; } = Consts.NullDouble;
 
         public bool IsCSIBCoordSystemTypeOnly { get; set; } = true;
-        public byte UTMZoneAtFirstPosition { get; set; } = 0;
+        public byte UTMZoneAtFirstPosition { get; set; }
 
         public bool GPSBaseLLHReceived { get { return GetGPSBaseLLHReceived; } }
 
-        public bool OnGroundFlagSet { get; set; } = false;
+        public bool OnGroundFlagSet { get; set; }
 
         public bool ResearchData { get { return _ResearchData; } set { SetResearchData(value); } }
         public bool UsingCCA { get { return _UsingCCA; } set { SetUsingCCA(value); } }
@@ -620,10 +616,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// Takes copies of the arrays of positions obtained from TAG values thathave been produced by transformation of the grid
         /// coordinate system they were measured in, into the coordinate system of the project the data is being processed into.
         /// </summary>
-        /// <param name="ConvertedBladePositions"></param>
-        /// <param name="ConvertedRearAxlePositions"></param>
-        /// <param name="ConvertedTrackPositions"></param>
-        /// <param name="ConvertedWheelPositions"></param>
+        /// <param name="convertedBladePositions"></param>
+        /// <param name="convertedRearAxlePositions"></param>
+        /// <param name="convertedTrackPositions"></param>
+        /// <param name="convertedWheelPositions"></param>
         public void PopulateConvertedBladeAndRearTypePositions(List<UTMCoordPointPair> convertedBladePositions,
           List<UTMCoordPointPair> convertedRearAxlePositions, List<UTMCoordPointPair> convertedTrackPositions, List<UTMCoordPointPair> convertedWheelPositions)
         {

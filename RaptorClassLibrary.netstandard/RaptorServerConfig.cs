@@ -1,10 +1,7 @@
 ﻿using log4net;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace VSS.VisionLink.Raptor
 {
@@ -17,7 +14,7 @@ namespace VSS.VisionLink.Raptor
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private static RaptorServerConfig instance = null;
+        private static RaptorServerConfig instance;
 
         /// <summary>
         /// Constructs a static instance of the configuration information supplied to the process on the command line
@@ -29,7 +26,7 @@ namespace VSS.VisionLink.Raptor
             {
                 Log.Info("Creating RaptorServerConfig");
 
-                string[] args = Environment.CommandLine.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                string[] args = Environment.CommandLine.Split(new [] { " " }, StringSplitOptions.RemoveEmptyEntries);
 
                 Log.Info($"Number of process args provided: {args.Length}");
                 if (args.Length > 0)
@@ -39,7 +36,7 @@ namespace VSS.VisionLink.Raptor
 
                 instance = new RaptorServerConfig
                 {
-                    SpatialSubdivisionDescriptor = args.Where(x => x.Contains("SpatialDivision=")).Select(x => x.Split(new string[] { "=" }, StringSplitOptions.RemoveEmptyEntries)[1]).Select(x => Convert.ToUInt16(x)).FirstOrDefault()
+                    SpatialSubdivisionDescriptor = args.Where(x => x.Contains("SpatialDivision=")).Select(x => x.Split(new [] { "=" }, StringSplitOptions.RemoveEmptyEntries)[1]).Select(x => Convert.ToUInt16(x)).FirstOrDefault()
                 };
             }
 
@@ -55,7 +52,7 @@ namespace VSS.VisionLink.Raptor
         /// SpatialSubdivisionDescriptor records which division of the spatial data in the system this node instance is responsible
         /// for serving requests against.
         /// </summary>
-        public uint SpatialSubdivisionDescriptor { get; set; } = 0;
+        public uint SpatialSubdivisionDescriptor { get; set; }
 
         /// <summary>
         /// UseMutableCellPassSegments controls whether the subgrid segments containing cell passes use a mutable structure 

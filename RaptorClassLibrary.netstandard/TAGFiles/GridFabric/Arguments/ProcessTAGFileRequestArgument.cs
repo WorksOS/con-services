@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.GridFabric.Arguments
 {
     [Serializable]
     public class ProcessTAGFileRequestFileItem
     {
-        public string FileName { get; set; } = null;
+        public string FileName { get; set; } 
 
-        public byte[] TagFileContent { get; set; } = null;
+        public byte[] TagFileContent { get; set; } 
 
         /// <summary>
         /// Default no-arg constructor
@@ -38,7 +35,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.GridFabric.Arguments
         /// <summary>
         /// A dictionary mapping TAG file nams to the content of each file
         /// </summary>
-        public List<ProcessTAGFileRequestFileItem> TAGFiles { get; set; } = null;
+        public List<ProcessTAGFileRequestFileItem> TAGFiles { get; set; } 
 
         /// <summary>
         ///  Default no-arg constructor

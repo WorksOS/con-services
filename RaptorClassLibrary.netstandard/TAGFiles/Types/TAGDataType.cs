@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor.TAGFiles.Types
+﻿namespace VSS.VisionLink.Raptor.TAGFiles.Types
 {
     /// <summary>
     /// The types of TAGs (fields) supported in the TAG file. Field data types that may be found in the tag file

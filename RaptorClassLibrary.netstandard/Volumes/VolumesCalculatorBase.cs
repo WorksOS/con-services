@@ -1,10 +1,6 @@
 ﻿using log4net;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Designs;
 using VSS.VisionLink.Raptor.Designs.Storage;
 using VSS.VisionLink.Raptor.Executors.Tasks;
@@ -34,12 +30,12 @@ namespace VSS.VisionLink.Raptor.Volumes
         /// <summary>
         /// The Aggregator to use for calculation volumes statistics
         /// </summary>
-        public ISubGridRequestsAggregator Aggregator { get; set; } = null;
+        public ISubGridRequestsAggregator Aggregator { get; set; }
 
         /// <summary>
         /// The Sitemodel from which the volume is being calculated
         /// </summary>
-        public SiteModel SiteModel { get; set; } = null;
+        public SiteModel SiteModel { get; set; }
 
         /// <summary>
         /// The volume computation method to use when calculating volume information
@@ -73,27 +69,27 @@ namespace VSS.VisionLink.Raptor.Volumes
         /// meaingful for a filter to have a spatial extent, and to denote an
         /// 'as-at' time only.
         /// </summary>
-        public CombinedFilter BaseFilter { get; set; } = null;
-        public CombinedFilter TopFilter { get; set; } = null;
+        public CombinedFilter BaseFilter { get; set; }
+        public CombinedFilter TopFilter { get; set; }
 
         /// <summary>
         /// RefOriginal references a subset that may be used in the volumes calculations
         /// process. If set, it represents the original ground of the site
         /// </summary>
-        public Design RefOriginal { get; set; } = null;
+        public Design RefOriginal { get; set; }
 
         /// <summary>
         /// RefDesign references a subset that may be used in the volumes calculations
         /// process. If set, it takes the place of the 'top' filter.
         /// </summary>
-        public Design RefDesign { get; set; } = null;
+        public Design RefDesign { get; set; }
 
         /// <summary>
         /// ActiveDesign is the design surface being used as the comparison surface in the
         /// surface to production data volume calculations. It is assigned from the FRefOriginal
         /// and FRefDesign surfaces depending on the volumes reporting type and configuration.
         /// </summary>
-        public Design ActiveDesign { get; set; } = null;
+        public Design ActiveDesign { get; set; }
 
         /// <summary>
         /// FromSelectionType and ToSelectionType describe how we mix the two filters
@@ -124,14 +120,14 @@ namespace VSS.VisionLink.Raptor.Volumes
         /// UseEarliestData governs whether we want the earlist or latest data from filtered
         /// ranges of cell passes in the base filtered surface.
         /// </summary>
-        public bool UseEarliestData { get; set; } = false;
+        public bool UseEarliestData { get; set; }
 
         // FLiftBuildSettings : TICLiftBuildSettings;
 
-        SubGridTreeSubGridExistenceBitMask ProdDataExistenceMap = null; //: TProductionDataExistanceMap;      //FPDExistenceMap : TSubGridTreeBitMask;
-        SubGridTreeSubGridExistenceBitMask OverallExistenceMap = null;
+        private SubGridTreeSubGridExistenceBitMask ProdDataExistenceMap; //: TProductionDataExistanceMap;      //FPDExistenceMap : TSubGridTreeBitMask;
+        private SubGridTreeSubGridExistenceBitMask OverallExistenceMap;
 
-        SubGridTreeSubGridExistenceBitMask DesignSubgridOverlayMap = null;
+        private SubGridTreeSubGridExistenceBitMask DesignSubgridOverlayMap;
 
         public bool AbortedDueToTimeout { get; set; } = false;
 
@@ -166,14 +162,14 @@ namespace VSS.VisionLink.Raptor.Volumes
             // PipeLine.LiftBuildSettings := FLiftBuildSettings;
 
             // Construct and assign the filter set into the pipeline
-            FilterSet FilterSet = null;
+            FilterSet FilterSet;
 
             if (VolumeType == VolumeComputationType.Between2Filters)
-                FilterSet = new FilterSet(new CombinedFilter[] { BaseFilter, TopFilter });
+                FilterSet = new FilterSet(new [] { BaseFilter, TopFilter });
             else if (VolumeType == VolumeComputationType.BetweenDesignAndFilter)
-                FilterSet = new FilterSet(new CombinedFilter[] { TopFilter });
+                FilterSet = new FilterSet(new [] { TopFilter });
             else
-                FilterSet = new FilterSet(new CombinedFilter[] { BaseFilter });
+                FilterSet = new FilterSet(new [] { BaseFilter });
 
             PipeLine.FilterSet = FilterSet;
             PipeLine.GridDataType = GridDataType.Height;
@@ -184,8 +180,8 @@ namespace VSS.VisionLink.Raptor.Volumes
 
         public RequestErrorStatus ExecutePipeline()
         {
-            PipelinedSubGridTask PipelinedTask = null;
-            SubGridPipelineAggregative<SubGridsRequestArgument, SimpleVolumesResponse> PipeLine = null;
+            PipelinedSubGridTask PipelinedTask;
+            SubGridPipelineAggregative<SubGridsRequestArgument, SimpleVolumesResponse> PipeLine;
 
             RequestErrorStatus Result = RequestErrorStatus.Unknown;
 

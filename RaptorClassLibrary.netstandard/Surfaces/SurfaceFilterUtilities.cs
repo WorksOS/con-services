@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.SubGridTrees;
 
@@ -21,7 +18,7 @@ namespace VSS.VisionLink.Raptor.Surfaces
         /// assumed to be the same.
         /// </summary>
         /// <param name="siteModelID"></param>
-        /// <param name="LocalSurveyedSurfaces"></param>
+        /// <param name="SurveyedSurfaces"></param>
         /// <param name="Filter"></param>
         /// <param name="ComparisonList"></param>
         /// <param name="FilteredSurveyedSurfaces"></param>
@@ -51,7 +48,7 @@ namespace VSS.VisionLink.Raptor.Surfaces
                 return true;
             }
 
-            if (FilteredSurveyedSurfaces.Count() > 0)
+            if (FilteredSurveyedSurfaces.Count > 0)
             {
                 SubGridTreeSubGridExistenceBitMask SurveyedSurfaceExistanceMap = ExistenceMaps.ExistenceMaps.GetCombinedExistenceMap(siteModelID,
                 FilteredSurveyedSurfaces.Select(x => new Tuple<long, long>(ExistenceMaps.Consts.EXISTANCE_SURVEYED_SURFACE_DESCRIPTOR, x.ID)).ToArray());

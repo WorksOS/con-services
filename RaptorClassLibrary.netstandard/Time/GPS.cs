@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace VSS.VisionLink.Raptor.Time
 {
@@ -12,11 +8,12 @@ namespace VSS.VisionLink.Raptor.Time
     public static class GPS
     {
         private const int secsPerMin = 60;
-        private const int secsPerHour = 60 * mSecsPerMin;
+        private const int minsPerHour = 60;
+        private const int secsPerHour = minsPerHour * secsPerMin;
         private const int secsPerDay = 24 * secsPerHour;
-        private const int mSecsPerMin = 60 * 1000;
-        private const int mSecsPerHour = 60 * mSecsPerMin;
-        private const int mSecsPerDay = 24 * mSecsPerHour;
+        private const int mSecsPerMin = secsPerMin * 1000;
+        private const int mSecsPerHour = minsPerHour * mSecsPerMin;
+        private const int mSecsPerDay = secsPerDay * 1000;
         private const int mSecsPerWeek = 7 * mSecsPerDay;
 
         /// <summary>

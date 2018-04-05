@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.SiteModels;
@@ -33,10 +29,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
         //      FShutdownReadyEvent : TSimpleEvent;
 
         //      FPendingFilesToBeProcessed : TStringList;
-        int PendingFilesToBeProcessedCount = 0;
+        private int PendingFilesToBeProcessedCount;
 
-        int OutstandingCellPasses = 0;
-        long TotalCellPassesProcessed = 0;
+        private int OutstandingCellPasses;
+        private long TotalCellPassesProcessed;
 
         //      FNumberOfTasksBeingProcessed : Integer;
         //      FRemainingNumberOfTasksBeingProcessed : Integer;
@@ -133,9 +129,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 
         //        Function SystemMonitorString : String;
 
-        public void GetStatistics(ref int outstandingCellPasses,
-                              ref long totalCellPassesProcessed,
-                              ref int pendingFilesToBeProcessed)
+        public void GetStatistics(out int outstandingCellPasses,
+                                  out long totalCellPassesProcessed,
+                                  out int pendingFilesToBeProcessed)
         {
             outstandingCellPasses = OutstandingCellPasses;
             totalCellPassesProcessed = TotalCellPassesProcessed;

@@ -5,21 +5,18 @@ using Apache.Ignite.Core.Cache.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Queues
 {
     public class SegmentRetirementQueue
     {
-        private ICache<long, SegmentRetirementQueueItem> QueueCache = null;
+        private ICache<long, SegmentRetirementQueueItem> QueueCache;
 
         /// <summary>
         /// Name of the cache holding the segments in the data model that need to be retired due to being
         /// replaced by small cloven segments as a result of TAG file processing
         /// </summary>
-        private static string SEGMENT_RETIREMENT_QUEUE_CACHE_NAME = "SegmentRetirementQueue";
+        private const string SEGMENT_RETIREMENT_QUEUE_CACHE_NAME = "SegmentRetirementQueue";
 
         private void Add(DateTime date, string value)
         {

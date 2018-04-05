@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.Geometry;
+﻿using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
 using VSS.VisionLink.Raptor.GridFabric.Responses;
 
@@ -18,27 +12,27 @@ namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Responses
         /// <summary>
         /// Cut volume, expressed in cubic meters
         /// </summary>
-        public double? Cut = null;
+        public double? Cut;
 
         /// <summary>
         /// Fill volume, expressed in cubic meters
         /// </summary>
-        public double? Fill = null;
+        public double? Fill;
 
         /// <summary>
         /// Total area coverged by the volume computation, expressed in square meters
         /// </summary>
-        public double? TotalCoverageArea = null;
+        public double? TotalCoverageArea;
 
         /// <summary>
         /// Total area coverged by the volume computation that produced cut volume, expressed in square meters
         /// </summary>
-        public double? CutArea = null;
+        public double? CutArea;
 
         /// <summary>
         /// Total area coverged by the volume computation that produced fill volume, expressed in square meters
         /// </summary>
-        public double? FillArea = null;
+        public double? FillArea;
 
         /// <summary>
         /// The bounding extent of the area covered by the volume computation expressed in the project site calibration/grid coordinate system
@@ -53,7 +47,7 @@ namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Responses
         /// <summary>
         /// Default no-arg constructor
         /// </summary>
-        public SimpleVolumesResponse() : base()
+        public SimpleVolumesResponse() 
         {
         }
 

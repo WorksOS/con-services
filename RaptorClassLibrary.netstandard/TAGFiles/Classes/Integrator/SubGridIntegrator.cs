@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.SubGridTrees;
@@ -19,17 +14,17 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 {
     public class SubGridIntegrator
     {
-        ServerSubGridTree Source = null;
-        SiteModel SiteModel = null;
-        ServerSubGridTree Target = null;
+        private ServerSubGridTree Source;
+        private SiteModel SiteModel;
+        private ServerSubGridTree Target;
 
-        ISubGrid SourceSubGrid = null;
-        IServerLeafSubGrid TargetSubGrid = null;
+        private ISubGrid SourceSubGrid;
+        private IServerLeafSubGrid TargetSubGrid;
 
         //const Persistor : TSVOICDeferredPersistor;
-        Action<uint, uint> SubGridChangeNotifier = null;
+        private Action<uint, uint> SubGridChangeNotifier;
 
-        IStorageProxy StorageProxy = null;  //IStorageProxy[] SpatialStorageProxy = null;
+        private IStorageProxy StorageProxy;  //IStorageProxy[] SpatialStorageProxy = null;
 
         public SubGridIntegrator()
         {
