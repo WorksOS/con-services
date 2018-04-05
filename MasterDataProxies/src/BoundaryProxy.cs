@@ -42,5 +42,11 @@ namespace VSS.MasterData.Proxies
       ClearCacheItem<FilterData>(filterUid, userId);
     }
 
+    public async Task<GeofenceData> GetBoundaryForProject(string projectUid, string geofenceUid,
+      IDictionary<string, string> customHeaders = null)
+    {
+      return await GetItemWithRetry<GeofenceListData, GeofenceData>(GetBoundaries, g => g.GeofenceUID.ToString() == geofenceUid, projectUid, customHeaders);
+    }
+
   }
 }

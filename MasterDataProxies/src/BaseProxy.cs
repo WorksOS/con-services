@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Models;
 
 namespace VSS.MasterData.Proxies
 {
@@ -424,5 +426,51 @@ namespace VSS.MasterData.Proxies
       log.LogDebug($"Clearing item from cache: {cacheKey}");
       cache.Remove(cacheKey);
     }
+    /// <summary>
+    /// Gets an item from a list.
+    /// </summary>
+    /// <typeparam name="U">The type of item in the list</typeparam>
+    /// <param name="listUid">The uid for the get request, also the cache key</param>
+    /// <param name="getList">The methiod to call to get the list of items</param>
+    /// <param name="itemSelector">The predicate to select the required item from the list</param>
+    /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
+    /// <returns>The item</returns>
+    private async Task<U> GetItemFromList<U>(string listUid,
+      Func<string, IDictionary<string, string>, Task<List<U>>> getList,
+      Func<U, bool> itemSelector,
+      IDictionary<string, string> customHeaders = null)
+    {
+      var list = await getList(listUid, customHeaders);
+      return list.SingleOrDefault(itemSelector);
+
+    }
+    /// <summary>
+    /// Gets an item from a list. If the item is not in the list then clears the cache and does the get again
+    /// which will issue the http request to get the list again. This lets us pick up items which have been
+    /// added since the list was cached (default 15 mins).
+    /// </summary>
+    /// <typeparam name="T">The type of the result from the http request</typeparam>
+    /// <typeparam name="U">The type of item in the list</typeparam>
+    /// <param name="getList">The method to call to get the list of items.</param>
+    /// <param name="itemSelector">The predicate to select the required item from the list</param>
+    /// <param name="listUid">The uid for the get request, also the cache key</param>
+    /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
+    /// <returns></returns>
+    public async Task<U> GetItemWithRetry<T,U>(
+      Func<string, IDictionary<string, string>, Task<List<U>>> getList,
+      Func<U, bool> itemSelector,
+      string listUid,  IDictionary<string, string> customHeaders = null)
+    {
+      var item = await GetItemFromList(listUid, getList, itemSelector, customHeaders);
+      if (item == null)
+      {
+        ClearCacheItem<T>(listUid, null);
+        item = await GetItemFromList(listUid, getList, itemSelector, customHeaders);
+      }
+      return item;
+    }
   }
+
+ 
+
 }
