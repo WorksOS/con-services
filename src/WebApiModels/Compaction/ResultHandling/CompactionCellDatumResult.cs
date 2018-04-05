@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
     public static CompactionCellDatumResult CreateCompactionCellDatumResult(
       DisplayMode displayMode,
       short returnCode,
-      double value,
+      double? value,
       DateTime timestamp,
       double northing,
       double easting)

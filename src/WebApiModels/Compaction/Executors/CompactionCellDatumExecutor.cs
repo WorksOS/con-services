@@ -39,12 +39,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       return base.GetCellDatumData(request, out data);
     }
 
-    protected override CellDatumResponse ConvertCellDatumResult(TCellProductionData result/*, CellDatumRequest request*/)
+    protected override CellDatumResponse ConvertCellDatumResult(TCellProductionData result)
     {
       return CompactionCellDatumResult.CreateCompactionCellDatumResult(
         RaptorConverters.convertDisplayMode((TICDisplayMode)result.DisplayMode),
         result.ReturnCode,
-        result.Value,
+        result.ReturnCode == 0 ? result.Value : (double?)null,
         result.TimeStampUTC,
         _northing,
         _easting);

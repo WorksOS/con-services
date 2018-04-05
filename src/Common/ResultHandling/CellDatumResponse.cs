@@ -20,7 +20,7 @@ namespace VSS.Productivity3D.Common.ResultHandling
     /// <summary>
     /// The value from the request, scaled in accordance with the underlying attribute domain.
     /// </summary>
-    public double value { get; protected set; }
+    public double? value { get; protected set; }
 
     /// <summary>
     /// The date and time of the value.
@@ -33,7 +33,7 @@ namespace VSS.Productivity3D.Common.ResultHandling
     public static CellDatumResponse CreateCellDatumResponse(
       DisplayMode displayMode,
       short returnCode,
-      double value,
+      double? value,
       DateTime timestamp)
     {
       return new CellDatumResponse

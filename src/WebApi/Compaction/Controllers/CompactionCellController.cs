@@ -30,21 +30,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IASNodeClient raptorClient;
 
     /// <summary>
-    /// Logger for logging
-    /// </summary>
-    private readonly ILogger log;
-
-    /// <summary>
-    /// Logger factory for use by executor
-    /// </summary>
-    private readonly ILoggerFactory logger;
-
-    /// <summary>
-    /// The request factory
-    /// </summary>
-    private readonly IProductionDataRequestFactory requestFactory;
-
-    /// <summary>
     /// Constructor with a dependency injection.
     /// </summary>
     /// <param name="raptorClient">>Raptor client.</param>
@@ -56,15 +41,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="serviceExceptionHandler">Service exception handler.</param>
     /// <param name="filterServiceProxy">Filter service proxy.</param>
     /// <param name="requestFactory">The request factory.</param>
-    public CompactionCellController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, 
+    public CompactionCellController(IASNodeClient raptorClient, ILoggerFactory loggerFactory, IConfigurationStore configStore, 
       IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
       IServiceExceptionHandler serviceExceptionHandler, IFilterServiceProxy filterServiceProxy, IProductionDataRequestFactory requestFactory) 
-      : base(logger, logger.CreateLogger<CompactionCellController>(), serviceExceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
+      : base(loggerFactory, loggerFactory.CreateLogger<CompactionCellController>(), serviceExceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
-      this.logger = logger;
-      this.log = logger.CreateLogger<CompactionCellController>();
-      this.requestFactory = requestFactory;
     }
 
     // GET: api/Cells
@@ -84,7 +66,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] double lat,
       [FromQuery] double lon) 
     {
-      log.LogInformation("GetProductionDataCellsDatum: " + Request.QueryString);
+      Log.LogInformation("GetProductionDataCellsDatum: " + Request.QueryString);
 
       var projectId = ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
@@ -104,7 +86,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       request.Validate();
 
-      return RequestExecutorContainerFactory.Build<CompactionCellDatumExecutor>(logger, raptorClient).Process(request) as CompactionCellDatumResult;
+      return RequestExecutorContainerFactory.Build<CompactionCellDatumExecutor>(LoggerFactory, raptorClient).Process(request) as CompactionCellDatumResult;
     }
   }
 }
