@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
 
@@ -18,7 +13,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
         // CurrentSubgridSegment is a reference to the current subgrid segment that the iterator is currently
         // up to in the sub grid tree scan. By definition, this subgrid is locked for
         // the period that FCurrentSubgridSegment references it.
-        SubGridCellPassesDataSegment CurrentSubgridSegment { get; set; } = null;
+        private SubGridCellPassesDataSegment CurrentSubgridSegment { get; set; } = null;
 
         // IterationState records the progress of the iteration by recording the path through
         // the subgrid tree which marks the progress of the iteration
@@ -100,7 +95,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
                         continue;
                     }
 
-                    ///* TODO There is no caching layer yet. This will function as if ReturnCachedItemsOnly was set to true for now 
+                    //* TODO There is no caching layer yet. This will function as if ReturnCachedItemsOnly was set to true for now 
                     if (!Result.Dirty && !ReturnCachedItemsOnly && 
                         ((RetrieveAllPasses && !Result.HasAllPasses) || (RetrieveLatestData && !Result.HasLatestData)))
                       {
@@ -191,13 +186,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
 
 //        public SiteModel SiteModelReference { get; set; } = null;
 
-        public SubGridCellPassesDataSegment CurrentSubGridSegment { get; set; } = null;
+        public SubGridCellPassesDataSegment CurrentSubGridSegment { get; set; }
         //        property StorageClasses : TICSubGridCellStorageClasses read FStorageClasses write FStorageClasses;
 
         /// <summary>
         /// ReturnDirtyOnly allows the iterator to only return segments in the subgrid that are dirty
         /// </summary>
-        public bool ReturnDirtyOnly { get; set; } = false;
+        public bool ReturnDirtyOnly { get; set; }
 
         public IterationDirection IterationDirection { get { return IterationState.IterationDirection; } set { IterationState.IterationDirection = value; } }
 
@@ -214,7 +209,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
         {
             get
             {
-                return (ServerSubGridTreeLeaf)IterationState.SubGrid;
+                return IterationState.SubGrid;
             }
             set
             {
@@ -236,9 +231,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
 
         public SubGridDirectory Directory { get { return IterationState.Directory; } set { IterationState.Directory = value; } }
 
-        public bool MarkReturnedSegmentsAsTouched { get; set; } = false;
+        public bool MarkReturnedSegmentsAsTouched { get; set; }
 
-        public int NumberOfSegmentsScanned { get; set; } = 0;
+        public int NumberOfSegmentsScanned { get; set; }
 
         public SubGridSegmentIterator(ServerSubGridTreeLeaf subgrid)
         {

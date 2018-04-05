@@ -1,26 +1,23 @@
 ﻿using Apache.Ignite.Core;
+using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
+using Apache.Ignite.Core.Communication.Tcp;
+using Apache.Ignite.Core.Configuration;
+using Apache.Ignite.Core.Discovery.Tcp;
+using Apache.Ignite.Core.Discovery.Tcp.Static;
+using Apache.Ignite.Log4Net;
+using log4net;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Storage;
+using System.Reflection;
 using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
-using Apache.Ignite.Log4Net;
-using log4net;
-using System.Reflection;
-using VSS.VisionLink.Raptor.Servers.Client;
-using Apache.Ignite.Core.Discovery.Tcp;
-using Apache.Ignite.Core.Configuration;
 using VSS.VisionLink.Raptor.GridFabric.Queues;
-using Apache.Ignite.Core.Binary;
-using Apache.Ignite.Core.Discovery.Tcp.Static;
-using Apache.Ignite.Core.Communication.Tcp;
+using VSS.VisionLink.Raptor.Servers.Client;
+using VSS.VisionLink.Raptor.Storage;
 
 namespace VSS.VisionLink.Raptor.Servers.Compute
 {
@@ -169,7 +166,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             }
         }
 
-        public virtual void StartRaptorGridCacheNode()
+        public void StartRaptorGridCacheNode()
         {
             Log.InfoFormat("Creating new Ignite node");
 
@@ -194,11 +191,9 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             // Wait until the grid is active
             ActivatePersistentGridServer.Instance().WaitUntilGridActive(RaptorGrids.RaptorImmutableGridName());
 
-            CacheConfiguration CacheCfg = null;
-
             // Add the immutable Spatial & NonSpatial caches
 
-            CacheCfg = new CacheConfiguration();
+            CacheConfiguration CacheCfg = new CacheConfiguration();
             ConfigureNonSpatialImmutableCache(CacheCfg);
             NonSpatialImmutableCache = InstantiateRaptorCacheReference(CacheCfg);
 
@@ -211,7 +206,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
         /// Constructor for the Raptor cache compute server node. Responsible for starting all Ignite services and creating the grid
         /// and cache instance in preparation for client access by business logic running on the node.
         /// </summary>
-        public RaptorImmutableCacheComputeServer() : base()
+        public RaptorImmutableCacheComputeServer()
         {
             if (immutableRaptorGrid == null)
             {

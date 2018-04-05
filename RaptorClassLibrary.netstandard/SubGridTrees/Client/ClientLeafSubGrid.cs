@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.Types;
-using VSS.VisionLink.Raptor.Filters;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Client
 {
@@ -22,9 +18,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
     /// retrieved from the server.
     /// </summary>
     [Serializable]
-    public class ClientLeafSubGrid : SubGrid, ISubGrid, ILeafSubGrid, IClientLeafSubGrid
+    public class ClientLeafSubGrid : SubGrid, IClientLeafSubGrid
     {
-
         /// <summary>
         /// Enumeration indicating type of grid data held in this client leaf sub grid
         /// </summary>
@@ -130,6 +125,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// </summary>
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>
+        /// <param name="Context"></param>
         public virtual void AssignFilteredValue(byte CellX, byte CellY, FilteredValueAssignmentContext Context)
         {
             Debug.Assert(false, "{0}.AssignFilteredValue may not be called directly. No need to assign value for entire cell pass", MethodBase.GetCurrentMethod().DeclaringType.Name);
@@ -237,7 +233,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// <param name="title"></param>
         public virtual void DumpToLog(string title)
         {
-            throw new NotImplementedException("TICSubGridTreeLeafSubGridBase.DumpToLog not implemented in " + this.GetType().Name);
+            throw new NotImplementedException("TICSubGridTreeLeafSubGridBase.DumpToLog not implemented in " + GetType().Name);
         }
 
 
@@ -294,6 +290,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// Write the contents of the Items array using the supplied writer
         /// </summary>
         /// <param name="writer"></param>
+        /// <param name="buffer"></param>
         public override void Write(BinaryWriter writer, byte [] buffer)
         {
             base.Write(writer, buffer);
@@ -310,6 +307,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// Fill the items array by reading the binary representation using the provided reader. 
         /// </summary>
         /// <param name="reader"></param>
+        /// <param name="buffer"></param>
         public override void Read(BinaryReader reader, byte [] buffer)
         {
             base.Read(reader, buffer);

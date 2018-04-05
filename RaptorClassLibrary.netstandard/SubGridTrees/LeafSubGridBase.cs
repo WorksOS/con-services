@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees
@@ -14,12 +9,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// LatestCellPassesOutOfDate notes whether there is 'latest' call pass information that has been changed and 
         /// required persistence.
         /// </summary>
-        protected bool latestCellPassesOutOfDate = false;
+        protected bool latestCellPassesOutOfDate;
         public bool LatestCellPassesOutOfDate { get { return latestCellPassesOutOfDate; } }
 
         public override void SetDirty(bool value)
         {
-            Debug.Assert(value = true, "Can only mark subgrid as dirty via public interface (not unset it!)");
+            Debug.Assert(value, "Can only mark subgrid as dirty via public interface (not unset it!)");
 
             base.SetDirty(value);
 

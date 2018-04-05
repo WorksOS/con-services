@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees
 {
     /// <summary>
-    /// GenericLeafSubGrid<T> implements a leaf subgrid where all the cells in the leaf are generic type T.
+    /// GenericLeafSubGrid in T implements a leaf subgrid where all the cells in the leaf are generic type T.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class GenericLeafSubGrid<T> : SubGrid, ILeafSubGrid
@@ -70,6 +66,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// Override to implement if needed.
         /// </summary>
         /// <param name="writer"></param>
+        /// <param name="buffer"></param>
         public override void Write(BinaryWriter writer, byte [] buffer)
         {
             throw new Exception("Generic BinaryWriter based implementation not provided. Override to implement if needed.");
@@ -81,6 +78,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// Override to implement if needed.
         /// </summary>
         /// <param name="reader"></param>
+        /// <param name="buffer"></param>
         public override void Read(BinaryReader reader, byte[] buffer)
         {
             throw new Exception ("Generic BinaryReader based implementation not provided. Override to implement if needed.");

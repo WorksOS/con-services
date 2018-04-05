@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+﻿using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Types
 {
@@ -20,7 +15,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Types
         /// </summary>
         public byte CellX { get; set; }
 
-        /// <summaryistmp
+        /// <summary>
         /// Y ordinate of the in-subgrid address of the cell
         /// </summary>
         public byte CellY { get; set; }

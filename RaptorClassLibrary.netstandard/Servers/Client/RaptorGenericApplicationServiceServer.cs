@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace VSS.VisionLink.Raptor.Servers.Client
 {
@@ -14,18 +10,18 @@ namespace VSS.VisionLink.Raptor.Servers.Client
         /// <summary>
         /// Static intance of the RaptorApplicationServicesServer
         /// </summary>
-        private static RaptorGenericApplicationServiceServer _instance = null;
+        private static RaptorGenericApplicationServiceServer _instance;
 
         /// <summary>
         /// Obtains, or creates, the static singleton intances for the RaptorApplicationServicesServer
         /// </summary>
         /// <returns></returns>
-        public static RaptorGenericApplicationServiceServer  Instance() => (_instance == null) ? _instance : (_instance = new RaptorGenericApplicationServiceServer());
+        public static RaptorGenericApplicationServiceServer  Instance() => _instance == null ? _instance : (_instance = new RaptorGenericApplicationServiceServer());
 
         /// <summary>
         /// Default no-arg constructor
         /// </summary>
-        public RaptorGenericApplicationServiceServer() : base()
+        public RaptorGenericApplicationServiceServer()
         {
         }
 

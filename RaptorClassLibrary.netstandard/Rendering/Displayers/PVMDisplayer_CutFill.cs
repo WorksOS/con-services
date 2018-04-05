@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 using VSS.VisionLink.Raptor.Cells;
-using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
@@ -16,13 +10,13 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
     /// </summary>
     public class PVMDisplayer_CutFill : PVMDisplayerBase
     {
-        private ClientHeightLeafSubGrid SubGrid = null;
+        private ClientHeightLeafSubGrid SubGrid;
 
         protected override bool DoRenderSubGrid(ISubGrid subGrid)
         {
             SubGrid = (subGrid as ClientHeightLeafSubGrid);
 
-            return SubGrid == null ? false : base.DoRenderSubGrid(SubGrid);
+            return SubGrid != null && base.DoRenderSubGrid(SubGrid);
         }
 
         protected override bool SupportsCellStripRendering() => true;

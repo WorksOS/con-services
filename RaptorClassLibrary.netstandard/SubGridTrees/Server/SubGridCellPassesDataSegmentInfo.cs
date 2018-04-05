@@ -1,26 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Common;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 {
     public class SubGridCellPassesDataSegmentInfo
     {
-        public SubGridCellPassesDataSegment Segment { get; set; } = null;
+        public SubGridCellPassesDataSegment Segment { get; set; }
         public DateTime StartTime { get; set; } = DateTime.MinValue;
         public DateTime EndTime { get; set; } = DateTime.MaxValue;
 
-        public uint FSGranuleIndex { get; set; } = 0;
-        public uint FSGranuleCount { get; set; } = 0;
+        public uint FSGranuleIndex { get; set; }
+        public uint FSGranuleCount { get; set; }
 
         public double MinElevation { get; set; } = Consts.NullDouble;
         public double MaxElevation { get; set; } = Consts.NullDouble;
 
-        public bool ExistsInPersistentStore { get; set; } = false;
+        public bool ExistsInPersistentStore { get; set; }
 
         public DateTime MidTime => DateTime.FromOADate((StartTime.ToOADate() + EndTime.ToOADate()) / 2);
 
@@ -33,7 +29,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                                                 SubGridCellPassesDataSegment segment
                          //const AFSGranuleIndex : TICFSGranuleIndex;
                          //const AFSGranuleCount : Longword
-                         ) : base()
+                         )
         {
             StartTime = startTime;
             EndTime = endTime;

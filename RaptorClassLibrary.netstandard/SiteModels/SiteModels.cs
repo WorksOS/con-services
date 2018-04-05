@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
+﻿using System.Collections.Generic;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.Types;
@@ -16,8 +11,8 @@ namespace VSS.VisionLink.Raptor.SiteModels
     /// </summary>
     public class SiteModels : Dictionary<long, SiteModel>
     {
-        private static IStorageProxy StorageProxy = null;
-        private static SiteModels[] instance = new SiteModels[2] {null, null};
+        private static IStorageProxy StorageProxy;
+        private static SiteModels[] instance = {null, null};
 
         private SiteModels(IStorageProxy storageProxy)
         {
@@ -38,7 +33,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
 
         public SiteModel GetSiteModel(long ID, bool CreateIfNotExist)
         {
-            SiteModel result = null;
+            SiteModel result;
 
             lock (this)
             {

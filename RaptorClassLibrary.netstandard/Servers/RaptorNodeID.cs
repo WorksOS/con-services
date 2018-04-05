@@ -1,9 +1,4 @@
 ﻿using Apache.Ignite.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Storage;
 
@@ -17,7 +12,7 @@ namespace VSS.VisionLink.Raptor.Servers
         /// <summary>
         /// Local storage for the 
         /// </summary>
-        private static string[] raptorNodeIDs= new string[2] {"", ""}; 
+        private static string[] raptorNodeIDs = {"", ""}; 
 
         public static string ThisNodeID(StorageMutability mutability)
         {

@@ -10,11 +10,8 @@ using Apache.Ignite.Log4Net;
 using log4net;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.GridFabric.Queues;
@@ -34,7 +31,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
         /// Constructor that creates a new server instance with a single role
         /// </summary>
         /// <param name="role"></param>
-        public RaptorImmutableClientServer(string role) : this(new string[] { role })
+        public RaptorImmutableClientServer(string role) : this(new [] { role })
         {
         }
 
@@ -42,7 +39,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
         /// Constructor that creates a new server instance with a set of roles
         /// </summary>
         /// <param name="roles"></param>
-        public RaptorImmutableClientServer(string [] roles) : base()
+        public RaptorImmutableClientServer(string [] roles)
         {
             if (immutableRaptorGrid == null)
             {

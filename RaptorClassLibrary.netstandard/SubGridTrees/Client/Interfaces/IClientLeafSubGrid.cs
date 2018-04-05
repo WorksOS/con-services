@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Filters;
+﻿using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Interfaces
@@ -11,7 +6,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Interfaces
     /// <summary>
     /// Interface for ClientLeafSubgrid derivations based on ClientLeafSubGrid
     /// </summary>
-    public interface IClientLeafSubGrid : ISubGrid, ILeafSubGrid
+    public interface IClientLeafSubGrid : ILeafSubGrid
     {
         double CellSize { set; get; }
 

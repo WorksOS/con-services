@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
-using VSS.VisionLink.Raptor.GridFabric.Requests;
 using VSS.VisionLink.Raptor.Pipelines.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
@@ -24,17 +18,17 @@ namespace VSS.VisionLink.Raptor.Pipelines
         /// <summary>
         /// The pipeline that has initiated this request analysis
         /// </summary>
-        private ISubGridPipelineBase Owner = null;
+        private ISubGridPipelineBase Owner;
 
         /// <summary>
         /// The resulting bitmap subgrid tree mask of all subgrids containing production data that need to be requested
         /// </summary>
-        public SubGridTreeSubGridExistenceBitMask ProdDataMask = null;
+        public SubGridTreeSubGridExistenceBitMask ProdDataMask;
 
         /// <summary>
         /// The resulting bitmap subgrid tree mask of all subgrids containing production data that need to be requested
         /// </summary>
-        public SubGridTreeSubGridExistenceBitMask SurveydSurfaceOnlyMask = null;
+        public SubGridTreeSubGridExistenceBitMask SurveydSurfaceOnlyMask;
 
         /// <summary>
         /// A cell coordinate level (rather than world coordinate) boundary that acts as an optional final override of the spatial area
@@ -44,14 +38,14 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
         public BoundingWorldExtent3D WorldExtents = BoundingWorldExtent3D.Inverted();
 
-        public long TotalNumberOfSubgridsAnalysed = 0;
-        public long TotalNumberOfCandidateSubgrids = 0;
-        protected bool ScanningFullWorldExtent = false;
+        public long TotalNumberOfSubgridsAnalysed;
+        public long TotalNumberOfCandidateSubgrids;
+        protected bool ScanningFullWorldExtent;
 
         /// <summary>
         /// Default no-arg constructor
         /// </summary>
-        public RequestAnalyser() : base()
+        public RequestAnalyser() 
         {
         }
 
@@ -117,7 +111,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
             else
             {
                 Owner.OverallExistenceMap.ScanSubGrids(FilterRestriction, SubGridEvent);
-            };
+            }
         }
 
         /// <summary>
@@ -269,7 +263,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
                             //                                                        Owner.ProdDataExistenceMap.GetCell(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J),
                             //                                                        Owner.IncludeSurveyedSurfaceInformation);
 
-                            /// Set the ProdDataMask for the production data
+                            // Set the ProdDataMask for the production data
                             if (ProdDataSubGrid != null && ProdDataSubGrid.Bits.BitSet(I, J))
                             {
                                 ProdDataMask.SetCell(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J, true);

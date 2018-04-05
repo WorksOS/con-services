@@ -1,13 +1,4 @@
-﻿using Apache.Ignite.Core;
-using Apache.Ignite.Core.Resource;
-using log4net;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
+﻿using System;
 
 namespace VSS.VisionLink.Raptor.GridFabric.Requests
 {
@@ -20,13 +11,14 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         /// <summary>
         /// Default no-arg constructor
         /// </summary>
-        public BaseRaptorRequest() : base()
+        public BaseRaptorRequest()
         {
         }
 
         /// <summary>
         /// Constructor accepting a role for the request that may identify a cluster group of nodes in the grid
         /// </summary>
+        /// <param name="gridName"></param>
         /// <param name="role"></param>
         public BaseRaptorRequest(string gridName, string role) : base(gridName, role)
         {

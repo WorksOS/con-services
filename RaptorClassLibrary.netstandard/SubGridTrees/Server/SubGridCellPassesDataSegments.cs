@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Interfaces;
+﻿using System.Collections.Generic;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server
@@ -14,13 +9,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public void Clear()
         {
-            if (Items != null)
-            {
-                Items.Clear();
-            }
+            Items?.Clear();
         }
 
-        public int Count => Items != null ? Items.Count() : 0;
+        public int Count => Items?.Count ?? 0;
 
         public SubGridCellPassesDataSegment this[int index] { get { return Items[index]; } }
 
@@ -64,7 +56,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         {
             //int J, Counter;
 
-            SubGridCellPassesDataSegment Result = null;
+            SubGridCellPassesDataSegment Result;
 
             if (segmentInfo == null)
             {

@@ -1,13 +1,8 @@
 ﻿using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using log4net;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
@@ -21,12 +16,12 @@ namespace VSS.VisionLink.Raptor.Storage
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        protected IIgnite ignite = null;
+        protected IIgnite ignite;
 
-        protected ICache<string, byte[]> nonSpatialCache = null;
+        protected ICache<string, byte[]> nonSpatialCache;
         public ICache<string, byte[]> NonSpatialCache => nonSpatialCache;
 
-        protected ICache<SubGridSpatialAffinityKey, byte[]> spatialCache = null;
+        protected ICache<SubGridSpatialAffinityKey, byte[]> spatialCache;
         public ICache<SubGridSpatialAffinityKey, byte[]> SpatialCache => spatialCache;
 
         /// <summary>
@@ -89,7 +84,7 @@ namespace VSS.VisionLink.Raptor.Storage
                 return null;
             }
 
-            MemoryStream immutableStream = null;
+            MemoryStream immutableStream;
             using (MemoryStream MS = new MemoryStream(mutableCache.Get(cacheKey)))
             {
                 MemoryStream mutableStream = MemoryStreamCompression.Decompress(MS);
@@ -169,7 +164,7 @@ namespace VSS.VisionLink.Raptor.Storage
                 return null;
             }
 
-            MemoryStream immutableStream = null;
+            MemoryStream immutableStream;
             using (MemoryStream MS = new MemoryStream(mutableCache.Get(cacheKey)), mutableStream = MemoryStreamCompression.Decompress(MS))
             {
                 immutableStream = PerformSpatialImmutabilityConversion(mutableStream, immutableCache, cacheKey, streamType);

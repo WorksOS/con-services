@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.SubGridTrees.Helpers;
 
@@ -65,7 +62,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// Initialise the internal state of a new structure. This must be called prior to use of the instance.
         /// If filled is true then all bits in the bits array will be set to '1'
         /// </summary>
-        /// <param name="filled"></param>
+        /// <param name="options"></param>
         public SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions options)
         {
             Bits = new uint[SubgridBitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear.Length];
@@ -454,6 +451,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// Writes the contents of the mask in a binary form using the given binary write
         /// </summary>
         /// <param name="writer"></param>
+        /// <param name="buffer"></param>
         public void Write(BinaryWriter writer, byte [] buffer)
         {
             switch (SumBitRows())
@@ -483,6 +481,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// Reads the contents of the mask from a binary form using the given binary reader
         /// </summary>
         /// <param name="reader"></param>
+        /// <param name="buffer"></param>
         public void Read(BinaryReader reader, byte[] buffer)
         {
             switch (reader.ReadByte())

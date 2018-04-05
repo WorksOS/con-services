@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Events.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
 using VSS.VisionLink.Raptor.Types;
 
@@ -31,7 +27,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             SubGridCellLatestPassDataWrapper_NonStatic oldItem = LatestPasses as SubGridCellLatestPassDataWrapper_NonStatic;
 
             LatestPasses = SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(false, true);
-            LatestPasses.Assign(oldItem as ISubGridCellLatestPassDataWrapper);
+            LatestPasses.Assign(oldItem);
 
             (LatestPasses as SubGridCellLatestPassDataWrapper_StaticCompressed).PerformEncodingForInternalCache(oldItem.PassData);
 
@@ -164,8 +160,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// <returns></returns>
         public static bool ConvertEventListToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream)
         {
-            /// Note: Some refactoring needs to be done with the read/write serialisation/deserialisation using BinaryFormatters
-            /// so that an events list can be read/written without prior knowledge of the type of the event list that is being read.
+            // Note: Some refactoring needs to be done with the read/write serialisation/deserialisation using BinaryFormatters
+            // so that an events list can be read/written without prior knowledge of the type of the event list that is being read.
             immutableStream = mutableStream;
 
             return true;

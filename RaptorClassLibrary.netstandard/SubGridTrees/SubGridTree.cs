@@ -213,9 +213,9 @@ namespace VSS.VisionLink.Raptor
         /// <param name="subGridfactory"></param>
         public SubGridTree(byte numLevels,
                            double cellSize,
-                           ISubGridFactory subGridfactory) : base()
+                           ISubGridFactory subGridfactory)
         {
-            if (numLevels < 1 || numLevels > SubGridTree.SubGridTreeLevels)
+            if (numLevels < 1 || numLevels > SubGridTreeLevels)
             {
                 // Invalid number of tree levels
                 throw new ArgumentException(string.Format("Number of levels must be between 1 and {0}", SubGridTreeLevels), "numLevels");

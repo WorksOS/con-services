@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
@@ -20,13 +16,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// <summary>
         /// CallPasses is a single collection of cell passes stored within this subgrid cell segment.
         /// </summary>
-        private CellPass[] CellPasses = null;
+        private CellPass[] CellPasses;
 
         /// <summary>
         /// PassData is the collection of cells as present in this segment. These cells do not store their cell passes directly,
         /// instead they store references into the CellPasses array that stores all cell passes in the segment.
         /// </summary>
-        public Cell_Static[,] PassData = null;
+        public Cell_Static[,] PassData;
 
         /// <summary>
         /// Default no-arg constructor that does not instantiate any state
@@ -38,7 +34,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// <summary>
         /// Constructor that accepts a set of cell passes and creates the internal structures to hold them
         /// </summary>
-        /// <param name="cellPassCount"></param>
+        /// <param name="cellPasses"></param>
         public void SetState(CellPass[,][] cellPasses)
         {
             // Ensure eny existing state is erased
@@ -77,7 +73,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// <summary>
         /// Constructor that accepts a set of non static cells and creates the internal structures to hold them
         /// </summary>
-        /// <param name="cellPassCount"></param>
+        /// <param name="cells"></param>
         public SubGridCellSegmentPassesDataWrapper_Static(Cell_NonStatic[,] cells)
         {
             // Determine the total number of passes that need to be stored and create the array to hold them
@@ -180,7 +176,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                     Read(i, j, reader);
 
                     SegmentPassCount += PassCount_;
-                };
+                }
             });
         }
 
@@ -209,7 +205,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// </summary>
         /// <param name="TotalPasses"></param>
         /// <param name="MaxPassCount"></param>
-        private void CalculateTotalPasses(ref uint TotalPasses, ref uint MaxPassCount)
+        private void CalculateTotalPasses(out uint TotalPasses, out uint MaxPassCount)
         {
             uint _TotalPasses = 0;
             uint _MaxPassCount = 0;
@@ -232,10 +228,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public void Write(BinaryWriter writer)
         {
-            uint TotalPasses = 0;
-            uint MaxPassCount = 0;
-
-            CalculateTotalPasses(ref TotalPasses, ref MaxPassCount);
+            CalculateTotalPasses(out uint TotalPasses, out uint MaxPassCount);
 
             writer.Write(TotalPasses);
             writer.Write(MaxPassCount);

@@ -1,5 +1,4 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces

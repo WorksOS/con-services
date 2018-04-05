@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees
@@ -58,7 +57,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <returns></returns>
         public static bool Write(ISubGridTree tree, string header, int version, BinaryWriter writer)
         {
-            bool Result = false;
+            bool Result;
 
             try
             {

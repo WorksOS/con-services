@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Client
 {
     [Serializable]
-    public class GenericClientLeafSubGrid<T> : ClientLeafSubGrid, ISubGrid, ILeafSubGrid, IClientLeafSubGrid
+    public class GenericClientLeafSubGrid<T> : ClientLeafSubGrid
     {
-        public T[,] Cells = null;
+        public T[,] Cells;
 
         /// <summary>
         /// Main constructor. Creates the local generic Items[,] array and delegates to base(...)
@@ -21,6 +17,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// <param name="owner"></param>
         /// <param name="parent"></param>
         /// <param name="level"></param>
+        /// <param name="cellSize"></param>
+        /// <param name="indexOriginOffset"></param>
         public GenericClientLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
         {
             Clear();

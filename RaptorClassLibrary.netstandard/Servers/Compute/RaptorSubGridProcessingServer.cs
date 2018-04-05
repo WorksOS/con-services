@@ -1,17 +1,9 @@
 ﻿using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
-using Apache.Ignite.Core.Discovery.Tcp;
 using log4net;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Affinity;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
 
 namespace VSS.VisionLink.Raptor.Servers.Compute
 {
@@ -77,7 +69,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
         /// <summary>
         /// Default constructor
         /// </summary>
-        public RaptorSubGridProcessingServer() : base()
+        public RaptorSubGridProcessingServer()
         {
         }
 

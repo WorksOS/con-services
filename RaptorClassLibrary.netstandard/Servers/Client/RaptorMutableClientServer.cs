@@ -2,7 +2,6 @@
 using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
-using Apache.Ignite.Core.Cache.Eviction;
 using Apache.Ignite.Core.Communication.Tcp;
 using Apache.Ignite.Core.Configuration;
 using Apache.Ignite.Core.Discovery.Tcp;
@@ -11,11 +10,8 @@ using Apache.Ignite.Log4Net;
 using log4net;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.GridFabric.Queues;
@@ -35,7 +31,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
         /// Constructor that creates a new server instance with a single role
         /// </summary>
         /// <param name="role"></param>
-        public RaptorMutableClientServer(string role) : this(new string[] { role })
+        public RaptorMutableClientServer(string role) : this(new [] { role })
         {
         }
 
@@ -43,7 +39,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
         /// Constructor that creates a new server instance with a set of roles
         /// </summary>
         /// <param name="roles"></param>
-        public RaptorMutableClientServer(string [] roles) : base()
+        public RaptorMutableClientServer(string [] roles)
         {
             if (mutableRaptorGrid == null)
             {

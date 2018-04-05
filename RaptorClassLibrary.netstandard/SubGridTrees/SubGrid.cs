@@ -108,7 +108,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <param name="owner"></param>
         /// <param name="parent"></param>
         /// <param name="level"></param>
-        public SubGrid(ISubGridTree owner, ISubGrid parent, byte level) : base()
+        public SubGrid(ISubGridTree owner, ISubGrid parent, byte level)
         {
             // Assert there is an owning tree (things don't work well without one!)
             if (owner == null)

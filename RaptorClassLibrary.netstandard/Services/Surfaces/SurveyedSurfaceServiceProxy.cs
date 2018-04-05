@@ -1,16 +1,12 @@
 ﻿using Apache.Ignite.Core;
-using Apache.Ignite.Core.Cluster;
-using Apache.Ignite.Core.Resource;
 using Apache.Ignite.Core.Services;
 using System;
-using System.Collections.Generic;
 using VSS.VisionLink.Raptor.Designs;
 using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.GridFabric.NodeFilters;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
-using VSS.VisionLink.Raptor.Services.Surfaces;
-using VSS.VisionLink.Raptor.Surfaces;
+using VSS.VisionLink.Raptor.GridFabric.NodeFilters;
 using VSS.VisionLink.Raptor.Storage;
+using VSS.VisionLink.Raptor.Surfaces;
 
 namespace VSS.VisionLink.Raptor.Services.Surfaces
 {
@@ -27,12 +23,12 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <summary>
         /// Services interface for the clustergroup projection
         /// </summary>
-        private IServices services = null;
+        private IServices services;
 
         /// <summary>
         /// The proxy to the deploy service
         /// </summary>
-        private ISurveyedSurfaceService proxy = null;
+        private ISurveyedSurfaceService proxy;
 
         /// <summary>
         /// No-arg constructor that instantiates the Ignitre instance, cluster, service and proxy members
@@ -68,6 +64,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="SiteModelID"></param>
         /// <param name="designDescriptor"></param>
         /// <param name="asAtDate"></param>
+        /// <param name="extents"></param>
         public void Invoke_Add(long SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents)
         {
             proxy.Add(SiteModelID, designDescriptor, asAtDate.Date, extents);

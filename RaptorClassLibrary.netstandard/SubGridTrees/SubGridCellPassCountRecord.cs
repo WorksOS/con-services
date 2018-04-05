@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server
+﻿namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 {
     /// <summary>
     /// Represents the number of passes and the location of the first cell pass for a cell within the set of cell passes

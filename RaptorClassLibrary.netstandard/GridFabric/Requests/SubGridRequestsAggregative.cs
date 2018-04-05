@@ -1,12 +1,8 @@
 ﻿using Apache.Ignite.Core.Compute;
 using log4net;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
 using VSS.VisionLink.Raptor.GridFabric.Responses;
@@ -26,7 +22,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         /// <summary>
         /// Default no-arg constructor that delegates construction to the base class
         /// </summary>
-        public SubGridRequestsAggregative() : base()
+        public SubGridRequestsAggregative()
         {
         }
 
@@ -68,7 +64,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
                                Task.PipeLine.DataModelID, Task.RaptorNodeID, Task.GridDataType, sw.ElapsedMilliseconds);
             }
 
-            /// Advise the pipeline of all the subgrids that were examined in the aggregative processing
+            // Advise the pipeline of all the subgrids that were examined in the aggregative processing
             Task.PipeLine.SubgridsProcessed(taskResult.NumSubgridsExamined);
 
             // Notify the pipline that all processing has been completed for it

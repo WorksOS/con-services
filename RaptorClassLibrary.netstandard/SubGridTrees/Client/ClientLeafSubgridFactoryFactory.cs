@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+﻿using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Client
@@ -17,7 +12,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// <summary>
         /// Local instance variable for the singleton factory isntance that is provided to all callers
         /// </summary>
-        private static IClientLeafSubgridFactory instance = null;
+        private static IClientLeafSubgridFactory instance;
 
         /// <summary>
         /// Gets the subgrid client factory to use. Replace this with an implementation that 

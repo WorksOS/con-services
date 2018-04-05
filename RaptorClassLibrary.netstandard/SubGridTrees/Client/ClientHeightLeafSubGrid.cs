@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using log4net;
+using System;
 using System.IO;
-using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.Filters;
-using log4net;
 using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
+using VSS.VisionLink.Raptor.Common;
+using VSS.VisionLink.Raptor.Filters;
+using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Client
-{   
+{
     /// <summary>
     /// The content of each cell in a height client leaf sub grid. Each cell stores an elevation only.
     /// </summary>
@@ -194,6 +190,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// Override to implement if needed.
         /// </summary>
         /// <param name="writer"></param>
+        /// <param name="buffer"></param>
         public override void Write(BinaryWriter writer, byte [] buffer)
         {
             base.Write(writer, buffer);
@@ -211,6 +208,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// Override to implement if needed.
         /// </summary>
         /// <param name="reader"></param>
+        /// <param name="buffer"></param>
         public override void Read(BinaryReader reader, byte[] buffer)
         {
             base.Read(reader, buffer);

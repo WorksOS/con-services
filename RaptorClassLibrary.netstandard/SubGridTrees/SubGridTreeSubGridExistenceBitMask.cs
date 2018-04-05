@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor.SubGridTrees
+﻿namespace VSS.VisionLink.Raptor.SubGridTrees
 {
     /// <summary>
     /// A specialised descendent of SubGridTreeBitMask tailored to tracking subgrid existance within a larger subgrid tree.
@@ -22,7 +16,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <summary>
         /// Default no-arg constructor that creates a subgrid tree one level shallower than the default, and with a correspondingly larger cell size
         /// </summary>
-        public SubGridTreeSubGridExistenceBitMask() : base(SubGridTree.SubGridTreeLevels - 1, SubGridTree.DefaultCellSize * SubGridTree.SubGridTreeDimension)
+        public SubGridTreeSubGridExistenceBitMask() : base(SubGridTreeLevels - 1, DefaultCellSize * SubGridTreeDimension)
         {
         }
     }

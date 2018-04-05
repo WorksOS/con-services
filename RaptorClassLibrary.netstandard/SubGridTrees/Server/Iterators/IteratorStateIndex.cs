@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.Utilities;
@@ -18,11 +14,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
         public DateTime StartSegmentTime = DateTime.MinValue;
         public DateTime EndSegmentTime = DateTime.MaxValue;
 
-        public IterationDirection IterationDirection { get; set; } = Iterators.IterationDirection.Forwards;
+        public IterationDirection IterationDirection { get; set; } = IterationDirection.Forwards;
 
-        public ServerSubGridTreeLeaf SubGrid { get; set; } = null;
+        public ServerSubGridTreeLeaf SubGrid { get; set; }
 
-        SubGridDirectory _Directory = null;
+        private SubGridDirectory _Directory;
 
         public SubGridDirectory Directory
         {
@@ -41,15 +37,15 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
             }
         }
 
-        int InitialNumberOfSegments = 0;
+        private int InitialNumberOfSegments;
 
         public double MinIterationElevation = Consts.NullDouble;
         public double MaxIterationElevation = Consts.NullDouble;
 
-        bool RestrictSegmentIterationBasedOnElevationRange = false;
+        private bool RestrictSegmentIterationBasedOnElevationRange;
 
         // The current index of the segment at this point in the iteration
-        public int Idx = 0;
+        public int Idx;
 
         public bool HasMachineRestriction = false;
 
@@ -76,7 +72,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
             bool SegmentIndexInRange;
             // double SegmentMinElev, SegmentMaxElev;
 
-            bool Result = false;
+            bool Result;
 
             if (InitialNumberOfSegments != _Directory.SegmentDirectory.Count)
             {
@@ -211,7 +207,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
             if (IterationDirection != IterationDirection.Forwards)
             {
                 // TODO add when logging available
-                ///SIGLogMessage.PublishNoODS(Nil, 'Extension of segment list only valid if iterator is travelling forwards through the list', slmcAssert);
+                //SIGLogMessage.PublishNoODS(Nil, 'Extension of segment list only valid if iterator is travelling forwards through the list', slmcAssert);
                 return;
             }
 

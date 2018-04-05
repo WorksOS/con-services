@@ -165,7 +165,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         }
 
         /// <summary>
-        /// RemoveLeafOwningCell locates the leaf subgrid that contains the OTG cell identified by <CellX> and <CellY> and removes it from the
+        /// RemoveLeafOwningCell locates the leaf subgrid that contains the OTG cell identified by CellX and CellY and removes it from the
         /// sub grid tree.        
         /// </summary>
         /// <param name="CellX"></param>

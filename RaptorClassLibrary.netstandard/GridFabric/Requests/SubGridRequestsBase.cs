@@ -1,17 +1,12 @@
-﻿using Apache.Ignite.Core.Compute;
-using log4net;
+﻿using log4net;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Designs.GridFabric.Requests;
 using VSS.VisionLink.Raptor.Executors.Tasks.Interfaces;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
 using VSS.VisionLink.Raptor.GridFabric.Responses;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.Types;
@@ -33,12 +28,12 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         /// <summary>
         /// Task is the business logic that will handle the response to the subgrids request
         /// </summary>
-        public ITask Task = null;
+        public ITask Task;
 
         /// <summary>
         /// The request argument to be passed to target of the request
         /// </summary>
-        public TSubGridsRequestArgument arg = null;
+        public TSubGridsRequestArgument arg;
 
         /// <summary>
         /// The ID of the SiteModel to execute the request against
@@ -65,22 +60,22 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         /// <summary>
         /// A subgrid bit mask tree identifying all the production data subgrids that require processing
         /// </summary>
-        public SubGridTreeSubGridExistenceBitMask ProdDataMask { get; set; } = null;
+        public SubGridTreeSubGridExistenceBitMask ProdDataMask { get; set; }
 
         /// <summary>
         /// A subgrid bit mask tree identifying all the surveyd surface subgrids that require processing
         /// </summary>
-        public SubGridTreeSubGridExistenceBitMask SurveyedSurfaceOnlyMask { get; set; } = null;
+        public SubGridTreeSubGridExistenceBitMask SurveyedSurfaceOnlyMask { get; set; }
 
         /// <summary>
         /// The set of filters to be applied to the subgrids being processed
         /// </summary>
-        public FilterSet Filters { get; set; } = null;
+        public FilterSet Filters { get; set; }
 
         /// <summary>
         /// Denotes whether results of these requests should include any surveyed surfaces in the site model
         /// </summary>
-        public bool IncludeSurveyedSurfaceInformation { get; set; } = false;
+        public bool IncludeSurveyedSurfaceInformation { get; set; }
 
         /// <summary>
         /// The design to be used in cases of cut/fill subgrid requests
@@ -91,7 +86,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         /// No arg constructor that establishes this request as a cache compute request. 
         /// of subgrid processing is returned as a set of partitioned results from the Broadcast() invocation.
         /// </summary>
-        public SubGridRequestsBase() : base()
+        public SubGridRequestsBase()
         {
         }
 
@@ -105,7 +100,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         /// <param name="requestedGridDataType"></param>
         /// <param name="includeSurveyedSurfaceInformation"></param>
         /// <param name="prodDataMask"></param>
-        /// <param name="surveyedSurfacOnlyeMask"></param>
+        /// <param name="surveyedSurfaceOnlyMask"></param>
         /// <param name="filters"></param>
         /// <param name="cutFillDesignID"></param>
         public SubGridRequestsBase(ITask task, 

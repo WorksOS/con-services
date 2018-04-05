@@ -16,6 +16,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="SiteModelID"></param>
         /// <param name="designDescriptor"></param>
         /// <param name="AsAtDate"></param>
+        /// <param name="extents"></param>
         void Add(long SiteModelID, DesignDescriptor designDescriptor, DateTime AsAtDate, BoundingWorldExtent3D extents);
 
         /// <summary>
@@ -29,6 +30,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// Removes a surveyed surfaces from a site model
         /// </summary>
         /// <param name="SiteModelID"></param>
+        /// <param name="SurveySurfaceID"></param>
         /// <returns></returns>
         bool Remove(long SiteModelID, long SurveySurfaceID);
     }

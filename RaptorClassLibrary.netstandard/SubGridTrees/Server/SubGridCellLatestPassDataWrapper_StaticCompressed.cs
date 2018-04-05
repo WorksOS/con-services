@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Compression;
@@ -15,7 +12,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 {
     public class SubGridCellLatestPassDataWrapper_StaticCompressed : SubGridCellLatestPassDataWrapperBase, ISubGridCellLatestPassDataWrapper
     {
-        DateTime FirstRealCellPassTime;
+        private DateTime FirstRealCellPassTime;
 
         // BF_CellPasses contains all the cell pass information for the segment (read in via
         // the transient CellPassesStorage reference and then encoded into the cache format)
@@ -52,6 +49,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             /// Serialise all descriptors to the supplied writer
             /// </summary>
             /// <param name="writer"></param>
+            /// <param name="buffer"></param>
             public void Write(BinaryWriter writer, byte [] buffer)
             {
                 Time.Write(writer);
@@ -67,6 +65,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             /// Deserialise all descriptors using the supplied reader
             /// </summary>
             /// <param name="reader"></param>
+            /// <param name="buffer"></param>
             public void Read(BinaryReader reader, byte [] buffer)
             {
                 Time.Read(reader);
@@ -82,7 +81,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             /// Calculate the chained offsets and numbers of requiredbits for each attribute being stored
             /// </summary>
             /// <param name="NumBitsPerCellPass"></param>
-            public void CalculateTotalOffsetBits(ref int NumBitsPerCellPass)
+            public void CalculateTotalOffsetBits(out int NumBitsPerCellPass)
             {
                 Time.OffsetBits = 0;
                 Height.OffsetBits = (byte)(Time.OffsetBits + Time.RequiredBits);
@@ -170,7 +169,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.CCA).ToArray(), 0xff, Cells.CellPass.NullCCA, true, ref EncodedFieldDescriptors.CCA);
 
             // Calculate the offset bit locations for the cell pass attributes
-            EncodedFieldDescriptors.CalculateTotalOffsetBits(ref NumBitsPerCellPass);
+            EncodedFieldDescriptors.CalculateTotalOffsetBits(out NumBitsPerCellPass);
 
             // Create the bit field arrays to contain the segment call pass index & count plus passes.
             // Copy the call passes themselves into BF
@@ -196,7 +195,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                     BF_CellPasses.StreamWrite(pass.MDP, EncodedFieldDescriptors.MDP);
                     BF_CellPasses.StreamWrite(pass.MaterialTemperature, EncodedFieldDescriptors.MaterialTemperature);
                     BF_CellPasses.StreamWrite(pass.CCA, EncodedFieldDescriptors.CCA);
-                };
+                }
             }
             finally
             {

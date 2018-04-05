@@ -3,11 +3,7 @@ using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Compute;
 using log4net;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Servers;
 
 namespace VSS.VisionLink.Raptor.GridFabric
@@ -30,7 +26,7 @@ namespace VSS.VisionLink.Raptor.GridFabric
         /// The cluster group of nodes in the grid that are available for responding to design/profile requests
         /// </summary>
         [NonSerialized]
-        private IClusterGroup _group = null;
+        private IClusterGroup _group;
 
         protected IClusterGroup _Group { get { return _group; } }
 
@@ -38,7 +34,7 @@ namespace VSS.VisionLink.Raptor.GridFabric
         /// The compute interface from the cluster group projection
         /// </summary>
         [NonSerialized]
-        private ICompute _compute = null;
+        private ICompute _compute;
 
         protected ICompute _Compute { get { return _compute; } }
 
@@ -73,7 +69,7 @@ namespace VSS.VisionLink.Raptor.GridFabric
         /// </summary>
         public BaseRaptorIgniteClass()
         {
-            Log.Info($"No-arg constructor BaseRaptorIgniteClass() called");
+            Log.Info("No-arg constructor BaseRaptorIgniteClass() called");
             // throw new ArgumentException("No-arg constructor invalid for BaseRaptorIgniteClass, use two-arg constructor");
         }
 

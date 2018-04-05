@@ -1,25 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.Storage;
+﻿using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 {
-    public class ServerSubGridTree : SubGridTree, ISubGridTree, IServerSubGridTree
+    public class ServerSubGridTree : SubGridTree
     {
         /// <summary>
         /// The SiteModel that this subgrid tree is holding information for
         /// </summary>
-        private SiteModel SiteModelReference { get; set; } = null;
+        private SiteModel SiteModelReference { get; set; }
 
         public ServerSubGridTree(SiteModel siteModel) :
-            base(SubGridTree.SubGridTreeLevels, SubGridTree.DefaultCellSize,
+            base(SubGridTreeLevels, DefaultCellSize,
                 new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>())
         {
             // FSerialisedStream := Nil;
@@ -51,7 +43,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             // Work out the cell address of the origin cell in the appropriate leaf
             // subgrid. We use this cell position to derive the name of the file
             // containing the leaf subgrid data
-            return SegmentInfo.FileName(new SubGridCellAddress((uint)(CellAddress.X & ~SubGridTree.SubGridLocalKeyMask), (uint)(CellAddress.Y & ~SubGridTree.SubGridLocalKeyMask)));
+            return SegmentInfo.FileName(new SubGridCellAddress((uint)(CellAddress.X & ~SubGridLocalKeyMask), (uint)(CellAddress.Y & ~SubGridLocalKeyMask)));
         }
 
         public bool LoadLeafSubGridSegment(//IStorageProxy storageProxy,
@@ -63,7 +55,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                                            SiteModel SiteModelReference*/)
         {
             string FullFileName;
-            bool FileLoaded = false;
+            bool FileLoaded;
             bool needToLoadLatestData, needToLoadAllPasses;
 
             needToLoadLatestData = loadLatestData && !Segment.HasLatestData;
@@ -124,7 +116,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         {
             string FullFileName;
 
-            bool Result = false;
+            bool Result;
 
             /* TODO ... Locking semantics not defined for Inite
             if (!SubGrid.Locked)
@@ -180,7 +172,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             // Work out the cell address of the origin cell in the appropriate leaf
             // subgrid. We use this cell position to derive the name of the file
             // containing the leaf subgrid data
-            return ServerSubGridTreeLeaf.FileNameFromOriginPosition(new SubGridCellAddress((uint)(CellAddress.X & ~SubGridTree.SubGridLocalKeyMask), (uint)(CellAddress.Y & ~SubGridTree.SubGridLocalKeyMask)));
+            return ServerSubGridTreeLeaf.FileNameFromOriginPosition(new SubGridCellAddress((uint)(CellAddress.X & ~SubGridLocalKeyMask), (uint)(CellAddress.Y & ~SubGridLocalKeyMask)));
         }
     }
 }

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Geometry;
 
 namespace VSS.VisionLink.Raptor.SiteModels
@@ -14,8 +10,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
     [Serializable]
     public class SiteModelDesign : IEquatable<string>
     {
-        private string name = "";
-        public string Name { get { return name; } }
+        public string Name { get; } 
 
         public BoundingWorldExtent3D Extents { get; set; } 
 
@@ -32,12 +27,12 @@ namespace VSS.VisionLink.Raptor.SiteModels
 
         public SiteModelDesign(string name, BoundingWorldExtent3D extents) : this()
         {
-            this.name = name;
+            Name = name;
             Extents = extents;
         }
 
-        public bool MatchesDesignName(string other) => (other != null) && name.Equals(other);
+        public bool MatchesDesignName(string other) => (other != null) && Name.Equals(other);
 
-        public bool Equals(string other) => (other != null) && name.Equals(other);
+        public bool Equals(string other) => (other != null) && Name.Equals(other);
     }
 }

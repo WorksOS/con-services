@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor;
 using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.Storage;
-using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators;
@@ -23,12 +17,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
     /// The core class containing a description of all cell passes recorded within the spatial confines
     /// of a subgrid on the ground.
     /// </summary>
-    public class ServerSubGridTreeLeaf : ServerLeafSubGridBase, IServerLeafSubGrid, ILeafSubGrid, ISubGrid
+    public class ServerSubGridTreeLeaf : ServerLeafSubGridBase, IServerLeafSubGrid
     {
         /// <summary>
         /// Does this subgrid contain directory information for all the subgrids that exist within it?
         /// </summary>
-        bool haveSubgridDirectoryDetails = false;
+        private bool haveSubgridDirectoryDetails;
         public bool HaveSubgridDirectoryDetails { get { return haveSubgridDirectoryDetails; } }
 
         /// <summary>
@@ -59,7 +53,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// <summary>
         /// The primary wrapper containing all segments that have been loaded
         /// </summary>
-        public SubGridCellPassesDataWrapper Cells { get; set; } = null; // Use AllocateLeafFullPassStacks() to create new SubGridCellPassesDataWrapper();
+        public SubGridCellPassesDataWrapper Cells { get; set; } // Use AllocateLeafFullPassStacks() to create new SubGridCellPassesDataWrapper();
 
         /// <summary>
         /// 
@@ -260,8 +254,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// selection of the 'latest' pass from a cell pass state versus selection of
         /// an appropriate filtered pass given other filtering criteria in play.
         /// </summary>
+        /// <param name="LastPassIndex"></param>
         /// <param name="TypeToCheck"></param>
         /// <param name="ValueFromLatestCellPass"></param>
+        /// <param name="CellPasses"></param>
+        /// <param name="LatestData"></param>
         private void GetAppropriateLatestValueFor(CellPass [] CellPasses,
                                                   ref CellPass LatestData,
                                                   int LastPassIndex,
@@ -427,7 +424,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         public void CalculateLatestPassGridForSegment(SubGridCellPassesDataSegment Segment,
                                                       SubGridCellPassesDataSegment TemporallyPrecedingSegment)
         {
-            bool UpdatedCell = false;
+            bool UpdatedCell;
 
             if (Segment.PassesData == null)
             {
@@ -683,7 +680,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         {
             FileSystemErrorStatus FSError;
 
-            bool Result = false;
+            bool Result;
 
             if (loadAllPasses && Segment.Dirty)
             {
@@ -696,7 +693,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 FSError = storageProxy.ReadSpatialStreamFromPersistentStore
                             (Owner.ID, FileName, OriginX, OriginY, FileName,
                              FileSystemStreamType.SubGridSegment, Segment.SegmentInfo.FSGranuleIndex, out MemoryStream SMS,
-                             out uint StoreGranuleIndex, out uint StoreGranuleCount);
+                             out uint _ /*StoreGranuleIndex*/, out uint _ /*StoreGranuleCount*/);
 
                 Result = FSError == FileSystemErrorStatus.OK;
 
@@ -740,7 +737,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public bool SaveDirectoryToStream(Stream stream)
         {
-            bool Result = false;
+            bool Result;
             BinaryWriter writer = new BinaryWriter(stream, Encoding.UTF8, true);
 
             SubGridStreamHeader Header = new SubGridStreamHeader()
@@ -771,7 +768,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         {
             MemoryStream MStream = new MemoryStream();
 
-            bool Result = false;
+            bool Result;
 
             if (!SaveDirectoryToStream(MStream))
             {
@@ -780,7 +777,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
             Result = storage.WriteSpatialStreamToPersistentStore
              (Owner.ID, FileName, OriginX, OriginY, string.Empty, //AInvalidatedSpatialStreams,
-              FileSystemStreamType.SubGridDirectory, out uint StoreGranuleIndex, out uint StoreGranuleCount, MStream) == FileSystemErrorStatus.OK;
+              FileSystemStreamType.SubGridDirectory, out uint _ /*StoreGranuleIndex*/, out uint _ /*StoreGranuleCount*/, MStream) == FileSystemErrorStatus.OK;
             if (Result)
             {
                 // update new index location and size
@@ -926,11 +923,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                              SubGridSegmentIterator Iterator,
                              bool IntegratingIntoIntermediaryGrid)
         {
-            SubGridCellPassesDataSegment Segment;
-            SubGridCellPassesDataSegment SourceSegment;
-            uint StartIndex, EndIndex;
-            DateTime EndTime;
-            int PassCountMinusOne;
+            Debug.Assert(Source != null, "Source subgrid not defined in TICServerSubGridTreeLeaf.Integrate");
 
             if (Source.Cells.PassesData.Count == 0)
             {
@@ -940,8 +933,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 return;
             }
 
-            Debug.Assert(Source != null, "Source subgrid not defined in TICServerSubGridTreeLeaf.Integrate");
-
             if (Source.Cells.PassesData.Count != 1)
             {
                 // TODO readd when logging available
@@ -950,9 +941,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             }
 
             Iterator.SubGrid = this;
-            Iterator.Directory = this.Directory;
+            Iterator.Directory = Directory;
 
-            SourceSegment = Source.Cells.PassesData[0];
+            SubGridCellPassesDataSegment SourceSegment = Source.Cells.PassesData[0];
 
             UpdateStartEndTimeRange(Source.LeafStartTime);
             UpdateStartEndTimeRange(Source.LeafEndTime);
@@ -962,7 +953,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 for (uint J = 0; J < SubGridTree.SubGridTreeDimension; J++)
                 {
                     // Perform the physical integration of the new cell passes into the target subgrid
-                    StartIndex = 0;
+                    uint StartIndex = 0;
                     uint localPassCount = SourceSegment.PassesData.PassCount(I, J);
 
                     if (localPassCount == 0)
@@ -980,16 +971,16 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                     Iterator.InitialiseIterator();
                     while (Iterator.MoveToNextSubGridSegment())
                     {
-                        Segment = Iterator.CurrentSubGridSegment;
+                        SubGridCellPassesDataSegment Segment = Iterator.CurrentSubGridSegment;
 
                         if (StartIndex < localPassCount && SourceSegment.PassesData.PassTime(I, J, StartIndex) >= Segment.SegmentInfo.EndTime)
                         {
                             continue;
                         }
 
-                        EndIndex = StartIndex;
-                        EndTime = Segment.SegmentInfo.EndTime;
-                        PassCountMinusOne = (int)localPassCount - 1;
+                        uint EndIndex = StartIndex;
+                        DateTime EndTime = Segment.SegmentInfo.EndTime;
+                        int PassCountMinusOne = (int)localPassCount - 1;
                         while (EndIndex < PassCountMinusOne && SourceSegment.PassesData.PassTime(I, J, EndIndex + 1) < EndTime)
                         {
                             EndIndex++;

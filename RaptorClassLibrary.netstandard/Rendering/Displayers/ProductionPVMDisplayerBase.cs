@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
@@ -54,21 +50,21 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
         // FICOptions is a transient reference an IC options object to be used while rendering
         //      FICOptions : TSVOICOptions;
 
-        protected bool FDisplayParametersCalculated = false;
+        protected bool FDisplayParametersCalculated;
 
         // FSubgridResult is a reference to the raw subgrid result returned from the PS layer
 //        SubGridTreeLeafSubGridBaseResult SubgridResult; // : TICSubGridTreeLeafSubGridBaseResult;
 
-        protected bool FHasRenderedSubgrid = false;
+        protected bool FHasRenderedSubgrid;
 
         private void CalculateDisplayParameters()
         {
             // Set the cell size for displaying the grid. If we will be processing
             // representative grids then set _CellSize to be the size of a leaf
             // subgrid in the sub grid tree
-            _OneThirdCellSize = _CellSize * (1 / 3);
-            _HalfCellSize = _CellSize / 2;
-            _TwoThirdsCellSize = _CellSize * (2 / 3);
+            _OneThirdCellSize = _CellSize * (1 / 3.0);
+            _HalfCellSize = _CellSize / 2.0;
+            _TwoThirdsCellSize = _CellSize * (2 / 3.0);
 
             double StepsPerPixelX = MapView.XPixelSize / _CellSize;
             double StepsPerPixelY = MapView.YPixelSize / _CellSize;
@@ -256,10 +252,10 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
 
         //      property ICOptions : TSVOICOptions read FICOptions write FICOptions;
 
-        public MapSurface MapView { get; set; } = null;
+        public MapSurface MapView { get; set; }
         public bool HasRenderedSubgrid { get; set; } = false;
 
-        public ProductionPVMDisplayerBase() : base()
+        public ProductionPVMDisplayerBase()
         {
 
         }

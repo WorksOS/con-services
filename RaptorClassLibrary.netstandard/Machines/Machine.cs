@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Types;
@@ -23,7 +19,7 @@ namespace VSS.VisionLink.Raptor.Machines
         public const long kJohnDoeAssetID = 0x7fffffffffffffff;
 
         [NonSerialized]
-        public MachinesList Owner = null;
+        public MachinesList Owner;
 
         public long ID { get; set; } = 0;
 

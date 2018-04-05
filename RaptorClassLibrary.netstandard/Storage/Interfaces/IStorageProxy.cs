@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.Types;
 
@@ -40,7 +35,7 @@ namespace VSS.VisionLink.Raptor.Interfaces
                                               string StreamName,
                                               FileSystemStreamType StreamType,
                                               out MemoryStream Streamout,
-                                              uint StoreGranuleIndex,
+                                              out uint StoreGranuleIndex,
                                               out uint StoreGranuleCount);
         FileSystemErrorStatus ReadStreamFromPersistentStore(long DataModelID,
                                                   string StreamName,

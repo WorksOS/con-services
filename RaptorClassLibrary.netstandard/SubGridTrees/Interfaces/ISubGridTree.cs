@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.SubGridTrees.Types;
 
@@ -62,7 +58,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Interfaces
         /// extent is passed to the OnProcessLeafSubgrid event for processing 
         /// </summary>
         /// <param name="extent"></param>
-        /// <param name="ScanLevel"></param>
         /// <param name="leafFunctor"></param>
         /// <param name="nodeFunctor"></param>
         /// <returns></returns>
@@ -76,7 +71,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Interfaces
         /// extent is passed to the OnProcessLeafSubgrid event for processing 
         /// </summary>
         /// <param name="extent"></param>
-        /// <param name="ScanLevel"></param>
         /// <param name="leafFunctor"></param>
         /// <param name="nodeFunctor"></param>
         /// <returns></returns>

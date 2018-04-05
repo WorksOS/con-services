@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
@@ -15,13 +10,13 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
     /// </summary>
     public class PVMDisplayer_Height : PVMDisplayerBase
     {
-        private ClientHeightLeafSubGrid SubGrid = null;
+        private ClientHeightLeafSubGrid SubGrid;
 
         protected override bool DoRenderSubGrid(ISubGrid subGrid)
         {
-            if (subGrid is ClientHeightLeafSubGrid)
+            if (subGrid is ClientHeightLeafSubGrid grid)
             {
-                SubGrid = (ClientHeightLeafSubGrid)subGrid;
+                SubGrid = grid;
                 return base.DoRenderSubGrid(SubGrid);
             }
 

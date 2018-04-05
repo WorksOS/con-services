@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor.Machines.Interfaces
+﻿namespace VSS.VisionLink.Raptor.Machines.Interfaces
 {
     public interface IMachine
     {

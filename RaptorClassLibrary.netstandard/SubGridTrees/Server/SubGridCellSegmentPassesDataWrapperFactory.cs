@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
+﻿using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 {
@@ -12,7 +7,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
     /// </summary>
     public class SubGridCellSegmentPassesDataWrapperFactory : ISubGridCellSegmentPassesDataWrapperFactory
     {
-        private static SubGridCellSegmentPassesDataWrapperFactory instance = null;
+        private static SubGridCellSegmentPassesDataWrapperFactory instance;
 
         /// <summary>
         /// Chooses which of the three segment cell pass wrappers should be created:
@@ -53,14 +48,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// Returns the singleton factory instance
         /// </summary>
         /// <returns></returns>
-        public static SubGridCellSegmentPassesDataWrapperFactory Instance()
-        {
-            if (instance == null)
-            {
-                instance = new SubGridCellSegmentPassesDataWrapperFactory();
-            }
-
-            return instance;
-        }
+        public static SubGridCellSegmentPassesDataWrapperFactory Instance() => instance ?? (instance = new SubGridCellSegmentPassesDataWrapperFactory());
     }
 }

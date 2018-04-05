@@ -1,12 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
-using VSS.VisionLink.Raptor.Utilities;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 {
@@ -20,7 +12,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// <summary>
         /// The count of cell passes residing in this subgrid segment
         /// </summary>
-        public int SegmentPassCount { get; set; } = 0;
+        public int SegmentPassCount { get; set; }
 
         /// <summary>
         /// Default no-arg constructor

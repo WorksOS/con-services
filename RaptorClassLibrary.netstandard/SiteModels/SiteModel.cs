@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.Services.Surfaces;
+using VSS.VisionLink.Raptor.SiteModels.Interfaces;
 using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
@@ -19,7 +18,7 @@ using VSS.VisionLink.Raptor.Types;
 namespace VSS.VisionLink.Raptor.SiteModels
 {
     [Serializable]
-    public class SiteModel
+    public class SiteModel : ISiteModel
     {
         public const string kSiteModelXMLFileName = "ProductionDataModel.XML";
         public const string kSubGridExistanceMapFileName = "SubGridExistanceMap";
@@ -32,7 +31,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
         /// <summary>
         /// THe storage proxy this sitemodel instance will use to read/write information related to the SiteModel
         /// </summary>
-        public IStorageProxy StorageProxy = null;
+        public IStorageProxy StorageProxy;
 
         DateTime LastModifiedDate { get; set; } = DateTime.MinValue;
 
@@ -40,7 +39,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
         /// The grid data for this site model
         /// </summary>
         [NonSerialized]
-        private ServerSubGridTree grid = null;
+        private ServerSubGridTree grid;
 
         /// <summary>
         /// The grid data for this site model
@@ -48,7 +47,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
         public ServerSubGridTree Grid { get { return grid; } }
 
         [NonSerialized]
-        private SubGridTreeSubGridExistenceBitMask existanceMap = null;
+        private SubGridTreeSubGridExistenceBitMask existanceMap;
 
         public SubGridTreeSubGridExistenceBitMask ExistanceMap {  get { return existanceMap; } }
 
@@ -65,7 +64,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
         // that record how the cofigured target CCV and pass count settings on each
         // machine has changed over time.
         [NonSerialized]
-        public MachinesTargetValuesList MachinesTargetValues = null;
+        public MachinesTargetValuesList MachinesTargetValues;
 
         private SiteModelDesignList siteModelDesigns = new SiteModelDesignList();
 
@@ -112,11 +111,11 @@ namespace VSS.VisionLink.Raptor.SiteModels
         // appropriate machine, and may also reference a wireless machine looked
         // after by METScomms
 
-        public MachinesList Machines { get; set; } = null;
+        public MachinesList Machines { get; set; }
 
         public bool IgnoreInvalidPositions { get; set; } = true;
 
-        private bool SurveyedSurfacesLoaded { get; set; } = false;
+        private bool SurveyedSurfacesLoaded { get; set; }
 
         public SiteModel()
         {
@@ -338,7 +337,8 @@ namespace VSS.VisionLink.Raptor.SiteModels
                     {
                         Write(writer);
 
-                        Result = StorageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out uint StoreGranuleIndex, out uint StoreGranuleCount, MS) == FileSystemErrorStatus.OK
+                        Result = StorageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, 
+                                                                           out uint _ /*StoreGranuleIndex&*/, out uint _ /*StoreGranuleCount*/, MS) == FileSystemErrorStatus.OK
                                  && SaveProductionDataExistanceMapToStorage() == FileSystemErrorStatus.OK;
                     }
                 }

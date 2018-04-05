@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+﻿using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Interfaces
 {
-    public interface IServerLeafSubGrid : ILeafSubGrid, ISubGrid
+    public interface IServerLeafSubGrid : ILeafSubGrid
     {
         SubGridCellPassesDataWrapper Cells { get; set; }
 

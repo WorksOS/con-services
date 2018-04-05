@@ -1,58 +1,51 @@
 ﻿using log4net;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Client
 {
-/*
-    /// <summary>
-    /// The content of each cell in a 'Height and time' client leaf sub grid. Each cell stores an elevation and 
-    /// the time at which the elevation measurement relates to (either the time stamp on a cell pass or the time
-    /// stamp from the surveyed surface that this elevation came from
-    /// </summary>
-    public struct SubGridCellHeightAndTime
-    {
+    /*
         /// <summary>
-        /// Measure height at the cell location
+        /// The content of each cell in a 'Height and time' client leaf sub grid. Each cell stores an elevation and 
+        /// the time at which the elevation measurement relates to (either the time stamp on a cell pass or the time
+        /// stamp from the surveyed surface that this elevation came from
         /// </summary>
-        public float Height { get; set; }
-
-        /// <summary>
-        /// UTC time at which the measurement is relevant
-        /// </summary>
-        public DateTime Time { get; set; }
-
-        /// <summary>
-        /// Set Height and Time values to null
-        /// </summary>
-        public void Clear()
+        public struct SubGridCellHeightAndTime
         {
-            Time = DateTime.MinValue;
-            Height = Consts.NullHeight;
-        }
+            /// <summary>
+            /// Measure height at the cell location
+            /// </summary>
+            public float Height { get; set; }
 
-        /// <summary>
-        /// Sets height and time components of the struct in a single operation
-        /// </summary>
-        /// <param name="height"></param>
-        /// <param name="time"></param>
-        public void Set(float height, DateTime time)
-        {
-            Height = height;
-            Time = time;
+            /// <summary>
+            /// UTC time at which the measurement is relevant
+            /// </summary>
+            public DateTime Time { get; set; }
+
+            /// <summary>
+            /// Set Height and Time values to null
+            /// </summary>
+            public void Clear()
+            {
+                Time = DateTime.MinValue;
+                Height = Consts.NullHeight;
+            }
+
+            /// <summary>
+            /// Sets height and time components of the struct in a single operation
+            /// </summary>
+            /// <param name="height"></param>
+            /// <param name="time"></param>
+            public void Set(float height, DateTime time)
+            {
+                Height = height;
+                Time = time;
+            }
         }
-    }
-*/
+    */
 
     /// <summary>
     /// Client leaf sub grid that tracks height and time for each cell
@@ -103,7 +96,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         {
             long[,] result = new long[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
 
-            ForEach((x, y) => result[x, y] = DateTime.MinValue.ToBinary());
+            DateTime min = DateTime.MinValue;
+            long nullValue = min.ToBinary();
+
+            ForEach((x, y) => result[x, y] = nullValue);
 
             return result;
         }
@@ -124,6 +120,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// Override to implement if needed.
         /// </summary>
         /// <param name="writer"></param>
+        /// <param name="buffer"></param>
         public override void Write(BinaryWriter writer, byte[] buffer)
         {
             base.Write(writer, buffer);
@@ -138,6 +135,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// Override to implement if needed.
         /// </summary>
         /// <param name="reader"></param>
+        /// <param name="buffer"></param>
         public override void Read(BinaryReader reader, byte[] buffer)
         {
             base.Read(reader, buffer);

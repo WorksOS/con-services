@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Types;
@@ -12,18 +7,18 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
 {
     public abstract class SubGridTreeScannerBase
     {
-        private bool scanActive = false;
-        public bool Aborted { get; set; } = false;
+        private bool scanActive;
+        public bool Aborted { get; set; }
         private int firstScanLevel = -1;
 
         protected virtual bool GetProceedWithScannedData() => true;
 
-        public ISubGridTree Grid { get; set; } = null;
+        public ISubGridTree Grid { get; set; }
         public BoundingIntegerExtent2D Extent;
-        public int ScanLevel { get; set; } = 0;
-        public bool RequestRepresentativeGrids { get; set; } = false;
+        public int ScanLevel { get; set; }
+        public bool RequestRepresentativeGrids { get; set; }
 
-        LeafSubgridRequestType RequestType { get; set; } = LeafSubgridRequestType.FullFromServer;
+        public LeafSubgridRequestType RequestType { get; set; } = LeafSubgridRequestType.FullFromServer;
 
         public bool ScanActive { get { return scanActive; } }
         public int FirstScanLevel { get { return firstScanLevel; } }
@@ -48,10 +43,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
             int scanLevel,
             bool requestRepresentativeGrids) : this()
         {
-            this.Grid = grid;
-            this.Extent = extent;
-            this.ScanLevel = scanLevel;
-            this.RequestRepresentativeGrids = requestRepresentativeGrids;
+            Grid = grid;
+            Extent = extent;
+            ScanLevel = scanLevel;
+            RequestRepresentativeGrids = requestRepresentativeGrids;
         }
 
         public SubGridTreeScannerBase(ISubGridTree grid,
@@ -59,7 +54,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
             int scanLevel,
             bool requestRepresentativeGrids) : this(grid, new BoundingIntegerExtent2D(), scanLevel, requestRepresentativeGrids)
         {
-            grid.CalculateRegionGridCoverage(extent, out this.Extent);
+            grid.CalculateRegionGridCoverage(extent, out Extent);
         }
 
         public virtual void OnStartScan(ISubGrid subGrid)

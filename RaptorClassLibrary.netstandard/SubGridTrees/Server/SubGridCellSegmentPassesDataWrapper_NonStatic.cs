@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
@@ -91,7 +87,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                     Read(i, j, reader);
 
                     SegmentPassCount += PassCount_;
-                };
+                }
             });
         }
 
@@ -114,7 +110,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// </summary>
         /// <param name="TotalPasses"></param>
         /// <param name="MaxPassCount"></param>
-        private void CalculateTotalPasses(ref uint TotalPasses, ref uint MaxPassCount)
+        private void CalculateTotalPasses(out uint TotalPasses, out uint MaxPassCount)
         {
             uint _TotalPasses = 0;
             uint _MaxPassCount = 0;
@@ -137,10 +133,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public void Write(BinaryWriter writer)
         {
-            uint TotalPasses = 0;
-            uint MaxPassCount = 0;
-
-            CalculateTotalPasses(ref TotalPasses, ref MaxPassCount);
+            CalculateTotalPasses(out uint TotalPasses, out uint MaxPassCount);
 
             writer.Write(TotalPasses);
             writer.Write(MaxPassCount);

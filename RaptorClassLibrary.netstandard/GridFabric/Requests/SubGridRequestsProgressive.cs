@@ -4,9 +4,7 @@ using log4net;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
@@ -29,17 +27,17 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         /// <summary>
         /// The listener to which the processing mengine may send in-progress updates during processing of the overall subgrids request
         /// </summary>
-        public SubGridListener Listener { get; set; } = null;
+        public SubGridListener Listener { get; set; }
 
         /// <summary>
         /// The MsgGroup into which the listener has been added
         /// </summary>
-        private IMessaging MsgGroup { get; set; } = null;
+        private IMessaging MsgGroup { get; set; }
 
         /// <summary>
         /// Default no-arg constructor thje delgates construction to the base class
         /// </summary>
-        public SubGridRequestsProgressive() : base()
+        public SubGridRequestsProgressive()
         {
         }
 
@@ -114,8 +112,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             finally
             {
                 sw.Stop();
-                Log.InfoFormat("TaskResult {0}: SubgidRequests.Execute() for DM:{1} from node {2} for data type {3} took {4}ms",
-                               taskResult.Status, Task.PipeLine.DataModelID, Task.RaptorNodeID, Task.GridDataType, sw.ElapsedMilliseconds);
+                Log.Info($"TaskResult {taskResult?.Status}: SubgidRequests.Execute() for DM:{Task.PipeLine.DataModelID} from node {Task.RaptorNodeID} for data type {Task.GridDataType} took {sw.ElapsedMilliseconds}ms");
             }
 
             // Notify the pipline that all processing has been completed for it
@@ -127,7 +124,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         }
 
         #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+        private bool disposedValue; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {

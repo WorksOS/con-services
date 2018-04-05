@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
+﻿using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 {
@@ -12,7 +7,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
     /// </summary>
     public class SubGridCellLatestPassesDataWrapperFactory
     {
-        private static SubGridCellLatestPassesDataWrapperFactory instance = null;
+        private static SubGridCellLatestPassesDataWrapperFactory instance;
 
         /// <summary>
         /// Chooses which of the three segment cell pass wrappers should be created:

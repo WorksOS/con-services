@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor.Storage
+﻿namespace VSS.VisionLink.Raptor.Storage
 {
     /// <summary>
     /// Handles actions and configuration related to data regions introduced in Ignite 2.3 to allow per-cache control of persistency, memory usage etc

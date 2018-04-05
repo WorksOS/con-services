@@ -1,10 +1,4 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
@@ -70,7 +64,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
 
     public class SubGridEnumerator
     {
-        public SubGridTreeIterator Iterator { get; set; } = null;
+        public SubGridTreeIterator Iterator { get; set; }
 
         public ISubGrid GetCurrent() => Iterator.CurrentSubGrid;
 
@@ -83,7 +77,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
     {
         // FGrid is the grid that the iterator will return subgrids from. If a scanner is set then
         // the grid will be taken from the supplied scanner
-        public ISubGridTree Grid { get; set; } = null;
+        public ISubGridTree Grid { get; set; }
 
         // FScanner is the scanning delegate through which additional control may be excecised
         // over pruning of the nodes and leaves that will be scanned
@@ -92,13 +86,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
         // FCurrent is a reference to the current subgrid that the iterator is currently
         // up to in the sub grid tree scan. By definition, this subgrid is locked for
         // the period that FCurrent references it.
-        public ISubGrid CurrentSubGrid { get; set; } = null;
+        public ISubGrid CurrentSubGrid { get; set; }
 
         // IterationState records the progress of the iteration by recording the path through
         // the subgrid tree which marks the progress of the iteration
         SubGridTreeIteratorStateIndex[] iterationState = new SubGridTreeIteratorStateIndex[SubGridTree.SubGridTreeLevels];
 
-        IStorageProxy StorageProxy = null; //IStorageProxy[] SpatialStorageProxy = null;
+        private IStorageProxy StorageProxy; //IStorageProxy[] SpatialStorageProxy = null;
 
         // FStorageClasses controls the storage classes that will be retrieved from the database
         // for each subgrid in the iteration
@@ -122,7 +116,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
 
         // ReturnedFirstItemInIteration keeps track of whether the first item in the iteration
         // has been returned to the caller.
-        public bool ReturnedFirstItemInIteration = false;
+        public bool ReturnedFirstItemInIteration;
 
         //    FDataStoreCache: TICDataStoreCache;
 
@@ -326,7 +320,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
         {
             ISubGrid SubGrid;
 
-            bool Result = false;
+            bool Result;
 
             if (!ReturnedFirstItemInIteration)
             {

@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.Types;
@@ -19,7 +14,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// <summary>
         /// Simple array to hold client leaf subgrid type map
         /// </summary>
-        private static Type[] typeMap = null;
+        private static Type[] typeMap;
 
         /// <summary>
         /// Stores of cached client grids to reduce the object instantation and garbage collection overhead

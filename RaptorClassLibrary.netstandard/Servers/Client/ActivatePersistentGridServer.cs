@@ -1,10 +1,7 @@
 ﻿using Apache.Ignite.Core;
 using log4net;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 
@@ -17,7 +14,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private static ActivatePersistentGridServer instance = null;
+        private static ActivatePersistentGridServer instance;
 
         /// <summary>
         /// Default constructor with role
@@ -40,7 +37,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
         /// <returns>True if the grid was successfully set to active, or was already in an active state</returns>
         public bool SetGridActive(string gridName)
         {
-            using (RaptorIgniteServer igniteNode = RaptorClientServerFactory.NewClientNode(gridName, "Activator"))
+            using (RaptorClientServerFactory.NewClientNode(gridName, "Activator"))
             {
                 try
                 {

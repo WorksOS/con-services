@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Compression;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
-using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 {
@@ -107,7 +102,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             /// Calculate the chained offsets and numbers of requiredbits for each attribute being stored
             /// </summary>
             /// <param name="NumBitsPerCellPass"></param>
-            public void CalculateTotalOffsetBits(ref int NumBitsPerCellPass)
+            public void CalculateTotalOffsetBits(out int NumBitsPerCellPass)
             {
                 MachineIDIndex.OffsetBits = 0;
                 Time.OffsetBits = (byte)(MachineIDIndex.OffsetBits + MachineIDIndex.RequiredBits);
@@ -325,20 +320,20 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             Result.Time = FirstRealCellPassTime.AddSeconds(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.Time));
 
             long IntegerHeight = BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.Height);
-            Result.Height = IntegerHeight == EncodedFieldDescriptors.Height.NativeNullValue ? Consts.NullHeight : IntegerHeight / 1000;
+            Result.Height = IntegerHeight == EncodedFieldDescriptors.Height.NativeNullValue ? Consts.NullHeight : (float)(IntegerHeight / 1000.0);
 
-            Result.CCV = (short)(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.CCV));
-            Result.RMV = (short)(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.RMV));
-            Result.MDP = (short)(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.MDP));
-            Result.MaterialTemperature = (ushort)(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.MaterialTemperature));
-            Result.MachineSpeed = (ushort)(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.MachineSpeed));
-            Result.RadioLatency = (byte)(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.RadioLatency));
+            Result.CCV = (short)BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.CCV);
+            Result.RMV = (short)BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.RMV);
+            Result.MDP = (short)BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.MDP);
+            Result.MaterialTemperature = (ushort)BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.MaterialTemperature);
+            Result.MachineSpeed = (ushort)BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.MachineSpeed);
+            Result.RadioLatency = (byte)BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.RadioLatency);
 
-            Result.GPSModeStore = (byte)(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.GPSModeStore)); ;
+            Result.GPSModeStore = (byte)BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.GPSModeStore); 
 
-            Result.Frequency = (ushort)(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.Frequency));
-            Result.Amplitude = (ushort)(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.Amplitude));
-            Result.CCA = (byte)(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.CCA));
+            Result.Frequency = (ushort)BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.Frequency);
+            Result.Amplitude = (ushort)BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.Amplitude);
+            Result.CCA = (byte)BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.CCA);
 
             return Result;
         }
@@ -369,7 +364,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
             long IntegerHeight = BF_CellPasses.ReadBitField(ref BitLocation, EncodedFieldDescriptors.Height);
 
-            return (IntegerHeight == EncodedFieldDescriptors.Height.NativeNullValue) ? Consts.NullHeight : IntegerHeight / 1000;
+            return (IntegerHeight == EncodedFieldDescriptors.Height.NativeNullValue) ? Consts.NullHeight : (float)(IntegerHeight / 1000.0);
         }
 
         public float PassHeight(uint X, uint Y, uint passNumber)
@@ -685,13 +680,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.CCA).ToArray(), 0xff, CellPass.NullCCA, true, ref EncodedFieldDescriptors.CCA);
 
             // Calculate the offset bit locations for the cell pass attributes
-            EncodedFieldDescriptors.CalculateTotalOffsetBits(ref NumBitsPerCellPass);
+            EncodedFieldDescriptors.CalculateTotalOffsetBits(out NumBitsPerCellPass);
 
             // Create the bit field arrays to contain the segment call pass index & count plus passes.
-            recordDescriptors = new BitFieldArrayRecordsDescriptor[] 
+            recordDescriptors = new [] 
             {
-                new BitFieldArrayRecordsDescriptor() { NumRecords = SubGridTree.SubGridTreeDimension, BitsPerRecord = EncodedColPassCountsBits },
-                new BitFieldArrayRecordsDescriptor() { NumRecords = SubGridTree.SubGridTreeCellsPerSubgrid, BitsPerRecord = PassCountEncodedFieldDescriptor.RequiredBits }
+                new BitFieldArrayRecordsDescriptor { NumRecords = SubGridTree.SubGridTreeDimension, BitsPerRecord = EncodedColPassCountsBits },
+                new BitFieldArrayRecordsDescriptor { NumRecords = SubGridTree.SubGridTreeCellsPerSubgrid, BitsPerRecord = PassCountEncodedFieldDescriptor.RequiredBits }
             };
 
             BF_PassCounts.Initialise(recordDescriptors);
@@ -716,9 +711,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             }
 
             // Copy the call passes themselves into BF
-            recordDescriptors = new BitFieldArrayRecordsDescriptor[] 
+            recordDescriptors = new [] 
             {            
-                new BitFieldArrayRecordsDescriptor() { NumRecords = SegmentPassCount, BitsPerRecord = NumBitsPerCellPass }
+                new BitFieldArrayRecordsDescriptor { NumRecords = SegmentPassCount, BitsPerRecord = NumBitsPerCellPass }
             };
 
             BF_CellPasses.Initialise(recordDescriptors);

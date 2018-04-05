@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 using VSS.VisionLink.Raptor.Cells;
-using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
@@ -16,13 +10,13 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
     /// </summary>
     public class PVMDisplayer_MachineSpeed : PVMDisplayerBase
     {
-        private ClientMachineSpeedLeafSubGrid SubGrid = null;
+        private ClientMachineSpeedLeafSubGrid SubGrid;
 
         protected override bool DoRenderSubGrid(ISubGrid subGrid)
         {
-            if (subGrid is ClientMachineSpeedLeafSubGrid)
+            if (subGrid is ClientMachineSpeedLeafSubGrid grid)
             {
-                SubGrid = subGrid as ClientMachineSpeedLeafSubGrid;
+                SubGrid = grid;
                 return base.DoRenderSubGrid(SubGrid);
             }
 

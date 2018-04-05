@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor.SubGridTrees.Helpers
+﻿namespace VSS.VisionLink.Raptor.SubGridTrees.Helpers
 {
     /// <summary>
     /// A helper class that contains definitions of Clear and Filled Bits subgrid mitmask bit arrays as well as
@@ -26,7 +20,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Helpers
         /// <summary>
         /// A predefined array of cleared bits for a subgrid bitmask
         /// </summary>
-        public static uint[] SubGridTreeLeafBitmapSubGridBits_Clear = new uint[BitsArrayLength]
+        public static uint[] SubGridTreeLeafBitmapSubGridBits_Clear = 
             {
             0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0,
@@ -37,7 +31,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Helpers
         /// <summary>
         /// A predefined array of filled bits for a subgrid bitmask
         /// </summary>
-        public static uint[] SubGridTreeLeafBitmapSubGridBits_Fill = new uint[BitsArrayLength]
+        public static uint[] SubGridTreeLeafBitmapSubGridBits_Fill = 
             {
             0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,
             0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,

@@ -1,37 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
 using VSS.VisionLink.Raptor.Types;
-using VSS.VisionLink.Raptor.Utilities;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 {
     public class SubGridCellPassesDataSegment
     {
-        public bool Dirty { get; set; } = false;
+        public bool Dirty { get; set; }
 
         private DateTime _StartTime = DateTime.MinValue;
         private DateTime _EndTime = DateTime.MaxValue;
 
         public ISubGrid Owner = null;
 
-        public bool HasAllPasses { get; set; } = false;
-        public bool HasLatestData { get; set; } = false;
+        public bool HasAllPasses { get; set; } 
+        public bool HasLatestData { get; set; } 
 
-        public SubGridCellPassesDataSegmentInfo SegmentInfo { get; set; } = null;
+        public SubGridCellPassesDataSegmentInfo SegmentInfo { get; set; } 
 
-        public ISubGridCellSegmentPassesDataWrapper PassesData { get; set; } = null;
+        public ISubGridCellSegmentPassesDataWrapper PassesData { get; set; } 
        
-        public ISubGridCellLatestPassDataWrapper LatestPasses { get; set; } = null;
+        public ISubGridCellLatestPassDataWrapper LatestPasses { get; set; }
 
         public SubGridCellPassesDataSegment()
         {
@@ -287,8 +282,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                                ref FileSystemErrorStatus FSError)
         {
             //            int TotalPasses = 0, MaxPasses = 0;
-            uint StoreGranuleIndex = 0;
-            uint StoreGranuleCount = 0;
             //            InvalidatedSpatialStreams: TInvalidatedSpatialStreamArray;
 
             bool Result = false;
@@ -336,8 +329,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
            FileName,
            //           InvalidatedSpatialStreams,
            FileSystemStreamType.SubGridSegment,
-           out StoreGranuleIndex,
-           out StoreGranuleCount,
+           out uint StoreGranuleIndex,
+           out uint StoreGranuleCount,
            MStream);
 
             Result = FSError == FileSystemErrorStatus.OK;

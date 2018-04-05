@@ -2,10 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.Storage.Utilities;
@@ -24,12 +21,12 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <summary>
         /// The reference to a storage proxy representing the immutable data store derived from a mutable data store
         /// </summary>
-        public IStorageProxy ImmutableProxy = null;
+        public IStorageProxy ImmutableProxy;
 
         /// <summary>
         /// Constructor that obtains references to the mutable and immutable, spatial and non-spatial caches present in the grid
         /// </summary>
-        /// <param name="gridName"></param>
+        /// <param name="mutability"></param>
         public StorageProxy_Ignite(StorageMutability mutability) : base(mutability)
         {
             EstablishCaches();
@@ -150,9 +147,11 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="DataModelID"></param>
         /// <param name="StreamName"></param>
         /// <param name="StreamType"></param>
-        /// <param name="Stream"></param>
+        /// <param name="Streamout"></param>
+        /// <param name="StoreGranuleIndex"></param>
+        /// <param name="StoreGranuleCount"></param>
         /// <returns></returns>
-        public FileSystemErrorStatus ReadStreamFromPersistentStore(long DataModelID, string StreamName, FileSystemStreamType StreamType, out MemoryStream Streamout, uint StoreGranuleIndex, out uint StoreGranuleCount)
+        public FileSystemErrorStatus ReadStreamFromPersistentStore(long DataModelID, string StreamName, FileSystemStreamType StreamType, out MemoryStream Streamout, out uint StoreGranuleIndex, out uint StoreGranuleCount)
         {
             StoreGranuleCount = 0;
             StoreGranuleIndex = 0;
@@ -217,6 +216,7 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="StreamName"></param>
         /// <param name="SubgridX"></param>
         /// <param name="SubgridY"></param>
+        /// <param name="SegmentIdentifier"></param>
         /// <param name="StreamType"></param>
         /// <param name="StoreGranuleIndex"></param>
         /// <param name="StoreGranuleCount"></param>
@@ -238,7 +238,7 @@ namespace VSS.VisionLink.Raptor.Storage
 
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
-                    Log.Info(string.Format($"Putting key:{cacheKey} in {spatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}"));
+                    Log.Info($"Putting key:{cacheKey} in {spatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
 
                     spatialCache.Put(cacheKey, compressedStream.ToArray());
                 }
@@ -285,7 +285,7 @@ namespace VSS.VisionLink.Raptor.Storage
 
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
-                    Log.Info(string.Format($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}"));
+                    Log.Info($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
 
                     // IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorGridName());
                     // ICache<string, byte[]> cache = ignite.GetCache<string, byte[]>(RaptorCaches.MutableNonSpatialCacheName());
@@ -295,7 +295,7 @@ namespace VSS.VisionLink.Raptor.Storage
                 }
 
                 // Convert the stream to the immutable form and write it to the immutable storage proxy
-                if (Mutability == StorageMutability.Mutable && (ImmutableProxy != null))
+                if (Mutability == StorageMutability.Mutable && ImmutableProxy != null)
                 {
                     PerformNonSpatialImmutabilityConversion(Stream, (ImmutableProxy as StorageProxy_Ignite).NonSpatialCache, cacheKey, StreamType);
                 }
@@ -324,13 +324,13 @@ namespace VSS.VisionLink.Raptor.Storage
 
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
-                    Log.Info(string.Format($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}"));
+                    Log.Info($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
 
                     nonSpatialCache.Put(cacheKey, compressedStream.ToArray());
                 }
 
                 // Convert the stream to the immutable form and write it to the immutable storage proxy
-                if (Mutability == StorageMutability.Mutable && (ImmutableProxy != null))
+                if (Mutability == StorageMutability.Mutable && ImmutableProxy != null)
                 {
                     PerformNonSpatialImmutabilityConversion(Stream, (ImmutableProxy as StorageProxy_Ignite).NonSpatialCache, cacheKey, StreamType);
                 }

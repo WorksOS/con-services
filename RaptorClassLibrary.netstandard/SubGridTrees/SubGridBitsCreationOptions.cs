@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor.SubGridTrees
+﻿namespace VSS.VisionLink.Raptor.SubGridTrees
 {
     /// <summary>
     /// The options used to control the initial state of a BitMask when it is created

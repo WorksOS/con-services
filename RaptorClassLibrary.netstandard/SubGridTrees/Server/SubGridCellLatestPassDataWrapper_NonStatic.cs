@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
@@ -163,6 +159,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// Writes the contents of the NonStatic latest passes using a supplied BinaryWriter
         /// </summary>
         /// <param name="writer"></param>
+        /// <param name="buffer"></param>
         public override void Write(BinaryWriter writer, byte [] buffer)
         {
             base.Write(writer, buffer);

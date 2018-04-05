@@ -1,9 +1,5 @@
 ﻿using Apache.Ignite.Core.Cluster;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Servers;
 
 namespace VSS.VisionLink.Raptor.GridFabric.NodeFilters
@@ -42,7 +38,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.NodeFilters
         public virtual bool Invoke(IClusterNode node)
         {
             // No implementation in base class, reject the node
-            return node.Attributes.Contains(new KeyValuePair<string, object>($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{Role}", "True")); ;
+            return node.Attributes.Contains(new KeyValuePair<string, object>($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{Role}", "True")); 
         }
     }
 }

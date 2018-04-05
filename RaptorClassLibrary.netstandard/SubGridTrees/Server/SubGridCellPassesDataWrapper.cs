@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 {
     public class SubGridCellPassesDataWrapper
     {
-        public IServerLeafSubGrid Owner { get; set; } = null;   // FOwner : TICServerSubGridTreeLeaf;
+        public IServerLeafSubGrid Owner { get; set; }   // FOwner : TICServerSubGridTreeLeaf;
 
         public void Clear()
         {
@@ -109,7 +105,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public void RemoveSegment(SubGridCellPassesDataSegment Segment)
         {
-            return;
         }
     }
 }

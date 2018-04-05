@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
@@ -42,7 +38,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
         /// The iterator responsible for moving through the set of segments in the subgrid as the cell pass
         /// iterator moves through the set of cell passes
         /// </summary>
-        public ISubGridSegmentIterator SegmentIterator { get; set; } = null;
+        public ISubGridSegmentIterator SegmentIterator { get; set; }
 
         protected int cellInSegmentIndex = -1;
         protected int finishCellInSegmentIndex = -1;
@@ -96,6 +92,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
         /// in the course of the iteration
         /// </summary>
         /// <param name="iterator"></param>
+        /// <param name="maxNumberOfPassesToReturn"></param>
         public SubGridSegmentCellPassIterator_Base(ISubGridSegmentIterator iterator, int maxNumberOfPassesToReturn = int.MaxValue) : this()
         {
             SegmentIterator = iterator;
@@ -143,14 +140,14 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
 
         // SetCellCoordinatesInSubgrid set the coordinates of the cell in the subgrid that
         // cell passes are being iterated over. The coordinates should be in the 0..DimensionSize-1 range
-        public void SetCellCoordinatesInSubgrid(byte cellX, byte cellY)
+        public void SetCellCoordinatesInSubgrid(byte _cellX, byte _cellY)
         {
-            Debug.Assert(Range.InRange(cellX, (byte)0, (byte)(SubGridTree.SubGridTreeDimensionMinus1)) &&
-                         Range.InRange(cellY, (byte)0, (byte)(SubGridTree.SubGridTreeDimensionMinus1)),
+            Debug.Assert(Range.InRange(_cellX, (byte)0, (byte)(SubGridTree.SubGridTreeDimensionMinus1)) &&
+                         Range.InRange(_cellY, (byte)0, (byte)(SubGridTree.SubGridTreeDimensionMinus1)),
                          "Cell coordinates out of range in SetCellCoordinatesInSubgrid");
 
-            this.cellX = cellX;
-            this.cellY = cellY;
+            cellX = _cellX;
+            cellY = _cellY;
         }
 
         /// <summary>

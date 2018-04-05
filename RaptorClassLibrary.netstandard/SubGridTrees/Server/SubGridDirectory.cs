@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.SubGridTrees.Server;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server
@@ -14,8 +9,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
     {
         // FFSGranuleIndex and FFSGranuleCount record the location and size
         // of the subgrid leaf (directory) stream in the data model FS file
-        public uint FSGranuleIndex { get; set; } = 0;
-        public uint FSGranuleCount { get; set; } = 0;
+        public uint FSGranuleIndex { get; set; }
+        public uint FSGranuleCount { get; set; }
 
         // SegmentDirectory contains a list of all the segments that are present
         // in this subgrid. The list is time ordered and also contains references
@@ -31,7 +26,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         // FLatestCells contains the computed latest cell information that spans
         // all the segments in the subgrid
-        public ISubGridCellLatestPassDataWrapper GlobalLatestCells { get; set; } = null;
+        public ISubGridCellLatestPassDataWrapper GlobalLatestCells { get; set; }
 
         //      property FSGranuleIndex : TICFSGranuleIndex read FFSGranuleIndex write FFSGranuleIndex;
         //      property FSGranuleCount : Longword read FFSGranuleCount write FFSGranuleCount;
@@ -84,8 +79,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public bool Write(BinaryWriter writer)
         {
-            int SegmentCount = 0;
-
             try
             {
                 Debug.Assert(GlobalLatestCells != null, "Cannot write subgrid directory without global latest values available");
@@ -93,8 +86,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 GlobalLatestCells.Write(writer, new byte[10000]);
 
                 // Write out the directoy of segments
-                SegmentCount = SegmentDirectory.Count;
-
                 Debug.Assert(SegmentDirectory.Count > 0, "Writing a segment directory with no segments");
                 writer.Write((int)SegmentDirectory.Count);
 

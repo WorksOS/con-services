@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Interfaces;
 
 namespace VSS.VisionLink.Raptor.Storage
@@ -14,8 +9,8 @@ namespace VSS.VisionLink.Raptor.Storage
     /// </summary>
     public static class StorageProxy
     {
-        private static IStorageProxy raptorInstance_Mutable = null;
-        private static IStorageProxy raptorInstance_Immutable = null;
+        private static IStorageProxy raptorInstance_Mutable;
+        private static IStorageProxy raptorInstance_Immutable;
 
         public static IStorageProxy RaptorInstance(StorageMutability mutability)
         {

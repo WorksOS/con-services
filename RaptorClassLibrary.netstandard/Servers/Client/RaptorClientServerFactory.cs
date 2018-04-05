@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 
 namespace VSS.VisionLink.Raptor.Servers.Client
@@ -24,15 +20,12 @@ namespace VSS.VisionLink.Raptor.Servers.Client
             {
                 return new RaptorMutableClientServer(role);
             }
-            else if (gridName.Equals(RaptorGrids.RaptorImmutableGridName()))
+            if (gridName.Equals(RaptorGrids.RaptorImmutableGridName()))
             {
                 return new RaptorImmutableClientServer(role);
             }
-            else
-            {
-                throw new ArgumentException($"{gridName} is an unknown grid to create a client node within.");
-            }
 
+            throw new ArgumentException($"{gridName} is an unknown grid to create a client node within.");
         }
     }
 }
