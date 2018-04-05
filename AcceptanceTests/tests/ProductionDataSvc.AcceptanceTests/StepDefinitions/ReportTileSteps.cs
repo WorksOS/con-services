@@ -235,7 +235,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       }
       if (!string.IsNullOrEmpty(language))
       {
-        sb.Append($"&language{language}");
+        sb.Append($"&language={language}");
       }
       return sb.ToString();
     }
