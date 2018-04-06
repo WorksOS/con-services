@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -45,7 +46,7 @@ namespace VSS.MasterData.Proxies
     public async Task<GeofenceData> GetBoundaryForProject(string projectUid, string geofenceUid,
       IDictionary<string, string> customHeaders = null)
     {
-      return await GetItemWithRetry<GeofenceListData, GeofenceData>(GetBoundaries, g => g.GeofenceUID.ToString() == geofenceUid, projectUid, customHeaders);
+      return await GetItemWithRetry<GeofenceListData, GeofenceData>(GetBoundaries, g => string.Equals(g.GeofenceUID.ToString(), geofenceUid, StringComparison.OrdinalIgnoreCase), projectUid, customHeaders);
     }
 
   }

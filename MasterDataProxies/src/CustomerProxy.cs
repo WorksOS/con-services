@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using System;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -58,7 +59,7 @@ namespace VSS.MasterData.Proxies
     public async Task<CustomerData> GetCustomerForUser(string userUid, string customerUid,
       IDictionary<string, string> customHeaders = null)
     {
-      return await GetItemWithRetry<CustomerDataResult, CustomerData>(GetCustomersForUser, c => c.uid == customerUid, userUid, customHeaders);
+      return await GetItemWithRetry<CustomerDataResult, CustomerData>(GetCustomersForUser, c => string.Equals(c.uid, customerUid, StringComparison.OrdinalIgnoreCase), userUid, customHeaders);
     }
 
   }

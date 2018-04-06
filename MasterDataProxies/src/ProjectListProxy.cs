@@ -44,7 +44,7 @@ namespace VSS.MasterData.Proxies
     public async Task<ProjectData> GetProjectForCustomer(string customerUid, string projectUid,
       IDictionary<string, string> customHeaders = null)
     {
-      return await GetItemWithRetry<ProjectDataResult, ProjectData>(GetProjectsV4, p => p.ProjectUid == projectUid, customerUid, customHeaders);
+      return await GetItemWithRetry<ProjectDataResult, ProjectData>(GetProjectsV4, p => string.Equals(p.ProjectUid, projectUid, StringComparison.OrdinalIgnoreCase), customerUid, customHeaders);
     }
 
   }

@@ -49,7 +49,7 @@ namespace VSS.MasterData.Proxies
       IDictionary<string, string> customHeaders = null)
     {
       var list = await GetFiles(projectUid, userId, customHeaders);
-      return list.SingleOrDefault(f => f.ImportedFileUid == importedFileUid);
+      return list.SingleOrDefault(f => string.Equals(f.ImportedFileUid, importedFileUid, StringComparison.OrdinalIgnoreCase));
 
     }
 

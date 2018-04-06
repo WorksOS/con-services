@@ -92,7 +92,7 @@ namespace VSS.MasterData.Proxies
     public async Task<GeofenceData> GetGeofenceForCustomer(string customerUid, string geofenceUid,
       IDictionary<string, string> customHeaders = null)
     {
-      return await GetItemWithRetry<GeofenceDataResult, GeofenceData>(GetGeofences, g => g.GeofenceUID.ToString() == geofenceUid, customerUid, customHeaders);
+      return await GetItemWithRetry<GeofenceDataResult, GeofenceData>(GetGeofences, g => string.Equals(g.GeofenceUID.ToString(), geofenceUid, StringComparison.OrdinalIgnoreCase), customerUid, customHeaders);
     }
   }
 }
