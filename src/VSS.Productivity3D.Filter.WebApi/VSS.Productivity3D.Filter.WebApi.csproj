@@ -47,7 +47,7 @@
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.*" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.1.*" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.25.*" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.26.*" />
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.17.*" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.8.*" />
   </ItemGroup>
