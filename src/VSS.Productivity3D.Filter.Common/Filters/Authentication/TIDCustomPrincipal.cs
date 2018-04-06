@@ -82,43 +82,14 @@ namespace VSS.Productivity3D.Filter.Common.Filters.Authentication
     /// <returns>Project descriptor</returns>
     public ProjectData GetProject(string projectUid)
     {
-      var project = GetProjectForCustomer(projectUid);
+      var project = ProjectProxy.GetProjectForCustomer(CustomerUid, projectUid, ContextHeaders).Result;
 
       if (project != null) { return project; }
-      else
-      {
-        InvalidateProjectList();
-        project = GetProjectForCustomer(projectUid);
-        if (project != null) { return project; }
-      }
-
+  
       throw new ServiceException(HttpStatusCode.Unauthorized,
           new ContractExecutionResult(ContractExecutionStatesEnum.AuthError,
             $"Missing Project or project does not belong to customer {CustomerUid}:{EmailAddress} or don't have access to the project {projectUid}"));
     }
-
-    /// <summary>
-    /// Gets the data for a project for this customer
-    /// </summary>
-    /// <param name="projectUid"></param>
-    /// <returns></returns>
-    private ProjectData GetProjectForCustomer(string projectUid)
-    {
-      var projects = ProjectProxy.GetProjectsV4(CustomerUid, ContextHeaders).Result;
-      return projects.FirstOrDefault(p => p.ProjectUid == projectUid);
-    }
-
-    /// <summary>
-    /// Invalidates the response cache for this customer
-    /// Used in situations where responses can change but not often
-    /// for example when a project is created.
-    /// </summary>
-    private void InvalidateProjectList()
-    {
-      ProjectProxy.ClearCacheItem(CustomerUid);
-    }
-
-
 
   }
 }

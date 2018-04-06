@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using VSS.Authentication.JWT;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
@@ -95,11 +96,12 @@ namespace VSS.Productivity3D.Filter.Common.Filters.Authentication
           return;
         }
 
+        var customHeaders = context.Request.Headers.GetCustomHeaders();
         //If this is an application context do not validate user-customer
         if (isApplicationContext)
         {
           //Set calling context Principal
-          context.User = new TIDCustomPrincipal(new GenericIdentity(userUid), customerUid, userEmail, "Application", ProjectListProxy, context.Request.Headers.GetCustomHeaders() , isApplication: true);
+          context.User = new TIDCustomPrincipal(new GenericIdentity(userUid), customerUid, userEmail, "Application", ProjectListProxy, customHeaders , isApplication: true);
           this.Log.LogInformation(
             "Authorization: Calling context is Application Context for Customer: {0} Application: {1} ApplicationName: {2}",
             customerUid, userUid, applicationName);
@@ -107,17 +109,13 @@ namespace VSS.Productivity3D.Filter.Common.Filters.Authentication
           await this.NextRequestDelegate.Invoke(context);
           return;
         }
-        CustomerDataResult customerResult;
+        CustomerData customer;
 
         // User must have be authenticated against this customer
         try
         {
-          customerResult =
-            await this.CustomerProxy.GetCustomersForMe(userUid, context.Request.Headers.GetCustomHeaders());
-          if (customerResult.status != 200 || customerResult.customer == null ||
-              customerResult.customer.Count < 1 ||
-              !customerResult.customer.Exists(
-                x => string.Equals(x.uid, customerUid, StringComparison.OrdinalIgnoreCase)))
+          customer = await CustomerProxy.GetCustomerForUser(userUid, customerUid, customHeaders);
+          if (customer == null)
           {
             var error = $"User {userUid} is not authorized to configure this customer {customerUid}";
             this.Log.LogWarning(error);
@@ -136,9 +134,8 @@ namespace VSS.Productivity3D.Filter.Common.Filters.Authentication
         this.Log.LogInformation("Authorization: for Customer: {0} UserUid: {1} UserEmail: {2} allowed", customerUid, userUid,
           userEmail);
         //Set calling context Principal
-        context.User = new TIDCustomPrincipal(new GenericIdentity(userUid), customerUid, userEmail,
-          customerResult.customer.First(x => string.Equals(x.uid, customerUid, StringComparison.OrdinalIgnoreCase)).name,
-          ProjectListProxy, context.Request.Headers.GetCustomHeaders(), isApplication: isApplicationContext);
+        context.User = new TIDCustomPrincipal(new GenericIdentity(userUid), customerUid, userEmail, customer.name,
+          ProjectListProxy, customHeaders, isApplication: isApplicationContext);
       }
 
       await this.NextRequestDelegate.Invoke(context);

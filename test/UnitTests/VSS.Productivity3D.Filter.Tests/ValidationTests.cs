@@ -170,10 +170,9 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var projectListProxy = new Mock<IProjectListProxy>();
       var projectData = new ProjectData { ProjectUid = projectUid, CustomerUid = custUid };
-      var projects = new List<ProjectData> { projectData };
 
       var customHeaders = new Dictionary<string, string>();
-      projectListProxy.Setup(ps => ps.GetProjectsV4(It.IsAny<string>(), customHeaders)).ReturnsAsync(projects);
+      projectListProxy.Setup(ps => ps.GetProjectForCustomer(It.IsAny<string>(), projectUid, customHeaders)).ReturnsAsync(projectData);
 
       TIDCustomPrincipal principal = new TIDCustomPrincipal(new System.Security.Claims.ClaimsIdentity(),
         custUid, "","", projectListProxy.Object, customHeaders);
@@ -187,9 +186,8 @@ namespace VSS.Productivity3D.Filter.Tests
       var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
 
       var projectListProxy = new Mock<IProjectListProxy>();
-      var projects = new List<MasterData.Models.Models.ProjectData>();
       var customHeaders = new Dictionary<string, string>();
-      projectListProxy.Setup(ps => ps.GetProjectsV4(It.IsAny<string>(), customHeaders)).ReturnsAsync(projects);
+      projectListProxy.Setup(ps => ps.GetProjectForCustomer(It.IsAny<string>(), It.IsAny<string>(), customHeaders)).ReturnsAsync((ProjectData)null);
 
       TIDCustomPrincipal principal = new TIDCustomPrincipal(new System.Security.Claims.ClaimsIdentity(),
         custUid, "", "", projectListProxy.Object, customHeaders);
@@ -202,6 +200,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
 
     [TestMethod]
+    [Ignore("This test logic needs to be moved to the proxies now the retry is done there")]
     public async Task CustomerProjectValidation_HappyPath_CacheSimulation()
     {
       var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
