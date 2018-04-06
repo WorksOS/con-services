@@ -19,7 +19,7 @@ namespace VSS.Productivity3D.Common.Executors
       CellDatumRequest request = item as CellDatumRequest;
 
       if (GetCellDatumData(request, out var data))
-        result = ConvertCellDatumResult(data/*, request*/);
+        result = ConvertCellDatumResult(data);
       else
       {
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
@@ -46,12 +46,12 @@ namespace VSS.Productivity3D.Common.Executors
         out data);
     }
 
-    protected virtual CellDatumResponse ConvertCellDatumResult(TCellProductionData result/*, CellDatumRequest request*/)
+    protected virtual CellDatumResponse ConvertCellDatumResult(TCellProductionData result)
     {
       return CellDatumResponse.CreateCellDatumResponse(
           RaptorConverters.convertDisplayMode((TICDisplayMode) result.DisplayMode),
               result.ReturnCode,
-              result.Value,
+              result.ReturnCode == 0 ? result.Value : (double?)null,
               result.TimeStampUTC);
     }
   }

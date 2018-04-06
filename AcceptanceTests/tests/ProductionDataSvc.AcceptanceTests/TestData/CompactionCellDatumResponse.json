@@ -54,7 +54,6 @@
     "easting": 2794.2710130345881,
     "displayMode": 8,
     "returnCode": 1,
-    "value": 597.32501220703125,
     "timestamp": "2012-11-07T23:16:46.769",
     "Code": 0,
     "Message": "success"
@@ -94,7 +93,6 @@
     "easting": 2738.7511710978069,
     "displayMode": 23,
     "returnCode": 1,
-    "value": 194,
     "timestamp": "2012-10-31T21:56:24.807",
     "Code": 0,
     "Message": "success"
@@ -104,7 +102,6 @@
     "easting": 2738.7511710978069,
     "displayMode": 24,
     "returnCode": 1,
-    "value": 0,
     "timestamp": "2012-10-31T21:56:24.807",
     "Code": 0,
     "Message": "success"
@@ -114,7 +111,6 @@
     "easting": 2738.7511710978069,
     "displayMode": 0,
     "returnCode": 1,
-    "value": 0,
     "timestamp": "1899-12-30T00:00:00",
     "Code": 0,
     "Message": "success"

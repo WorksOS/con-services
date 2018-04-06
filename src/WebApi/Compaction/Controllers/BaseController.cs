@@ -415,19 +415,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to retrieve project."));
       }
 
-      var utcNow = DateTime.UtcNow;
-
-      // Force date range filters to be null if ProjectExtents is specified.
-      DateTime? startUtc = null;
-      DateTime? endUtc = null;
-
-      if (filter.DateRangeType.Value != DateRangeType.ProjectExtents)
-      {
-        startUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, true);
-        endUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, false);
-      }
-
-      filter.SetDates(startUtc, endUtc);
+      filter.ApplyDateRange(project.ianaTimeZone, true);
     }
 
     private void ApplyDateRange(Guid projectUid, FilterResult filter)
@@ -446,19 +434,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to retrieve project."));
       }
 
-      var utcNow = DateTime.UtcNow;
-
-      // Force date range filters to be null if ProjectExtents is specified.
-      DateTime? startUtc = null;
-      DateTime? endUtc = null;
-
-      if (filter.DateRangeType.Value != DateRangeType.ProjectExtents)
-      {
-        startUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, true);
-        endUtc = utcNow.UtcForDateRangeType(filter.DateRangeType.Value, project.ianaTimeZone, false);
-      }
-
-      filter.SetDates(startUtc, endUtc);
+      filter.ApplyDateRange(project.ianaTimeZone);
     }
 
     /// <summary>
