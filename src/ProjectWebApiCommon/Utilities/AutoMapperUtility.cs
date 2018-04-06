@@ -84,6 +84,24 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(x => x.ProjectUID, opt => opt.MapFrom(src => Guid.Parse(src.ProjectUid)))
             .ForMember(x => x.ActionUTC, opt => opt.MapFrom(src => src.LastActionedUtc))
             .ForMember(x => x.ReceivedUTC, opt => opt.MapFrom(src => src.LastActionedUtc));
+
+          // for v2 BC apis
+          cfg.CreateMap<Repositories.DBModels.Project, ProjectV2Descriptor>()
+            .ForMember(x => x.StartDate, opt => opt.MapFrom(src => src.StartDate.ToString("O")))
+            .ForMember(x => x.EndDate, opt => opt.MapFrom(src => src.EndDate.ToString("O")));
+          cfg.CreateMap<CreateProjectV2Request, CreateProjectEvent>()
+            .ForMember(x => x.CustomerID, opt => opt.Ignore())
+            .ForMember(x => x.CustomerUID, opt => opt.Ignore())
+            .ForMember(x => x.ProjectBoundary, opt => opt.Ignore())
+            .ForMember(x => x.CoordinateSystemFileName, opt => opt.Ignore())
+            .ForMember(x => x.CoordinateSystemFileContent, opt => opt.Ignore())
+            .ForMember(x => x.ActionUTC, opt => opt.Ignore())
+            .ForMember(x => x.ReceivedUTC, opt => opt.Ignore())
+            .ForMember(x => x.ProjectID, opt => opt.Ignore());
+            // todo convert PointLL and CoordSystem
+          cfg.CreateMap<Repositories.DBModels.Project, ProjectV2Descriptor>()
+            .ForMember(x => x.StartDate, opt => opt.MapFrom(src => src.StartDate.ToString("O")))
+            .ForMember(x => x.EndDate, opt => opt.MapFrom(src => src.EndDate.ToString("O")));
         }
       );
 

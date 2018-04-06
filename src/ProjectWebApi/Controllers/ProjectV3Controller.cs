@@ -55,7 +55,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       log.LogInformation("GetProjectsV3");
       var projects = (await GetProjectList());
-      var customerUid = LogCustomerDetails("GetProjectsV3");
+      var customerUid = LogCustomerDetails("GetProjectsV3", "");
 
 
       return projects.Where(p => p.CustomerUID == customerUid).ToImmutableDictionary(key => key.LegacyProjectID,

@@ -212,18 +212,39 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="projectUid">The project uid.</param>
     protected async Task<Repositories.DBModels.Project> GetProject(string projectUid)
     {
-      var customerUid = LogCustomerDetails("GetProject", projectUid);
+      var customerUid = LogCustomerDetails("GetProject by projectUid", projectUid);
       var project =
         (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
           p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
 
       if (project == null)
       {
-        log.LogWarning($"User doesn't have access to {projectUid}");
+        log.LogWarning($"User doesn't have access to projectUid: {projectUid}");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 1);
       }
 
-      log.LogInformation($"Project {projectUid} retrieved");
+      log.LogInformation($"Project projectUid: {projectUid} retrieved");
+      return project;
+    }
+
+    /// <summary>
+    /// Gets the project.
+    /// </summary>
+    /// <param name="legacyProjectId"></param>
+    protected async Task<Repositories.DBModels.Project> GetProject(long legacyProjectId)
+    {
+      var customerUid = LogCustomerDetails("GetProject by legacyProjectId", legacyProjectId);
+      var project =
+        (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
+          p => p.LegacyProjectID == legacyProjectId);
+
+      if (project == null)
+      {
+        log.LogWarning($"User doesn't have access to legacyProjectId: {legacyProjectId}");
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 1);
+      }
+
+      log.LogInformation($"Project legacyProjectId: {legacyProjectId} retrieved");
       return project;
     }
 
@@ -237,6 +258,20 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       log.LogInformation(
         $"{functionName}: UserUID={userId}, CustomerUID={customerUid}  and projectUid={projectUid}");
+
+      return customerUid;
+    }
+
+    /// <summary>
+    /// Log the Customer and Project details.
+    /// </summary>
+    /// <param name="functionName">Calling function name</param>
+    /// <param name="legacyProjectId">The Project Id from legacy</param>
+    /// <returns>Returns <see cref="TIDCustomPrincipal.CustomerUid"/></returns>
+    protected string LogCustomerDetails(string functionName, long legacyProjectId = 0)
+    {
+      log.LogInformation(
+        $"{functionName}: UserUID={userId}, CustomerUID={customerUid}  and legacyProjectId={legacyProjectId}");
 
       return customerUid;
     }

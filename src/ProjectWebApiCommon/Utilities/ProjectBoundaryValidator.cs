@@ -95,7 +95,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       return ParseBoundaryData(s, ',', ' ');
     }
 
-    private static string GetWicketFromPoints(List<Point> points)
+    public static string GetWicketFromPoints(List<Point> points)
     {
       if (points.Count == 0)
         return string.Empty;
@@ -108,7 +108,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       return polygonWkt.ToString().TrimEnd(',') + ("))");
     }
 
-    private static List<Point> MakingValidPoints(List<Point> points)
+    public static List<Point> MakingValidPoints(List<Point> points)
     {
       List<Point> adjustedPoints = new List<Point>();
       points.Add(new Point(Double.MaxValue, Double.MaxValue));
