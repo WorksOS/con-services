@@ -47,5 +47,12 @@ namespace VSS.MasterData.Proxies
       return await GetItemWithRetry<ProjectDataResult, ProjectData>(GetProjectsV4, p => string.Equals(p.ProjectUid, projectUid, StringComparison.OrdinalIgnoreCase), customerUid, customHeaders);
     }
 
+    //To support 3dpm v1 end points which use legacy project id
+    public async Task<ProjectData> GetProjectForCustomer(string customerUid, long projectId,
+      IDictionary<string, string> customHeaders = null)
+    {
+      return await GetItemWithRetry<ProjectDataResult, ProjectData>(GetProjectsV4, p => p.LegacyProjectId == projectId, customerUid, customHeaders);
+    }
+
   }
 }
