@@ -113,8 +113,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       Log.LogDebug("GetReportTile: " + Request.QueryString);
 
       var tileResult = await GetGeneratedTile(projectUid, filterUid, cutFillDesignUid, volumeBaseUid, volumeTopUid,
-        volumeCalcType, overlays, width, height, mapType, mode,
-        userPreferences: string.IsNullOrEmpty(language) ? null : new UserPreferenceData { Language = language });
+        volumeCalcType, overlays, width, height, mapType, mode, language: language);
 
       return tileResult;
     }
@@ -159,8 +158,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       Log.LogDebug("GetReportTileRaw: " + Request.QueryString);
 
       var tileResult = await GetGeneratedTile(projectUid, filterUid, cutFillDesignUid, volumeBaseUid, volumeTopUid,
-        volumeCalcType, overlays, width, height, mapType, mode, 
-        userPreferences: string.IsNullOrEmpty(language) ? null : new UserPreferenceData { Language = language });
+        volumeCalcType, overlays, width, height, mapType, mode, language: language);
 
       Response.Headers.Add("X-Warning", "false");
       return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
@@ -220,7 +218,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Get the generated tile for the request
     /// </summary>
     private async Task<TileResult> GetGeneratedTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, Guid? volumeBaseUid, Guid? volumeTopUid, VolumeCalcType? volumeCalcType,
-      TileOverlayType[] overlays, int width, int height, MapType? mapType, DisplayMode? mode, bool thumbnail = false, UserPreferenceData userPreferences = null)
+      TileOverlayType[] overlays, int width, int height, MapType? mapType, DisplayMode? mode, bool thumbnail = false, string language = null)
     {
       var overlayTypes = overlays.ToList();
       if (overlays.Contains(TileOverlayType.AllOverlays))
@@ -243,7 +241,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var alignmentDescriptors = overlayTypes.Contains(TileOverlayType.Alignments)
         ? await GetAlignmentDescriptors(projectUid)
         : new List<DesignDescriptor>();
-      userPreferences = userPreferences ?? await GetShortCachedUserPreferences();
+      language = string.IsNullOrEmpty(language) ? (await GetShortCachedUserPreferences()).Language : language;
       ////var geofences = overlayTypes.Contains(TileOverlayType.Geofences)
       ////  ? await geofenceProxy.GetGeofences((User as RaptorPrincipal).CustomerUid, CustomHeaders)
       ////  : new List<GeofenceData>();
@@ -263,7 +261,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         .SetAlignmentDescriptors(alignmentDescriptors)
         .SetDxfFiles(dxfFiles)
         .SetProject(project)
-        .CreateTileGenerationRequest(overlayTypes.ToArray(), width, height, mapType, mode, userPreferences.Language);
+        .CreateTileGenerationRequest(overlayTypes.ToArray(), width, height, mapType, mode, language);
 
       request.Validate();
 
