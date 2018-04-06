@@ -78,7 +78,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <returns></returns>
         public bool IdentifierMatches(byte[] identifier)
         {
-            if (Identifier.Count() != identifier.Length)
+            if (Identifier.Length != identifier.Length)
             {
                 return false;
             }

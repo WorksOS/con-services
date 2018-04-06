@@ -124,7 +124,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             SurveyedSurfaces SurveyedSurfaceList = SiteModel.SurveyedSurfaces;
             FilteredSurveyedSurfaces = new SurveyedSurfaces();
 
-            if (SurveyedSurfaceList?.Count() > 0)
+            if (SurveyedSurfaceList?.Count > 0)
             {
                 // Filter out any surveyed surfaces which don't match current filter (if any) - realistically, this is time filters we're thinking of here
                 SurveyedSurfaceList.FilterSurveyedSurfaceDetails(Filter.AttributeFilter.HasTimeFilter,
@@ -369,7 +369,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// </summary>
         private ServerRequestResult PerformHeightAnnotation()
         {
-            if (FilteredSurveyedSurfaces.Count() == 0)
+            if (FilteredSurveyedSurfaces.Count == 0)
             {
                 return ServerRequestResult.NoError;
             }
@@ -385,7 +385,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
             bool ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime = ClientGrid is ClientHeightAndTimeLeafSubGrid;
 
-            ///* TODO - cell profiles not yet supported
+            //* TODO - cell profiles not yet supported
             // ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile = ClientGrid is ClientCellProfileLeafSubGrid; // TICClientSubGridTreeLeaf_CellProfile;
 
             if (!(ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime /* || ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile */))

@@ -67,17 +67,14 @@ namespace VSS.VisionLink.Raptor.GridFabric.Events
             }
             else
             {
-                Log.Error($"Unable to get messaging projection to add site model attribute changed event to");
+                Log.Error("Unable to get messaging projection to add site model attribute changed event to");
             }
         }
 
         public void StopListening()
         {
-            if (MsgGroup != null)
-            {
-                // Unregister the listener from the message group
-                MsgGroup.StopLocalListen(this);
-            }
+            // Unregister the listener from the message group
+            MsgGroup?.StopLocalListen(this);
 
             MsgGroup = null;
         }

@@ -1,12 +1,6 @@
 ﻿using log4net;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
 
@@ -59,7 +53,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
                                  bool LookInCacheOnly,
                                  bool AcceptSpeculativeReadFailure)
         {
-            ISubGrid SubGrid = null;
+            ISubGrid SubGrid;
             ServerSubGridTreeLeaf LeafSubGrid = null;
             // bool SubGridLockAcquired = false;
             // bool IntentionLockCounterWound = false;
@@ -77,7 +71,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
 
             try
             {
-                Debug.Assert(ForSubGridTree != null, $"Subgridtree null in LocateSubGridContaining");
+                Debug.Assert(ForSubGridTree != null, "Subgridtree null in LocateSubGridContaining");
 
                 // Use a subgrid tree specific interlock to permit multiple threads accessing
                 // different subgrid trees to operate concurrently

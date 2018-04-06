@@ -45,8 +45,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 
                 TAGDataType fieldType = (TAGDataType)tempFieldType;
 
-                short id;
-                if  (!reader.ReadVarInt(out id))
+                if  (!reader.ReadVarInt(out var id))
                 {
                     return false;
                 }

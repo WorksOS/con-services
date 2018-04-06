@@ -51,7 +51,7 @@ namespace VSS.VisionLink.Raptor.Filters
             */
 
             // Increase the length of the passes array
-            if (PassCount == FilteredPassData.Count())
+            if (PassCount == FilteredPassData.Length)
             {
                 Array.Resize(ref FilteredPassData, PassCount + RaptorConfig.VLPDPSNode_CellPassAggregationListSizeIncrement);
             }
@@ -83,7 +83,7 @@ namespace VSS.VisionLink.Raptor.Filters
             */
 
             // Increase the length of the passes array
-            if (PassCount == FilteredPassData.Count())
+            if (PassCount == FilteredPassData.Length)
             {
                 Array.Resize(ref FilteredPassData, PassCount + RaptorConfig.VLPDPSNode_CellPassAggregationListSizeIncrement);
             }

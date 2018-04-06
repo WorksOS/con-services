@@ -30,7 +30,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                                double cellSize,
                                int indexOriginOffset) : this(owner, parent, level)
         {
-
         }
 
         public LeafSubGridBase(ISubGridTree owner,

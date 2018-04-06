@@ -71,15 +71,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         {
             InitialiseStartEndTime();
 
-            if (Cells != null)
-            {
-                Cells.Clear();
-            }
-
-            if (Directory != null)
-            {
-                Directory.Clear();
-            }
+            Cells?.Clear();
+            Directory?.Clear();
         }
 
         private void CellPassAdded(SubGridCellPassesDataSegment segment, CellPass pass)
@@ -182,11 +175,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 AllocateSegment(SegmentInfo);
             }
 
-            if (SegmentInfo.Segment != null)
-            {
-                SegmentInfo.Segment.AllocateFullPassStacks();
-                //                FCachedMemorySizeOutOfDate:= True;
-            }
+            SegmentInfo.Segment?.AllocateFullPassStacks();
+            //                FCachedMemorySizeOutOfDate:= True;
         }
 
         public void AllocateLatestPassGrid(SubGridCellPassesDataSegmentInfo SegmentInfo)
@@ -196,11 +186,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 AllocateSegment(SegmentInfo);
             }
 
-            if (SegmentInfo.Segment != null)
-            {
-                SegmentInfo.Segment.AllocateLatestPassGrid();
-                //                FCachedMemorySizeOutOfDate:= True;
-            }
+            SegmentInfo.Segment?.AllocateLatestPassGrid();
+            //                FCachedMemorySizeOutOfDate:= True;
         }
 
         public bool HasAllCellPasses() => Cells != null;
@@ -602,7 +589,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             }
 
             // If we chose the first segment and it was dirty, then clear it
-            if (SeedSegmentInfo != null && SeedSegmentInfo.Segment != null)
+            if (SeedSegmentInfo?.Segment != null)
             {
                 LastSegment = SeedSegmentInfo.Segment;
             }

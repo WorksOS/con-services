@@ -41,7 +41,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Palettes
         {
             MinElevation = minElevation;
             MaxElevation = maxElevation;
-            ElevationPerBand = (MaxElevation - MinElevation) / ElevationPalette.Count();
+            ElevationPerBand = (MaxElevation - MinElevation) / ElevationPalette.Length;
         }
 
         public Color ChooseColour(double value)
@@ -53,7 +53,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Palettes
 
             int index = (int)Math.Floor((value - MinElevation) / ElevationPerBand);
 
-            return Range.InRange(index, 0, ElevationPalette.Count() - 1) ?  ElevationPalette[index] : Color.Black; // Color.Empty;
+            return Range.InRange(index, 0, ElevationPalette.Length - 1) ?  ElevationPalette[index] : Color.Black; // Color.Empty;
         }
     }
 }

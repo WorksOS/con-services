@@ -106,8 +106,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                                                bool loadLatestData,
                                                bool loadAllPasses,
                                                SubGridCellPassCountRecord[,] CellPassCounts,
-                                               ref long LatestCellPassDataSize,
-                                               ref long CellPassStacksDataSize)
+                                               out long LatestCellPassDataSize,
+                                               out long CellPassStacksDataSize)
         {
             LatestCellPassDataSize = 0;
             CellPassStacksDataSize = 0;
@@ -149,9 +149,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             SubGridCellPassCountRecord[,] CellPassCounts = new SubGridCellPassCountRecord[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
             CellPass[,] LatestPassData = new CellPass[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
 
-            long LatestCellPassDataSize = 0;
-            long CellPassStacksDataSize = 0;
-
             // Read the version etc from the stream
             if (!Header.IdentifierMatches(SubGridStreamHeader.kICServerSubgridLeafFileMoniker))
             {
@@ -180,7 +177,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 {
                     case 0:
                         Result = LoadPayloadFromStream_v2p0(reader, loadLatestData, loadAllPasses, CellPassCounts, // LatestPasses.PassData,
-                                               ref LatestCellPassDataSize, ref CellPassStacksDataSize);
+                                               out long LatestCellPassDataSize, out long CellPassStacksDataSize);
                         break;
 
                     default:
@@ -228,8 +225,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 MinorVersion = SubGridStreamHeader.kSubGridMinorVersion_Latest,
                 Identifier = SubGridStreamHeader.kICServerSubgridLeafFileMoniker,
                 Flags = SubGridStreamHeader.kSubGridHeaderFlag_IsSubgridSegmentFile,
-                StartTime = SegmentInfo == null ? _StartTime : SegmentInfo.StartTime,
-                EndTime = SegmentInfo == null ? _EndTime : SegmentInfo.EndTime,
+                StartTime = SegmentInfo?.StartTime ?? _StartTime,
+                EndTime = SegmentInfo?.EndTime ?? _EndTime,
                 LastUpdateTimeUTC = DateTime.Now - Time.GPS.GetLocalGMTOffset()
             };
 
@@ -279,7 +276,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public bool SaveToFile(IStorageProxy storage,
                                string FileName,
-                               ref FileSystemErrorStatus FSError)
+                               out FileSystemErrorStatus FSError)
         {
             //            int TotalPasses = 0, MaxPasses = 0;
             //            InvalidatedSpatialStreams: TInvalidatedSpatialStreamArray;

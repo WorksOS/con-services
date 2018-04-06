@@ -22,7 +22,7 @@ namespace VSS.VisionLink.Raptor.Services.Designs
 
 
         [NonSerialized]
-        private static DesignsService _instance = null;
+        private static DesignsService _instance;
 
         public static DesignsService Instance() 
         {
@@ -90,7 +90,8 @@ namespace VSS.VisionLink.Raptor.Services.Designs
         /// </summary>
         /// <param name="SiteModelID"></param>
         /// <param name="designDescriptor"></param>
-        /// <param name="AsAtDate"></param>
+        /// <param name="extents"></param>
+        /// <param name="DesignID"></param>
         public void AddDirect(long SiteModelID, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents, out long DesignID)
         {
             // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
@@ -108,13 +109,9 @@ namespace VSS.VisionLink.Raptor.Services.Designs
             {
                 // Swallow exception, the list will be empty
             }
-            catch
-            {
-                throw;
-            }
 
             // Add the new design, generating a random ID from a GUID
-            Raptor.Designs.Storage.Design design = designList.AddDesignDetails(DesignID, designDescriptor, extents);
+            designList.AddDesignDetails(DesignID, designDescriptor, extents);
 
             // Put the list back into the cache with the new entry
             mutableNonSpatialCache.Put(cacheKey, designList.ToBytes());

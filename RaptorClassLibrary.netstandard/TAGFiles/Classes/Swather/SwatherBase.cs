@@ -46,7 +46,6 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
                                           CellPass processedCellPass)
         {
             ServerSubGridTreeLeaf SubGrid;
-            byte SubGridCellX, SubGridCellY;
 
             // Arrange the subgrid that will house this cell pass.
             // This needs to happen if, and only if, we will actually add a cell
@@ -75,7 +74,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
             SubGrid.Dirty = true;
 
             // Find the location of the cell within the subgrid.
-            SubGrid.GetSubGridCellIndex(cellX, cellY, out SubGridCellX, out SubGridCellY);
+            SubGrid.GetSubGridCellIndex(cellX, cellY, out byte SubGridCellX, out byte SubGridCellY);
 
             // Now add the pass to the cell information
             SubGrid.AddPass(SubGridCellX, SubGridCellY, processedCellPass);

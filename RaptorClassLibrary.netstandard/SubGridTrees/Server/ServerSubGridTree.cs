@@ -3,7 +3,7 @@ using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 {
-    public class ServerSubGridTree : SubGridTree
+    public class ServerSubGridTree : SubGridTree, IServerSubGridTree
     {
         /// <summary>
         /// The SiteModel that this subgrid tree is holding information for

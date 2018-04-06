@@ -39,11 +39,6 @@ namespace VSS.VisionLink.Raptor.GridFabric.Caches
             {
                 // This is fine, carry on
             }
-            catch (Exception E)
-            {
-                // This is less fine...
-                throw E;
-            }
         }
 
         /// <summary>

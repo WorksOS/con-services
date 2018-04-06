@@ -21,12 +21,8 @@ namespace VSS.VisionLink.Raptor.SiteModels
 
         public static SiteModels Instance(StorageMutability mutability = StorageMutability.Immutable)
         {
-            if (instance[(int)mutability] == null)
-            {
-                instance[(int)mutability] = new SiteModels(StorageProxyFactory.Storage(mutability));
-            }
-
-            return instance[(int)mutability];
+            return instance[(int) mutability] ??
+                   (instance[(int) mutability] = new SiteModels(StorageProxyFactory.Storage(mutability)));
         }
 
         public SiteModel GetSiteModel(long ID) => GetSiteModel(ID, false);

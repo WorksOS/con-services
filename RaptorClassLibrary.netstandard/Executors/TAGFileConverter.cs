@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.SiteModels;
@@ -132,7 +131,7 @@ namespace VSS.VisionLink.Raptor.Executors
 
                 SetPublishedState(Processor);
             }
-            catch (Exception E) // make sure any exception is trapped to return correct response to caller
+            catch //(Exception E) // make sure any exception is trapped to return correct response to caller
             {
                 return false;
             }

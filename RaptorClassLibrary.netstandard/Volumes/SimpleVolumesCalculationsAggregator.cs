@@ -210,7 +210,7 @@ namespace VSS.VisionLink.Raptor.Volumes
 
                         if (VolumeType == VolumeComputationType.BetweenFilterAndDesign || VolumeType == VolumeComputationType.BetweenDesignAndFilter)
                         {
-                            TopZ = DesignHeights == null ? Consts.NullHeight : DesignHeights.Cells[I, J];
+                            TopZ = DesignHeights?.Cells[I, J] ?? Consts.NullHeight;
 
                             if (VolumeType == VolumeComputationType.BetweenDesignAndFilter)
                             {

@@ -80,9 +80,14 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             try
             {
                 // create a leaf to contain the mutable directory (and ensure the global latest cells is the mutable variety)
-                ServerSubGridTreeLeaf leaf = new ServerSubGridTreeLeaf(null, null, SubGridTree.SubGridTreeLevels);
+                ServerSubGridTreeLeaf leaf = new ServerSubGridTreeLeaf(null, null, SubGridTree.SubGridTreeLevels)
+                {
+                    Directory =
+                    {
+                        GlobalLatestCells = SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(true, false)
+                    }
+                };
 
-                leaf.Directory.GlobalLatestCells = SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(true, false);
 
                 // Load the mutable stream of information
                 mutableStream.Position = 0;

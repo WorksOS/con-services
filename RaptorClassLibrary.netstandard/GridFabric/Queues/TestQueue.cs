@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
-using VSS.VisionLink.Raptor.Servers.Client;
 
 namespace VSS.VisionLink.Raptor.GridFabric.Queues
 {
@@ -17,9 +16,9 @@ namespace VSS.VisionLink.Raptor.GridFabric.Queues
         /// A key field (a time) set up as an ordered (ascending) index
         /// </summary>
         [QuerySqlField(IsIndexed = true)]
-        public long Date { get; set; } = 0;
+        public long Date { get; set; }
 
-        public string Value { get; set; }  = "BobValue";
+        public string Value { get; set; }
 
         public TestQueueItem(long date, string value)
         {
@@ -30,7 +29,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Queues
 
     public class TestQueueHolder
     {
-        private ICache<long, TestQueueItem> QueueCache = null;
+        private ICache<long, TestQueueItem> QueueCache;
 
         private void Add(DateTime date, string value)
         {
@@ -39,7 +38,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Queues
 
         public TestQueueHolder()
         {
-            RaptorMutableClientServer Server = new RaptorMutableClientServer(new string[] { "TestQueue2" });
+          //  RaptorMutableClientServer Server = new RaptorMutableClientServer(new [] { "TestQueue2" });
             IIgnite Ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
             QueueCache = Ignite.GetOrCreateCache<long, TestQueueItem>(
                 new CacheConfiguration

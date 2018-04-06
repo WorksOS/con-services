@@ -254,7 +254,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
             // Construct the map representing those cells that contain values that
             // should be serialised
             // Unsure if this is needed (current gen used it to control which values were written into the stream)
-            ProdDataMap.ForEach((x, y) => CellHasValue(x, y));
+            ProdDataMap.ForEach(CellHasValue);
 
             // Write the map to the stream for deserialisation
             formatter.Serialize(stream, ProdDataMap);

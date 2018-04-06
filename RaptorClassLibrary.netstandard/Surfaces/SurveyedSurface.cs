@@ -109,13 +109,14 @@ namespace VSS.VisionLink.Raptor.Surfaces
         {
             Read(reader);
         }
-        
+
         /// <summary>
         /// Constructor accepting full surveyed surface state
         /// </summary>
         /// <param name="AID"></param>
         /// <param name="ADesignDescriptor"></param>
         /// <param name="AAsAtDate"></param>
+        /// <param name="AExtents"></param>
         public SurveyedSurface(long AID,
                                DesignDescriptor ADesignDescriptor,
                                DateTime AAsAtDate,

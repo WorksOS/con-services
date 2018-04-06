@@ -348,7 +348,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             Result.Time = IntegerTime == EncodedFieldDescriptors.Time.NativeNullValue ? DateTime.MinValue : FirstRealCellPassTime.AddSeconds(IntegerTime);
 
             long IntegerHeight = BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.Height);
-            Result.Height = IntegerHeight == EncodedFieldDescriptors.Height.NativeNullValue ? Consts.NullHeight : IntegerHeight / 1000;
+            Result.Height = IntegerHeight == EncodedFieldDescriptors.Height.NativeNullValue ? Consts.NullHeight : (float)(IntegerHeight / 1000.0);
 
             Result.CCV = (short)(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.CCV));
             Result.RMV = (short)(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.RMV));

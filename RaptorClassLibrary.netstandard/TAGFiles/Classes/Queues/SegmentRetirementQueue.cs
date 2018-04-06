@@ -42,7 +42,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Queues
         public IEnumerable<SegmentRetirementQueueItem> Query(DateTime earlierThan)
         {
             var sql = new SqlQuery(typeof(SegmentRetirementQueueItem), $"_key < {earlierThan.ToBinary().ToString()}");
-            var cursor = QueueCache.Query(sql);
+            // var cursor = QueueCache.Query(sql);
 
             try
             {

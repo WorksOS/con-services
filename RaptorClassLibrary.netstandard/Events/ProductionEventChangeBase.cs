@@ -92,7 +92,7 @@ namespace VSS.VisionLink.Raptor.Events
         public bool IsCustomEvent
         {
             get { return BitFlagHelper.IsBitOn(flags, kCustomEventBitFlag); }
-            set { BitFlagHelper.SetBit(ref flags, kCustomEventBitFlag, true); }
+            set { BitFlagHelper.SetBit(ref flags, kCustomEventBitFlag, value); }
         }
 
 //        public bool SpatialDataRemovedForEvent
@@ -154,7 +154,7 @@ namespace VSS.VisionLink.Raptor.Events
         /// It is assigned the default value for the type. Make sure all enumerated and other types specify an
         /// appropriate default (or null) value
         /// </summary>
-        public V State { get; set; } = default(V);
+        public V State { get; set; } // = default(V);
 
         /// <summary>
         /// Provides the base comparer between two events for a generic event. Base events define only a date/time, this comparer

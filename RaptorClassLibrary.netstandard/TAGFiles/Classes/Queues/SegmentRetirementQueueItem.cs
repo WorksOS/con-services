@@ -13,9 +13,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Queues
         /// A key field (a time) set up as an ordered (ascending) index
         /// </summary>
         [QuerySqlField(IsIndexed = true)]
-        public long Date { get; set; } = 0;
+        public long Date { get; set; }
 
-        public string Value { get; set; } = "BobValue";
+        public string Value { get; set; }
 
         public SegmentRetirementQueueItem(long date, string value)
         {

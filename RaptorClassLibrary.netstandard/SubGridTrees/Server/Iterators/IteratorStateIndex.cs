@@ -111,7 +111,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
                                  Range.InRange(MaxIterationElevation, SegmentInfo.MinElevation, SegmentInfo.MaxElevation);
                     }
                     else
-                      if (SegmentInfo.Segment != null && SegmentInfo.Segment.PassesData != null)
+                      if (SegmentInfo.Segment?.PassesData != null)
 
                     {
                         Debug.Assert(false, "Static cell pass information not yet supported");

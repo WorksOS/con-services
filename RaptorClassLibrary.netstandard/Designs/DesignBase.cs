@@ -22,7 +22,7 @@ namespace VSS.Velociraptor.DesignProfiling
         {
         }
 
-        public abstract DesignLoadResult LoadFromFile(string FileName);
+        public abstract DesignLoadResult LoadFromFile(string fileName);
 
         public abstract void GetExtents(out double x1, out double y1, out double x2, out double y2);
 

@@ -134,9 +134,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
             {
                 if (s.Segment != null)
                 {
-                    FileSystemErrorStatus FSError = FileSystemErrorStatus.OK;
-
-                    s.Segment.SaveToFile(StorageProxy, ServerSubGridTree.GetLeafSubGridSegmentFullFileName(SubGridOriginAddress, s), ref FSError);
+                    s.Segment.SaveToFile(StorageProxy, ServerSubGridTree.GetLeafSubGridSegmentFullFileName(SubGridOriginAddress, s), out FileSystemErrorStatus FSError);
                 }
             }
 

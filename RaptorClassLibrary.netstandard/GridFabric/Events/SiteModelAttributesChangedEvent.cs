@@ -1,11 +1,4 @@
-﻿using Apache.Ignite.Core.Events;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor.GridFabric.Events
+﻿namespace VSS.VisionLink.Raptor.GridFabric.Events
 {
     public class SiteModelAttributesChangedEvent
     {

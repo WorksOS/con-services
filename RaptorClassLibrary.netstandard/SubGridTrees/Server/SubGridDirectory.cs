@@ -68,10 +68,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         public void Clear()
         {
             // Remove the global latest cell passes
-            if (GlobalLatestCells != null)
-            {
-                GlobalLatestCells.Clear();
-            }
+            GlobalLatestCells?.Clear();
 
             // Unhook all loaded segments from the segment directory
             SegmentDirectory.ForEach(x => { x.Segment = null; });

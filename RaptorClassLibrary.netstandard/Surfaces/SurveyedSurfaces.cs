@@ -144,7 +144,7 @@ namespace VSS.VisionLink.Raptor.Surfaces
 
         public new void Sort()
         {
-            base.Sort((x, y) => { return FSortDescending ? y.AsAtDate.CompareTo(x.AsAtDate) : x.AsAtDate.CompareTo(y.AsAtDate); });
+            base.Sort((x, y) => FSortDescending ? y.AsAtDate.CompareTo(x.AsAtDate) : x.AsAtDate.CompareTo(y.AsAtDate));
         }
 
         /// <summary>
@@ -271,7 +271,7 @@ namespace VSS.VisionLink.Raptor.Surfaces
                 return;
             }
 
-            if (!HasTimeFilter && ExclusionList.Count() == 0)
+            if (!HasTimeFilter && ExclusionList.Length == 0)
             {
                 FilteredSurveyedSurfaceDetails.Assign(this);
                 return;

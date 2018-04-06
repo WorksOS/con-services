@@ -23,29 +23,29 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         // Local state populated by the retriever constructor
-        private CombinedFilter Filter = null;
-        private SiteModel SiteModel = null;
-        private bool CanUseGlobalLatestCells = false;
-        private bool HasOverrideSpatialCellRestriction = false;
+        private CombinedFilter Filter;
+        private SiteModel SiteModel;
+        private bool CanUseGlobalLatestCells;
+        private bool HasOverrideSpatialCellRestriction;
         private BoundingIntegerExtent2D OverrideSpatialCellRestriction;
-        private bool PrepareGridForCacheStorageIfNoSeiving = false;
+        private bool PrepareGridForCacheStorageIfNoSeiving;
         private byte Level = SubGridTree.SubGridTreeLevels;
         private int MaxNumberOfPassesToReturn = int.MaxValue;
         private AreaControlSet AreaControlSet;
 
         // Local state populated for the purpose of access from variosu local methods
-        private IClientLeafSubGrid ClientGrid = null;
-        private ClientLeafSubGrid ClientGridAsLeaf = null;
+        private IClientLeafSubGrid ClientGrid;
+        private ClientLeafSubGrid ClientGridAsLeaf;
         private GridDataType _GridDataType = GridDataType.All;
-        private bool SeiveFilterInUse = false;
+        private bool SeiveFilterInUse;
         private SubGridTreeBitmapSubGridBits SeiveBitmask;
 //        private SubGridTreeBitmapSubGridBits CellIterationBitmask = SubGridTreeBitmapSubGridBits.FullMask;
-        ISubGrid _SubGrid = null;
-        ServerSubGridTreeLeaf _SubGridAsLeaf = null;
+        ISubGrid _SubGrid;
+        ServerSubGridTreeLeaf _SubGridAsLeaf;
 
-        FilteredValueAssignmentContext AssignmentContext = null;
-        SubGridSegmentIterator SegmentIterator = null;
-        SubGridSegmentCellPassIterator_NonStatic CellPassIterator = null;
+        FilteredValueAssignmentContext AssignmentContext;
+        SubGridSegmentIterator SegmentIterator;
+        SubGridSegmentCellPassIterator_NonStatic CellPassIterator;
 
         double _CellSize = Consts.NullDouble;
         int NumRowsToScan, NumColsToScan;
@@ -70,12 +70,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
         // long LastGetTargetValues_MachineID = -1;
         // bool MachineTargetValuesEventsLocked = false;
-        bool HaveFilteredPass = false;
+        bool HaveFilteredPass;
         FilteredPassData CurrentPass;
         FilteredPassData TempPass;
 
-        ISubGridCellLatestPassDataWrapper _GlobalLatestCells = null;
-        bool UseLastPassGrid = false; // Assume we can't use last pass data
+        ISubGridCellLatestPassDataWrapper _GlobalLatestCells;
+        bool UseLastPassGrid; // Assume we can't use last pass data
 
         /// <summary>
         /// Constructor for the subgrid retriever helper
@@ -98,6 +98,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                                 AreaControlSet areaControlSet)
         {
             SiteModel = sitemodel;
+            SegmentIterator = null;
+            CellPassIterator = null;
             _CellSize = SiteModel.Grid.CellSize;
 
             Filter = filter ?? new CombinedFilter(/*SiteModel*/);
@@ -300,7 +302,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         {
             // int TopMostLayerPassCount = 0;
             int TopMostLayerCompactionHalfPassCount = 0;
-            bool FilteredValueIsFromLatestCellPass = false;
+            bool FilteredValueIsFromLatestCellPass;
 
             IterationDirection PreviousIterationDirection;
 
@@ -429,7 +431,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                                 // consideration of this cell
 
                                 return; 
-                            };
+                            }
 
                             FilteredValueIsFromLatestCellPass = false;
 
@@ -638,7 +640,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         {
             // int TopMostLayerPassCount = 0;
             int TopMostLayerCompactionHalfPassCount = 0;
-            bool FilteredValueIsFromLatestCellPass = false;
+            bool FilteredValueIsFromLatestCellPass;
 
             IterationDirection PreviousIterationDirection;
 
@@ -808,7 +810,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                                     // consideration of this cell
 
                                     continue;
-                                };
+                                }
 
                                 FilteredValueIsFromLatestCellPass = false;
 
@@ -1093,23 +1095,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             if (!VLPDSvcLocations.VLPDPSNode_UseSkipStepComputationForWMSSubgridRequests)
             {
                 return false;
-            }
-            */
+            } */
 
             if (AreaControlSet.PixelXWorldSize == 0 || AreaControlSet.PixelYWorldSize == 0)
             {
                 return false;
             }
-
-            double Temp;
-
-            int north_row, east_col;
-
-            double CurrentNorth, CurrentEast;
-
-            int StepX, StepY;
-            double StepXIncrement, StepYIncrement;
-            double StepXIncrementOverTwo, StepYIncrementOverTwo;
 
             // Progress through the cells in the grid, starting from the southern most
             // row in the grid and progressing from the western end to the eastern end
@@ -1117,19 +1108,17 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
             ///////////////// CalculateParameters;  START
 
-            double StepsPerPixelX, StepsPerPixelY;
+            double StepsPerPixelX = AreaControlSet.PixelXWorldSize / _CellSize;
+            double StepsPerPixelY = AreaControlSet.PixelYWorldSize / _CellSize;
 
-            StepsPerPixelX = AreaControlSet.PixelXWorldSize / _CellSize;
-            StepsPerPixelY = AreaControlSet.PixelYWorldSize / _CellSize;
+            int StepX = Math.Min(kMaxStepSize, Math.Max(1, (int)Math.Truncate(StepsPerPixelX)));
+            int StepY = Math.Min(kMaxStepSize, Math.Max(1, (int)Math.Truncate(StepsPerPixelY)));
 
-            StepX = Math.Min(kMaxStepSize, Math.Max(1, (int)Math.Truncate(StepsPerPixelX)));
-            StepY = Math.Min(kMaxStepSize, Math.Max(1, (int)Math.Truncate(StepsPerPixelY)));
+            double StepXIncrement = StepX * _CellSize;
+            double StepYIncrement = StepY * _CellSize;
 
-            StepXIncrement = StepX * _CellSize;
-            StepYIncrement = StepY * _CellSize;
-
-            StepXIncrementOverTwo = StepXIncrement / 2;
-            StepYIncrementOverTwo = StepYIncrement / 2;
+            double StepXIncrementOverTwo = StepXIncrement / 2;
+            double StepYIncrementOverTwo = StepYIncrement / 2;
 
             ///////////////// CalculateParameters;  END
 
@@ -1153,9 +1142,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             // Skip-Iterate through the cells marking those cells that require values
             // calculate for them in the bitmask
 
-            Temp = SubGridWorldOriginY / StepYIncrement;
-            CurrentNorth = (Math.Truncate(Temp) * StepYIncrement) - StepYIncrementOverTwo;
-            north_row = (int)Math.Floor((CurrentNorth - SubGridWorldOriginY) / _CellSize);
+            double Temp = SubGridWorldOriginY / StepYIncrement;
+            double CurrentNorth = (Math.Truncate(Temp) * StepYIncrement) - StepYIncrementOverTwo;
+            int north_row = (int)Math.Floor((CurrentNorth - SubGridWorldOriginY) / _CellSize);
 
             while (north_row < 0)
             {
@@ -1166,8 +1155,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             {
                 Temp = SubGridWorldOriginX / StepXIncrement;
 
-                CurrentEast = (Math.Truncate(Temp) * StepXIncrement) + StepXIncrementOverTwo;
-                east_col = (int)Math.Floor((CurrentEast - SubGridWorldOriginX) / _CellSize);
+                double CurrentEast = (Math.Truncate(Temp) * StepXIncrement) + StepXIncrementOverTwo;
+                int east_col = (int)Math.Floor((CurrentEast - SubGridWorldOriginX) / _CellSize);
 
                 while (east_col < 0)
                 {
@@ -1192,7 +1181,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         {
             double CosOfRotation, SinOfRotation;
 
-            Fence RotatedSubgridBoundary = null;
+            Fence RotatedSubgridBoundary;
 
             if (Rotation != 0)
             {
@@ -1247,22 +1236,19 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
         private void PerformScan(double SubgridMinX, double SubgridMinY, double SubgridMaxX, double SubgridMaxY)
         {
-            int north_row, east_col;
-            double CurrentNorth, CurrentEast;
-
             // Skip-Iterate through the cells marking those cells that require values
             // calculate for them in the bitmask. Also record the actual probe locations
             // that determined the cells to be processed.
 
             for (int I = 0; I < NumRowsToScan; I++)
             {
-                CurrentNorth = FirstScanPointNorth + (I * StepNorthY);
-                CurrentEast = FirstScanPointEast + (I * StepNorthX);
+                double  CurrentNorth = FirstScanPointNorth + (I * StepNorthY);
+                double CurrentEast = FirstScanPointEast + (I * StepNorthX);
 
                 for (int J = 0; J < NumColsToScan; J++)
                 {
-                    east_col = (int)Math.Floor((CurrentEast - SubgridMinX) / _CellSize);
-                    north_row = (int)Math.Floor((CurrentNorth - SubgridMinY) / _CellSize);
+                    int east_col = (int)Math.Floor((CurrentEast - SubgridMinX) / _CellSize);
+                    int north_row = (int)Math.Floor((CurrentNorth - SubgridMinY) / _CellSize);
 
                     if (Range.InRange(east_col, 0, SubGridTree.SubGridTreeDimensionMinus1) &&
                         Range.InRange(north_row, 0, SubGridTree.SubGridTreeDimensionMinus1))
@@ -1340,9 +1326,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             //  SIGLogMessage.PublishNoODS(Nil, Format('In RetrieveSubGrid: Active pass filters = %s, Active cell filters = %s', [PassFilter.ActiveFiltersText, CellFilter.ActiveFiltersText]), slmcDebug);
 
             // Set up class local state for other methods to access
-            this.ClientGrid = clientGrid;
-            this.ClientGridAsLeaf = clientGrid as ClientLeafSubGrid;
-            this._GridDataType = clientGrid.GridDataType;
+            ClientGrid = clientGrid;
+            ClientGridAsLeaf = clientGrid as ClientLeafSubGrid;
+            _GridDataType = clientGrid.GridDataType;
 
             try
             {
@@ -1420,7 +1406,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                     // SIGLogMessage.PublishNoODS(Nil, Format('Getting subgrid leaf at %dx%d', [CellX, CellY]), slmcDebug);
 
                     _SubGridAsLeaf = (ServerSubGridTreeLeaf)_SubGrid;
-                    this._GlobalLatestCells = _SubGridAsLeaf.Directory.GlobalLatestCells;
+                    _GlobalLatestCells = _SubGridAsLeaf.Directory.GlobalLatestCells;
 
                     if (PruneSubGridRetrievalHere())
                     {

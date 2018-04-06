@@ -60,7 +60,7 @@ namespace VSS.VisionLink.Raptor.Filters
         /// </summary>
         public DateTime EndTime { get; set; } = DateTime.MaxValue;
 
-        public bool OverrideTimeBoundary { get; set; } = false;
+        public bool OverrideTimeBoundary { get; set; }
 
         // Machine based filtering members
         //    Machines   : TMachineDetails; // TMachineIDArray;
@@ -71,31 +71,31 @@ namespace VSS.VisionLink.Raptor.Filters
         // Auto Vibe state filtering member
         public VibrationState VibeState { get; set; } = VibrationState.Invalid;
 
-        public MachineDirection MachineDirection { get; set; } = Types.MachineDirection.Unknown;
+        public MachineDirection MachineDirection { get; set; } = MachineDirection.Unknown;
 
         // TODO Add then set of pass types is implemented
         // PassTypeSet: TPassTypeSet;
-        public bool MinElevationMapping { get; set; } = false; //MinElevationMapping : TICMinElevMappingState;
-        public PositioningTech PositioningTech { get; set; } = Types.PositioningTech.Unknown;
+        public bool MinElevationMapping { get; set; } //MinElevationMapping : TICMinElevMappingState;
+        public PositioningTech PositioningTech { get; set; } = PositioningTech.Unknown;
 
         public short GPSTolerance { get; set; } = CellPass.NullGPSTolerance;
 
-        public bool GPSAccuracyIsInclusive { get; set; } = false;
+        public bool GPSAccuracyIsInclusive { get; set; }
 
-        public GPSAccuracy GPSAccuracy { get; set; } = Types.GPSAccuracy.Unknown;
+        public GPSAccuracy GPSAccuracy { get; set; } = GPSAccuracy.Unknown;
 
         /// <summary>
         /// The filter will select cell passes with a measure GPS tolerance value greater than the limit specified
         /// in GPSTolerance
         /// </summary>
-        public bool GPSToleranceIsGreaterThan { get; set; } = false;
+        public bool GPSToleranceIsGreaterThan { get; set; }
 
         // AvoidZoneEnteringEvents : Boolean;
         // AvoidZoneExitingEvents : Boolean;
         // AvoidZone2DZones : Boolean;
         // AvoidZoneUndergroundServiceZones : Boolean;
 
-        public ElevationType ElevationType { get; set; } = Types.ElevationType.Last;
+        public ElevationType ElevationType { get; set; } = ElevationType.Last;
 
         /// <summary>
         /// The machine automatics guidance mode to be in used to record cell passes that will meet the filter.
@@ -107,7 +107,7 @@ namespace VSS.VisionLink.Raptor.Filters
         /// cell passes within a cell. If set, then the first cell pass is chosen. If not set, then
         /// the latest cell pass is chosen
         /// </summary>
-        public bool ReturnEarliestFilteredCellPass { get; set; } = false;
+        public bool ReturnEarliestFilteredCellPass { get; set; }
 
         /// <summary>
         /// The elevation to uses as a level benchmark plane for an elevation filter
@@ -135,12 +135,12 @@ namespace VSS.VisionLink.Raptor.Filters
         /// by setting ElevationRangeBottomElevationForCell and ElevationRangeTopElevationForCell or by
         /// setting ElevationRangeDesignElevations top contain relevant benchmark elevations
         /// </summary>
-        public bool ElevationRangeIsInitialised { get; set; } = false;
+        public bool ElevationRangeIsInitialised { get; set; }
 
         /// <summary>
         /// The defined elevation range is defined only by a level plan and thickness
         /// </summary>
-        public bool ElevationRangeIsLevelAndThicknessOnly { get; set; } = false;
+        public bool ElevationRangeIsLevelAndThicknessOnly { get; set; }
 
         /// <summary>
         /// The top of the elevation range permitted for an individual cell being filtered against as
@@ -159,13 +159,13 @@ namespace VSS.VisionLink.Raptor.Filters
         /// an elevation range filter.
         /// </summary>
         [NonSerialized]
-        public ClientHeightLeafSubGrid ElevationRangeDesignElevations = null;
+        public ClientHeightLeafSubGrid ElevationRangeDesignElevations;
 
         /// <summary>
         /// Denotes whether analysis of cell passes in a cell are analysed into separate layers accodring to 
         /// LayerMethod or if extracted cell passes are wrapped into a single containing layer.
         /// </summary>
-        public LayerState LayerState { get; set; } = Types.LayerState.Invalid;
+        public LayerState LayerState { get; set; } = LayerState.Invalid;
 
         /// <summary>
         /// ID of layer we are only interested in
@@ -175,7 +175,7 @@ namespace VSS.VisionLink.Raptor.Filters
         /// <summary>
         /// Only permit cell passes recorded from a compaction type machine to be considered for filtering
         /// </summary>
-        public bool RestrictFilteredDataToCompactorsOnly { get; set; } = false;
+        public bool RestrictFilteredDataToCompactorsOnly { get; set; }
 
         /// <summary>
         /// The list of surveyed surface identifiers to be exluded from the filtered result
@@ -186,7 +186,7 @@ namespace VSS.VisionLink.Raptor.Filters
         //  public something[] MachineIDSets
 
         //  public CellPassAttributeFilter(SiteModel owner) : base(owner)
-        public CellPassAttributeFilter() : base()
+        public CellPassAttributeFilter()
         {
             ClearFilter();
         }
@@ -248,7 +248,7 @@ namespace VSS.VisionLink.Raptor.Filters
         /// <returns></returns>
         public int CompareTo(CellPassAttributeFilter AFilter)
         {
-            int Result = 0;
+            int Result;
 
             // Time
             Result = FlagCheck2(HasTimeFilter, AFilter.HasTimeFilter);
@@ -600,7 +600,7 @@ namespace VSS.VisionLink.Raptor.Filters
 
             LayerID = Source.LayerID;
 
-            Array.Copy(Source.SurveyedSurfaceExclusionList, SurveyedSurfaceExclusionList, Source.SurveyedSurfaceExclusionList.Count());
+            Array.Copy(Source.SurveyedSurfaceExclusionList, SurveyedSurfaceExclusionList, Source.SurveyedSurfaceExclusionList.Length);
 
             // This assignment method consciously does not "clone" or otherwise assign Elevation Range related filter state;
             // i.e. FElevationRangeIsInitialised, FElevationRangeIsLevelAndThicknessOnly, FElevationRangeTopElevationForCell,
@@ -691,10 +691,10 @@ FAvoidZoneUndergroundServiceZones = false;
             VibrationState VibeStateValue = VibrationState.Invalid;
             MachineGear MachineGearValue = MachineGear.Null;
             bool MinElevMappingValue = false;
-            GPSAccuracyAndTolerance GPSAccuracyAndToleranceValue = Types.GPSAccuracyAndTolerance.Null();
+            GPSAccuracyAndTolerance GPSAccuracyAndToleranceValue = GPSAccuracyAndTolerance.Null();
             PositioningTech PositioningTechStateValue = PositioningTech.Unknown;
             MachineAutomaticsMode GCSGuidanceModeValue = MachineAutomaticsMode.Unknown;
-            Machine Machine = null;
+            Machine Machine;
             ushort LayerIDStateValue = ushort.MaxValue;  // ID of current layer
 
             /* SPR 10733: AZ filters should only apply to AZ transgression events
@@ -1170,7 +1170,7 @@ FAvoidZoneUndergroundServiceZones = false;
 
         public bool FilterPass_NoMachineEvents(CellPass PassValue)
         {
-            Machine Machine = null;
+            Machine Machine;
 
             if (!AnyNonMachineEventFilterSelections)
             {
@@ -1225,7 +1225,7 @@ FAvoidZoneUndergroundServiceZones = false;
 
         /// <summary>
         /// FilterSinglePass selects a single pass from the list of passes in
-        /// <PassValues> where <PassValues> contains the entire list of passes for
+        /// PassValues where PassValues contains the entire list of passes for
         /// a cell in the database.
         /// </summary>
         /// <returns></returns>

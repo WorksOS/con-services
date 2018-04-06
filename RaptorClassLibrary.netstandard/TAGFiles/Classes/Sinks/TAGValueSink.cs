@@ -75,25 +75,25 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks
 
         public override void ReadANSIStringValue(TAGDictionaryItem valueType, byte[] value)
         {
-            if (ValueMatchers.TryGetValue(valueType.Name, out TAGValueMatcher valueMatcher) && (valueMatcher != null))
+            if (ValueMatchers.TryGetValue(valueType.Name, out TAGValueMatcher valueMatcher))
             {
-                valueMatcher.ProcessANSIStringValue(valueType, value);
+                valueMatcher?.ProcessANSIStringValue(valueType, value);
             }
         }
 
         public override void ReadEmptyValue(TAGDictionaryItem valueType)
         {
-            if (ValueMatchers.TryGetValue(valueType.Name, out TAGValueMatcher valueMatcher) && (valueMatcher != null))
+            if (ValueMatchers.TryGetValue(valueType.Name, out TAGValueMatcher valueMatcher))
             {
-                valueMatcher.ProcessEmptyValue(valueType);
+                valueMatcher?.ProcessEmptyValue(valueType);
             }
         }
 
         public override void ReadIEEEDoubleValue(TAGDictionaryItem valueType, double value)
         {
-            if (ValueMatchers.TryGetValue(valueType.Name, out TAGValueMatcher valueMatcher) && (valueMatcher != null))
+            if (ValueMatchers.TryGetValue(valueType.Name, out TAGValueMatcher valueMatcher))
             {
-                valueMatcher.ProcessDoubleValue(valueType, value);
+                valueMatcher?.ProcessDoubleValue(valueType, value);
             }
         }
 
@@ -104,25 +104,25 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks
 
         public override void ReadIntegerValue(TAGDictionaryItem valueType, int value)
         {
-            if (ValueMatchers.TryGetValue(valueType.Name, out TAGValueMatcher valueMatcher) && (valueMatcher != null))
+            if (ValueMatchers.TryGetValue(valueType.Name, out TAGValueMatcher valueMatcher))
             {
-                valueMatcher.ProcessIntegerValue(valueType, value);
+                valueMatcher?.ProcessIntegerValue(valueType, value);
             }
         }
 
         public override void ReadUnicodeStringValue(TAGDictionaryItem valueType, string value)
         {
-            if (ValueMatchers.TryGetValue(valueType.Name, out TAGValueMatcher valueMatcher) && (valueMatcher != null))
+            if (ValueMatchers.TryGetValue(valueType.Name, out TAGValueMatcher valueMatcher))
             {
-                valueMatcher.ProcessUnicodeStringValue(valueType, value);
+                valueMatcher?.ProcessUnicodeStringValue(valueType, value);
             }
         }
 
         public override void ReadUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
-            if (ValueMatchers.TryGetValue(valueType.Name, out TAGValueMatcher valueMatcher) && (valueMatcher != null))
+            if (ValueMatchers.TryGetValue(valueType.Name, out TAGValueMatcher valueMatcher))
             {
-                valueMatcher.ProcessUnsignedIntegerValue(valueType, value);
+                valueMatcher?.ProcessUnsignedIntegerValue(valueType, value);
             }
         }
     }

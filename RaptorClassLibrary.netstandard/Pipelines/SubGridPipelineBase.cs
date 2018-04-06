@@ -37,11 +37,11 @@ namespace VSS.VisionLink.Raptor.Pipelines
         /// As each subgrid result is processed in the task, the task pings the pipeline to note another task has been 
         /// completed. Once this count reaches zero the pipeline is cleared to complete its processing.
         /// </summary>
-        private long SubgridsRemainingToProcess = 0;
+        private long SubgridsRemainingToProcess;
 
-        public int ID = 0;
-        public PipelinedSubGridTask PipelineTask = null;
-        public bool Aborted { get; set; } = false;
+        public int ID;
+        public PipelinedSubGridTask PipelineTask;
+        public bool Aborted { get; set; }
 
         public uint TimeToLiveSeconds = 0;
         DateTime TimeToLiveExpiryTime = DateTime.MaxValue;
@@ -55,24 +55,24 @@ namespace VSS.VisionLink.Raptor.Pipelines
         /// <summary>
         /// OverallExistenceMap is the map which describes the combination of Prod Data and Surveyed Surfaces
         /// </summary>
-        public SubGridTreeSubGridExistenceBitMask OverallExistenceMap { get; set; } = null;
+        public SubGridTreeSubGridExistenceBitMask OverallExistenceMap { get; set; }
 
         /// <summary>
         /// ProdDataExistenceMap is the subgrid existence map for the data model referenced by FDataModelID
         /// </summary>
-        public SubGridTreeSubGridExistenceBitMask ProdDataExistenceMap { get; set; } = null;
+        public SubGridTreeSubGridExistenceBitMask ProdDataExistenceMap { get; set; }
 
         public bool IncludeSurveyedSurfaceInformation = true;
 
         /// <summary>
         /// DesignSubgridOverlayMap is the subgrid index for subgrids that cover the design being related to for cut/fill operations
         /// </summary>
-        public SubGridTreeSubGridExistenceBitMask DesignSubgridOverlayMap { get; set; } = null;
+        public SubGridTreeSubGridExistenceBitMask DesignSubgridOverlayMap { get; set; }
 
         /// <summary>
         /// The set of filters to be made available to the subgrid processing for this request
         /// </summary>
-        public FilterSet FilterSet { get; set; } = null;
+        public FilterSet FilterSet { get; set; }
 
         public int MaxNumberOfPassesToReturn = 0;
 
@@ -86,7 +86,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
         public bool Terminated = false;
 
-        protected bool pipelineCompleted = false;
+        protected bool pipelineCompleted;
 
         public bool PipelineCompleted {
             get
@@ -115,7 +115,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
         /// <summary>
         /// Have all subgrids in the request been returned and processed?
         /// </summary>
-        public bool AllFinished = false;
+        public bool AllFinished;
 
         private void AllSubgridsProcessed()
         {

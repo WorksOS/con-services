@@ -55,7 +55,8 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// </summary>
         /// <param name="SiteModelID"></param>
         /// <param name="designDescriptor"></param>
-        /// <param name="AsAtDate"></param>
+        /// <param name="asAtDate"></param>
+        /// <param name="extents"></param>
         public void Add(long SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents )
         {
             mutableNonSpatialCache.Invoke(SurveyedSurfaces.CacheKey(SiteModelID), 
@@ -68,7 +69,9 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// </summary>
         /// <param name="SiteModelID"></param>
         /// <param name="designDescriptor"></param>
-        /// <param name="AsAtDate"></param>
+        /// <param name="asAtDate"></param>
+        /// <param name="extents"></param>
+        /// <param name="SuveyedSurfaceID"></param>
         public void AddDirect(long SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents, out long SuveyedSurfaceID)
         {
             // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
@@ -93,7 +96,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
             }
 
             // Add the new surveyed surface, generating a random ID from a GUID
-            SurveyedSurface ss = ssList.AddSurveyedSurfaceDetails(SuveyedSurfaceID, designDescriptor, asAtDate, extents);
+            ssList.AddSurveyedSurfaceDetails(SuveyedSurfaceID, designDescriptor, asAtDate, extents);
 
             // Put the list back into the cache with the new entry
             mutableNonSpatialCache.Put(cacheKey, ssList.ToBytes());
@@ -140,7 +143,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="context"></param>
         public void Execute(IServiceContext context)
         {
-           Log.Info($"Executing Raptor Service 'SurveyedSurfaceService'");
+           Log.Info("Executing Raptor Service 'SurveyedSurfaceService'");
         }
 
         /// <summary>

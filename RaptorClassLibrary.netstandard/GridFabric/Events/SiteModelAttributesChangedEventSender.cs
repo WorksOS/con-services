@@ -17,6 +17,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Events
         /// <summary>
         /// Notify all nodes in the grid a site model has changed attributes
         /// </summary>
+        /// <param name="ignite"></param>
         /// <param name="siteModelID"></param>
         public static void ModelAttributesChanged(IIgnite ignite, long siteModelID)
         {

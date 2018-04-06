@@ -18,13 +18,13 @@ namespace VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments
 
         public BoundingWorldExtent3D Extents = BoundingWorldExtent3D.Inverted();
 
-        public bool CoordsAreGrid { get; set; } = false;
+        public bool CoordsAreGrid { get; set; }
 
         public ushort PixelsX { get; set; } = 256;
         public ushort PixelsY { get; set; } = 256;
 
-        public CombinedFilter Filter1 { get; set; } = null;
-        public CombinedFilter Filter2 { get; set; } = null;
+        public CombinedFilter Filter1 { get; set; }
+        public CombinedFilter Filter2 { get; set; }
 
         /// <summary>
         /// The identifier for the design held in the designs list ofr the project to be used to calculate cut/fill values

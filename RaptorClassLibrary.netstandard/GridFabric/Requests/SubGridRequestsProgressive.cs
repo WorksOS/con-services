@@ -67,11 +67,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
 
         public void StopListening()
         {
-            if (MsgGroup != null)
-            {
-                // Unregister the listener from the message group
-                MsgGroup.StopLocalListen(Listener);
-            }
+            // Unregister the listener from the message group
+            MsgGroup?.StopLocalListen(Listener);
 
             MsgGroup = null;
         }

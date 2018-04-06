@@ -39,7 +39,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         private short _ICCCVTargetValue = CellPass.NullCCV;
         private short _ICMDPTargetValue = CellPass.NullMDP;
         private short _ICCCATargetValue = CellPass.NullCCA;
-        private ushort _ICPassTargetValue = 0;
+        private ushort _ICPassTargetValue;
         private ushort _ICLayerIDValue = CellPass.NullLayerID;
 
         private MachineGear _ICGear = CellPass.NullMachineGear;
@@ -80,8 +80,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         private byte _UTMZone = CellPass.NullUTMZone;
         private CoordinateSystemType _CSType = CoordinateSystemType.NoCoordSystem;
 
-        private bool _ResearchData = false;
-        private bool _UsingCCA = false;
+        private bool _ResearchData;
+        private bool _UsingCCA;
 
         ////////////////////////Private procedures
 
@@ -97,7 +97,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
             XYZ CentrePointTo = (DataLeft + DataRight) * 0.5;
 
             double DistanceTraveled = XYZ.Get3DLength(CentrePointFrom, CentrePointTo); // meters converted to kilometers...
-            double TravelTime = ((TimeSpan)(DataTime - FirstDataTime)).TotalMilliseconds / 1000;   // milliseconds converted to seconds...
+            double TravelTime = (DataTime - FirstDataTime).TotalMilliseconds / 1000;   // milliseconds converted to seconds...
 
             return TravelTime > 0 ? DistanceTraveled / TravelTime : 0.0;
         }

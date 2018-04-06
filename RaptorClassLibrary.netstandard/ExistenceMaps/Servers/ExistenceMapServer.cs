@@ -24,19 +24,19 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.Servers
         /// Note: This was previous an [InstanceResource] but this does not work well with more than one Grid active in the process
         /// </summary>
         //[InstanceResource]
-        private readonly IIgnite ignite = null;
+        private readonly IIgnite ignite;
 
         /// <summary>
         /// A cache that holds the existance maps derived from designfiles (eg: TTM files)
         /// Each existence map is stored in it's serialised byte stream from. It does not define the grid per se, but does
         /// define a cache that is used within the grid to stored existence maps
         /// </summary>
-        protected ICache<string, byte[]> DesignTopologyExistanceMapsCache = null;
+        protected ICache<string, byte[]> DesignTopologyExistanceMapsCache;
 
         /// <summary>
         /// Internal static instance variable for the server
         /// </summary>
-        private static ExistenceMapServer _Instance = null;
+        private static ExistenceMapServer _Instance;
 
         /// <summary>
         /// Creates or returns the singleton instance
@@ -111,11 +111,6 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.Servers
                 // If the key is not present, return a null/empty array
                 return null;
             }
-            catch
-            {
-                // For other oddities, throw it!
-                throw;
-            }            
         }
 
         /// <summary>
@@ -125,15 +120,7 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.Servers
         /// <param name="map"></param>
         public void SetExistenceMap(string key, byte [] map)
         {
-            try
-            {
-                DesignTopologyExistanceMapsCache.Put(key, map);
-            }
-            catch
-            {
-                // Something bad happened, bring it to attention of authorities
-                throw;
-            }
+            DesignTopologyExistanceMapsCache.Put(key, map);
         }
     }
 }

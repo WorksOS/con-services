@@ -52,12 +52,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// <returns></returns>
         public static SubGridCellLatestPassesDataWrapperFactory Instance()
         {
-            if (instance == null)
-            {
-                instance = new SubGridCellLatestPassesDataWrapperFactory();
-            }
-
-            return instance;
+            return instance ?? (instance = new SubGridCellLatestPassesDataWrapperFactory());
         }
     }
 }

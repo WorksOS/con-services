@@ -21,7 +21,7 @@ namespace VSS.VisionLink.Raptor.Machines
         [NonSerialized]
         public MachinesList Owner;
 
-        public long ID { get; set; } = 0;
+        public long ID { get; set; }
 
         public string Name { get; set; } = "";
 
@@ -31,7 +31,7 @@ namespace VSS.VisionLink.Raptor.Machines
 
         public string MachineHardwareID { get; set; } = "";
 
-        public bool IsJohnDoeMachine { get; set; } = false;
+        public bool IsJohnDoeMachine { get; set; }
 
         public double LastKnownX { get; set; } = Consts.NullDouble;
         public double LastKnownY { get; set; } = Consts.NullDouble;
@@ -39,7 +39,7 @@ namespace VSS.VisionLink.Raptor.Machines
 
         public string LastKnownDesignName { get; set; } = string.Empty;
 
-        public ushort LastKnownLayerId { get; set; } = 0;
+        public ushort LastKnownLayerId { get; set; }
 
         [NonSerialized]
         public ProductionEventChanges TargetValueChanges = null; // new ProductionEventChanges(null, -1);

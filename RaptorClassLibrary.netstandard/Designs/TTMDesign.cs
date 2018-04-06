@@ -594,7 +594,7 @@ namespace VSS.Velociraptor.DesignProfiling
                                               tri,
                                               (tree, x, y) => (tree as SubGridTreeSubGridExistenceBitMask)[x, y],
                                               (tree, x, y, t) => (tree as SubGridTreeSubGridExistenceBitMask)[x, y] = true,
-                                              (Index, leafSatisfied, includeTriangle, T, H1, H2, V, SingleRowOnly) => AddTrianglePieceToSubgridIndex(Index, leafSatisfied, includeTriangle, T, H1, H2, V, SingleRowOnly),
+                                              AddTrianglePieceToSubgridIndex,
                                               intersectionVertex);
                     }
                 }
@@ -852,6 +852,7 @@ namespace VSS.Velociraptor.DesignProfiling
         /// <summary>
         /// Interpolates a single spot height fromn the design
         /// </summary>
+        /// <param name="SearchState"></param>
         /// <param name="Hint"></param>
         /// <param name="X"></param>
         /// <param name="Y"></param>
@@ -870,11 +871,11 @@ namespace VSS.Velociraptor.DesignProfiling
             SearchState.start_search(X - 0.1, Y - 0.1, X + 0.1, Y + 0.1, true, QuadTreeSpatialIndex);
 
             int eindex = 0;
-            int interationCount = 0;
+            int iterationCount = 0;
 
             while (QuadTreeSpatialIndex.next_entity(ref SearchState, ref eindex, ref Hint))
             {
-                interationCount++;
+                iterationCount++;
                 Z = ((Triangle)Hint).GetHeight(X, Y);
 
                 if (Z != Consts.NullReal)
@@ -950,7 +951,7 @@ namespace VSS.Velociraptor.DesignProfiling
 
                 return ValueCount > 0;
             }
-            catch (Exception E)
+            catch // (Exception E)
             {
                 // TODO readd when logging available
                 // SIGLogMessage.PublishNoODS(Self, Format('Exception "%s" occurred in TTTMDesign.InterpolateHeights', [E.Message]), slmcException);
@@ -1118,7 +1119,7 @@ namespace VSS.Velociraptor.DesignProfiling
 
                     // Count the numnber of triangle references present in the tree
                     int numTriangleReferences = 0;
-                    FSpatialIndex.ForEach(x => { numTriangleReferences += x == null ? 0 : x.Count; return true; });
+                    FSpatialIndex.ForEach(x => { numTriangleReferences += x?.Count ?? 0; return true; });
 
                     // Create the single array
                     FSpatialIndexOptimisedTriangles = new Triangle[numTriangleReferences];
@@ -1147,7 +1148,7 @@ namespace VSS.Velociraptor.DesignProfiling
                             SpatialIndexOptimised[leaf.OriginX + x, leaf.OriginY + y] = new TriangleArrayReference()
                             {
                                 TriangleArrayIndex = copiedCount,
-                                Count = (uint)triList.Count()
+                                Count = (uint)triList.Count
                             };
 
                             // Keep track of how may have been copied
@@ -1171,7 +1172,7 @@ namespace VSS.Velociraptor.DesignProfiling
                     FSpatialIndex.ForEach(x =>
                     {
                         sumTriangleLists++;
-                        sumTriangleReferences += x == null ? 0 : x.Count;
+                        sumTriangleReferences += x?.Count ?? 0;
                         return true;
                     });
 
@@ -1180,7 +1181,7 @@ namespace VSS.Velociraptor.DesignProfiling
 
                 return true;
             }
-            catch (Exception E)
+            catch // (Exception E)
             {
                 // TODO readd when logging available
                 //  SIGLogMessage.PublishNoODS(Self, Format('Exception in TTTMDesign.ConstructSpatialIndex: %s', [E.Message]), slmcException);
@@ -1191,15 +1192,15 @@ namespace VSS.Velociraptor.DesignProfiling
         /// <summary>
         /// Loads the TTM design from a TTM file, along with the subgrid existance map file if it exists (created otherwise)
         /// </summary>
-        /// <param name="FileName"></param>
+        /// <param name="fileName"></param>
         /// <returns></returns>
-        public override DesignLoadResult LoadFromFile(string FileName)
+        public override DesignLoadResult LoadFromFile(string fileName)
         {
             try
             {
-                FData.LoadFromFile(FileName);
+                FData.LoadFromFile(fileName);
 
-                Log.Info($"Loaded TTM file {FileName} containing {FData.Header.NumberOfTriangles} triangles and {FData.Header.NumberOfVertices} vertices.");
+                Log.Info($"Loaded TTM file {fileName} containing {FData.Header.NumberOfTriangles} triangles and {FData.Header.NumberOfVertices} vertices.");
 
                 FMinHeight = Consts.NullReal;
                 FMaxHeight = Consts.NullReal;
@@ -1207,7 +1208,7 @@ namespace VSS.Velociraptor.DesignProfiling
                 // Build the subgrid tree based spatial index
                 ConstructSpatialIndex();
 
-                if (!LoadSubgridIndexFile(FileName + Consts.kDesignSubgridIndexFileExt))
+                if (!LoadSubgridIndexFile(fileName + Consts.kDesignSubgridIndexFileExt))
                 {
                     return DesignLoadResult.UnableToLoadSubgridIndex;
                 }

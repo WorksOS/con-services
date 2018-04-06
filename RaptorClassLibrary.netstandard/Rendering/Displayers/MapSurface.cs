@@ -10,7 +10,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
     public class MapSurface
     {
         private const double MaxViewDimensionMetres = 20000000;
-        private const double MaxViewDimensionFeet = 60000000;
+//        private const double MaxViewDimensionFeet = 60000000;
         private const double MinViewDimensionMetres = 0.001;
 
         //  private
@@ -31,8 +31,8 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
 
         //    FDisplayer : TMapDisplayBase;
 
-        int XAxisAdjust = 0;
-        int YAxisAdjust = 0;
+        int XAxisAdjust;
+        int YAxisAdjust;
 
         //    RePaintEntityCount : Integer;
         //    EntityDisplayCount : Integer;
@@ -42,11 +42,11 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
         // double WLastPtX; // World coordinate versions of lastptx/y 
         // double WLastPtY;
 
-        bool Rotating = false;
-        public double Rotation = 0;
+        bool Rotating;
+        public double Rotation;
 
         double CosOfRotation = 1.0;
-        double SinOfRotation = 0.0;
+        double SinOfRotation; //= 0.0;
 
         public double XPixelSize = Consts.NullDouble;
         public double YPixelSize = Consts.NullDouble;
@@ -103,8 +103,8 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
         //protected
         protected double DQMScaleX = Consts.NullDouble; // Scale used in world to screen transform 
         protected double DQMScaleY = Consts.NullDouble; // Scale used in world to screen transform 
-        protected int XOffset = 0;
-        protected int YOffset = 0;
+        protected int XOffset;
+        protected int YOffset;
 
         //    FZoomList : Contnrs.TObjectList;
 
@@ -380,23 +380,8 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
 
             XOffset = 0;
             YOffset = 0;
-            if (XAxesDirection == 1)
-            {
-                XAxisAdjust = 0;
-            }
-            else
-            {
-                XAxisAdjust = ClipWidth;
-            }
-
-            if (YAxesDirection == 1)
-            {
-                YAxisAdjust = ClipHeight;
-            }
-            else
-            {
-                YAxisAdjust = 0;
-            }
+            XAxisAdjust = XAxesDirection == 1 ? 0 : ClipWidth;
+            YAxisAdjust = YAxesDirection == 1 ? ClipHeight : 0;
         }
 
         //        procedure DisplaySurfacePaint(Sender : TObject);
@@ -508,7 +493,7 @@ double BorderSize)
             {
                 MinY = ((MaxY + MinY) / 2) - (MaxViewDimensionMetres / 2);
                 MaxY = MinY + MaxViewDimensionMetres;
-            };
+            }
 
             // We restrict the minimum zoom extent (ie width/height across view) to +0.001 metres
             if ((MaxX - MinX) < MinViewDimensionMetres)

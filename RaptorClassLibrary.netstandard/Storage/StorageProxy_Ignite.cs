@@ -196,10 +196,7 @@ namespace VSS.VisionLink.Raptor.Storage
                     // TODO Log the error
                 }
 
-                if (ImmutableProxy != null)
-                {
-                    ImmutableProxy.RemoveStreamFromPersistentStore(DataModelID, StreamName);
-                }
+                ImmutableProxy?.RemoveStreamFromPersistentStore(DataModelID, StreamName);
 
                 return FileSystemErrorStatus.OK;
             }

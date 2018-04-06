@@ -280,10 +280,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
             }
 
             // if we have a attached segment iterator then also set its date range
-            if (SegmentIterator != null)
-            {
-                SegmentIterator.SetTimeRange(iteratorStartTime, iteratorEndTime);
-            }
+            SegmentIterator?.SetTimeRange(iteratorStartTime, iteratorEndTime);
         }
 
         // Machine restriction not implemented

@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.Velociraptor.Designs.TTM;
 
 namespace VSS.VisionLink.Raptor.Designs
@@ -50,7 +47,7 @@ namespace VSS.VisionLink.Raptor.Designs
             }
         }
 
-        public TTMQuadTree() : base()
+        public TTMQuadTree()
         {
         }
 

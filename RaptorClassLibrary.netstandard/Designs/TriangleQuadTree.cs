@@ -115,8 +115,8 @@ namespace VSS.VisionLink.Raptor.Designs
                 double resolution, square_size;
                 double min_x, min_y, max_x, max_y;
 
-                Raptor.Utilities.MinMax.SetMinMax(ref x1, ref x2);
-                Raptor.Utilities.MinMax.SetMinMax(ref y1, ref y2);
+                Utilities.MinMax.SetMinMax(ref x1, ref x2);
+                Utilities.MinMax.SetMinMax(ref y1, ref y2);
 
                 tree.calc_rectangle_keys(x1, y1, x2, y2, ref key_list);
 
@@ -126,25 +126,10 @@ namespace VSS.VisionLink.Raptor.Designs
                 if (key_list.key[0] == outside_quadtree)
                 {
                     // Calculate a rectangle intersection for the two rectangles
-                    if (x1 > tree.tree_min_x)
-                        min_x = x1;
-                    else
-                        min_x = tree.tree_min_x;
-
-                    if (y1 > tree.tree_min_y)
-                        min_y = y1;
-                    else
-                        min_y = tree.tree_min_y;
-
-                    if (x2 > tree.tree_max_x)
-                        max_x = tree.tree_max_x;
-                    else
-                        max_x = x2;
-
-                    if (y2 > tree.tree_max_y)
-                        max_y = tree.tree_max_y;
-                    else
-                        max_y = y2;
+                    min_x = x1 > tree.tree_min_x ? x1 : tree.tree_min_x;
+                    min_y = y1 > tree.tree_min_y ? y1 : tree.tree_min_y;
+                    max_x = x2 > tree.tree_max_x ? tree.tree_max_x : x2;
+                    max_y = y2 > tree.tree_max_y ? tree.tree_max_y : y2;
 
                     // If there is an intersection then search the entire quadtree
                     if ((max_x > min_x) && (max_y > min_y))
@@ -242,7 +227,7 @@ namespace VSS.VisionLink.Raptor.Designs
                     key2 >>= 3;
                 }
                 return key1 == key2;
-            };
+            }
         }
 
         void set_smallest_square_size()
@@ -484,8 +469,8 @@ namespace VSS.VisionLink.Raptor.Designs
             }
 
             // { Require x1 <= x2 and y1 <= y2}
-            Raptor.Utilities.MinMax.SetMinMax(ref x1, ref x2);
-            Raptor.Utilities.MinMax.SetMinMax(ref y1, ref y2);
+            Utilities.MinMax.SetMinMax(ref x1, ref x2);
+            Utilities.MinMax.SetMinMax(ref y1, ref y2);
 
             // { Get the associated key }
             key = rectangle_key(x1, y1, x2, y2);
@@ -587,7 +572,7 @@ namespace VSS.VisionLink.Raptor.Designs
             int lower_block; //: block_index_type;
             int lower_index = 0; //: element_index_type;
 
-            bool result = false;
+            bool result;
 
             if (tree_empty())
                 return false;
@@ -676,7 +661,7 @@ namespace VSS.VisionLink.Raptor.Designs
             int lower_block; //: block_index_type;
             int lower_index = 0; //: element_index_type;
 
-            bool result = false;
+            bool result;
 
             if (tree_empty())
                 return false;
@@ -1296,7 +1281,7 @@ namespace VSS.VisionLink.Raptor.Designs
                 writer.WriteLine(Title);
                 writer.WriteLine($"root block: {non_search_path_cache[0].block_nbr} levels: {Btree_levels} Num blocks: {num_Btree_blocks}");
 
-                writer.WriteLine($"Path cache: ");
+                writer.WriteLine("Path cache: ");
                 for (int I = 0; I < Btree_levels; I++)
                 {
                     writer.Write($"[{I}={non_search_path_cache[I].block_nbr}]");

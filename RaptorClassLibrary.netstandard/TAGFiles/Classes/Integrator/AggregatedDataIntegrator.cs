@@ -120,7 +120,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
         // CountOfTasksToProcess returns the number of tasks remaining in the
         // tasks to process list. This is a thread safe call, multiple threads may safely add
         // files to the list in a concurrent fashion if required.
-        public int CountOfTasksToProcess => TasksToProcess.Count();
+        public int CountOfTasksToProcess => TasksToProcess.Count;
 
         public AggregatedDataIntegrator()
         {

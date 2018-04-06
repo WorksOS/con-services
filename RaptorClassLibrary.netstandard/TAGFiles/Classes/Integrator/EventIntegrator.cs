@@ -206,7 +206,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
             var targetEventLists = Target.GetEventLists();
 
             // Integrate all remaining event lists and collate them wrt the machine start/stop recording events
-            for (int I = 0; I < sourceEventLists.Count(); I++)
+            for (int I = 0; I < sourceEventLists.Length; I++)
             {
                 SourceList = sourceEventLists[I];
 

@@ -15,7 +15,10 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps
         {
             DataModelID = dataModelID;
 
-            Map = new SubGridTreeSubGridExistenceBitMask(); //, kICFSSubgridSpatialExistanceMapHeader, kICFSSubgridSpatialExistanceMapVersion);
+            Map = new SubGridTreeSubGridExistenceBitMask
+            {
+                CellSize = cellSize
+            }; //, kICFSSubgridSpatialExistanceMapHeader, kICFSSubgridSpatialExistanceMapVersion);
         }    
     }
 }
