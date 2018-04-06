@@ -11,12 +11,14 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using SVOICStatistics;
 using VLPDDecls;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 using Point = VSS.Productivity3D.Common.Models.Point;
+using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
 
 namespace VSS.Productivity3D.WebApiTests.MapHandling
 {
@@ -341,7 +343,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
 
       TICDataModelStatistics statistics = new TICDataModelStatistics();
       raptorClient
-        .Setup(x => x.GetDataModelStatistics(project.projectId, It.IsAny<TSurveyedSurfaceID[]>(), out statistics))
+        .Setup(x => x.GetDataModelStatistics(project.LegacyProjectId, It.IsAny<TSurveyedSurfaceID[]>(), out statistics))
         .Returns(true);
 
       TCoordPointList pointList = new TCoordPointList
@@ -357,7 +359,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         }
       };
       raptorClient
-        .Setup(x => x.GetGridCoordinates(project.projectId, It.IsAny<TWGS84FenceContainer>(),
+        .Setup(x => x.GetGridCoordinates(project.LegacyProjectId, It.IsAny<TWGS84FenceContainer>(),
           TCoordConversionType.ctNEEtoLLH, out pointList))
         .Returns(TCoordReturnCode.nercNoError);
 
@@ -382,7 +384,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
 
       TICDataModelStatistics statistics = new TICDataModelStatistics();
       raptorClient
-        .Setup(x => x.GetDataModelStatistics(project.projectId, It.IsAny<TSurveyedSurfaceID[]>(), out statistics))
+        .Setup(x => x.GetDataModelStatistics(project.LegacyProjectId, It.IsAny<TSurveyedSurfaceID[]>(), out statistics))
         .Returns(true);
 
       TCoordPointList pointList = new TCoordPointList
@@ -398,7 +400,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         }
       };
       raptorClient
-        .Setup(x => x.GetGridCoordinates(project.projectId, It.IsAny<TWGS84FenceContainer>(),
+        .Setup(x => x.GetGridCoordinates(project.LegacyProjectId, It.IsAny<TWGS84FenceContainer>(),
           TCoordConversionType.ctNEEtoLLH, out pointList))
         .Returns(TCoordReturnCode.nercNoError);
 
@@ -417,7 +419,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
 
       TICDataModelStatistics statistics = new TICDataModelStatistics();
       raptorClient
-        .Setup(x => x.GetDataModelStatistics(project.projectId, It.IsAny<TSurveyedSurfaceID[]>(), out statistics))
+        .Setup(x => x.GetDataModelStatistics(project.LegacyProjectId, It.IsAny<TSurveyedSurfaceID[]>(), out statistics))
         .Returns(false);
 
       var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>(), raptorClient.Object);
@@ -435,7 +437,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
 
       TICDataModelStatistics statistics = new TICDataModelStatistics();
       raptorClient
-        .Setup(x => x.GetDataModelStatistics(project.projectId, It.IsAny<TSurveyedSurfaceID[]>(), out statistics))
+        .Setup(x => x.GetDataModelStatistics(project.LegacyProjectId, It.IsAny<TSurveyedSurfaceID[]>(), out statistics))
         .Returns(false);
 
       var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>(), raptorClient.Object);
@@ -455,11 +457,11 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
       new Point {y = 36.103, x = -115.687}
     };
 
-    private static ProjectDescriptor project = new ProjectDescriptor
+    private static ProjectData project = new ProjectData
     {
-      projectUid = Guid.NewGuid().ToString(),
-      projectId = 1234,
-      projectGeofenceWKT = TestUtils.GetWicketFromPoints(projectPoints)
+      ProjectUid = Guid.NewGuid().ToString(),
+      LegacyProjectId = 1234,
+      ProjectGeofenceWKT = TestUtils.GetWicketFromPoints(projectPoints)
     };
 
     private static double projMinLatRadians = projectPoints.Min(p => p.Latitude).LatDegreesToRadians();

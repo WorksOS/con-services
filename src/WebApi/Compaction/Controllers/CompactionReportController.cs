@@ -166,7 +166,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var updatedOffsets = offsets?.AddZeroDistinctSortBy();
 
       var reportRequest = requestFactory.Create<CompactionReportStationOffsetRequestHelper>(r => r
-        .ProjectId(project.projectId)
+        .ProjectId(project.LegacyProjectId)
         .Headers(CustomHeaders)
         .ProjectSettings(projectSettings)
         .Filter(filter))
@@ -184,7 +184,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         endStation,
         updatedOffsets,
         userPreferences,
-        project.projectTimeZone);
+        project.ProjectTimeZone);
 
       reportRequest.Validate();
 

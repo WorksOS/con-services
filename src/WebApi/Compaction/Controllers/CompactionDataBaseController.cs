@@ -42,7 +42,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     protected void SetCacheControlPolicy(Guid projectUid)
     {
-      if (!((RaptorPrincipal) User).GetProject(projectUid).isArchived)
+      if (!((RaptorPrincipal) User).GetProject(projectUid).IsArchived)
       {
         return;
       }

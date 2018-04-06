@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using VLPDDecls;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -20,6 +21,7 @@ using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Coord.Executors;
 using VSS.Productivity3D.WebApiModels.Coord.Models;
 using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
+using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
@@ -50,7 +52,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="topFilter">The top filter for summary volumes</param>
     /// <param name="boundaryType">Type of boundary to get: custom polygon or design boundaries or both</param>
     /// <returns>A list of boundaries (polygons). Points are latitude/longitude in degrees.</returns>
-    public List<List<WGSPoint>> GetFilterBoundaries(ProjectDescriptor project, FilterResult filter,
+    public List<List<WGSPoint>> GetFilterBoundaries(ProjectData project, FilterResult filter,
                                                     FilterResult baseFilter, FilterResult topFilter, FilterBoundaryType boundaryType)
     {
       var boundaries = GetFilterBoundaries(project, filter, boundaryType);
@@ -68,7 +70,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="filter">The filter to get boundaries for</param>
     /// <param name="boundaryType">Type of boundary to get: custom polygon or design boundaries or both</param>
     /// <returns>A list of boundaries (polygons). Points are latitude/longitude in degrees.</returns>
-    private List<List<WGSPoint>> GetFilterBoundaries(ProjectDescriptor project, FilterResult filter, FilterBoundaryType boundaryType)
+    private List<List<WGSPoint>> GetFilterBoundaries(ProjectData project, FilterResult filter, FilterBoundaryType boundaryType)
     {
       var boundaries = new List<List<WGSPoint>>();
       if (filter != null)
@@ -77,8 +79,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         {
           if (filter.AlignmentFile != null)
           {
-            log.LogDebug($"GetFilterBoundaries: adding alignment boundary for projectId={project.projectId}, filter name={filter.Name}");
-            boundaries.Add(GetAlignmentPoints(project.projectId, filter.AlignmentFile, 
+            log.LogDebug($"GetFilterBoundaries: adding alignment boundary for projectId={project.LegacyProjectId}, filter name={filter.Name}");
+            boundaries.Add(GetAlignmentPoints(project.LegacyProjectId, filter.AlignmentFile, 
               filter.StartStation ?? 0, filter.EndStation ?? 0, filter.LeftOffset ?? 0, filter.RightOffset ?? 0).ToList());
           }
         }
@@ -86,15 +88,15 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         {
           if (filter.DesignFile != null)
           {
-            log.LogDebug($"GetFilterBoundaries: adding design boundary polygons for projectId={project.projectId}, filter name={filter.Name}");
-            boundaries.AddRange(GetDesignBoundaryPolygons(project.projectId, filter.DesignFile));
+            log.LogDebug($"GetFilterBoundaries: adding design boundary polygons for projectId={project.LegacyProjectId}, filter name={filter.Name}");
+            boundaries.AddRange(GetDesignBoundaryPolygons(project.LegacyProjectId, filter.DesignFile));
           }
         }
         if (boundaryType == FilterBoundaryType.Polygon || boundaryType == FilterBoundaryType.All)
         {
           if (filter.PolygonLL != null && filter.PolygonLL.Count > 0)
           {
-            log.LogDebug($"GetFilterBoundaries: adding custom polygon for projectId={project.projectId}, filter name={filter.Name}");
+            log.LogDebug($"GetFilterBoundaries: adding custom polygon for projectId={project.LegacyProjectId}, filter name={filter.Name}");
             boundaries.Add(filter.PolygonLL);
           }
         }
@@ -112,7 +114,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="baseFilter">The base filter for summary volumes</param>
     /// <param name="topFilter">The top filter for summary volumes</param>
     /// <returns>A list of latitude/longitude points in degrees</returns>
-    private List<WGSPoint> GetFilterPoints(ProjectDescriptor project, FilterResult filter, FilterResult baseFilter, FilterResult topFilter)
+    private List<WGSPoint> GetFilterPoints(ProjectData project, FilterResult filter, FilterResult baseFilter, FilterResult topFilter)
     {
       var boundaries = GetFilterBoundaries(project, filter, baseFilter, topFilter, FilterBoundaryType.All);
       return GetPointsFromPolygons(boundaries);
@@ -143,9 +145,9 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="topFilter">The top filter for summary volumes</param>
     /// <param name="designDescriptor">The design for cut-fill & summary volumes</param>
     /// <returns>A bounding box in latitude/longitude (radians)</returns>
-    public MapBoundingBox GetBoundingBox(ProjectDescriptor project, FilterResult filter, TileOverlayType[] overlays, FilterResult baseFilter, FilterResult topFilter, DesignDescriptor designDescriptor)
+    public MapBoundingBox GetBoundingBox(ProjectData project, FilterResult filter, TileOverlayType[] overlays, FilterResult baseFilter, FilterResult topFilter, DesignDescriptor designDescriptor)
     {
-      log.LogInformation($"GetBoundingBox: project {project.projectUid}");
+      log.LogInformation($"GetBoundingBox: project {project.ProjectUid}");
 
       MapBoundingBox bbox = null;
 
@@ -166,7 +168,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       else
       {
         //If no spatial filter then use cut-fill/volumes design
-        var boundaryPoints = GetPointsFromPolygons(GetDesignBoundaryPolygons(project.projectId, designDescriptor));
+        var boundaryPoints = GetPointsFromPolygons(GetDesignBoundaryPolygons(project.LegacyProjectId, designDescriptor));
         if (boundaryPoints.Count > 0)
         {
           log.LogDebug("GetBoundingBox: Using cut-fill design boundary");
@@ -186,7 +188,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
           //Also if doing the project boundary tile we assume the user wants to see that so production data extents not applicable.
           if (overlays.Contains(TileOverlayType.ProductionData) && !overlays.Contains(TileOverlayType.ProjectBoundary))
           {
-            var productionDataExtents = GetProductionDataExtents(project.projectId, filter);
+            var productionDataExtents = GetProductionDataExtents(project.LegacyProjectId, filter);
             if (productionDataExtents != null)
             {
               log.LogDebug(
@@ -207,7 +209,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
           //Also use project boundary extents if fail to get production data extents or not doing production data tiles
           //e.g. project thumbnails or user has requested project boundary overlay
-          var projectPoints = RaptorConverters.geometryToPoints(project.projectGeofenceWKT).ToList();
+          var projectPoints = RaptorConverters.geometryToPoints(project.ProjectGeofenceWKT).ToList();
           var projectMinLat = projectPoints.Min(p => p.Lat);
           var projectMinLng = projectPoints.Min(p => p.Lon);
           var projectMaxLat = projectPoints.Max(p => p.Lat);
@@ -597,11 +599,11 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
   public interface IBoundingBoxService
   {
-    MapBoundingBox GetBoundingBox(ProjectDescriptor project, FilterResult filter, TileOverlayType[] overlays, FilterResult baseFilter, FilterResult topFilter, DesignDescriptor designDescriptor);
+    MapBoundingBox GetBoundingBox(ProjectData project, FilterResult filter, TileOverlayType[] overlays, FilterResult baseFilter, FilterResult topFilter, DesignDescriptor designDescriptor);
 
     void AdjustBoundingBoxToFit(MapParameters parameters);
 
-    List<List<WGSPoint>> GetFilterBoundaries(ProjectDescriptor project, FilterResult filter,
+    List<List<WGSPoint>> GetFilterBoundaries(ProjectData project, FilterResult filter,
                                              FilterResult baseFilter, FilterResult topFilter, FilterBoundaryType boundaryType);
 
     IEnumerable<WGSPoint> GetAlignmentPoints(long projectId, DesignDescriptor alignDescriptor,

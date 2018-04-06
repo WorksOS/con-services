@@ -97,7 +97,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       if (User is RaptorPrincipal && request.projectUid.HasValue)
       {
         var projectDescr = (User as RaptorPrincipal).GetProject(request.projectUid);
-        projectId = projectDescr.projectId;
+        projectId = projectDescr.LegacyProjectId;
 
       }
 //      var boundary = WGS84Fence.CreateWGS84Fence(RaptorConverters.geometryToPoints(projectDescr.projectGeofenceWKT).ToArray());

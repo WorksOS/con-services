@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -27,12 +28,10 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
       UserEmail = username;
       CustomerName = customername;
       this.projectProxy = projectProxy;
-      this.authNContext = contextHeaders;
+      authNContext = contextHeaders;
     }
 
     public string CustomerUid { get; }
-
-    public IEnumerable<ProjectDescriptor> Projects => RetreieveProjects();
 
     public string UserEmail { get; }
 
@@ -40,44 +39,12 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
 
     public bool IsApplication { get; }
 
-    private void InvalidateProjectList()
-    {
-      projectProxy.ClearCacheItem(CustomerUid);
-    }
-
-    private IEnumerable<ProjectDescriptor> RetreieveProjects()
-    {
-      var customerProjects = projectProxy.GetProjectsV4(CustomerUid, authNContext).Result;
-      if (customerProjects != null)
-      {
-        foreach (var project in customerProjects)
-        {
-          var projectDesc = new ProjectDescriptor
-          {
-            isLandFill = project.ProjectType == ProjectType.LandFill,
-            isArchived = project.IsArchived,
-            projectUid = project.ProjectUid,
-            projectId = project.LegacyProjectId,
-            coordinateSystemFileName = project.CoordinateSystemFileName,
-            projectGeofenceWKT = project.ProjectGeofenceWKT,
-            projectTimeZone = project.ProjectTimeZone,
-            ianaTimeZone = project.IanaTimeZone
-          };
-          yield return projectDesc;
-        }
-      }
-    }
-
     /// <summary>
     /// Get the project descriptor for the specified project id.
     /// </summary>
-    public ProjectDescriptor GetProject(long projectId)
+    public ProjectData GetProject(long projectId)
     {
-      var projectDescr = Projects.FirstOrDefault(p => p.projectId == projectId);
-
-      if (projectDescr != null) return projectDescr;
-      InvalidateProjectList();
-      projectDescr = Projects.FirstOrDefault(p => p.projectId == projectId);
+      var projectDescr = projectProxy.GetProjectForCustomer(CustomerUid, projectId, authNContext).Result;
       if (projectDescr != null) return projectDescr;
 
       throw new ServiceException(HttpStatusCode.Unauthorized,
@@ -88,7 +55,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
     /// <summary>
     /// Get the project descriptor for the specified project uid.
     /// </summary>
-    public ProjectDescriptor GetProject(Guid? projectUid)
+    public ProjectData GetProject(Guid? projectUid)
     {
       if (!projectUid.HasValue)
       {
@@ -102,20 +69,13 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
     /// <summary>
     /// Get the project descriptor for the specified project uid.
     /// </summary>
-    public ProjectDescriptor GetProject(string projectUid)
+    public ProjectData GetProject(string projectUid)
     {
       if (string.IsNullOrEmpty(projectUid))
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Missing project UID"));
 
-      var projectDescr =
-        Projects.FirstOrDefault(p => string.Equals(p.projectUid, projectUid, StringComparison.OrdinalIgnoreCase));
-      if (projectDescr != null) return projectDescr;
-
-      InvalidateProjectList();
-      projectDescr =
-        Projects.FirstOrDefault(p => string.Equals(p.projectUid, projectUid, StringComparison.OrdinalIgnoreCase));
-
+      var projectDescr = projectProxy.GetProjectForCustomer(CustomerUid, projectUid, authNContext).Result;
       if (projectDescr != null) return projectDescr;
 
       throw new ServiceException(HttpStatusCode.Unauthorized,
@@ -133,7 +93,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
         throw new ArgumentException("Incorrect request context principal.");
       }
 
-      var projectId = GetProject(projectUid).projectId;
+      var projectId = GetProject(projectUid).LegacyProjectId;
       if (projectId > 0)
       {
         return projectId;

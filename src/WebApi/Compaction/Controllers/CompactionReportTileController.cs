@@ -179,7 +179,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       // TODO (Aaron) refactor this repeated code
       //Short-circuit cache time for Archived projects
-      if ((User as RaptorPrincipal).GetProject(projectUid).isArchived)
+      if ((User as RaptorPrincipal).GetProject(projectUid).IsArchived)
         Response.Headers["Cache-Control"] = "public,max-age=31536000";
       Response.Headers.Add("X-Warning", "false");
 
@@ -203,7 +203,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       // TODO (Aaron) refactor this repeated code
       //Short-circuit cache time for Archived projects
-      if ((User as RaptorPrincipal).GetProject(projectUid).isArchived)
+      if ((User as RaptorPrincipal).GetProject(projectUid).IsArchived)
         Response.Headers["Cache-Control"] = "public,max-age=31536000";
       Response.Headers.Add("X-Warning", "false");
 
@@ -244,7 +244,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var geofences = new List<GeofenceData>();
 
       var request = requestFactory.Create<TileGenerationRequestHelper>(r => r
-          .ProjectId(project.projectId)
+          .ProjectId(project.LegacyProjectId)
           .Headers(CustomHeaders)
           .ProjectSettings(projectSettings)
           .ProjectSettingsColors(projectSettingsColors)

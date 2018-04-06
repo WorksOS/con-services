@@ -25,7 +25,7 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
     private IEnumerable<GeofenceData> boundaries;
     private IEnumerable<DesignDescriptor> alignmentDescriptors;
     private IEnumerable<FileData> dxfFiles;
-    private ProjectDescriptor project;
+    private ProjectData project;
 
     public TileGenerationRequestHelper()
     { }
@@ -82,7 +82,7 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
       return this;
     }
 
-    public TileGenerationRequestHelper SetProject(ProjectDescriptor project)
+    public TileGenerationRequestHelper SetProject(ProjectData project)
     {
       this.project = project;
       return this;

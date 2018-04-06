@@ -25,7 +25,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
   {
     private IASNodeClient raptorClient;
     private UserPreferenceData userPreferences;
-    private ProjectDescriptor projectDescriptor;
+    private ProjectData projectDescriptor;
 
     /// <summary>
     /// Parameterless constructor is required to support factory create function in <see cref="WebApi"/> project.
@@ -53,7 +53,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       return this;
     }
 
-    public ExportRequestHelper SetProjectDescriptor(ProjectDescriptor projectDescriptor)
+    public ExportRequestHelper SetProjectDescriptor(ProjectData projectDescriptor)
     {
       this.projectDescriptor = projectDescriptor;
       return this;
@@ -129,7 +129,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         exportType == ExportTypes.kSurfaceExport,
         fileName,
         exportType,
-        ConvertUserPreferences(this.userPreferences, this.projectDescriptor.projectTimeZone));
+        ConvertUserPreferences(this.userPreferences, this.projectDescriptor.ProjectTimeZone));
     }
 
     private static string StripInvalidCharacters(string str)
