@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.TAGFiles.Types;
+﻿using VSS.VisionLink.Raptor.TAGFiles.Types;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher
 {
@@ -16,14 +11,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher
         {
         }
 
-        public override string[] MatchedValueTypes()
-        {
-            return new string[] { TAGValueNames.kTagInAvoidZone };
-        }
+        private static readonly string[] valueTypes = { TAGValueNames.kTagInAvoidZone };
+
+        public override string[] MatchedValueTypes() => valueTypes;
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
-            if (!(valueType.Type == TAGDataType.t4bitUInt && (value >= 0) && value <= 3)) // Check only the two least significant bits are set
+            if (!(valueType.Type == TAGDataType.t4bitUInt && value <= 3)) // Check only the two least significant bits are set
             {
                 return false;
             }

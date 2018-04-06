@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Positioning
+﻿namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Positioning
 {
     public class TAGGPSBasePositionValueMatcher : TAGValueMatcher
     {
@@ -12,10 +6,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Positioning
         {
         }
 
-        public override string[] MatchedValueTypes()
-        {
-            return new string[] { TAGValueNames.kTagGPSBasePosition };
-        }
+        private static readonly string[] valueTypes = { TAGValueNames.kTagGPSBasePosition };
+
+        public override string[] MatchedValueTypes() => valueTypes;
 
         public override bool ProcessEmptyValue(TAGDictionaryItem valueType)
         {

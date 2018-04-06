@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.TAGFiles.Types;
 using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine
 {
     /// <summary>
-    ///  Handles the blade of ground flag as reported fom the amchine
+    /// Handles the blade of ground flag as reported fom the amchine
     /// </summary>
     public class TAGBladeOnGroundValueMatcher : TAGValueMatcher
     {
@@ -17,10 +13,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine
         {
         }
 
-        public override string[] MatchedValueTypes()
-        {
-            return new string[] { TAGValueNames.kTagFileBladeOnGroundTag };
-        }
+        private static readonly string[] valueTypes = { TAGValueNames.kTagFileBladeOnGroundTag };
+
+        public override string[] MatchedValueTypes() => valueTypes;
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
@@ -28,7 +23,6 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine
             {
                 return false;
             }
-
 
             if (!Enum.IsDefined(typeof(OnGroundState), (int)value))
             {

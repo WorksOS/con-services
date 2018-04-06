@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.TAGFiles.Types;
+﻿using VSS.VisionLink.Raptor.TAGFiles.Types;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.CoordinateSystem
 {
@@ -16,10 +11,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.CoordinateSystem
         {
         }
 
-        public override string[] MatchedValueTypes()
-        {
-            return new string[] { TAGValueNames.kTagUTMZone };
-        }
+        private static readonly string[] valueTypes = { TAGValueNames.kTagUTMZone };
+
+        public override string[] MatchedValueTypes() => valueTypes;
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {

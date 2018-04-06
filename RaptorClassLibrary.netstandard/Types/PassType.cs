@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Utilities;
-
-namespace VSS.VisionLink.Raptor.Types
+﻿namespace VSS.VisionLink.Raptor.Types
 {
     /// <summary>
     /// The different varieties of 'passes' that are tracked. Passes are made by the front axle/implement, rear axle/implement, 

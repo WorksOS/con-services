@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.TAGFiles.Types;
+﻿using VSS.VisionLink.Raptor.TAGFiles.Types;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher
 {
@@ -13,14 +8,12 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher
         {
         }
 
-        public override string[] MatchedValueTypes()
-        {
-            return new string[] { TAGValueNames.kTag3DSonic };
-        }
+        private static readonly string[] valueTypes = { TAGValueNames.kTag3DSonic };
+        public override string[] MatchedValueTypes() => valueTypes;
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
-            if (!(valueType.Type == TAGDataType.t4bitUInt && (value >= 0) && value <= 2)) // Sonic state currently only defines three states
+            if (!(valueType.Type == TAGDataType.t4bitUInt && value <= 2)) // Sonic state currently only defines three states
             {
                 return false;
             }

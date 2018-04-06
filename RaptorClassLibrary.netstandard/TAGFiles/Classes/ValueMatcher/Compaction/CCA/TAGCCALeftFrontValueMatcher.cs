@@ -1,23 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Cells;
+﻿using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.TAGFiles.Types;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Compaction.CCA
 {
-  public class TAGCCALeftFrontValueMatcher : TAGValueMatcher
+    public class TAGCCALeftFrontValueMatcher : TAGValueMatcher
   {
     public TAGCCALeftFrontValueMatcher(TAGProcessorStateBase valueSink, TAGValueMatcherState state) : base(valueSink, state)
     {
     }
 
-    public override string[] MatchedValueTypes()
-    {
-      return new string[] { TAGValueNames.kTagFileICCCALeftFrontTag };
-    }
+      private static readonly string[] valueTypes = { TAGValueNames.kTagFileICCCALeftFrontTag };
+
+      public override string[] MatchedValueTypes() => valueTypes;
 
     public override bool ProcessEmptyValue(TAGDictionaryItem valueType)
     {

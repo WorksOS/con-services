@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.TAGFiles.Types;
+﻿using VSS.VisionLink.Raptor.TAGFiles.Types;
 using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Positioning
@@ -17,16 +12,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Positioning
         {
         }
 
-        public override string[] MatchedValueTypes()
-        {
-            return new string[] { TAGValueNames.kTagGPSAccuracy };
-        }
+        private static readonly string[] valueTypes = { TAGValueNames.kTagGPSAccuracy };
+
+        public override string[] MatchedValueTypes() => valueTypes;
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {
-            ushort WordToCheck; //16-bit UINT
             GPSAccuracy Accuracy;
-            short ErrorLimit;
 
             if (valueType.Type != TAGDataType.t16bitUInt)
             {
@@ -34,7 +26,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Positioning
             }
 
             // Shift bits right so that we can check the top 2 bits
-            WordToCheck = (ushort)(value >> 14);
+            ushort WordToCheck = (ushort)(value >> 14); //16-bit UINT
 
             switch (WordToCheck)
             {
@@ -53,7 +45,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Positioning
             }
 
             // Lose the top 2 bits; what remains is the error limit in mm
-            ErrorLimit = (short)(value & 0x3fff);
+            short ErrorLimit = (short)(value & 0x3fff);
 
             valueSink.SetGPSAccuracyState(Accuracy, ErrorLimit);
 

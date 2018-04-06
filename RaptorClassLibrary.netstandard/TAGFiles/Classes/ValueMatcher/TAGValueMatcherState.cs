@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.TAGFiles.Types;
+﻿using VSS.VisionLink.Raptor.TAGFiles.Types;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher
 {
@@ -16,36 +11,35 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher
         public TAGValueSide TrackSide { get; set; } = TAGValueSide.Left;
         public TAGValueSide WheelSide { get; set; } = TAGValueSide.Left;
         public TAGValueSide RearSide { get; set; } = TAGValueSide.Left;
-        public bool HaveSeenATimeValue { get; set; } = false;
-        public bool HaveSeenAWeekValue { get; set; } = false;
-        public bool HaveSeenAProofingRunTimeValue { get; set; } = false;
-        public bool HaveSeenAProofingRunWeekValue { get; set; } = false;
+        public bool HaveSeenATimeValue { get; set; }
+        public bool HaveSeenAWeekValue { get; set; }
+        public bool HaveSeenAProofingRunTimeValue { get; set; }
+        public bool HaveSeenAProofingRunWeekValue { get; set; }
         public bool ProofingRunProcessed { get; set; } = true;
-        public bool HaveSeenAMachineID { get; set; } = false;
-        public bool HaveSeenAnAbsolutePosition { get; set; } = false;
-        public bool HaveSeenAnAbsoluteTrackPosition { get; set; } = false;
-        public bool HaveSeenAnAbsoluteWheelPosition { get; set; } = false;
-        public bool HaveSeenAnAbsoluteRearPosition { get; set; } = false;
-        public bool HaveSeenAnAbsoluteCCV { get; set; } = false;
-        public bool HaveSeenAnAbsoluteFrequency { get; set; } = false;
-        public bool HaveSeenAnAbsoluteAmplitude { get; set; } = false;
-        public bool HaveSeenAnAbsoluteRMV { get; set; } = false;
-        public bool HaveSeenAnAbsoluteMDP { get; set; } = false;
-        public bool HaveSeenAnAbsoluteTemperature { get; set; } = false;
-        public bool HaveSeenARadioSerial { get; set; } = false;
+        public bool HaveSeenAMachineID { get; set; }
+        public bool HaveSeenAnAbsolutePosition { get; set; }
+        public bool HaveSeenAnAbsoluteTrackPosition { get; set; }
+        public bool HaveSeenAnAbsoluteWheelPosition { get; set; }
+        public bool HaveSeenAnAbsoluteRearPosition { get; set; }
+        public bool HaveSeenAnAbsoluteCCV { get; set; }
+        public bool HaveSeenAnAbsoluteFrequency { get; set; }
+        public bool HaveSeenAnAbsoluteAmplitude { get; set; }
+        public bool HaveSeenAnAbsoluteRMV { get; set; }
+        public bool HaveSeenAnAbsoluteMDP { get; set; }
+        public bool HaveSeenAnAbsoluteTemperature { get; set; }
+        public bool HaveSeenARadioSerial { get; set; }
         public bool HaveSeenARadioType { get; set; } = false;
-        public bool HaveSeenAnLLHPosition { get; set; } = false;
-        public bool HaveSeenAUTMZone { get; set; } = false;
-        public bool HaveSeenAnAbsoluteVolkelMeasUtilRange { get; set; } = false;
-        public bool HaveSeenMachineSpeed { get; set; } = false;
-        public bool GPSBasePositionReportingHaveStarted { get; set; } = false;
+        public bool HaveSeenAnLLHPosition { get; set; }
+        public bool HaveSeenAUTMZone { get; set; }
+        public bool HaveSeenAnAbsoluteVolkelMeasUtilRange { get; set; }
+        public bool HaveSeenMachineSpeed { get; set; }
+        public bool GPSBasePositionReportingHaveStarted { get; set; }
 
         /// <summary>
         /// Default constructor
         /// </summary>
         public TAGValueMatcherState()
         {
-
         }
     }
 }

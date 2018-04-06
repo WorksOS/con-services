@@ -12,10 +12,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine
         {
         }
 
-        public override string[] MatchedValueTypes()
-        {
-            return new string[] { TAGValueNames.kTagFileSerialTag };
-        }
+        private static readonly string[] valueTypes = { TAGValueNames.kTagFileSerialTag };
+
+        public override string[] MatchedValueTypes() => valueTypes;
 
         public override bool ProcessANSIStringValue(TAGDictionaryItem valueType, byte[] value)
         {

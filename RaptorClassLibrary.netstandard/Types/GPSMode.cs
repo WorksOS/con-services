@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor.Types
+﻿namespace VSS.VisionLink.Raptor.Types
 {
     /// <summary>
     /// Type of GPS position used for location information available for a cell pass

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Proofing
 {
@@ -15,10 +11,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Proofing
         {
         }
 
-        public override string[] MatchedValueTypes()
-        {
-            return new string[] { TAGValueNames.kTagFileStartProofingTag };
-        }
+        private static readonly string[] valueTypes = { TAGValueNames.kTagFileStartProofingTag };
+
+        public override string[] MatchedValueTypes() => valueTypes;
 
         private void SetProofingRunStartTime()
         {

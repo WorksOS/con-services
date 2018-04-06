@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor.Types
+﻿namespace VSS.VisionLink.Raptor.Types
 {
     /// <summary>
     /// The result coniditons returnable by the Raptor persistence layer that implements FS files.

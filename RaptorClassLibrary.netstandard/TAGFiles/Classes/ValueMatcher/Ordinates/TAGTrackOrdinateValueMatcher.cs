@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.Geometry;
+﻿using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.TAGFiles.Types;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Ordinates
@@ -15,10 +9,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Ordinates
         {
         }
 
-        public override string[] MatchedValueTypes()
-        {
-            return new string[] { TAGValueNames.kTagFileEastingTrackTag, TAGValueNames.kTagFileNorthingTrackTag, TAGValueNames.kTagFileElevationTrackTag };
-        }
+        private static readonly string[] valueTypes = { TAGValueNames.kTagFileEastingTrackTag, TAGValueNames.kTagFileNorthingTrackTag, TAGValueNames.kTagFileElevationTrackTag };
+
+        public override string[] MatchedValueTypes() => valueTypes;
 
         public override bool ProcessIntegerValue(TAGDictionaryItem valueType, int value)
         {

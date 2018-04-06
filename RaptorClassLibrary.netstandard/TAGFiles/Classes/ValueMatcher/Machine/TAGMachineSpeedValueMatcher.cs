@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine
+﻿namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine
 {
     /// <summary>
     /// Handles the machine speed value reported from the machine ECM
@@ -15,10 +9,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine
         {
         }
 
-        public override string[] MatchedValueTypes()
-        {
-            return new string[] { TAGValueNames.kTagMachineSpeed };
-        }
+        private static readonly string[] valueTypes = { TAGValueNames.kTagMachineSpeed };
+
+        public override string[] MatchedValueTypes() => valueTypes;
 
         public override bool ProcessDoubleValue(TAGDictionaryItem valueType, double value)
         {

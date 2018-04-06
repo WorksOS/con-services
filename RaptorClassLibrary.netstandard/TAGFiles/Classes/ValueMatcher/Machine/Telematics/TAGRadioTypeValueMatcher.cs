@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine.Telematics
 {
@@ -12,10 +8,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine.Telematics
         {
         }
 
-        public override string[] MatchedValueTypes()
-        {
-            return new string[] { TAGValueNames.kTagRadioType };
-        }
+        private static readonly string[] valueTypes = { TAGValueNames.kTagRadioType };
+
+        public override string[] MatchedValueTypes() => valueTypes;
 
         public override bool ProcessANSIStringValue(TAGDictionaryItem valueType, byte[] value)
         {

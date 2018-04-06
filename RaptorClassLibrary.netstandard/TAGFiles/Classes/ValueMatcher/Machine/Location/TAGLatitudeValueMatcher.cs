@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine.Location
+﻿namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine.Location
 {
     /// <summary>
     /// Handles a latitude position (such as TAG file seed location) reported by a machine
@@ -15,10 +9,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine.Location
         {
         }
 
-        public override string[] MatchedValueTypes()
-        {
-            return new string[] { TAGValueNames.kTagPositionLatitude };
-        }
+        private static readonly string[] valueTypes = { TAGValueNames.kTagPositionLatitude };
+
+        public override string[] MatchedValueTypes() => valueTypes;
 
         public override bool ProcessDoubleValue(TAGDictionaryItem valueType, double value)
         {

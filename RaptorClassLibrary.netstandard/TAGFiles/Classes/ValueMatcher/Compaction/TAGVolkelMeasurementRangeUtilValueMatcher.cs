@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Cells;
+﻿using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.TAGFiles.Types;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Compaction
@@ -17,10 +12,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Compaction
         {
         }
 
-        public override string[] MatchedValueTypes()
-        {
-            return new string[] { TAGValueNames.kTabFileVolkelMeasRangeUtil };
-        }
+        private static readonly string[] valueTypes = { TAGValueNames.kTabFileVolkelMeasRangeUtil };
+
+        public override string[] MatchedValueTypes() => valueTypes;
 
         public override bool ProcessEmptyValue(TAGDictionaryItem valueType)
         {

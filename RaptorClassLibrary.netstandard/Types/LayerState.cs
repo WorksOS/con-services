@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor.Types
+﻿namespace VSS.VisionLink.Raptor.Types
 {
     /// <summary>
     /// Controls whether any layer analysis is applied to cell passes in cells queried from the data model

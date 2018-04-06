@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.ControlState
+﻿namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.ControlState
 {
     public class TAGControlStateRightLiftValueMatcher : TAGValueMatcher
     {
@@ -12,10 +6,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.ControlState
         {
         }
 
-        public override string[] MatchedValueTypes()
-        {
-            return new string[] { TAGValueNames.kTagFileControlStateRightLift };
-        }
+        private static readonly string[] valueTypes = { TAGValueNames.kTagFileControlStateRightLift };
+
+        public override string[] MatchedValueTypes() => valueTypes;
 
         public override bool ProcessUnsignedIntegerValue(TAGDictionaryItem valueType, uint value)
         {

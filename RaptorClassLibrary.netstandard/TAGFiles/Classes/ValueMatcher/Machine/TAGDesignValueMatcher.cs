@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine
+﻿namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine
 {
     public class TAGDesignValueMatcher : TAGValueMatcher
     {
@@ -12,10 +6,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine
         {
         }
 
-        public override string[] MatchedValueTypes()
-        {
-            return new string[] { TAGValueNames.kTagFileDesignTag };
-        }
+        private static readonly string[] valueTypes = { TAGValueNames.kTagFileDesignTag };
+
+        public override string[] MatchedValueTypes() => valueTypes;
 
         public override bool ProcessUnicodeStringValue(TAGDictionaryItem valueType, string value)
         {

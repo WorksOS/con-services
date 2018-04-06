@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.TAGFiles.Types;
+﻿using VSS.VisionLink.Raptor.TAGFiles.Types;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Compaction.PassCount
 {
@@ -16,10 +11,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Compaction.PassCou
         {
         }
 
-        public override string[] MatchedValueTypes()
-        {
-            return new string[] { TAGValueNames.kTagFileICPassTargetTag };
-        }
+        private static readonly string[] valueTypes = { TAGValueNames.kTagFileICPassTargetTag };
+
+        public override string[] MatchedValueTypes() => valueTypes;
 
         public override bool ProcessEmptyValue(TAGDictionaryItem valueType)
         {

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.TAGFiles.Types;
+﻿using System.Linq;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher
 {
@@ -16,13 +11,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher
         /// <summary>
         /// The value sink that all TAG values read in will be sent to
         /// </summary>
-        protected TAGProcessorStateBase valueSink = null;
+        protected TAGProcessorStateBase valueSink;
 
         /// <summary>
         /// The state machine state updated as new TAG values are read in. Value matchers update this state
         /// which in turn responds by emitted events to trigger further processing.
         /// </summary>
-        protected TAGValueMatcherState state { get; set; } = null;
+        protected TAGValueMatcherState state { get; set; }
 
         /// <summary>
         /// MatchesValueType determines if this value matcher is interested in fields with a field name of AValueName
@@ -69,7 +64,6 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher
         /// Processes an empty TAG value (a value with a name but no value at all - the TAG itself is the value)
         /// </summary>
         /// <param name="valueType"></param>
-        /// <param name="value"></param>
         /// <returns></returns>
         public virtual bool ProcessEmptyValue(TAGDictionaryItem valueType) => false;
 
