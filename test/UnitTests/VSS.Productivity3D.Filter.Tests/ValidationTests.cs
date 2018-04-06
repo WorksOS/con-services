@@ -177,7 +177,8 @@ namespace VSS.Productivity3D.Filter.Tests
       TIDCustomPrincipal principal = new TIDCustomPrincipal(new System.Security.Claims.ClaimsIdentity(),
         custUid, "","", projectListProxy.Object, customHeaders);
 
-      Assert.AreEqual(projectData, principal.GetProject(projectUid));
+      var actual = await principal.GetProject(projectUid);
+      Assert.AreEqual(projectData, actual);
     }
 
     [TestMethod]
@@ -192,7 +193,7 @@ namespace VSS.Productivity3D.Filter.Tests
       TIDCustomPrincipal principal = new TIDCustomPrincipal(new System.Security.Claims.ClaimsIdentity(),
         custUid, "", "", projectListProxy.Object, customHeaders);
 
-      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => principal.GetProject(projectUid));
+      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(() => principal.GetProject(projectUid));
 
       StringAssert.Contains(ex.GetContent, "-5");
       StringAssert.Contains(ex.GetContent, "Missing Project or project does not belong to customer");
@@ -217,7 +218,8 @@ namespace VSS.Productivity3D.Filter.Tests
       TIDCustomPrincipal principal = new TIDCustomPrincipal(new System.Security.Claims.ClaimsIdentity(),
         custUid, "", "", projectListProxy.Object, customHeaders);
 
-      Assert.AreEqual(projectData, principal.GetProject(projectUid));
+      var actual = await principal.GetProject(projectUid);
+      Assert.AreEqual(projectData, actual);
     }
 
     [TestMethod]

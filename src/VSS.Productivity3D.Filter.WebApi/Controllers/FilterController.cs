@@ -63,7 +63,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
           (User as TIDCustomPrincipal)?.CustomerUid,
           (User as TIDCustomPrincipal).IsApplication,
           ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
-          (User as TIDCustomPrincipal)?.GetProject(projectUid));
+          await (User as TIDCustomPrincipal)?.GetProject(projectUid));
 
       requestFull.Validate(ServiceExceptionHandler, true);
 
@@ -94,7 +94,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
           (User as TIDCustomPrincipal)?.CustomerUid,
           (User as TIDCustomPrincipal).IsApplication,
           ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
-          (User as TIDCustomPrincipal)?.GetProject(projectUid),
+          await (User as TIDCustomPrincipal)?.GetProject(projectUid),
           new FilterRequest { FilterUid = filterUid });
 
       requestFull.Validate(ServiceExceptionHandler, true);
@@ -184,7 +184,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
        (User as TIDCustomPrincipal)?.CustomerUid,
        (User as TIDCustomPrincipal).IsApplication,
        ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
-       (User as TIDCustomPrincipal)?.GetProject(projectUid),
+        await (User as TIDCustomPrincipal)?.GetProject(projectUid),
        filterRequest);
 
       requestFull.Validate(ServiceExceptionHandler);
@@ -211,7 +211,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         (User as TIDCustomPrincipal)?.CustomerUid,
         (User as TIDCustomPrincipal).IsApplication,
         ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
-        (User as TIDCustomPrincipal)?.GetProject(projectUid),
+        await (User as TIDCustomPrincipal)?.GetProject(projectUid),
         new FilterRequest { FilterUid = filterUid });
 
       requestFull.Validate(ServiceExceptionHandler, true);

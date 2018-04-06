@@ -80,9 +80,9 @@ namespace VSS.Productivity3D.Filter.Common.Filters.Authentication
     /// </summary>
     /// <param name="projectUid">The project ID</param>
     /// <returns>Project descriptor</returns>
-    public ProjectData GetProject(string projectUid)
+    public async Task<ProjectData> GetProject(string projectUid)
     {
-      var project = ProjectProxy.GetProjectForCustomer(CustomerUid, projectUid, ContextHeaders).Result;
+      var project = await ProjectProxy.GetProjectForCustomer(CustomerUid, projectUid, ContextHeaders);
 
       if (project != null) { return project; }
   
