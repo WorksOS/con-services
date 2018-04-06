@@ -18,9 +18,8 @@ Examples:
 #| Geofences         | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | Geofences                              |           |      | 1          |          |
 | ProjectBoundary    | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProjectBoundary                        |           |      | 1          |          |
 | BaseMap            | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | BaseMap                                | MAP       |      | 1          |          |
-| BaseMap            | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | BaseMap                                | MAP       |      | 1          |          |  
-| BaseMap            | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | BaseMap                                | MAP       |      | 1          | zh-CN    |
-| BaseMap            | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | BaseMap                                | MAP       |      | 1          | en_US    |
+| BaseMapEN          | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | BaseMap                                | MAP       |      | 1          | zh-CN    |
+| BaseMapZH          | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | BaseMap                                | MAP       |      | 1          | en_US    |
 | Elevation          | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 0    | 3.5        |          |
 | MDP                | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 20   | 3          |          |
 | CMV                | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 1    | 3          |          |
