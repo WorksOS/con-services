@@ -27,7 +27,7 @@ namespace VSS.Productivity3D.Common.ResultHandling
     /// </summary>
     public DateTime timestamp { get; protected set; }
 
-    public bool ShouldSerializevalue() => returnCode == 0;
+    public bool ShouldSerializevalue() => (returnCode == 0) && value.HasValue;
 
     /// <summary>
     /// Create instance of CellDatumResponse
