@@ -20,13 +20,11 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Compaction.CMV
             // Value is the absolute MDP value
             if (valueType.Type == TAGDataType.t12bitUInt)
             {
-                valueSink.ICMDPTargetValue = (short)value;
+                valueSink.ICMDPTargetValue = (short) value;
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
     }
 }

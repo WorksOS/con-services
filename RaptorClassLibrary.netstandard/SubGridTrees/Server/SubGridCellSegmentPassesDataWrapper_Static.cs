@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
@@ -42,12 +43,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             CellPasses = null;
 
             // Determine the total number of passes that need to be stored and create the array to hold them
-            int totalPassCount = 0;
-
-            foreach (CellPass[] passes in cellPasses)
-            {
-                totalPassCount += passes.Length;
-            }
+            int totalPassCount = cellPasses.Cast<CellPass[]>().Sum(passes => passes.Length);
 
             CellPasses = new CellPass[totalPassCount];
 

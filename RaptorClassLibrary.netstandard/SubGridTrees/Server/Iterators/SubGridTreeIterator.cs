@@ -290,12 +290,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
                             // It's a leaf subgrid - so use it
                             return SubGrid;
                         }
-                        else
-                        {
-                            // It's a node subgrid that contains other node subgrids or leaf subgrids - descend into it
-                            LevelIdx++;
-                            iterationState[LevelIdx].SubGrid = SubGrid;
-                        }
+
+                        // It's a node subgrid that contains other node subgrids or leaf subgrids - descend into it
+                        LevelIdx++;
+                        iterationState[LevelIdx].SubGrid = SubGrid;
+
                     }
                 }
 

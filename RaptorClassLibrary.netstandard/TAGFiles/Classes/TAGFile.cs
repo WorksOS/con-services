@@ -269,10 +269,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
                     // SIGLogMessage.Publish(Self, Format('Exception in TagFile.ReadFile: %s', [E.Message]), slmcDebug);
                     return TAGReadResult.CouldNotOpenFile;
                 }
-                else
-                {
-                    throw;
-                }
+
+                throw;
             }
 
             return TAGReadResult.NoError;

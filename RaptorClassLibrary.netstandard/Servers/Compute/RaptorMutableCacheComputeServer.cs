@@ -48,7 +48,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
 
             // Configure the Ignite persistence layer to store our data
             // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
-            cfg.DataStorageConfiguration = new DataStorageConfiguration()
+            cfg.DataStorageConfiguration = new DataStorageConfiguration
             {
                 PageSize = DataRegions.DEFAULT_MUTABLE_DATA_REGION_PAGE_SIZE,
 

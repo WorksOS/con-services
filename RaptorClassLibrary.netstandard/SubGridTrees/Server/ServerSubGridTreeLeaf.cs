@@ -727,7 +727,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             bool Result;
             BinaryWriter writer = new BinaryWriter(stream, Encoding.UTF8, true);
 
-            SubGridStreamHeader Header = new SubGridStreamHeader()
+            SubGridStreamHeader Header = new SubGridStreamHeader
             {
                 MajorVersion = SubGridStreamHeader.kSubGridMajorVersion,
                 MinorVersion = SubGridStreamHeader.kSubGridMinorVersion_Latest,

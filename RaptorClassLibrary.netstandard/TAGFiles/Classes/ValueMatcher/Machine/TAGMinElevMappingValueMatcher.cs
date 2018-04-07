@@ -22,10 +22,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine
                 valueSink.SetMinElevMappingState(value == 1);
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
     }
 }

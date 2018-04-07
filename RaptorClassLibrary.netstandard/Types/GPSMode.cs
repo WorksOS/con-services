@@ -54,5 +54,5 @@
         /// No GPS location available
         /// </summary>
         NoGPS = 0x0F
-    };
+    }
 }

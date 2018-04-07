@@ -21,10 +21,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine
                 valueSink.MachineWheelWidth = value;
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
     }
 }

@@ -473,7 +473,7 @@ namespace VSS.Velociraptor.DesignProfiling
             // Split triangle into two pieces, a 'top' piece and a 'bottom' piece to simplify
             // scanning across the triangle. Split is always with a horizontal line
 
-            TriVertex[] SortVertices = new TriVertex[] { Tri.Vertices[0], Tri.Vertices[1], Tri.Vertices[2] };
+            TriVertex[] SortVertices = { Tri.Vertices[0], Tri.Vertices[1], Tri.Vertices[2] };
 
             if (SortVertices[0].Y > SortVertices[1].Y) SwapVertices(ref SortVertices[0], ref SortVertices[1]);
             if (SortVertices[1].Y > SortVertices[2].Y) SwapVertices(ref SortVertices[1], ref SortVertices[2]);
@@ -624,7 +624,7 @@ namespace VSS.Velociraptor.DesignProfiling
 
             // Create a subgrid tree bit mask index that holds one bit per on-the-ground
             // subgrid that intersects at least one triangle in the TTM.
-            FSubgridIndex = new SubGridTreeSubGridExistenceBitMask()
+            FSubgridIndex = new SubGridTreeSubGridExistenceBitMask
             {
                 CellSize = SubGridTree.SubGridTreeDimension * ACellSize
             };

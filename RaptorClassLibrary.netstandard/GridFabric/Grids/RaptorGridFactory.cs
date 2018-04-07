@@ -16,14 +16,12 @@ namespace VSS.VisionLink.Raptor.GridFabric.Grids
             {
                 return Ignition.TryGetIgnite(gridName);
             }
-            else if (gridName.Equals(RaptorGrids.RaptorImmutableGridName()))
+            if (gridName.Equals(RaptorGrids.RaptorImmutableGridName()))
             {
                 return Ignition.TryGetIgnite(gridName);
             }
-            else
-            {
-                throw new ArgumentException($"{gridName} is an unknown grid to create a reference for.");
-            }
+
+            throw new ArgumentException($"{gridName} is an unknown grid to create a reference for.");
         }
     }
 }

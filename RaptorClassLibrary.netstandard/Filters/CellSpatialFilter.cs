@@ -289,25 +289,22 @@ namespace VSS.VisionLink.Raptor.Filters
         /// <returns></returns>
         public BoundingWorldExtent3D CalculateIntersectionWithExtents(BoundingWorldExtent3D Extents)
         {
-            if (IsSpatial)// Just a polygonal fence
+            if (IsSpatial) // Just a polygonal fence
             {
                 Fence.GetExtents(out double MinX, out double MinY, out double MaxX, out double MaxY);
                 return Extents.Intersect(MinX, MinY, MaxX, MaxY);
             }
-            else
+
+            if (IsPositional) // Square or circle
             {
-                if (IsPositional) // Square or circle
-                {
-                    return Extents.Intersect(PositionX - PositionRadius,
-                                             PositionY - PositionRadius,
-                                             PositionX + PositionRadius,
-                                             PositionY + PositionRadius);
-                }
-                else // no spatial restriction in the filter
-                {                    
-                    return Extents;
-                }
+                return Extents.Intersect(PositionX - PositionRadius,
+                    PositionY - PositionRadius,
+                    PositionX + PositionRadius,
+                    PositionY + PositionRadius);
             }
+
+            // no spatial restriction in the filter
+            return Extents;
         }
     }
 }

@@ -48,7 +48,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             try
             {
                 // Construct the function to be used
-                IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse> func = new SubGridsRequestComputeFuncAggregative<TSubGridsRequestArgument, TSubGridRequestsResponse>()
+                IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse> func = new SubGridsRequestComputeFuncAggregative<TSubGridsRequestArgument, TSubGridRequestsResponse>
                 {
                     Task = Task
                 };

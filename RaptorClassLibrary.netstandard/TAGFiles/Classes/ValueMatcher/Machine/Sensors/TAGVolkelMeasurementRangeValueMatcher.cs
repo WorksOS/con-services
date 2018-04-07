@@ -22,10 +22,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine.Sensors
                 valueSink.SetVolkelMeasRange((int)value);
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
     }
 }

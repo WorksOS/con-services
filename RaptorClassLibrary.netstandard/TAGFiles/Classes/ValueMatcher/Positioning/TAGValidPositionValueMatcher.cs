@@ -19,10 +19,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Positioning
                 valueSink.ValidPosition = (byte)value;
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
     }
 }

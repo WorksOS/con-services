@@ -74,7 +74,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Models
         {
             if (!(response is CutFillStatisticsResponse statisticsResponse))
             {
-                throw new ArgumentException($"Response argument is null or not a CutFillStatisticsResponse instance");
+                throw new ArgumentException("Response argument is null or not a CutFillStatisticsResponse instance");
             }
 
             Counts = statisticsResponse.Counts;

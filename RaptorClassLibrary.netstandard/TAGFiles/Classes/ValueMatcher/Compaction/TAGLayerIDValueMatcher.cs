@@ -22,10 +22,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Compaction
                 valueSink.ICLayerIDValue = (ushort)value;
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
     }
 }

@@ -24,7 +24,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             // Ensure the requested tree level is valid for the given tree
             if (treeLevel < 1 || treeLevel > tree.NumLevels)
             {
-                throw new ArgumentException(string.Format("Invalid treeLevel in subgrid factory: {0}, range is 1-{1}", treeLevel, tree.NumLevels), "treeLevel");
+                throw new ArgumentException(
+                    string.Format("Invalid treeLevel in subgrid factory: {0}, range is 1-{1}", treeLevel,
+                        tree.NumLevels), "treeLevel");
             }
 
             //Type NodeType = (treeLevel < tree.NumLevels) ? typeof(Node) : typeof(Leaf);
@@ -32,20 +34,18 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
             if (treeLevel < tree.NumLevels)
             {
-                return new Node()
+                return new Node
                 {
                     Owner = tree,
                     Level = treeLevel
                 };
             }
-            else
+
+            return new Leaf
             {
-                return new Leaf()
-                {
-                    Owner = tree,
-                    Level = treeLevel
-                };
-            }
+                Owner = tree,
+                Level = treeLevel
+            };
         }
     }
 }

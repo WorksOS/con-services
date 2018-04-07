@@ -23,10 +23,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Compaction.CMV
                 valueSink.ICCCVTargetValue = (short)value;
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;            
         }
     }
 }

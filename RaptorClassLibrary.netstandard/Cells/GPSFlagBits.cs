@@ -25,5 +25,5 @@
         /// Unused, spare bit
         /// </summary>
         GPSSBitSpare = 7
-    };
+    }
 }

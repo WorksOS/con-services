@@ -224,7 +224,7 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
                     };
 
                     // Create and configure the volumes calculation engine
-                    VolumesCalculator ComputeVolumes = new VolumesCalculator()
+                    VolumesCalculator ComputeVolumes = new VolumesCalculator
                     {
                         RequestDescriptor = RequestDescriptor,
                         SiteModel = SiteModel,

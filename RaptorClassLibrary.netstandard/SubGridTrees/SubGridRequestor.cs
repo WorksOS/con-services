@@ -375,7 +375,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             }
 
             ClientHeightAndTimeLeafSubGrid ClientGridAsHeightAndTime = null;
-            ClientHeightAndTimeLeafSubGrid SurfaceElevations = null;
+            ClientHeightAndTimeLeafSubGrid SurfaceElevations;
             bool SurveyedSurfaceElevationWanted;
 
             ServerRequestResult Result = ServerRequestResult.NoError;
@@ -646,14 +646,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                                                                       ref ClientGridAsLeafSubgrid.ProdDataMap,
                                                                       ref ClientGridAsLeafSubgrid.FilterMap))
                 {
-                    Result = ServerRequestResult.NoError;
+                    Result = PerformHeightAnnotation();
                 }
                 else
                 {
                     Result = ServerRequestResult.FailedToComputeDesignFilterPatch;
-                }
-
-                Result = PerformHeightAnnotation();
+                }                
             }
 
             return Result;

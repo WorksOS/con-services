@@ -292,7 +292,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
             {
                 return MachineDirection.Forward;
             }
-            else
+
             if (_ICGear == MachineGear.Reverse ||
                 _ICGear == MachineGear.Reverse2 ||
                 _ICGear == MachineGear.Reverse3 ||
@@ -301,10 +301,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
             {
                 return MachineDirection.Reverse;
             }
-            else
-            {
-                return MachineDirection.Unknown;
-            }
+
+            return MachineDirection.Unknown;
         }
 
         public virtual void SetResearchData(bool value) => _ResearchData = value;

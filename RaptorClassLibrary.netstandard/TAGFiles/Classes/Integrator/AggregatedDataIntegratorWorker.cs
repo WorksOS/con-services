@@ -372,7 +372,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                             // we have been given are with respect to the subgrid, we must transform them
                             // into coordinates relavant to the dirty bitmap subgrid tree.
 
-                            WorkingModelUpdateMap = new SubGridTreeSubGridExistenceBitMask()
+                            WorkingModelUpdateMap = new SubGridTreeSubGridExistenceBitMask
                             {
                                 CellSize = SubGridTree.SubGridTreeDimension * SiteModelFromDM.Grid.CellSize,
                                 ID = SiteModelFromDM.ID

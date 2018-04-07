@@ -132,10 +132,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 
             foreach (var s in (TargetSubGrid as ServerSubGridTreeLeaf).Directory.SegmentDirectory)
             {
-                if (s.Segment != null)
-                {
-                    s.Segment.SaveToFile(StorageProxy, ServerSubGridTree.GetLeafSubGridSegmentFullFileName(SubGridOriginAddress, s), out FileSystemErrorStatus FSError);
-                }
+                s.Segment?.SaveToFile(StorageProxy, ServerSubGridTree.GetLeafSubGridSegmentFullFileName(SubGridOriginAddress, s), out FileSystemErrorStatus FSError);
             }
 
             // Save the changed subgrid directory to allow Ignite to store & socialise the update

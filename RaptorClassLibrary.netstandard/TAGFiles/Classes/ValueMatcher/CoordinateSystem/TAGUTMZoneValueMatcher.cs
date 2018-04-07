@@ -30,10 +30,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.CoordinateSystem
 
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;            
         }
     }
 }

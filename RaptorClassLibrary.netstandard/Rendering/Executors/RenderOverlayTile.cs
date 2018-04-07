@@ -285,7 +285,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
             RepresentationalDisplayer.MapView = new MapSurface
             {
                 SquareAspect = false,
-                Rotation = (-TileRotation + (Math.PI / 2)),
+                Rotation = -TileRotation + Math.PI / 2
             };
 
             RepresentationalDisplayer.MapView.SetBounds(NPixelsX, NPixelsY);

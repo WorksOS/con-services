@@ -25,13 +25,11 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Compaction.PassCou
             // Value is the absolute CCV value
             if (valueType.Type == TAGDataType.t12bitUInt)
             {
-                valueSink.ICPassTargetValue = (ushort)value;
+                valueSink.ICPassTargetValue = (ushort) value;
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
     }
 }

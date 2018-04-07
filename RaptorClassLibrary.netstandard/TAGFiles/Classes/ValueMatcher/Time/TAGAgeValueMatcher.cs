@@ -16,13 +16,11 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Time
         {
             if (valueType.Type == TAGDataType.t4bitUInt)
             {
-                valueSink.SetAgeOfCorrection((byte)value);
+                valueSink.SetAgeOfCorrection((byte) value);
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
     }
 }

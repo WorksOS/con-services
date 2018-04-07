@@ -408,10 +408,8 @@ namespace VSS.VisionLink.Raptor.Events
                     return Result ?? this;
                 }
             }
-            else
-            {
-                return this;
-            }
+
+            return this;
         }
     }
 
@@ -444,7 +442,7 @@ namespace VSS.VisionLink.Raptor.Events
         /// <returns>The event instance that was added to the list</returns>
         public virtual T PutValueAtDate(DateTime dateTime, V value)
         {
-            T newEvent = new T()
+            T newEvent = new T
             {
                 Date = dateTime,
                 State = value

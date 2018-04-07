@@ -32,7 +32,7 @@ namespace VSS.VisionLink.Raptor.Designs
 
             public static key_list_rec Init()
             {
-                return new key_list_rec()
+                return new key_list_rec
                 {
                     num_keys = 0,
                     key = new uint[4]
@@ -397,26 +397,24 @@ namespace VSS.VisionLink.Raptor.Designs
         }
 
         bool split_rectangle(uint key, // : keytype;
-        ref double x0, ref double y0, ref double x1, ref double y1, ref double x2, ref double y2)
-        //        Splits the rectangle given by the key into 4.
-        //        x0,y0 = min, x1,y1 = middle, x2,y2 = max.
-        //        shift = position of split in key.
-        //  Function returns false if key cannot be split. }
+                ref double x0, ref double y0, ref double x1, ref double y1, ref double x2, ref double y2)
+            //        Splits the rectangle given by the key into 4.
+            //        x0,y0 = min, x1,y1 = middle, x2,y2 = max.
+            //        shift = position of split in key.
+            //  Function returns false if key cannot be split. }
         {
             if (key == outside_quadtree || (key & 7) != 0)
                 return false;
-            else
-            {
-                // { Find the enclosing quadtree rectangle}
-                key_rectangle(key, ref x0, ref y0, ref x2, ref y2);
 
-                // { Calculate the middle point }
-                x1 = 0.5 * (x0 + x2);
-                y1 = 0.5 * (y0 + y2);
+            // { Find the enclosing quadtree rectangle}
+            key_rectangle(key, ref x0, ref y0, ref x2, ref y2);
 
-                return true;
-            }
-        }
+            // { Calculate the middle point }
+            x1 = 0.5 * (x0 + x2);
+            y1 = 0.5 * (y0 + y2);
+
+            return true;
+        }    
 
         bool rectangles_overlap(double rx0, double ry0, double rx1, double ry1,        // { first rectangle }
         double sx0, double sy0, double sx1, double sy1) // { 2nd rectangle }
@@ -553,8 +551,8 @@ namespace VSS.VisionLink.Raptor.Designs
                 scan_down_tree(ref tree_level, ref key_block, ref key_index);
                 return true;
             }
-            else
-                return false;
+
+            return false;
         }
 
         bool find_key(Tentity_element key,
@@ -962,28 +960,26 @@ namespace VSS.VisionLink.Raptor.Designs
         }
 
         bool find_unique_key(uint key, // : keytype;
-                             Ttree_block_type[] search_path_cache, // var search_path_cache : Tpath_cache_type;
-                             int ent_index, // : longint;
-                             ref int tree_level, // : level_index_type;
-                             ref int key_block, // : block_index_type;
-                             ref int key_index) // : element_index_type ) : boolean;
-                                                //{ Finds the position of the entity reference in the B-tree.
-                                                //  If not found, the returned index is the insert position of the key. }
+                Ttree_block_type[] search_path_cache, // var search_path_cache : Tpath_cache_type;
+                int ent_index, // : longint;
+                ref int tree_level, // : level_index_type;
+                ref int key_block, // : block_index_type;
+                ref int key_index) // : element_index_type ) : boolean;
+            //{ Finds the position of the entity reference in the B-tree.
+            //  If not found, the returned index is the insert position of the key. }
         {
             Tentity_element tree_element = new Tentity_element();
 
             //{ Check for empty tree }
             if (search_path_cache[0].Count == 0)
                 return false;
-            else
-            {
-                tree_element.key = key;
-                tree_element.entity_index = ent_index;
 
-                tree_level = 0; //{root}
-                key_block = search_path_cache[0].block_nbr;
-                return find_key(tree_element, search_path_cache, ref tree_level, ref key_block, ref key_index);
-            }
+            tree_element.key = key;
+            tree_element.entity_index = ent_index;
+
+            tree_level = 0; //{root}
+            key_block = search_path_cache[0].block_nbr;
+            return find_key(tree_element, search_path_cache, ref tree_level, ref key_block, ref key_index);
         }
 
         void split_block(int tree_level, // : level_index_type;
@@ -997,17 +993,15 @@ namespace VSS.VisionLink.Raptor.Designs
                                                     //    b) Splits the block into two nodes, and moves the middle entry up one level.
         {
             int index_in_parent(int _parent_level, // : level_index_type;
-                                int _block_index) // : block_index_type ) : ext_element_type;
+                int _block_index) // : block_index_type ) : ext_element_type;
             {
                 if (block_index == non_search_path_cache[_parent_level].back_pointer)
                     return -1;
-                else
-                {
-                    int Result = 0;
-                    while (non_search_path_cache[_parent_level].element[Result].next != _block_index)
-                        Result++;
-                    return Result;
-                }
+
+                int Result = 0;
+                while (non_search_path_cache[_parent_level].element[Result].next != _block_index)
+                    Result++;
+                return Result;
             }
 
             const int min_balance_move = elements_per_block / 10;  //{ Minimum number of blocks to move in a balance }

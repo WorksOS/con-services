@@ -200,10 +200,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 
             if (ClearInterpolators)
             {
-              for (int J = 0; J < InterpolationFences.Length; J++)
-              {
-                InterpolationFences[J].Clear();
-              }
+                foreach (var t in InterpolationFences)
+                {
+                    t.Clear();
+                }
             }
 
             if (ADataLeft.IsNull || ADataRight.IsNull) 

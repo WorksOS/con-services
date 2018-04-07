@@ -426,7 +426,7 @@ namespace VSS.VisionLink.Raptor.Volumes
                     // By convention BaseSubgrid is always the first subgrid in the array,
                     // regardless of whether it really forms the 'top' or 'bottom' of the interval.
 
-                    IClientLeafSubGrid TopSubGrid = null;
+                    IClientLeafSubGrid TopSubGrid;
                     IClientLeafSubGrid BaseSubGrid = subGridResult[0]; //.Subgrid as TICClientSubGridTreeLeaf_Height;
 
                     if (BaseSubGrid == null)

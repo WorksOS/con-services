@@ -13,7 +13,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Palettes
         private double MaxElevation;// = Consts.NullDouble;
         private double ElevationPerBand;// = Consts.NullDouble;
 
-        private static Color[] ElevationPalette = new []
+        private static Color[] ElevationPalette = 
         {
         Color.Aqua,
         Color.Yellow,

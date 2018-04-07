@@ -25,13 +25,11 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Compaction.PassCou
             // Value is the absolute CCV value
             if (valueType.Type == TAGDataType.t16bitUInt)
             {
-                valueSink.ICTargetLiftThickness = (float)value / 1000;
+                valueSink.ICTargetLiftThickness = (float) value / 1000;
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
     }
 }

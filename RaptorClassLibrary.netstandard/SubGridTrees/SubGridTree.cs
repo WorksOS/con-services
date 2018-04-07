@@ -344,23 +344,23 @@ namespace VSS.VisionLink.Raptor
                 // First calculate the leaf data cell indexes for the given real world extent
                 // If the world coorindates lie outside of the extent covered by the grid, then
                 // clamp them to the boundaries of the grid.
-                if (CalculateIndexOfCellContainingPosition(Range.EnsureRange(worldExtent.MinX, -MaxOrdinate, MaxOrdinate),
-                                                         Range.EnsureRange(worldExtent.MinY, -MaxOrdinate, MaxOrdinate),
-                                                         out uint minX,
-                                                         out uint minY) &&
-                         CalculateIndexOfCellContainingPosition(Range.EnsureRange(worldExtent.MaxX, -MaxOrdinate, MaxOrdinate),
-                                                      Range.EnsureRange(worldExtent.MaxY, -MaxOrdinate, MaxOrdinate),
-                                                      out uint maxX,
-                                                      out uint maxY))
+                if (CalculateIndexOfCellContainingPosition(
+                        Range.EnsureRange(worldExtent.MinX, -MaxOrdinate, MaxOrdinate),
+                        Range.EnsureRange(worldExtent.MinY, -MaxOrdinate, MaxOrdinate),
+                        out uint minX,
+                        out uint minY) &&
+                    CalculateIndexOfCellContainingPosition(
+                        Range.EnsureRange(worldExtent.MaxX, -MaxOrdinate, MaxOrdinate),
+                        Range.EnsureRange(worldExtent.MaxY, -MaxOrdinate, MaxOrdinate),
+                        out uint maxX,
+                        out uint maxY))
                 {
-                    cellExtent = new BoundingIntegerExtent2D((int)minX, (int)minY, (int)maxX, (int)maxY);
+                    cellExtent = new BoundingIntegerExtent2D((int) minX, (int) minY, (int) maxX, (int) maxY);
                     return true;
                 }
-                else
-                {
-                    cellExtent = new BoundingIntegerExtent2D();
-                    return false;
-                }
+
+                cellExtent = new BoundingIntegerExtent2D();
+                return false;
             }
             catch (Exception)
             {

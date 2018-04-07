@@ -55,7 +55,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
 
                     Log.InfoFormat("Creating new Ignite node with Roles = {0} & RaptorNodeID = {1}", roleNames, RaptorNodeID);
 
-                    IgniteConfiguration cfg = new IgniteConfiguration()
+                    IgniteConfiguration cfg = new IgniteConfiguration
                     {
                         // SpringConfigUrl = @".\RaptorIgniteConfig.xml",
 
