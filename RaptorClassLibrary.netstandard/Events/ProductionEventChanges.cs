@@ -90,6 +90,10 @@ namespace VSS.VisionLink.Raptor.Events
         public ProductionEventChangeList<ProductionEventChangeBase<byte>, byte> ICFlagsStateEvents;
 
         /// <summary>
+        /// Records the target CCV value configured on the machine control system
+        /// </summary>
+        public ProductionEventChangeList<ProductionEventChangeBase<short>, short> TargetCCVStateEvents;
+        /// <summary>
         /// Create all defined event lists in one operation.
         /// </summary>
         private void CreateEventLists()
@@ -107,6 +111,7 @@ namespace VSS.VisionLink.Raptor.Events
             LayerIDStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<ushort>, ushort>(MachineID, SiteModel.ID, ProductionEventType.LayerID);
             DesignNameStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<string>, string>(MachineID, SiteModel.ID, ProductionEventType.DesignChange);
             ICFlagsStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<byte>, byte>(MachineID, SiteModel.ID, ProductionEventType.ICFlagsChange);            
+            TargetCCVStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<short>, short>(MachineID, SiteModel.ID, ProductionEventType.TargetCCV);
         }
 
     /// <summary>
@@ -129,7 +134,8 @@ namespace VSS.VisionLink.Raptor.Events
                 GPSAccuracyAndToleranceStateEvents,
                 LayerIDStateEvents,
                 DesignNameStateEvents,
-                ICFlagsStateEvents
+                ICFlagsStateEvents,
+                TargetCCVStateEvents
             };
         }
     /// <summary>
@@ -174,6 +180,7 @@ namespace VSS.VisionLink.Raptor.Events
             LayerIDStateEvents = LayerIDStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<ushort>, ushort>;
             DesignNameStateEvents = DesignNameStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<string>, string>;
             ICFlagsStateEvents = DesignNameStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<byte>, byte>;
+            TargetCCVStateEvents = TargetCCVStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<short>, short>;
 
             return true;
         }

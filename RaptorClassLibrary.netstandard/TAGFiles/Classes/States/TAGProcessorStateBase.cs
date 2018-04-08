@@ -65,11 +65,11 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 
         // The control state members contain the control state flags set for five different
         // automatics controls supported by the GCS900 machine control system
-        int _ControlStateLeftLift = MachineControlStateFlags.NullGCSControlState;
-        int _ControlStateRightLift = MachineControlStateFlags.NullGCSControlState;
-        int _ControlStateLift = MachineControlStateFlags.NullGCSControlState;
-        int _ControlStateTilt = MachineControlStateFlags.NullGCSControlState;
-        int _ControlStateSideShift = MachineControlStateFlags.NullGCSControlState;
+        private int _ControlStateLeftLift = MachineControlStateFlags.NullGCSControlState;
+        private int _ControlStateRightLift = MachineControlStateFlags.NullGCSControlState;
+        private int _ControlStateLift = MachineControlStateFlags.NullGCSControlState;
+        private int _ControlStateTilt = MachineControlStateFlags.NullGCSControlState;
+        private int _ControlStateSideShift = MachineControlStateFlags.NullGCSControlState;
 
         // FAutomaticesMode records the machine automatic control state as defined by
         // the 5 GCS900 control state flag sets. It is currently defined as a simple

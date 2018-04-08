@@ -235,6 +235,11 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
             }
         }
 
+        /// <summary>
+        /// Records a change in the 'ICMode' flags from the compaction system. These flags also drive two 
+        /// other events: vibration events and automatics vibration events
+        /// </summary>
+        /// <param name="Value"></param>
         protected override void SetICMode(byte Value)
         {
             base.SetICMode(Value);
@@ -296,11 +301,23 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
             }
         }
 
+        protected override void SetICCCVTargetValue(short Value)
+        {
+            base.SetICCCVTargetValue(Value);
+
+            if (DataTime != DateTime.MinValue)
+                MachineTargetValueChangesAggregator.TargetCCVStateEvents.PutValueAtDate(DataTime, Value);
+            else
+            {
+                //{$IFDEF DENSE_TAG_FILE_LOGGING}
+                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SVOICSnailTrailProcessor.SetICCCVTargetValue', slpmcDebug); 
+                //{$ENDIF}
+            }
+        }
+
         /*
-              procedure SetICMode                     (const Value :Byte                  ); override;
               procedure SetICGear                     (const Value :Byte                  ); override;
               procedure SetICSonic3D                  (const Value :Byte                  ); override;
-              procedure SetICCCVTargetValue           (const Value :SmallInt              ); override;
               procedure SetICPassTargetValue          (const Value :TICPassCountValue     ); override;
               procedure SetICTargetLiftThickness      (const Value :TICLiftThickness      ); override;
               procedure SetAutomaticsMode             (const Value :TGCSAutomaticsMode    ); override;
