@@ -33,6 +33,11 @@ namespace VSS.VisionLink.Raptor.Events
         public ProductionEventChangeList<ProductionEventChangeBase<VibrationState>, VibrationState> VibrationStateEvents;
 
         /// <summary>
+        /// Events recording automatics vibration state changes for vibratory drum compactor operation
+        /// </summary>
+        public ProductionEventChangeList<ProductionEventChangeBase<AutoVibrationState>, AutoVibrationState> AutoVibrationStateEvents;
+
+        /// <summary>
         /// Events recording changes to the prevailing GPSMode (eg: RTK Fixed, RTK Float, Differential etc) at the time 
         /// production measurements were being made
         /// </summary>
@@ -75,12 +80,23 @@ namespace VSS.VisionLink.Raptor.Events
         public ProductionEventChangeList<ProductionEventChangeBase<ushort>, ushort> LayerIDStateEvents;
 
         /// <summary>
+        /// Records the selected design on the machine at the time the measurements were made
+        /// </summary>
+        public ProductionEventChangeList<ProductionEventChangeBase<string>, string> DesignNameStateEvents;
+
+        /// <summary>
+        /// ICFlags control flags change events
+        /// </summary>
+        public ProductionEventChangeList<ProductionEventChangeBase<byte>, byte> ICFlagsStateEvents;
+
+        /// <summary>
         /// Create all defined event lists in one operation.
         /// </summary>
         private void CreateEventLists()
         {
             StartEndRecordedDataEvents = new StartEndRecordedDataChangeList(MachineID, SiteModel.ID, ProductionEventType.StartRecordedData);
             VibrationStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<VibrationState>, VibrationState>(MachineID, SiteModel.ID, ProductionEventType.VibrationStateChange);
+            AutoVibrationStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<AutoVibrationState>, AutoVibrationState>(MachineID, SiteModel.ID, ProductionEventType.AutoVibrationStateChange);
             GPSModeStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<GPSMode>, GPSMode>(MachineID, SiteModel.ID, ProductionEventType.GPSModeChange);
             PositioningTechStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<PositioningTech>, PositioningTech>(MachineID, SiteModel.ID, ProductionEventType.PositioningTech);
             DesignNameIDStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<int>, int>(MachineID, SiteModel.ID, ProductionEventType.DesignChange);
@@ -89,18 +105,21 @@ namespace VSS.VisionLink.Raptor.Events
             MinElevMappingStateEvents = new ProductionEventChangeList< ProductionEventChangeBase<bool>, bool>(MachineID, SiteModel.ID, ProductionEventType.MinElevMappingStateChange);
             GPSAccuracyAndToleranceStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<GPSAccuracyAndTolerance>, GPSAccuracyAndTolerance>(MachineID, SiteModel.ID, ProductionEventType.GPSAccuracyChange);
             LayerIDStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<ushort>, ushort>(MachineID, SiteModel.ID, ProductionEventType.LayerID);
-       }
+            DesignNameStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<string>, string>(MachineID, SiteModel.ID, ProductionEventType.DesignChange);
+            ICFlagsStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<byte>, byte>(MachineID, SiteModel.ID, ProductionEventType.ICFlagsChange);            
+        }
 
-        /// <summary>
-        /// Returns an array containing all the event lists for a machine
-        /// </summary>
-        /// <returns></returns>
-        public IProductionEventChangeList[] GetEventLists()
+    /// <summary>
+    /// Returns an array containing all the event lists for a machine
+    /// </summary>
+    /// <returns></returns>
+    public IProductionEventChangeList[] GetEventLists()
         {
             return new IProductionEventChangeList[]
             {
                 StartEndRecordedDataEvents,
                 VibrationStateEvents,
+                AutoVibrationStateEvents,
                 GPSModeStateEvents,
                 PositioningTechStateEvents,
                 DesignNameIDStateEvents,
@@ -108,7 +127,9 @@ namespace VSS.VisionLink.Raptor.Events
                 MachineGearStateEvents,
                 MinElevMappingStateEvents,
                 GPSAccuracyAndToleranceStateEvents,
-                LayerIDStateEvents
+                LayerIDStateEvents,
+                DesignNameStateEvents,
+                ICFlagsStateEvents
             };
         }
     /// <summary>
@@ -142,6 +163,7 @@ namespace VSS.VisionLink.Raptor.Events
         {
             StartEndRecordedDataEvents = StartEndRecordedDataEvents.LoadFromStore(storageProxy) as StartEndRecordedDataChangeList;
             VibrationStateEvents = VibrationStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<VibrationState>, VibrationState>;
+            AutoVibrationStateEvents = AutoVibrationStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<AutoVibrationState>, AutoVibrationState>;
             GPSModeStateEvents = GPSModeStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<GPSMode>, GPSMode>;
             PositioningTechStateEvents = PositioningTechStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<PositioningTech>, PositioningTech>;
             DesignNameIDStateEvents = DesignNameIDStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<int>, int>;
@@ -150,6 +172,8 @@ namespace VSS.VisionLink.Raptor.Events
             MinElevMappingStateEvents = MinElevMappingStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<bool>, bool>;
             GPSAccuracyAndToleranceStateEvents = GPSAccuracyAndToleranceStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<GPSAccuracyAndTolerance>, GPSAccuracyAndTolerance>;
             LayerIDStateEvents = LayerIDStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<ushort>, ushort>;
+            DesignNameStateEvents = DesignNameStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<string>, string>;
+            ICFlagsStateEvents = DesignNameStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<byte>, byte>;
 
             return true;
         }

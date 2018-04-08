@@ -26,7 +26,11 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// <summary>
         /// The position in the stream the reader is currently positioned at, in nybbles.
         /// </summary>
-        public long NybblePosition { get { return nybblePosition; } set { SetNybblePosition(value); } }
+        public long NybblePosition
+        {
+            get => nybblePosition;
+            set => SetNybblePosition(value);
+        }
 
         /// <summary>
         /// Default no-arg constructor. Do not use, this will throw an exception, use TagFileReader(Stream stream)
@@ -56,7 +60,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// Read the next nybble from the stream
         /// </summary>
         /// <returns></returns>
-        public byte ReadNybble()
+        private byte ReadNybble()
         {
             byte result;
 
@@ -94,7 +98,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// Read an ANSI char from the stream. The result is returned as a byte as
         /// c# does not have a native ANSI type
         /// </summary>
-        public byte /*ANSIChar*/ ReadANSIChar => (byte)ReadUnSignedIntegerValue(2);
+        private byte /*ANSIChar*/ ReadANSIChar => (byte)ReadUnSignedIntegerValue(2);
 
         /// <summary>
         /// Read an ANSI string from the stream. The result is returned as a byte array as
@@ -127,9 +131,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// </summary>
         /// <param name="count"></param>
         /// <returns></returns>
-        public byte[] ReadBuffer(uint count)
+        private byte[] ReadBuffer(uint count)
         {
-            Debug.Assert(!(count % 2 == 1), "ReadBuffer can only read even number of nybbles");
+            Debug.Assert(count % 2 != 1, "ReadBuffer can only read even number of nybbles");
 
             byte[] buffer = new byte[count / 2];
 
@@ -183,7 +187,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// Read a single UniCode character from the stream
         /// </summary>
         /// <returns></returns>
-        public char ReadUnicodeChar() => BitConverter.ToChar(ReadBuffer(4), 0);
+        private char ReadUnicodeChar() => BitConverter.ToChar(ReadBuffer(4), 0);
 
         /// <summary>
         /// Read a Unicode string from the stream

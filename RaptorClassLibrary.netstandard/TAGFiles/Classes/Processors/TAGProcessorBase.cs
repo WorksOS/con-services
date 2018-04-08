@@ -194,10 +194,6 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
                                    double ADataTime,
                                    XYZ ADataLeft, XYZ ADataRight)
         {
-            double WheelBaseWidth;
-            double DeltaX, DeltaY;
-            double Ratio;
-
             if (ClearInterpolators)
             {
                 foreach (var t in InterpolationFences)
@@ -208,16 +204,16 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 
             if (ADataLeft.IsNull || ADataRight.IsNull) 
             {
-                // There is no data available to construct an interpolation context - bug out!
+                // There is no data available to construct an interpolation context...
                 return;
             }
 
             if (MachineWheelWidth > 0)
             {
-                DeltaX = ADataRight.X - ADataLeft.X;
-                DeltaY = ADataRight.Y - ADataLeft.Y;
-                WheelBaseWidth = Math.Sqrt(DeltaX * DeltaX + DeltaY * DeltaY);
-                Ratio = MachineWheelWidth / WheelBaseWidth;
+                double DeltaX = ADataRight.X - ADataLeft.X;
+                double DeltaY = ADataRight.Y - ADataLeft.Y;
+                double WheelBaseWidth = Math.Sqrt(DeltaX * DeltaX + DeltaY * DeltaY);
+                double Ratio = MachineWheelWidth / WheelBaseWidth;
 
                 if (Ratio >= 0.5)
                 {

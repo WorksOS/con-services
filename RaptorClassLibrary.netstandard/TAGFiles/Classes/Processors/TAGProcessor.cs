@@ -19,7 +19,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         public TAGProcessor()
         {
         }
-        
+
         /// <summary>
         /// Primary constructor for the TAGProcessor. The arguments passed to it are:
         /// 1. The target SiteModel which is intended to be the recipient of the TAG information processed 
@@ -35,10 +35,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// <param name="targetValues"></param>
         /// <param name="siteModelGridAggregator"></param>
         /// <param name="machineTargetValueChangesAggregator"></param>
-        public TAGProcessor(SiteModel targetSiteModel, 
-            Machine targetMachine, 
+        public TAGProcessor(SiteModel targetSiteModel,
+            Machine targetMachine,
             ProductionEventChanges targetValues,
-            ServerSubGridTree siteModelGridAggregator, 
+            ServerSubGridTree siteModelGridAggregator,
             ProductionEventChanges machineTargetValueChangesAggregator) : this()
         {
             SiteModel = targetSiteModel;
@@ -96,7 +96,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// </summary>
         protected bool EpochContainsProofingRunDescription()
         {
-            return (StartProofingDataTime != DateTime.MinValue) &&  // We have a start time for the run
+            return (StartProofingDataTime != DateTime.MinValue) && // We have a start time for the run
                    (DataTime > StartProofingDataTime); // The current epoch time is greater than the start
         }
 
@@ -106,7 +106,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         protected bool ProcessProofingPassInformation()
         {
             bool Result = true;
-            string TempStr = EndProofingName != string.Empty ? EndProofingName : Design == string.Empty ? "No Design" : Design;
+            string TempStr = EndProofingName != string.Empty ? EndProofingName :
+                Design == string.Empty ? "No Design" : Design;
 
             DateTime LocalTime = StartProofingDataTime + Time.GPS.GetLocalGMTOffset();
 
@@ -137,6 +138,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
             return Result;
         }
 
+        /*
         /// <summary>
         /// At every epoch we process a set of state information that has been set into
         /// this processor by the active tag file value sink. Most of this information
@@ -148,20 +150,21 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         {
             base.ClearEpochSpecificData();
         }
+        */
 
         private SwatherBase CreateSwather(Fence InterpolationFence)
         {
             // Decide which swather to create. Currently it's just a standard terrain swather
-            TerrainSwather Result = new TerrainSwather(this,
-                                              MachineTargetValueChangesAggregator,
-                                              SiteModel,
-                                              SiteModelGridAggregator,
-                                              Machine.ID,
-                                         //     FICMachine.ConnectedMachineLevel,
-                                              InterpolationFence);
-            (Result as TerrainSwather).ProcessedEpochNumber = ProcessedEpochCount;
-
-            return Result;
+            return new TerrainSwather(this,
+                MachineTargetValueChangesAggregator,
+                SiteModel,
+                SiteModelGridAggregator,
+                Machine.ID,
+                //     FICMachine.ConnectedMachineLevel,
+                InterpolationFence)
+            {
+                ProcessedEpochNumber = ProcessedEpochCount
+            };
         }
 
         protected override void SetDataTime(DateTime Value)
@@ -172,27 +175,186 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 
             if (RecordEvent)
             {
-                MachineTargetValueChangesAggregator.StartEndRecordedDataEvents.PutValueAtDate(Value, ProductionEventType.StartRecordedData);
+                MachineTargetValueChangesAggregator.StartEndRecordedDataEvents.PutValueAtDate(Value,
+                    ProductionEventType.StartRecordedData);
 
                 TagFileStartTime = Value;
             }
         }
 
-        protected void UpdateCurrentDesignExtent()
+        protected void SetDesign(string Value)
         {
-            lock (SiteModel.SiteModelDesigns)
+            // If the design being loaded changed, then update the extents of the design
+            // in the designs list in the sitemodel
+
+            if (Design != "" && Design != Value)
+                UpdateCurrentDesignExtent();
+
+            base.SetDesign(Value);
+
+            if (DataTime != DateTime.MinValue)
+                MachineTargetValueChangesAggregator.DesignNameStateEvents.PutValueAtDate(DataTime, Value);
+            else
+            {
+                /* TODO
+                 {$IFDEF DENSE_TAG_FILE_LOGGING}
+                SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SVOICSnailTrailProcessor.SetDesign', slpmcDebug);
+                {$ENDIF}
+                */
+            }
+
+            // Get the current design extent for the newly selected design
+            SelectCurrentDesignExtent();
+        }
+
+        protected void SelectCurrentDesignExtent()
+        {
+            //TODO: FICSiteModel.SiteModelDesigns.AcquireLock;
+            try
             {
                 int DesignIndex = SiteModel.SiteModelDesigns.IndexOf(Design);
 
-                if (DesignIndex != -1)
+                if (DesignIndex == -1)
                 {
-                    SiteModel.SiteModelDesigns[DesignIndex].Extents = DesignExtent;
-                }
+// This may be because there is no selected design name, of that the
+// entry for this named design is not in the list. If the former, just clear the
+// design extents. If the latter, create a new design extents entry
 
-                // Clear the design extent being maintained in the processor.
-                DesignExtent.SetInverted();
+                    // Clear the design extent being maintained in the processor.
+                    DesignExtent.SetInverted();
+
+                    if (Design != "")
+                        SiteModel.SiteModelDesigns.CreateNew(Design, DesignExtent);
+                }
+                else
+                    DesignExtent = SiteModel.SiteModelDesigns[DesignIndex].Extents;
+            }
+            finally
+            {
+                //TODO - FICSiteModel.SiteModelDesigns.ReleaseLock;
             }
         }
+
+        protected override void SetICMode(byte Value)
+        {
+            base.SetICMode(Value);
+
+            VibrationState TempVibrationState = VibrationState.Invalid ;
+            AutoVibrationState TempAutoVibrationState = AutoVibrationState.Unknown;
+
+            if (DataTime != DateTime.MinValue)
+            {
+                switch (ICSensorType)
+                {
+                    case CompactionSensorType.Volkel:
+                    {
+                        if ((((Value & 0x01) >> 0) != 0) &&
+                            (((Value & 0x02) >> 1) != 0) &&
+                            (((Value & 0x04) >> 2) != 0) &&
+                            (((Value & 0x08) >> 3)) != 0) // Vibration is On...
+                            TempVibrationState = VibrationState.On;
+                        else // Vibration is Off...
+                            TempVibrationState = VibrationState.Off;
+
+                        TempAutoVibrationState = AutoVibrationState.Unknown;
+
+                        break;
+                    }
+
+                    case CompactionSensorType.MC024:
+                    case CompactionSensorType.CATFactoryFitSensor:
+                    {
+
+                        TempVibrationState = (VibrationState) ((Value & 0x04) >> 2);
+                        TempAutoVibrationState = (AutoVibrationState) (Value & 0x03);
+                        break;
+                    }
+
+                    case CompactionSensorType.NoSensor:
+
+                    {
+                        // Per TFS US 37212: Machines that do not report a compaction sensor type will
+                        // report vibration state information directly from the machine ECM in the FLAGS TAG.
+                        TempVibrationState = (VibrationState) ((Value & 0x04) >> 2);
+                        TempAutoVibrationState = (AutoVibrationState) (Value & 0x03);
+                        break;
+                    }
+                    default:
+                        Debug.Assert(false, "Unknown sensor type");
+                        break;
+                }
+
+                MachineTargetValueChangesAggregator.VibrationStateEvents.PutValueAtDate(DataTime, TempVibrationState);
+                MachineTargetValueChangesAggregator.AutoVibrationStateEvents.PutValueAtDate(DataTime, TempAutoVibrationState);
+                MachineTargetValueChangesAggregator.ICFlagsStateEvents.PutValueAtDate(DataTime, Value);
+            }
+            else
+            {
+                //{$IFDEF DENSE_TAG_FILE_LOGGING}
+                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SVOICSnailTrailProcessor.SetICMode',slpmcDebug);
+                //{$ENDIF}
+            }
+        }
+
+        /*
+              procedure SetICMode                     (const Value :Byte                  ); override;
+              procedure SetICGear                     (const Value :Byte                  ); override;
+              procedure SetICSonic3D                  (const Value :Byte                  ); override;
+              procedure SetICCCVTargetValue           (const Value :SmallInt              ); override;
+              procedure SetICPassTargetValue          (const Value :TICPassCountValue     ); override;
+              procedure SetICTargetLiftThickness      (const Value :TICLiftThickness      ); override;
+              procedure SetAutomaticsMode             (const Value :TGCSAutomaticsMode    ); override;
+              procedure SetRMVJumpThresholdValue      (const Value :TICRMVValue           ); override;
+              procedure SetICSensorType               (const Value: TICSensorType         ); override;
+              procedure SetMachineDirection           (const Value: TICMachineDirection   ); override;
+              procedure SetICTempWarningLevelMinValue (const Value: TICMaterialTemperature); override;
+              procedure SetICTempWarningLevelMaxValue (const Value :TICMaterialTemperature); override;
+              procedure SetICMDPTargetValue           (const Value :SmallInt              ); override;
+              procedure SetUTMZone                    (const Value :Byte                  ); override;
+              procedure SetCSType                     (const Value :Byte                  ); override;
+              procedure SetICLayerIDValue             (const Value :TICLayerIdValue       ); override;
+              procedure SetICCCATargetValue           (const Value :SmallInt              ); override;
+
+      function MaxEpochInterval: Double; override;
+      function IgnoreInvalidPositions: Boolean; override;
+
+                  procedure SetICCCVValue(const Value :TICCCVValue); override;
+      procedure SetICMDPValue(const Value :TICMDPValue); override;
+
+      procedure SetICCCAValue(const Value :TICCCAValue); override;
+      procedure SetICCCALeftFrontValue  (const Value : TICCCAValue ); override;
+      procedure SetICCCARightFrontValue (const Value : TICCCAValue ); override;
+      procedure SetICCCALeftRearValue   (const Value : TICCCAValue ); override;
+      procedure SetICCCARightRearValue  (const Value : TICCCAValue ); override;
+
+      procedure SetICRMVValue(const Value :SmallInt   ); override;
+
+      procedure SetGPSMode(const Value :TICGPSMode); override;
+      procedure SetMinElevMappingState(const Value: TICMinElevMappingState); override;
+      procedure SetInAvoidZoneState(const Value: TICInAvoidZoneState); override;
+      procedure SetGPSAccuracyState(const AccValue: TICGPSAccuracy; const LimValue: TICGPSTolerance); override;
+      procedure SetAgeOfCorrection(const Value: Byte); override;
+         */
+
+        /// <summary>
+        /// Updates the bounding box surrounding the area of the project worked on with the current
+        /// design name selected on the machine.
+        /// </summary>
+        protected void UpdateCurrentDesignExtent()
+          {
+              lock (SiteModel.SiteModelDesigns)
+              {
+                  int DesignIndex = SiteModel.SiteModelDesigns.IndexOf(Design);
+
+                  if (DesignIndex != -1)
+                  {
+                      SiteModel.SiteModelDesigns[DesignIndex].Extents = DesignExtent;
+                  }
+
+                  // Clear the design extent being maintained in the processor.
+                  DesignExtent.SetInverted();
+              }
+          }
 
         /// <summary>
         /// DoProcessEpochContext is the method that does the actual processing
@@ -204,12 +366,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// <returns></returns>
         public override bool DoProcessEpochContext(Fence InterpolationFence, MachineSide machineSide )
         {
-            SwatherBase Swather;
-
             Debug.Assert(SiteModel != null, "Null site model/data store for processor");
             Debug.Assert(Machine != null, "Null machine reference for processor");
 
-            Swather = CreateSwather(InterpolationFence);
+            SwatherBase Swather = CreateSwather(InterpolationFence);
 
             if (Swather == null)
             {
