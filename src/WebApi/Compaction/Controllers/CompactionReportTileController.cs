@@ -88,7 +88,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="mode">The thematic mode to be rendered; elevation, compaction, temperature etc</param>
     /// <param name="volumeBaseUid">Base Design or Filter UID for summary volumes determined by volumeCalcType</param>
     /// <param name="volumeTopUid">Top Design or  filter UID for summary volumes determined by volumeCalcType</param>
-    /// <param name="volumeCalcType">Summary volumes calculation type</param> 
+    /// <param name="volumeCalcType">Summary volumes calculation type</param>
+    /// <param name="language">Optional language parameter</param> 
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>CompactionTileExecutor</executor> 
     [ProjectUidVerifier]
@@ -106,12 +107,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] DisplayMode? mode,
       [FromQuery] Guid? volumeBaseUid,
       [FromQuery] Guid? volumeTopUid,
-      [FromQuery] VolumeCalcType? volumeCalcType)
+      [FromQuery] VolumeCalcType? volumeCalcType,
+      [FromQuery] string language = null)
     {
       Log.LogDebug("GetReportTile: " + Request.QueryString);
 
       var tileResult = await GetGeneratedTile(projectUid, filterUid, cutFillDesignUid, volumeBaseUid, volumeTopUid,
-        volumeCalcType, overlays, width, height, mapType, mode);
+        volumeCalcType, overlays, width, height, mapType, mode, language: language);
 
       return tileResult;
     }
@@ -131,7 +133,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="mode">The thematic mode to be rendered; elevation, compaction, temperature etc</param>
     /// <param name="volumeBaseUid">Base Design or Filter UID for summary volumes determined by volumeCalcType</param>
     /// <param name="volumeTopUid">Top Design or  filter UID for summary volumes determined by volumeCalcType</param>
-    /// <param name="volumeCalcType">Summary volumes calculation type</param>    
+    /// <param name="volumeCalcType">Summary volumes calculation type</param>
+    /// <param name="language"></param>    
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request succeeds.</returns>
     /// <executor>CompactionTileExecutor</executor> 
     [ProjectUidVerifier]
@@ -149,12 +152,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] DisplayMode? mode,
       [FromQuery] Guid? volumeBaseUid,
       [FromQuery] Guid? volumeTopUid,
-      [FromQuery] VolumeCalcType? volumeCalcType)
+      [FromQuery] VolumeCalcType? volumeCalcType,
+      [FromQuery] string language = null)
     {
       Log.LogDebug("GetReportTileRaw: " + Request.QueryString);
 
       var tileResult = await GetGeneratedTile(projectUid, filterUid, cutFillDesignUid, volumeBaseUid, volumeTopUid,
-        volumeCalcType, overlays, width, height, mapType, mode);
+        volumeCalcType, overlays, width, height, mapType, mode, language: language);
 
       Response.Headers.Add("X-Warning", "false");
       return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
@@ -216,7 +220,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Get the generated tile for the request
     /// </summary>
     private async Task<TileResult> GetGeneratedTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, Guid? volumeBaseUid, Guid? volumeTopUid, VolumeCalcType? volumeCalcType,
-      TileOverlayType[] overlays, int width, int height, MapType? mapType, DisplayMode? mode, bool thumbnail = false)
+      TileOverlayType[] overlays, int width, int height, MapType? mapType, DisplayMode? mode, bool thumbnail = false, string language = null)
     {
       var overlayTypes = overlays.ToList();
       if (overlays.Contains(TileOverlayType.AllOverlays))
@@ -239,7 +243,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var alignmentDescriptors = overlayTypes.Contains(TileOverlayType.Alignments)
         ? await GetAlignmentDescriptors(projectUid)
         : new List<DesignDescriptor>();
-      var userPreferences = await GetShortCachedUserPreferences();
+      language = string.IsNullOrEmpty(language) ? (await GetShortCachedUserPreferences()).Language : language;
       ////var geofences = overlayTypes.Contains(TileOverlayType.Geofences)
       ////  ? await geofenceProxy.GetGeofences((User as RaptorPrincipal).CustomerUid, CustomHeaders)
       ////  : new List<GeofenceData>();
@@ -259,7 +263,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         .SetAlignmentDescriptors(alignmentDescriptors)
         .SetDxfFiles(dxfFiles)
         .SetProject(project)
-        .CreateTileGenerationRequest(overlayTypes.ToArray(), width, height, mapType, mode, userPreferences.Language);
+        .CreateTileGenerationRequest(overlayTypes.ToArray(), width, height, mapType, mode, language);
 
       request.Validate();
 

@@ -24,6 +24,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     private string volumeBaseUid;
     private string volumeTopUid;
     private string cutFillDesignUid;
+    private string language;
     private Getter<TileResult> tileRequester;
 
     [Given(@"the Report Tile service URI ""(.*)""")]
@@ -62,6 +63,13 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       if (!string.IsNullOrEmpty(mode))
       this.mode = Convert.ToInt32(mode);
     }
+
+    [Given(@"a language ""(.*)""")]
+    public void GivenALanguage(string language)
+    {
+      this.language = language;
+    }
+
 
     [Given(@"a width ""(.*)"" and a height ""(.*)""")]
     public void GivenAWidthAndAHeight(int width, int height)
@@ -224,6 +232,10 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       if (!string.IsNullOrEmpty(cutFillDesignUid))
       {
         sb.Append($"&cutFillDesignUid={cutFillDesignUid}");
+      }
+      if (!string.IsNullOrEmpty(language))
+      {
+        sb.Append($"&language={language}");
       }
       return sb.ToString();
     }
