@@ -117,7 +117,7 @@ namespace VSS.VisionLink.Raptor.Executors
             {
                 Initialise();
 
-                TAGProcessor Processor = new TAGProcessor(SiteModel, Machine, Events, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
+                TAGProcessor Processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
                 TAGValueSink Sink = new TAGValueSink(Processor);
                 TAGReader Reader = new TAGReader(TAGData);
                 TAGFile TagFile = new TAGFile();

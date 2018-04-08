@@ -21,11 +21,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Tests
         {
             var SiteModel = new SiteModel();
             var Machine = new Machine();
-            var Events = new ProductionEventChanges(SiteModel, Machine.ID);
             var SiteModelGridAggregator = new ServerSubGridTree(SiteModel);
             var MachineTargetValueChangesAggregator = new ProductionEventChanges(SiteModel, long.MaxValue);
 
-            TAGProcessor processor = new TAGProcessor(SiteModel, Machine, Events, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
+            TAGProcessor processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
         }
 
         [Fact()]
@@ -33,11 +32,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Tests
         {
             var SiteModel = new SiteModel();
             var Machine = new Machine();
-            var Events = new ProductionEventChanges(SiteModel, Machine.ID);
             var SiteModelGridAggregator = new ServerSubGridTree(SiteModel);
             var MachineTargetValueChangesAggregator = new ProductionEventChanges(SiteModel, long.MaxValue);
 
-            TAGProcessor processor = new TAGProcessor(SiteModel, Machine, Events, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
+            TAGProcessor processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
 
             // Set the blade left and right tip locations to a trivial epoch, the epoch and do it again to trigger a swathing scan, then 
             // check to see if it generated anything!
@@ -68,11 +66,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Tests
         {
             var SiteModel = new SiteModel();
             var Machine = new Machine();
-            var Events = new ProductionEventChanges(SiteModel, Machine.ID);
             var SiteModelGridAggregator = new ServerSubGridTree(SiteModel);
             var MachineTargetValueChangesAggregator = new ProductionEventChanges(SiteModel, long.MaxValue);
 
-            TAGProcessor processor = new TAGProcessor(SiteModel, Machine, Events, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
+            TAGProcessor processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
 
             // Set the state of the processor to emulate the end of processing this TAG file at which point the processor should emit
             // a "Stop recording event". In this instance, the NoGPSModeSet flag will also be true which should trigger emission of 
@@ -100,11 +97,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Tests
         {
             var SiteModel = new SiteModel();
             var Machine = new Machine();
-            var Events = new ProductionEventChanges(SiteModel, Machine.ID);
             var SiteModelGridAggregator = new ServerSubGridTree(SiteModel);
             var MachineTargetValueChangesAggregator = new ProductionEventChanges(SiteModel, long.MaxValue);
 
-            TAGProcessor processor = new TAGProcessor(SiteModel, Machine, Events, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
+            TAGProcessor processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
 
             Assert.True(processor.DoEpochPreProcessAction(), "EpochPreProcessAction returned false in default TAGProcessor state");
 

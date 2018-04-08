@@ -41,6 +41,13 @@ namespace VSS.VisionLink.Raptor.Machines
 
         public ushort LastKnownLayerId { get; set; }
 
+        private bool _compactionDataReported;
+
+        /// <summary>
+        /// Indicates if the machine has ever reported any compactrion realated data, such as CCV, MDP or CCA measurements
+        /// </summary>
+        public bool CompactionDataReported { get => _compactionDataReported; set => _compactionDataReported = _compactionDataReported | value; }
+
         [NonSerialized]
         public ProductionEventChanges TargetValueChanges = null; // new ProductionEventChanges(null, -1);
 
@@ -75,8 +82,8 @@ namespace VSS.VisionLink.Raptor.Machines
         }
 
         public Machine(MachinesList owner,
-                       string name, 
-                       string machineHardwareID, 
+                       string name,
+                       string machineHardwareID,
                        byte machineType,
                        int deviceType,
                        long machineID,
@@ -91,20 +98,20 @@ namespace VSS.VisionLink.Raptor.Machines
             IsJohnDoeMachine = isJohnDoeMachine;
             ID = machineID;
 
-           // TODO FConnectedMachineLevel:= AConnectedMachineLevel;
+            // TODO FConnectedMachineLevel:= AConnectedMachineLevel;
         }
 
         public void Assign(Machine source)
         {
             Name = source.Name;
             MachineHardwareID = source.MachineHardwareID;
-//            CompactionSensorType = source.CompactionSensorType;
-//            CompactionRMVJumpThreshold = source.CompactionRMVJumpThreshold;
-//            UseMachineRMVThreshold = source.UseMachineRMVThreshold;
-//            OverrideRMVJumpThreshold = source.OverrideRMVJumpThreshold;
+            //            CompactionSensorType = source.CompactionSensorType;
+            //            CompactionRMVJumpThreshold = source.CompactionRMVJumpThreshold;
+            //            UseMachineRMVThreshold = source.UseMachineRMVThreshold;
+            //            OverrideRMVJumpThreshold = source.OverrideRMVJumpThreshold;
             DeviceType = source.DeviceType;
-//            CompactionDataReported = source.CompactionDataReported;
-//            ConnectedMachineLevel = source.ConnectedMachineLevel;
+            CompactionDataReported = source.CompactionDataReported;
+            //            ConnectedMachineLevel = source.ConnectedMachineLevel;
             MachineType = source.MachineType;
             IsJohnDoeMachine = source.IsJohnDoeMachine;
             LastKnownX = source.LastKnownX;
@@ -113,7 +120,7 @@ namespace VSS.VisionLink.Raptor.Machines
             LastKnownDesignName = source.LastKnownDesignName;
             LastKnownPositionTimeStamp = source.LastKnownPositionTimeStamp;
 
-//            Dirty = True;
+            //            Dirty = True;
         }
     }
 }

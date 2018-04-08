@@ -166,11 +166,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
                                   // (see TAG file schema for more details)
                                   ProcessedCellPass.CCA = Processor.SelectCCAValue(_TheTime, passType, machineSide);
 
-                  // If VibeState is not On, then any CCV info etc is invalid, and should be recorded as appropriate null values
-                  // temp bug fix AJR
-                  if (MachineTargetValueChanges.VibrationStateEvents.GetValueAtDate(ProcessedCellPass.Time, out int StateChangeIndex, VibrationState.Invalid) == VibrationState.On)
+                                  // If VibeState is not On, then any CCV info etc is invalid, and should be recorded as appropriate null values
+                                  // temp bug fix AJR
+                                  if (MachineTargetValueChanges.VibrationStateEvents.GetValueAtDate(ProcessedCellPass.Time, out int StateChangeIndex, VibrationState.Invalid) == VibrationState.On)
                                     {
-
                                         ProcessedCellPass.CCV = Processor.ICCCVValues.GetCCVValueAtDateTime(_TheTime);
                                         ProcessedCellPass.RMV = Processor.ICRMVValues.GetRMVValueAtDateTime(_TheTime);
                                         ProcessedCellPass.Frequency = Processor.ICFrequencys.GetFrequencyValueAtDateTime(_TheTime);
@@ -201,11 +200,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
                                 ProcessedCellPass.passType = passType;
 
                                 // We have now assembled the cell pass - add it to the model
-
-                                //              SIGLogMessage.PublishNoODS(Self,
-                                //                                         Format('Committing cell pass at %dx%d to model', {SKIP}
-                                //                                                [I, J]),
-                                //                                         slmcDebug);
+                                // SIGLogMessage.PublishNoODS(Self,
+                                //                            Format('Committing cell pass at %dx%d to model', {SKIP}
+                                //                                   [I, J]),
+                                //                            slmcDebug);
 
                                 CommitCellPassToModel(I, J, GridX, GridY, ProcessedCellPass);
                             }

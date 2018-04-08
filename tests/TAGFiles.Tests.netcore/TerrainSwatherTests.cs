@@ -25,14 +25,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather.Tests
         {
             var siteModel = new SiteModel();
             var machine = new Machine();
-            var events = new ProductionEventChanges(siteModel, machine.ID);
             var grid = new ServerSubGridTree(siteModel);
             var fence = new Fence();
             var SiteModelGridAggregator = new ServerSubGridTree(siteModel);
             var MachineTargetValueChangesAggregator = new ProductionEventChanges(siteModel, long.MaxValue);
-            var processor = new TAGProcessor(siteModel, machine, events, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
+            var processor = new TAGProcessor(siteModel, machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
 
-            TerrainSwather swather = new TerrainSwather(processor, events, siteModel, grid, machine.ID, fence);
+            TerrainSwather swather = new TerrainSwather(processor, MachineTargetValueChangesAggregator, siteModel, grid, machine.ID, fence);
 
             Assert.True(swather != null & swather.MachineID == machine.ID,
                 "TerrainSwather not created as expected");
@@ -44,16 +43,15 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather.Tests
         {
             var siteModel = new SiteModel();
             var machine = new Machine();
-            var events = new ProductionEventChanges(siteModel, machine.ID);
             var grid = new ServerSubGridTree(siteModel);
             var SiteModelGridAggregator = new ServerSubGridTree(siteModel);
             var MachineTargetValueChangesAggregator = new ProductionEventChanges(siteModel, long.MaxValue);
-            var processor = new TAGProcessor(siteModel, machine, events, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
+            var processor = new TAGProcessor(siteModel, machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
 
             var fence = new Fence();
             fence.SetRectangleFence(0, 0, 10, 2);
 
-            TerrainSwather swather = new TerrainSwather(processor, events, siteModel, grid, machine.ID, fence);
+            TerrainSwather swather = new TerrainSwather(processor, MachineTargetValueChangesAggregator, siteModel, grid, machine.ID, fence);
 
             // Create four corner vertices for location of the processing context
             var V00 = new XYZ(0, 0, 0);

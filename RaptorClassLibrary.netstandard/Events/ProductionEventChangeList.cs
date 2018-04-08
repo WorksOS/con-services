@@ -143,7 +143,7 @@ namespace VSS.VisionLink.Raptor.Events
         {
             int EventIndex = Count;
 
-            bool ExistingEventFound = Find((T)Event, out EventIndex);
+            bool ExistingEventFound = Find(Event, out EventIndex);
 
             //  if (Event._Type = icmetStartRecordedData) or (Event._Type = icmetEndRecordedData) then
             //    SIGLOGMessage.PublishNoODS(Self, Format('Adding event %s', [Event.ToText]), slmcMessage); {SKIP}
@@ -354,14 +354,7 @@ namespace VSS.VisionLink.Raptor.Events
         public void Write(BinaryWriter writer)
         {
             BinaryFormatter formatter = new BinaryFormatter();
-            try
-            {
-                formatter.Serialize(writer.BaseStream, this);
-            }
-            catch // (Exception E)
-            {
-                throw;
-            }
+            formatter.Serialize(writer.BaseStream, this);
         }
 
         /// <summary>
@@ -452,8 +445,6 @@ namespace VSS.VisionLink.Raptor.Events
 
         public virtual V GetValueAtDate(DateTime eventDate, out int stateChangeIndex, V defaultValue = default(V))
         {
-            T StateChange;
-
             if (Count == 0)
             {
                 stateChangeIndex = -1;
@@ -467,7 +458,7 @@ namespace VSS.VisionLink.Raptor.Events
 
             if (stateChangeIndex >= 0)
             {
-                StateChange = this[stateChangeIndex];
+                T StateChange = this[stateChangeIndex];
 
                 if (StateChange.Date <= eventDate)
                 {

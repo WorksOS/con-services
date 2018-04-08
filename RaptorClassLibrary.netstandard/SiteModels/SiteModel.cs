@@ -559,7 +559,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
             {
                 foreach (SurveyedSurface surveyedSurface in SurveyedSurfaces)
                 {
-                    if (!SurveyedSurfaceExclusionList.Any(x => x == surveyedSurface.ID))
+                    if (SurveyedSurfaceExclusionList.All(x => x != surveyedSurface.ID))
                     {
                         SpatialExtents.Include(surveyedSurface.Extents);
                     }

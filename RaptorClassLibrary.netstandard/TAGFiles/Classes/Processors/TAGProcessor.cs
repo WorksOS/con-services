@@ -32,18 +32,15 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// </summary>
         /// <param name="targetSiteModel"></param>
         /// <param name="targetMachine"></param>
-        /// <param name="targetValues"></param>
         /// <param name="siteModelGridAggregator"></param>
         /// <param name="machineTargetValueChangesAggregator"></param>
         public TAGProcessor(SiteModel targetSiteModel,
             Machine targetMachine,
-            ProductionEventChanges targetValues,
             ServerSubGridTree siteModelGridAggregator,
             ProductionEventChanges machineTargetValueChangesAggregator) : this()
         {
             SiteModel = targetSiteModel;
             Machine = targetMachine;
-            MachineTargetValueChanges = targetValues;
 
             SiteModelGridAggregator = siteModelGridAggregator;
             MachineTargetValueChangesAggregator = machineTargetValueChangesAggregator;
@@ -69,7 +66,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         // MachineTargetValueChanges is a reference to an object that records all the
         // machine state events of interest that we encounter while processing the
         // file
-        private ProductionEventChanges MachineTargetValueChanges;
+        //private ProductionEventChanges MachineTargetValueChanges;
 
         // FICMachineTargetValueChangesAggregator is an object that aggregates all the
         // machine state events of interest that we encounter while processing the
@@ -91,7 +88,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         private bool HasGPSModeBeenSet = false;
 
         /// <summary>
-        /// EpochContainsProofingRunDescription determines if the current epoch
+        /// EpochContainsProofingRunDescription determines if the current epochsw
         /// contains a description of a proofing run.
         /// </summary>
         protected bool EpochContainsProofingRunDescription()
@@ -198,7 +195,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
             {
                 /* TODO
                  {$IFDEF DENSE_TAG_FILE_LOGGING}
-                SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SVOICSnailTrailProcessor.SetDesign', slpmcDebug);
+                SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in .SetDesign', slpmcDebug);
                 {$ENDIF}
                 */
             }
@@ -296,11 +293,15 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
             else
             {
                 //{$IFDEF DENSE_TAG_FILE_LOGGING}
-                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SVOICSnailTrailProcessor.SetICMode',slpmcDebug);
+                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICMode',slpmcDebug);
                 //{$ENDIF}
             }
         }
 
+        /// <summary>
+        /// Adds the CCV target value set on the machine into the target CCV list
+        /// </summary>
+        /// <param name="Value"></param>
         protected override void SetICCCVTargetValue(short Value)
         {
             base.SetICCCVTargetValue(Value);
@@ -310,27 +311,128 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
             else
             {
                 //{$IFDEF DENSE_TAG_FILE_LOGGING}
-                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SVOICSnailTrailProcessor.SetICCCVTargetValue', slpmcDebug); 
+                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICCCVTargetValue', slpmcDebug); 
+                //{$ENDIF}
+            }
+        }
+
+        /// <summary>
+        /// Adds the CCA target value set on the machine into the target CCA list
+        /// </summary>
+        /// <param name="Value"></param>
+        protected override void SetICCCATargetValue(short Value)
+        {
+            base.SetICCCATargetValue(Value);
+
+            if (DataTime != DateTime.MinValue)
+                MachineTargetValueChangesAggregator.TargetCCAStateEvents.PutValueAtDate(DataTime, Value);
+            else
+            {
+                //{$IFDEF DENSE_TAG_FILE_LOGGING}
+                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICCCATargetValue', slpmcDebug);
+                //{$ENDIF}
+            }
+        }
+
+        /// <summary>
+        /// Adds the MDP target value set on the machine into the target MDP list
+        /// </summary>
+        /// <param name="Value"></param>
+        protected override void SetICMDPTargetValue(short Value)
+        {
+            base.SetICMDPTargetValue(Value);
+
+            if (DataTime != DateTime.MinValue)
+                MachineTargetValueChangesAggregator.TargetMDPStateEvents.PutValueAtDate(DataTime, Value);
+            else
+            {
+                //{$IFDEF DENSE_TAG_FILE_LOGGING}
+                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICMDPTargetValue', slpmcDebug);
+                //{$ENDIF}
+            }
+        }
+
+        /// <summary>
+        /// Adds the MDP target value set on the machine into the target MDP list
+        /// </summary>
+        /// <param name="Value"></param>
+        protected override void SetICPassTargetValue(ushort Value)
+        {
+            base.SetICPassTargetValue(Value);
+
+            if (DataTime != DateTime.MinValue)
+                MachineTargetValueChangesAggregator.TargetPassCountStateEvents.PutValueAtDate(DataTime, Value);
+            else
+            {
+                //{$IFDEF DENSE_TAG_FILE_LOGGING}
+                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICPassTargetValue', slpmcDebug);
+                //{$ENDIF}
+            }
+        }
+
+        /// <summary>
+        /// Converts the machine direction indicated by Value into a forwards or reverse gear, and injects it into the machine gear events list
+        /// </summary>
+        /// <param name="Value"></param>
+        public override void SetMachineDirection(MachineDirection Value)
+        {
+            base.SetMachineDirection(Value);
+
+            if (GearValueReceived)
+                return;
+
+            MachineGear Gear = MachineGear.Null;
+
+            switch (Value)
+            {
+                case MachineDirection.Forward:
+                    Gear = MachineGear.Forward;
+                    break;
+                case MachineDirection.Reverse:
+                    Gear = MachineGear.Reverse;
+                    break;
+            }
+
+            if (DataTime != DateTime.MinValue && (Gear == MachineGear.Forward || Gear == MachineGear.Reverse))
+                MachineTargetValueChangesAggregator.MachineGearStateEvents.PutValueAtDate(DataTime, Gear);
+            else
+            {
+                //{$IFDEF DENSE_TAG_FILE_LOGGING}
+                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 or Gear not Forward/Reverse in SetMachineDirection', slpmcDebug);
+                //{$ENDIF}
+            }
+        }
+
+        /// <summary>
+        /// Sets the machine gear into the machine gear events list
+        /// </summary>
+        /// <param name="Value"></param>
+        protected override void SetICGear(MachineGear Value)
+        {
+            base.SetICGear(Value);
+
+            if (DataTime != DateTime.MinValue && Value != MachineGear.SensorFailedDeprecated)
+                MachineTargetValueChangesAggregator.MachineGearStateEvents.PutValueAtDate(DataTime, Value);
+            else
+            {
+                //{$IFDEF DENSE_TAG_FILE_LOGGING}
+                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICGear', slpmcDebug);
                 //{$ENDIF}
             }
         }
 
         /*
-              procedure SetICGear                     (const Value :Byte                  ); override;
               procedure SetICSonic3D                  (const Value :Byte                  ); override;
               procedure SetICPassTargetValue          (const Value :TICPassCountValue     ); override;
               procedure SetICTargetLiftThickness      (const Value :TICLiftThickness      ); override;
               procedure SetAutomaticsMode             (const Value :TGCSAutomaticsMode    ); override;
               procedure SetRMVJumpThresholdValue      (const Value :TICRMVValue           ); override;
               procedure SetICSensorType               (const Value: TICSensorType         ); override;
-              procedure SetMachineDirection           (const Value: TICMachineDirection   ); override;
               procedure SetICTempWarningLevelMinValue (const Value: TICMaterialTemperature); override;
               procedure SetICTempWarningLevelMaxValue (const Value :TICMaterialTemperature); override;
-              procedure SetICMDPTargetValue           (const Value :SmallInt              ); override;
               procedure SetUTMZone                    (const Value :Byte                  ); override;
               procedure SetCSType                     (const Value :Byte                  ); override;
               procedure SetICLayerIDValue             (const Value :TICLayerIdValue       ); override;
-              procedure SetICCCATargetValue           (const Value :SmallInt              ); override;
 
       function MaxEpochInterval: Double; override;
       function IgnoreInvalidPositions: Boolean; override;

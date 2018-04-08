@@ -93,6 +93,22 @@ namespace VSS.VisionLink.Raptor.Events
         /// Records the target CCV value configured on the machine control system
         /// </summary>
         public ProductionEventChangeList<ProductionEventChangeBase<short>, short> TargetCCVStateEvents;
+
+        /// <summary>
+        /// Records the target CCA value configured on the machine control system
+        /// </summary>
+        public ProductionEventChangeList<ProductionEventChangeBase<short>, short> TargetCCAStateEvents;
+
+        /// <summary>
+        /// Records the target MDP value configured on the machine control system
+        /// </summary>
+        public ProductionEventChangeList<ProductionEventChangeBase<short>, short> TargetMDPStateEvents;
+
+        /// <summary>
+        /// Records the target MDP value configured on the machine control system
+        /// </summary>
+        public ProductionEventChangeList<ProductionEventChangeBase<ushort>, ushort> TargetPassCountStateEvents;
+
         /// <summary>
         /// Create all defined event lists in one operation.
         /// </summary>
@@ -112,13 +128,16 @@ namespace VSS.VisionLink.Raptor.Events
             DesignNameStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<string>, string>(MachineID, SiteModel.ID, ProductionEventType.DesignChange);
             ICFlagsStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<byte>, byte>(MachineID, SiteModel.ID, ProductionEventType.ICFlagsChange);            
             TargetCCVStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<short>, short>(MachineID, SiteModel.ID, ProductionEventType.TargetCCV);
+            TargetCCAStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<short>, short>(MachineID, SiteModel.ID, ProductionEventType.TargetCCA);
+            TargetMDPStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<short>, short>(MachineID, SiteModel.ID, ProductionEventType.TargetMDP);
+            TargetPassCountStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<ushort>, ushort>(MachineID, SiteModel.ID, ProductionEventType.TargetPassCount);
         }
 
-    /// <summary>
-    /// Returns an array containing all the event lists for a machine
-    /// </summary>
-    /// <returns></returns>
-    public IProductionEventChangeList[] GetEventLists()
+        /// <summary>
+        /// Returns an array containing all the event lists for a machine
+        /// </summary>
+        /// <returns></returns>
+        public IProductionEventChangeList[] GetEventLists()
         {
             return new IProductionEventChangeList[]
             {
@@ -135,7 +154,10 @@ namespace VSS.VisionLink.Raptor.Events
                 LayerIDStateEvents,
                 DesignNameStateEvents,
                 ICFlagsStateEvents,
-                TargetCCVStateEvents
+                TargetCCVStateEvents,
+                TargetCCAStateEvents,
+                TargetMDPStateEvents,
+                TargetPassCountStateEvents
             };
         }
     /// <summary>
@@ -181,6 +203,9 @@ namespace VSS.VisionLink.Raptor.Events
             DesignNameStateEvents = DesignNameStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<string>, string>;
             ICFlagsStateEvents = DesignNameStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<byte>, byte>;
             TargetCCVStateEvents = TargetCCVStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<short>, short>;
+            TargetCCAStateEvents = TargetCCAStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<short>, short>;
+            TargetMDPStateEvents = TargetMDPStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<short>, short>;
+            TargetPassCountStateEvents = TargetPassCountStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<ushort>, ushort>;
 
             return true;
         }
