@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Threading.Tasks;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -118,9 +119,9 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/projects/{projectUid}/coordsystem")]
     [HttpGet]
-    public CoordinateSystemSettings Get([FromRoute] Guid projectUid)
+    public async Task<CoordinateSystemSettings> Get([FromRoute] Guid projectUid)
     {
-      long projectId = (User as RaptorPrincipal).GetLegacyProjectId(projectUid);
+      long projectId = await (User as RaptorPrincipal).GetLegacyProjectId(projectUid);
       ProjectID request = ProjectID.CreateProjectID(projectId, projectUid);
 
       request.Validate();

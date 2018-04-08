@@ -127,7 +127,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       [FromServices] IEnqueueItem<ProjectFileDescriptor> fileQueue)
     {
       log.LogDebug("GetAddFile: " + Request.QueryString);
-      ProjectData projectDescr = (User as RaptorPrincipal).GetProject(projectUid);
+      ProjectData projectDescr = await (User as RaptorPrincipal).GetProject(projectUid);
       string coordSystem = projectDescr.CoordinateSystemFileName;
       var customHeaders = Request.Headers.GetCustomHeaders();
       FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
@@ -177,7 +177,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       )
     {
       log.LogDebug("GetDeleteFile: " + Request.QueryString);
-      ProjectData projectDescr = (User as RaptorPrincipal).GetProject(projectUid);
+      ProjectData projectDescr = await (User as RaptorPrincipal).GetProject(projectUid);
       var customHeaders = Request.Headers.GetCustomHeaders();
 
       //Cannot delete a design or alignment file that is used in a filter

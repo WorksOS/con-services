@@ -95,7 +95,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetReportGrid: " + Request.QueryString);
 
-      var projectId = GetLegacyProjectId(projectUid);
+      var projectId = await GetLegacyProjectId(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var cutFillDesign = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid, true);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
@@ -155,7 +155,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetStationOffset: " + Request.QueryString);
 
-      var project = (this.User as RaptorPrincipal)?.GetProject(projectUid);
+      var project = await (this.User as RaptorPrincipal)?.GetProject(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var cutFillDesignDescriptor = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
       var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentUid);

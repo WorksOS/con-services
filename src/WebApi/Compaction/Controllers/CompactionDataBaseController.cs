@@ -40,9 +40,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Short-circuit cache time for Archived projects.
     /// </summary>
-    protected void SetCacheControlPolicy(Guid projectUid)
+    protected async Task SetCacheControlPolicy(Guid projectUid)
     {
-      if (!((RaptorPrincipal) User).GetProject(projectUid).IsArchived)
+      var project = await ((RaptorPrincipal)User).GetProject(projectUid);
+      if (!project.IsArchived)
       {
         return;
       }
@@ -61,8 +62,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       LiftBuildSettings liftSettings = this.SettingsManager.CompactionLiftBuildSettings(projectSettings);
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
-
-      return CMVRequest.CreateCMVRequest(GetLegacyProjectId(projectUid), null, cmvSettings, liftSettings, filter, -1, null, null, null);
+      var projectId = await GetLegacyProjectId(projectUid);
+      return CMVRequest.CreateCMVRequest(projectId, null, cmvSettings, liftSettings, filter, -1, null, null, null);
     }
 
     /// <summary>
@@ -75,8 +76,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       LiftBuildSettings liftSettings = this.SettingsManager.CompactionLiftBuildSettings(projectSettings);
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
-
-      return PassCounts.CreatePassCountsRequest(GetLegacyProjectId(projectUid), null, passCountSettings, liftSettings, filter, -1, null, null, null);
+      var projectId = await GetLegacyProjectId(projectUid);
+      return PassCounts.CreatePassCountsRequest(projectId, null, passCountSettings, liftSettings, filter, -1, null, null, null);
     }
 
     /// <summary>
@@ -91,7 +92,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         return true;
 
       var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid);
-      ProjectStatisticsRequest request = ProjectStatisticsRequest.CreateStatisticsParameters(GetLegacyProjectId(projectUid), excludedIds?.ToArray());
+      var projectId = await GetLegacyProjectId(projectUid);
+
+      ProjectStatisticsRequest request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, excludedIds?.ToArray());
       request.Validate();
       try
       {

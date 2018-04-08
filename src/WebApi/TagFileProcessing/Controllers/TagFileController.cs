@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -90,13 +91,13 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
         // [NotLandFillProjectWithUIDVerifier]  Not a requirement to present a TAG file for processing
     [Route("api/v2/tagfiles")]
     [HttpPost]
-    public ContractExecutionResult PostTagFile([FromBody]CompactionTagFileRequest request)
+    public async Task<ContractExecutionResult> PostTagFile([FromBody]CompactionTagFileRequest request)
     {
       log.LogDebug("PostTagFile: " + JsonConvert.SerializeObject(request));
       long projectId = -1;
       if (User is RaptorPrincipal && request.projectUid.HasValue)
       {
-        var projectDescr = (User as RaptorPrincipal).GetProject(request.projectUid);
+        var projectDescr = await (User as RaptorPrincipal).GetProject(request.projectUid);
         projectId = projectDescr.LegacyProjectId;
 
       }

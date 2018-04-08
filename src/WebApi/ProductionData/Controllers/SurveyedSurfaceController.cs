@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Threading.Tasks;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -87,9 +88,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectUidVerifier(AllowLandfillProjects = true, AllowArchivedState = true)]
     [HttpGet]
     [Route("api/v2/projects/{projectUid}/surveyedsurfaces/{surveyedsurfaceId}/delete")]
-    public ContractExecutionResult GetDel([FromRoute] Guid projectUid, [FromRoute] long surveyedSurfaceId)
+    public async Task<ContractExecutionResult> GetDel([FromRoute] Guid projectUid, [FromRoute] long surveyedSurfaceId)
     {
-      long projectId = (User as RaptorPrincipal).GetLegacyProjectId(projectUid);
+      long projectId = await (User as RaptorPrincipal).GetLegacyProjectId(projectUid);
       ProjectID projId = ProjectID.CreateProjectID(projectId, projectUid);
       projId.Validate();
 
@@ -125,9 +126,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectUidVerifier(AllowLandfillProjects = true)]
     [HttpGet]
     [Route("api/v2/projects/{projectUid}/surveyedsurfaces")]
-    public SurveyedSurfaceResult Get([FromRoute] Guid projectUid)
+    public async Task<SurveyedSurfaceResult> Get([FromRoute] Guid projectUid)
     {
-      long projectId = (User as RaptorPrincipal).GetLegacyProjectId(projectUid);
+      long projectId = await (User as RaptorPrincipal).GetLegacyProjectId(projectUid);
       ProjectID request = ProjectID.CreateProjectID(projectId, projectUid);
 
       request.Validate();

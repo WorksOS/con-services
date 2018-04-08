@@ -179,7 +179,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       // TODO (Aaron) refactor this repeated code
       //Short-circuit cache time for Archived projects
-      if ((User as RaptorPrincipal).GetProject(projectUid).IsArchived)
+      var project = await (User as RaptorPrincipal).GetProject(projectUid);
+      if (project.IsArchived)
         Response.Headers["Cache-Control"] = "public,max-age=31536000";
       Response.Headers.Add("X-Warning", "false");
 
@@ -203,7 +204,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       // TODO (Aaron) refactor this repeated code
       //Short-circuit cache time for Archived projects
-      if ((User as RaptorPrincipal).GetProject(projectUid).IsArchived)
+      var project = await (User as RaptorPrincipal).GetProject(projectUid);
+      if (project.IsArchived)
         Response.Headers["Cache-Control"] = "public,max-age=31536000";
       Response.Headers.Add("X-Warning", "false");
 
@@ -222,7 +224,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         overlayTypes = new List<TileOverlayType>((TileOverlayType[])Enum.GetValues(typeof(TileOverlayType)));
         overlayTypes.Remove(TileOverlayType.AllOverlays);
       }
-      var project = (User as RaptorPrincipal).GetProject(projectUid);
+      var project = await (User as RaptorPrincipal).GetProject(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var projectSettingsColors = await GetProjectSettingsColors(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);

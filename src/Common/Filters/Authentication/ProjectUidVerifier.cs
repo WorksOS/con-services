@@ -53,7 +53,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
       }
 
       // RaptorPrincipal will handle the failure case where project isn't found.
-      var projectDescriptor = (actionContext.HttpContext.User as RaptorPrincipal).GetProject((string)projectUidValue);
+      var projectDescriptor = (actionContext.HttpContext.User as RaptorPrincipal).GetProject((string)projectUidValue).Result;
 
       if (this.AllowLandfillProjects && projectDescriptor.ProjectType == ProjectType.LandFill)
       {

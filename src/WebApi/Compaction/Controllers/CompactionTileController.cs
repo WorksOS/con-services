@@ -111,7 +111,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogDebug("GetProductionDataTile: " + Request.QueryString);
       
-      var projectId = ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
+      var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var projectSettingsColors = await GetProjectSettingsColors(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
@@ -180,7 +180,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogDebug("GetProductionDataTileRaw: " + Request.QueryString);
       
-      var projectId = ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
+      var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var projectSettingsColors = await GetProjectSettingsColors(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);

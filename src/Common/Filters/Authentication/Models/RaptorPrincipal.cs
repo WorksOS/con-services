@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -42,9 +43,9 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
     /// <summary>
     /// Get the project descriptor for the specified project id.
     /// </summary>
-    public ProjectData GetProject(long projectId)
+    public async Task<ProjectData> GetProject(long projectId)
     {
-      var projectDescr = projectProxy.GetProjectForCustomer(CustomerUid, projectId, authNContext).Result;
+      var projectDescr = await projectProxy.GetProjectForCustomer(CustomerUid, projectId, authNContext);
       if (projectDescr != null) return projectDescr;
 
       throw new ServiceException(HttpStatusCode.Unauthorized,
@@ -55,7 +56,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
     /// <summary>
     /// Get the project descriptor for the specified project uid.
     /// </summary>
-    public ProjectData GetProject(Guid? projectUid)
+    public async Task<ProjectData> GetProject(Guid? projectUid)
     {
       if (!projectUid.HasValue)
       {
@@ -63,19 +64,19 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Missing project UID"));
       }
 
-      return GetProject(projectUid.ToString());
+      return await GetProject(projectUid.ToString());
     }
 
     /// <summary>
     /// Get the project descriptor for the specified project uid.
     /// </summary>
-    public ProjectData GetProject(string projectUid)
+    public async Task<ProjectData> GetProject(string projectUid)
     {
       if (string.IsNullOrEmpty(projectUid))
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Missing project UID"));
 
-      var projectDescr = projectProxy.GetProjectForCustomer(CustomerUid, projectUid, authNContext).Result;
+      var projectDescr = await projectProxy.GetProjectForCustomer(CustomerUid, projectUid, authNContext);
       if (projectDescr != null) return projectDescr;
 
       throw new ServiceException(HttpStatusCode.Unauthorized,
@@ -86,14 +87,15 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
     /// <summary>
     /// Gets the legacy Project Id (long) from a ProjectUid (Guid).
     /// </summary>
-    public long GetLegacyProjectId(Guid? projectUid)
+    public async Task<long> GetLegacyProjectId(Guid? projectUid)
     {
       if (!(this is RaptorPrincipal _))
       {
         throw new ArgumentException("Incorrect request context principal.");
       }
 
-      var projectId = GetProject(projectUid).LegacyProjectId;
+      var project = await GetProject(projectUid);
+      var projectId = project.LegacyProjectId;
       if (projectId > 0)
       {
         return projectId;

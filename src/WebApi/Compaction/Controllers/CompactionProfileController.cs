@@ -83,7 +83,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] VolumeCalcType? volumeCalcType)
     {
       Log.LogInformation("GetProfileProductionDataSlicer: " + Request.QueryString);
-      var projectId = GetLegacyProjectId(projectUid);
+      var projectId = await GetLegacyProjectId(projectUid);
 
       var settings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
@@ -209,7 +209,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetProfileDesignSlicer: " + Request.QueryString);
 
-      var projectId = GetLegacyProjectId(projectUid);
+      var projectId = await GetLegacyProjectId(projectUid);
       var settings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
 
