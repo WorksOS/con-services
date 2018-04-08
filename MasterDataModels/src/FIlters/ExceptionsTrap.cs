@@ -33,33 +33,48 @@ namespace VSS.MasterData.Models.FIlters
       }
       catch (ServiceException ex)
       {
-        log.LogWarning($"Service exception: {nameof(ex)} {ex.Source} {ex.GetFullContent} statusCode: {ex.Code} {ex.StackTrace}");
-        context.Response.StatusCode = (int)ex.Code;
-        await context.Response.WriteAsync(ex.GetContent);
+        await HandleServiceException(context, ex);
       }
       catch (Exception ex)
       {
-        try
+        //Exceptions may get wrapped depending on order of middleware
+        if (ex.InnerException != null && ex.InnerException is ServiceException)
         {
-          context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-          await context.Response.WriteAsync(ex.Message);
+          await HandleServiceException(context, ex.InnerException as ServiceException);
         }
-        finally
+        else
         {
-          log.LogCritical($"EXCEPTION: {nameof(ex)} {ex.Message} {ex.Source} {ex.StackTrace}");
-          if (ex is AggregateException)
+          try
           {
-            var exception = ex as AggregateException;
-            log.LogCritical("EXCEPTION AGGREGATED: {0}, {1}, {2}",
+            context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
+            await context.Response.WriteAsync(ex.Message);
+          }
+          finally
+          {
+            log.LogCritical($"EXCEPTION: {nameof(ex)} {ex.Message} {ex.Source} {ex.StackTrace}");
+            if (ex is AggregateException)
+            {
+              var exception = ex as AggregateException;
+              log.LogCritical("EXCEPTION AGGREGATED: {0}, {1}, {2}",
                 exception.InnerExceptions.Select(i => i.Message).Aggregate((i, j) => i + j),
                 exception.InnerExceptions.Select(i => i.Source).Aggregate((i, j) => i + j),
                 exception.InnerExceptions.Select(i => i.StackTrace).Aggregate((i, j) => i + j));
 
+            }
           }
         }
       }
     }
+
+    private async Task HandleServiceException(HttpContext context, ServiceException ex)
+    {
+      log.LogWarning($"Service exception: {nameof(ex)} {ex.Source} {ex.GetFullContent} statusCode: {ex.Code} {ex.StackTrace}");
+      context.Response.StatusCode = (int)ex.Code;
+      await context.Response.WriteAsync(ex.GetContent);
+    }
+
   }
+
 
   public static class ExceptionsTrapExtensions
   {
