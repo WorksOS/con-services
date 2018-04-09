@@ -85,94 +85,135 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [TestMethod]
-    [DataRow(DateRangeType.Custom)]
-    [DataRow(DateRangeType.ProjectExtents)]
-    public void Should_not_set_dates_based_on_DateRangeType(DateRangeType dateRangeType)
+    [DataRow(DateRangeType.Custom, true)]
+    [DataRow(DateRangeType.ProjectExtents, true)]
+    [DataRow(DateRangeType.Custom, false)]
+    [DataRow(DateRangeType.ProjectExtents, false)]
+    public void Should_not_set_dates_based_on_DateRangeType(DateRangeType dateRangeType, bool asAtDate)
     {
-      var filter = new MasterData.Repositories.DBModels.Filter { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"elevationType\":null}}" };
+      var startUtc = dateRangeType == DateRangeType.Custom ? new DateTime(2017, 11, 5) : (DateTime?)null;
+      var endUtc = dateRangeType == DateRangeType.Custom ? new DateTime(2017, 11, 6) : (DateTime?)null;
+      //Json deserialize interprets date as mm/dd/yyyy so format date that way
+      var startUtcStr = startUtc?.ToString("MM/dd/yyyy");
+      var endUtcStr = endUtc?.ToString("MM/dd/yyyy");
+      var filter = new MasterData.Repositories.DBModels.Filter { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"startUTC\":\"{startUtcStr}\",\"endUTC\":\"{endUtcStr}\",\"elevationType\":null}}" };
 
       FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filter);
 
       MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filter.FilterJson);
       Assert.AreEqual(dateRangeType, filterObj.DateRangeType);
-      Assert.IsNull(filterObj.StartUtc);
-      Assert.IsNull(filterObj.EndUtc);
+      if (asAtDate)
+        Assert.AreEqual(null, filterObj.StartUtc);
+      else
+        Assert.AreEqual(startUtc, filterObj.StartUtc);
+      Assert.AreEqual(endUtc, filterObj.EndUtc);
     }
 
     [TestMethod]
-    [DataRow(DateRangeType.Custom)]
-    [DataRow(DateRangeType.ProjectExtents)]
-    public void Should_not_set_dates_based_on_DateRangeType_When_using_FilterDescriptor(DateRangeType dateRangeType)
+    [DataRow(DateRangeType.Custom, true)]
+    [DataRow(DateRangeType.ProjectExtents, true)]
+    [DataRow(DateRangeType.Custom, false)]
+    [DataRow(DateRangeType.ProjectExtents, false)]
+    public void Should_not_set_dates_based_on_DateRangeType_When_using_FilterDescriptor(DateRangeType dateRangeType, bool asAtDate)
     {
-      var filterDescriptor = new FilterDescriptor { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"elevationType\":null}}" };
+      var startUtc = dateRangeType == DateRangeType.Custom ? new DateTime(2017, 11, 5) : (DateTime?)null;
+      var endUtc = dateRangeType == DateRangeType.Custom ? new DateTime(2017, 11, 6) : (DateTime?)null;
+      //Json deserialize interprets date as mm/dd/yyyy so format date that way
+      var startUtcStr = startUtc?.ToString("MM/dd/yyyy");
+      var endUtcStr = endUtc?.ToString("MM/dd/yyyy");
+      var filterDescriptor = new FilterDescriptor { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"startUTC\":\"{startUtcStr}\",\"endUTC\":\"{endUtcStr}\",\"elevationType\":null}}" };
 
       FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filterDescriptor);
 
       MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterDescriptor.FilterJson);
-      Assert.IsNull(filterObj.StartUtc);
-      Assert.IsNull(filterObj.EndUtc);
+      if (asAtDate)
+        Assert.AreEqual(null, filterObj.StartUtc);
+      else
+        Assert.AreEqual(startUtc, filterObj.StartUtc);
+      Assert.AreEqual(endUtc, filterObj.EndUtc);
     }
 
     [TestMethod]
-    [DataRow(DateRangeType.CurrentMonth)]
-    [DataRow(DateRangeType.CurrentWeek)]
-    [DataRow(DateRangeType.PreviousMonth)]
-    [DataRow(DateRangeType.PreviousWeek)]
-    [DataRow(DateRangeType.Today)]
-    [DataRow(DateRangeType.Yesterday)]
-    public void Should_set_dates_based_on_DateRangeType_When_using_collection_of_Filters(DateRangeType dateRangeType)
+    [DataRow(DateRangeType.CurrentMonth, true)]
+    [DataRow(DateRangeType.CurrentWeek, true)]
+    [DataRow(DateRangeType.PreviousMonth, true)]
+    [DataRow(DateRangeType.PreviousWeek, true)]
+    [DataRow(DateRangeType.Today, true)]
+    [DataRow(DateRangeType.Yesterday, true)]
+    [DataRow(DateRangeType.CurrentMonth, false)]
+    [DataRow(DateRangeType.CurrentWeek, false)]
+    [DataRow(DateRangeType.PreviousMonth, false)]
+    [DataRow(DateRangeType.PreviousWeek, false)]
+    [DataRow(DateRangeType.Today, false)]
+    [DataRow(DateRangeType.Yesterday, false)]
+    public void Should_set_dates_based_on_DateRangeType_When_using_collection_of_Filters(DateRangeType dateRangeType, bool asAtDate)
     {
       var filters = new List<MasterData.Repositories.DBModels.Filter>();
 
       for (int i = 0; i < 10; i++)
       {
-        filters.Add(new MasterData.Repositories.DBModels.Filter { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"elevationType\":null}}" });
+        filters.Add(new MasterData.Repositories.DBModels.Filter { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"elevationType\":null}}" });
       }
       FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filters);
 
       foreach (var filter in filters)
       {
-        ValidateDates(filter.FilterJson);
+        ValidateDates(filter.FilterJson, asAtDate);
       }
     }
 
     [TestMethod]
-    [DataRow(DateRangeType.CurrentMonth)]
-    [DataRow(DateRangeType.CurrentWeek)]
-    [DataRow(DateRangeType.PreviousMonth)]
-    [DataRow(DateRangeType.PreviousWeek)]
-    [DataRow(DateRangeType.Today)]
-    [DataRow(DateRangeType.Yesterday)]
-    public void Should_set_dates_based_on_DateRangeType_When_using_Filter(DateRangeType dateRangeType)
+    [DataRow(DateRangeType.CurrentMonth, true)]
+    [DataRow(DateRangeType.CurrentWeek, true)]
+    [DataRow(DateRangeType.PreviousMonth, true)]
+    [DataRow(DateRangeType.PreviousWeek, true)]
+    [DataRow(DateRangeType.Today, true)]
+    [DataRow(DateRangeType.Yesterday, true)]
+    [DataRow(DateRangeType.CurrentMonth, false)]
+    [DataRow(DateRangeType.CurrentWeek, false)]
+    [DataRow(DateRangeType.PreviousMonth, false)]
+    [DataRow(DateRangeType.PreviousWeek, false)]
+    [DataRow(DateRangeType.Today, false)]
+    [DataRow(DateRangeType.Yesterday, false)]
+    public void Should_set_dates_based_on_DateRangeType_When_using_Filter(DateRangeType dateRangeType, bool asAtDate)
     {
-      var filter = new MasterData.Repositories.DBModels.Filter { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"elevationType\":null}}" };
+      var filter = new MasterData.Repositories.DBModels.Filter { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"elevationType\":null}}" };
 
       FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filter);
 
-      ValidateDates(filter.FilterJson);
+      ValidateDates(filter.FilterJson, asAtDate);
     }
 
     [TestMethod]
-    [DataRow(DateRangeType.CurrentMonth)]
-    [DataRow(DateRangeType.CurrentWeek)]
-    [DataRow(DateRangeType.PreviousMonth)]
-    [DataRow(DateRangeType.PreviousWeek)]
-    [DataRow(DateRangeType.Today)]
-    [DataRow(DateRangeType.Yesterday)]
-    public void Should_set_dates_based_on_DateRangeType_When_using_FilterDescriptor(DateRangeType dateRangeType)
+    [DataRow(DateRangeType.CurrentMonth, true)]
+    [DataRow(DateRangeType.CurrentWeek, true)]
+    [DataRow(DateRangeType.PreviousMonth, true)]
+    [DataRow(DateRangeType.PreviousWeek, true)]
+    [DataRow(DateRangeType.Today, true)]
+    [DataRow(DateRangeType.Yesterday, true)]
+    [DataRow(DateRangeType.CurrentMonth, false)]
+    [DataRow(DateRangeType.CurrentWeek, false)]
+    [DataRow(DateRangeType.PreviousMonth, false)]
+    [DataRow(DateRangeType.PreviousWeek, false)]
+    [DataRow(DateRangeType.Today, false)]
+    [DataRow(DateRangeType.Yesterday, false)]
+    public void Should_set_dates_based_on_DateRangeType_When_using_FilterDescriptor(DateRangeType dateRangeType, bool asAtDate)
     {
-      var filterDescriptor = new FilterDescriptor { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"elevationType\":null}}" };
+      var filterDescriptor = new FilterDescriptor { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"elevationType\":null}}" };
 
       FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filterDescriptor);
 
-      ValidateDates(filterDescriptor.FilterJson);
+      ValidateDates(filterDescriptor.FilterJson, asAtDate);
     }
 
-    private static void ValidateDates(string filterJson)
+    private static void ValidateDates(string filterJson, bool startUtcShouldBeNull)
     {
       MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterJson);
 
-      Assert.IsNotNull(filterObj.StartUtc);
+      if (startUtcShouldBeNull)
+        Assert.IsNull(filterObj.StartUtc);
+      else
+        Assert.IsNotNull(filterObj.StartUtc);
       Assert.IsNotNull(filterObj.EndUtc);
     }
   }

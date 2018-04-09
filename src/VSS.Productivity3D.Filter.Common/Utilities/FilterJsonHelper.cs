@@ -58,15 +58,9 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
       try
       {
         MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterJson);
-
-        if (!string.IsNullOrEmpty(project?.IanaTimeZone) && 
-            filterObj.DateRangeType != null &&
-            filterObj.DateRangeType != DateRangeType.ProjectExtents && 
-            filterObj.DateRangeType != DateRangeType.Custom)
-        {
-          filterObj.ApplyDateRange(project?.IanaTimeZone);
-        }
-
+   
+        filterObj.ApplyDateRange(project?.IanaTimeZone);
+        
         return JsonConvert.SerializeObject(filterObj);
       }
       catch(Exception)
