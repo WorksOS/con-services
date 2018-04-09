@@ -46,9 +46,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator.Tests
             // Create the site model and machine etc to aggregate the processed TAG file into
             SiteModel siteModel = new SiteModel("TestName", "TestDesc", 1, 1.0, null);
             Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
-            //            ISubGridFactory factory = new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>();
-            //            ServerSubGridTree tree = new ServerSubGridTree(siteModel);
-            //            ProductionEventChanges events = new ProductionEventChanges(siteModel, machine.ID);
+            // ISubGridFactory factory = new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>();
+            // ServerSubGridTree tree = new ServerSubGridTree(siteModel);
+            // ProductionEventChanges events = new ProductionEventChanges(siteModel, machine.ID);
 
             // Create the integrator and add the processed TAG file to its processing list
             AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();

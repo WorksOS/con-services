@@ -30,13 +30,13 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests.Volumes
 
             Assert.NotNull(response);
             Assert.True(!response.Cut.HasValue &&
-                          !response.Fill.HasValue &&
-                          !response.TotalCoverageArea.HasValue &&
-                          !response.CutArea.HasValue &&
-                          !response.FillArea.HasValue &&
-                          response.BoundingExtentGrid.Equals(BoundingWorldExtent3D.Null()) &&
-                          response.BoundingExtentLLH.Equals(BoundingWorldExtent3D.Null()),
-                          "Reponse is not null as expected");
+                        !response.Fill.HasValue &&
+                        !response.TotalCoverageArea.HasValue &&
+                        !response.CutArea.HasValue &&
+                        !response.FillArea.HasValue &&
+                        response.BoundingExtentGrid.Equals(BoundingWorldExtent3D.Null()) &&
+                        response.BoundingExtentLLH.Equals(BoundingWorldExtent3D.Null()),
+                        "Reponse is not null as expected");
         }
     }
 }

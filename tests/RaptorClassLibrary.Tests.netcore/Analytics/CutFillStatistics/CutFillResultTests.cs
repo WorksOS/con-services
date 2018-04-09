@@ -13,8 +13,8 @@ namespace VSS.VisionLink.Raptor.Tests.Analytics.CutFillStatistics
         public void Test_CutFillResult_Population_Successful()
         {
             CutFillResult r = new CutFillResult();
-            long[] testCounts = new long[7] { 100, 100, 100, 400, 100, 100, 100 };
-            double[] testPercents = new double[7] { 10.0, 10.0, 10.0, 40.0, 10.0, 10.0, 10.0};
+            long[] testCounts = { 100, 100, 100, 400, 100, 100, 100 };
+            double[] testPercents = { 10.0, 10.0, 10.0, 40.0, 10.0, 10.0, 10.0};
 
             Assert.True(r.ResultStatus != Types.RequestErrorStatus.OK, "Invalid initial result status");
 
@@ -28,7 +28,7 @@ namespace VSS.VisionLink.Raptor.Tests.Analytics.CutFillStatistics
 
             for (int i = 0; i < r.Percents.Length; i++)
             {
-                Assert.True(Math.Abs(10 - r.Percents[i]) < 0.00001, $"Invalid initial result percentage for item {i}");
+                Assert.True(Math.Abs(testPercents[i] - r.Percents[i]) < 0.00001, $"Invalid initial result percentage for item {i}");
             }
         }
 
