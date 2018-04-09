@@ -8,7 +8,7 @@ namespace VSS.VisionLink.Raptor.Events
     /// Base class to represent all event types in a Raptor data model.
     /// </summary>
     [Serializable]
-    public struct EfficientProductionEventChangeBase<V> : IEfficientProductionEventChangeBase<V>, IComparable<EfficientProductionEventChangeBase<V>>
+    public struct EfficientProductionEventChangeBase<V> :  IEfficientProductionEventChangeBase<V>, IComparable<EfficientProductionEventChangeBase<V>>
     {
         /// <summary>
         /// Flag constant indicating this event is a customer event
@@ -19,7 +19,6 @@ namespace VSS.VisionLink.Raptor.Events
         /// Storage for event flags (such as Custom event)
         /// </summary>
         private byte flags;
-        public byte Flags { get => flags; set => flags = value; }
 
         /// <summary>
         /// The 'Type' of event, such as machine start or stop. See GetEventType for further informtion.

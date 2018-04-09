@@ -8,11 +8,6 @@ namespace VSS.VisionLink.Raptor.Events.Interfaces
     public interface IEfficientProductionEventChangeBase<V>
     {
         /// <summary>
-        /// Storage for event flags (such as Custom event)
-        /// </summary>
-        byte Flags { set; get; }
-
-        /// <summary>
         /// Defines whether this event is a custom event, ie: an event that was not recorded by a machine but which has been 
         /// inserted as a part of a nother process such as to override values recorded by the machine that were incorrect 
         /// (eg: design or material lift number)
