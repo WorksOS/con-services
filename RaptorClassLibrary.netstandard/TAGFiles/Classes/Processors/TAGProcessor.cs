@@ -179,7 +179,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
             }
         }
 
-        protected void SetDesign(string Value)
+        protected override void SetDesign(string Value)
         {
             // If the design being loaded changed, then update the extents of the design
             // in the designs list in the sitemodel
@@ -193,11 +193,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
                 MachineTargetValueChangesAggregator.DesignNameStateEvents.PutValueAtDate(DataTime, Value);
             else
             {
-                /* TODO
-                 {$IFDEF DENSE_TAG_FILE_LOGGING}
-                SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in .SetDesign', slpmcDebug);
-                {$ENDIF}
-                */
+                //{$IFDEF DENSE_TAG_FILE_LOGGING}
+                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetDesign', slpmcDebug);
+                //{$ENDIF}
             }
 
             // Get the current design extent for the newly selected design

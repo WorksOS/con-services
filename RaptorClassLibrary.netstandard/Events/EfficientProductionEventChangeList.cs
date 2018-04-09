@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using RaptorClassLibrary.netstandard.Events.Interfaces;
 using VSS.VisionLink.Raptor.Events.Interfaces;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.Types;
@@ -11,10 +12,22 @@ using VSS.VisionLink.Raptor.Utilities;
 
 namespace VSS.VisionLink.Raptor.Events
 {
+    /// <summary>
+    /// EfficientProductionEventChangeList implements a generic event list without using a list, or object instances for each event
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="V"></typeparam>
     [Serializable]
-    public class ProductionEventChangeList<T> : List<T>, IProductionEventChangeList where T : ProductionEventChangeBase, new()
+    public class EfficientProductionEventChangeList<T, V> : List<T>, IEfficientProductionEventChangeList where T : IEfficientProductionEventChangeBase<V>, new()
     {
+        /// <summary>
+        /// The Site Model to which these events relate
+        /// </summary>
         public long SiteModelID { get; set; }
+
+        /// <summary>
+        /// The machine to which these events relate
+        /// </summary>
         public long MachineID { get; set; }
 
         [NonSerialized]
@@ -24,15 +37,15 @@ namespace VSS.VisionLink.Raptor.Events
         // in the persistent store
         public DateTime LastUpdateTimeUTC { get; set; } = DateTime.MinValue;
 
-        ProductionEventType EventListType { get; set; } = ProductionEventType.Unknown;
+        private ProductionEventType EventListType { get; set; } = ProductionEventType.Unknown;
 
         private bool eventsListIsOutOfDate;
 
-        public ProductionEventChangeList()
+        public EfficientProductionEventChangeList()
         {
         }
 
-        public ProductionEventChangeList(long machineID, long siteModelID,
+        public EfficientProductionEventChangeList(long machineID, long siteModelID,
                                          ProductionEventType eventListType) : this()
         {
             eventsListIsOutOfDate = true;
@@ -46,13 +59,13 @@ namespace VSS.VisionLink.Raptor.Events
             // LoadedFromPersistentStore = machineID == kICMachineIDMaxValue;
         }
 
-        public ProductionEventChangeList(ProductionEventChanges container,
+        public EfficientProductionEventChangeList(ProductionEventChanges container,
                                          long machineID, long siteModelID,
                                          ProductionEventType eventListType) : this(machineID, siteModelID, eventListType)
         {
             Container = container;
         }
-
+        
         // Compare performs a date based comparison between the event identified
         // by <Item> and the date held in <Value>
         public bool Find(Func<T, int> Comparer, out int index)
@@ -130,6 +143,15 @@ namespace VSS.VisionLink.Raptor.Events
             return PutValueAtDate(newEvent);
         }
 
+        public virtual T PutValueAtDate(DateTime dateTime, V value)
+        {
+            return PutValueAtDate(new T
+            {
+                Date = dateTime,
+                State = value
+            });
+        }
+
         /// <summary>
         /// Adds the given event into the list.  If the event is a duplicate of an existing event the 
         /// passed event will be ignored and the existing duplicate event will be returned, otherwise 
@@ -140,9 +162,7 @@ namespace VSS.VisionLink.Raptor.Events
         /// <returns>The event instance that was added to the list</returns>
         public T PutValueAtDate(T Event)
         {
-            int EventIndex = Count;
-
-            bool ExistingEventFound = Find(Event, out EventIndex);
+            bool ExistingEventFound = Find(Event, out int EventIndex);
 
             //  if (Event._Type = icmetStartRecordedData) or (Event._Type = icmetEndRecordedData) then
             //    SIGLOGMessage.PublishNoODS(Self, Format('Adding event %s', [Event.ToText]), slmcMessage); {SKIP}
@@ -227,7 +247,6 @@ namespace VSS.VisionLink.Raptor.Events
 
             int FirstIdx = 0;
             int SecondIdx = 1;
-            bool NeedsNullRemoval = false;
 
             // We only want to collate items generally if they fall between a pair of Start/EndRecordedData events.
             // The TICEventStartEndRecordedDataChangeList.Collate method overrides this one to collate those
@@ -256,8 +275,7 @@ namespace VSS.VisionLink.Raptor.Events
                    Range.InRange(this[FirstIdx].Date, StartEvent.Date, EndEvent.Date) &&
                    Range.InRange(this[SecondIdx].Date, StartEvent.Date, EndEvent.Date))
                 {
-                    NeedsNullRemoval = true;
-                    this[SecondIdx] = null;
+                    RemoveAt(SecondIdx);
                 }
                 else
                 {
@@ -265,11 +283,6 @@ namespace VSS.VisionLink.Raptor.Events
                 }
 
                 SecondIdx++;
-            }
-
-            if (NeedsNullRemoval)
-            {
-                RemoveAll(x => x == null);
             }
         }
 
@@ -311,7 +324,7 @@ namespace VSS.VisionLink.Raptor.Events
         }
 
         public int IndexOfClosestEventSubsequentToDate(DateTime eventDate,
-                                                 ProductionEventType eventType = ProductionEventType.Unknown)
+                                                       ProductionEventType eventType = ProductionEventType.Unknown)
 
         {
             if ((Count == 0) || ((Count > 0) && (this[Count - 1].Date < eventDate)))
@@ -360,10 +373,10 @@ namespace VSS.VisionLink.Raptor.Events
         /// Reads a binary serialisation of the content of the list
         /// </summary>
         /// <param name="reader"></param>
-        public static IProductionEventChangeList Read(BinaryReader reader)
+        public static IEfficientProductionEventChangeList Read(BinaryReader reader)
         {
             BinaryFormatter formatter = new BinaryFormatter();
-            return (ProductionEventChangeList<T>)formatter.Deserialize(reader.BaseStream);
+            return (EfficientProductionEventChangeList<T, V>)formatter.Deserialize(reader.BaseStream);
         }
 
         public void SaveToStream(Stream stream)
@@ -386,7 +399,7 @@ namespace VSS.VisionLink.Raptor.Events
             }
         }
 
-        public IProductionEventChangeList LoadFromStore(IStorageProxy storageProxy)
+        public IEfficientProductionEventChangeList LoadFromStore(IStorageProxy storageProxy)
         {
             storageProxy.ReadStreamFromPersistentStoreDirect(SiteModelID, EventChangeListPersistantFileName(), FileSystemStreamType.Events, out MemoryStream MS);
 
@@ -396,50 +409,12 @@ namespace VSS.VisionLink.Raptor.Events
 
                 using (var reader = new BinaryReader(MS, Encoding.UTF8, true))
                 {
-                    IProductionEventChangeList Result = Read(reader);
+                    IEfficientProductionEventChangeList Result = Read(reader);
                     return Result ?? this;
                 }
             }
 
             return this;
-        }
-    }
-
-    [Serializable]
-    public class ProductionEventChangeList<T, V> : ProductionEventChangeList<T> where T : ProductionEventChangeBase<V>, new()
-    {
-        public ProductionEventChangeList()
-        {
-        }
-
-        public ProductionEventChangeList(long machineID, long siteModelID,
-                                         ProductionEventType eventListType) : base(machineID, siteModelID, eventListType)
-        {
-        }
-
-        public ProductionEventChangeList(ProductionEventChanges container,
-                                         long machineID, long siteModelID,
-                                         ProductionEventType eventListType) : base(container, machineID, siteModelID, eventListType)
-        {
-        }
-
-        /// <summary>
-        /// Adds an event of type T with the given date into the list, with a state value given by V.
-        /// If the event is a duplicate of an existing event the passed event will be ignored and 
-        /// the existing duplicate event will be returned, otherwise passed event will be returned.
-        /// The method returns the event instance that was added to the list
-        /// </summary>
-        /// <param name="dateTime"></param>
-        /// <param name="value"></param>
-        /// <returns>The event instance that was added to the list</returns>
-        public virtual T PutValueAtDate(DateTime dateTime, V value)
-        {
-            T newEvent = new T
-            {
-                Date = dateTime,
-                State = value
-            };
-            return PutValueAtDate(newEvent);
         }
 
         public virtual V GetValueAtDate(DateTime eventDate, out int stateChangeIndex, V defaultValue = default(V))
@@ -466,16 +441,6 @@ namespace VSS.VisionLink.Raptor.Events
             }
 
             return defaultValue;
-        }
-
-        /// <summary>
-        /// Reads a binary serialisation of the content of the list
-        /// </summary>
-        /// <param name="reader"></param>
-        public new static IProductionEventChangeList Read(BinaryReader reader)
-        {
-            BinaryFormatter formatter = new BinaryFormatter();
-            return (IProductionEventChangeList)formatter.Deserialize(reader.BaseStream);
         }
     }
 }
