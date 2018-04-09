@@ -392,12 +392,13 @@ namespace VSS.MasterData.Models.Models
 
       if (AsAtDate.HasValue)
       {
-        if (!EndUtc.HasValue && !DateRangeType.HasValue)
+        bool valid = EndUtc.HasValue || DateRangeType.HasValue &&
+                DateRangeType.Value != Internal.DateRangeType.Custom;//custom must have end UTC
+        if (!valid)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
         }
       }
-
     }
 
     public bool Equals(Filter other)
@@ -484,6 +485,7 @@ namespace VSS.MasterData.Models.Models
           EndUtc = DateRangeType?.UtcForDateRangeType(ianaTimeZoneName, false, useEndOfCurrentDay);
         }
       }
+      //For as-at dates only use EndUTC, so make sure StartUTC is null
       if (AsAtDate == true)
       {
         StartUtc = null;
