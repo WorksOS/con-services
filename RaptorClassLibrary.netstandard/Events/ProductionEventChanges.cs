@@ -1,6 +1,7 @@
 ﻿using VSS.VisionLink.Raptor.Events.Interfaces;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.SiteModels;
+using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Compaction.PassCount;
 using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.Events
@@ -110,6 +111,26 @@ namespace VSS.VisionLink.Raptor.Events
         public ProductionEventChangeList<ProductionEventChangeBase<ushort>, ushort> TargetPassCountStateEvents;
 
         /// <summary>
+        /// Records the target minimum temperature value configured on the machine control system
+        /// </summary>
+        public ProductionEventChangeList<ProductionEventChangeBase<ushort>, ushort> TargetMinMaterialTemperature;
+
+        /// <summary>
+        /// Records the target maximum temperature value configured on the machine control system
+        /// </summary>
+        public ProductionEventChangeList<ProductionEventChangeBase<ushort>, ushort> TargetMaxMaterialTemperature;
+
+        /// <summary>
+        /// Records the target lift thickness value configured on the machine control system
+        /// </summary>
+        public ProductionEventChangeList<ProductionEventChangeBase<float>, float> TargetLiftThickness;
+
+        /// <summary>
+        /// Records the Resonance Meter Value jump threshold configured on the machine control system
+        /// </summary>
+        public ProductionEventChangeList<ProductionEventChangeBase<short>, short> RMVJumpThresholdEvents;
+
+        /// <summary>
         /// Create all defined event lists in one operation.
         /// </summary>
         private void CreateEventLists()
@@ -126,11 +147,17 @@ namespace VSS.VisionLink.Raptor.Events
             GPSAccuracyAndToleranceStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<GPSAccuracyAndTolerance>, GPSAccuracyAndTolerance>(MachineID, SiteModel.ID, ProductionEventType.GPSAccuracyChange);
             LayerIDStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<ushort>, ushort>(MachineID, SiteModel.ID, ProductionEventType.LayerID);
             DesignNameStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<string>, string>(MachineID, SiteModel.ID, ProductionEventType.DesignChange);
-            ICFlagsStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<byte>, byte>(MachineID, SiteModel.ID, ProductionEventType.ICFlagsChange);            
+            ICFlagsStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<byte>, byte>(MachineID, SiteModel.ID, ProductionEventType.ICFlagsChange);
+
             TargetCCVStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<short>, short>(MachineID, SiteModel.ID, ProductionEventType.TargetCCV);
             TargetCCAStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<short>, short>(MachineID, SiteModel.ID, ProductionEventType.TargetCCA);
             TargetMDPStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<short>, short>(MachineID, SiteModel.ID, ProductionEventType.TargetMDP);
             TargetPassCountStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<ushort>, ushort>(MachineID, SiteModel.ID, ProductionEventType.TargetPassCount);
+            TargetMinMaterialTemperature = new ProductionEventChangeList<ProductionEventChangeBase<ushort>, ushort>(MachineID, SiteModel.ID, ProductionEventType.TempWarningLevelMinChange);
+            TargetMaxMaterialTemperature = new ProductionEventChangeList<ProductionEventChangeBase<ushort>, ushort>(MachineID, SiteModel.ID, ProductionEventType.TempWarningLevelMaxChange);
+            TargetLiftThickness = new ProductionEventChangeList<ProductionEventChangeBase<float>, float>(MachineID, SiteModel.ID, ProductionEventType.TargetLiftThickness);
+
+            RMVJumpThresholdEvents = new ProductionEventChangeList<ProductionEventChangeBase<short>, short>(MachineID, SiteModel.ID, ProductionEventType.MachineRMVJumpValueChange);
         }
 
         /// <summary>
@@ -157,7 +184,11 @@ namespace VSS.VisionLink.Raptor.Events
                 TargetCCVStateEvents,
                 TargetCCAStateEvents,
                 TargetMDPStateEvents,
-                TargetPassCountStateEvents
+                TargetPassCountStateEvents,
+                TargetMinMaterialTemperature,
+                TargetMaxMaterialTemperature,
+                TargetLiftThickness,
+                RMVJumpThresholdEvents
             };
         }
     /// <summary>
@@ -206,6 +237,10 @@ namespace VSS.VisionLink.Raptor.Events
             TargetCCAStateEvents = TargetCCAStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<short>, short>;
             TargetMDPStateEvents = TargetMDPStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<short>, short>;
             TargetPassCountStateEvents = TargetPassCountStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<ushort>, ushort>;
+            TargetMinMaterialTemperature = TargetMinMaterialTemperature.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<ushort>, ushort>;
+            TargetMaxMaterialTemperature = TargetMaxMaterialTemperature.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<ushort>, ushort>;
+            TargetLiftThickness = TargetLiftThickness.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<float>, float>;
+            RMVJumpThresholdEvents = RMVJumpThresholdEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<short>, short>;
 
             return true;
         }

@@ -320,7 +320,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// Adds the CCA target value set on the machine into the target CCA list
         /// </summary>
         /// <param name="Value"></param>
-        protected override void SetICCCATargetValue(short Value)
+        protected override void SetICCCATargetValue(byte Value)
         {
             base.SetICCCATargetValue(Value);
 
@@ -421,39 +421,156 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
             }
         }
 
+        /// <summary>
+        /// Sets the target minimum material temperture into the machine target material temperature events list
+        /// </summary>
+        /// <param name="Value"></param>
+        protected override void SetICTempWarningLevelMinValue(ushort Value)
+        {
+            base.SetICTempWarningLevelMinValue(Value);
+
+            if (DataTime != DateTime.MinValue)
+                MachineTargetValueChangesAggregator.TargetMinMaterialTemperature.PutValueAtDate(DataTime, Value);
+            else
+            {
+                //{$IFDEF DENSE_TAG_FILE_LOGGING}
+                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICTempWarningLevelMinValue', slpmcDebug);
+                //{$ENDIF}
+            }
+        }
+
+        /// <summary>
+        /// Sets the target maximum material temperture into the machine target material temperature events list
+        /// </summary>
+        /// <param name="Value"></param>
+
+        protected override void SetICTempWarningLevelMaxValue(ushort Value)
+        {
+            base.SetICTempWarningLevelMaxValue(Value);
+
+            if (DataTime != DateTime.MinValue)
+                MachineTargetValueChangesAggregator.TargetMaxMaterialTemperature.PutValueAtDate(DataTime, Value);
+            else
+            {
+                //{$IFDEF DENSE_TAG_FILE_LOGGING}
+                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICTempWarningLevelMaxValue', slpmcDebug);
+                //{$ENDIF}
+            }
+        }
+
+        /// <summary>
+        /// Sets the target lift thickness into the machine target lift thickness events list
+        /// </summary>
+        /// <param name="Value"></param>
+        protected override void SetICTargetLiftThickness(float Value)
+        {
+            base.SetICTargetLiftThickness(Value);
+
+            if (DataTime != DateTime.MinValue)
+                MachineTargetValueChangesAggregator.TargetLiftThickness.PutValueAtDate(DataTime, Value);
+            else
+            {
+                //{$IFDEF DENSE_TAG_FILE_LOGGING}
+                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICTargetLiftThickness', slpmcDebug);
+                //{$ENDIF}
+            }
+        }
+
+        public override void SetICCCVValue(short Value)
+        {
+            base.SetICCCVValue(Value);
+            Machine.CompactionDataReported = true;
+        }
+
+        public override void SetICRMVValue(short Value)
+        {
+            base.SetICRMVValue(Value);
+            Machine.CompactionDataReported = true;
+        }
+
+        public override void SetICMDPValue(short Value)
+        {
+            base.SetICMDPValue(Value);
+            Machine.CompactionDataReported = true;
+        }
+
+        public override void SetICCCAValue(byte Value)
+        {
+            base.SetICCCAValue(Value);
+            Machine.CompactionDataReported = true;
+        }
+
+        public override void SetICCCALeftFrontValue(byte Value)
+        {
+            base.SetICCCALeftFrontValue(Value);
+            Machine.CompactionDataReported = true;
+        }
+
+        public override void SetICCCARightFrontValue(byte Value)
+        {
+            base.SetICCCARightFrontValue(Value);
+            Machine.CompactionDataReported = true;
+        }
+
+        public override void SetICCCALeftRearValue(byte Value)
+        {
+            base.SetICCCALeftRearValue(Value);
+            Machine.CompactionDataReported = true;
+        }
+
+        public override void SetICCCARightRearValue(byte Value)
+        {
+            base.SetICCCARightRearValue(Value);
+            Machine.CompactionDataReported = true;
+        }
+
+        protected override void SetRMVJumpThresholdValue(short Value)
+        {
+            base.SetRMVJumpThresholdValue(Value);
+
+            if (DataTime != DateTime.MinValue)
+                MachineTargetValueChangesAggregator.RMVJumpThresholdEvents.PutValueAtDate(DataTime, Value);
+            else
+            {
+                //{$IFDEF DENSE_TAG_FILE_LOGGING}
+                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in RMVJumpThresholdEvents', slpmcDebug);
+                //{$ENDIF}
+            }
+        }
+
+        protected override void SetICSensorType(CompactionSensorType Value)
+        {
+            base.SetICSensorType(Value);
+
+            if (DataTime != DateTime.MinValue)
+            {
+                // Tell the machine object itself what the current sensor type is
+                Machine.CompactionSensorType = Value;
+            }
+            else
+            {
+                // {$IFDEF DENSE_TAG_FILE_LOGGING}
+                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SVOICSnailTrailProcessor.SetICSensorType', slpmcDebug);
+                //{$ENDIF}
+            }
+        }
+
         /*
               procedure SetICSonic3D                  (const Value :Byte                  ); override;
-              procedure SetICPassTargetValue          (const Value :TICPassCountValue     ); override;
-              procedure SetICTargetLiftThickness      (const Value :TICLiftThickness      ); override;
               procedure SetAutomaticsMode             (const Value :TGCSAutomaticsMode    ); override;
-              procedure SetRMVJumpThresholdValue      (const Value :TICRMVValue           ); override;
-              procedure SetICSensorType               (const Value: TICSensorType         ); override;
-              procedure SetICTempWarningLevelMinValue (const Value: TICMaterialTemperature); override;
-              procedure SetICTempWarningLevelMaxValue (const Value :TICMaterialTemperature); override;
               procedure SetUTMZone                    (const Value :Byte                  ); override;
               procedure SetCSType                     (const Value :Byte                  ); override;
               procedure SetICLayerIDValue             (const Value :TICLayerIdValue       ); override;
 
-      function MaxEpochInterval: Double; override;
-      function IgnoreInvalidPositions: Boolean; override;
+              function MaxEpochInterval: Double; override;
+              function IgnoreInvalidPositions: Boolean; override;
 
-                  procedure SetICCCVValue(const Value :TICCCVValue); override;
-      procedure SetICMDPValue(const Value :TICMDPValue); override;
-
-      procedure SetICCCAValue(const Value :TICCCAValue); override;
-      procedure SetICCCALeftFrontValue  (const Value : TICCCAValue ); override;
-      procedure SetICCCARightFrontValue (const Value : TICCCAValue ); override;
-      procedure SetICCCALeftRearValue   (const Value : TICCCAValue ); override;
-      procedure SetICCCARightRearValue  (const Value : TICCCAValue ); override;
-
-      procedure SetICRMVValue(const Value :SmallInt   ); override;
-
-      procedure SetGPSMode(const Value :TICGPSMode); override;
-      procedure SetMinElevMappingState(const Value: TICMinElevMappingState); override;
-      procedure SetInAvoidZoneState(const Value: TICInAvoidZoneState); override;
-      procedure SetGPSAccuracyState(const AccValue: TICGPSAccuracy; const LimValue: TICGPSTolerance); override;
-      procedure SetAgeOfCorrection(const Value: Byte); override;
-         */
+              procedure SetGPSMode(const Value :TICGPSMode); override;
+              procedure SetMinElevMappingState(const Value: TICMinElevMappingState); override;
+              procedure SetInAvoidZoneState(const Value: TICInAvoidZoneState); override;
+              procedure SetGPSAccuracyState(const AccValue: TICGPSAccuracy; const LimValue: TICGPSTolerance); override;
+              procedure SetAgeOfCorrection(const Value: Byte); override;
+                 */
 
         /// <summary>
         /// Updates the bounding box surrounding the area of the project worked on with the current

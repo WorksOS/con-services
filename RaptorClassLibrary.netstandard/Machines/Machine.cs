@@ -48,6 +48,8 @@ namespace VSS.VisionLink.Raptor.Machines
         /// </summary>
         public bool CompactionDataReported { get => _compactionDataReported; set => _compactionDataReported = _compactionDataReported | value; }
 
+        public CompactionSensorType CompactionSensorType { get; set; } = CompactionSensorType.NoSensor;
+    
         [NonSerialized]
         public ProductionEventChanges TargetValueChanges = null; // new ProductionEventChanges(null, -1);
 
@@ -105,7 +107,7 @@ namespace VSS.VisionLink.Raptor.Machines
         {
             Name = source.Name;
             MachineHardwareID = source.MachineHardwareID;
-            //            CompactionSensorType = source.CompactionSensorType;
+            CompactionSensorType = source.CompactionSensorType;
             //            CompactionRMVJumpThreshold = source.CompactionRMVJumpThreshold;
             //            UseMachineRMVThreshold = source.UseMachineRMVThreshold;
             //            OverrideRMVJumpThreshold = source.OverrideRMVJumpThreshold;

@@ -38,7 +38,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 
         private short _ICCCVTargetValue = CellPass.NullCCV;
         private short _ICMDPTargetValue = CellPass.NullMDP;
-        private short _ICCCATargetValue = CellPass.NullCCA;
+        private byte _ICCCATargetValue = CellPass.NullCCA;
         private ushort _ICPassTargetValue;
         private ushort _ICLayerIDValue = CellPass.NullLayerID;
 
@@ -201,7 +201,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         protected virtual void SetICTempWarningLevelMinValue(ushort value) => _ICTempWarningLevelMinValue = value;
         protected virtual void SetICTempWarningLevelMaxValue(ushort value) => _ICTempWarningLevelMaxValue = value;
 
-        protected virtual void SetICCCATargetValue(short value) => _ICCCATargetValue = value;
+        protected virtual void SetICCCATargetValue(byte value) => _ICCCATargetValue = value;
         protected virtual void SetUTMZone(byte value) => _UTMZone = value;
         protected virtual void SetCSType(CoordinateSystemType value) => _CSType = value;
 
@@ -431,7 +431,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         public AccumulatedAttributes ICCCARightFrontValues { get; set; } = new AccumulatedAttributes();
         public AccumulatedAttributes ICCCALeftRearValues { get; set; } = new AccumulatedAttributes();
         public AccumulatedAttributes ICCCARightRearValues { get; set; } = new AccumulatedAttributes();
-        public short ICCCATargetValue { get { return _ICCCATargetValue; } set { SetICCCATargetValue(value); } }
+        public byte ICCCATargetValue { get { return _ICCCATargetValue; } set { SetICCCATargetValue(value); } }
         public AccumulatedAttributes ICTemperatureValues { get; set; } = new AccumulatedAttributes();
 
         public ushort ICTempWarningLevelMinValue { get { return _ICTempWarningLevelMinValue; } set { SetICTempWarningLevelMinValue(value); } }
@@ -536,11 +536,11 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
             GPSAccuracyErrorLimit = LimValue;
         }
         public virtual void SetICMDPValue(short value) => ICMDPValues.Add(DataTime, value);
-        public virtual void SetICCCAValue(short value) => ICCCAValues.Add(DataTime, value);
-        public virtual void SetICCCARightFrontValue(short value) => ICCCARightFrontValues.Add(DataTime, value);
-        public virtual void SetICCCALeftFrontValue(short value) => ICCCALeftFrontValues.Add(DataTime, value);
-        public virtual void SetICCCARightRearValue(short value) => ICCCARightRearValues.Add(DataTime, value);
-        public virtual void SetICCCALeftRearValue(short value) => ICCCALeftRearValues.Add(DataTime, value);
+        public virtual void SetICCCAValue(byte value) => ICCCAValues.Add(DataTime, value);
+        public virtual void SetICCCARightFrontValue(byte value) => ICCCARightFrontValues.Add(DataTime, value);
+        public virtual void SetICCCALeftFrontValue(byte value) => ICCCALeftFrontValues.Add(DataTime, value);
+        public virtual void SetICCCARightRearValue(byte value) => ICCCARightRearValues.Add(DataTime, value);
+        public virtual void SetICCCALeftRearValue(byte value) => ICCCALeftRearValues.Add(DataTime, value);
 
 
         public virtual void SetICTemperatureValue(ushort value) => ICTemperatureValues.Add(DataTime, value);

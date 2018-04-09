@@ -19,7 +19,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Compaction.CCA
                 return false;
             }
 
-            valueSink.ICCCATargetValue = (short)value;
+            valueSink.ICCCATargetValue = (byte)value;
 
             return true;
         }

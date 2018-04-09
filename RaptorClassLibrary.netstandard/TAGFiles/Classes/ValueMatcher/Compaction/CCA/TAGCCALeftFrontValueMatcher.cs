@@ -27,7 +27,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Compaction.CCA
         return false;
       }
 
-      valueSink.SetICCCALeftFrontValue((short)value);
+      valueSink.SetICCCALeftFrontValue((byte)value);
 
       return true;
     }
