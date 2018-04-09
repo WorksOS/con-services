@@ -31,6 +31,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting tiles for displaying production data and linework.
   /// </summary>
+  [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)] // (Aaron) Disabled temporarily until we can resolve the cache invalidation problem.
   [ProjectUidVerifier]
   public class CompactionTileController : BaseController
   {
@@ -110,15 +111,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] VolumeCalcType? volumeCalcType)
     {
       Log.LogDebug("GetProductionDataTile: " + Request.QueryString);
-      
-      var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
+
+      var projectId = await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var projectSettingsColors = await GetProjectSettingsColors(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
       var tileResult = WithServiceExceptionTryExecute(() =>
-        tileService.GetProductionDataTile(projectSettings, projectSettingsColors,filter, projectId, mode, width, height,
+        tileService.GetProductionDataTile(projectSettings, projectSettingsColors, filter, projectId, mode, width, height,
           GetBoundingBox(bbox), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3,
           volumeCalcType, CustomHeaders));
 
@@ -179,8 +180,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] VolumeCalcType? volumeCalcType)
     {
       Log.LogDebug("GetProductionDataTileRaw: " + Request.QueryString);
-      
-      var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
+
+      var projectId = await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var projectSettingsColors = await GetProjectSettingsColors(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
@@ -302,7 +303,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return new FileStreamResult(new MemoryStream(result.TileData), "image/png");
     }
-    
+
     /// <summary>
     /// Validates the file type for DXF tile request and gets the imported file data for it
     /// </summary>
@@ -330,8 +331,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
               "Unsupported file type " + fileType));
         }
-      }
-      else
+      } else
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -376,8 +376,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           if (num < -Math.PI / 2)
           {
             num = num + Math.PI;
-          }
-          else if (num > Math.PI / 2)
+          } else if (num > Math.PI / 2)
           {
             num = num - Math.PI;
           }
@@ -387,8 +386,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           if (num < -Math.PI)
           {
             num = num + 2 * Math.PI;
-          }
-          else if (num > Math.PI)
+          } else if (num > Math.PI)
           {
             num = num - 2 * Math.PI;
           }
