@@ -73,6 +73,7 @@ namespace VSS.MasterData.Models.ResultHandling
       DynamicAddwithOffset("Invalid alignment filter. Start or end station are invalid.", 65);
       DynamicAddwithOffset("Invalid alignment filter. Left or right offset are invalid.", 66);
       DynamicAddwithOffset("Invalid alignment filter. Parameters are incomplete.", 67);
+      DynamicAddwithOffset("Invalid Date Filter. Either EndUTC or DateRangeType must be provided for an as-at date filter.", 68);
     }
   }
 }

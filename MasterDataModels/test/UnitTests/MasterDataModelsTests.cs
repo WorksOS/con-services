@@ -488,6 +488,39 @@ namespace VSS.MasterData.Models.UnitTests
       Assert.AreEqual(rightOffset, filter.RightOffset, "rightOffset is wrong.");
     }
 
+    [TestMethod]
+    public void AsAtDateFilterCustom_Success()
+    {
+      var filter = Filter.CreateFilter(null, DateTime.UtcNow.AddDays(-1), null, null, null, null, null, null, null, null, 
+        null, null, null, null, null, null, null, true);
+      filter.Validate(_serviceExceptionHandler);
+    }
+
+    [TestMethod]
+    public void AsAtDateFilterWithDateRangeType_Success()
+    {
+      //Need to use filter JSON as cannot set DateRangeType directly
+      var filterJson = "{\"asAtDate\":true, \"dateRangeType\":0}";
+      var filter = JsonConvert.DeserializeObject<Filter>(filterJson);
+      filter.Validate(_serviceExceptionHandler);
+    }
+
+    [TestMethod]
+    public void AsAtDateFilterFailure_MissingEndUtc()
+    {
+      var filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null,
+        null, null, null, null, true);
+      Assert.ThrowsException<ServiceException>(() => filter.Validate(this._serviceExceptionHandler));
+    }
+
+    [TestMethod]
+    public void AsAtDateFilterFailure_MissingStartUtc()
+    {
+      var filter = Filter.CreateFilter(null, DateTime.UtcNow.AddDays(-1), null, null, null, null, null, null, null, null, null, null, null,
+        null, null, null, null, false);
+      Assert.ThrowsException<ServiceException>(() => filter.Validate(this._serviceExceptionHandler));
+    }
+
     private string INVALID_GUID = "39823294vf-vbfb";
 
   }

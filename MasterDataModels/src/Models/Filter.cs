@@ -138,6 +138,13 @@ namespace VSS.MasterData.Models.Models
     [JsonProperty(PropertyName = "rightOffset", Required = Required.Default)]
     public double? RightOffset { get; protected set; }
 
+    /// <summary>
+    /// Used in conjunction with DateRangeType or EndUTC. If true then only the end of the date 
+    /// range applies and the start date is the date and time the  project started. Default is false.
+    /// </summary>
+    [JsonProperty(PropertyName = "asAtDate", Required = Required.Default)]
+    public bool? AsAtDate { get; protected set; }
+
 
     #region For JSON Serialization
     public bool ShouldSerializeStartUtc()
@@ -216,6 +223,10 @@ namespace VSS.MasterData.Models.Models
     {
       return RightOffset != null;
     }
+    public bool ShouldSerializeAsAtDate()
+    {
+      return AsAtDate != null;
+    }
     #endregion
 
     public bool HasData() =>
@@ -233,7 +244,8 @@ namespace VSS.MasterData.Models.Models
       StartStation.HasValue ||
       EndStation.HasValue ||
       LeftOffset.HasValue ||
-      RightOffset.HasValue;
+      RightOffset.HasValue ||
+      AsAtDate.HasValue;
 
     public void AddBoundary(string polygonUID, string polygonName, List<WGSPoint> polygonLL)
     {
@@ -263,7 +275,8 @@ namespace VSS.MasterData.Models.Models
         double? startStation = null,
         double? endStation = null,
         double? leftOffset = null,
-        double? rightOffset = null
+        double? rightOffset = null,
+        bool? asAtDate = null
       )
     {
       return new Filter
@@ -284,15 +297,16 @@ namespace VSS.MasterData.Models.Models
         StartStation = startStation,
         EndStation = endStation,
         LeftOffset = leftOffset,
-        RightOffset = rightOffset
+        RightOffset = rightOffset,
+        AsAtDate = asAtDate
       };
     }
 
     public string ToJsonString()
     {
-      var filter = CreateFilter(StartUtc, EndUtc, DesignUid, ContributingMachines, OnMachineDesignId, ElevationType, VibeStateOn, PolygonLL, ForwardDirection, LayerNumber, 
-        PolygonUid, PolygonName, 
-        AlignmentUid, StartStation, EndStation, LeftOffset, RightOffset);
+      var filter = CreateFilter(StartUtc, EndUtc, DesignUid, ContributingMachines, OnMachineDesignId, ElevationType, 
+        VibeStateOn, PolygonLL, ForwardDirection, LayerNumber, PolygonUid, PolygonName, 
+        AlignmentUid, StartStation, EndStation, LeftOffset, RightOffset, AsAtDate);
 
       return JsonConvert.SerializeObject(filter);
     }
@@ -311,7 +325,14 @@ namespace VSS.MasterData.Models.Models
         }
         else
         {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 30);
+          if (!AsAtDate.HasValue || AsAtDate.Value == false)
+          {
+            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 30);
+          }
+          else if (!EndUtc.HasValue)
+          {
+            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
+          }
         }
       }
 
@@ -369,6 +390,14 @@ namespace VSS.MasterData.Models.Models
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 67);
       }
 
+      if (AsAtDate.HasValue)
+      {
+        if (!EndUtc.HasValue && !DateRangeType.HasValue)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
+        }
+      }
+
     }
 
     public bool Equals(Filter other)
@@ -415,6 +444,7 @@ namespace VSS.MasterData.Models.Models
         hashCode = (hashCode * 397) ^ (EndStation != null ? EndStation.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (LeftOffset != null ? LeftOffset.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (RightOffset != null ? RightOffset.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (AsAtDate != null ? AsAtDate.GetHashCode() : 397);
         return hashCode;
       }
     }
@@ -453,6 +483,10 @@ namespace VSS.MasterData.Models.Models
           StartUtc = DateRangeType?.UtcForDateRangeType(ianaTimeZoneName, true, useEndOfCurrentDay);
           EndUtc = DateRangeType?.UtcForDateRangeType(ianaTimeZoneName, false, useEndOfCurrentDay);
         }
+      }
+      if (AsAtDate == true)
+      {
+        StartUtc = null;
       }
     }
   }
