@@ -79,7 +79,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 
         public bool ProcessTask(List<AggregatedDataIntegratorTask> ProcessedTasks)
         {
-            ProductionEventChanges SiteModelMachineTargetValues = null;
+            EfficientProductionEventChanges SiteModelMachineTargetValues = null;
 
             bool AnyMachineEvents = false;
             bool AnyCellPasses = false;
@@ -282,7 +282,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 
                             if (SiteModelMachineTargetValues == null)
                             {
-                                SiteModelFromDM.MachinesTargetValues.Add(new ProductionEventChanges(SiteModelFromDM, MachineFromDM.ID));
+                                SiteModelFromDM.MachinesTargetValues.Add(new EfficientProductionEventChanges(SiteModelFromDM, MachineFromDM.ID));
                                 //SiteModelFromDM.MachinesTargetValues.CreateNewMachineTargetValues(MachineFromDM, MachineFromDM.ID);
                             }
 

@@ -54,7 +54,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                                       Machine machine,
                                       ServerSubGridTree aggregatedCellPasses,
                                       int aggregatedCellPassCount,
-                                      ProductionEventChanges aggregatedMachineEvents /*,
+                                      EfficientProductionEventChanges aggregatedMachineEvents /*,
                                     const ATaskFinalizer : TAggregationTaskFinalizer*/)
         {
             /*

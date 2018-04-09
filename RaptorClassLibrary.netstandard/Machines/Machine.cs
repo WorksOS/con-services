@@ -51,7 +51,7 @@ namespace VSS.VisionLink.Raptor.Machines
         public CompactionSensorType CompactionSensorType { get; set; } = CompactionSensorType.NoSensor;
     
         [NonSerialized]
-        public ProductionEventChanges TargetValueChanges = null; // new ProductionEventChanges(null, -1);
+        public EfficientProductionEventChanges TargetValueChanges = null; // new ProductionEventChanges(null, -1);
 
         /// <summary>
         /// Determines if the type of this machine is one of the machine tyeps that supports compaction operations

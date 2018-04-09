@@ -7,8 +7,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 {
     public class EventIntegrator
     {
-        private ProductionEventChanges Source;
-        private ProductionEventChanges Target;
+        private EfficientProductionEventChanges Source;
+        private EfficientProductionEventChanges Target;
         private bool RemoveFromSource;
         private bool IntegratingIntoPersistentDataModel;
 
@@ -16,8 +16,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
         {
         }
 
-        public EventIntegrator(ProductionEventChanges Source,
-                               ProductionEventChanges Target,
+        public EventIntegrator(EfficientProductionEventChanges Source,
+            EfficientProductionEventChanges Target,
                                bool RemoveFromSource,
                                bool IntegratingIntoPersistentDataModel) : this()
         {
@@ -171,8 +171,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
             }
         }
 
-        public void IntegrateMachineEvents(ProductionEventChanges source,
-                                           ProductionEventChanges target,
+        public void IntegrateMachineEvents(EfficientProductionEventChanges source,
+                                           EfficientProductionEventChanges target,
                                            bool removeFromSource,
                                            bool integratingIntoPersistentDataModel)
         {

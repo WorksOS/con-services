@@ -1,24 +1,16 @@
-﻿using VSS.VisionLink.Raptor.TAGFiles.Classes.Swather;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using VSS.VisionLink.Raptor.Events;
-using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.SubGridTrees.Server;
-using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Types;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.SiteModels;
-using Xunit;
+using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+using VSS.VisionLink.Raptor.SubGridTrees.Server;
 using VSS.VisionLink.Raptor.TAGFiles.Types;
+using Xunit;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather.Tests
 {
-        public class TerrainSwatherTests
+    public class TerrainSwatherTests
     {
         [Fact()]
         public void Test_TerrainSwather_Creation()
@@ -28,7 +20,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather.Tests
             var grid = new ServerSubGridTree(siteModel);
             var fence = new Fence();
             var SiteModelGridAggregator = new ServerSubGridTree(siteModel);
-            var MachineTargetValueChangesAggregator = new ProductionEventChanges(siteModel, long.MaxValue);
+            var MachineTargetValueChangesAggregator = new EfficientProductionEventChanges(siteModel, long.MaxValue);
             var processor = new TAGProcessor(siteModel, machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
 
             TerrainSwather swather = new TerrainSwather(processor, MachineTargetValueChangesAggregator, siteModel, grid, machine.ID, fence);
@@ -45,7 +37,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather.Tests
             var machine = new Machine();
             var grid = new ServerSubGridTree(siteModel);
             var SiteModelGridAggregator = new ServerSubGridTree(siteModel);
-            var MachineTargetValueChangesAggregator = new ProductionEventChanges(siteModel, long.MaxValue);
+            var MachineTargetValueChangesAggregator = new EfficientProductionEventChanges(siteModel, long.MaxValue);
             var processor = new TAGProcessor(siteModel, machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
 
             var fence = new Fence();

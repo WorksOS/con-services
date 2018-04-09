@@ -46,7 +46,7 @@ namespace VSS.VisionLink.Raptor.Executors
         /// <summary>
         /// The events from the primary target site model
         /// </summary>
-        public ProductionEventChanges Events;
+        public EfficientProductionEventChanges Events;
 
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace VSS.VisionLink.Raptor.Executors
         // file. These are then integrated into the machine events in a single step
         // at a later point in processing
         /// </summary>
-        public ProductionEventChanges MachineTargetValueChangesAggregator { get; set; }
+        public EfficientProductionEventChanges MachineTargetValueChangesAggregator { get; set; }
 
         /// <summary>
         /// Default no-arg constructor
@@ -79,7 +79,7 @@ namespace VSS.VisionLink.Raptor.Executors
             // so the SiteModel constructed to contain the data processed from a TAG file does not need a 
             // storage proxy assigned to it
             SiteModel = new SiteModel(-1, null /*StorageProxy.RaptorInstance(StorageMutability.Mutable)*/);
-            Events = new ProductionEventChanges(SiteModel, 0 /*TODO: Machine.ID*/);
+            Events = new EfficientProductionEventChanges(SiteModel, 0 /*TODO: Machine.ID*/);
 
             Machine = new Machine()
             {
@@ -92,7 +92,7 @@ namespace VSS.VisionLink.Raptor.Executors
                 SiteModelGridAggregator.CellSize = SiteModel.Grid.CellSize;
             }
 
-            MachineTargetValueChangesAggregator = new ProductionEventChanges(SiteModel, long.MaxValue);
+            MachineTargetValueChangesAggregator = new EfficientProductionEventChanges(SiteModel, long.MaxValue);
         }
 
         /// <summary>

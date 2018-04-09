@@ -21,8 +21,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
 
         public int ProcessedEpochNumber { get; set; }
 
-        public TerrainSwather(TAGProcessorBase processor,        
-                              ProductionEventChanges machineTargetValueChanges,
+        public TerrainSwather(TAGProcessorBase processor,
+                              EfficientProductionEventChanges machineTargetValueChanges,
                               SiteModel siteModel,
                               ServerSubGridTree grid,
                               long machineID,
