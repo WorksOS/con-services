@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -120,7 +121,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v2/ccatiles/png")]
     [HttpGet]
-    public FileResult Get
+    public async Task<FileResult> Get
     (
       [FromQuery] Guid projectUid,
       [FromQuery] long assetId,
@@ -136,7 +137,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     )
     {
       log.LogInformation("Get: " + Request.QueryString);
-      long projectId = (User as RaptorPrincipal).GetLegacyProjectId(projectUid);
+      long projectId = await (User as RaptorPrincipal).GetLegacyProjectId(projectUid);
       var request = CreateAndValidateRequest(projectId, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid);
 
       return GetCCADataTile(request);

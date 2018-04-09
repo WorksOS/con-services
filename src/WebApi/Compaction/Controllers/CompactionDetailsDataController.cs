@@ -61,8 +61,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var filter = await GetCompactionFilter(projectUid, filterUid);
 
       double[] cmvChangeSummarySettings = this.SettingsManager.CompactionCmvPercentChangeSettings(projectSettings);
+      var projectId = await GetLegacyProjectId(projectUid);
+
       CMVChangeSummaryRequest request = CMVChangeSummaryRequest.CreateCMVChangeSummaryRequest(
-        GetLegacyProjectId(projectUid), null, liftSettings, filter, -1, cmvChangeSummarySettings);
+        projectId, null, liftSettings, filter, -1, cmvChangeSummarySettings);
       request.Validate();
       try
       {
@@ -71,7 +73,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var returnResult = CompactionCmvPercentChangeResult.CreateCmvPercentChangeResult(result);
         Log.LogInformation("GetCmvPercentChange result: " + JsonConvert.SerializeObject(returnResult));
 
-        SetCacheControlPolicy(projectUid);
+        await SetCacheControlPolicy(projectUid);
 
         return returnResult;
       }
@@ -173,9 +175,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var cutFillDesign = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
+      var projectId = await GetLegacyProjectId(projectUid);
 
       var cutFillRequest = RequestFactory.Create<CutFillRequestHelper>(r => r
-          .ProjectId(GetLegacyProjectId(projectUid))
+          .ProjectId(projectId)
           .Headers(this.CustomHeaders)
           .ProjectSettings(projectSettings)
           .Filter(filter)

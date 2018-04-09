@@ -76,8 +76,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var projectSettings = await GetProjectSettingsTargets(projectUid);
 
         var filter = await GetCompactionFilter(projectUid, filterUid);
-
-        ElevationStatisticsResult result = elevProxy.GetElevationRange(GetLegacyProjectId(projectUid), filter, projectSettings);
+        var projectId = await GetLegacyProjectId(projectUid);
+        ElevationStatisticsResult result = elevProxy.GetElevationRange(projectId, filter, projectSettings);
         if (result == null)
         {
           //Ideally want to return an error code and message only here
@@ -114,7 +114,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromServices] IBoundingBoxService boundingBoxService)
     {
       Log.LogInformation("GetAlignmentStationRange: " + Request.QueryString);
-      var projectId = GetLegacyProjectId(projectUid);
+      var projectId = await GetLegacyProjectId(projectUid);
 
       var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentFileUid);
 
@@ -143,7 +143,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetProjectStatistics: " + Request.QueryString);
       var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid);
-      ProjectStatisticsRequest request = ProjectStatisticsRequest.CreateStatisticsParameters(GetLegacyProjectId(projectUid), excludedIds?.ToArray());
+      var projectId = await GetLegacyProjectId(projectUid);
+
+      ProjectStatisticsRequest request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, excludedIds?.ToArray());
       request.Validate();
       try
       {

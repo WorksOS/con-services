@@ -4,6 +4,7 @@ using System.Reflection;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Common.Filters.Authentication
 {
@@ -52,16 +53,16 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
       }
 
       // RaptorPrincipal will handle the failure case where project isn't found.
-      var projectDescriptor = (actionContext.HttpContext.User as RaptorPrincipal).GetProject((string)projectUidValue);
+      var projectDescriptor = (actionContext.HttpContext.User as RaptorPrincipal).GetProject((string)projectUidValue).Result;
 
-      if (this.AllowLandfillProjects && projectDescriptor.isLandFill)
+      if (this.AllowLandfillProjects && projectDescriptor.ProjectType == ProjectType.LandFill)
       {
         throw new ServiceException(HttpStatusCode.Unauthorized,
           new ContractExecutionResult(ContractExecutionStatesEnum.AuthError,
             "Don't have access to the selected landfill project."));
       }
 
-      if (this.AllowArchivedState && projectDescriptor.isArchived)
+      if (this.AllowArchivedState && projectDescriptor.IsArchived)
       {
         throw new ServiceException(HttpStatusCode.Unauthorized,
           new ContractExecutionResult(ContractExecutionStatesEnum.AuthError,

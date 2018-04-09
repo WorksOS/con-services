@@ -85,7 +85,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       Log.LogInformation("GetExportReportSurface: " + Request.QueryString);
 
-      var projectId = GetLegacyProjectId(projectUid);
+      var project = await (User as RaptorPrincipal).GetProject(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
@@ -93,13 +93,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       tolerance = tolerance ?? surfaceExportTollerance;
 
       var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
-          .ProjectId(projectId)
+          .ProjectId(project.LegacyProjectId)
           .Headers(this.CustomHeaders)
           .ProjectSettings(projectSettings)
           .Filter(filter))
         .SetUserPreferences(userPreferences)
         .SetRaptorClient(raptorClient)
-        .SetProjectDescriptor((User as RaptorPrincipal).GetProject(projectUid))
+        .SetProjectDescriptor(project)
         .CreateExportRequest(
           null, //startUtc,
           null, //endUtc,
@@ -238,20 +238,20 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetExportReportVeta: " + Request.QueryString);
 
-      var projectId = GetLegacyProjectId(projectUid);
+      var project = await (User as RaptorPrincipal).GetProject(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
-      var startEndDate = GetDateRange(projectId, filter);
+      var startEndDate = GetDateRange(project.LegacyProjectId, filter);
 
       var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
-          .ProjectId(projectId)
+          .ProjectId(project.LegacyProjectId)
           .Headers(this.CustomHeaders)
           .ProjectSettings(projectSettings)
           .Filter(filter))
         .SetRaptorClient(raptorClient)
         .SetUserPreferences(userPreferences)
-        .SetProjectDescriptor((User as RaptorPrincipal).GetProject(projectUid))
+        .SetProjectDescriptor(project)
         .CreateExportRequest(
           startEndDate.Item1,
           startEndDate.Item2,
@@ -297,20 +297,20 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetExportReportMachinePasses: " + Request.QueryString);
 
-      var projectId = GetLegacyProjectId(projectUid);
+      var project = await (User as RaptorPrincipal).GetProject(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
-      var startEndDate = GetDateRange(projectId, filter);
+      var startEndDate = GetDateRange(project.LegacyProjectId, filter);
 
       var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
-          .ProjectId(projectId)
+          .ProjectId(project.LegacyProjectId)
           .Headers(this.CustomHeaders)
           .ProjectSettings(projectSettings)
           .Filter(filter))
         .SetUserPreferences(userPreferences)
         .SetRaptorClient(raptorClient)
-        .SetProjectDescriptor((User as RaptorPrincipal).GetProject(projectUid))
+        .SetProjectDescriptor(project)
         .CreateExportRequest(
           startEndDate.Item1,
           startEndDate.Item2,

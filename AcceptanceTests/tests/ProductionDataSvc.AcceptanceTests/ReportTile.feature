@@ -8,29 +8,32 @@ And a filterUid "<filterUID>"
 And an overlayType "<overlayType>"
 And a mapType "<mapType>"
 And a mode "<mode>"
+And a language "<language>"
 When I request a Report Tile and the result file "CompactionReportTileResponse.json"	
 Then the result tile should match the "<ResultName>" from the repository within "<Difference>" percent
 Examples: 
-| ResultName              | ProjectUID                           | filterUID                            | overlayType                            | mapType   | mode | Difference |
-| DxfLinework             | ff91dd40-1569-4765-a2bc-014321f76ace | 7b2bd262-8355-44ba-938a-d50f9712dafc | DxfLinework                            |           |      | 1          |
-| Alignments              | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | Alignments                             |           |      | 1          |
-#| Geofences               | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | Geofences                              |           |      | 1          |
-| ProjectBoundary         | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProjectBoundary                        |           |      | 1          |
-| BaseMap                 | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | BaseMap                                | MAP       |      | 1          |
-| Elevation               | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 0    | 3.5          |
-| MDP                     | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 20   | 3          |
-| CMV                     | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 1    | 3          |
-| CMVchange               | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 27   | 3          |
-| CMVsummary              | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 13   | 3          |
-| Speed                   | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 26   | 8          |
-| Temperature             | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 10   | 3          |
-| CMVchangeOverlay        | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 27   | 10         |
-| CMVsummaryOverlay       | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 13   | 10         |
-| SpeedOverlay            | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 26   | 10         |
-| TemperatureOverlay      | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 10   | 10         |
-| ElevationOverlay        | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 0    | 10         |
-| MDPOverlay              | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 20   | 10         |
-| CMVOverlay              | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 1    | 10         |
+| ResultName         | ProjectUID                           | filterUID                            | overlayType                            | mapType   | mode | Difference | language |
+| DxfLinework        | ff91dd40-1569-4765-a2bc-014321f76ace | 7b2bd262-8355-44ba-938a-d50f9712dafc | DxfLinework                            |           |      | 1          |          |
+| Alignments         | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | Alignments                             |           |      | 1          |          |
+#| Geofences         | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | Geofences                              |           |      | 1          |          |
+| ProjectBoundary    | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProjectBoundary                        |           |      | 1          |          |
+| BaseMap            | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | BaseMap                                | MAP       |      | 1          |          |
+| BaseMapZH          | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | BaseMap                                | MAP       |      | 1          | zh-CN    |
+| BaseMapEN          | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | BaseMap                                | MAP       |      | 1          | en_US    |
+| Elevation          | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 0    | 3.5        |          |
+| MDP                | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 20   | 3          |          |
+| CMV                | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 1    | 3          |          |
+| CMVchange          | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 27   | 3          |          |
+| CMVsummary         | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 13   | 3          |          |
+| Speed              | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 26   | 8          |          |
+| Temperature        | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 10   | 3          |          |
+| CMVchangeOverlay   | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 27   | 10         |          |
+| CMVsummaryOverlay  | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 13   | 10         |          |
+| SpeedOverlay       | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 26   | 10         |          |
+| TemperatureOverlay | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 10   | 10         |          |
+| ElevationOverlay   | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 0    | 10         |          |
+| MDPOverlay         | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 20   | 10         |          |
+| CMVOverlay         | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary | SATELLITE | 1    | 10         |          |
 #| ElevationOverlayAll     | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | AllOverlays                            | HYBRID    | 0    | 3          |
 #| CMVchangeOverlayAll     | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | AllOverlays                            | HYBRID    | 27   | 3          |
 #| CMVsummaryOverlayAll    | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | AllOverlays                            | HYBRID    | 13   | 3          |

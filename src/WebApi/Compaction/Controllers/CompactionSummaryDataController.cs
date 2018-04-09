@@ -66,7 +66,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var returnResult = CompactionCmvSummaryResult.Create(result, request.cmvSettings);
         Log.LogInformation("GetCmvSummary result: " + JsonConvert.SerializeObject(returnResult));
 
-        SetCacheControlPolicy(projectUid);
+        await SetCacheControlPolicy(projectUid);
 
         return returnResult;
       }
@@ -105,8 +105,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
-
-      MDPRequest request = MDPRequest.CreateMDPRequest(GetLegacyProjectId(projectUid), null, mdpSettings, liftSettings, filter,
+      var projectId = await GetLegacyProjectId(projectUid);
+      MDPRequest request = MDPRequest.CreateMDPRequest(projectId, null, mdpSettings, liftSettings, filter,
         -1,
         null, null, null);
       request.Validate();
@@ -117,7 +117,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var returnResult = CompactionMdpSummaryResult.CreateMdpSummaryResult(result, mdpSettings);
         Log.LogInformation("GetMdpSummary result: " + JsonConvert.SerializeObject(returnResult));
 
-        SetCacheControlPolicy(projectUid);
+       await  SetCacheControlPolicy(projectUid);
 
         return returnResult;
       }
@@ -159,7 +159,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var returnResult = CompactionPassCountSummaryResult.CreatePassCountSummaryResult(result);
         Log.LogInformation("GetPassCountSummary result: " + JsonConvert.SerializeObject(returnResult));
 
-        SetCacheControlPolicy(projectUid);
+        await SetCacheControlPolicy(projectUid);
 
         return returnResult;
       }
@@ -196,8 +196,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       LiftBuildSettings liftSettings = this.SettingsManager.CompactionLiftBuildSettings(projectSettings);
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
-
-      TemperatureRequest request = TemperatureRequest.CreateTemperatureRequest(GetLegacyProjectId(projectUid), null,
+      var projectId = await GetLegacyProjectId(projectUid);
+      TemperatureRequest request = TemperatureRequest.CreateTemperatureRequest(projectId, null,
         temperatureSettings, liftSettings, filter, -1, null, null, null);
       request.Validate();
       try
@@ -208,7 +208,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var returnResult = CompactionTemperatureSummaryResult.CreateTemperatureSummaryResult(result);
         Log.LogInformation("GetTemperatureSummary result: " + JsonConvert.SerializeObject(returnResult));
 
-        SetCacheControlPolicy(projectUid);
+        await SetCacheControlPolicy(projectUid);
 
         return returnResult;
       }
@@ -235,7 +235,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetSpeedSummary: " + Request.QueryString);
 
-      var projectId = GetLegacyProjectId(projectUid);
+      var projectId = await GetLegacyProjectId(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       //Speed settings are in LiftBuildSettings
       LiftBuildSettings liftSettings = this.SettingsManager.CompactionLiftBuildSettings(projectSettings);
@@ -258,7 +258,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           CompactionSpeedSummaryResult.CreateSpeedSummaryResult(result, liftSettings.machineSpeedTarget);
         Log.LogInformation("GetSpeedSummary result: " + JsonConvert.SerializeObject(returnResult));
 
-        SetCacheControlPolicy(projectUid);
+        await SetCacheControlPolicy(projectUid);
 
         return returnResult;
       }
@@ -339,8 +339,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Missing volumes calculation type"));
       }
-
-      var request = SummaryVolumesRequest.CreateAndValidate(GetLegacyProjectId(projectUid), baseFilter, topFilter, baseDesign, topDesign, volumeCalcType);
+      var projectId = await GetLegacyProjectId(projectUid);
+      var request = SummaryVolumesRequest.CreateAndValidate(projectId, baseFilter, topFilter, baseDesign, topDesign, volumeCalcType);
 
       CompactionVolumesSummaryResult returnResult;
 

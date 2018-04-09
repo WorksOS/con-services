@@ -68,7 +68,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetProductionDataCellsDatum: " + Request.QueryString);
 
-      var projectId = ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
+      var projectId = await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);

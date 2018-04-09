@@ -30,7 +30,7 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
     public MapType? mapType { get; private set; }
     public DisplayMode? mode { get; private set; }
     public string language { get; private set; }
-    public ProjectDescriptor project { get; private set; }
+    public ProjectData project { get; private set; }
     public CompactionProjectSettings projectSettings { get; private set; }
     public CompactionProjectSettingsColors ProjectSettingsColors { get; private set; }
 
@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
       MapType? mapType,
       DisplayMode? mode,
       string language,
-      ProjectDescriptor project,
+      ProjectData project,
       CompactionProjectSettings projectSettings,
       CompactionProjectSettingsColors projectSettingsColors
       )

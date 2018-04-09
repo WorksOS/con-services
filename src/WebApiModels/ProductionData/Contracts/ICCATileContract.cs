@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Contracts
@@ -52,7 +53,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Contracts
     /// <param name="geofenceUid">Geofence boundary unique identifier.</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds. If the size of a pixel in the rendered tile coveres more than 10.88 meters in width or height, then the pixel will be rendered in a 'representational style' where black (currently, but there is a work item to allow this to be configurable) is used to indicate the presense of data. Representational style rendering performs no filtering what so ever on the data.10.88 meters is 32 (number of cells across a subgrid) * 0.34 (default width in meters of a single cell)</returns>
     /// 
-    FileResult Get([FromQuery] Guid projectUid,
+    Task<FileResult> Get([FromQuery] Guid projectUid,
                    [FromQuery] long assetId,
                    [FromQuery] string machineName,
                    [FromQuery] bool isJohnDoe,

@@ -14,8 +14,8 @@ using VSS.MasterData.Models.FIlters;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters;
 using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
-using ValidationFilterAttribute = VSS.Productivity3D.Common.Filters.Validation.ValidationFilterAttribute;
 
 namespace VSS.Productivity3D.WebApi
 {
@@ -93,14 +93,17 @@ namespace VSS.Productivity3D.WebApi
         var assemblyName = moduleName.Substring(0, moduleName.LastIndexOf('.'));
 
         if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), assemblyName + ".xml")))
+        {
           pathToXml = Directory.GetCurrentDirectory();
-        else if (File.Exists(Path.Combine(AppContext.BaseDirectory, assemblyName + ".xml")))
+        } else if (File.Exists(Path.Combine(AppContext.BaseDirectory, assemblyName + ".xml")))
+        {
           pathToXml = AppContext.BaseDirectory;
-        else
+        } else
         {
           var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
           pathToXml = Path.GetDirectoryName(pathToExe);
         }
+
         options.IncludeXmlComments(Path.Combine(pathToXml, assemblyName + ".xml"));
 
         options.IgnoreObsoleteProperties();
@@ -119,6 +122,7 @@ namespace VSS.Productivity3D.WebApi
       loggerFactory.AddDebug();
 
       serviceCollection.AddSingleton(loggerFactory);
+      var serviceProvider = serviceCollection.BuildServiceProvider();
       serviceCollection.BuildServiceProvider();
 
       app.UseFilterMiddleware<ExceptionsTrap>();
@@ -127,10 +131,12 @@ namespace VSS.Productivity3D.WebApi
       app.UseCors("VSS");
 
       app.UseFilterMiddleware<TIDAuthentication>();
-      
+
       //Add stats
       if (Configuration["newrelic"] == "true")
+      {
         app.UseFilterMiddleware<NewRelicMiddleware>();
+      }
 
       app.UseFilterMiddleware<RequestIDMiddleware>();
       app.UseResponseCompression();
@@ -147,9 +153,11 @@ namespace VSS.Productivity3D.WebApi
 
       app.UseMvc();
 
-      //Check if the configuration is correct and we are able to connect to Raptor
-    /*  var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
+      // Check if the configuration is correct and we are able to connect to Raptor.
+      var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
+
       log.LogInformation("Testing Raptor configuration with sending config request");
+
       try
       {
         serviceProvider.GetRequiredService<IASNodeClient>().RequestConfig(out string config);
@@ -162,7 +170,7 @@ namespace VSS.Productivity3D.WebApi
         log.LogError("Exception loading config: {0} at {1}", e.Message, e.StackTrace);
         log.LogCritical("Can't talk to Raptor for some reason - check configuration");
         Environment.Exit(138);
-      }*/
+      }
     }
   }
 }

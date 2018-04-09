@@ -187,8 +187,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettingsColors = await this.GetProjectSettingsColors(projectUid);
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
-
-      ElevationStatisticsResult elevExtents = elevProxy.GetElevationRange(GetLegacyProjectId(projectUid), filter, projectSettings);
+      var projectId = await GetLegacyProjectId(projectUid);
+      ElevationStatisticsResult elevExtents = elevProxy.GetElevationRange(projectId, filter, projectSettings);
       var compactionPalette = this.SettingsManager.CompactionPalette(DisplayMode.Height, elevExtents, projectSettings, projectSettingsColors);
 
       DetailPalette elevationPalette = null;

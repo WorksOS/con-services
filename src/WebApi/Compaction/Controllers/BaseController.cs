@@ -78,11 +78,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     protected IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
 
     /// <summary>
-    /// Returns the legacy ProjectId (long) for a given ProjectUid (Guid).
-    /// </summary>
-    protected long GetLegacyProjectId(Guid projectUid) => ((RaptorPrincipal)this.User).GetLegacyProjectId(projectUid);
-
-    /// <summary>
     /// Gets the memory cache of previously fetched, and valid, <see cref="FilterResult"/> objects
     /// </summary>
     private IMemoryCache FilterCache => HttpContext.RequestServices.GetService<IMemoryCache>();
@@ -106,6 +101,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       this.FilterServiceProxy = filterServiceProxy;
       this.SettingsManager = settingsManager;
     }
+
+    /// <summary>
+    /// Returns the legacy ProjectId (long) for a given ProjectUid (Guid).
+    /// </summary>
+    protected async Task<long> GetLegacyProjectId(Guid projectUid)
+    {
+      return await ((RaptorPrincipal)this.User).GetLegacyProjectId(projectUid);
+    } 
 
     /// <summary>
     /// Gets the User uid/applicationID from the context.
@@ -323,7 +326,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       // cached object is out of date in this regard.
       if (filterUid.HasValue && this.FilterCache.TryGetValue(filterUid, out FilterResult cachedFilter))
       {
-        ApplyDateRange(projectUid, cachedFilter);
+        await ApplyDateRange(projectUid, cachedFilter);
 
         return cachedFilter;
       }
@@ -353,7 +356,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
             if (filterData.HasData() || haveExcludedIds || designDescriptor != null)
             {
-              ApplyDateRange(projectUid, filterData);
+              await ApplyDateRange(projectUid, filterData);
 
               var polygonPoints = filterData.PolygonLL?.ConvertAll(p =>
                 Common.Models.WGSPoint.CreatePoint(p.Lat.LatDegreesToRadians(), p.Lon.LonDegreesToRadians()));
@@ -399,7 +402,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <remarks>
     /// Custom date range is unaltered.Project extents is always null. Other types are calculated in the project time zone.
     /// </remarks>
-    private void ApplyDateRange(Guid projectUid, Filter filter)
+    private async Task ApplyDateRange(Guid projectUid, Filter filter)
     {
       if (!filter.DateRangeType.HasValue || filter.DateRangeType.Value == DateRangeType.Custom)
       {
@@ -407,7 +410,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         return;
       }
 
-      var project = (this.User as RaptorPrincipal)?.GetProject(projectUid);
+      var project = await (this.User as RaptorPrincipal)?.GetProject(projectUid);
       if (project == null)
       {
         throw new ServiceException(
@@ -415,10 +418,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to retrieve project."));
       }
 
-      filter.ApplyDateRange(project.ianaTimeZone, true);
+      filter.ApplyDateRange(project.IanaTimeZone, true);
     }
 
-    private void ApplyDateRange(Guid projectUid, FilterResult filter)
+    private async Task ApplyDateRange(Guid projectUid, FilterResult filter)
     {
       if (!filter.DateRangeType.HasValue || filter.DateRangeType.Value == DateRangeType.Custom)
       {
@@ -426,7 +429,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         return;
       }
 
-      var project = (this.User as RaptorPrincipal)?.GetProject(projectUid);
+      var project = await (this.User as RaptorPrincipal)?.GetProject(projectUid);
       if (project == null)
       {
         throw new ServiceException(
@@ -434,7 +437,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to retrieve project."));
       }
 
-      filter.ApplyDateRange(project.ianaTimeZone);
+      filter.ApplyDateRange(project.IanaTimeZone);
     }
 
     /// <summary>

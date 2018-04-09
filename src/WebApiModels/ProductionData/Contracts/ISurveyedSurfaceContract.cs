@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -36,7 +37,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Contracts
     /// <param name="surveyedSurfaceId">The Surveyed Surface identifier.</param>
     /// <returns></returns>
     /// 
-    ContractExecutionResult GetDel([FromRoute] Guid projectUid, [FromRoute] long surveyedSurfaceId);
+    Task<ContractExecutionResult> GetDel([FromRoute] Guid projectUid, [FromRoute] long surveyedSurfaceId);
 
     /// <summary>
     /// Gets a Surveyed Surface list from Raptor.
@@ -52,7 +53,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Contracts
     /// <param name="projectUid">The model/project unique identifier.</param>
     /// <returns>Execution result with a list of Surveyed Surfaces.</returns>
     /// 
-    SurveyedSurfaceResult Get([FromRoute] Guid projectUid);
+    Task<SurveyedSurfaceResult> Get([FromRoute] Guid projectUid);
 
     /// <summary>
     /// Updates an existing Surveyed Surface data in a Raptor's list of surveyed surfaces if the target
