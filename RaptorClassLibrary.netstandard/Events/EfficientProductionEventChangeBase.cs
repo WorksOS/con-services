@@ -1,5 +1,5 @@
 ﻿using System;
-using RaptorClassLibrary.netstandard.Events.Interfaces;
+using VSS.VisionLink.Raptor.Events.Interfaces;
 using VSS.VisionLink.Raptor.Utilities;
 
 namespace VSS.VisionLink.Raptor.Events
@@ -59,39 +59,15 @@ namespace VSS.VisionLink.Raptor.Events
             set => BitFlagHelper.SetBit(ref flags, kCustomEventBitFlag, value);
         }
 
-//        public bool SpatialDataRemovedForEvent
-//        {
-//            get { return BitFlagHelper.IsBitOn(flags, kSpatialDataRemovedForEventBitFlag); }
-//            set { BitFlagHelper.SetBit(ref flags, kSpatialDataRemovedForEventBitFlag, true); }
-//        }
-
-            /// <summary>
-            /// Assigns the content of another event to this event
-            /// </summary>
-            /// <param name="source"></param>
+        /// <summary>
+        /// Assigns the content of another event to this event
+        /// </summary>
+        /// <param name="source"></param>
         public void Assign(EfficientProductionEventChangeBase<V> source)
         {
             Date = source.Date;
             flags = source.flags;
         }
-
-        /// <summary>
-        /// Denotes if this event has a spatial location associated with it. THe base class always responds with false
-        /// </summary>
-        /// <returns></returns>
-//        public bool HasSpatialLocation() => false;
-
-        /// <summary>
-        /// Base method for requesting the spatial location of the machine at the time the event was recorded.
-        /// The base method simply returns null, descendent events override this method as apporopriate.
-        /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-//        public void GetLocation(out double X, out double Y)
-//        {
-//            X = Consts.NullDouble;
-//            Y = Consts.NullDouble;
-//        }
 
         /// <summary>
         /// Provides the base comparer between two events for a generic event. Base events define only a date/time, this comparer

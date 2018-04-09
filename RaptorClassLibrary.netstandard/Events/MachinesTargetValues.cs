@@ -36,13 +36,7 @@ namespace VSS.VisionLink.Raptor.Events
         /// </summary>
         /// <param name="MachineID"></param>
         /// <returns></returns>
-        public ProductionEventChanges this[long MachineID]
-        {
-            get
-            {
-                return MachineIDMap.TryGetValue(MachineID, out ProductionEventChanges result) ? result : null;
-            }
-        }
+        public ProductionEventChanges this[long MachineID] => MachineIDMap.TryGetValue(MachineID, out ProductionEventChanges result) ? result : null;
 
         /// <summary>
         /// Default (int) indexer for the machines target values that uses the machine ID map dictionary to locate the set of 
@@ -50,13 +44,7 @@ namespace VSS.VisionLink.Raptor.Events
         /// </summary>
         /// <param name="MachineID"></param>
         /// <returns></returns>
-        public new ProductionEventChanges this[int MachineID]
-        {
-            get
-            {
-                return MachineIDMap.TryGetValue(MachineID, out ProductionEventChanges result) ? result : null;
-            }
-        }
+        public new ProductionEventChanges this[int MachineID] => MachineIDMap.TryGetValue(MachineID, out ProductionEventChanges result) ? result : null;
 
         /// <summary>
         /// Overrides the base List T Add() method to add the item to the local machine ID map dictionary as well as add it to the list

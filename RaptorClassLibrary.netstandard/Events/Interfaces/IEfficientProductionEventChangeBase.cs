@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using VSS.VisionLink.Raptor.Events;
 
-namespace RaptorClassLibrary.netstandard.Events.Interfaces
+namespace VSS.VisionLink.Raptor.Events.Interfaces
 {
     public interface IEfficientProductionEventChangeBase<V>
     {
