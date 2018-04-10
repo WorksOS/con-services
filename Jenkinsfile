@@ -29,12 +29,13 @@ node('Jenkins-Win2016-Raptor') {
 
     try
     {
-        // Presence of the containers indicate another is building. Abort immediately.
-        bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\check-container-state.ps1"
-        
         stage ('Checkout') {
             checkout scm
         }
+
+        // Presence of the containers indicate another is building. Abort immediately.
+        bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\check-container-state.ps1"
+        
         stage ('Restore packages') {
             bat "dotnet restore --no-cache VSS.Productivity3D.Service.sln"
         }
