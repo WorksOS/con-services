@@ -21,11 +21,11 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.0" />
-	<PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.1.*" />
-    <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.2.*" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.24.*" />
-    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.7.*" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.15.*" />
+	  <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.1.*" />
+    <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.5.*" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.26.*" />
+    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.8.*" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.17.*" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

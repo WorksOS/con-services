@@ -53,7 +53,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
 
       var filter =
         (await ((IFilterRepository)Repository).GetFiltersForProjectUser(filterRequest.CustomerUid, filterRequest.ProjectUid,
-          filterRequest.UserId).ConfigureAwait(false))
+          filterRequest.UserId, true).ConfigureAwait(false))
         .SingleOrDefault(f => string.Equals(f.FilterUid, filterRequest.FilterUid, StringComparison.OrdinalIgnoreCase));
 
       if (filter == null)
@@ -64,7 +64,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
 
       DeleteFilterEvent deleteEvent = await StoreFilterAndNotifyRaptor<DeleteFilterEvent>(filterRequest, new int[] { 12, 13 });
       //Only write to kafka for persistent filters
-      if (deleteEvent != null && !string.IsNullOrEmpty(filter.Name))
+      if (deleteEvent != null && filter.FilterType != FilterType.Transient)
       {
         var payload = JsonConvert.SerializeObject(new { DeleteFilterEvent = deleteEvent });
         SendToKafka(deleteEvent.FilterUID.ToString(), payload, 14);

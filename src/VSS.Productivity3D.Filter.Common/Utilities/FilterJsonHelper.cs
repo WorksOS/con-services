@@ -64,12 +64,7 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
             filterObj.DateRangeType != DateRangeType.ProjectExtents && 
             filterObj.DateRangeType != DateRangeType.Custom)
         {
-          var utcNow = DateTime.UtcNow;
-
-          var startUtc = utcNow.UtcForDateRangeType((DateRangeType) filterObj.DateRangeType, project.IanaTimeZone, true);
-          var endUtc = utcNow.UtcForDateRangeType((DateRangeType) filterObj.DateRangeType, project.IanaTimeZone, false);
-
-          filterObj.SetDates(startUtc, endUtc);
+          filterObj.ApplyDateRange(project?.IanaTimeZone);
         }
 
         return JsonConvert.SerializeObject(filterObj);

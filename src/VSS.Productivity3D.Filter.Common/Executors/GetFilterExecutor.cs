@@ -72,13 +72,14 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       if (filter == null
           || !string.Equals(filter.CustomerUid, filterRequest.CustomerUid, StringComparison.OrdinalIgnoreCase)
           || !string.Equals(filter.ProjectUid, filterRequest.ProjectUid, StringComparison.OrdinalIgnoreCase)
-          || !string.Equals(filter.UserId, filterRequest.UserId, StringComparison.OrdinalIgnoreCase)
+          || !string.Equals(filter.UserId, filterRequest.UserId, StringComparison.OrdinalIgnoreCase) && !filterRequest.IsApplicationContext
       )
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 36);
       }
 
-      FilterJsonHelper.ParseFilterJson(await GetProjectForRequest(filterRequest), filter);
+
+      FilterJsonHelper.ParseFilterJson(filterRequest.ProjectData, filter);
 
       return new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
     }

@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Repositories.DBModels;
 
 namespace VSS.Productivity3D.Filter.Common.Models
@@ -18,14 +19,14 @@ namespace VSS.Productivity3D.Filter.Common.Models
     public static BoundaryRequestFull Create(
       string customerUid,
       bool isApplicationContext,
-      string projectUid,
+      ProjectData projectData,
       string userUid,
       BoundaryRequest request)
     {
       return new BoundaryRequestFull
       {
         IsApplicationContext = isApplicationContext,
-        ProjectUid = projectUid,
+        ProjectUid = projectData?.ProjectUid,
         CustomerUid = customerUid,
         UserUid = userUid,
         Request = request

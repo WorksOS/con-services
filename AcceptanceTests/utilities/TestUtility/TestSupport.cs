@@ -164,7 +164,8 @@ namespace TestUtility
             CustomerUID = new Guid(eventObject.CustomerUID),
             ProjectUID = new Guid(eventObject.ProjectUID),
             UserID = eventObject.UserID,
-            FilterJson = eventObject.FilterJson
+            FilterJson = eventObject.FilterJson,
+            FilterType = eventObject.FilterType
           };
           jsonString = JsonConvert.SerializeObject(new { CreateFilterEvent = createFilterEvent }, jsonSettings);
           break;
@@ -176,7 +177,8 @@ namespace TestUtility
             CustomerUID = new Guid(eventObject.CustomerUID),
             ProjectUID = new Guid(eventObject.ProjectUID),
             UserID = eventObject.UserID,
-            FilterJson = eventObject.FilterJson
+            FilterJson = eventObject.FilterJson,
+            FilterType = eventObject.FilterType
           };
           jsonString = JsonConvert.SerializeObject(new { UpdateFilterEvent = updateFilterEvent }, jsonSettings);
           break;
@@ -207,8 +209,8 @@ namespace TestUtility
       switch (dbTable)
       {
         case "Filter":
-          sqlCmd += $@"(FilterUID,fk_CustomerUID,fk_ProjectUID,UserID,Name,FilterJson,IsDeleted,LastActionedUTC) VALUES 
-                ('{eventObject.FilterUID}','{eventObject.fk_CustomerUID}','{eventObject.fk_ProjectUID}','{eventObject.UserID}','{eventObject.Name}','{eventObject.FilterJson}',{eventObject.IsDeleted},'{eventObject.LastActionedUTC}');";
+          sqlCmd += $@"(FilterUID,fk_CustomerUID,fk_ProjectUID,UserID,Name,fk_FilterTypeID,FilterJson,IsDeleted,LastActionedUTC) VALUES 
+                ('{eventObject.FilterUID}','{eventObject.fk_CustomerUID}','{eventObject.fk_ProjectUID}','{eventObject.UserID}','{eventObject.Name}',{eventObject.fk_FilterTypeID},'{eventObject.FilterJson}',{eventObject.IsDeleted},'{eventObject.LastActionedUTC}');";
           break;
         case "Geofence":
           sqlCmd += $@"(GeofenceUID,Name,fk_GeofenceTypeID,GeometryWKT,FillColor,IsTransparent,IsDeleted,Description,fk_CustomerUID,UserUID,LastActionedUTC) VALUES 
@@ -239,22 +241,6 @@ namespace TestUtility
       mysqlHelper.ExecuteMySqlInsert(tsCfg.DbConnectionString, sqlCmd);
       sqlCmd = $@"DELETE FROM `{tsCfg.dbSchema}`.Geofence";
       mysqlHelper.ExecuteMySqlInsert(tsCfg.DbConnectionString, sqlCmd);
-    }
-
-    /// <summary>
-    /// Check that a property exists in the dynamic object
-    /// </summary>
-    /// <param name="obj">dynamic object</param>
-    /// <param name="propertyName">Property name as string</param>
-    /// <returns>true or false</returns>
-    private static bool HasProperty(dynamic obj, string propertyName)
-    {
-      var expandoDict = (IDictionary<string, object>)obj;
-      if (expandoDict.ContainsKey(propertyName) && expandoDict[propertyName] != null)
-      {
-        return true;
-      }
-      return false;
     }
 
     /// <summary>

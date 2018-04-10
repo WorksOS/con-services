@@ -60,12 +60,12 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       filterRequest.FilterJson = await ValidationUtil
           .HydrateJsonWithBoundary(auxRepository as GeofenceRepository, log, serviceExceptionHandler, filterRequest).ConfigureAwait(false);
 
-      if (string.IsNullOrEmpty(filterRequest.Name))
+      if (filterRequest.FilterType == FilterType.Transient)
         result = await ProcessTransient(filterRequest).ConfigureAwait(false);
       else
         result = await ProcessPersistent(filterRequest).ConfigureAwait(false);
 
-      FilterJsonHelper.ParseFilterJson(await GetProjectForRequest(filterRequest), result.FilterDescriptor);
+      FilterJsonHelper.ParseFilterJson(filterRequest.ProjectData, result.FilterDescriptor);
 
       return result;
     }
@@ -94,8 +94,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       {
         existingPersistentFilters =
         (await ((IFilterRepository)Repository)
-          .GetFiltersForProjectUser(filterRequest.CustomerUid, filterRequest.ProjectUid, filterRequest.UserId)
-          .ConfigureAwait(false)).ToList();
+          .GetFiltersForProjectUser(filterRequest.CustomerUid, filterRequest.ProjectUid, filterRequest.UserId, true)
+          .ConfigureAwait(false)).Where(f => f.FilterType == filterRequest.FilterType).ToList();
       }
       catch (Exception e)
       {
@@ -112,14 +112,19 @@ namespace VSS.Productivity3D.Filter.Common.Executors
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 21);
         }
 
-        // don't allow update to Name to a Name which already exists (for a different filterUid)
-        var filterOfSameName = existingPersistentFilters
-          .FirstOrDefault(f => string.Equals(f.Name, filterRequest.Name, StringComparison.OrdinalIgnoreCase)
-               && !string.Equals(f.FilterUid, filterRequest.FilterUid, StringComparison.OrdinalIgnoreCase));
-
-        if (filterOfSameName != null)
+        // don't allow update to Name to a Name which already exists (for a different filterUid) for persistent filters
+        //Allowed duplicate name for report filters
+        if (filterRequest.FilterType == FilterType.Persistent)
         {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 39);
+          var filterOfSameName = existingPersistentFilters
+            .FirstOrDefault(f => string.Equals(f.Name, filterRequest.Name, StringComparison.OrdinalIgnoreCase)
+                                 && !string.Equals(f.FilterUid, filterRequest.FilterUid,
+                                   StringComparison.OrdinalIgnoreCase));
+
+          if (filterOfSameName != null)
+          {
+            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 39);
+          }
         }
 
         // only Name can be updated, NOT FilterJson. Do this here as well as in AutoMapper, just to be sure!
@@ -132,16 +137,19 @@ namespace VSS.Productivity3D.Filter.Common.Executors
           SendToKafka(updateFilterEvent.FilterUID.ToString(), payload, 26);
         }
 
-        return RetrieveFilter(updateFilterEvent, false);
+        return RetrieveFilter(updateFilterEvent);
 
       }
       else // create
       {
-        var filterOfSameName = existingPersistentFilters
-          .FirstOrDefault(f => (string.Equals(f.Name, filterRequest.Name, StringComparison.OrdinalIgnoreCase)));
-        if (filterOfSameName != null)
+        if (filterRequest.FilterType == FilterType.Persistent)
         {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 39);
+          var filterOfSameName = existingPersistentFilters
+            .FirstOrDefault(f => (string.Equals(f.Name, filterRequest.Name, StringComparison.OrdinalIgnoreCase)));
+          if (filterOfSameName != null)
+          {
+            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 39);
+          }
         }
 
         return await CreateFilter(filterRequest, false);
@@ -169,16 +177,15 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         }
       }
 
-      return RetrieveFilter(createFilterEvent, transient);
+      return RetrieveFilter(createFilterEvent);
     }
 
     /// <summary>
     /// Retrieve the filter just saved
     /// </summary>
     /// <param name="filterRequest"></param>
-    /// <param name="transient"></param>
     /// <returns></returns>
-    private FilterDescriptorSingleResult RetrieveFilter<T>(T filterRequest, bool transient)
+    private FilterDescriptorSingleResult RetrieveFilter<T>(T filterRequest)
     {
 
       var mappingResult = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filterRequest));

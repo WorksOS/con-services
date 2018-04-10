@@ -18,9 +18,12 @@ namespace ExecutorTests
     }
 
     [TestMethod]
-    public async Task DeleteFilterExecutor_NoExistingFilter()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Transient)]
+    [DataRow(FilterType.Report)]
+    public async Task DeleteFilterExecutor_NoExistingFilter(FilterType filterType)
     {
-      var request = CreateAndValidateRequest();
+      var request = CreateAndValidateRequest(name:"delete " + filterType, filterType: filterType, onlyFilterUid: true);
 
       var executor =
         RequestExecutorContainer.Build<DeleteFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
@@ -30,7 +33,10 @@ namespace ExecutorTests
     }
 
     [TestMethod]
-    public async Task DeleteFilterExecutor_ExistingFilter()
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Transient)]
+    [DataRow(FilterType.Report)]
+    public async Task DeleteFilterExecutor_ExistingFilter(FilterType filterType)
     {
       string custUid = Guid.NewGuid().ToString();
       string userId = Guid.NewGuid().ToString();
@@ -46,12 +52,13 @@ namespace ExecutorTests
         ProjectUID = Guid.Parse(projectUid),
         FilterUID = Guid.Parse(filterUid),
         Name = name,
+        FilterType = filterType,
         FilterJson = filterJson,
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
       });
 
-      var request = CreateAndValidateRequest(customerUid: custUid, userId: userId, projectUid: projectUid, filterUid: filterUid);
+      var request = CreateAndValidateRequest(name: name, customerUid: custUid, userId: userId, projectUid: projectUid, filterUid: filterUid, filterType: filterType, onlyFilterUid: true);
 
       var executor =
         RequestExecutorContainer.Build<DeleteFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);

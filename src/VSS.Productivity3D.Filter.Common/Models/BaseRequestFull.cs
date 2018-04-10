@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.Filter.Common.Models
 {
@@ -20,13 +21,13 @@ namespace VSS.Productivity3D.Filter.Common.Models
     public static BaseRequestFull Create(
       string customerUid,
       bool isApplicationContext,
-      string projectUid,
+      ProjectData projectData,
       string userUid)
     {
       return new BaseRequestFull
       {
         IsApplicationContext = isApplicationContext,
-        ProjectUid = projectUid,
+        ProjectUid = projectData?.ProjectUid,
         CustomerUid = customerUid,
         UserUid = userUid
       };

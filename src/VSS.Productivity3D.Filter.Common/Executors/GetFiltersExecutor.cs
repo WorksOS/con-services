@@ -66,16 +66,25 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       //                     else get only those for the calling UserUid
       try
       {
-        filters = (List<MasterData.Repositories.DBModels.Filter>)await ((IFilterRepository)this.Repository)
+        if (filterRequest.IsApplicationContext)
+        {
+          filters = (List<MasterData.Repositories.DBModels.Filter>)await ((IFilterRepository)this.Repository)
+          .GetFiltersForProject(filterRequest.ProjectUid)
+          .ConfigureAwait(false);
+        }
+        else
+        {
+          filters = (List<MasterData.Repositories.DBModels.Filter>)await ((IFilterRepository)this.Repository)
           .GetFiltersForProjectUser(filterRequest.CustomerUid, filterRequest.ProjectUid, filterRequest.UserId)
           .ConfigureAwait(false);
+        }
       }
       catch (Exception e)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 10, e.Message);
       }
 
-      FilterJsonHelper.ParseFilterJson(await GetProjectForRequest(filterRequest), filters);
+      FilterJsonHelper.ParseFilterJson(filterRequest.ProjectData, filters);
 
       // may be none, return success and empty list
       return new FilterDescriptorListResult

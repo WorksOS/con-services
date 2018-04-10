@@ -10,7 +10,6 @@ using System.Net;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
@@ -19,8 +18,8 @@ using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Validators;
-using VSS.Productivity3D.Filter.WebApi.Filters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 
 namespace VSS.Productivity3D.Filter.WebAPI.Controllers
 {
@@ -59,19 +58,16 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       var requestFull = BoundaryRequestFull.Create(
         (User as TIDCustomPrincipal)?.CustomerUid,
         (User as TIDCustomPrincipal).IsApplication,
-        projectUid,
+        await (User as TIDCustomPrincipal).GetProject(projectUid),
         ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
         request);
 
       requestFull.Validate(ServiceExceptionHandler);
 
-      await ValidationUtil.ValidateProjectForCustomer(ProjectListProxy, Log, ServiceExceptionHandler, Request.Headers.GetCustomHeaders(),
-        (User as TIDCustomPrincipal)?.CustomerUid, projectUid).ConfigureAwait(false);
-
       var getResult = await GetProjectBoundaries(projectUid);
       if (getResult.GeofenceData.Any(g => request.Name.Equals(g.GeofenceName, StringComparison.OrdinalIgnoreCase)))
       {
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 62, "Duplicate boundary name");
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 62);
       }
 
       var executor = RequestExecutorContainer.Build<UpsertBoundaryExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepository, ProjectRepository, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
@@ -93,15 +89,12 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
 
       var requestFull = BoundaryUidRequestFull.Create(
         (User as TIDCustomPrincipal)?.CustomerUid,
-        (User as TIDCustomPrincipal).IsApplication, 
-        projectUid,
+        (User as TIDCustomPrincipal).IsApplication,
+        await (User as TIDCustomPrincipal).GetProject(projectUid),
         ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
         boundaryUid);
 
       requestFull.Validate(ServiceExceptionHandler);
-
-      await ValidationUtil.ValidateProjectForCustomer(ProjectListProxy, Log, ServiceExceptionHandler, Request.Headers.GetCustomHeaders(),
-        (User as TIDCustomPrincipal)?.CustomerUid, projectUid).ConfigureAwait(false);
 
       var executor = RequestExecutorContainer.Build<DeleteBoundaryExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepository, ProjectRepository, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
 
@@ -125,13 +118,10 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       var requestFull = BaseRequestFull.Create(
         (User as TIDCustomPrincipal)?.CustomerUid,
         (User as TIDCustomPrincipal).IsApplication,
-        projectUid,
+        await (User as TIDCustomPrincipal).GetProject(projectUid),
         ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name);
 
       requestFull.Validate(ServiceExceptionHandler);
-
-      await ValidationUtil.ValidateProjectForCustomer(ProjectListProxy, Log, ServiceExceptionHandler, Request.Headers.GetCustomHeaders(),
-        (User as TIDCustomPrincipal)?.CustomerUid, projectUid).ConfigureAwait(false);
 
       var executor = RequestExecutorContainer.Build<GetBoundariesExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepository, ProjectRepository, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
 
@@ -156,14 +146,11 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       var requestFull = BoundaryUidRequestFull.Create(
         (User as TIDCustomPrincipal)?.CustomerUid,
         (User as TIDCustomPrincipal).IsApplication,
-        projectUid,
+        await (User as TIDCustomPrincipal).GetProject(projectUid),
         ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
         boundaryUid);
 
       requestFull.Validate(ServiceExceptionHandler);
-
-      await ValidationUtil.ValidateProjectForCustomer(ProjectListProxy, Log, ServiceExceptionHandler, Request.Headers.GetCustomHeaders(),
-        (User as TIDCustomPrincipal)?.CustomerUid, projectUid).ConfigureAwait(false);
 
       var executor = RequestExecutorContainer.Build<GetBoundaryExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepository, ProjectRepository, ProjectListProxy, RaptorProxy, Producer, KafkaTopicName);
 
