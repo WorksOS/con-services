@@ -178,8 +178,36 @@ namespace ProductionDataSvc.AcceptanceTests
 #line 59
  testRunner.When("I request Delete File Notification Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 60
- testRunner.Then("I should get error code -1 and message \"Cannot delete a design surface used in a " +
-                    "filter\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("I should get error code -1 and message \"Cannot delete a design surface or alignme" +
+                    "nt file used in a filter\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Notification Delete File - Alignment in Filter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Notification")]
+        public virtual void NotificationDeleteFile_AlignmentInFilter()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Notification Delete File - Alignment in Filter", ((string[])(null)));
+#line 62
+this.ScenarioSetup(scenarioInfo);
+#line 63
+ testRunner.Given("the Delete File Notification service URI \"/api/v2/notification/deletefile\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 64
+ testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 65
+ testRunner.And("a filespaceId \"u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01\" and a path \"/NotificationAc" +
+                    "ceptanceTest\" and a fileName \"Large Sites Road.svl\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 66
+ testRunner.And("a fileId \"112\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 67
+  testRunner.And("a fileUid \"6ece671b-7959-4a14-86fa-6bfe6ef4dd62\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 68
+ testRunner.When("I request Delete File Notification Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 69
+ testRunner.Then("I should get error code -1 and message \"Cannot delete a design surface or alignme" +
+                    "nt file used in a filter\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

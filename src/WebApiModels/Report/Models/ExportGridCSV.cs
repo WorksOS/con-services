@@ -58,7 +58,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
         /// Value may be null.
         /// </summary>
         [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-        public Filter filter { get; protected set; }
+        public FilterResult filter { get; protected set; }
 
         /// <summary>
         /// The filter ID to be used in the request.

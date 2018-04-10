@@ -112,17 +112,33 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Summary volumes")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionSummaryVolumes")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "GroundToGround")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "GroundToGround")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUid", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "GroundToGroundEarliestToLatest")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "GroundToGroundEarliestToLatest")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUid", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:DesignUid", "")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid", "a37f3008-65e5-44a8-b406-9a078ec62ece")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid2", "a37f3008-65e5-44a8-b406-9a078ec62ece")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "GroundToGround")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid", "f4e9b4dd-e8c4-4edb-b9aa-59a209c17de7")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid2", "7730ea54-6c6f-4450-ae94-1933471d7961")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "GroundToGroundEarliestToLatest")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:httpCode", "200")]
-        public virtual void CompactionGetSummaryVolumes_GroundToGround()
+        public virtual void CompactionGetSummaryVolumes_GroundToGroundEarliestToLatest()
         {
-            this.CompactionGetSummaryVolumes("GroundToGround", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "a37f3008-65e5-44a8-b406-9a078ec62ece", "a37f3008-65e5-44a8-b406-9a078ec62ece", "GroundToGround", "200", ((string[])(null)));
+            this.CompactionGetSummaryVolumes("GroundToGroundEarliestToLatest", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "", "f4e9b4dd-e8c4-4edb-b9aa-59a209c17de7", "7730ea54-6c6f-4450-ae94-1933471d7961", "GroundToGroundEarliestToLatest", "200", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Summary volumes")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionSummaryVolumes")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "GroundToGroundLatestToEarliest")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "GroundToGroundLatestToEarliest")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUid", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:DesignUid", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid", "7730ea54-6c6f-4450-ae94-1933471d7961")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid2", "f4e9b4dd-e8c4-4edb-b9aa-59a209c17de7")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "GroundToGroundLatestToEarliest")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:httpCode", "200")]
+        public virtual void CompactionGetSummaryVolumes_GroundToGroundLatestToEarliest()
+        {
+            this.CompactionGetSummaryVolumes("GroundToGroundLatestToEarliest", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "", "7730ea54-6c6f-4450-ae94-1933471d7961", "f4e9b4dd-e8c4-4edb-b9aa-59a209c17de7", "GroundToGroundLatestToEarliest", "200", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -146,15 +162,15 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionSummaryVolumes")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "GroundToGroundNoData")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "GroundToGroundNoData")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUid", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUid", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:DesignUid", "")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid", "a54e5945-1aaa-4921-9cc1-c9d8c0a343d3")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid2", "a54e5945-1aaa-4921-9cc1-c9d8c0a343d3")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "EmptyJsonResponse")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid", "ce4497d9-76d0-4477-aa23-2ee1acd8c4f0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid2", "fe6065a7-21fe-4db0-8f47-3ea6c320dac7")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDataResponse")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:httpCode", "200")]
         public virtual void CompactionGetSummaryVolumes_GroundToGroundNoData()
         {
-            this.CompactionGetSummaryVolumes("GroundToGroundNoData", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "a54e5945-1aaa-4921-9cc1-c9d8c0a343d3", "a54e5945-1aaa-4921-9cc1-c9d8c0a343d3", "EmptyJsonResponse", "200", ((string[])(null)));
+            this.CompactionGetSummaryVolumes("GroundToGroundNoData", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "", "ce4497d9-76d0-4477-aa23-2ee1acd8c4f0", "fe6065a7-21fe-4db0-8f47-3ea6c320dac7", "NoDataResponse", "200", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -171,22 +187,6 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         public virtual void CompactionGetSummaryVolumes_GroundToGroundNullUid()
         {
             this.CompactionGetSummaryVolumes("GroundToGroundNullUid", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "", "", "FilterAndInvalidDesign", "400", ((string[])(null)));
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Summary volumes")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionSummaryVolumes")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "FilterAndDesign")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "FilterAndDesign")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUid", "ff91dd40-1569-4765-a2bc-014321f76ace")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:DesignUid", "ea89be4b-0efb-4b8f-ba33-03f0973bfc7b")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid", "f07ed071-f8a1-42c3-804a-1bde7a78be5b")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid2", "")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "FilterAndDesign")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:httpCode", "200")]
-        public virtual void CompactionGetSummaryVolumes_FilterAndDesign()
-        {
-            this.CompactionGetSummaryVolumes("FilterAndDesign", "ff91dd40-1569-4765-a2bc-014321f76ace", "ea89be4b-0efb-4b8f-ba33-03f0973bfc7b", "f07ed071-f8a1-42c3-804a-1bde7a78be5b", "", "FilterAndDesign", "200", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -240,33 +240,49 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Summary volumes")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionSummaryVolumes")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "DesignToDesign")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "DesignToDesign")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUid", "ff91dd40-1569-4765-a2bc-014321f76ace")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:DesignUid", "")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid", "ea89be4b-0efb-4b8f-ba33-03f0973bfc7b")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid2", "ea89be4b-0efb-4b8f-ba33-03f0973bfc7b")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "EmptyJsonResponse")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "DesignToLatestGround")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "DesignToLatestGround")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUid", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:DesignUid", "7730ea54-6c6f-4450-ae94-1933471d7961")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid", "3d255208-8aa2-4172-9046-f97a36eff896")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid2", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "DesignToLatestGround")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:httpCode", "200")]
-        public virtual void CompactionGetSummaryVolumes_DesignToDesign()
+        public virtual void CompactionGetSummaryVolumes_DesignToLatestGround()
         {
-            this.CompactionGetSummaryVolumes("DesignToDesign", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "ea89be4b-0efb-4b8f-ba33-03f0973bfc7b", "ea89be4b-0efb-4b8f-ba33-03f0973bfc7b", "EmptyJsonResponse", "200", ((string[])(null)));
+            this.CompactionGetSummaryVolumes("DesignToLatestGround", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "7730ea54-6c6f-4450-ae94-1933471d7961", "3d255208-8aa2-4172-9046-f97a36eff896", "", "DesignToLatestGround", "200", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Summary volumes")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionSummaryVolumes")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "DesignToGround")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "DesignToGround")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUid", "ff91dd40-1569-4765-a2bc-014321f76ace")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:DesignUid", "ea89be4b-0efb-4b8f-ba33-03f0973bfc7b")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid", "a54e5945-1aaa-4921-9cc1-c9d8c0a343d3")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid2", "")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "EmptyJsonResponse")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "EarliestGroundToDesign")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "EarliestGroundToDesign")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUid", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:DesignUid", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid", "f4e9b4dd-e8c4-4edb-b9aa-59a209c17de7")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid2", "3d255208-8aa2-4172-9046-f97a36eff896")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "LatestGroundToLatestGround")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:httpCode", "200")]
-        public virtual void CompactionGetSummaryVolumes_DesignToGround()
+        public virtual void CompactionGetSummaryVolumes_EarliestGroundToDesign()
         {
-            this.CompactionGetSummaryVolumes("DesignToGround", "ff91dd40-1569-4765-a2bc-014321f76ace", "ea89be4b-0efb-4b8f-ba33-03f0973bfc7b", "a54e5945-1aaa-4921-9cc1-c9d8c0a343d3", "", "EmptyJsonResponse", "200", ((string[])(null)));
+            this.CompactionGetSummaryVolumes("EarliestGroundToDesign", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "", "f4e9b4dd-e8c4-4edb-b9aa-59a209c17de7", "3d255208-8aa2-4172-9046-f97a36eff896", "LatestGroundToLatestGround", "200", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Summary volumes")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionSummaryVolumes")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "LatestGroundToLatestGround")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "LatestGroundToLatestGround")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUid", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:DesignUid", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid", "7730ea54-6c6f-4450-ae94-1933471d7961")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid2", "7730ea54-6c6f-4450-ae94-1933471d7961")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "LatestGroundToLatestGround")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:httpCode", "200")]
+        public virtual void CompactionGetSummaryVolumes_LatestGroundToLatestGround()
+        {
+            this.CompactionGetSummaryVolumes("LatestGroundToLatestGround", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "", "7730ea54-6c6f-4450-ae94-1933471d7961", "7730ea54-6c6f-4450-ae94-1933471d7961", "LatestGroundToLatestGround", "200", ((string[])(null)));
         }
     }
 }

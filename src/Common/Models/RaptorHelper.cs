@@ -160,7 +160,7 @@ namespace VSS.Productivity3D.Common.Models
       }
     }
 
-    public void ValidateVolumesFilters(RaptorConverters.VolumesType computeVolType, Filter filter1, long filterId1, Filter filter2, long filterId2)
+    public void ValidateVolumesFilters(RaptorConverters.VolumesType computeVolType, FilterResult filter1, long filterId1, FilterResult filter2, long filterId2)
     {
       switch (computeVolType)
       {

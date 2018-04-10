@@ -7,7 +7,6 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
-using Filter = VSS.Productivity3D.Common.Models.Filter;
 
 namespace VSS.Productivity3D.WebApiModels.MapHandling
 {
@@ -17,9 +16,9 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
   public class TileGenerationRequest
   {
     public DesignDescriptor designDescriptor { get; private set; }
-    public Filter filter { get; private set; }
-    public Filter baseFilter { get; private set; }
-    public Filter topFilter { get; private set; }
+    public FilterResult filter { get; private set; }
+    public FilterResult baseFilter { get; private set; }
+    public FilterResult topFilter { get; private set; }
     public VolumeCalcType? volCalcType { get; private set; }
     public IEnumerable<GeofenceData> geofences { get; private set; }
     public IEnumerable<GeofenceData> boundaries { get; private set; }
@@ -31,7 +30,7 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
     public MapType? mapType { get; private set; }
     public DisplayMode? mode { get; private set; }
     public string language { get; private set; }
-    public ProjectDescriptor project { get; private set; }
+    public ProjectData project { get; private set; }
     public CompactionProjectSettings projectSettings { get; private set; }
     public CompactionProjectSettingsColors ProjectSettingsColors { get; private set; }
 
@@ -41,9 +40,9 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
     /// </summary>
     public static TileGenerationRequest CreateTileGenerationRequest(
       DesignDescriptor designDescriptor,
-      Filter filter,
-      Filter baseFilter, 
-      Filter topFilter,
+      FilterResult filter,
+      FilterResult baseFilter,
+      FilterResult topFilter,
       VolumeCalcType? volCalcType,
       IEnumerable<GeofenceData> geofences,
       IEnumerable<GeofenceData> boundaries,
@@ -55,7 +54,7 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
       MapType? mapType,
       DisplayMode? mode,
       string language,
-      ProjectDescriptor project,
+      ProjectData project,
       CompactionProjectSettings projectSettings,
       CompactionProjectSettingsColors projectSettingsColors
       )

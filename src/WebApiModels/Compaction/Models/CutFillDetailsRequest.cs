@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Models;
@@ -18,7 +17,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     /// The filter instance to use in the request
     /// Value may be null.
     /// </summary>
-    public Filter filter { get; private set; }
+    public FilterResult filter { get; private set; }
 
     /// <summary>
     /// The set of parameters and configuration information relevant to analysis of compaction material layers information for related profile queries.
@@ -30,7 +29,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     /// </summary>
     public DesignDescriptor designDescriptor { get; private set; }
 
-    public static CutFillDetailsRequest CreateCutFillDetailsRequest(long projectId, double[] tolerances, Filter filter, LiftBuildSettings liftBuildSettings, DesignDescriptor designDescriptor)
+    public static CutFillDetailsRequest CreateCutFillDetailsRequest(long projectId, double[] tolerances, FilterResult filter, LiftBuildSettings liftBuildSettings, DesignDescriptor designDescriptor)
     {
       return new CutFillDetailsRequest
       {
@@ -54,10 +53,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
         filter.Validate();  
       }
 
-      if (liftBuildSettings != null)
-      {
-        liftBuildSettings.Validate();
-      }
+      liftBuildSettings?.Validate();
 
       if (designDescriptor != null)
       {
@@ -70,6 +66,5 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
             "Design must be specified for cut-fill details"));
       }
     }
-
   }
 }

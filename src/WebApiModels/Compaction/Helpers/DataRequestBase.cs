@@ -19,11 +19,11 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     protected IDictionary<string, string> Headers;
     protected CompactionProjectSettings ProjectSettings;
     protected CompactionProjectSettingsColors ProjectSettingsColors;
-    protected Filter Filter;
+    protected FilterResult Filter;
     protected DesignDescriptor DesignDescriptor;
 
-    public void Initialize(ILogger log, IConfigurationStore configurationStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, 
-      long projectId, CompactionProjectSettings projectSettings, CompactionProjectSettingsColors projectSettingsColors, IDictionary<string, string> headers, Filter filter, DesignDescriptor designDescriptor)
+    public void Initialize(ILogger log, IConfigurationStore configurationStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager,
+      long projectId, CompactionProjectSettings projectSettings, CompactionProjectSettingsColors projectSettingsColors, IDictionary<string, string> headers, FilterResult filter, DesignDescriptor designDescriptor)
     {
       Log = log;
       ConfigurationStore = configurationStore;

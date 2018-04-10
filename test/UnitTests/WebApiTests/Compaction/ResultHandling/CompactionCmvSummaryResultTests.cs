@@ -2,7 +2,7 @@
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.ResultHandling
 {
@@ -10,33 +10,25 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.ResultHandling
   public class CompactionCmvSummaryResultTests
   {
     [TestMethod]
-    public void CreateCmvSummaryResult_Should_return_empty_object_When_TotalAreaCoveredSqMeters_is_null()
+    public void CreateCmvSummaryResult_Should_return_null_object_When_TotalAreaCoveredSqMeters_is_null()
     {
-      var summaryResult = CMVSummaryResult.CreateCMVSummaryResult(1, 2, true, 3, 4, 0, 6);
+      var summaryResult = CMVSummaryResult.Create(1, 2, true, 3, 4, 0, 6);
       var settings = CMVSettings.CreateCMVSettings(1, 2, 3, 4, 5, true);
 
-      var result = CompactionCmvSummaryResult.CreateCmvSummaryResult(summaryResult, settings);
+      var result = CompactionCmvSummaryResult.Create(summaryResult, settings);
 
       Assert.IsNotNull(result);
+      Assert.IsNull(result.SummaryData);
       Assert.AreEqual(ContractExecutionResult.DefaultMessage, result.Message);
-
-      Assert.AreEqual(0, result.SummaryData.TotalAreaCoveredSqMeters);
-      Assert.AreEqual(0, result.SummaryData.MaxCMVPercent);
-      Assert.AreEqual(0, result.SummaryData.MaxCMVPercent);
-      Assert.AreEqual(0, result.SummaryData.MinCMVPercent);
-      Assert.AreEqual(0, result.SummaryData.PercentEqualsTarget);
-      Assert.AreEqual(0, result.SummaryData.PercentGreaterThanTarget);
-      Assert.AreEqual(0, result.SummaryData.PercentLessThanTarget);
-      Assert.IsNotNull(result.SummaryData.CmvTarget);
     }
 
     [TestMethod]
     public void CreateCmvSummaryResult_Should_return_full_object_When_TotalAreaCoveredSqMeters_is_not_null()
     {
-      var summaryResult = CMVSummaryResult.CreateCMVSummaryResult(1, 2, true, 3, 4, 5, 6);
+      var summaryResult = CMVSummaryResult.Create(1, 2, true, 3, 4, 5, 6);
       var settings = CMVSettings.CreateCMVSettings(1, 2, 3, 4, 5, true);
 
-      var result = CompactionCmvSummaryResult.CreateCmvSummaryResult(summaryResult, settings);
+      var result = CompactionCmvSummaryResult.Create(summaryResult, settings);
 
       Assert.IsNotNull(result);
       Assert.AreEqual(ContractExecutionResult.DefaultMessage, result.Message);

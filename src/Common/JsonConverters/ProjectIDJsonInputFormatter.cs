@@ -16,22 +16,20 @@ namespace VSS.Productivity3D.Common.JsonConverters
       ObjectPoolProvider objectPoolProvider) : base(logger, serializerSettings, charPool, objectPoolProvider)
     { }
 
-    public override Task<InputFormatterResult> ReadRequestBodyAsync(InputFormatterContext context, Encoding encoding)
+    public override async Task<InputFormatterResult> ReadRequestBodyAsync(InputFormatterContext context, Encoding encoding)
     {
-      var task = base.ReadRequestBodyAsync(context, encoding);
-      var result = task.ContinueWith((t) =>
-        GetProjectId(context, t.Result), TaskContinuationOptions.OnlyOnRanToCompletion);
+      var result = await GetProjectId(context, await base.ReadRequestBodyAsync(context, encoding));
       return result;
     }
 
-    private InputFormatterResult GetProjectId(InputFormatterContext context, InputFormatterResult result)
+    private async Task<InputFormatterResult> GetProjectId(InputFormatterContext context, InputFormatterResult result)
     {
       if (!result.HasError && result.Model is ProjectID)
       {
         var projectID = result.Model as ProjectID;
         if (!projectID.projectId.HasValue)
         {
-          projectID.projectId = (context.HttpContext.User as RaptorPrincipal).GetProjectId(projectID.projectUid);
+          projectID.projectId = await (context.HttpContext.User as RaptorPrincipal).GetLegacyProjectId(projectID.projectUid);
         }
       }
 

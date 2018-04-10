@@ -6,7 +6,7 @@ using System.Net;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common.Filters.Interfaces;
+using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Models;
@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       {
         try
         {
-          result = ExportResult.CreateExportDataResult(
+          result = ExportResult.Create(
             File.ReadAllBytes(BuildFilePath(request.projectId ?? -1, request.callerId, request.filename, true)),
             dataexport.ReturnCode);
         }

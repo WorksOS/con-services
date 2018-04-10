@@ -23,7 +23,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     /// The filter to be used 
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public Filter Filter { get; protected set; }
+    public FilterResult Filter { get; protected set; }
 
     /// <summary>
     /// Gets or sets the filter identifier.
@@ -52,22 +52,20 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     }
 
     /// <summary>
-    /// Prevents a default instance of the <see cref="SummaryParametersBase"/> class from being created.
+    /// Default protected constructor.
     /// </summary>
     protected SummarySpeedRequest()
-    {
-    }
+    { }
 
     /// <summary>
-    /// Create instance of SummarySpeedRequest
+    /// Static constructor.
     /// </summary>
     public static SummarySpeedRequest CreateSummarySpeedRequest(
       long projectId,
       Guid? callId,
       LiftBuildSettings liftBuildSettings,
-      Filter filter,
-      int filterId
-        )
+      FilterResult filter,
+      int filterId)
     {
       return new SummarySpeedRequest
       {

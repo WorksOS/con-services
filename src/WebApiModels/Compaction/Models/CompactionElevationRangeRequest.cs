@@ -1,13 +1,13 @@
 ﻿using Newtonsoft.Json;
-using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.WebApiModels.Compaction.Models;
 
-namespace VSS.Productivity3D.WebApiModels.Compaction.Models
+namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
 {
   /// <summary>
   /// The representation of a elevation statistics request
   /// </summary>
-  public class CompactionElevationRangeRequest : ProjectID, IValidatable
+  public class CompactionElevationRangeRequest : ProjectID
   {
     /// <summary>
     /// The filter to be used.

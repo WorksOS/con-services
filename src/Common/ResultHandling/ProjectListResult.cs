@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common.Filters.Authentication.Models;
 
 namespace VSS.Productivity3D.Common.ResultHandling
 {
@@ -17,7 +17,7 @@ namespace VSS.Productivity3D.Common.ResultHandling
     /// The list project ids.
     /// </value>
     [JsonProperty(PropertyName = "ProjectIds", Required = Required.Default)]
-    public Dictionary<long, ProjectDescriptor> ProjectIds { get; private set; }
+    public Dictionary<long, ProjectData> ProjectIds { get; private set; }
 
     private ProjectListResult()
     {
@@ -29,7 +29,7 @@ namespace VSS.Productivity3D.Common.ResultHandling
     /// </summary>
     /// <param name="projectIDs">The project ids.</param>
     /// <returns></returns>
-    public static ProjectListResult CreateProjectListResult(Dictionary<long, ProjectDescriptor> projectIDs)
+    public static ProjectListResult CreateProjectListResult(Dictionary<long, ProjectData> projectIDs)
     {
       return new ProjectListResult() { ProjectIds = projectIDs };
     }

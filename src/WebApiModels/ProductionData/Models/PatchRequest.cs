@@ -72,7 +72,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
         /// The base or earliest filter to be used.
         /// </summary>
         [JsonProperty(PropertyName = "filter1", Required = Required.Default)]
-        public Filter filter1 { get; private set; }
+        public FilterResult filter1 { get; private set; }
 
         /// <summary>
         /// The ID of the base or earliest filter to be used.
@@ -84,7 +84,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
         /// The top or latest filter to be used.
         /// </summary>
         [JsonProperty(PropertyName = "filter2", Required = Required.Default)]
-        public Filter filter2 { get; private set; }
+        public FilterResult filter2 { get; private set; }
 
         /// <summary>
         /// The ID of the top or latest filter to be used.
@@ -134,9 +134,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
           RaptorConverters.VolumesType computeVolType,
           double computeVolNoChangeTolerance,
           DesignDescriptor designDescriptor,
-          Filter filter1,
+          FilterResult filter1,
           long filterId1,
-          Filter filter2,
+          FilterResult filter2,
           long filterId2,
           FilterLayerMethod filterLayerMethod ,
           int patchNumber,
@@ -168,18 +168,10 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
         {
           base.Validate();
           ValidatePalettes(palettes, mode);
-
-          //Compaction settings
-          if (liftBuildSettings != null)
-              liftBuildSettings.Validate();
-
-          //Volumes
-          //mode == DisplayMode.VolumeCoverage
-          //computeVolNoChangeTolerance and computeVolType must be provided but since not nullable types they always will have a value anyway
+          liftBuildSettings?.Validate();
 
           ValidateDesign(designDescriptor, mode, computeVolType);
-
-
+      
           if (mode == DisplayMode.VolumeCoverage)
           {
             ValidateVolumesFilters(computeVolType, filter1, filterId1, filter2, filterId2);

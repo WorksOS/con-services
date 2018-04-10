@@ -10,7 +10,6 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
-using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Notification.Controllers;
@@ -31,12 +30,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     private readonly IASNodeClient raptorClient;
 
     /// <summary>
-    /// Logger for logging
+    /// LoggerFactory for logging
     /// </summary>
     private readonly ILogger log;
 
     /// <summary>
-    /// Logger factory for use by executor
+    /// LoggerFactory factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
 
@@ -56,7 +55,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
-    /// <param name="logger">Logger</param>
+    /// <param name="logger">LoggerFactory</param>
     /// <param name="configStore">Configuration store</param>
     /// <param name="fileListProxy">File list proxy</param>
     public DesignController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, IFileListProxy fileListProxy)
@@ -74,7 +73,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="projectUid">The model/project unique identifier.</param>
     /// <param name="tolerance">The spacing interval for the sampled points. Setting to 1.0 will cause points to be spaced 1.0 meters apart.</param>
     /// <returns>Execution result with a list of design boundaries.</returns>
-    /// 
     [ProjectUidVerifier]
     [Route("api/v2/designs/boundaries")]
     [HttpGet]
@@ -82,7 +80,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       log.LogInformation("GetDesignBoundaries: " + Request.QueryString);
 
-      long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      long projectId = await (User as RaptorPrincipal).GetLegacyProjectId(projectUid);
       tolerance = tolerance ?? DesignBoundariesRequest.BOUNDARY_POINTS_INTERVAL;
 
       DesignBoundariesRequest request = DesignBoundariesRequest.CreateDesignBoundariesRequest(projectId, tolerance.Value);

@@ -25,7 +25,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     /// The filter to be used 
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public Filter filter { get; protected set; }
+    public FilterResult filter { get; protected set; }
 
     /// <summary>
     /// Gets or sets the filter identifier.
@@ -80,7 +80,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
       long projectID,
       Guid? callId,
       LiftBuildSettings liftBuildSettings,
-      Filter filter,
+      FilterResult filter,
       int filterID,
       double[] cmvChangeSummaryValues
         )

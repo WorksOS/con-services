@@ -25,7 +25,6 @@ namespace VSS.Productivity3D.WebApiTests.Caching
   [TestClass]
   public class CacheKeyProviderTests
   {
-
     public IServiceProvider ServiceProvider;
 
     [TestInitialize]
@@ -71,7 +70,7 @@ namespace VSS.Productivity3D.WebApiTests.Caching
       var defaultContext = new DefaultHttpContext();
       var defaultRequest = new DefaultHttpRequest(defaultContext) { Method = "GET" };
       var projectGuid = Guid.NewGuid();
-      defaultRequest.Path = $"/MYPATH";
+      defaultRequest.Path = "/MYPATH";
       defaultRequest.QueryString = new QueryString($"?projectuid={projectGuid}");
       var keyProvider = new CustomResponseCachingKeyProvider(new DefaultObjectPoolProvider(), new FakeFilterProxy(), null, new FakeResponseCacheOptions());
       var key = keyProvider.GenerateBaseKeyFromRequest(defaultRequest);
@@ -85,14 +84,18 @@ namespace VSS.Productivity3D.WebApiTests.Caching
     public void ClearCacheItem(string uid, string userId = null)
     { }
 
+#pragma warning disable 1998
     public async Task<FilterDescriptor> GetFilter(string projectUid, string filterUid, IDictionary<string, string> customHeaders = null)
+#pragma warning restore 1998
     {
-      return new FilterDescriptor() { FilterJson = "{\"designUID\":\"testDesign\"}", FilterUid = Guid.NewGuid().ToString() };
+      return new FilterDescriptor { FilterJson = "{\"designUID\":\"testDesign\"}", FilterUid = Guid.NewGuid().ToString() };
     }
 
+#pragma warning disable 1998
     public async Task<List<FilterDescriptor>> GetFilters(string projectUid, IDictionary<string, string> customHeaders = null)
+#pragma warning restore 1998
     {
-      return new List<FilterDescriptor>() { new FilterDescriptor() { FilterJson = "{\"designUID\":\"testDesign\"}", FilterUid = Guid.NewGuid().ToString() } };
+      return new List<FilterDescriptor> { new FilterDescriptor { FilterJson = "{\"designUID\":\"testDesign\"}", FilterUid = Guid.NewGuid().ToString() } };
     }
 
     public void ClearCacheListItem(string projectUid, string userId = null)

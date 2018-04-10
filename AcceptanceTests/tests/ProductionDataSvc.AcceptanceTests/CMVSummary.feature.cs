@@ -79,14 +79,20 @@ namespace ProductionDataSvc.AcceptanceTests
         
         public virtual void CMVSummary_GoodRequest(string parameterName, string resultName, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("CMVSummary - Good Request", exampleTags);
-#line 7
+            string[] @__tags = new string[] {
+                    "Ignore"};
+            if ((exampleTags != null))
+            {
+                @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
+            }
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("CMVSummary - Good Request", @__tags);
+#line 8
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 8
- testRunner.When(string.Format("I request CMV Summary supplying \"{0}\" paramters from the repository", parameterName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 9
+ testRunner.When(string.Format("I request CMV Summary supplying \"{0}\" paramters from the repository", parameterName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 10
  testRunner.Then(string.Format("the CMV Summary response should match \"{0}\" result from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -95,6 +101,7 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("CMVSummary - Good Request")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CMVSummary")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "OverrideTargetAllLayers")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "OverrideTargetAllLayers")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "OverrideTargetAllLayers")]
@@ -106,6 +113,7 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("CMVSummary - Good Request")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CMVSummary")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "OverrideTargetTopLayerOnly")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "OverrideTargetTopLayerOnly")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "OverrideTargetTopLayerOnly")]
@@ -117,6 +125,7 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("CMVSummary - Good Request")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CMVSummary")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "NotOverrideTargetAllLayers")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "NotOverrideTargetAllLayers")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NotOverrideTargetAllLayers")]
@@ -128,6 +137,7 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("CMVSummary - Good Request")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CMVSummary")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "NotOverrideTargetTopLayerOnly")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "NotOverrideTargetTopLayerOnly")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NotOverrideTargetTopLayerOnly")]
@@ -139,14 +149,14 @@ this.FeatureBackground();
         public virtual void CMVSummary_BadRequest(string parameterName, string httpCode, string errorCode, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("CMVSummary - Bad Request", exampleTags);
-#line 17
+#line 18
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 18
+#line 19
  testRunner.When(string.Format("I request CMV Summary supplying \"{0}\" paramters from the repository expecting htt" +
                         "p error code {1}", parameterName, httpCode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 19
+#line 20
  testRunner.Then(string.Format("the response should contain error code {0}", errorCode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();

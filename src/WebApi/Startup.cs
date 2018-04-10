@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Swashbuckle.Swagger.Model;
+using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -16,19 +16,21 @@ using VSS.Productivity3D.Common.Filters;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
-using ValidationFilterAttribute = VSS.Productivity3D.Common.Filters.Validation.ValidationFilterAttribute;
 
 namespace VSS.Productivity3D.WebApi
 {
   public partial class Startup
   {
+    /// <summary>
+    /// Log4net repository logger name.
+    /// </summary>
     public const string LOGGER_REPO_NAME = "WebApi";
+
     private IServiceCollection serviceCollection;
 
     /// <summary>
-    /// 
+    /// Default constructor.
     /// </summary>
-    /// <param name="env"></param>
     public Startup(IHostingEnvironment env)
     {
       var builder = new ConfigurationBuilder()
@@ -45,14 +47,13 @@ namespace VSS.Productivity3D.WebApi
     }
 
     /// <summary>
-    /// 
+    /// Gets the default configuration object.
     /// </summary>
     public IConfigurationRoot Configuration { get; }
 
     /// <summary>
     /// This method gets called by the runtime. Use this method to add services to the container.
     /// </summary>
-    /// <param name="services"></param>
     public void ConfigureServices(IServiceCollection services)
     {
       //Configure CORS
@@ -79,38 +80,35 @@ namespace VSS.Productivity3D.WebApi
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
       //Configure swagger
-      services.AddSwaggerGen();
+      services.AddSwaggerGen(c =>
+      {
+        c.SwaggerDoc("v1", new Info { Title = "3dPm Service API", Description = "API for 3D compaction and volume data", Version = "v1" });
+      });
 
       services.ConfigureSwaggerGen(options =>
       {
-        options.SingleApiVersion(new Info
-        {
-          Version = "v1",
-          Title = "Raptor API",
-          Description = "API for 3D compaction and volume data",
-          TermsOfService = "None"
-        });
-
         string pathToXml;
 
         var moduleName = typeof(Startup).GetTypeInfo().Assembly.ManifestModule.Name;
         var assemblyName = moduleName.Substring(0, moduleName.LastIndexOf('.'));
 
         if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), assemblyName + ".xml")))
+        {
           pathToXml = Directory.GetCurrentDirectory();
-        else if (File.Exists(Path.Combine(AppContext.BaseDirectory, assemblyName + ".xml")))
+        } else if (File.Exists(Path.Combine(AppContext.BaseDirectory, assemblyName + ".xml")))
+        {
           pathToXml = AppContext.BaseDirectory;
-        else
+        } else
         {
           var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
           pathToXml = Path.GetDirectoryName(pathToExe);
         }
+
         options.IncludeXmlComments(Path.Combine(pathToXml, assemblyName + ".xml"));
 
         options.IgnoreObsoleteProperties();
         options.DescribeAllEnumsAsStrings();
       });
-      //Swagger documentation can be viewed with http://localhost:5000/swagger/ui/index.html   
 
       ConfigureApplicationServices(services);
     }
@@ -118,9 +116,6 @@ namespace VSS.Productivity3D.WebApi
     /// <summary>
     /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline
     /// </summary>
-    /// <param name="app"></param>
-    /// <param name="env"></param>
-    /// <param name="loggerFactory"></param>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
       loggerFactory.AddConsole(Configuration.GetSection("Logging"));
@@ -128,6 +123,7 @@ namespace VSS.Productivity3D.WebApi
 
       serviceCollection.AddSingleton(loggerFactory);
       var serviceProvider = serviceCollection.BuildServiceProvider();
+      serviceCollection.BuildServiceProvider();
 
       app.UseFilterMiddleware<ExceptionsTrap>();
 
@@ -135,23 +131,33 @@ namespace VSS.Productivity3D.WebApi
       app.UseCors("VSS");
 
       app.UseFilterMiddleware<TIDAuthentication>();
-      
+
       //Add stats
       if (Configuration["newrelic"] == "true")
+      {
         app.UseFilterMiddleware<NewRelicMiddleware>();
+      }
 
       app.UseFilterMiddleware<RequestIDMiddleware>();
       app.UseResponseCompression();
 
       app.UseResponseCaching();
-      app.UseMvc();
 
       app.UseSwagger();
-      app.UseSwaggerUi();
 
-      //Check if the configuration is correct and we are able to connect to Raptor
-    /*  var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
+      //Swagger documentation can be viewed with http://localhost:5000/swagger/v1/swagger.json
+      app.UseSwaggerUI(c =>
+      {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "3dPm Service API");
+      });
+
+      app.UseMvc();
+
+      // Check if the configuration is correct and we are able to connect to Raptor.
+      var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
+
       log.LogInformation("Testing Raptor configuration with sending config request");
+
       try
       {
         serviceProvider.GetRequiredService<IASNodeClient>().RequestConfig(out string config);
@@ -164,7 +170,7 @@ namespace VSS.Productivity3D.WebApi
         log.LogError("Exception loading config: {0} at {1}", e.Message, e.StackTrace);
         log.LogCritical("Can't talk to Raptor for some reason - check configuration");
         Environment.Exit(138);
-      }*/
+      }
     }
   }
 }

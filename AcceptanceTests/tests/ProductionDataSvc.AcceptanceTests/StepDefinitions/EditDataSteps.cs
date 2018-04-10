@@ -200,7 +200,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
             Point gridPoint = new Point() { x = gridPtX, y = gridPtY };
 
             // Construct Filter from data edit (by LiftId, DesignId or both)
-            Filter filter = new Filter();
+            FilterResult filter = new FilterResult();
             ProductionDataEdit edit = _dataEditContext.DataEdits[editId];
             if(edit.liftNumber != null)
             {

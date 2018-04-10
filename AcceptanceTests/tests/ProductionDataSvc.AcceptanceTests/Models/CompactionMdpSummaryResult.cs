@@ -28,6 +28,12 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       if (other == null)
         return false;
 
+      if (this.mdpSummaryData == null)
+      {
+        return this.Code == other.Code &&
+               this.Message == other.Message;
+      }
+
       return this.mdpSummaryData.Equals(other.mdpSummaryData) &&
        this.Code == other.Code &&
        this.Message == other.Message;
@@ -36,7 +42,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
     public static bool operator ==(CompactionMdpSummaryResult a, CompactionMdpSummaryResult b)
     {
       if ((object)a == null || (object)b == null)
-        return Object.Equals(a, b);
+        return object.Equals(a, b);
 
       return a.Equals(b);
     }

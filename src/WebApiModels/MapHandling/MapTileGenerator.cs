@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ASNodeDecls;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -6,11 +8,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using ASNodeDecls;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.Productivity3D.Common.Extensions;
-using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.MapHandling;
@@ -90,9 +88,9 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
             bitmap = mapTileService.GetMapBitmap(parameters, request.mapType.Value, request.language.Substring(0, 2));
             break;
           case TileOverlayType.ProductionData:
-            log.LogInformation($"GetProductionDataTile: project {request.project.projectUid}");
+            log.LogInformation($"GetProductionDataTile: project {request.project.ProjectUid}");
             BoundingBox2DLatLon prodDataBox = BoundingBox2DLatLon.CreateBoundingBox2DLatLon(parameters.bbox.minLng, parameters.bbox.minLat, parameters.bbox.maxLng, parameters.bbox.maxLat);
-            var tileResult = productionDataTileService.GetProductionDataTile(request.projectSettings, request.ProjectSettingsColors, request.filter, request.project.projectId,
+            var tileResult = productionDataTileService.GetProductionDataTile(request.projectSettings, request.ProjectSettingsColors, request.filter, request.project.LegacyProjectId,
               request.mode.Value, (ushort)parameters.mapWidth, (ushort)parameters.mapHeight, prodDataBox, request.designDescriptor, request.baseFilter,
               request.topFilter, request.designDescriptor, request.volCalcType, null);//custom headers not used
             bitmap = tileResult.TileData;
@@ -117,11 +115,11 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
               FilterBoundaryType.Alignment);
             break;
           case TileOverlayType.CutFillDesignBoundary:
-            var designBoundaries = boundingBoxService.GetDesignBoundaryPolygons(request.project.projectId, request.designDescriptor);
+            var designBoundaries = boundingBoxService.GetDesignBoundaryPolygons(request.project.LegacyProjectId, request.designDescriptor);
             bitmap = geofenceTileService.GetFilterBoundaryBitmap(parameters, designBoundaries, FilterBoundaryType.Design);
             break;
           case TileOverlayType.Alignments:
-            bitmap = alignmentTileService.GetAlignmentsBitmap(parameters, request.project.projectId,
+            bitmap = alignmentTileService.GetAlignmentsBitmap(parameters, request.project.LegacyProjectId,
               request.alignmentDescriptors);
             break;
           case TileOverlayType.DxfLinework:

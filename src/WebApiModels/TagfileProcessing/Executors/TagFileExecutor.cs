@@ -4,7 +4,7 @@ using TAGProcServiceDecls;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common.Filters.Interfaces;
+using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.TagfileProcessing.Models;
@@ -50,7 +50,7 @@ namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.Executors
             request.projectId ?? -1, 0, 0, request.machineId ?? -1,
             request.boundary != null
               ? RaptorConverters.convertWGS84Fence(request.boundary)
-              : TWGS84FenceContainer.Null());
+              : TWGS84FenceContainer.Null(),request.tccOrgId);
 
         if (returnResult == TTAGProcServerProcessResult.tpsprOK)
           return TAGFilePostResult.CreateTAGFilePostResult();

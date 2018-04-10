@@ -1,0 +1,32 @@
+{
+  "TargetsDefault": {
+    "projectUid": "ff91dd40-1569-4765-a2bc-014321f76ace",
+    "Settings": "",
+    "ProjectSettingsType": 1
+  },
+  "ColorsDefault": {
+    "projectUid": "ff91dd40-1569-4765-a2bc-014321f76ace",
+    "Settings": "",
+    "ProjectSettingsType": 3
+  },
+  "TargetsPartialCustom": {
+    "projectUid": "ff91dd40-1569-4765-a2bc-014321f76ace",
+    "Settings": "{ useMachineTargetPassCount : false, customTargetPassCountMinimum : 5, customTargetPassCountMaximum : 7 }",
+    "ProjectSettingsType": 1
+  },
+  "ColorsPartialCustom": {
+    "projectUid": "ff91dd40-1569-4765-a2bc-014321f76ace",
+    "Settings": "{ useDefaultMDPSummaryColors : false, mdpOnTargetColor : 0x8BC34A, mdpOverTargetColor : 0xD50000, mdpUnderTargetColor : 0x1579B }",
+    "ProjectSettingsType": 3
+  },
+  "TargetsFullCustom": {
+    "projectUid": "ff91dd40-1569-4765-a2bc-014321f76ace",
+    "Settings": "{useMachineTargetPassCount: false, customTargetPassCountMinimum: 5, customTargetPassCountMaximum: 7, useMachineTargetTemperature: false, customTargetTemperatureMinimum: 75, customTargetTemperatureMaximum: 150, useMachineTargetCmv: false, customTargetCmv: 77, useMachineTargetMdp: false, customTargetMdp: 88, useDefaultTargetRangeCmvPercent: false, customTargetCmvPercentMinimum: 75, customTargetCmvPercentMaximum: 105, useDefaultTargetRangeMdpPercent: false, customTargetMdpPercentMinimum: 85, customTargetMdpPercentMaximum: 115, useDefaultTargetRangeSpeed: false, customTargetSpeedMinimum: 10, customTargetSpeedMaximum: 30, useDefaultCutFillTolerances: false, customCutFillTolerances: [3,2,1,0,-1,-2,-3], useDefaultVolumeShrinkageBulking: false, customShrinkagePercent: 5, customBulkingPercent: 7.5, useDefaultPassCountTargets: false, customPassCountTargets: [1,3,5,8,11,16,20,25]\r\n}",
+    "ProjectSettingsType": 1
+  },
+  "ColorsFullCustom": {
+    "projectUid": "ff91dd40-1569-4765-a2bc-014321f76ace",
+    "Settings": "{ useDefaultElevationColors: true, elevationColors: [0xC80000, 0xFF0000, 0xFF3C00, 0xFF5A00, 0xFF8200, 0xFFAA00, 0xFFC800, 0xFFDC00, 0xFAE600, 0xDCE600, 0xD2E600, 0xC8E600, 0xB4E600, 0x96E600, 0x82E600, 0x64F000, 0x00FF00, 0x00F064, 0x00E682, 0x00E696, 0x00E6B4, 0x00E6C8, 0x00E6D2, 0x00DCDC, 0x00E6E6, 0x00C8E6, 0x00B4F0, 0x0096F5, 0x0078FA, 0x005AFF, 0x0046FF, 0x0000FF], useDefaultCMVDetailsColors: true, cmvDetailsColors: [0x01579B, 0x2473AE, 0x488FC1, 0x6BACD5, 0x8FC8E8, 0xB3E5FC, 0xDBECC8, 0x99CB65, 0x649E38, 0x2D681D, 0xFFCCD2, 0xF6A3A8, 0xEE7A7E, 0xE55154, 0xDD282A, 0xD50000], useDefaultCMVSummaryColors: true, cmvOnTargetColor: 0x8BC34A, cmvOverTargetColor: 0xD50000, cmvUnderTargetColor: 0x1579B, useDefaultCMVPercentColors: true, cmvPercentColors: [0xD50000, 0xE57373, 0xFFCDD2, 0x8BC34A, 0xB3E5FC, 0x005AFF, 0x039BE5, 0x01579B], useDefaultPassCountDetailsColors: true, passCountDetailsColors: [0x2D5783, 0x439BDC, 0xBEDFF1, 0x9DCE67, 0x6BA03E, 0x3A6B25, 0xF6CED3, 0xD57A7C, 0xC13037], useDefaultPassCountSummaryColors: true, passCountOnTargetColor: 0x8BC34A, passCountOverTargetColor: 0xD50000, passCountUnderTargetColor: 0x1579B, useDefaultCutFillColors: true, cutFillColors: [0xD50000, 0xE57373, 0xFFCDD2, 0x8BC34A, 0xB3E5FC, 0x039BE5, 0x01579B], useDefaultTemperatureSummaryColors: true, temperatureOnTargetColor: 0x8BC34A, temperatureOverTargetColor: 0xD50000, temperatureUnderTargetColor: 0x1579B, useDefaultSpeedSummaryColors: true, speedOnTargetColor: 0x8BC34A, speedOverTargetColor: 0xD50000, speedUnderTargetColor: 0x1579B, useDefaultMDPSummaryColors: true, mdpOnTargetColor: 0x8BC34A, mdpOverTargetColor: 0xD50000, mdpUnderTargetColor: 0x1579B}",
+    "ProjectSettingsType": 3
+  }
+}

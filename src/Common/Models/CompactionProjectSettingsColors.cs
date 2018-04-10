@@ -91,6 +91,7 @@ namespace VSS.Productivity3D.Common.Models
     #endregion
 
     #region Pass Count
+
     /// <summary>
     /// Flag to determine if default or custom Pass Count details colour values are used. Default is true.
     /// </summary>

@@ -75,7 +75,7 @@ namespace VSS.Productivity3D.Common.Models
     /// The base or earliest filter to be used.
     /// </summary>
     [JsonProperty(PropertyName = "filter1", Required = Required.Default)]
-    public Filter filter1 { get; protected set; }
+    public FilterResult filter1 { get; protected set; }
 
     /// <summary>
     /// The ID of the base or earliest filter to be used.
@@ -87,7 +87,7 @@ namespace VSS.Productivity3D.Common.Models
     /// The top or latest filter to be used.
     /// </summary>
     [JsonProperty(PropertyName = "filter2", Required = Required.Default)]
-    public Filter filter2 { get; protected set; }
+    public FilterResult filter2 { get; protected set; }
 
     /// <summary>
     /// The ID of the top or latest filter to be used.
@@ -136,7 +136,7 @@ namespace VSS.Productivity3D.Common.Models
     public bool IsSummaryVolumeCutFillRequest { get; set; }
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor.
     /// </summary>
     protected TileRequest()
     { }
@@ -153,9 +153,9 @@ namespace VSS.Productivity3D.Common.Models
         RaptorConverters.VolumesType computeVolType,
         double computeVolNoChangeTolerance,
         DesignDescriptor designDescriptor,
-        Filter filter1,
+        FilterResult filter1,
         long filterId1,
-        Filter filter2,
+        FilterResult filter2,
         long filterId2,
         FilterLayerMethod filterLayerMethod,
         BoundingBox2DLatLon boundingBoxLatLon,

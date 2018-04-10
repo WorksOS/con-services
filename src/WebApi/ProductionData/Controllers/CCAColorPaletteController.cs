@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Threading.Tasks;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
-using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
@@ -25,18 +25,18 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     private readonly IASNodeClient raptorClient;
  
     /// <summary>
-    /// Logger for logging
+    /// LoggerFactory for logging
     /// </summary>
     private readonly ILogger log;
 
     /// <summary>
-    /// Logger factory for use by executor
+    /// LoggerFactory factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
     /// <summary>
     /// Constructor with dependency injection
     /// </summary>
-    /// <param name="logger">Logger</param>
+    /// <param name="logger">LoggerFactory</param>
     /// <param name="raptorClient">Raptor client</param>
     public CCAColorPaletteController(ILoggerFactory logger, IASNodeClient raptorClient)
     {
@@ -84,7 +84,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v2/ccacolors")]
     [HttpGet]
-    public CCAColorPaletteResult Get([FromQuery] Guid projectUid,
+    public async Task<CCAColorPaletteResult> Get([FromQuery] Guid projectUid,
                                      [FromQuery] long assetId,
                                      [FromQuery] DateTime? startUtc = null,
                                      [FromQuery] DateTime? endUtc = null,
@@ -92,7 +92,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       log.LogInformation("Get: " + Request.QueryString);
 
-      long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      long projectId = await (User as RaptorPrincipal).GetLegacyProjectId(projectUid);
       var request = CCAColorPaletteRequest.CreateCCAColorPaletteRequest(projectId, assetId, startUtc, endUtc, liftId);
       request.Validate();
 

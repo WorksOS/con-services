@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 
-namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
 {
-  public class SummaryVolumesData
+  public class VolumesSummaryData
   {
     [JsonProperty(PropertyName = "netVolume")]
     public double NetVolume;

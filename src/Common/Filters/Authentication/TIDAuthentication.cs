@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using VSS.Authentication.JWT;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
@@ -20,7 +21,6 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
     private readonly IProjectListProxy projectListProxy;
     private readonly ICustomerProxy customerProxy;
     private readonly ILogger log;
-    private CustomerDataResult customerDataResult;
 
     public TIDAuthentication(RequestDelegate next, IProjectListProxy projectListProxy, ICustomerProxy customerProxy,
       ILoggerFactory logger)
@@ -87,6 +87,9 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
           return;
         }
 
+        var customHeaders = context.Request.Headers.GetCustomHeaders();
+        CustomerData customer = null;
+
         //If this is an application context do not validate user-customer.
         //  If a user exists jwtToken.IsApplicationUserToken, then it may not be the user being acted on.
         if (isApplicationContext)
@@ -106,14 +109,10 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
           {
             try
             {
-              this.customerDataResult =
-                await customerProxy.GetCustomersForMe(userUid, context.Request.Headers.GetCustomHeaders());
-              if (this.customerDataResult.status != StatusCodes.Status200OK ||
-                  this.customerDataResult.customer == null ||
-                  this.customerDataResult.customer.Count < 1 ||
-                  !this.customerDataResult.customer.Exists(x => x.uid == customerUid))
+              customer = await customerProxy.GetCustomerForUser(userUid, customerUid, customHeaders);
+              if (customer == null)
               {
-                var error = $"User {userUid} is not authorized for this customer {customerUid}";
+                var error = $"User {userUid} is not authorized to configure this customer {customerUid}";
                 log.LogWarning(error);
                 await SetResult(error, context);
                 return;
@@ -142,12 +141,10 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
             var identity = string.IsNullOrEmpty(customerUid)
               ? new GenericIdentity(userUid)
               : new GenericIdentity(userUid, customerUid);
-            //this params were validated and are exepected to be non-null
+            //this params were validated and are expected to be non-null
             var principal = new RaptorPrincipal(identity, customerUid, username,
-              isApplicationContext
-                ? "Application"
-                : this.customerDataResult.customer.First(cst => cst.uid == customerUid).name, projectListProxy,
-              context.Request.Headers.GetCustomHeaders(), isApplicationContext);
+              isApplicationContext ? "Application" : customer.name, projectListProxy,
+              customHeaders, isApplicationContext);
             context.User = principal;
           }
           catch (Exception ex)

@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.WebApi.Models.Factories.ProductionData
     private IDictionary<string, string> headers;
     private CompactionProjectSettings projectSettings;
     private CompactionProjectSettingsColors projectSettingsColors;
-    private Filter filter;
+    private FilterResult filter;
     private DesignDescriptor designDescriptor;
 
     /// <summary>
@@ -100,7 +100,7 @@ namespace VSS.Productivity3D.WebApi.Models.Factories.ProductionData
     /// Sets the filter.
     /// </summary>
     /// <param name="filter">Filter model for the raptor query.</param>
-    public ProductionDataRequestFactory Filter(Filter filter)
+    public ProductionDataRequestFactory Filter(FilterResult filter)
     {
       this.filter = filter;
       return this;

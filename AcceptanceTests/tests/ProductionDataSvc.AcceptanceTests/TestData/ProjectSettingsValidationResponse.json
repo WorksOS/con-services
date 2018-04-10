@@ -1,0 +1,10 @@
+{
+  "TargetsResult": {
+    "Code": 0,
+    "Message": "Project settings Targets are valid"
+  },
+  "ColorsResult": {
+    "Code": 0,
+    "Message": "Project settings Colors are valid"
+  }
+}

@@ -39,7 +39,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     /// Value may be null.
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public Filter filter { get; private set; }
+    public FilterResult filter { get; private set; }
 
     /// <summary>
     /// The filter ID to used in the request.
@@ -84,7 +84,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
       Guid? callId,
       MDPSettings mdpSettings,
       LiftBuildSettings liftBuildSettings,
-      Filter filter,
+      FilterResult filter,
       long filterID,
       DateTime? overrideStartUTC,
       DateTime? overrideEndUTC,
@@ -112,8 +112,8 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     {
       base.Validate();
       mdpSettings.Validate();
-      if (liftBuildSettings != null)
-        liftBuildSettings.Validate();
+      liftBuildSettings?.Validate();
+
       if (filter != null)
         filter.Validate();
 

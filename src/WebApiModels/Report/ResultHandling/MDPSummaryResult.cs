@@ -1,7 +1,8 @@
-﻿
+﻿using System;
+using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
 {
   /// <summary>
   /// The result representation of a summary MDP request
@@ -11,53 +12,57 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
     /// <summary>
     /// The percentage of cells that are compacted within the target bounds
     /// </summary>
-    public double compactedPercent { get; private set; }
+    [JsonProperty(PropertyName = "underCompactedPercent")]
+    public double CompactedPercent { get; private set; }
 
     /// <summary>
     /// If the MDP value is constant, this is the constant value of all MDP targets in the processed data.
     /// </summary>
-    public short constantTargetMDP { get; private set; }
+    [JsonProperty(PropertyName = "underCompactedPercent")]
+    public short ConstantTargetMDP { get; private set; }
 
     /// <summary>
     /// Are the MDP target values applying to all processed cells constant?
     /// </summary>
-    public bool isTargetMDPConstant { get; private set; }
+    [JsonProperty(PropertyName = "underCompactedPercent")]
+    public bool IsTargetMDPConstant { get; private set; }
 
     /// <summary>
     /// The percentage of the cells that are over-compacted
     /// </summary>
-    public double overCompactedPercent { get; private set; }
+    [JsonProperty(PropertyName = "underCompactedPercent")]
+    public double OverCompactedPercent { get; private set; }
 
     /// <summary>
     /// The internal result code of the request. Documented elsewhere.
     /// </summary>
-    public short returnCode { get; private set; }
+    [JsonProperty(PropertyName = "underCompactedPercent")]
+    public short ReturnCode { get; private set; }
 
     /// <summary>
     /// The total area covered by non-null cells in the request area
     /// </summary>
-    public double totalAreaCoveredSqMeters { get; private set; }
+    [JsonProperty(PropertyName = "underCompactedPercent")]
+    public double TotalAreaCoveredSqMeters { get; private set; }
 
     /// <summary>
     /// The percentage of the cells that are under compacted
     /// </summary>
-    public double underCompactedPercent { get; private set; }
+    [JsonProperty(PropertyName = "underCompactedPercent")]
+    public double UnderCompactedPercent { get; private set; }
+
+    public bool HasData() => Math.Abs(this.TotalAreaCoveredSqMeters) > 0.001;
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor.
     /// </summary>
     private MDPSummaryResult()
     { }
-
-    public static MDPSummaryResult Empty()
-    {
-      return new MDPSummaryResult();
-    }
-
+    
     /// <summary>
-    /// Create instance of MDPSummaryResult
+    /// Static constructor.
     /// </summary>
-    public static MDPSummaryResult CreateMDPSummaryResult(
+    public static MDPSummaryResult Create(
       double compactedPercent,
       short constantTargetMDP,
       bool isTargetMDPConstant,
@@ -69,15 +74,14 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
     {
       return new MDPSummaryResult
       {
-        compactedPercent = compactedPercent,
-        constantTargetMDP = constantTargetMDP,
-        isTargetMDPConstant = isTargetMDPConstant,
-        overCompactedPercent = overCompactedPercent,
-        returnCode = returnCode,
-        totalAreaCoveredSqMeters = totalAreaCoveredSqMeters,
-        underCompactedPercent = underCompactedPercent
+        CompactedPercent = compactedPercent,
+        ConstantTargetMDP = constantTargetMDP,
+        IsTargetMDPConstant = isTargetMDPConstant,
+        OverCompactedPercent = overCompactedPercent,
+        ReturnCode = returnCode,
+        TotalAreaCoveredSqMeters = totalAreaCoveredSqMeters,
+        UnderCompactedPercent = underCompactedPercent
       };
     }
-
   }
 }

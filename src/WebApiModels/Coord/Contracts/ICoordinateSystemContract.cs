@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using VSS.Productivity3D.WebApiModels.Coord.Models;
 using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
@@ -39,7 +40,7 @@ namespace VSS.Productivity3D.WebApiModels.Coord.Contracts
     /// <param name="projectUid">The model/project unique identifier.</param>
     /// <returns>Execution result with Coordinate System settings.</returns>
     /// 
-    CoordinateSystemSettings Get([FromRoute] Guid projectUid);
+    Task<CoordinateSystemSettings> Get([FromRoute] Guid projectUid);
 
     /// <summary>
     /// Posts a list of coordinates to a Raptor's data model for conversion.

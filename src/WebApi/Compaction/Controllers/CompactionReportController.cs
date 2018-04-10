@@ -11,7 +11,6 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
-using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
@@ -24,23 +23,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting Raptor production data for report requests
   /// </summary>
-  [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
+  // [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })] (Aaron) Disabled temporarily until we can resolve the cache invalidation problem
+  [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
   public class CompactionReportController : BaseController
   {
     /// <summary>
     /// Raptor client for use by executor
     /// </summary>
     private readonly IASNodeClient raptorClient;
-
-    /// <summary>
-    /// Logger for logging
-    /// </summary>
-    private readonly ILogger log;
-
-    /// <summary>
-    /// Logger factory for use by executor
-    /// </summary>
-    private readonly ILoggerFactory logger;
 
     /// <summary>
     /// The request factory
@@ -55,24 +45,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    /// <param name="raptorClient">The raptor client</param>
-    /// <param name="logger">The logger.</param>
-    /// <param name="exceptionHandler">The exception handler.</param>
-    /// <param name="configStore">Configuration store.</param>
-    /// <param name="fileListProxy">The file list proxy.</param>
-    /// <param name="projectSettingsProxy">The project settings proxy.</param>
-    /// <param name="filterServiceProxy">The filter service proxy.</param>
-    /// <param name="settingsManager">The compaction settings manager.</param>
-    /// <param name="requestFactory">The request factory.</param>
-    /// <param name="prefProxy">The User Preferences proxy.</param>
-    public CompactionReportController(IASNodeClient raptorClient, ILoggerFactory logger, IServiceExceptionHandler exceptionHandler, IConfigurationStore configStore,
-      IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, IFilterServiceProxy filterServiceProxy, ICompactionSettingsManager settingsManager,
-      IProductionDataRequestFactory requestFactory, IPreferenceProxy prefProxy) :
-      base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
+    public CompactionReportController(IASNodeClient raptorClient, ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler, IConfigurationStore configStore, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, IFilterServiceProxy filterServiceProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory, IPreferenceProxy prefProxy) :
+      base(loggerFactory, loggerFactory.CreateLogger<CompactionReportController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
-      this.logger = logger;
-      log = logger.CreateLogger<CompactionReportController>();
       this.requestFactory = requestFactory;
       this.prefProxy = prefProxy;
     }
@@ -117,14 +93,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] double endEasting,
       [FromQuery] double azimuth)
     {
-      log.LogInformation("GetReportGrid: " + Request.QueryString);
+      Log.LogInformation("GetReportGrid: " + Request.QueryString);
 
-      var projectId = GetProjectId(projectUid);
+      var projectId = await GetLegacyProjectId(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var cutFillDesign = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid, true);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
 
-      var reportGridRequest = await requestFactory.Create<CompactionReportGridRequestHelper>(r => r
+      var reportGridRequest = requestFactory.Create<CompactionReportGridRequestHelper>(r => r
           .ProjectId(projectId)
           .Headers(CustomHeaders)
           .ProjectSettings(projectSettings)
@@ -150,7 +126,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<CompactionReportGridExecutor>(logger, raptorClient, null, ConfigStore)
+          .Build<CompactionReportGridExecutor>(LoggerFactory, raptorClient, null, ConfigStore)
           .Process(reportGridRequest) as CompactionReportResult
       );
     }
@@ -177,9 +153,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] double endStation,
       [FromQuery] double[] offsets)
     {
-      log.LogInformation("GetStationOffset: " + Request.QueryString);
+      Log.LogInformation("GetStationOffset: " + Request.QueryString);
 
-      var project = (this.User as RaptorPrincipal)?.GetProject(projectUid);
+      var project = await (this.User as RaptorPrincipal)?.GetProject(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var cutFillDesignDescriptor = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
       var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentUid);
@@ -190,7 +166,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var updatedOffsets = offsets?.AddZeroDistinctSortBy();
 
       var reportRequest = requestFactory.Create<CompactionReportStationOffsetRequestHelper>(r => r
-        .ProjectId(project.projectId)
+        .ProjectId(project.LegacyProjectId)
         .Headers(CustomHeaders)
         .ProjectSettings(projectSettings)
         .Filter(filter))
@@ -208,13 +184,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         endStation,
         updatedOffsets,
         userPreferences,
-        project.projectTimeZone);
+        project.ProjectTimeZone);
 
       reportRequest.Validate();
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<CompactionReportStationOffsetExecutor>(logger, raptorClient, null, ConfigStore)
+          .Build<CompactionReportStationOffsetExecutor>(LoggerFactory, raptorClient, null, ConfigStore)
           .Process(reportRequest) as CompactionReportResult
       );
     }

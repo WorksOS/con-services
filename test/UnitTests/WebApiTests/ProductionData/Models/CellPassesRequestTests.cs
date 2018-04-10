@@ -6,7 +6,6 @@ using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
-using Filter = VSS.Productivity3D.Common.Models.Filter;
 using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
 
 namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
@@ -40,7 +39,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
         CCVRangePercentage.CreateCcvRangePercentage(30.0, 70.0), false, 0.0, 0.0, 0.2f, LiftDetectionType.Automatic,
         LiftThicknessType.Compacted, MDPRangePercentage.CreateMdpRangePercentage(35.0, 75.0),
         false, 0.0f, 0, 0, null, null, null, liftThicknessTarget, null);
-      Filter filter = Filter.CreateFilter(null, null, null, null, null, 1, new List<long>(), true, false, null,
+
+      var filter = FilterResult.CreateFilter(null, null, null, null, null, 1, new List<long>(), true, false, null,
           new List<WGSPoint>(),
           new List<Point>(),
           false,

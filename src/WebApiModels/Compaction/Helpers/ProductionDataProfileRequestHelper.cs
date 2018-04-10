@@ -7,7 +7,6 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
-using VSS.Productivity3D.WebApi.Models.Extensions;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 
@@ -19,8 +18,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
   /// </summary>
   public class ProductionDataProfileRequestHelper : DataRequestBase, IProductionDataProfileRequestHelper
   {
-    private Filter baseFilter;
-    private Filter topFilter;
+    private FilterResult baseFilter;
+    private FilterResult topFilter;
     private VolumeCalcType? volCalcType;
     private DesignDescriptor volumeDesign;
 
@@ -48,13 +47,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       return this;
     }
 
-    public ProductionDataProfileRequestHelper SetBaseFilter(Filter baseFilter)
+    public ProductionDataProfileRequestHelper SetBaseFilter(FilterResult baseFilter)
     {
       this.baseFilter = baseFilter;
       return this;
     }
 
-    public ProductionDataProfileRequestHelper SetTopFilter(Filter topFilter)
+    public ProductionDataProfileRequestHelper SetTopFilter(FilterResult topFilter)
     {
       this.topFilter = topFilter;
       return this;

@@ -14,16 +14,13 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
-using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
-using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
-using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
-using Filter = VSS.Productivity3D.Common.Models.Filter;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
 using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
@@ -40,11 +37,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     private readonly IASNodeClient raptorClient;
     /// <summary>
-    /// Logger for logging
+    /// LoggerFactory for logging
     /// </summary>
     private readonly ILogger log;
     /// <summary>
-    /// Logger factory for use by executor
+    /// LoggerFactory factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
     /// <summary>
@@ -56,7 +53,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// Constructor with dependency injection
     /// </summary>
     /// <param name="geofenceProxy">Proxy client for getting geofences for boundaries</param>
-    /// <param name="logger">Logger</param>
+    /// <param name="logger">LoggerFactory</param>
     /// <param name="raptorClient">Raptor client</param>
     public CCATileController(IGeofenceProxy geofenceProxy, ILoggerFactory logger, IASNodeClient raptorClient)
     {
@@ -83,7 +80,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectIdVerifier]
     [Route("api/v1/ccatiles/png")]
     [HttpGet]
-    public async Task<FileResult> Get
+    public FileResult Get
     (
       [FromQuery] long projectId,
       [FromQuery] long assetId,
@@ -140,7 +137,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     )
     {
       log.LogInformation("Get: " + Request.QueryString);
-      long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      long projectId = await (User as RaptorPrincipal).GetLegacyProjectId(projectUid);
       var request = CreateAndValidateRequest(projectId, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid);
 
       return GetCCADataTile(request);
@@ -204,41 +201,16 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         geometry = RaptorConverters.geometryToPoints(geometryWKT).ToList();
       }
 
-      var filter = Filter.CreateFilter
+      var filter = FilterResult.CreateFilterForCCATileRequest
       (
-        null,
-        null,
-        null,
         startUtc,
         endUtc,
-        null,
         new List<long> { assetId },
-        null,
-        null,
-        null,
         geometry,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
         liftId.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None,
-        null,
-        null,
         liftId,
-        null,
-        new List<MachineDetails> { MachineLiftDetails.CreateMachineDetails(assetId, machineName, isJohnDoe) },
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null);
+        new List<MachineDetails> { MachineDetails.CreateMachineDetails(assetId, machineName, isJohnDoe) }
+       );
 
       var request = TileRequest.CreateTileRequest
       (

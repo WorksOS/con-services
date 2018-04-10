@@ -6,27 +6,29 @@ namespace ProductionDataSvc.AcceptanceTests.Models
 {
   public class CompactionCmvSummaryResult : RequestResult, IEquatable<CompactionCmvSummaryResult>
   {
-    #region Members
     /// <summary>
     /// The CMV summary data results
     /// </summary>
     public CmvSummaryData cmvSummaryData { get; set; }
-    #endregion
-
-    #region Constructors
+    
     /// <summary>
     /// Constructor: Success by default
     /// </summary>
     public CompactionCmvSummaryResult()
-            : base("success")
-        { }
-    #endregion
+      : base("success")
+    { }
 
     #region Equality test
     public bool Equals(CompactionCmvSummaryResult other)
     {
       if (other == null)
         return false;
+
+      if (this.cmvSummaryData == null)
+      {
+        return this.Code == other.Code &&
+               this.Message == other.Message;
+      }
 
       return this.cmvSummaryData.Equals(other.cmvSummaryData) &&
        this.Code == other.Code &&
@@ -36,7 +38,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
     public static bool operator ==(CompactionCmvSummaryResult a, CompactionCmvSummaryResult b)
     {
       if ((object)a == null || (object)b == null)
-        return Object.Equals(a, b);
+        return Equals(a, b);
 
       return a.Equals(b);
     }

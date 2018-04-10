@@ -10,26 +10,21 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.ResultHandling
   public class CompactionPassCountSummaryResultTests
   {
     [TestMethod]
-    public void CreatePassCountSummaryResult_Should_return_empty_object_When_TotalAreaCoveredSqMeters_is_null()
+    public void CreatePassCountSummaryResult_Should_return_null_object_When_TotalAreaCoveredSqMeters_is_null()
     {
-      var passCountSummaryResult = PassCountSummaryResult.CreatePassCountSummaryResult(null, false, 1, 2, 3, 4, 0);
+      var passCountSummaryResult = PassCountSummaryResult.Create(null, false, 1, 2, 3, 4, 0);
       var result = CompactionPassCountSummaryResult.CreatePassCountSummaryResult(passCountSummaryResult);
 
       Assert.IsNotNull(result);
       Assert.AreEqual(ContractExecutionResult.DefaultMessage, result.Message);
-
-      Assert.AreEqual(0, result.SummaryData.TotalAreaCoveredSqMeters);
-      Assert.AreEqual(0, result.SummaryData.PercentEqualsTarget);
-      Assert.AreEqual(0, result.SummaryData.PercentGreaterThanTarget);
-      Assert.AreEqual(0, result.SummaryData.PercentLessThanTarget);
-      Assert.IsNotNull(result.SummaryData.PassCountTarget);
+      Assert.IsNull(result.SummaryData);
     }
 
     [TestMethod]
     public void CreatePassCountSummaryResult_Should_return_full_object_When_totalAreaCoveredSqMeters_is_not_null()
     {
       var targetPassCountRange = TargetPassCountRange.CreateTargetPassCountRange(6, 7);
-      var passCountSummaryResult = PassCountSummaryResult.CreatePassCountSummaryResult(targetPassCountRange, false, 1, 2, 3, 4, 342.12);
+      var passCountSummaryResult = PassCountSummaryResult.Create(targetPassCountRange, false, 1, 2, 3, 4, 342.12);
       var result = CompactionPassCountSummaryResult.CreatePassCountSummaryResult(passCountSummaryResult);
 
       Assert.IsNotNull(result);

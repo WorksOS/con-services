@@ -1,6 +1,6 @@
 ﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
 {
   public class ConfigResult : ContractExecutionResult
   {
@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
     /// <summary>
     /// Create instance of ConfigResult
     /// </summary>
-    public static ConfigResult CreateConfigResult(string config)
+    public static ConfigResult Create(string config)
     {
       return new ConfigResult
       {

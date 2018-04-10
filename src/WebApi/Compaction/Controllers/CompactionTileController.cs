@@ -16,7 +16,6 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
-using VSS.Productivity3D.Common.Filters.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -32,6 +31,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting tiles for displaying production data and linework.
   /// </summary>
+  [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)] // (Aaron) Disabled temporarily until we can resolve the cache invalidation problem.
   [ProjectUidVerifier]
   public class CompactionTileController : BaseController
   {
@@ -44,15 +44,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// The tile generator
     /// </summary>
     private readonly IProductionDataTileService tileService;
-    /// <summary>
-    /// Logger for logging
-    /// </summary>
-    private readonly ILogger log;
-
-    /// <summary>
-    /// Logger factory for use by executor
-    /// </summary>
-    private readonly ILoggerFactory logger;
 
     /// <summary>
     /// Used to talk to TCC
@@ -60,27 +51,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IFileRepository fileRepo;
 
     /// <summary>
-    /// Constructor with injected raptor client, logger and authenticated projects
+    /// Default constructor.
     /// </summary>
-    /// <param name="raptorClient">Raptor client</param>
-    /// <param name="logger">Logger</param>
-    /// <param name="configStore">Configuration store</param>
-    /// <param name="fileRepo">Imported file repository</param>
-    /// <param name="fileListProxy">File list proxy</param>
-    /// <param name="projectSettingsProxy">Project settings proxy</param>
-    /// <param name="settingsManager">Compaction settings manager</param>
-    /// <param name="exceptionHandler">Service exception handler</param>
-    /// <param name="filterServiceProxy">Filter service proxy</param>
-    /// <param name="tileService">Map tile generator</param>
-    public CompactionTileController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore,
-      IFileRepository fileRepo, IFileListProxy fileListProxy,
-      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
-      IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IProductionDataTileService tileService) :
-      base(logger.CreateLogger<BaseController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
+    public CompactionTileController(IASNodeClient raptorClient, ILoggerFactory loggerFactory, IConfigurationStore configStore,
+      IFileRepository fileRepo, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IProductionDataTileService tileService) :
+      base(loggerFactory, loggerFactory.CreateLogger<CompactionTileController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
-      this.logger = logger;
-      this.log = logger.CreateLogger<CompactionTileController>();
       this.fileRepo = fileRepo;
       this.tileService = tileService;
     }
@@ -133,16 +110,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? volumeTopUid,
       [FromQuery] VolumeCalcType? volumeCalcType)
     {
-      log.LogDebug("GetProductionDataTile: " + Request.QueryString);
-      
-      var projectId = ((RaptorPrincipal) User).GetProjectId(projectUid);
+      Log.LogDebug("GetProductionDataTile: " + Request.QueryString);
+
+      var projectId = await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var projectSettingsColors = await GetProjectSettingsColors(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
       var tileResult = WithServiceExceptionTryExecute(() =>
-        tileService.GetProductionDataTile(projectSettings, projectSettingsColors,filter, projectId, mode, width, height,
+        tileService.GetProductionDataTile(projectSettings, projectSettingsColors, filter, projectId, mode, width, height,
           GetBoundingBox(bbox), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3,
           volumeCalcType, CustomHeaders));
 
@@ -202,9 +179,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? volumeTopUid,
       [FromQuery] VolumeCalcType? volumeCalcType)
     {
-      log.LogDebug("GetProductionDataTileRaw: " + Request.QueryString);
-      
-      var projectId = ((RaptorPrincipal) User).GetProjectId(projectUid);
+      Log.LogDebug("GetProductionDataTileRaw: " + Request.QueryString);
+
+      var projectId = await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var projectSettingsColors = await GetProjectSettingsColors(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
@@ -262,14 +239,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid,
       [FromQuery] string fileType)
     {
-      log.LogDebug("GetLineworkTile: " + Request.QueryString);
+      Log.LogDebug("GetLineworkTile: " + Request.QueryString);
 
       var requiredFiles = await ValidateFileType(projectUid, fileType);
       var dxfTileRequest = DxfTileRequest.CreateTileRequest(requiredFiles, GetBoundingBox(bbox));
 
       dxfTileRequest.Validate();
 
-      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(logger, raptorClient, null, this.ConfigStore, fileRepo);
+      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(LoggerFactory, raptorClient, null, this.ConfigStore, fileRepo);
       var result = await executor.ProcessAsync(dxfTileRequest) as TileResult;
 
       return result;
@@ -314,19 +291,19 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid,
       [FromQuery] string fileType)
     {
-      log.LogDebug("GetLineworkTileRaw: " + Request.QueryString);
+      Log.LogDebug("GetLineworkTileRaw: " + Request.QueryString);
 
       var requiredFiles = await ValidateFileType(projectUid, fileType);
       var dxfTileRequest = DxfTileRequest.CreateTileRequest(requiredFiles, GetBoundingBox(bbox));
 
       dxfTileRequest.Validate();
 
-      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(logger, raptorClient, null, this.ConfigStore, fileRepo);
+      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(LoggerFactory, raptorClient, null, this.ConfigStore, fileRepo);
       var result = await executor.ProcessAsync(dxfTileRequest) as TileResult;
 
       return new FileStreamResult(new MemoryStream(result.TileData), "image/png");
     }
-    
+
     /// <summary>
     /// Validates the file type for DXF tile request and gets the imported file data for it
     /// </summary>
@@ -354,8 +331,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
               "Unsupported file type " + fileType));
         }
-      }
-      else
+      } else
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -363,11 +339,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
 
       //Get all the imported files for the project
-      var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), userId, Request.Headers.GetCustomHeaders()) ?? new List<FileData>();
+      var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), GetUserId(), Request.Headers.GetCustomHeaders()) ?? new List<FileData>();
 
       //Select the required ones from the list
       var filesOfType = fileList.Where(f => f.ImportedFileType == importedFileType && f.IsActivated).ToList();
-      log.LogInformation("Found {0} files of type {1} from a total of {2}", filesOfType.Count, fileType, fileList.Count);
+      Log.LogInformation("Found {0} files of type {1} from a total of {2}", filesOfType.Count, fileType, fileList.Count);
 
       return filesOfType;
     }
@@ -400,8 +376,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           if (num < -Math.PI / 2)
           {
             num = num + Math.PI;
-          }
-          else if (num > Math.PI / 2)
+          } else if (num > Math.PI / 2)
           {
             num = num - Math.PI;
           }
@@ -411,8 +386,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           if (num < -Math.PI)
           {
             num = num + 2 * Math.PI;
-          }
-          else if (num > Math.PI)
+          } else if (num > Math.PI)
           {
             num = num - 2 * Math.PI;
           }
@@ -435,7 +409,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         }
       }
 
-      log.LogDebug("BBOX in radians: blLong=" + blLong + ",blLat=" + blLat + ",trLong=" + trLong + ",trLat=" + trLat);
+      Log.LogDebug("BBOX in radians: blLong=" + blLong + ",blLat=" + blLat + ",trLong=" + trLong + ",trLat=" + trLat);
       return BoundingBox2DLatLon.CreateBoundingBox2DLatLon(blLong, blLat, trLong, trLat);
     }
   }

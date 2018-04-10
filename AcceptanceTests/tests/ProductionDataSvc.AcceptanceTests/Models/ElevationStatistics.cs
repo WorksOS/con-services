@@ -24,7 +24,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
         /// <summary>
         /// The filter to be used for the request
         /// </summary>
-        public Filter Filter { get; set; }
+        public FilterResult Filter { get; set; }
 
         /// <summary>
         /// The ID of the filter to be used for the request

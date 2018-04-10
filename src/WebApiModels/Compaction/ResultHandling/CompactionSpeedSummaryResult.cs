@@ -2,6 +2,7 @@
 using System;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
@@ -23,19 +24,19 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
     private CompactionSpeedSummaryResult()
     { }
 
+    public static CompactionSpeedSummaryResult CreateEmptyResult() => new CompactionSpeedSummaryResult();
+
     /// <summary>
     /// SpeedSummaryResult create instance
     /// </summary>
     /// <param name="result">The speed results from Raptor</param>
     /// <param name="speedTarget">The speed target from Raptor</param>
     /// <returns>An instance of CompactionSpeedSummaryResult</returns>
-    public static CompactionSpeedSummaryResult CreateSpeedSummaryResult(SummarySpeedResult result, MachineSpeedTarget speedTarget)
+    public static CompactionSpeedSummaryResult CreateSpeedSummaryResult(SpeedSummaryResult result, MachineSpeedTarget speedTarget)
     {
-      const int noSpeedData = 0;
-
-      if (Math.Abs(result.CoverageArea - noSpeedData) < 0.001)
+      if (result == null || !result.HasData())
       {
-        return new CompactionSpeedSummaryResult { SummaryData = new SpeedSummaryData() };
+        return CreateEmptyResult();
       }
 
       return new CompactionSpeedSummaryResult
@@ -54,49 +55,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
               MidpointRounding.AwayFromZero) // cm per second converted to km per hour...
         }
       };
-    }
-
-    /// <summary>
-    /// Speed summary data returned
-    /// </summary>
-    public class SpeedSummaryData
-    {
-      /// <summary>
-      /// The percentage of cells within speed target
-      /// </summary>
-      [JsonProperty(PropertyName = "percentEqualsTarget")]
-      public double PercentEqualsTarget { get; set; }
-      /// <summary>
-      /// The percentage of the cells over speed target
-      /// </summary>
-      [JsonProperty(PropertyName = "percentGreaterThanTarget")]
-      public double PercentGreaterThanTarget { get; set; }
-      /// <summary>
-      /// The percentage of the cells under speed target
-      /// </summary>
-      [JsonProperty(PropertyName = "percentLessThanTarget")]
-      public double PercentLessThanTarget { get; set; }
-      /// <summary>
-      /// The total area covered by non-null cells in the request area
-      /// </summary>
-      [JsonProperty(PropertyName = "totalAreaCoveredSqMeters")]
-      public double TotalAreaCoveredSqMeters { get; set; }
-      /// <summary>
-      /// Sets the minimum target machine speed. The value should be specified in km\h
-      /// </summary>
-      /// <value>
-      /// The minimum target machine speed.
-      /// </value>
-      [JsonProperty(PropertyName = "minTarget")]
-      public double MinTargetMachineSpeed { get; set; }
-      /// <summary>
-      /// Sets the maximum target machine speed. The value should be specified in km\h
-      /// </summary>
-      /// <value>
-      /// The maximum target machine speed.
-      /// </value>
-      [JsonProperty(PropertyName = "maxTarget")]
-      public double MaxTargetMachineSpeed { get; set; }
     }
   }
 }
