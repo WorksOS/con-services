@@ -65,7 +65,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
         }
 
         /*
-         *   Procedure HandleDecapsulation(AggregatedCellPasses : TICServerSubGridTree);cul
+         *   Procedure HandleDecapsulation(AggregatedCellPasses : TICServerSubGridTree);
                 begin
             // Decapsulate the cell passes so they are accessible
             if kEncapsulateIntermediaryTAGFileProcessingResults then
@@ -84,13 +84,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
             bool AnyMachineEvents = false;
             bool AnyCellPasses = false;
 
-            SiteModel SiteModelFromDM;
-            Machine MachineFromDM;
             // string LastKnownDesignName;
-            int Comparison;
-
-            AggregatedDataIntegratorTask Task;
-            AggregatedDataIntegratorTask TestTask;
 
             EventIntegrator eventIntegrator = new EventIntegrator();
 
@@ -114,6 +108,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
             {
                 try
                 {
+                    AggregatedDataIntegratorTask Task;
+
                     lock (TasksToProcess)
                     {
                         // ====== STAGE 0: DETERMINE THE SITEMODEL AND MACHINE TO PROCESS TAG FILES FOR FROM THE BASE TASK
@@ -157,7 +153,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                         {
                             for (int I = 0; I < Math.Min(TasksToProcess.Count - 1, TasksToProcess.Count /*Removed for POC VLPDSvcLocations.VLPDTagProc_MaxMappedTAGFilesToProcessPerAggregationEpoch*/); I++)
                             {
-                                if (TasksToProcess.TryPeek(out TestTask))
+                                if (TasksToProcess.TryPeek(out AggregatedDataIntegratorTask TestTask))
                                 {
                                     if (TestTask.TargetSiteModelID == Task.TargetSiteModelID && TestTask.TargetMachineID == Task.TargetMachineID &&
                                       AnyCellPasses == (TestTask.AggregatedCellPasses != null) && AnyMachineEvents == (TestTask.AggregatedMachineEvents != null))
@@ -233,7 +229,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                     // Integrate the items present in the 'TargetSiteModel' into the real sitemodel
                     // read from the datamodel file itself, then synchronously write it to the DataModel
                     // avoiding the use of the deferred persistor.
-                    SiteModelFromDM = SiteModels.SiteModels.Instance(StorageMutability.Mutable).GetSiteModel(Task.TargetSiteModelID);
+                    SiteModel SiteModelFromDM = SiteModels.SiteModels.Instance(StorageMutability.Mutable).GetSiteModel(Task.TargetSiteModelID);
 
                     if (SiteModelFromDM == null)
                     {
@@ -241,6 +237,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                         //SIGLogMessage.PublishNoODS(Self, Format('Unable to lock SiteModel %d from the data model file', [Task.TargetSiteModelID]), slmcWarning);
                         return false;
                     }
+
+                    Machine MachineFromDM;
 
                     lock (SiteModelFromDM)
                     {
@@ -313,7 +311,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                             if (SiteModelMachineTargetValues != null)
                             {
                                 //Update machine last known value (events) from integrated model before saving
-                                Comparison = MachineFromDM.LastKnownPositionTimeStamp.CompareTo(Task.TargetMachine.LastKnownPositionTimeStamp);
+                                int Comparison = MachineFromDM.LastKnownPositionTimeStamp.CompareTo(Task.TargetMachine.LastKnownPositionTimeStamp);
                                 if (Comparison < 1)
                                 {
                                     /* TODO...

@@ -211,9 +211,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
                                                         MachineControlStateFlags.GCSControlStateInActiveAuto |
                                                         MachineControlStateFlags.GCSControlStateAutoValueNotDriving;
 
-            MachineAutomaticsMode OldAutomaticsModeState, NewAutomaticsModeState;
+            MachineAutomaticsMode NewAutomaticsModeState;
 
-            OldAutomaticsModeState = _AutomaticsMode;
+            MachineAutomaticsMode OldAutomaticsModeState = _AutomaticsMode;
 
             //   implement unknown automatics state for initialisation purposes
 
@@ -391,7 +391,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         public byte InAvoidZone { get; set; }
 
         public GPSAccuracy GPSAccuracy { get; set; } = GPSAccuracy.Unknown;
-        public short GPSAccuracyErrorLimit { get; set; } = CellPass.NullGPSTolerance;
+        public ushort GPSAccuracyErrorLimit { get; set; } = CellPass.NullGPSTolerance;
 
         public MachineDirection MachineDirection { get { return GetMachineDirection(); } set { SetMachineDirection(value); } }
 
@@ -530,7 +530,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         public virtual void SetMinElevMappingState(bool value) => MinElevMapping = value;
         public virtual void SetInAvoidZoneState(byte value) => InAvoidZone = value;
         public virtual void SetPositioningTechState(PositioningTech value) => PositioningTech = value;
-        public virtual void SetGPSAccuracyState(GPSAccuracy AccValue, short LimValue)
+        public virtual void SetGPSAccuracyState(GPSAccuracy AccValue, ushort LimValue)
         {
             GPSAccuracy = AccValue;
             GPSAccuracyErrorLimit = LimValue;

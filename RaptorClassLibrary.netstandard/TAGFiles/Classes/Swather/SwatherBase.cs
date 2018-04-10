@@ -45,8 +45,6 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
                                           double gridX, double gridY,
                                           CellPass processedCellPass)
         {
-            ServerSubGridTreeLeaf SubGrid;
-
             // Arrange the subgrid that will house this cell pass.
             // This needs to happen if, and only if, we will actually add a cell
             // pass to the subgrid. The reason for this restriction is that we may
@@ -58,7 +56,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
             // server interlock (ICServerModule.Server.AquireLock) and we may interact
             // directly with the subgrid tree being populated
 
-            SubGrid = Grid.ConstructPathToCell(cellX, cellY, SubGridPathConstructionType.CreateLeaf) as ServerSubGridTreeLeaf;
+            ServerSubGridTreeLeaf SubGrid = Grid.ConstructPathToCell(cellX, cellY, SubGridPathConstructionType.CreateLeaf) as ServerSubGridTreeLeaf;
             LastInMemoryLeafSubGrid = SubGrid;
 
             SubGrid.AllocateLeafFullPassStacks();

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Linq;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.SiteModels;

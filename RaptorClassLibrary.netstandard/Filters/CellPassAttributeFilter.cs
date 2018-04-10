@@ -78,7 +78,7 @@ namespace VSS.VisionLink.Raptor.Filters
         public bool MinElevationMapping { get; set; } //MinElevationMapping : TICMinElevMappingState;
         public PositioningTech PositioningTech { get; set; } = PositioningTech.Unknown;
 
-        public short GPSTolerance { get; set; } = CellPass.NullGPSTolerance;
+        public ushort GPSTolerance { get; set; } = CellPass.NullGPSTolerance;
 
         public bool GPSAccuracyIsInclusive { get; set; }
 

@@ -162,8 +162,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
         private void IntegrateIntoLiveGrid(SubGridSegmentIterator SegmentIterator)
         {
             TargetSubGrid = LocateOrCreateAndLockSubgrid(Target,
-                                                          SourceSubGrid.OriginX, SourceSubGrid.OriginY,
-                                                          0 /* TODO:... FAggregatedDataIntegratorLockToken */);
+                SourceSubGrid.OriginX, SourceSubGrid.OriginY,
+                0 /* TODO:... FAggregatedDataIntegratorLockToken */);
             if (TargetSubGrid == null)
             {
                 //TODO add when logging available
@@ -173,16 +173,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 
             try
             {
-                try
+                if (!IntegrateIntoLiveDatabase(SegmentIterator))
                 {
-                    if (!IntegrateIntoLiveDatabase(SegmentIterator))
-                    {
-                        return;
-                    }
-                }
-                catch // (Exception E)
-                {
-                    throw;
+                    return;
                 }
             }
             finally

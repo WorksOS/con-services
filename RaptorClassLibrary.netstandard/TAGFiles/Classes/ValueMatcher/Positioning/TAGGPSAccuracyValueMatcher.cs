@@ -45,7 +45,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Positioning
             }
 
             // Lose the top 2 bits; what remains is the error limit in mm
-            short ErrorLimit = (short)(value & 0x3fff);
+            ushort ErrorLimit = (ushort)(value & 0x3fff);
 
             valueSink.SetGPSAccuracyState(Accuracy, ErrorLimit);
 

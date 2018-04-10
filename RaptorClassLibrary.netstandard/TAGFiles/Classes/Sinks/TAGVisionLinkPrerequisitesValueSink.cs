@@ -4,7 +4,7 @@
     /// Specialised TAG value sink that determines if the prerequisites for processing this information into 
     /// visionlink have been met
     /// </summary>
-    class TAGVisionLinkPrerequisitesValueSink : TAGValueSink
+    public class TAGVisionLinkPrerequisitesValueSink : TAGValueSink
     {
         /// <summary>
         /// Constructor -> proxied to base
@@ -27,7 +27,7 @@
             // aborting test succeeds or the end of the file is reached.
 
             //Check if we need to process a final context to be added into the coordinate array
-            return ValueMatcherState.HaveSeenATimeValue ? Processor.ProcessEpochContext() : true;
+            return !ValueMatcherState.HaveSeenATimeValue || Processor.ProcessEpochContext();
         }
     }
 }

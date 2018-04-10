@@ -8,9 +8,9 @@ namespace VSS.VisionLink.Raptor.Types
     public struct GPSAccuracyAndTolerance
     {
         public GPSAccuracy GPSAccuracy;
-        public short GPSTolerance;
+        public ushort GPSTolerance;
 
-        public GPSAccuracyAndTolerance(GPSAccuracy gPSAccuracyValue, short gPSToleranceValue)
+        public GPSAccuracyAndTolerance(GPSAccuracy gPSAccuracyValue, ushort gPSToleranceValue)
         {
             GPSAccuracy = gPSAccuracyValue;
             GPSTolerance = gPSToleranceValue;

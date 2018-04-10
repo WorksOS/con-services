@@ -2,22 +2,7 @@
 using System.Collections.Generic;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.GridFabric.Arguments
-{
-    [Serializable]
-    public class ProcessTAGFileRequestFileItem
-    {
-        public string FileName { get; set; } 
-
-        public byte[] TagFileContent { get; set; } 
-
-        /// <summary>
-        /// Default no-arg constructor
-        /// </summary>
-        public ProcessTAGFileRequestFileItem()
-        {
-        }
-    }
-
+{   
     [Serializable]
     public class ProcessTAGFileRequestArgument
     {

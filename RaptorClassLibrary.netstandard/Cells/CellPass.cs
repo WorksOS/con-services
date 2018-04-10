@@ -105,7 +105,7 @@ namespace VSS.VisionLink.Raptor.Cells
         /// <summary>
         /// Null GPS tolerance value
         /// </summary>
-        public const short NullGPSTolerance = short.MaxValue;
+        public const ushort NullGPSTolerance = ushort.MaxValue;
 
         /// <summary>
         /// Null machine type value

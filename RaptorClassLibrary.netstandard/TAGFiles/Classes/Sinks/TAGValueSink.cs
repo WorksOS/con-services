@@ -70,7 +70,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks
         public override bool Finishing()
         {
             //Check if we need to process a final context
-            return ValueMatcherState.HaveSeenATimeValue ? Processor.ProcessEpochContext() : true;
+            return !ValueMatcherState.HaveSeenATimeValue || Processor.ProcessEpochContext();
         }
 
         public override void ReadANSIStringValue(TAGDictionaryItem valueType, byte[] value)

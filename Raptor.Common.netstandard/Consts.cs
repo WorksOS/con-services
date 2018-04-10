@@ -35,6 +35,6 @@
         /// <summary>
         /// Largest GPS accuracy error value
         /// </summary>
-        public const short kMaxGPSAccuracyErrorLimit = 0x3FFF;
+        public const ushort kMaxGPSAccuracyErrorLimit = 0x3FFF;
     }
 }

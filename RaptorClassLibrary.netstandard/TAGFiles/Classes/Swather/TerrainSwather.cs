@@ -39,15 +39,11 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
                                              PassType passType,
                                              MachineSide machineSide)
         {
-            CellPass ProcessedCellPass;
             DateTime _TheTime = DateTime.MinValue;
             float _TheHeight = Consts.NullHeight;
 
             // FMinX/Y, FMaxX/Y describe the world coordinate rectangle the encompasses
             // the pair of epochs denoting a processing interval.
-
-            long CellCount;
-            double MachineSpd;
 
             try
             {
@@ -72,11 +68,11 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
 
                 // Check that the swathing of this epoch will not create an inordinate number of cell passes
                 // If so, prevent swathing of this epoch interval
-                CellCount = (long)(CellExtent.MaxX - CellExtent.MinX) * (long)(CellExtent.MaxY - CellExtent.MinY);
+                long CellCount = (long)(CellExtent.MaxX - CellExtent.MinX) * (long)(CellExtent.MaxY - CellExtent.MinY);
                 if (CellCount > kMaxNumberCellPassesPerSwathingEpoch)
                 {
                     /* TODO add when logging available
-                     * SIGLogMessage.PublishNoODS(Self, Format('Epoch %d cell extents %s (SizeX=%d, SizeY=%d) cover too many cell passes to swath (%d), limit is %d per epoch',
+                       SIGLogMessage.PublishNoODS(Self, Format('Epoch %d cell extents %s (SizeX=%d, SizeY=%d) cover too many cell passes to swath (%d), limit is %d per epoch',
 
                                                    [ProcessedEpochNumber,
                                                     CellExtent.AsText, CellExtent.SizeX, CellExtent.SizeY,
@@ -146,7 +142,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
                             // Fill in all the details for the processed cell pass, using the tag event lookups
                             // to make sure the appropriate values at the cell pass time are used.
 
-                            ProcessedCellPass = new CellPass();
+                            CellPass ProcessedCellPass = new CellPass();
 
                             if (BaseProductionDataSupportedByMachine)
                             {
@@ -180,7 +176,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
                                 ProcessedCellPass.RadioLatency = Processor.AgeOfCorrections.GetAgeOfCorrectionValueAtDateTime(_TheTime);
                                 ProcessedCellPass.MaterialTemperature = Processor.ICTemperatureValues.GetMaterialTemperatureValueAtDateTime(_TheTime);
 
-                                MachineSpd = Processor.ICMachineSpeedValues.GetMachineSpeedValueAtDateTime(_TheTime);
+                                double MachineSpd = Processor.ICMachineSpeedValues.GetMachineSpeedValueAtDateTime(_TheTime);
                                 if (MachineSpd == Consts.NullDouble)
                                 {
                                     MachineSpd = Processor.CalculatedMachineSpeed;

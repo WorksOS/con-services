@@ -44,8 +44,7 @@ namespace VSS.VisionLink.Raptor.Events
         public EfficientProductionEventChangeList<EfficientProductionEventChangeBase<GPSMode>, GPSMode> GPSModeStateEvents;
 
         /// <summary>
-        /// Records the positioning technology (eg: GPS or UTS) being used at the time 
-        /// production measurements were being made
+        /// Records the positioning technology (eg: GPS or UTS) being used at the time production measurements were being made
         /// </summary>
         public EfficientProductionEventChangeList<EfficientProductionEventChangeBase<PositioningTech>, PositioningTech> PositioningTechStateEvents;
 
@@ -128,7 +127,7 @@ namespace VSS.VisionLink.Raptor.Events
         /// Records the Resonance Meter Value jump threshold configured on the machine control system
         /// </summary>
         public EfficientProductionEventChangeList<EfficientProductionEventChangeBase<short>, short> RMVJumpThresholdEvents;
-
+      
         /// <summary>
         /// Create all defined event lists in one operation.
         /// </summary>
@@ -139,6 +138,7 @@ namespace VSS.VisionLink.Raptor.Events
             AutoVibrationStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<AutoVibrationState>, AutoVibrationState>(MachineID, SiteModel.ID, ProductionEventType.AutoVibrationStateChange);
             GPSModeStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<GPSMode>, GPSMode>(MachineID, SiteModel.ID, ProductionEventType.GPSModeChange);
             PositioningTechStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<PositioningTech>, PositioningTech>(MachineID, SiteModel.ID, ProductionEventType.PositioningTech);
+
             DesignNameIDStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<int>, int>(MachineID, SiteModel.ID, ProductionEventType.DesignChange);
             MachineAutomaticsStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<MachineAutomaticsMode>, MachineAutomaticsMode>(MachineID, SiteModel.ID, ProductionEventType.MachineAutomaticsChange);
             MachineGearStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<MachineGear>, MachineGear>(MachineID, SiteModel.ID, ProductionEventType.MachineGearChange);
@@ -232,6 +232,7 @@ namespace VSS.VisionLink.Raptor.Events
             LayerIDStateEvents = LayerIDStateEvents.LoadFromStore(storageProxy) as EfficientProductionEventChangeList<EfficientProductionEventChangeBase<ushort>, ushort>;
             DesignNameStateEvents = DesignNameStateEvents.LoadFromStore(storageProxy) as EfficientProductionEventChangeList<EfficientProductionEventChangeBase<string>, string>;
             ICFlagsStateEvents = DesignNameStateEvents.LoadFromStore(storageProxy) as EfficientProductionEventChangeList<EfficientProductionEventChangeBase<byte>, byte>;
+
             TargetCCVStateEvents = TargetCCVStateEvents.LoadFromStore(storageProxy) as EfficientProductionEventChangeList<EfficientProductionEventChangeBase<short>, short>;
             TargetCCAStateEvents = TargetCCAStateEvents.LoadFromStore(storageProxy) as EfficientProductionEventChangeList<EfficientProductionEventChangeBase<short>, short>;
             TargetMDPStateEvents = TargetMDPStateEvents.LoadFromStore(storageProxy) as EfficientProductionEventChangeList<EfficientProductionEventChangeBase<short>, short>;
@@ -239,6 +240,7 @@ namespace VSS.VisionLink.Raptor.Events
             TargetMinMaterialTemperature = TargetMinMaterialTemperature.LoadFromStore(storageProxy) as EfficientProductionEventChangeList<EfficientProductionEventChangeBase<ushort>, ushort>;
             TargetMaxMaterialTemperature = TargetMaxMaterialTemperature.LoadFromStore(storageProxy) as EfficientProductionEventChangeList<EfficientProductionEventChangeBase<ushort>, ushort>;
             TargetLiftThickness = TargetLiftThickness.LoadFromStore(storageProxy) as EfficientProductionEventChangeList<EfficientProductionEventChangeBase<float>, float>;
+
             RMVJumpThresholdEvents = RMVJumpThresholdEvents.LoadFromStore(storageProxy) as EfficientProductionEventChangeList<EfficientProductionEventChangeBase<short>, short>;
 
             return true;

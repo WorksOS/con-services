@@ -71,8 +71,6 @@ using VSS.VisionLink.Raptor.TAGFiles.Types;
   1	Unsigned Int	Data Dictionary Minor version
   8	Unsigned Int	Byte offset to field and type table
 
-
-
   If the byte offset in the header is zero, then the field and type table is
   found immedatley following the header, and the data begins immediatley
   afterwards. This form of the file may be used when the file does not support
@@ -115,12 +113,22 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
     public class TAGFile
     {
         private TAGHeader Header = new TAGHeader();
+
         private TAGDictionary Dictionary { get; set; } = new TAGDictionary();
 
+        /// <summary>
+        /// Default no-arg constructor
+        /// </summary>
         public TAGFile()
         {
         }
 
+        /// <summary>
+        /// Reads the context of a TAG file usign the provided reader and sink
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="sink"></param>
+        /// <returns></returns>
         public TAGReadResult Read(TAGReader reader, TAGValueSinkBase sink)
         {
             try
@@ -149,14 +157,19 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
                     {
                         long StreamPos = reader.NybblePosition;
                         reader.NybblePosition = Header.FieldAndTypeTableOffset * 2; // FieldAndTypeTableOffset is in bytes
-                        Dictionary.Read(reader);
+
+                        if (!Dictionary.Read(reader))
+                            return TAGReadResult.InvalidDictionary;
+
                         reader.NybblePosition = StreamPos;
 
                         DataEndPos = Header.FieldAndTypeTableOffset * 2; // FieldAndTypeTableOffset is in bytes
                     }
                     else
                     {
-                        Dictionary.Read(reader);
+                        if (!Dictionary.Read(reader))
+                            return TAGReadResult.InvalidDictionary;
+
                         DataEndPos = reader.GetSize();
                     }
                 }
@@ -236,8 +249,6 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
                             case TAGDataType.tEmptyType:
                                 sink.ReadEmptyValue(DictionaryEntry);
                                 break;
-                          //  default:
-                          //      break;
                         }
                     }
                     catch // (Exception E)
@@ -276,6 +287,12 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
             return TAGReadResult.NoError;
         }
             
+        /// <summary>
+        /// Read the content of a TAG file and routes it to the provided sink
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="sink"></param>
+        /// <returns></returns>
         public TAGReadResult Read(string fileName, TAGValueSinkBase sink)
         {
             using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))

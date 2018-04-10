@@ -232,6 +232,7 @@ namespace VSS.VisionLink.Raptor.Events
             LayerIDStateEvents = LayerIDStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<ushort>, ushort>;
             DesignNameStateEvents = DesignNameStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<string>, string>;
             ICFlagsStateEvents = DesignNameStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<byte>, byte>;
+
             TargetCCVStateEvents = TargetCCVStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<short>, short>;
             TargetCCAStateEvents = TargetCCAStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<short>, short>;
             TargetMDPStateEvents = TargetMDPStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<short>, short>;
@@ -239,6 +240,7 @@ namespace VSS.VisionLink.Raptor.Events
             TargetMinMaterialTemperature = TargetMinMaterialTemperature.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<ushort>, ushort>;
             TargetMaxMaterialTemperature = TargetMaxMaterialTemperature.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<ushort>, ushort>;
             TargetLiftThickness = TargetLiftThickness.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<float>, float>;
+
             RMVJumpThresholdEvents = RMVJumpThresholdEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<short>, short>;
 
             return true;

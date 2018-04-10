@@ -22,6 +22,12 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// </summary>
         public short ID;             // eg: 12. Value will refer to type by using this value
 
+        /// <summary>
+        /// Constructor for TAG dictionary item accepting name, type and id
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="type"></param>
+        /// <param name="id"></param>
         public TAGDictionaryItem(string name, TAGDataType type, short id)
         {
             Name = name;

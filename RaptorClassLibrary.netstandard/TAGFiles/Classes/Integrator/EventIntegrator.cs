@@ -157,9 +157,6 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
             }
         }
 
-
-        //        private void PerformListIntegration(ProductionEventChangeList<ProductionEventChangeBase> Source,
-        //                                          ProductionEventChangeList<ProductionEventChangeBase> Target)
         private void PerformListIntegration(IProductionEventChangeList source,
                                             IProductionEventChangeList target)
         {
@@ -189,10 +186,6 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
             IProductionEventChangeList SourceList;
             IProductionEventChangeList TargetList;
             IProductionEventChangeList SourceStartEndRecordedDataList;
-
-            //            ProductionEventChangeList<ProductionEventChangeBase> SourceList;
-            //            ProductionEventChangeList<ProductionEventChangeBase> TargetList;
-            //            ProductionEventChangeList<ProductionEventChangeBase<ProductionEventType>, ProductionEventType> SourceStartEndRecordedDataList;
 
             IntegrateMachineDesignEventNames();
 

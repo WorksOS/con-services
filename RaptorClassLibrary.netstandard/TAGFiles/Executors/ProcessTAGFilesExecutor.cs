@@ -5,15 +5,19 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using VSS.VisionLink.Raptor.Executors;
-using VSS.VisionLink.Raptor.Machines;
-using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.Storage;
+//using VSS.VisionLink.Raptor.Machines;
+//using VSS.VisionLink.Raptor.SiteModels;
+//using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator;
 using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Responses;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Executors
 {
+    /// <summary>
+    /// Provides an executor that accepts a set of TAG files to be processed and orchestrates their processing using
+    /// appropriate converters and aggregator/integrator workers.
+    /// </summary>
     public static class ProcessTAGFilesExecutor
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -24,7 +28,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Executors
 
             ProcessTAGFileResponse response = new ProcessTAGFileResponse();
 
-            int batchSize = 20;
+            const int batchSize = 20;
             int batchCount = 0;
 
             // Create the integration machinery responsibvle for tracking tasks and integrating them into the database
@@ -33,8 +37,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Executors
             List<AggregatedDataIntegratorTask> ProcessedTasks = new List<AggregatedDataIntegratorTask>();
 
             // Create the site model and machine etc to aggregate the processed TAG file into
-            SiteModel siteModel = SiteModels.SiteModels.Instance(StorageMutability.Mutable).GetSiteModel(ProjectID, true);
-            Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
+//            SiteModel siteModel = SiteModels.SiteModels.Instance(StorageMutability.Mutable).GetSiteModel(ProjectID, true);
+//            Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
 
             // Process each file into a task, and batch tasks into groups for integration to reduce the number of cache 
             // updates made for subgrid changes
@@ -64,7 +68,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Executors
                         batchCount = 0;
                     }
 
-                    response.Results.Add(new ProcessTAGFileResponseItem() { FileName = item.FileName, Success = true /* additional state goes here */ });
+                    response.Results.Add(new ProcessTAGFileResponseItem() { FileName = item.FileName, Success = true });
                 }
                 catch (Exception E)
                 {

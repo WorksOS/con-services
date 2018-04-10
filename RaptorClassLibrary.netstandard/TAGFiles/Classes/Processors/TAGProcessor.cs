@@ -7,6 +7,7 @@ using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
 using VSS.VisionLink.Raptor.TAGFiles.Classes.Swather;
 using VSS.VisionLink.Raptor.TAGFiles.Types;
+using VSS.VisionLink.Raptor.Time;
 using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes
@@ -63,11 +64,6 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         // has collected the data being processed.
         private Machine Machine;
 
-        // MachineTargetValueChanges is a reference to an object that records all the
-        // machine state events of interest that we encounter while processing the
-        // file
-        //private ProductionEventChanges MachineTargetValueChanges;
-
         // FICMachineTargetValueChangesAggregator is an object that aggregates all the
         // machine state events of interest that we encounter while processing the
         // file. These are then integrated into the machine events in a single step
@@ -75,14 +71,15 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         public EfficientProductionEventChanges MachineTargetValueChangesAggregator { get; set; }
 
         /*
-         *      // FOnProgressCheck provides a callback to the owner of the ST processing
-              // currently underway. The owner may abort the processing by returning
-              // false when the event is called.
-              FOnProgressCheck : TSTProcessingProgressCheckEvent;
+        // FOnProgressCheck provides a callback to the owner of the ST processing
+        // currently underway. The owner may abort the processing by returning
+        // false when the event is called.
+        FOnProgressCheck : TSTProcessingProgressCheckEvent;
 
-              // FOnAbortProcessing is an event that allows the processor to advise a third
-              // party that the processing had been aborted.
-              FOnAbortProcessing : TNotifyEvent; */
+        // FOnAbortProcessing is an event that allows the processor to advise a third
+        // party that the processing had been aborted.
+        FOnAbortProcessing : TNotifyEvent; 
+        */
 
         private DateTime TagFileStartTime = DateTime.MinValue;
         private bool HasGPSModeBeenSet = false;
@@ -381,15 +378,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 
             MachineGear Gear = MachineGear.Null;
 
-            switch (Value)
-            {
-                case MachineDirection.Forward:
-                    Gear = MachineGear.Forward;
-                    break;
-                case MachineDirection.Reverse:
-                    Gear = MachineGear.Reverse;
-                    break;
-            }
+            if (Value == MachineDirection.Forward)
+                Gear = MachineGear.Forward;
+            else if (Value == MachineDirection.Reverse)
+                Gear = MachineGear.Reverse;
 
             if (DataTime != DateTime.MinValue && (Gear == MachineGear.Forward || Gear == MachineGear.Reverse))
                 MachineTargetValueChangesAggregator.MachineGearStateEvents.PutValueAtDate(DataTime, Gear);
@@ -531,7 +523,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
             else
             {
                 //{$IFDEF DENSE_TAG_FILE_LOGGING}
-                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in RMVJumpThresholdEvents', slpmcDebug);
+                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetRMVJumpThresholdValue', slpmcDebug);
                 //{$ENDIF}
             }
         }
@@ -548,27 +540,102 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
             else
             {
                 // {$IFDEF DENSE_TAG_FILE_LOGGING}
-                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SVOICSnailTrailProcessor.SetICSensorType', slpmcDebug);
+                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICSensorType', slpmcDebug);
+                //{$ENDIF}
+            }
+        }
+
+        protected override void SetAutomaticsMode(MachineAutomaticsMode Value)
+        {
+            base.SetAutomaticsMode(Value);
+
+            if (DataTime != DateTime.MinValue)
+                MachineTargetValueChangesAggregator.MachineAutomaticsStateEvents.PutValueAtDate(DataTime, Value);
+            else
+            {
+                //{$IFDEF DENSE_TAG_FILE_LOGGING}
+                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetAutomaticsMode', slpmcDebug);
+                //{$ENDIF}
+            }
+        }
+
+        protected override void SetICLayerIDValue(ushort Value)
+        {
+            base.SetICLayerIDValue(Value);
+
+            if (DataTime != DateTime.MinValue)
+                MachineTargetValueChangesAggregator.LayerIDStateEvents.PutValueAtDate(DataTime, Value);
+            else
+            {
+                //{$IFDEF DENSE_TAG_FILE_LOGGING}
+                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetICLayerIDValue', slpmcDebug);
+                //{$ENDIF}
+            }
+        }
+
+        public override void SetGPSMode(GPSMode Value)
+        {
+            base.SetGPSMode(Value);
+
+            if (DataTime != DateTime.MinValue)
+            {
+                if (PositioningTech == PositioningTech.Unknown || PositioningTech == PositioningTech.UTS)
+                {
+                    if (Value != GPSMode.NoGPS)
+                        MachineTargetValueChangesAggregator.PositioningTechStateEvents.PutValueAtDate(DataTime, PositioningTech.GPS);
+                    else
+                        MachineTargetValueChangesAggregator.PositioningTechStateEvents.PutValueAtDate(DataTime, PositioningTech.UTS);
+                }
+
+                MachineTargetValueChangesAggregator.GPSModeStateEvents.PutValueAtDate(DataTime, Value);
+
+                HasGPSModeBeenSet = true;
+            }
+            else
+            {
+                //{$IFDEF DENSE_TAG_FILE_LOGGING}
+                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetGPSMode', slpmcDebug);
+                //{$ENDIF}
+            }
+        }
+
+        public override void SetMinElevMappingState(bool Value)
+        {
+            base.SetMinElevMappingState(Value);
+
+            if (DataTime != DateTime.MinValue)
+                MachineTargetValueChangesAggregator.MinElevMappingStateEvents.PutValueAtDate(DataTime, Value);
+            else
+            {
+                //{$IFDEF DENSE_TAG_FILE_LOGGING}
+                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetMinElevMappingState', slpmcDebug);
+                //{$ENDIF}
+            }
+        }
+
+        public override void SetGPSAccuracyState(GPSAccuracy accuracy, ushort tolerance)
+        {
+            base.SetGPSAccuracyState(accuracy, tolerance);
+
+            if (DataTime != DateTime.MinValue)
+                MachineTargetValueChangesAggregator.GPSAccuracyAndToleranceStateEvents.PutValueAtDate(DataTime, new GPSAccuracyAndTolerance(accuracy, tolerance));
+            else
+            {
+                //{$IFDEF DENSE_TAG_FILE_LOGGING}
+                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetGPSAccuracyState', slpmcDebug);
                 //{$ENDIF}
             }
         }
 
         /*
-              procedure SetICSonic3D                  (const Value :Byte                  ); override;
-              procedure SetAutomaticsMode             (const Value :TGCSAutomaticsMode    ); override;
-              procedure SetUTMZone                    (const Value :Byte                  ); override;
-              procedure SetCSType                     (const Value :Byte                  ); override;
-              procedure SetICLayerIDValue             (const Value :TICLayerIdValue       ); override;
+      
+       function MaxEpochInterval: Double; override;
+       function IgnoreInvalidPositions: Boolean; override;
 
-              function MaxEpochInterval: Double; override;
-              function IgnoreInvalidPositions: Boolean; override;
-
-              procedure SetGPSMode(const Value :TICGPSMode); override;
-              procedure SetMinElevMappingState(const Value: TICMinElevMappingState); override;
-              procedure SetInAvoidZoneState(const Value: TICInAvoidZoneState); override;
-              procedure SetGPSAccuracyState(const AccValue: TICGPSAccuracy; const LimValue: TICGPSTolerance); override;
-              procedure SetAgeOfCorrection(const Value: Byte); override;
-                 */
+       procedure SetICSonic3D                  (const Value :Byte                  ); override;
+       procedure SetInAvoidZoneState(const Value: TICInAvoidZoneState); override;
+       procedure SetAgeOfCorrection(const Value: Byte); override;
+       */
 
         /// <summary>
         /// Updates the bounding box surrounding the area of the project worked on with the current
@@ -679,12 +746,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         /// <returns></returns>
         public override bool DoEpochPreProcessAction()
         {
-            if (EpochContainsProofingRunDescription() && !ProcessProofingPassInformation())
-            {
-                return false;
-            }
-
-            return true;
+            return !EpochContainsProofingRunDescription() || ProcessProofingPassInformation();
         }
     }
 }
