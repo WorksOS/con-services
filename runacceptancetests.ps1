@@ -16,7 +16,7 @@ if ($mockWebAPIContainerName.length -lt 1) {
 }
 
 if ($3dpWebAPIcontainerName.length -lt 1) {
-    Write-Host "Failed to find `mockprojectwebapi` container. Exiting" -ForegroundColor "red"
+    Write-Host "Failed to find `3DP webapi` container. Exiting" -ForegroundColor "red"
     Exit -1
 }
 
