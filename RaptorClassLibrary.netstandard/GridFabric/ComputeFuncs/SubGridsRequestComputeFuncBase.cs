@@ -18,6 +18,7 @@ using VSS.VisionLink.Raptor.Utilities;
 using VSS.VisionLink.Raptor.Designs.Storage;
 using VSS.VisionLink.Raptor.Services.Designs;
 using VSS.Velociraptor.DesignProfiling;
+using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 
 namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 {

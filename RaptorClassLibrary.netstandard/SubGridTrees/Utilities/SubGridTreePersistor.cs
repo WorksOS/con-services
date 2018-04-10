@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees
+namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
 {
     /// <summary>
     /// SubGridTreePersistor is a helper class that coordinates serialising and deserialising the 
@@ -57,38 +57,22 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <returns></returns>
         public static bool Write(ISubGridTree tree, string header, int version, BinaryWriter writer)
         {
-            bool Result;
+            writer.Write(header);
+            writer.Write(version);
 
-            try
-            {
-                writer.Write(header);
-                writer.Write(version);
+            // Write place holder for stream size
+            long SizePosition = writer.BaseStream.Position;
+            writer.Write((long) 0);
 
-                // Write place holder for stream size
-                long SizePosition = writer.BaseStream.Position;
-                writer.Write((long) 0);
+            if (!SerialiseOut(tree, writer))
+                return false;
 
-                Result = SerialiseOut(tree, writer);
-                if (!Result)
-                {
-                    return false;
-                }
+            // Write the size of the stream in to the header
+            long Size = writer.BaseStream.Position;
+            writer.BaseStream.Seek(SizePosition, SeekOrigin.Begin);
+            writer.Write(Size);
 
-                // Write the size of the stream in to the header
-                long Size = writer.BaseStream.Position;
-                writer.BaseStream.Seek(SizePosition, SeekOrigin.Begin);
-                writer.Write(Size);
-
-                Result = true;
-            }
-            catch
-            {
-                //on EAssertionFailed do
-                //    Raise;
-                throw;
-            }
-
-            return Result;
+            return true;
         }
 
         /// <summary>

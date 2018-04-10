@@ -1,15 +1,11 @@
-﻿using VSS.VisionLink.Raptor.SubGridTrees;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.IO;
 using System.Text;
-using System.Threading.Tasks;
-using System.IO;
+using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 using Xunit;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Tests
 {
-        public class SubGridTreePersistorTests
+    public class SubGridTreePersistorTests
     {
         [Fact()]
         public void Test_SubGridTreePersistor_Write_Empty()

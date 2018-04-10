@@ -20,10 +20,7 @@ namespace VSS.VisionLink.Raptor.Analytics.GridFabric.Responses
         /// <returns></returns>
         public CutFillStatisticsResponse AggregateWith(CutFillStatisticsResponse other)
         {
-            if (Counts == null)
-            {
-                Counts = new long[other.Counts.Length];
-            }
+            Counts = Counts ?? new long[other.Counts.Length];
 
             Debug.Assert(Counts.Length == other.Counts.Length);
 

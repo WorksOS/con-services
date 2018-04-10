@@ -1,26 +1,14 @@
-﻿using VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Server;
-using VSS.VisionLink.Raptor.Events;
-using VSS.VisionLink.Raptor.SubGridTrees;
-using VSS.VisionLink.Raptor.Executors;
+﻿using System.Collections.Generic;
 using System.IO;
-using VSS.VisionLink.Raptor.TAGFiles.Tests;
-using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.Storage;
-using VSS.VisionLink.Raptor.SiteModels;
+using VSS.VisionLink.Raptor.Executors;
 using VSS.VisionLink.Raptor.Machines;
+using VSS.VisionLink.Raptor.SiteModels;
 using VSSTests.TRex.Tests.Common;
 using Xunit;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator.Tests
 {
-        public class AggregatedDataIntegratorWorkerTests
+    public class AggregatedDataIntegratorWorkerTests
     {
         [Fact(Skip = "Not Implemented")]
         public void Test_AggregatedDataIntegratorWorker_AggregatedDataIntegratorWorkerTest()
