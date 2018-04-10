@@ -7,16 +7,16 @@ function WaitForContainer {
 
 # Validate the required containers are running
 $containers = docker ps
-$mockWebAPIContainerName = $containers | select-string -Pattern "[a-zA-Z0-9-_-]+mockprojectwebapi_\d"  | Select-Object -ExpandProperty Matches |  Select-Object -First 1 -ExpandProperty Value
-$3dpWebAPIcontainerName = $containers | select-string -Pattern "[a-zA-Z0-9-_-]+_webapi_\d"  | Select-Object -ExpandProperty Matches |  Select-Object -First 1 -ExpandProperty Value
+$mockWebAPIContainerName = $containers | Select-String -Pattern "[a-zA-Z0-9-_-]+mockprojectwebapi_\d"  | Select-Object -ExpandProperty Matches |  Select-Object -First 1 -ExpandProperty Value
+$3dpWebAPIcontainerName = $containers | Select-String -Pattern "[a-zA-Z0-9-_-]+_webapi_\d"  | Select-Object -ExpandProperty Matches |  Select-Object -First 1 -ExpandProperty Value
 
-if ($mockWebAPIContainerName.length -lt 1) {
-    Write-Host "Failed to find `mockprojectwebapi` container. Exiting" -ForegroundColor "red"
+if ($mockWebAPIContainerName.Length -lt 1) {
+    Write-Host "Failed to find `mockprojectwebapi` container. Exiting" -ForegroundColor DarkRed
     Exit -1
 }
 
-if ($3dpWebAPIcontainerName.length -lt 1) {
-    Write-Host "Failed to find `3DP webapi` container. Exiting" -ForegroundColor "red"
+if ($3dpWebAPIcontainerName.Length -lt 1) {
+    Write-Host "Failed to find `3DP webapi` container. Exiting" -ForegroundColor DarkRed
     Exit -1
 }
 
@@ -25,7 +25,7 @@ WaitForContainer
 
 # $? is true if last command was a success, false otherwise
 if (!$?) {
-    Write-Host "No IP address set, attempting again in 10 seconds..." - -ForegroundColor "red"
+    Write-Host "No IP address set, attempting again in 10 seconds..." - -ForegroundColor DarkRed
     docker ps -a
     Start-Sleep -Seconds 10
     WaitForContainer
