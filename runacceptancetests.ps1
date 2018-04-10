@@ -1,6 +1,7 @@
 Write-Host "Running acceptance tests" -ForegroundColor DarkGray
 
 $global:ipAddress = ""
+
 function WaitForContainer {
     PowerShell.exe -ExecutionPolicy Bypass -Command .\waitForContainer.ps1 -IP $global:ipAddress
 }
