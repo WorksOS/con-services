@@ -30,11 +30,8 @@ node('Jenkins-Win2016-Raptor') {
     try
     {
         // Presence of the containers indicate another is building. Abort immediately.
-        def status = bat "PowerShell.exe -ExecutionPolicy Bypass -Command check-container-state"
-        if (status != 0) {
-            exit status
-        }
-
+        bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\check-container-state.ps1"
+        
         stage ('Checkout') {
             checkout scm
         }
