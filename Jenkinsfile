@@ -46,7 +46,7 @@ node('Jenkins-Win2016-Raptor') {
 			bat "./acceptancetests.bat"
 			try {
 				stage ('Compose containers') {
-					bat  "PowerShell.exe -ExecutionPolicy Bypass -Command .\\start_containers.ps1"
+					bat  "PowerShell.exe -ExecutionPolicy Bypass -Command .\\start_containers.ps1 -branch ${branchName}"
 				}
 				stage ('Run Acceptance Tests') {
 					bat  "PowerShell.exe -ExecutionPolicy Bypass -Command .\\runacceptancetests.ps1"
