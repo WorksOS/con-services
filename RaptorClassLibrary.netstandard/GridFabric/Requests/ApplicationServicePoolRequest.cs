@@ -14,9 +14,5 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         public ApplicationServicePoolRequest() : base(RaptorGrids.RaptorImmutableGridName(), ServerRoles.ASNODE)
         {
         }
-
-//        public ApplicationServicePoolRequest(string gridName, string role) : base(gridName, role)
-//        {
-//        }
     }
 }

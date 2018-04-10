@@ -153,15 +153,10 @@ namespace VSS.VisionLink.Raptor.Volumes
         {
             float BaseZ, TopZ;
 
-            double VolumeDifference;
-            bool CellUsedInVolumeCalc;
-
             // DesignHeights represents all the valid spot elevations for the cells in the
             // subgrid being processed
             ClientHeightLeafSubGrid DesignHeights = null;
             DesignProfilerRequestResult ProfilerRequestResult = DesignProfilerRequestResult.UnknownError;
-
-            ISubGrid CoverageMapSubgrid;
 
             double BelowToleranceToCheck, AboveToleranceToCheck;
             double ElevationDiff;
@@ -208,19 +203,16 @@ namespace VSS.VisionLink.Raptor.Volumes
                         }
                         */
 
-                        if (VolumeType == VolumeComputationType.BetweenFilterAndDesign || VolumeType == VolumeComputationType.BetweenDesignAndFilter)
+                        if (VolumeType == VolumeComputationType.BetweenFilterAndDesign ||
+                            VolumeType == VolumeComputationType.BetweenDesignAndFilter)
                         {
                             TopZ = DesignHeights?.Cells[I, J] ?? Consts.NullHeight;
 
                             if (VolumeType == VolumeComputationType.BetweenDesignAndFilter)
-                            {
                                 MinMax.Swap(ref BaseZ, ref TopZ);
-                            }
                         }
                         else
-                        {
                             TopZ = TopScanSubGrid.Cells[I, J];
-                        }
 
                         switch (VolumeType)
                         {
@@ -228,87 +220,82 @@ namespace VSS.VisionLink.Raptor.Volumes
                                 break;
 
                             case VolumeComputationType.AboveLevel:
+                            {
+                                if (BaseZ != Consts.NullHeight)
                                 {
-                                    if (BaseZ != Consts.NullHeight)
-                                    {
-                                        CellsUsed++;
-                                        if (BaseZ > BaseLevel)
-                                            Volume += CellArea * (BaseZ - BaseLevel);
-                                    }
-                                    else
-                                    {
-                                        CellsDiscarded++;
-                                    }
-                                    break;
+                                    CellsUsed++;
+                                    if (BaseZ > BaseLevel)
+                                        Volume += CellArea * (BaseZ - BaseLevel);
                                 }
+                                else
+                                    CellsDiscarded++;
+
+                                break;
+                            }
 
                             case VolumeComputationType.Between2Levels:
+                            {
+                                if (BaseZ != Consts.NullHeight)
                                 {
-                                    if (BaseZ != Consts.NullHeight)
-                                    {
-                                        CellsUsed++;
+                                    CellsUsed++;
 
-                                        if (BaseZ > BaseLevel)
-                                        {
-                                            Volume += CellArea * (BaseZ < TopLevel ? (BaseZ - BaseLevel) : (TopLevel - BaseLevel));
-                                        }
-                                    }
-                                    else
-                                    {
-                                        CellsDiscarded++;
-                                    }
-                                    break;
+                                    if (BaseZ > BaseLevel)
+                                        Volume += CellArea * (BaseZ < TopLevel ? (BaseZ - BaseLevel) : (TopLevel - BaseLevel));
                                 }
+                                else
+                                    CellsDiscarded++;
+
+                                break;
+                            }
 
                             case VolumeComputationType.AboveFilter:
                             case VolumeComputationType.Between2Filters:
                             case VolumeComputationType.BetweenFilterAndDesign:
                             case VolumeComputationType.BetweenDesignAndFilter:
+                            {
+                                if (BaseZ != Consts.NullHeight && TopZ != Consts.NullHeight)
                                 {
-                                    if (BaseZ != Consts.NullHeight && TopZ != Consts.NullHeight)
+                                    CellsUsed++;
+
+                                    //  Note the fact we have processed this cell in the coverage map
+                                    Bits.SetBit(I, J);
+
+                                    // FCoverageMap.Cells[BaseScanSubGrid.OriginX + I, BaseScanSubGrid.OriginY + J] := True;
+
+                                    bool CellUsedInVolumeCalc = (TopZ - BaseZ >= FillTolerance) || (BaseZ - TopZ >= CutTolerance);
+
+                                    // Accumulate volumes
+                                    if (CellUsedInVolumeCalc)
                                     {
-                                        CellsUsed++;
+                                        double VolumeDifference = CellArea * (TopZ - BaseZ);
 
-                                        //  Note the fact we have processed this cell in the coverage map
-                                        Bits.SetBit(I, J);
+                                        // Accumulate the 'surplus' volume. Ie: the simple summation of
+                                        // all cuts and fills.
+                                        Volume += VolumeDifference;
 
-                                        // FCoverageMap.Cells[BaseScanSubGrid.OriginX + I,
-                                        //                    BaseScanSubGrid.OriginY + J] := True;
-
-                                        CellUsedInVolumeCalc = (TopZ - BaseZ >= FillTolerance) || (BaseZ - TopZ >= CutTolerance);
-
-                                        // Accumulate volumes
-                                        if (CellUsedInVolumeCalc)
+                                        // Accumulate the cuts and fills into discrete cut and fill quantities
+                                        if (TopZ < BaseZ)
                                         {
-                                            VolumeDifference = CellArea * (TopZ - BaseZ);
-
-                                            // Accumulate the 'surplus' volume. Ie: the simple summation of
-                                            // all cuts and fills.
-                                            Volume += VolumeDifference;
-
-                                            // Accumulate the cuts and fills into discrete cut and fill quantities
-                                            if (TopZ < BaseZ)
-                                            {
-                                                CellsUsedCut++;
-                                                CutFillVolume.AddCutVolume(Math.Abs(VolumeDifference));
-                                            }
-                                            else
-                                            {
-                                                CellsUsedFill++;
-                                                CutFillVolume.AddFillVolume(Math.Abs(VolumeDifference));
-                                            }
+                                            CellsUsedCut++;
+                                            CutFillVolume.AddCutVolume(Math.Abs(VolumeDifference));
                                         }
                                         else
                                         {
-                                            // Note the fact there was no volume change in this cell
-                                            // NoChangeMap.Cells[BaseScanSubGrid.OriginX + I, BaseScanSubGrid.OriginY + J] := True;
+                                            CellsUsedFill++;
+                                            CutFillVolume.AddFillVolume(Math.Abs(VolumeDifference));
                                         }
                                     }
                                     else
                                     {
-                                        CellsDiscarded++;
+                                        // Note the fact there was no volume change in this cell
+                                        // NoChangeMap.Cells[BaseScanSubGrid.OriginX + I, BaseScanSubGrid.OriginY + J] := True;
                                     }
                                 }
+                                else
+                                {
+                                    CellsDiscarded++;
+                                }
+                            }
                                 break;
 
                             default:
@@ -338,39 +325,25 @@ namespace VSS.VisionLink.Raptor.Volumes
                     TopZ = TopScanSubGrid.Cells[I, J];
 
                     if (BaseZ != Consts.NullHeight || TopZ != Consts.NullHeight)
-                    {
                         CellsScanned++;
-                    }
 
                         //Test if we don't have NULL values and carry on
-                        if (BaseZ != Consts.NullHeight && TopZ != Consts.NullHeight)
+                    if (BaseZ != Consts.NullHeight && TopZ != Consts.NullHeight)
                     {
                         Bits.SetBit(I, J);
                         ElevationDiff = TopZ - BaseZ;
 
                         if (ElevationDiff <= AboveToleranceToCheck && ElevationDiff >= BelowToleranceToCheck)
-                        {
                             CellsUsed++;
-                        }
                         else
-                        {
                             if (ElevationDiff > AboveToleranceToCheck)
-                            {
                                 CellsUsedFill++;
-                            }
                             else
-                            {
                                 if (ElevationDiff < BelowToleranceToCheck)
-                                {
                                     CellsUsedCut++;
-                                }
-                            }
-                        }
                     }
                     else
-                    {
                         CellsDiscarded++;
-                    }
                 });
             }
 
@@ -379,12 +352,10 @@ namespace VSS.VisionLink.Raptor.Volumes
             if (!Bits.IsEmpty())
             {
                 if (RequiresSerialisation)
-                {
                     Monitor.Enter(CoverageMap);
-                }
                 try
                 {
-                    CoverageMapSubgrid = CoverageMap.ConstructPathToCell(BaseScanSubGrid.OriginX, BaseScanSubGrid.OriginY, SubGridPathConstructionType.CreateLeaf);
+                    ISubGrid CoverageMapSubgrid = CoverageMap.ConstructPathToCell(BaseScanSubGrid.OriginX, BaseScanSubGrid.OriginY, SubGridPathConstructionType.CreateLeaf);
 
                     if (CoverageMapSubgrid != null)
                     {
@@ -392,16 +363,12 @@ namespace VSS.VisionLink.Raptor.Volumes
                         (CoverageMapSubgrid as SubGridTreeLeafBitmapSubGrid).Bits = Bits;
                     }
                     else
-                    {
                         Debug.Assert(false, "Failed to request CoverageMapSubgrid from FCoverageMap in TICVolumesCalculationsAggregateState.ProcessVolumeInformationForSubgrid");
-                    }
                 }
                 finally
                 {
                     if (RequiresSerialisation)
-                    {
                         Monitor.Exit(CoverageMap);
-                    }
                 }
             }
         }
@@ -413,9 +380,7 @@ namespace VSS.VisionLink.Raptor.Volumes
         public void SummariseSubgridResult(IClientLeafSubGrid[][] subGrids)
         {
             if (RequiresSerialisation)
-            {
                 Monitor.Enter(this);
-            }
 
             try
             {
@@ -447,9 +412,7 @@ namespace VSS.VisionLink.Raptor.Volumes
                         };
                     }
                     else
-                    {
                         TopSubGrid = NullHeightSubgrid;
-                    }
 
                     ProcessVolumeInformationForSubgrid(BaseSubGrid as ClientHeightLeafSubGrid, TopSubGrid as ClientHeightLeafSubGrid);
                 }
@@ -457,9 +420,7 @@ namespace VSS.VisionLink.Raptor.Volumes
             finally
             {
                 if (RequiresSerialisation)
-                {
                     Monitor.Exit(this);
-                }
             }
         }
 

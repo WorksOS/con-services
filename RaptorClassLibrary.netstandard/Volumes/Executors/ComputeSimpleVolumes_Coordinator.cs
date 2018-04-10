@@ -162,8 +162,6 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
 //            BoundingWorldExtent3D SpatialExtent = BoundingWorldExtent3D.Null();
 //            long[] SurveyedSurfaceExclusionList = new long[0];
 
-            RequestErrorStatus ResultStatus = RequestErrorStatus.Unknown;
-
             long RequestDescriptor = Guid.NewGuid().GetHashCode(); // TODO ASNodeImplInstance.NextDescriptor;
 
             //NEECoords: TCSConversionCoordinates;
@@ -200,7 +198,7 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
                     // InterlockedIncrement64(ASNodeRequestStats.NumVolumeRequests);
 
                     // Prepare filters for use in the request
-                    ResultStatus = FilterUtilities.PrepareFiltersForUse(new [] { BaseFilter, TopFilter, AdditionalSpatialFilter }, SiteModelID);
+                    RequestErrorStatus ResultStatus = FilterUtilities.PrepareFiltersForUse(new [] { BaseFilter, TopFilter, AdditionalSpatialFilter }, SiteModelID);
                     if (ResultStatus != RequestErrorStatus.OK)
                         return VolumesResult;
 

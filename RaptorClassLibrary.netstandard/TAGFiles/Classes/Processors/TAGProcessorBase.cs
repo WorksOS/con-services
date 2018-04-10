@@ -702,9 +702,6 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 
       public byte SelectCCAValue(DateTime dateTime, PassType passType, MachineSide machineSide)
       {
-
-      //  return ICCCAValues.GetCCAValueAtDateTime(dateTime);
-
         byte myResult = CellPass.NullCCA;
 
         switch (passType)
