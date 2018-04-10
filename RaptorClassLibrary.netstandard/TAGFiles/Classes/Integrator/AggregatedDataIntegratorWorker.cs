@@ -84,8 +84,6 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
             bool AnyMachineEvents = false;
             bool AnyCellPasses = false;
 
-            // string LastKnownDesignName;
-
             EventIntegrator eventIntegrator = new EventIntegrator();
 
             /* The task contains a set of machine events and cell passes that need to be integrated into the
@@ -314,15 +312,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                                 int Comparison = MachineFromDM.LastKnownPositionTimeStamp.CompareTo(Task.TargetMachine.LastKnownPositionTimeStamp);
                                 if (Comparison < 1)
                                 {
-                                    /* TODO...
-                                    if (SiteModelMachineTargetValues.EventDesignNames.Count > 0)
+                                    MachineFromDM.LastKnownDesignName = SiteModelMachineTargetValues.DesignNameStateEvents.LastOrDefault().State;
+
+                                    /*
+                                    if (SiteModelMachineTargetValues.DesignNameStateEvents.Count > 0)
                                     {
-                                        SiteModelFromDM.GetDesignName((SiteModelMachineTargetValues.TargetValueChanges.EventDesignNames.Items[SiteModelMachineTargetValues.TargetValueChanges.EventDesignNames.Count - 1] as TICEventDesignNameValueChange).EventDesignNameID, LastKnownDesignName);
+                                        SiteModelFromDM.SiteModelMachineTargetValues.DesignNameStateEvents.Items[SiteModelMachineTargetValues.TargetValueChanges.EventDesignNames.Count - 1] as TICEventDesignNameValueChange).EventDesignNameID, out string LastKnownDesignName);
                                         MachineFromDM.LastKnownDesignName = LastKnownDesignName;
-                                    }
-                                    else
-                                    {
-                                        MachineFromDM.LastKnownDesignName = "";
                                     }
                                     */
 
