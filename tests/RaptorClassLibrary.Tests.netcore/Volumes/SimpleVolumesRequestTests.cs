@@ -32,7 +32,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests.Volumes
         }
 
         [Fact]
-        public void Test_SimpleVolumesRequest_DefaultFilterToFilter_Execute()
+        public void Test_SimpleVolumesRequest_ApplicationService_DefaultFilterToFilter_Execute()
         {
             SimpleVolumesRequest_ApplicationService request = new SimpleVolumesRequest_ApplicationService();
             SimpleVolumesRequestArgument arg = new SimpleVolumesRequestArgument()
@@ -67,6 +67,44 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests.Volumes
                         !response.BoundingExtentGrid.Equals(BoundingWorldExtent3D.Null()),
                         // No LL converesion available yet && !response.BoundingExtentLLH.Equals(BoundingWorldExtent3D.Null()),
                         "Reponse is null, unexpected");
+        }
+
+        [Fact]
+        public void Test_SimpleVolumesRequest_ClusterCompute_DefaultFilterToFilter_Execute()
+        {
+            SimpleVolumesRequest_ClusterCompute request = new SimpleVolumesRequest_ClusterCompute();
+            SimpleVolumesRequestArgument arg = new SimpleVolumesRequestArgument()
+            {
+                SiteModelID = 6,
+                VolumeType = VolumeComputationType.Between2Filters,
+                BaseFilter = new CombinedFilter()
+                {
+                    AttributeFilter =
+                    {
+                        ReturnEarliestFilteredCellPass = true,
+                    }
+                },
+                TopFilter = new CombinedFilter(),
+                BaseDesignID = long.MinValue,
+                TopDesignID = long.MinValue,
+                CutTolerance = 0.001,
+                FillTolerance = 0.001
+            };
+
+            SimpleVolumesResponse response = request.Execute(arg);
+
+            // This request will fail (Ignite not accessible from unit tests) and will return a 
+            // response with null values
+
+            Assert.NotNull(response);
+            Assert.True(response.Cut.HasValue &&
+                        response.Fill.HasValue &&
+                        response.TotalCoverageArea.HasValue &&
+                        response.CutArea.HasValue &&
+                        response.FillArea.HasValue &&
+                        !response.BoundingExtentGrid.Equals(BoundingWorldExtent3D.Null()),
+                // No LL converesion available yet && !response.BoundingExtentLLH.Equals(BoundingWorldExtent3D.Null()),
+                "Reponse is null, unexpected");
         }
     }
 }
