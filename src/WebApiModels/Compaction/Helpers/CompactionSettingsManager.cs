@@ -3,18 +3,20 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.Common.ResultHandling;
-  
+
 namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 {
   /// <summary>
-  /// Default settings for compaction end points. For consistency all compaction end points should use these settings.
-  /// They should be passed to Raptor for tiles and for retrieving data and also returned to the client UI (albeit in a simplfied form).
+  ///   Default settings for compaction end points. For consistency all compaction end points should use these settings.
+  ///   They should be passed to Raptor for tiles and for retrieving data and also returned to the client UI (albeit in a
+  ///   simplfied form).
   /// </summary>
   public class CompactionSettingsManager : ICompactionSettingsManager
   {
-    public CompactionSettingsManager()
-    {
-    }
+    private const int NO_CCV = SVOICDecls.__Global.kICNullCCVValue;
+
+    private const short MIN_CMV_MDP_VALUE = 0;
+    private const short MAX_CMV_MDP_VALUE = 2000;
 
     public LiftBuildSettings CompactionLiftBuildSettings(CompactionProjectSettings ps)
     {
@@ -51,9 +53,10 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       return AutoMapperUtility.Automapper.Map<CutFillSettings>(ps).percents;
     }
 
-    public List<ColorPalette> CompactionPalette(DisplayMode mode, ElevationStatisticsResult elevExtents, CompactionProjectSettings projectSettings, CompactionProjectSettingsColors projectSettingsColors)
+    public List<ColorPalette> CompactionPalette(DisplayMode mode, ElevationStatisticsResult elevExtents,
+      CompactionProjectSettings projectSettings, CompactionProjectSettingsColors projectSettingsColors)
     {
-      List<ColorPalette> palette = new List<ColorPalette>();
+      var palette = new List<ColorPalette>();
 
       bool useDefaultValue;
       uint underColor;
@@ -71,13 +74,14 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
           else
           {
             //Compaction elevation palette has 31 colors, original Raptor one had 30 colors
-            List<uint> colors = projectSettingsColors.useDefaultElevationColors.HasValue && projectSettingsColors.useDefaultElevationColors.Value
+            var colors = projectSettingsColors.useDefaultElevationColors.HasValue &&
+                         projectSettingsColors.useDefaultElevationColors.Value
               ? CompactionProjectSettingsColors.DefaultSettings.elevationColors
               : projectSettingsColors.elevationColors;
-            double step = (elevExtents.MaxElevation - elevExtents.MinElevation) / (colors.Count - 1);
+            var step = (elevExtents.MaxElevation - elevExtents.MinElevation) / (colors.Count - 1);
 
             palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.elevationBelowColor, -1));
-            for (int i = 0; i < colors.Count; i++)
+            for (var i = 0; i < colors.Count; i++)
             {
               palette.Add(ColorPalette.CreateColorPalette((uint) colors[i], elevExtents.MinElevation + i * step));
             }
@@ -87,21 +91,25 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
           break;
         case DisplayMode.CCV:
           const int STEP = 100;
-          List<uint> cmvColors = projectSettingsColors.useDefaultCMVDetailsColors.HasValue && projectSettingsColors.useDefaultCMVDetailsColors.Value 
-            ? CompactionProjectSettingsColors.DefaultSettings.cmvDetailsColors : projectSettingsColors.cmvDetailsColors;
+          var cmvColors = projectSettingsColors.useDefaultCMVDetailsColors.HasValue &&
+                          projectSettingsColors.useDefaultCMVDetailsColors.Value
+            ? CompactionProjectSettingsColors.DefaultSettings.cmvDetailsColors
+            : projectSettingsColors.cmvDetailsColors;
 
-          for (int i = 0; i < cmvColors.Count; i++)
+          for (var i = 0; i < cmvColors.Count; i++)
           {
             //The last 16th color and value are for above...
             palette.Add(ColorPalette.CreateColorPalette(cmvColors[i], i * STEP));
           }
           break;
         case DisplayMode.PassCount:
-          PassCountSettings passCountSettings = CompactionPassCountSettings(projectSettings);
-          List<uint> passCountDetailColors = projectSettingsColors.useDefaultPassCountDetailsColors.HasValue && projectSettingsColors.useDefaultPassCountDetailsColors.Value
-            ? CompactionProjectSettingsColors.DefaultSettings.passCountDetailsColors : projectSettingsColors.passCountDetailsColors;
+          var passCountSettings = CompactionPassCountSettings(projectSettings);
+          var passCountDetailColors = projectSettingsColors.useDefaultPassCountDetailsColors.HasValue &&
+                                      projectSettingsColors.useDefaultPassCountDetailsColors.Value
+            ? CompactionProjectSettingsColors.DefaultSettings.passCountDetailsColors
+            : projectSettingsColors.passCountDetailsColors;
 
-          for (int i = 0; i < passCountSettings.passCounts.Length; i++)
+          for (var i = 0; i < passCountSettings.passCounts.Length; i++)
           {
             //The colors and values for 1-8
             palette.Add(ColorPalette.CreateColorPalette(passCountDetailColors[i], passCountSettings.passCounts[i]));
@@ -111,20 +119,23 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
           break;
         case DisplayMode.PassCountSummary:
           //Values don't matter here as no machine override for compaction
-          useDefaultValue = projectSettingsColors.useDefaultPassCountSummaryColors.HasValue && 
-            projectSettingsColors.useDefaultPassCountSummaryColors.Value;
+          useDefaultValue = projectSettingsColors.useDefaultPassCountSummaryColors.HasValue &&
+                            projectSettingsColors.useDefaultPassCountSummaryColors.Value;
 
           underColor = useDefaultValue
             ? CompactionProjectSettingsColors.DefaultSettings.passCountUnderTargetColor.Value
-            : projectSettingsColors.passCountUnderTargetColor ?? CompactionProjectSettingsColors.DefaultSettings.passCountUnderTargetColor.Value;
+            : projectSettingsColors.passCountUnderTargetColor ??
+              CompactionProjectSettingsColors.DefaultSettings.passCountUnderTargetColor.Value;
 
           onColor = useDefaultValue
             ? CompactionProjectSettingsColors.DefaultSettings.passCountOnTargetColor.Value
-            : projectSettingsColors.passCountOnTargetColor ?? CompactionProjectSettingsColors.DefaultSettings.passCountOnTargetColor.Value;
+            : projectSettingsColors.passCountOnTargetColor ??
+              CompactionProjectSettingsColors.DefaultSettings.passCountOnTargetColor.Value;
 
           overColor = useDefaultValue
             ? CompactionProjectSettingsColors.DefaultSettings.passCountOverTargetColor.Value
-            : projectSettingsColors.passCountOverTargetColor ?? CompactionProjectSettingsColors.DefaultSettings.passCountOverTargetColor.Value;
+            : projectSettingsColors.passCountOverTargetColor ??
+              CompactionProjectSettingsColors.DefaultSettings.passCountOverTargetColor.Value;
 
           palette.Add(ColorPalette.CreateColorPalette(underColor, ColorSettings.Default.passCountMinimum.value));
           palette.Add(ColorPalette.CreateColorPalette(onColor, ColorSettings.Default.passCountTarget.value));
@@ -133,10 +144,12 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
         case DisplayMode.CutFill:
           //Note: cut-fill also requires a design for tile requests 
           var cutFillTolerances = CompactionCutFillSettings(projectSettings);
-          List<uint> cutFillColors = projectSettingsColors.useDefaultCutFillColors.HasValue && projectSettingsColors.useDefaultCutFillColors.Value
-            ? CompactionProjectSettingsColors.DefaultSettings.cutFillColors : projectSettingsColors.cutFillColors;
+          var cutFillColors = projectSettingsColors.useDefaultCutFillColors.HasValue &&
+                              projectSettingsColors.useDefaultCutFillColors.Value
+            ? CompactionProjectSettingsColors.DefaultSettings.cutFillColors
+            : projectSettingsColors.cutFillColors;
 
-          for (int i = 0; i < cutFillColors.Count; i++)
+          for (var i = 0; i < cutFillColors.Count; i++)
           {
             palette.Add(ColorPalette.CreateColorPalette(cutFillColors[i], cutFillTolerances[i]));
           }
@@ -147,15 +160,18 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 
           underColor = useDefaultValue
             ? CompactionProjectSettingsColors.DefaultSettings.temperatureUnderTargetColor.Value
-            : projectSettingsColors.temperatureUnderTargetColor?? CompactionProjectSettingsColors.DefaultSettings.temperatureUnderTargetColor.Value;
+            : projectSettingsColors.temperatureUnderTargetColor ??
+              CompactionProjectSettingsColors.DefaultSettings.temperatureUnderTargetColor.Value;
 
           onColor = useDefaultValue
             ? CompactionProjectSettingsColors.DefaultSettings.temperatureOnTargetColor.Value
-            : projectSettingsColors.temperatureOnTargetColor ?? CompactionProjectSettingsColors.DefaultSettings.temperatureOnTargetColor.Value;
+            : projectSettingsColors.temperatureOnTargetColor ??
+              CompactionProjectSettingsColors.DefaultSettings.temperatureOnTargetColor.Value;
 
           overColor = useDefaultValue
             ? CompactionProjectSettingsColors.DefaultSettings.temperatureOverTargetColor.Value
-            : projectSettingsColors.temperatureOverTargetColor ?? CompactionProjectSettingsColors.DefaultSettings.temperatureOverTargetColor.Value;
+            : projectSettingsColors.temperatureOverTargetColor ??
+              CompactionProjectSettingsColors.DefaultSettings.temperatureOverTargetColor.Value;
 
           palette.Add(ColorPalette.CreateColorPalette(underColor, 0));
           palette.Add(ColorPalette.CreateColorPalette(onColor, 1));
@@ -167,15 +183,18 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 
           underColor = useDefaultValue
             ? CompactionProjectSettingsColors.DefaultSettings.cmvUnderTargetColor.Value
-            : projectSettingsColors.cmvUnderTargetColor ?? CompactionProjectSettingsColors.DefaultSettings.cmvUnderTargetColor.Value;
+            : projectSettingsColors.cmvUnderTargetColor ??
+              CompactionProjectSettingsColors.DefaultSettings.cmvUnderTargetColor.Value;
 
           onColor = useDefaultValue
             ? CompactionProjectSettingsColors.DefaultSettings.cmvOnTargetColor.Value
-            : projectSettingsColors.cmvOnTargetColor ?? CompactionProjectSettingsColors.DefaultSettings.cmvOnTargetColor.Value;
+            : projectSettingsColors.cmvOnTargetColor ??
+              CompactionProjectSettingsColors.DefaultSettings.cmvOnTargetColor.Value;
 
           overColor = useDefaultValue
             ? CompactionProjectSettingsColors.DefaultSettings.cmvOverTargetColor.Value
-            : projectSettingsColors.cmvOverTargetColor ?? CompactionProjectSettingsColors.DefaultSettings.cmvOverTargetColor.Value;
+            : projectSettingsColors.cmvOverTargetColor ??
+              CompactionProjectSettingsColors.DefaultSettings.cmvOverTargetColor.Value;
 
           palette.Add(ColorPalette.CreateColorPalette(onColor, 0));
           palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.ccvSummaryWorkInProgressLayerColor, 1));
@@ -190,15 +209,18 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 
           underColor = useDefaultValue
             ? CompactionProjectSettingsColors.DefaultSettings.mdpUnderTargetColor.Value
-            : projectSettingsColors.mdpUnderTargetColor ?? CompactionProjectSettingsColors.DefaultSettings.mdpUnderTargetColor.Value;
+            : projectSettingsColors.mdpUnderTargetColor ??
+              CompactionProjectSettingsColors.DefaultSettings.mdpUnderTargetColor.Value;
 
           onColor = useDefaultValue
             ? CompactionProjectSettingsColors.DefaultSettings.mdpOnTargetColor.Value
-            : projectSettingsColors.mdpOnTargetColor ?? CompactionProjectSettingsColors.DefaultSettings.mdpOnTargetColor.Value;
+            : projectSettingsColors.mdpOnTargetColor ??
+              CompactionProjectSettingsColors.DefaultSettings.mdpOnTargetColor.Value;
 
           overColor = useDefaultValue
             ? CompactionProjectSettingsColors.DefaultSettings.mdpOverTargetColor.Value
-            : projectSettingsColors.mdpOverTargetColor ?? CompactionProjectSettingsColors.DefaultSettings.mdpOverTargetColor.Value;
+            : projectSettingsColors.mdpOverTargetColor ??
+              CompactionProjectSettingsColors.DefaultSettings.mdpOverTargetColor.Value;
 
           palette.Add(ColorPalette.CreateColorPalette(onColor, 0));
           palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.mdpSummaryWorkInProgressLayerColor, 1));
@@ -213,15 +235,18 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 
           underColor = useDefaultValue
             ? CompactionProjectSettingsColors.DefaultSettings.speedUnderTargetColor.Value
-            : projectSettingsColors.speedUnderTargetColor ?? CompactionProjectSettingsColors.DefaultSettings.speedUnderTargetColor.Value;
+            : projectSettingsColors.speedUnderTargetColor ??
+              CompactionProjectSettingsColors.DefaultSettings.speedUnderTargetColor.Value;
 
           onColor = useDefaultValue
             ? CompactionProjectSettingsColors.DefaultSettings.speedOnTargetColor.Value
-            : projectSettingsColors.speedOnTargetColor ?? CompactionProjectSettingsColors.DefaultSettings.speedOnTargetColor.Value;
+            : projectSettingsColors.speedOnTargetColor ??
+              CompactionProjectSettingsColors.DefaultSettings.speedOnTargetColor.Value;
 
           overColor = useDefaultValue
             ? CompactionProjectSettingsColors.DefaultSettings.speedOverTargetColor.Value
-            : projectSettingsColors.speedOverTargetColor ?? CompactionProjectSettingsColors.DefaultSettings.speedOverTargetColor.Value;
+            : projectSettingsColors.speedOverTargetColor ??
+              CompactionProjectSettingsColors.DefaultSettings.speedOverTargetColor.Value;
 
           palette.Add(ColorPalette.CreateColorPalette(underColor, 0));
           palette.Add(ColorPalette.CreateColorPalette(onColor, 1));
@@ -229,25 +254,22 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
           break;
         case DisplayMode.CMVChange:
           var cmvPercentChangeSettings = CompactionCmvPercentChangeSettings(projectSettings);
-          List<uint> cmvPercentChangeColors = projectSettingsColors.useDefaultCMVPercentColors.HasValue && projectSettingsColors.useDefaultCMVPercentColors.Value
-            ? CompactionProjectSettingsColors.DefaultSettings.cmvPercentColors : projectSettingsColors.cmvPercentColors;
+          var cmvPercentChangeColors = projectSettingsColors.useDefaultCMVPercentColors.HasValue &&
+                                       projectSettingsColors.useDefaultCMVPercentColors.Value
+            ? CompactionProjectSettingsColors.DefaultSettings.cmvPercentColors
+            : projectSettingsColors.cmvPercentColors;
 
           palette.Add(ColorPalette.CreateColorPalette(Colors.None, double.MinValue));
 
-          for (int i = 0; i < cmvPercentChangeSettings.Length; i++)
+          for (var i = 0; i < cmvPercentChangeSettings.Length; i++)
             palette.Add(ColorPalette.CreateColorPalette(cmvPercentChangeColors[i], cmvPercentChangeSettings[i]));
 
-          palette.Add(ColorPalette.CreateColorPalette(cmvPercentChangeColors[cmvPercentChangeColors.Count - 1], NO_CCV));
+          palette.Add(ColorPalette.CreateColorPalette(cmvPercentChangeColors[cmvPercentChangeColors.Count - 1],
+            NO_CCV));
 
           break;
       }
       return palette;
     }
-
-    private const int NO_CCV = SVOICDecls.__Global.kICNullCCVValue;
-
-    private const short MIN_CMV_MDP_VALUE = 0;
-    private const short MAX_CMV_MDP_VALUE = 2000;
-
   }
 }
