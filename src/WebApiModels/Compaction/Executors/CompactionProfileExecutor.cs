@@ -224,7 +224,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
           ? float.NaN
           : (currCell.PrevCCV == VelociraptorConstants.NO_CCV
             ? 100.0f
-            : (float) Math.Abs(currCell.CCV - currCell.PrevCCV) / (float) currCell.PrevCCV * 100.0f);
+            : (float) (currCell.CCV - currCell.PrevCCV) / (float) currCell.PrevCCV * 100.0f);
 
         var passCountIndex = noPassCountValue || float.IsNaN(lastPassHeight)
           ? ValueTargetType.NoData
