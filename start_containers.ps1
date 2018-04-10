@@ -9,7 +9,7 @@ Invoke-Expression -Command (aws ecr get-login --no-include-email --profile vss-g
 docker-compose pull
 if ($branch -eq "Release") {
   Write-Host "Building containers for testing against alpha raptor"
-  docker-compose -file docker-compose-alpha.yml up --build -d 2>&1 > container.txt
+  docker-compose -f docker-compose-alpha.yml up --build -d 2>&1 > container.txt
 } else {
   Write-Host "Building containers for testing against dev raptor"
   docker-compose up --build -d 2>&1 > container.txt
