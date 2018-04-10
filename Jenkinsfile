@@ -30,7 +30,7 @@ node('Jenkins-Win2016-Raptor') {
     try
     {
         // Presence of the containers indicate another is building. Abort immediately.
-        def status = powershell(returnStatus: true, script: 'check-container-state')
+        def status = bat "PowerShell.exe -ExecutionPolicy Bypass -Command check-container-state"
         if (status != 0) {
             exit status
         }
