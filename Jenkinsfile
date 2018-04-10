@@ -137,16 +137,23 @@ node('Jenkins-Win2016-Raptor') {
         }
     }
     else {
-        sendBuildFailureMessage()
+        SendBuildFailureMessage()
     }
 }
 
-/*    Send build failure message     */
-def sendBuildFailureMessage() {
+/* Send build failure message */
+def SendBuildFailureMessage() {
     echo "Sending failure email..."
     try
     {
-        commitVals = getChangeLogs().split(',')
+        def changelogs = GetChangeLogs()
+
+        // Build may have failed after being manually restarted with no new commits and so no 'committer' to email.
+        if (changelogs == null) {
+            return
+        }
+
+        commitVals = changelogs.split(',')
         committer = commitVals[0]
         committerEmail = commitVals[1]
         commitId = commitVals[2]
@@ -172,9 +179,9 @@ def sendBuildFailureMessage() {
     }
 }    
 
-/*  Get the changelogs for the commit which triggered this build.   */
+/* Get the changelogs for the commit which triggered this build. */
 @NonCPS
-def getChangeLogs() {
+def GetChangeLogs() {
     def changeLogSets = currentBuild.changeSets
     def commitVals
     for (int i = 0; i < changeLogSets.size(); i++)
