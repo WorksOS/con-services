@@ -21,6 +21,7 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -41,14 +42,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="subsProxy"></param>
     /// <param name="geofenceProxy"></param>
     /// <param name="raptorProxy"></param>
+    /// <param name="fileRepo"></param>
     /// <param name="logger"></param>
     /// <param name="serviceExceptionHandler">The ServiceException handler.</param>
     public ProjectV4Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
       IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
-      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger,
+      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, IFileRepository fileRepo,
+      ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler)
-      : base(producer, projectRepo, subscriptionsRepo, store, subsProxy, geofenceProxy, raptorProxy, logger,
-        serviceExceptionHandler, logger.CreateLogger<ProjectV4Controller>())
+      : base(producer, projectRepo, subscriptionsRepo, store, subsProxy, geofenceProxy, raptorProxy, fileRepo,
+        logger, serviceExceptionHandler, logger.CreateLogger<ProjectV4Controller>())
     { }
 
     #region projects
@@ -157,6 +160,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 18);
       }
 
+      ProjectBoundaryValidator.ValidateWKT(((CreateProjectEvent)project).ProjectBoundary);
       await ValidateCoordSystemInRaptor(project).ConfigureAwait(false);
 
       log.LogDebug($"Testing if there are overlapping projects for project {project.ProjectName}");

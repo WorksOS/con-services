@@ -88,6 +88,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       DynamicAddwithOffset("CreateImportedFileV4. DxfUnitsType is an unrecognized type.", 75);
       DynamicAddwithOffset("CreateImportedFileV4. DxfUnitsType is not supported at present.", 76);
       DynamicAddwithOffset("Unsupported ProjectSettings type.", 77);
+      DynamicAddwithOffset("GetCoordinateSystemFromFileRepo: Folder {0} doesn't exist.", 78);
+      DynamicAddwithOffset("GetCoordinateSystemFromFileRepo: Exception reading file {0}.", 79);
+      DynamicAddwithOffset("GetCoordinateSystemFromFileRepo: Returned file invalid {0}.", 80);
+      DynamicAddwithOffset("CreateProjectV2: Missing CreateProjectRequest.", 81);
+      DynamicAddwithOffset("CreateProjectV2: Missing BusinessCentreFile.", 82);
+      DynamicAddwithOffset("CreateProjectV2: Invalid businessCentreFile path.", 83);
+      DynamicAddwithOffset("CreateProjectV2: Invalid businessCentreFile fileSpaceId.", 84);
     }
 
     /// <summary>

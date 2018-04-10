@@ -1,79 +1,100 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.MasterData.Repositories.ExtendedModels;
+using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using Moq;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.MasterData.Repositories;
 
 namespace VSS.MasterData.ProjectTests
 {
   [TestClass]
   public class ProjectValidationTests
   {
-    private List<string> _projectTimezones;
+    protected ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
+    private static List<PointLL> _boundaryLL;
+    private static BusinessCenterFile _businessCenterFile;
+    private static string _checkBoundaryString;
 
-    [TestInitialize]
-    public void TestInitialize()
+    private static string _customerUid;
+    //private static byte[] _coordinateSystemFileContent;
+
+    [ClassInitialize]
+    public static void ClassInitialize(TestContext testContext)
     {
-      _projectTimezones = PreferencesTimeZones.WindowsTimeZoneNames().ToList();
+      AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
+      _boundaryLL = new List<PointLL>()
+      {
+        new PointLL(-43.5, 172.6),
+        new PointLL(-43.5003, 172.6),
+        new PointLL(-43.5003, 172.603),
+        new PointLL(-43.5, 172.603)
+      };
+
+      _checkBoundaryString = "POLYGON((172.6 -43.5,172.6 -43.5003,172.603 -43.5003,172.603 -43.5,172.6 -43.5))";
+
+      _businessCenterFile = new BusinessCenterFile()
+      {
+        FileSpaceId = "u3bdc38d-1afe-470e-8c1c-fc241d4c5e01",
+        Path = "/BC Data/Sites/Chch Test Site",
+        Name = "CTCTSITECAL.dc",
+        CreatedUtc = DateTime.UtcNow.AddDays(-0.5)
+      };
+
+      _customerUid = Guid.NewGuid().ToString();
+      //_coordinateSystemFileContent = new byte[] {0, 1, 2, 3, 4};
     }
 
     [TestMethod]
-    public void ValidateCreateProject_InvalidProjectTimeZone()
+    public void ValidateCreateProjectV2Request_HappyPath()
     {
-      Assert.IsFalse(_projectTimezones.Contains("whatever"), "ProjectTimezone should be invalid");
+      var request = CreateProjectV2Request.CreateACreateProjectV2Request
+      (ProjectType.Standard, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
+        "New Zealand Standard Time", _boundaryLL, _businessCenterFile);
+      var createProjectEvent = MapV2Models.MapCreateProjectV2RequestToEvent(request, _customerUid);
+      Assert.AreEqual(_checkBoundaryString, createProjectEvent.ProjectBoundary,"Invalid ProjectBoundary in WKT");
+
+      var projectRepo = new Mock<IProjectRepository>();
+      projectRepo.Setup(ps => ps.ProjectExists(It.IsAny<string>())).ReturnsAsync(false);
+
+      ProjectDataValidator.Validate(createProjectEvent, projectRepo.Object);
+      request.CoordinateSystem = ProjectDataValidator.ValidateBusinessCentreFile(request.CoordinateSystem);
+      ProjectBoundaryValidator.ValidateWKT(createProjectEvent.ProjectBoundary);
     }
 
     [TestMethod]
-    public void ValidateCreateProject_ValidProjectTimeZone()
+    public void ValidateCreateProjectV2Request_CheckBusinessCentreFile()
     {
-      Assert.IsTrue(_projectTimezones.Contains("Namibia Standard Time"), "ProjectTimezone should be valid");
-    }
+      var bcf = BusinessCenterFile.CreateBusinessCenterFile(_businessCenterFile.FileSpaceId, _businessCenterFile.Path,
+        _businessCenterFile.Name, _businessCenterFile.CreatedUtc);
+      bcf.Path = "BC Data/Sites/Chch Test Site/";
 
-    [TestMethod]
-    public void ValidateCreateProject_ValidProjectTimeZoneCaseSensitive()
-    {
-      Assert.IsFalse(_projectTimezones.Contains("Namibia sTandard Time"), "ProjectTimezone should be correct case");
-    }
+      var resultantBusinessCenterFile = ProjectDataValidator.ValidateBusinessCentreFile(bcf);
+      Assert.AreEqual("/BC Data/Sites/Chch Test Site", resultantBusinessCenterFile.Path,"Path should have bounding slashes inserted");
 
-    [TestMethod]
-    public void ValidateCreateProject_InValidProjectTimeZone()
-    {
-      Assert.IsFalse(_projectTimezones.Contains("Namibia Standard Time Namibia Standard Time"), "ProjectTimezone should be invalid");
-    }
+      bcf = BusinessCenterFile.CreateBusinessCenterFile(_businessCenterFile.FileSpaceId, _businessCenterFile.Path,
+        _businessCenterFile.Name, _businessCenterFile.CreatedUtc);
+      bcf.Path = "";
+      var ex = Assert.ThrowsException < ServiceException >(() =>  ProjectDataValidator.ValidateBusinessCentreFile(bcf));
+      Assert.AreNotEqual(-1, ex.Content.IndexOf("2083", StringComparison.Ordinal));
 
-    [TestMethod]
-    public void WindowsToIana_MissingWindowsTimeZone()
-    {
-      Assert.AreEqual(string.Empty, PreferencesTimeZones.WindowsToIana(null), "IANA time zone should be empty string");
-    }
+      bcf = BusinessCenterFile.CreateBusinessCenterFile(_businessCenterFile.FileSpaceId, _businessCenterFile.Path,
+        _businessCenterFile.Name, _businessCenterFile.CreatedUtc);
+      bcf.Name = "";
+      ex = Assert.ThrowsException<ServiceException>(() => ProjectDataValidator.ValidateBusinessCentreFile(bcf));
+      Assert.AreNotEqual(-1, ex.Content.IndexOf("2002", StringComparison.Ordinal));
 
-    [TestMethod]
-    public void WindowsToIana_InvalidWindowsTimeZone()
-    {
-      Assert.IsNull(PreferencesTimeZones.WindowsToIana("NZST"), "IANA time zone should be null");
-    }
+      bcf = BusinessCenterFile.CreateBusinessCenterFile(_businessCenterFile.FileSpaceId, _businessCenterFile.Path,
+        _businessCenterFile.Name, _businessCenterFile.CreatedUtc);
+      bcf.FileSpaceId = null;
+      ex = Assert.ThrowsException<ServiceException>(() => ProjectDataValidator.ValidateBusinessCentreFile(bcf));
+      Assert.AreNotEqual(-1, ex.Content.IndexOf("2084", StringComparison.Ordinal));
+      
+      ex = Assert.ThrowsException<ServiceException>(() => ProjectDataValidator.ValidateBusinessCentreFile(null));
+      Assert.AreNotEqual(-1, ex.Content.IndexOf("2082", StringComparison.Ordinal));
 
-    [TestMethod]
-    public void WindowsToIana_ValidWindowsTimeZone()
-    {
-      Assert.AreEqual("Pacific/Auckland", PreferencesTimeZones.WindowsToIana("New Zealand Standard Time"), "IANA time zone should be correct");
-    }
-
-    [TestMethod]
-    public void IanaToWindows_MissingIanaTimeZone()
-    {
-      Assert.AreEqual(string.Empty, PreferencesTimeZones.IanaToWindows(null), "Windows time zone should be empty string");
-    }
-
-    [TestMethod]
-    public void IanaToWindows_InvalidIanaTimeZone()
-    {
-      Assert.IsNull(PreferencesTimeZones.IanaToWindows("Pacific/Wellington"), "Windows time zone should be null");
-    }
-
-    [TestMethod]
-    public void IanaToWindows_ValidIanaTimeZone()
-    {
-      Assert.AreEqual("New Zealand Standard Time", PreferencesTimeZones.IanaToWindows("Pacific/Auckland"), "Windows time zone should be correct");
     }
   }
 }

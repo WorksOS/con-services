@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -36,6 +38,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Gets or sets the Geofence proxy. 
     /// </summary>
     protected readonly IGeofenceProxy geofenceProxy;
+
+    /// <summary>
+    /// Gets or sets the FileRepository (TCC) proxy. 
+    /// </summary>
+    /// 
+    protected readonly IFileRepository fileRepo;
+
 
     /// <summary>
     /// Gets or sets the Subscription Repository.
@@ -62,18 +71,21 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="subsProxy">The subs proxy.</param>
     /// <param name="geofenceProxy">The geofence proxy.</param>
     /// <param name="raptorProxy">The raptorServices proxy.</param>
+    /// <param name="fileRepo"></param>
     /// <param name="logger">The logger.</param>
     /// <param name="serviceExceptionHandler">The ServiceException handler</param>
     /// <param name="log"></param>
     public ProjectBaseController(IKafka producer, IRepository<IProjectEvent> projectRepo, 
       IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore configStore, 
-      ISubscriptionProxy subsProxy, IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, 
+      ISubscriptionProxy subsProxy, IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy,
+      IFileRepository fileRepo,
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, ILogger log)
       : base(log, configStore, serviceExceptionHandler, producer, raptorProxy, projectRepo)
     {
       subsService = subscriptionsRepo as SubscriptionRepository;
       this.subsProxy = subsProxy;
       this.geofenceProxy = geofenceProxy;
+      this.fileRepo = fileRepo;
     }
 
     /// <summary>
@@ -128,9 +140,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 45);
       }
 
-      if (project is CreateProjectEvent)
-        ProjectBoundaryValidator.ValidateWKT(((CreateProjectEvent)project).ProjectBoundary);
-
       var csFileName = project is CreateProjectEvent
         ? ((CreateProjectEvent)project).CoordinateSystemFileName
         : ((UpdateProjectEvent)project).CoordinateSystemFileName;
@@ -154,7 +163,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         if (coordinateSystemSettingsResult == null)
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 46);
 
-        if (coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
+        if (coordinateSystemSettingsResult != null && coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 47, coordinateSystemSettingsResult.Code.ToString(),
             coordinateSystemSettingsResult.Message);
@@ -206,6 +215,72 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       return project; // legacyID may have been added
     }
 
+    /// <summary>
+    /// get CoordinateSystem file content from TCC
+    /// </summary>
+    protected async Task<byte[]> GetCoordinateSystemContent(BusinessCenterFile businessCentreFile)
+    {
+      // Read CoordSystem file from TCC as byte[]. 
+      //    Filename and content are used: 
+      //      validated via raptorproxy
+      //      created in Raptor via raptorProxy
+      //      stored in CreateKafkaEvent
+      //    Only Filename is stored in the VL database 
+
+      Stream memStream = new MemoryStream();
+      var tccPath = $"/{businessCentreFile.Path}/{businessCentreFile.Name}";
+
+      try
+      {
+        log.LogInformation(
+          $"GetFileFromTCCRepository: businessCentreFile {JsonConvert.SerializeObject(businessCentreFile)}");
+        // check for exists first to avoid an misleading exception in our logs.
+        var folderExists = await fileRepo.FolderExists(businessCentreFile.FileSpaceId, tccPath).ConfigureAwait(false);
+        if (!folderExists)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 78,
+            $"{businessCentreFile.FileSpaceId} {tccPath}");
+        }
+
+        memStream = await fileRepo.GetFile(businessCentreFile.FileSpaceId, tccPath).ConfigureAwait(false);
+      }
+      catch (Exception e)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 79, e.Message);
+      }
+      finally
+      {
+        memStream.Dispose();
+      }
+
+      byte[] coordSystemFileContent = null;
+      int numBytesRead = 0;
+      if (memStream.CanRead && memStream.Length > 0)
+      {
+        // Now read s into a byte buffer with a little padding.
+        coordSystemFileContent = new byte[memStream.Length + 10];
+        int numBytesToRead = (int) memStream.Length;
+        numBytesRead = memStream.Read(coordSystemFileContent, 0, numBytesToRead);
+      }
+      else
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
+          80, $" isAbleToRead {memStream.CanRead} bytesReturned: {memStream.Length}");
+      }
+
+      log.LogInformation(
+        $"GetFileFromTCCRepository: numBytesRead: {numBytesRead} coordSystemFileContent.Length {(coordSystemFileContent != null ? coordSystemFileContent.Length : 0)}");
+      return coordSystemFileContent;
+    }
+    /// <summary>
+    /// Create CoordinateSystem in Raptor
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <param name="legacyProjectId"></param>
+    /// <param name="coordinateSystemFileName"></param>
+    /// <param name="coordinateSystemFileContent"></param>
+    /// <param name="isCreate"></param>
+    /// <returns></returns>
     protected async Task CreateCoordSystemInRaptor(Guid projectUid, int legacyProjectId, string coordinateSystemFileName, byte[] coordinateSystemFileContent, bool isCreate)
     {
       if (!string.IsNullOrEmpty(coordinateSystemFileName))

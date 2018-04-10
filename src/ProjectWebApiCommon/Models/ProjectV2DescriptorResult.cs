@@ -9,29 +9,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
   ///   Single project descriptor
   /// </summary>
   ///   /// <seealso cref="ContractExecutionResult" />
-  public class ProjectV2DescriptorsSingleResult : ContractExecutionResult
-  {
-    private ProjectV2Descriptor _projectV2Descriptor;
-
-    public ProjectV2DescriptorsSingleResult(ProjectV2Descriptor projectV2Descriptor)
-    {
-      this._projectV2Descriptor = projectV2Descriptor;
-    }
-
-    /// <summary>
-    /// Gets or sets the project descriptor.
-    /// </summary>
-    /// <value>
-    /// The project descriptor.
-    /// </value>
-    public ProjectV2Descriptor ProjectDescriptor { get { return _projectV2Descriptor; } set { _projectV2Descriptor = value; } }
-  }
-
-
-  /// <summary>
-  ///   Describes VL project
-  /// </summary>
-  public class ProjectV2Descriptor
+  public class ProjectV2DescriptorResult : ContractExecutionResult
   {
     /// <summary>
     /// The id for the project.
@@ -82,7 +60,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
 
     public override bool Equals(object obj)
     {
-      if (!(obj is ProjectV2Descriptor otherProject)) return false;
+      if (!(obj is ProjectV2DescriptorResult otherProject)) return false;
       return otherProject.LegacyProjectId == this.LegacyProjectId
              && otherProject.ProjectType == this.ProjectType
              && otherProject.Name == this.Name

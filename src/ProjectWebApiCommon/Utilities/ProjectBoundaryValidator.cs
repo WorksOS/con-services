@@ -111,8 +111,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
     public static List<Point> MakingValidPoints(List<Point> points)
     {
       List<Point> adjustedPoints = new List<Point>();
+      if (!points[0].Equals(points[points.Count - 1]))
+        points.Add(points[0]);
       points.Add(new Point(Double.MaxValue, Double.MaxValue));
-      for (int i = 0; i < points.Count - 1; i++)
+      for (int i = 0; i < points.Count -1; i++)
       {
         var firstPoint = points[i];
         var secondPoint = points[i + 1];

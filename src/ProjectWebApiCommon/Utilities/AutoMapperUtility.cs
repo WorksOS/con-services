@@ -47,61 +47,61 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
         {
           cfg.AllowNullCollections = true; // so that byte[] can be null
           cfg.CreateMap<CreateProjectRequest, CreateProjectEvent>()
-            .ForMember(x => x.CustomerID, opt => opt.MapFrom(src => src.CustomerID ?? 0))
-            .ForMember(x => x.ActionUTC, opt => opt.Ignore())
-            .ForMember(x => x.ReceivedUTC, opt => opt.Ignore())
-            .ForMember(x => x.ProjectID, opt => opt.Ignore());
+            .ForMember(dest => dest.CustomerID, opt => opt.MapFrom(src => src.CustomerID ?? 0))
+            .ForMember(dest => dest.ActionUTC, opt => opt.Ignore())
+            .ForMember(dest => dest.ReceivedUTC, opt => opt.Ignore())
+            .ForMember(dest => dest.ProjectID, opt => opt.Ignore());
           cfg.CreateMap<UpdateProjectRequest, UpdateProjectEvent>()
-            .ForMember(x => x.ActionUTC, opt => opt.Ignore())
-            .ForMember(x => x.ReceivedUTC, opt => opt.Ignore())
-            .ForMember(x => x.ProjectTimezone, opt => opt.Ignore());
+            .ForMember(dest => dest.ActionUTC, opt => opt.Ignore())
+            .ForMember(dest => dest.ReceivedUTC, opt => opt.Ignore())
+            .ForMember(dest => dest.ProjectTimezone, opt => opt.Ignore());
           cfg.CreateMap<Repositories.DBModels.Project, ProjectV4Descriptor>()
-            .ForMember(x => x.ProjectGeofenceWKT, opt => opt.MapFrom(src => src.GeometryWKT))
-            .ForMember(x => x.ServiceType, opt => opt.MapFrom(src => src.ServiceTypeID))
-            .ForMember(x => x.IanaTimeZone, opt => opt.MapFrom(src => src.LandfillTimeZone))
-            .ForMember(x => x.IsArchived,
+            .ForMember(dest => dest.ProjectGeofenceWKT, opt => opt.MapFrom(src => src.GeometryWKT))
+            .ForMember(dest => dest.ServiceType, opt => opt.MapFrom(src => src.ServiceTypeID))
+            .ForMember(dest => dest.IanaTimeZone, opt => opt.MapFrom(src => src.LandfillTimeZone))
+            .ForMember(dest => dest.IsArchived,
               opt => opt.MapFrom(src => src.IsDeleted || src.SubscriptionEndDate < DateTime.UtcNow))
-            .ForMember(x => x.StartDate, opt => opt.MapFrom(src => src.StartDate.ToString("O")))
-            .ForMember(x => x.EndDate, opt => opt.MapFrom(src => src.EndDate.ToString("O")))
-            .ForMember(x => x.SubscriptionStartDate,
+            .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate.ToString("O")))
+            .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate.ToString("O")))
+            .ForMember(dest => dest.SubscriptionStartDate,
               opt => opt.MapFrom(src => src.SubscriptionStartDate.HasValue
                 ? src.SubscriptionStartDate.Value.ToString("O")
                 : string.Empty))
-            .ForMember(x => x.SubscriptionEndDate,
+            .ForMember(dest => dest.SubscriptionEndDate,
               opt => opt.MapFrom(src => src.SubscriptionEndDate.HasValue
                 ? src.SubscriptionEndDate.Value.ToString("O")
                 : string.Empty));
           cfg.CreateMap<ImportedFile, ImportedFileDescriptor>()
-            .ForMember(x => x.ImportedUtc, opt => opt.MapFrom(src => src.LastActionedUtc))
-            .ForMember(x => x.LegacyFileId, opt => opt.MapFrom(src => src.ImportedFileId))
-            .ForMember(x => x.ImportedFileHistory, opt => opt.MapFrom(src => src.ImportedFileHistory.ImportedFileHistoryItems))
-            .ForMember(x => x.IsActivated, opt => opt.UseValue(true));
+            .ForMember(dest => dest.ImportedUtc, opt => opt.MapFrom(src => src.LastActionedUtc))
+            .ForMember(dest => dest.LegacyFileId, opt => opt.MapFrom(src => src.ImportedFileId))
+            .ForMember(dest => dest.ImportedFileHistory, opt => opt.MapFrom(src => src.ImportedFileHistory.ImportedFileHistoryItems))
+            .ForMember(dest => dest.IsActivated, opt => opt.UseValue(true));
           cfg.CreateMap<Repositories.DBModels.ImportedFileHistoryItem, Models.ImportedFileHistoryItem>()
-            .ForMember(x => x.FileCreatedUtc, opt => opt.MapFrom(src => src.FileCreatedUtc))
-            .ForMember(x => x.FileUpdatedUtc, opt => opt.MapFrom(src => src.FileUpdatedUtc));
+            .ForMember(dest => dest.FileCreatedUtc, opt => opt.MapFrom(src => src.FileCreatedUtc))
+            .ForMember(dest => dest.FileUpdatedUtc, opt => opt.MapFrom(src => src.FileUpdatedUtc));
           cfg.CreateMap<ImportedFile, UpdateImportedFileEvent>()
-            .ForMember(x => x.ImportedFileUID, opt => opt.MapFrom(src => Guid.Parse(src.ImportedFileUid)))
-            .ForMember(x => x.ProjectUID, opt => opt.MapFrom(src => Guid.Parse(src.ProjectUid)))
-            .ForMember(x => x.ActionUTC, opt => opt.MapFrom(src => src.LastActionedUtc))
-            .ForMember(x => x.ReceivedUTC, opt => opt.MapFrom(src => src.LastActionedUtc));
+            .ForMember(dest => dest.ImportedFileUID, opt => opt.MapFrom(src => Guid.Parse(src.ImportedFileUid)))
+            .ForMember(dest => dest.ProjectUID, opt => opt.MapFrom(src => Guid.Parse(src.ProjectUid)))
+            .ForMember(dest => dest.ActionUTC, opt => opt.MapFrom(src => src.LastActionedUtc))
+            .ForMember(dest => dest.ReceivedUTC, opt => opt.MapFrom(src => src.LastActionedUtc));
 
           // for v2 BC apis
-          cfg.CreateMap<Repositories.DBModels.Project, ProjectV2Descriptor>()
-            .ForMember(x => x.StartDate, opt => opt.MapFrom(src => src.StartDate.ToString("O")))
-            .ForMember(x => x.EndDate, opt => opt.MapFrom(src => src.EndDate.ToString("O")));
+          cfg.CreateMap<Repositories.DBModels.Project, ProjectV2DescriptorResult>()
+            .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate.ToString("O")))
+            .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate.ToString("O")))
+            .ForMember(dest => dest.Code, opt => opt.Ignore())
+            .ForMember(dest => dest.Message, opt => opt.Ignore());
           cfg.CreateMap<CreateProjectV2Request, CreateProjectEvent>()
-            .ForMember(x => x.CustomerID, opt => opt.Ignore())
-            .ForMember(x => x.CustomerUID, opt => opt.Ignore())
-            .ForMember(x => x.ProjectBoundary, opt => opt.Ignore())
-            .ForMember(x => x.CoordinateSystemFileName, opt => opt.Ignore())
-            .ForMember(x => x.CoordinateSystemFileContent, opt => opt.Ignore())
-            .ForMember(x => x.ActionUTC, opt => opt.Ignore())
-            .ForMember(x => x.ReceivedUTC, opt => opt.Ignore())
-            .ForMember(x => x.ProjectID, opt => opt.Ignore());
-            // todo convert PointLL and CoordSystem
-          cfg.CreateMap<Repositories.DBModels.Project, ProjectV2Descriptor>()
-            .ForMember(x => x.StartDate, opt => opt.MapFrom(src => src.StartDate.ToString("O")))
-            .ForMember(x => x.EndDate, opt => opt.MapFrom(src => src.EndDate.ToString("O")));
+            .ForMember(dest => dest.CustomerID, opt => opt.UseValue(0))
+            .ForMember(dest => dest.CustomerUID, opt => opt.Ignore()) // done externally
+            .ForMember(dest => dest.ProjectBoundary, opt => opt.Ignore()) // done externally
+            .ForMember(dest => dest.CoordinateSystemFileName, opt => opt.MapFrom((src => src.CoordinateSystem.Name)))
+            .ForMember(dest => dest.CoordinateSystemFileContent, opt => opt.Ignore()) // done externally
+            .ForMember(dest => dest.ActionUTC, opt => opt.UseValue(DateTime.UtcNow))
+            .ForMember(dest => dest.ReceivedUTC, opt => opt.UseValue(DateTime.UtcNow))
+            .ForMember(dest => dest.ProjectID, opt => opt.UseValue(0))
+            .ForMember(dest => dest.ProjectUID, opt => opt.UseValue(Guid.NewGuid()))
+            .ForMember(dest => dest.Description, opt => opt.Ignore());
         }
       );
 

@@ -66,34 +66,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// <summary>
     /// The details of the coordinate system file from Trimble Business Center.
     /// </summary>
-    [Required(ErrorMessage = "Required Field")]
+    //[Required(ErrorMessage = "Required Field")]
     [JsonProperty(PropertyName = "coordinateSystem", Required = Required.Always)]
     public BusinessCenterFile CoordinateSystem;
 
-    //[IgnoreHelp]
-    //public static CreateProjectV2Request HelpSample
-    //{
-    //  get
-    //  {
-    //    return new CreateProjectV2Request()
-    //    {
-    //      coordinateSystem = BusinessCenterFile.HelpSample,
-    //      projectType = ProjectTypeEnum.Standard,
-    //      startDate = DateTime.UtcNow.Date,
-    //      endDate = DateTime.UtcNow.AddDays(7).Date,
-    //      projectName = "Burwood East",
-    //      timeZoneName = "New Zealand Standard Time",
-    //      boundaryLL = new List<PointLL>()
-    //      {
-    //        new PointLL( -43.5,172.6 ),
-    //        new PointLL( -43.5003, 172.6 ),
-    //        new PointLL( -43.5003,  172.603 ),
-    //        new PointLL( -43.5, 172.603)
-    //      }
-    //    };
-    //  }
-    //}
-
+    
     /// <summary>
     /// Private constructor
     /// </summary>
