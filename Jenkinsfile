@@ -27,51 +27,55 @@ node('Jenkins-Win2016-Raptor') {
     def fullVersion = versionNumber + suffix
     currentBuild.displayName = versionNumber + suffix
 
-	try
-	{
-		stage ('Checkout') {
-			checkout scm
-		}
-		stage ('Restore packages') {
-			bat "dotnet restore --no-cache VSS.Productivity3D.Service.sln"
-		}
-		stage ('Build solution') {
-			bat "./build.bat"
-		}
-		stage ('Run unit tests') {
-			bat "./unittests.bat"
-		}
+    try
+    {
+        stage ('Checkout') {
+            checkout scm
+        }
 
-		stage ('Prepare Acceptance tests') {
-			bat "./acceptancetests.bat"
-			try {
-				stage ('Compose containers') {
-					bat  "PowerShell.exe -ExecutionPolicy Bypass -Command .\\start_containers.ps1 -branch ${branchName}"
-				}
-				stage ('Run Acceptance Tests') {
-					bat  "PowerShell.exe -ExecutionPolicy Bypass -Command .\\runacceptancetests.ps1"
-				}
-			} finally {
-				stage ('Bring containers down and archive the logs') {
-					bat "./stop_containers.bat"
-				}
-				stage ('Publish test results and logs') {
-					//Convert trx to xml for archiving
-					currentBuild.result = 'SUCCESS'
-					bat ".\\msxsl.exe .\\AcceptanceTests\\tests\\ProductionDataSvc.AcceptanceTests\\bin\\Debug\\testresults.trx .\\mstest-to-junit.xsl -o .\\TestResult.xml"
-					step([$class: 'JUnitResultArchiver', testResults: '**/TestResult.xml'])
-					publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './AcceptanceTests/tests/ProductionDataSvc.AcceptanceTests/bin/Debug', reportFiles: 'logs.txt', reportName: 'WebApi logs'])
-				}
-			}
-		}
-	}
-	catch (error)
-	{
-		echo "An error occurred during execution of packaging - ${error.getMessage()}."
-		sendBuildFailureMessage()
-		// re-throw error to maintain logic flow
-		throw error
-	}
+        // Presence of the containers indicate another is building. Abort immediately.
+        bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\check-container-state.ps1"
+
+        stage ('Restore packages') {
+            bat "dotnet restore --no-cache VSS.Productivity3D.Service.sln"
+        }
+        stage ('Build solution') {
+            bat "./build.bat"
+        }
+        stage ('Run unit tests') {
+            bat "./unittests.bat"
+        }
+
+        stage ('Prepare Acceptance tests') {
+            bat "./acceptancetests.bat"
+            try {
+                stage ('Compose containers') {
+                    bat  "PowerShell.exe -ExecutionPolicy Bypass -Command .\\start_containers.ps1"
+                }
+                stage ('Run Acceptance Tests') {
+                    bat  "PowerShell.exe -ExecutionPolicy Bypass -Command .\\runacceptancetests.ps1"
+                }
+            } finally {
+                stage ('Bring containers down and archive the logs') {
+                    bat "./stop_containers.bat"
+                }
+                stage ('Publish test results and logs') {
+                    //Convert trx to xml for archiving
+                    currentBuild.result = 'SUCCESS'
+                    bat ".\\msxsl.exe .\\AcceptanceTests\\tests\\ProductionDataSvc.AcceptanceTests\\bin\\Debug\\testresults.trx .\\mstest-to-junit.xsl -o .\\TestResult.xml"
+                    step([$class: 'JUnitResultArchiver', testResults: '**/TestResult.xml'])
+                    publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './AcceptanceTests/tests/ProductionDataSvc.AcceptanceTests/bin/Debug', reportFiles: 'logs.txt', reportName: 'WebApi logs'])
+                }
+            }
+        }
+    }
+    catch (error)
+    {
+        echo "An error occurred during execution of packaging - ${error.getMessage()}."
+        SendBuildFailureMessage()
+        // re-throw error to maintain logic flow
+        throw error
+    }
 
     echo "Build result is ${currentBuild.result}"
     if (currentBuild.result=='SUCCESS') {
@@ -132,45 +136,52 @@ node('Jenkins-Win2016-Raptor') {
             }
         }
     }
-	else {
-		sendBuildFailureMessage()
-	}
+    else {
+        SendBuildFailureMessage()
+    }
 }
 
-/*	Send build failure message     */
-def sendBuildFailureMessage() {
-	echo "Sending failure email..."
-	try
-	{
-		commitVals = getChangeLogs().split(',')
-		committer = commitVals[0]
-		committerEmail = commitVals[1]
-		commitId = commitVals[2]
-	}
-	catch (error)
-	{
-		echo "Unable to determine committer for failure email: ${error.getMessage()}"
-	}
-	
-	def body = "${env.JOB_NAME} - build failed"	
-	body = "${body}\nBuild #: ${env.BUILD_ID}"
-	body = "${body}\nCommitters: ${committer}"
-	body = "${body}\nCommit SHA: ${commitId}"
-	body = "${body}\nSee console log at ${env.BUILD_URL}console for details"
+/* Send build failure message */
+def SendBuildFailureMessage() {
+    echo "Sending failure email..."
+    try
+    {
+        def changelogs = GetChangeLogs()
 
-	retry(2)
-	{
-		mail body: "${body}",
-		from: 'jenkins_noreply@vspengg.com',
-		subject: "${env.BUILD_URL} Failed",
-		cc: (env.BRANCH_NAME == 'master' ? 'VSSTeamMerino@trimble.com' : ''),
-		to: committerEmail
-	}
-}	
+        // Build may have failed after being manually restarted with no new commits and so no 'committer' to email.
+        if (changelogs == null) {
+            return
+        }
 
-/*  Get the changelogs for the commit which triggered this build.   */
+        commitVals = changelogs.split(',')
+        committer = commitVals[0]
+        committerEmail = commitVals[1]
+        commitId = commitVals[2]
+    }
+    catch (error)
+    {
+        echo "Unable to determine committer for failure email: ${error.getMessage()}"
+    }
+
+    def body = "${env.JOB_NAME} - build failed"
+    body = "${body}\nBuild #: ${env.BUILD_ID}"
+    body = "${body}\nCommitters: ${committer}"
+    body = "${body}\nCommit SHA: ${commitId}"
+    body = "${body}\nSee console log at ${env.BUILD_URL}console for details"
+
+    retry(2)
+    {
+        mail body: "${body}",
+        from: 'jenkins_noreply@vspengg.com',
+        subject: "${env.BUILD_URL} Failed",
+        cc: (env.BRANCH_NAME == 'master' ? 'VSSTeamMerino@trimble.com' : ''),
+        to: committerEmail
+    }
+}
+
+/* Get the changelogs for the commit which triggered this build. */
 @NonCPS
-def getChangeLogs() {
+def GetChangeLogs() {
     def changeLogSets = currentBuild.changeSets
     def commitVals
     for (int i = 0; i < changeLogSets.size(); i++)

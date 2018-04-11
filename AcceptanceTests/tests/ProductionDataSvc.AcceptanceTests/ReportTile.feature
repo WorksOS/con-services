@@ -60,6 +60,7 @@ Examples:
 | ResultName            | ProjectUID                           | filterUID                            | overlayType                                                             | mapType   | mode | Difference |
 | CMVLarge              | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary                                  | SATELLITE | 1    | 10         |
 
+@Ignore
 Scenario Outline: Report cutfill and volume tiles
 Given the Report Tile service URI "/api/v2/reporttiles" 
 And a projectUid "<ProjectUID>"

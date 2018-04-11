@@ -26,7 +26,7 @@ function GetContainerIpAddress
     WriteMsg $containerId
     WriteMsg "  IP Address: " "gray" $True
     WriteMsg $containerIpAddress`n
-    [Environment]::SetEnvironmentVariable("TEST_DATA_PATH", "../../../ProductionDataSvc.AcceptanceTests/bin/Debug/TestData/", "Machine")
+    [Environment]::SetEnvironmentVariable("TEST_DATA_PATH", "../../../tests/ProductionDataSvc.AcceptanceTests/bin/Debug/TestData/", "Machine")
     [Environment]::SetEnvironmentVariable("COMPACTION_SVC_BASE_URI", ":80", "Machine")
     [Environment]::SetEnvironmentVariable("NOTIFICATION_SVC_BASE_URI", ":80", "Machine")
     [Environment]::SetEnvironmentVariable("REPORT_SVC_BASE_URI", ":80", "Machine")
