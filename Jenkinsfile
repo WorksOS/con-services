@@ -72,7 +72,7 @@ node('Jenkins-Win2016-Raptor') {
     catch (error)
     {
         echo "An error occurred during execution of packaging - ${error.getMessage()}."
-        sendBuildFailureMessage()
+        SendBuildFailureMessage()
         // re-throw error to maintain logic flow
         throw error
     }
