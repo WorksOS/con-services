@@ -814,6 +814,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             SegmentTimeRangeCalculator.CalculateTimeRange(this, out startTime, out endTime);
         }
 
+        /// <summary>
+        /// Calculates the number of passes in the segment that occur before searchTime
+        /// </summary>
+        /// <param name="searchTime"></param>
+        /// <param name="totalPasses"></param>
+        /// <param name="maxPassCount"></param>
         public void CalculatePassesBeforeTime(DateTime searchTime, out uint totalPasses, out uint maxPassCount)
         {
             SegmentTimeRangeCalculator.CalculatePassesBeforeTime(this, searchTime, out totalPasses, out maxPassCount);

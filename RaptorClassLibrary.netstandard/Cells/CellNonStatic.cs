@@ -67,13 +67,11 @@ namespace VSS.VisionLink.Raptor.Cells
         {
             int L = 0;
             int H = (int)PassCount - 1;
-            int I, C;
 
             while (L <= H)
             {
-                I = (L + H) >> 1;
-
-                C = Passes[I].Time.CompareTo(time);
+                int I = (L + H) >> 1;
+                int C = Passes[I].Time.CompareTo(time);
 
                 if (C < 0)
                 {
@@ -90,7 +88,6 @@ namespace VSS.VisionLink.Raptor.Cells
                     H = I - 1;
                 }
             }
-
 
             index = L;
             return false;
@@ -118,7 +115,7 @@ namespace VSS.VisionLink.Raptor.Cells
             AllocatePasses(PassCount + 1);
             if (position < PassCount - 1)
             {
-                Array.Copy(Passes, position, Passes, position + 1, (PassCount - position - 1));
+                Array.Copy(Passes, position, Passes, position + 1, PassCount - position - 1);
             }
 
             // Add the new pass to the passes list.

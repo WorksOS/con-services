@@ -129,7 +129,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public bool LocateTime(uint X, uint Y, DateTime time, out int index)
         {
-            bool exactMatch = PassData[X, Y].LocateTime(CellPasses, time, out index);
+            return PassData[X, Y].LocateTime(CellPasses, time, out index);
+
+            /*
+             bool exactMatch = PassData[X, Y].LocateTime(CellPasses, time, out index);
+             
 
             if (!exactMatch)
             {
@@ -138,6 +142,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             }
 
             return exactMatch;
+            */
         }
 
         public void Read(BinaryReader reader)

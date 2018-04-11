@@ -132,10 +132,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
 
             Assert.Equal((uint)3, item.PassCount(1, 1));
 
-            int index = 0;
-            bool exactMatch;
-
-            exactMatch = item.LocateTime(1, 1, new DateTime(1999, 12, 31, 0, 0, 0), out index);
+            bool exactMatch = item.LocateTime(1, 1, new DateTime(1999, 12, 31, 0, 0, 0), out int index);
             Assert.Equal(-1, index);
 
             exactMatch = item.LocateTime(1, 1, new DateTime(2000, 1, 1, 0, 0, 0), out index);

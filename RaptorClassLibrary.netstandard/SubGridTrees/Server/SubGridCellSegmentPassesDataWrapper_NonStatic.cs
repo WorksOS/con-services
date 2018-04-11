@@ -30,6 +30,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         public void AddPass(uint X, uint Y, CellPass pass, int position = -1)
         {
             PassData[X, Y].AddPass(pass, position);
+
+            SegmentPassCount++;
         }
 
         public void ReplacePass(uint X, uint Y, int position, CellPass pass)
@@ -44,8 +46,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public bool LocateTime(uint X, uint Y, DateTime time, out int index)
         {
-            bool exactMatch = PassData[X, Y].LocateTime(time, out index);
-
+            return PassData[X, Y].LocateTime(time, out index);
+            /*
+             bool exactMatch = PassData[X, Y].LocateTime(time, out index);
+             
             if (!exactMatch)
             {
                 // return previous cell pass as this is the one 'in effect' for the time being observed
@@ -53,6 +57,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             }
 
             return exactMatch;
+            */
         }
 
         public void Read(BinaryReader reader)
