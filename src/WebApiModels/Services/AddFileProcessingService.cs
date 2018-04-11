@@ -78,7 +78,7 @@ namespace VSS.Productivity3D.WebApi.Models.Services
           if (queue.TryDequeue(out var descriptor))
           {
             log.LogInformation($"Processing file {JsonConvert.SerializeObject(descriptor)}");
-            ProcessItem(descriptor);
+            var task = ProcessItem(descriptor);
           }
         }
         else

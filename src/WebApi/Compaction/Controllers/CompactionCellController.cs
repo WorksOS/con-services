@@ -33,7 +33,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Constructor with a dependency injection.
     /// </summary>
     /// <param name="raptorClient">>Raptor client.</param>
-    /// <param name="logger">Logger.</param>
+    /// <param name="loggerFactory">Logger.</param>
     /// <param name="configStore">Configuration store.</param>
     /// <param name="fileListProxy">File list proxy.</param>
     /// <param name="projectSettingsProxy">Project settings proxy.</param>
