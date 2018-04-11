@@ -41,7 +41,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected string userId;
     protected string userEmailAddress;
 
-    protected IDictionary<string, string> headers;
+    protected IDictionary<string, string> customHeaders;
 
     /// <summary>
     /// Gets or sets the Kafak consumer.
@@ -76,7 +76,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     /// Repository factory used for subscription checking
     /// </summary>
-    protected ISubscriptionRepository subscriptionsRepo;
+    protected ISubscriptionRepository subscriptionRepo;
 
     /// <summary>
     /// Repository factory used for accessing files in TCC (at present)
@@ -188,14 +188,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.customerUid = customerUid;
       this.userId = userId;
       this.userEmailAddress = userEmailAddress;
-      this.headers = headers;
+      this.customHeaders = headers;
       this.producer = producer;
       this.kafkaTopicName = kafkaTopicName;
       this.geofenceProxy = geofenceProxy;
       this.raptorProxy = raptorProxy;
       this.subscriptionProxy = subscriptionProxy;
       this.projectRepo = projectRepo;
-      this.subscriptionsRepo = subscriptionsRepo;
+      this.subscriptionRepo = subscriptionsRepo;
       this.fileRepo = fileRepo;
     }
 

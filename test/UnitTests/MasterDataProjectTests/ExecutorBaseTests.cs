@@ -37,7 +37,7 @@ namespace VSS.MasterData.ProjectTests
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton(loggerFactory);
       serviceCollection
-        .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
+        .AddTransient<IProjectRepository, ProjectRepository>()
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
         .AddTransient<IRaptorProxy, RaptorProxy>()

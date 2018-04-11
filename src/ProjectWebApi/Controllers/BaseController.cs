@@ -32,7 +32,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected readonly int customErrorMessageOffset = 2000;
 
     /// <summary>
-    /// Gets or sets the local log provider.
+    /// Gets or sets the local logger provider.
     /// </summary>
     protected readonly ILogger log;
 
@@ -64,13 +64,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Gets or sets the Project Repository. 
     /// </summary>
-    protected readonly ProjectRepository projectRepo;
+    protected readonly IProjectRepository projectRepo;
 
     /// <summary>
-    /// Gets the custom headers for the request.
+    /// Gets the custom customHeaders for the request.
     /// </summary>
     /// <value>
-    /// The custom headers.
+    /// The custom customHeaders.
     /// </value>
     protected IDictionary<string, string> customHeaders => Request.Headers.GetCustomHeaders();
 
@@ -109,7 +109,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="projectRepo">The project repo.</param>
     protected BaseController(ILogger log, IConfigurationStore configStore,
       IServiceExceptionHandler serviceExceptionHandler, IKafka producer,
-      IRaptorProxy raptorProxy, IRepository<IProjectEvent> projectRepo)
+      IRaptorProxy raptorProxy, IProjectRepository projectRepo)
     {
       this.log = log;
       this.configStore = configStore;
@@ -124,7 +124,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       kafkaTopicName = (configStore.GetValueString("PROJECTSERVICE_KAFKA_TOPIC_NAME") +
                         configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")).Trim();
 
-      this.projectRepo = projectRepo as ProjectRepository;
+      this.projectRepo = projectRepo;
       this.raptorProxy = raptorProxy;
     }
 

@@ -2,15 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
@@ -29,33 +28,25 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
   /// </summary>
   public class ProjectRequestHelper
   {
-    ///// <summary>
-    ///// Gets or sets the local log provider.
-    ///// </summary>
-    //protected readonly ILoggerFactory logger;
-
     /// <summary>
-    /// Gets or sets the local log provider.
+    /// Gets or sets the local logger provider.
     /// </summary>
-    protected readonly ILogger log;
-
-    /// <summary>
-    /// Gets or sets the Service exception handler.
-    /// </summary>
-    protected readonly IServiceExceptionHandler serviceExceptionHandler;
-
-    /// <summary>
-    /// Gets or sets the customHeaders for the controller.
-    /// </summary>
-    protected readonly IDictionary<string, string> customHeaders;
+    protected readonly ILogger logger;
 
     /// <summary>
     /// Gets or sets the Configuration Store. 
     /// </summary>
     protected readonly IConfigurationStore configStore;
-
+    
+    /// <summary>
+    /// Gets or sets the Service exception handler.
+    /// </summary>
+    protected readonly IServiceExceptionHandler serviceExceptionHandler;
+    
     protected readonly string customerUid;
     protected string userId;
+    protected readonly IDictionary<string, string> customHeaders;
+
 
     /// <summary>
     /// Gets or sets the Kafak consumer.
@@ -68,6 +59,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     protected readonly string kafkaTopicName;
 
     /// <summary>
+    /// Gets or sets the Geofence proxy. 
+    /// </summary>
+    protected readonly IGeofenceProxy geofenceProxy;
+    
+    /// <summary>
     /// Gets or sets the Raptor proxy.
     /// </summary>
     protected readonly IRaptorProxy raptorProxy;
@@ -75,12 +71,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <summary>
     /// Gets or sets the subscription proxy.
     /// </summary>
-    protected readonly ISubscriptionProxy subsProxy;
+    protected readonly ISubscriptionProxy subscriptionProxy;
 
-    /// <summary>
-    /// Gets or sets the Geofence proxy. 
-    /// </summary>
-    protected readonly IGeofenceProxy geofenceProxy;
 
     /// <summary>
     /// Gets or sets the Project Repository. 
@@ -93,6 +85,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     protected readonly ISubscriptionRepository subscriptionRepo;
 
     /// <summary>
+    /// Gets or sets the TCC Repository.
+    /// </summary>
+    protected readonly IFileRepository fileRepo;
+
+
+    /// <summary>
     /// Save for potential rollback
     /// </summary>
     protected Guid subscriptionUidAssigned = Guid.Empty;
@@ -103,32 +101,36 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     protected Guid geofenceUidCreated = Guid.Empty;
 
     public ProjectRequestHelper(
-      IServiceExceptionHandler serviceExceptionHandler, ILogger log, IConfigurationStore configStore,
-      ISubscriptionProxy subsProxy, IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy,
-      ISubscriptionRepository subscriptionsRepo, IProjectRepository projectRepo,
-      IKafka producer, IDictionary<string, string> customHeaders, string customerUid, string userId)
+      ILogger logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler,
+      string customerUid, string userId, IDictionary<string, string> customHeaders,
+      IKafka producer,
+      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ISubscriptionProxy subscriptionProxy,
+      IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo, IFileRepository fileRepo
+      )
     {
-      this.log = log;
+      this.logger = logger;
       this.configStore = configStore;
       this.serviceExceptionHandler = serviceExceptionHandler;
-      this.customHeaders = customHeaders;
       this.customerUid = customerUid;
       this.userId = userId;
+      this.customHeaders = customHeaders;
+
       this.producer = producer;
 
       if (!this.producer.IsInitializedProducer)
       {
         this.producer.InitProducer(configStore);
       }
+      this.kafkaTopicName = (configStore.GetValueString("PROJECTSERVICE_KAFKA_TOPIC_NAME") +
+                             configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")).Trim();
 
-      kafkaTopicName = (configStore.GetValueString("PROJECTSERVICE_KAFKA_TOPIC_NAME") +
-                        configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")).Trim();
+      this.geofenceProxy = geofenceProxy;
+      this.raptorProxy = raptorProxy;
+      this.subscriptionProxy = subscriptionProxy;
 
       this.projectRepo = projectRepo;
-      this.raptorProxy = raptorProxy;
-      this.subscriptionRepo = subscriptionsRepo;
-      this.subsProxy = subsProxy;
-      this.geofenceProxy = geofenceProxy;
+      this.subscriptionRepo = subscriptionRepo;
+      this.fileRepo = fileRepo;
     }
 
     /// <summary>
@@ -146,7 +148,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       if (overlaps)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 43);
 
-      log.LogDebug($"No overlapping projects for {project.ProjectName}");
+      logger.LogDebug($"No overlapping projects for {project.ProjectName}");
       return overlaps;
     }
 
@@ -213,14 +215,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     public async Task<CreateProjectEvent> CreateProjectInDb(CreateProjectEvent project,
       AssociateProjectCustomer customerProject)
     {
-      log.LogDebug(
+      logger.LogDebug(
         $"Creating the project in the DB {JsonConvert.SerializeObject(project)} and customerProject {JsonConvert.SerializeObject(customerProject)}");
 
       var isCreated = await projectRepo.StoreEvent(project).ConfigureAwait(false);
       if (isCreated == 0)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 61);
 
-      log.LogDebug(
+      logger.LogDebug(
         $"Created the project in DB. IsCreated: {isCreated}. projectUid: {project.ProjectUID} legacyprojectID: {project.ProjectID}");
 
       if (project.ProjectID <= 0)
@@ -234,7 +236,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         }
       }
 
-      log.LogDebug($"Using Legacy projectId {project.ProjectID} for project {project.ProjectName}");
+      logger.LogDebug($"Using Legacy projectId {project.ProjectID} for project {project.ProjectName}");
 
       // this is needed so that when ASNode (raptor client), which is called from CoordinateSystemPost, can retrieve the just written project+cp
       isCreated = await projectRepo.StoreEvent(customerProject).ConfigureAwait(false);
@@ -242,7 +244,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       if (isCreated == 0)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 63);
 
-      log.LogDebug($"Created CustomerProject in DB {JsonConvert.SerializeObject(customerProject)}");
+      logger.LogDebug($"Created CustomerProject in DB {JsonConvert.SerializeObject(customerProject)}");
       return project; // legacyID may have been added
     }
 
@@ -273,7 +275,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           var message = string.Format($"Post of CS create to RaptorServices returned code: {0} Message {1}.",
             coordinateSystemSettingsResult?.Code ?? -1,
             coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
-          log.LogDebug(message);
+          logger.LogDebug(message);
           if (coordinateSystemSettingsResult == null ||
               coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
           {
@@ -307,12 +309,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       {
         subscriptionUidAssigned = Guid.Parse((await GetFreeSubs(customerUid, project.ProjectType, project.ProjectUID))
           .First().SubscriptionUID);
-        log.LogDebug($"Received {subscriptionUidAssigned} subscription");
+        logger.LogDebug($"Received {subscriptionUidAssigned} subscription");
         //Assign a new project to a subscription
         try
         {
           // rethrows any exception
-          await subsProxy.AssociateProjectSubscription(subscriptionUidAssigned,
+          await subscriptionProxy.AssociateProjectSubscription(subscriptionUidAssigned,
             project.ProjectUID, customHeaders).ConfigureAwait(false);
         }
         catch (Exception e)
@@ -342,7 +344,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           .ConfigureAwait(false))
         .Where(s => s.ServiceTypeID == (int) type.MatchSubscriptionType()).ToImmutableList();
 
-      log.LogDebug($"We have {availableFreSub.Count} free subscriptions for the selected project type {type}");
+      logger.LogDebug($"We have {availableFreSub.Count} free subscriptions for the selected project type {type}");
       if (!availableFreSub.Any())
       {
         await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid).ConfigureAwait(false);
@@ -359,7 +361,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <returns></returns>
     public async Task CreateGeofenceInGeofenceService(CreateProjectEvent project)
     {
-      log.LogDebug($"Creating a geofence for project: {project.ProjectName}");
+      logger.LogDebug($"Creating a geofence for project: {project.ProjectName}");
 
       try
       {
@@ -387,7 +389,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       }
     }
 
-    // <summary>
+    /// <summary>
     /// Creates Kafka events.
     /// </summary>
     /// <param name="project"></param>
@@ -395,7 +397,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <returns></returns>
     public void CreateKafkaEvents(CreateProjectEvent project, AssociateProjectCustomer customerProject)
     {
-      log.LogDebug($"CreateProjectEvent on kafka queue {JsonConvert.SerializeObject(project)}");
+      logger.LogDebug($"CreateProjectEvent on kafka queue {JsonConvert.SerializeObject(project)}");
       string wktBoundary = project.ProjectBoundary;
 
       // Convert to old format for Kafka for consistency on kakfa queue
@@ -414,7 +416,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       //Save boundary as WKT
       project.ProjectBoundary = wktBoundary;
 
-      log.LogDebug(
+      logger.LogDebug(
         $"AssociateCustomerProjectEvent on kafka queue {customerProject.ProjectUID} with Customer {customerProject.CustomerUID}");
       var messagePayloadCustomerProject = JsonConvert.SerializeObject(new {AssociateProjectCustomer = customerProject});
       producer.Send(kafkaTopicName,
@@ -422,6 +424,64 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         {
           new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayloadCustomerProject)
         });
+    }
+
+    /// <summary>
+    /// get CoordinateSystem file content from TCC
+    /// </summary>
+    public async Task<byte[]> GetCoordinateSystemContent(BusinessCenterFile businessCentreFile)
+    {
+      // Read CoordSystem file from TCC as byte[]. 
+      //    Filename and content are used: 
+      //      validated via raptorproxy
+      //      created in Raptor via raptorProxy
+      //      stored in CreateKafkaEvent
+      //    Only Filename is stored in the VL database 
+
+      Stream memStream = null;
+      var tccPath = $"{businessCentreFile.Path}/{businessCentreFile.Name}";
+      byte[] coordSystemFileContent = null;
+      int numBytesRead = 0;
+
+      try
+      {
+        // MockFileRepository.FolderExists and FileExists always returns false so can't check first
+        //// check for exists first to avoid an misleading exception in our logs.
+        //var folderExists = await fileRepo.FolderExists(businessCentreFile.FileSpaceId, tccPath).ConfigureAwait(false);
+        //if (!folderExists)
+        //{
+        //  serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 78,
+        //    $"{businessCentreFile.FileSpaceId} {tccPath}");
+        //}
+
+        logger.LogInformation(
+          $"GetCoordinateSystemContent: getBusinessCentreFile fielspaceID: {businessCentreFile.FileSpaceId} tccPath: {tccPath}");
+        memStream = await fileRepo.GetFile(businessCentreFile.FileSpaceId, tccPath).ConfigureAwait(false);
+
+        if (memStream != null && memStream.CanRead && memStream.Length > 0)
+        {
+          coordSystemFileContent = new byte[memStream.Length];
+          int numBytesToRead = (int)memStream.Length;
+          numBytesRead = memStream.Read(coordSystemFileContent, 0, numBytesToRead);
+        }
+        else
+        {
+            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
+              80, $" isAbleToRead {memStream != null && memStream.CanRead} bytesReturned: {memStream?.Length ?? 0}");
+        }
+      }
+      catch (Exception e)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 79, e.Message);
+      }
+      finally
+      {
+        memStream?.Dispose();
+      }
+
+      logger.LogInformation(
+        $"GetCoordinateSystemContent: numBytesRead: {numBytesRead} coordSystemFileContent.Length {coordSystemFileContent?.Length ?? 0}");
+      return coordSystemFileContent;
     }
 
 
@@ -438,7 +498,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <returns></returns>
     private async Task DeleteProjectPermanentlyInDb(Guid customerUid, Guid projectUid)
     {
-      log.LogDebug($"DeleteProjectPermanentlyInDB: {projectUid}");
+      logger.LogDebug($"DeleteProjectPermanentlyInDB: {projectUid}");
       var deleteProjectEvent = new DeleteProjectEvent
       {
         ProjectUID = projectUid,
@@ -463,7 +523,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     {
       if (subscriptionUidAssigned != Guid.Empty)
       {
-        await subsProxy.DissociateProjectSubscription(subscriptionUidAssigned,
+        await subscriptionProxy.DissociateProjectSubscription(subscriptionUidAssigned,
           projectUid, customHeaders).ConfigureAwait(false);
       }
     }

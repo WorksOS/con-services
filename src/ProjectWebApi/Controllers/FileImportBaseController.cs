@@ -60,7 +60,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="serviceExceptionHandler">For correctly throwing ServiceException errors</param>
     /// <param name="requestFactory"></param>
     /// <param name="log"></param>
-    public FileImportBaseController(IKafka producer, IRepository<IProjectEvent> projectRepo,
+    public FileImportBaseController(IKafka producer, IProjectRepository projectRepo,
       IConfigurationStore configStore, IRaptorProxy raptorProxy,
       IFileRepository fileRepo, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
       IRequestFactory requestFactory, ILogger log)
