@@ -5,6 +5,7 @@ using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Compression;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
+using VSS.VisionLink.Raptor.SubGridTrees.Server.Utilities;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server
@@ -792,5 +793,35 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// </summary>
         /// <returns></returns>
         public override bool IsImmutable() => true;
+
+        /// <summary>
+        /// Calculate the total number of passes from all the cells present in this subgrid segment
+        /// </summary>
+        /// <param name="TotalPasses"></param>
+        /// <param name="MaxPassCount"></param>
+        public void CalculateTotalPasses(out uint TotalPasses, out uint MaxPassCount)
+        {
+            SegmentTotalPassesCalculator.CalculateTotalPasses(this, out TotalPasses, out MaxPassCount);
+        }
+
+        /// <summary>
+        /// Calculates the time range covering all the cell passes within this segment
+        /// </summary>
+        /// <param name="startTime"></param>
+        /// <param name="endTime"></param>
+        public void CalculateTimeRange(out DateTime startTime, out DateTime endTime)
+        {
+            SegmentTimeRangeCalculator.CalculateTimeRange(this, out startTime, out endTime);
+        }
+
+        public void CalculatePassesBeforeTime(DateTime searchTime, out uint totalPasses, out uint maxPassCount)
+        {
+            SegmentTimeRangeCalculator.CalculatePassesBeforeTime(this, searchTime, out totalPasses, out maxPassCount);
+        }
+
+        public void AdoptCellPassesFrom(ISubGridCellSegmentPassesDataWrapper sourceSegment, DateTime atAndAfterTime)
+        {
+            throw new NotImplementedException("Static cell segment passes wrappers do not support cell pass adoption");
+        }
     }
 }

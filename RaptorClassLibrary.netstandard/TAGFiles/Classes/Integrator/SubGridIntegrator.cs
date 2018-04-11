@@ -78,7 +78,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
         {
             // Note the fact that this subgrid will be changed and become dirty as a result
             // of the cell pass integration
-            TargetSubGrid.Dirty = true; // MarkAsDirty;
+            TargetSubGrid.Dirty = true; 
 
             //    TargetSubGrid.CachedMemoryUpdateTrackingActive = true;
             //    try

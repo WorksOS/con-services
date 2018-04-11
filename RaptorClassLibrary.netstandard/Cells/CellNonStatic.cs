@@ -105,7 +105,7 @@ namespace VSS.VisionLink.Raptor.Cells
         public void AddPass(CellPass pass, int position = -1)
         {
             // Locate the position in the list of time ordered passes to insert the new pass
-            if ((position == -1) && LocateTime(pass.Time, out position))
+            if (position == -1 && LocateTime(pass.Time, out position))
             {
                 Debug.Assert(false, "Pass with same time being added to cell");
             }

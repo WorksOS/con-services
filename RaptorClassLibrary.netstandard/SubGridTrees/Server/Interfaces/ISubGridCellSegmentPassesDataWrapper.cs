@@ -140,6 +140,41 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces
         /// <returns></returns>
         CellPass[,][] GetState();
 
+        /// <summary>
+        /// Indicates if this segment is immutable
+        /// </summary>
+        /// <returns></returns>
         bool IsImmutable();
+
+        /// <summary>
+        /// Calculate the total number of passes from all the cells present in this subgrid segment
+        /// </summary>
+        /// <param name="TotalPasses"></param>
+        /// <param name="MaxPassCount"></param>
+        void CalculateTotalPasses(out uint TotalPasses, out uint MaxPassCount);
+
+        /// <summary>
+        /// Calculates the time range covering all the cell passes within the given subgrid segment
+        /// </summary>
+        /// <param name="segment"></param>
+        /// <param name="startTime"></param>
+        /// <param name="endTime"></param>
+        void CalculateTimeRange(out DateTime startTime, out DateTime endTime);
+
+        /// <summary>
+        /// Calculates the number of passes in the segment that occur before searchTime
+        /// </summary>
+        /// <param name="searchTime"></param>
+        /// <param name="totalPasses"></param>
+        /// <param name="maxPassCount"></param>
+        void CalculatePassesBeforeTime(DateTime searchTime, out uint totalPasses, out uint maxPassCount);
+
+        /// <summary>
+        /// Causes this segment to adopt all cell passes from sourceSegment where those cell passes were 
+        /// recorded at or later than a specific date
+        /// </summary>
+        /// <param name="sourceSegment"></param>
+        /// <param name="atAndAfterTime"></param>
+        void AdoptCellPassesFrom(ISubGridCellSegmentPassesDataWrapper sourceSegment, DateTime atAndAfterTime);
     }
 }

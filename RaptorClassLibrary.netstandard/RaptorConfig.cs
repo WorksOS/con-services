@@ -32,5 +32,10 @@
         /// The number of nodes processing and storing data from TAG files (mutable grid)
         /// </summary>
         public static uint numTAGFileProcessingDivisions = 1;
+
+        /// <summary>
+        /// Defines the maximum number of cell passes permitted in a subgrid segment before that segment will be split
+        /// </summary>
+        public static int VLPD_SubGridSegmentPassCountLimit = 20000;
     }
 }

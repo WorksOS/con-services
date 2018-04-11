@@ -1,17 +1,24 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Text;
-using VSS.VisionLink.Raptor.Cells;
+using log4net;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
+using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 {
     public class SubGridCellPassesDataSegment
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        /// <summary>
+        /// Tracks whether there are unsaved changes in this segment
+        /// </summary>
         public bool Dirty { get; set; }
 
         private DateTime _StartTime = DateTime.MinValue;
@@ -28,6 +35,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
        
         public ISubGridCellLatestPassDataWrapper LatestPasses { get; set; }
 
+        /// <summary>
+        /// Default no-arg constructor
+        /// </summary>
         public SubGridCellPassesDataSegment()
         {
         }
@@ -41,6 +51,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             HasAllPasses = PassesData != null;
         }
 
+        /// <summary>
+        /// Determines if this segments tiume range bounds the data tiem givein in the time argument
+        /// </summary>
+        /// <param name="time"></param>
+        /// <returns></returns>
         public bool SegmentMatches(DateTime time) => (time >= SegmentInfo.StartTime) && (time < SegmentInfo.EndTime);
 
         public void AllocateFullPassStacks()
@@ -74,8 +89,14 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public bool SavePayloadToStream(BinaryWriter writer)
         {
-            int EndPosition;
-            bool Result = true;
+            if (!(HasAllPasses && HasLatestData && PassesData != null && LatestPasses != null))
+            {
+                Debug.Assert(false,
+                    "Leaf subgrids being written to persistent store must be fully populated with pass stacks and latest pass grid");
+                return false;
+            }
+
+            //bool Result = true;
             int CellStacksOffset = -1;
 
             // Write the cell pass information (latest and historic cell pass stacks)
@@ -91,7 +112,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
             PassesData.Write(writer);
 
-            EndPosition = (int)writer.BaseStream.Position;
+            int EndPosition = (int)writer.BaseStream.Position;
 
             // Write out the offset to the cell pass stacks in the file
             writer.BaseStream.Seek(CellStacksOffsetOffset, SeekOrigin.Begin);
@@ -99,19 +120,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
             writer.BaseStream.Seek(EndPosition, SeekOrigin.Begin);
 
-            return Result;
+            return true; // Result;
         }
 
         public bool LoadPayloadFromStream_v2p0(BinaryReader reader,
                                                bool loadLatestData,
-                                               bool loadAllPasses,
-                                               SubGridCellPassCountRecord[,] CellPassCounts,
-                                               out long LatestCellPassDataSize,
-                                               out long CellPassStacksDataSize)
+                                               bool loadAllPasses)
         {
-            LatestCellPassDataSize = 0;
-            CellPassStacksDataSize = 0;
-
             // Read the stream offset where the cell pass stacks start
             int CellStacksOffset = reader.ReadInt32();
 
@@ -119,8 +134,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             {
                 if (LatestPasses == null)
                 {
-                    // TODO readd when logging available
-                    // SIGLogMessage.PublishNoODS(Self, 'Cell latest pass store not instantiated in LoadPayloadFromStream_v2p0', slmcAssert);
+                    Log.Error("Cell latest pass store not instantiated in LoadPayloadFromStream_v2p0");
                     return false;
                 }
 
@@ -137,28 +151,18 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             return true;
         }
 
-        public bool Read(BinaryReader reader, //Stream stream,
-                         bool loadLatestData, bool loadAllPasses /*
-                         SiteModel SiteModelReference*/)
+        public bool Read(BinaryReader reader, 
+                         bool loadLatestData, bool loadAllPasses )
         {
             SubGridStreamHeader Header = new SubGridStreamHeader(reader);
 
             _StartTime = Header.StartTime;
             _EndTime = Header.EndTime;
 
-            SubGridCellPassCountRecord[,] CellPassCounts = new SubGridCellPassCountRecord[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
-            CellPass[,] LatestPassData = new CellPass[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
-
             // Read the version etc from the stream
             if (!Header.IdentifierMatches(SubGridStreamHeader.kICServerSubgridLeafFileMoniker))
             {
-                /* TODO readd when logging available
-                SIGLogMessage.Publish(Self,
-                                      'Subgrid segment file moniker (expected %1, found %2). Stream size/position = %3/%4', { SKIP}
-                                      [String(kICServerSubgridLeafFileMoniker), String(Identitifer),
-                                      InttoStr(Stream.Size), InttoStr(Stream.Position)],
-                                      slmcError);
-                */
+                Log.Error($"Subgrid segment file moniker (expected {SubGridStreamHeader.kICServerSubgridLeafFileMoniker}, found {Header.Identifier}). Stream size/position = {reader.BaseStream.Length}{reader.BaseStream.Position}");
                 return false;
             }
 
@@ -176,42 +180,18 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 switch (Header.MinorVersion)
                 {
                     case 0:
-                        Result = LoadPayloadFromStream_v2p0(reader, loadLatestData, loadAllPasses, CellPassCounts, // LatestPasses.PassData,
-                                               out long LatestCellPassDataSize, out long CellPassStacksDataSize);
+                        Result = LoadPayloadFromStream_v2p0(reader, loadLatestData, loadAllPasses);
                         break;
 
                     default:
-                        /* Todo: Readd when logging available
-                        SIGLogMessage.Publish(Self,
-                                              'Subgrid segment file version mismatch (expected %1.%2, found %3.%4). Stream size/position = %5/%6', { SKIP}
-                          [IntToStr(kSubGridMajorVersion), IntToStr(kSubGridMinorVersion_Latest),
-                           IntToStr(MajorVersion), IntToStr(MinorVersion),
-                           InttoStr(Stream.Size), InttoStr(Stream.Position)],
-                          slmcError);*/
+                        Log.Error($"Subgrid segment file version mismatch (expected {SubGridStreamHeader.kSubGridMajorVersion}.{SubGridStreamHeader.kSubGridMinorVersion_Latest}, found {Header.MajorVersion}.{Header.MinorVersion}). Stream size/position = {reader.BaseStream.Length}{reader.BaseStream.Position}");
                         break;
                 }
             }
             else
             {
-                /* Todo: Readd when logging available  
-                     SIGLogMessage.Publish(Self,
-                        'Subgrid segment file version mismatch (expected %1.%2, found %3.%4). Stream size/position = %5/%6', {SKIP}
-                        [IntToStr(kSubGridMajorVersion), IntToStr(kSubGridMinorVersion_Latest),
-                         IntToStr(MajorVersion), IntToStr(MinorVersion),
-                         InttoStr(Stream.Size), InttoStr(Stream.Position)],
-                        slmcError);*/
+                Log.Error($"Subgrid segment file version mismatch (expected {SubGridStreamHeader.kSubGridMajorVersion}.{SubGridStreamHeader.kSubGridMinorVersion_Latest}, found {Header.MajorVersion}.{Header.MinorVersion}). Stream size/position = {reader.BaseStream.Length}{reader.BaseStream.Position}");
             }
-
-            /*  {$IFDEF STATIC_CELL_PASSES}
-              if Result then
-                begin
-                  if Assigned(PassesData) then
-                    Result := Result and PassesData.PerformEncodingForInternalCache(CellPassCounts, LatestCellPassDataSize, CellPassStacksDataSize, SiteModelReference);
-
-                  if Assigned(LatestPasses) then
-                    Result := Result and  LatestPasses.PerformEncodingForInternalCache(LatestPassData, LatestCellPassDataSize, CellPassStacksDataSize);
-                end;
-              {$ENDIF}*/
 
             return Result;
         }
@@ -242,30 +222,24 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             double Min = 1E10;
             double Max = -1E10;
 
-            for (uint i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            SubGridUtilities.SubGridDimensionalIterator((i, j) =>
             {
-                for (uint j = 0; j < SubGridTree.SubGridTreeDimension; j++)
+                uint _PassCount = PassesData.PassCount(i, j);
+
+                if (_PassCount == 0)
+                    return;
+
+                for (uint PassIndex = 0; PassIndex < _PassCount; PassIndex++)
                 {
-                    uint _PassCount = PassesData.PassCount(i, j);
+                    float _height = PassesData.PassHeight(i, j, PassIndex);
 
-                    if (_PassCount > 0)
-                    {
-                        for (uint PassIndex = 0; PassIndex < _PassCount; PassIndex++)
-                        {
-                            float _height = PassesData.PassHeight(i, j, PassIndex);
+                    if (_height > Max)
+                        Max = _height;
 
-                            if (_height > Max)
-                            {
-                                Max = _height;
-                            }
-                            if (_height < Min)
-                            {
-                                Min = _height;
-                            }
-                        }
-                    }
+                    if (_height < Min)
+                        Min = _height;
                 }
-            }
+            });
 
             if (Min < Max)
             {
@@ -279,14 +253,14 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                                out FileSystemErrorStatus FSError)
         {
             //            int TotalPasses = 0, MaxPasses = 0;
-            //            InvalidatedSpatialStreams: TInvalidatedSpatialStreamArray;
+            //  TODO          InvalidatedSpatialStreams: TInvalidatedSpatialStreamArray;
 
-            bool Result = false;
+            bool Result;
             FSError = FileSystemErrorStatus.OK;
 
             CalculateElevationRangeOfPasses();
 
-            /*
+            /* todo
              *   if (RecordSegmentCleavingOperationsToLog)
                {
                    CalculateTotalPasses(ref TotalPasses, ref MaxPasses);
@@ -309,34 +283,34 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             }
             */
 
-            MemoryStream MStream = new MemoryStream();
-            using (var writer = new BinaryWriter(MStream, Encoding.UTF8, true))
+            using (MemoryStream MStream = new MemoryStream())
             {
-                if (!Write(writer))
+                using (var writer = new BinaryWriter(MStream, Encoding.UTF8, true))
                 {
-                    return false;
+                    if (!Write(writer))
+                        return false;
                 }
-            }
 
-            //            SetLength(InvalidatedSpatialStreams, 0);
-            FSError = storage.WriteSpatialStreamToPersistentStore(
-           Owner.Owner.ID,
-           FileName,
-           Owner.OriginX, Owner.OriginY,
-           FileName,
-           //           InvalidatedSpatialStreams,
-           FileSystemStreamType.SubGridSegment,
-           out uint StoreGranuleIndex,
-           out uint StoreGranuleCount,
-           MStream);
+                //  TODO          SetLength(InvalidatedSpatialStreams, 0);
+                FSError = storage.WriteSpatialStreamToPersistentStore(
+                    Owner.Owner.ID,
+                    FileName,
+                    Owner.OriginX, Owner.OriginY,
+                    FileName,
+                    //  TODO         InvalidatedSpatialStreams,
+                    FileSystemStreamType.SubGridSegment,
+                    out uint StoreGranuleIndex,
+                    out uint StoreGranuleCount,
+                    MStream);
 
-            Result = FSError == FileSystemErrorStatus.OK;
+                Result = FSError == FileSystemErrorStatus.OK;
 
-            if (Result)
-            {
-                // Assign the store granule index and count into the segment for later reference
-                SegmentInfo.FSGranuleIndex = StoreGranuleIndex;
-                SegmentInfo.FSGranuleCount = StoreGranuleCount;
+                if (Result)
+                {
+                    // Assign the store granule index and count into the segment for later reference
+                    SegmentInfo.FSGranuleIndex = StoreGranuleIndex;
+                    SegmentInfo.FSGranuleCount = StoreGranuleCount;
+                }
             }
 
             return Result;

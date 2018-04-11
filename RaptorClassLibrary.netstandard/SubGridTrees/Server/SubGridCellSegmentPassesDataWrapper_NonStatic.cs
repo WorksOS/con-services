@@ -2,6 +2,7 @@
 using System.IO;
 using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
+using VSS.VisionLink.Raptor.SubGridTrees.Server.Utilities;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 using VSS.VisionLink.Raptor.Utilities;
 
@@ -110,25 +111,41 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// </summary>
         /// <param name="TotalPasses"></param>
         /// <param name="MaxPassCount"></param>
-        private void CalculateTotalPasses(out uint TotalPasses, out uint MaxPassCount)
+        public void CalculateTotalPasses(out uint TotalPasses, out uint MaxPassCount)
         {
-            uint _TotalPasses = 0;
-            uint _MaxPassCount = 0;
+            SegmentTotalPassesCalculator.CalculateTotalPasses(this, out TotalPasses, out MaxPassCount);
+        }
 
-            SubGridUtilities.SubGridDimensionalIterator((i, j) =>
-            {
-                uint ThePassCount = PassCount(i, j);
+        /// <summary>
+        /// Calculates the time range covering all the cell passes within this segment
+        /// </summary>
+        /// <param name="startTime"></param>
+        /// <param name="endTime"></param>
+        public void CalculateTimeRange(out DateTime startTime, out DateTime endTime)
+        {
+            SegmentTimeRangeCalculator.CalculateTimeRange(this, out startTime, out endTime);
+        }
 
-                if (ThePassCount > _MaxPassCount)
-                {
-                    _MaxPassCount = ThePassCount;
-                }
+        /// <summary>
+        /// Calculates the number of passes in the segment that occur before searchTime
+        /// </summary>
+        /// <param name="searchTime"></param>
+        /// <param name="totalPasses"></param>
+        /// <param name="maxPassCount"></param>
+        public void CalculatePassesBeforeTime(DateTime searchTime, out uint totalPasses, out uint maxPassCount)
+        {
+            SegmentTimeRangeCalculator.CalculatePassesBeforeTime(this, searchTime, out totalPasses, out maxPassCount);
+        }
 
-                _TotalPasses += ThePassCount;
-            });
-
-            TotalPasses = _TotalPasses;
-            MaxPassCount = _MaxPassCount;
+        /// <summary>
+        /// Causes this segment to adopt all cell passes from sourceSegment where those cell passes were 
+        /// recorded at or later than a specific date
+        /// </summary>
+        /// <param name="sourceSegment"></param>
+        /// <param name="atAndAfterTime"></param>
+        public void AdoptCellPassesFrom(ISubGridCellSegmentPassesDataWrapper sourceSegment, DateTime atAndAfterTime)
+        {
+            SegmentCellPassAdopter.AdoptCellPassesFrom(this, sourceSegment, atAndAfterTime);
         }
 
         public void Write(BinaryWriter writer)
@@ -216,6 +233,5 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
             return result;
         }
-
     }
 }

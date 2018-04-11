@@ -18,13 +18,40 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         public List<SubGridCellPassesDataSegmentInfo> SegmentDirectory { get; set; } = new List<SubGridCellPassesDataSegmentInfo>();
 
         // PersistedClovenSegments contains a list of all the segments that exists in the
-        // persistent data store that have been cloven since the lst time this leaf
+        // persistent data store that have been cloven since the last time this leaf
         // was persisted to the data store. This is essentially a list of obsolete
         // segments whose presence in the persistent data store need to be removed
         // when the subgrid is next persisted
-        //      PersistedClovenSegments : TICSubGridCellPassesDataSegmentInfoList;
+        private List<SubGridCellPassesDataSegmentInfo> PersistedClovenSegments { get; set; }
 
-        // FLatestCells contains the computed latest cell information that spans
+        /// <summary>
+        /// Adds a segment to the persistent list of cloven segments. The underlying list is created
+        /// on demand under a subgrid lock
+        /// </summary>
+        /// <param name="segment"></param>
+        public void AddPersistedClovenSegment(SubGridCellPassesDataSegmentInfo segment)
+        {
+            lock (this)
+            {
+                (PersistedClovenSegments ?? (PersistedClovenSegments = new List<SubGridCellPassesDataSegmentInfo>())).Add(segment);
+            }
+        }
+
+        /// <summary>
+        /// Extracts and returns the current list of persisted cloven segments. THe internal list is set to null
+        /// </summary>
+        /// <returns></returns>
+        public List<SubGridCellPassesDataSegmentInfo> ExtractPersistedClovenSegments()
+        {
+            lock (this)
+            {
+                var result = PersistedClovenSegments;
+                PersistedClovenSegments = null;
+                return result;
+            }
+        }
+
+        // GlobalLatestCells contains the computed latest cell information that spans
         // all the segments in the subgrid
         public ISubGridCellLatestPassDataWrapper GlobalLatestCells { get; set; }
 
