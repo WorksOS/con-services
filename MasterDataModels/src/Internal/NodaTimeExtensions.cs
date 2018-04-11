@@ -30,19 +30,34 @@ namespace VSS.MasterData.Models.Internal
           dateTimeInTimeZone = isStart ? startToday : currentEnd;
           break;
         case DateRangeType.Yesterday:
+        case DateRangeType.PriorToYesterday:
           dateTimeInTimeZone = isStart ? startToday.PlusDays(-1) : startToday.PlusSeconds(-1);
+          if (dateRangeType == DateRangeType.PriorToYesterday)
+          {
+            dateTimeInTimeZone = dateTimeInTimeZone.PlusDays(-1);
+          }
           break;
         case DateRangeType.CurrentWeek:
           dateTimeInTimeZone = isStart ? startThisWeek : currentEnd;
           break;
         case DateRangeType.PreviousWeek:
+        case DateRangeType.PriorToPreviousWeek:
           dateTimeInTimeZone = isStart ? startThisWeek.PlusDays(-7) : startThisWeek.PlusSeconds(-1);
+          if (dateRangeType == DateRangeType.PriorToPreviousWeek)
+          {
+            dateTimeInTimeZone = dateTimeInTimeZone.PlusDays(-7);
+          }
           break;
         case DateRangeType.CurrentMonth:
           dateTimeInTimeZone = isStart ? startThisMonth : currentEnd;
           break;
         case DateRangeType.PreviousMonth:
+        case DateRangeType.PriorToPreviousMonth:
           dateTimeInTimeZone = isStart ? startThisMonth.PlusMonths(-1) : startThisMonth.PlusSeconds(-1);
+          if (dateRangeType == DateRangeType.PriorToPreviousMonth)
+          {
+            dateTimeInTimeZone = dateTimeInTimeZone.PlusMonths(-1);
+          }
           break;
         case DateRangeType.ProjectExtents:
         case DateRangeType.Custom:

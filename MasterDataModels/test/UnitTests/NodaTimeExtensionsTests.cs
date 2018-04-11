@@ -82,8 +82,8 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void ShouldGetLocalDateTimeForCurrentMonthSpanningDaylightSavingChange()
     {
-      //Daylight saving finished on Sunday 1/4/2018 at 2am
-      var localNowAfterChange = new LocalDateTime(2018, 4, 3, 15, 28, 10);
+      //Daylight saving finished on Sunday 1/4/2018 at 2am in NZ      
+      var localNowAfterChange = new LocalDateTime(2018, 4, 3, 15, 28, 10);//Tue 3/4/2018
       var start = localNowAfterChange.LocalDateTimeForDateRangeType(DateRangeType.CurrentMonth, true);
       var end = localNowAfterChange.LocalDateTimeForDateRangeType(DateRangeType.CurrentMonth, false);
       Assert.AreEqual(new LocalDateTime(2018, 4, 1, 0, 0, 0), start, "Wrong start for current month");
@@ -93,8 +93,8 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void ShouldGetLocalDateTimeForPreviousWeekSpanningDaylightSavingChange()
     {
-      //Daylight saving finished on Sunday 1/4/2018 at 2am
-      var localNowAfterChange = new LocalDateTime(2018, 4, 3, 15, 28, 10);
+      //Daylight saving finished on Sunday 1/4/2018 at 2am in NZ
+      var localNowAfterChange = new LocalDateTime(2018, 4, 3, 15, 28, 10);//Tue 3/4/2018
       var start = localNowAfterChange.LocalDateTimeForDateRangeType(DateRangeType.PreviousWeek, true);
       var end = localNowAfterChange.LocalDateTimeForDateRangeType(DateRangeType.PreviousWeek, false);
       Assert.AreEqual(new LocalDateTime(2018, 3, 26, 0, 0, 0), start, "Wrong start for previous week");
@@ -105,6 +105,44 @@ namespace VSS.MasterData.Models.UnitTests
     public void UtcForDateRangeType_Should_return_null_When_timeZoneName_is_null()
     {
       Assert.IsNull(DateRangeType.CurrentWeek.UtcForDateRangeType(null, true));
+    }
+
+    [TestMethod]
+    public void ShouldGetLocalDateTimeForPriorToYesterday()
+    {
+      var start = localNow.LocalDateTimeForDateRangeType(DateRangeType.PriorToYesterday, true, true);
+      var end = localNow.LocalDateTimeForDateRangeType(DateRangeType.PriorToYesterday, false, true);
+      Assert.AreEqual(startYesterday.PlusDays(-1), start, "Wrong start for prior to yesterday");
+      Assert.AreEqual(endYesterday.PlusDays(-1), end, "Wrong end for prior to yesterday");
+    }
+
+    [TestMethod]
+    public void ShouldGetLocalDateTimeForPriorToPreviousWeek()
+    {
+      var start = localNow.LocalDateTimeForDateRangeType(DateRangeType.PriorToPreviousWeek, true, true);
+      var end = localNow.LocalDateTimeForDateRangeType(DateRangeType.PriorToPreviousWeek, false, true);
+      Assert.AreEqual(startPreviousWeek.PlusDays(-7), start, "Wrong start for prior to previous week");
+      Assert.AreEqual(endPreviousWeek.PlusDays(-7), end, "Wrong end for prior to previous week");
+    }
+
+    [TestMethod]
+    public void ShouldGetLocalDateTimeForPriorToPreviousMonth()
+    {
+      var start = localNow.LocalDateTimeForDateRangeType(DateRangeType.PriorToPreviousMonth, true, true);
+      var end = localNow.LocalDateTimeForDateRangeType(DateRangeType.PriorToPreviousMonth, false, true);
+      Assert.AreEqual(startPreviousMonth.PlusMonths(-1), start, "Wrong start for prior to previous month");
+      Assert.AreEqual(endPreviousMonth.PlusMonths(-1), end, "Wrong end for prior to previous month");
+    }
+
+    [TestMethod]
+    public void ShouldGetLocalDateTimeForPriorToPreviousWeekSpanningDaylightSavingChange()
+    {
+      //Daylight saving finished on Sunday 1/4/2018 at 2am in NZ
+      var localNowAfterChange = new LocalDateTime(2018, 4, 10, 15, 28, 10);//Tue 10/4/2018
+      var start = localNowAfterChange.LocalDateTimeForDateRangeType(DateRangeType.PriorToPreviousWeek, true);
+      var end = localNowAfterChange.LocalDateTimeForDateRangeType(DateRangeType.PriorToPreviousWeek, false);
+      Assert.AreEqual(new LocalDateTime(2018, 3, 26, 0, 0, 0), start, "Wrong start for prior to previous week");
+      Assert.AreEqual(new LocalDateTime(2018, 4, 1, 23, 59, 59), end, "Wrong end for prior to previous week");
     }
 
     private LocalDateTime localNow = new LocalDateTime(2017, 1, 18, 10, 25, 12);//Wednesday

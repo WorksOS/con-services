@@ -9,6 +9,11 @@
     CurrentMonth,
     PreviousMonth,
     ProjectExtents,
-    Custom
+    Custom,
+    PriorToYesterday,
+    PriorToCurrentWeek,
+    PriorToPreviousWeek,
+    PriorToCurrentMonth,
+    PriorToPreviousMonth
   }
 }
