@@ -4,12 +4,12 @@ $mockWebAPIContainerName = $containers | Select-String -Pattern "[a-zA-Z0-9-_-]+
 $3dpWebAPIcontainerName = $containers | Select-String -Pattern "[a-zA-Z0-9-_-]+_webapi_\d"  | Select-Object -ExpandProperty Matches |  Select-Object -First 1 -ExpandProperty Value
 
 if ($mockWebAPIContainerName.Length -gt 0) {
-    Write-Host "`mockprojectwebapi` container is already running." -ForegroundColor DarkRed
+    Write-Host "`mockprojectwebapi` container is already running, aborting..." -ForegroundColor DarkRed
     Exit -1
 }
 
 if ($3dpWebAPIcontainerName.Length -gt 0) {
-    Write-Host "`3DP webapi` container is already running." -ForegroundColor DarkRed
+    Write-Host "`3DP webapi` container is already running, aborting..." -ForegroundColor DarkRed
     Exit -1
 }
 

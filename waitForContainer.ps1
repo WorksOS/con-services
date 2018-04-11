@@ -12,6 +12,7 @@ do {
   $retrySeconds += $sleepSeconds
 
   if ($retrySeconds -gt 90) {
+    Write-Host "Failed to connect to Raptor after $retrySeconds, aborting..."
     Exit -1
   }
 
