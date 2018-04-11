@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
+using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
@@ -34,6 +35,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     private readonly ILoggerFactory logger;
 
+    private ProjectRequestHelper projectRequestHelper;
+
     /// <summary>
     /// 
     /// </summary>
@@ -41,20 +44,26 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="projectRepo"></param>
     /// <param name="subscriptionsRepo"></param>
     /// <param name="store"></param>
-    /// <param name="subsProxy"></param>
+    /// <param name="subscriptionProxy"></param>
     /// <param name="geofenceProxy"></param>
     /// <param name="raptorProxy"></param>
     /// <param name="fileRepo"></param>
     /// <param name="logger"></param>
     /// <param name="serviceExceptionHandler">The ServiceException handler.</param>
-    public ProjectV2Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
-      IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
+    public ProjectV2Controller(IKafka producer, IProjectRepository projectRepo,
+      ISubscriptionRepository subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
       IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, IFileRepository fileRepo,
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
-      : base(producer, projectRepo, subscriptionsRepo, store, subsProxy, geofenceProxy, raptorProxy, fileRepo,
+      : base(producer, projectRepo, subscriptionsRepo, store, subscriptionProxy, geofenceProxy, raptorProxy, fileRepo,
         logger, serviceExceptionHandler, logger.CreateLogger<ProjectV2Controller>())
     {
       this.logger = logger;
+      this.projectRequestHelper = new ProjectRequestHelper(
+        log, configStore, serviceExceptionHandler,
+        customerUid, userId, customHeaders,
+        producer,
+        geofenceProxy, raptorProxy, subscriptionProxy,
+        projectRepo, subscriptionRepo, fileRepo);
     }
 
     #region projects
@@ -68,7 +77,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     //[HttpGet]
     //public async Task<ProjectV2DescriptorResult> GetProjectV2(long id)
     //{
-    //  log.LogInformation("GetProjectV2");
+    //  logger.LogInformation("GetProjectV2");
     //  var project = await GetProject(id).ConfigureAwait(false);
     //  return AutoMapperUtility.Automapper.Map<ProjectV2DescriptorResult>(project);
     //}
@@ -97,14 +106,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       ProjectDataValidator.Validate(createProjectEvent, projectRepo);
       projectRequest.CoordinateSystem = ProjectDataValidator.ValidateBusinessCentreFile(projectRequest.CoordinateSystem);
       // get CoordinateSystem file content from TCC
-      createProjectEvent.CoordinateSystemFileContent = await GetCoordinateSystemContent(projectRequest.CoordinateSystem).ConfigureAwait(false);
+      createProjectEvent.CoordinateSystemFileContent = await projectRequestHelper.GetCoordinateSystemContent(projectRequest.CoordinateSystem).ConfigureAwait(false);
 
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<CreateProjectExecutor>(logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
-            geofenceProxy, raptorProxy, subsProxy,
+            geofenceProxy, raptorProxy, SubscriptionProxy,
             projectRepo, subscriptionRepo, fileRepo)
           .ProcessAsync(createProjectEvent)
       );
@@ -157,7 +166,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     //      new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
     //    });
 
-    //  log.LogInformation("DeleteProjectV2. Completed succesfully");
+    //  logger.LogInformation("DeleteProjectV2. Completed succesfully");
     //  return new ContractExecutionResult();
     //}
 

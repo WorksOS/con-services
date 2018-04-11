@@ -34,10 +34,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
 
       var projectRequestHelper = new ProjectRequestHelper(
-        serviceExceptionHandler, log, configStore,
-        subscriptionProxy, geofenceProxy, raptorProxy,
-        subscriptionsRepo, projectRepo, 
-        producer, headers, customerUid, userId);
+        log, configStore, serviceExceptionHandler,
+        customerUid, userId, customHeaders,
+        producer,
+        geofenceProxy, raptorProxy, subscriptionProxy,
+        projectRepo, subscriptionRepo, fileRepo);
 
       ProjectBoundaryValidator.ValidateWKT(((CreateProjectEvent)createProjectEvent).ProjectBoundary);
       await projectRequestHelper.ValidateCoordSystemInRaptor(createProjectEvent).ConfigureAwait(false);

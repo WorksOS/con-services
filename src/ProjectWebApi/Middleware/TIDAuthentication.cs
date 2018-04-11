@@ -82,7 +82,7 @@ namespace VSS.MasterData.Project.WebAPI.Middleware
           await SetResult("No account selected", context);
           return;
         }
-        //log.LogTrace("JWT token used: {0}", authorization);
+        //logger.LogTrace("JWT token used: {0}", authorization);
         try
         {
           var jwtToken = new TPaaSJWT(authorization);
@@ -121,27 +121,9 @@ namespace VSS.MasterData.Project.WebAPI.Middleware
           try
           {
             var customHeaders = context.Request.Headers.GetCustomHeaders();
-            CustomerDataResult customerResult =
-              await this.customerProxy.GetCustomersForMe(userUid, customHeaders);
-
-            if (customerResult.status != 200 || customerResult.customer == null ||
-                customerResult.customer.Count < 1 ||
-                !customerResult.customer.Exists(x => x.uid == customerUid))
+            var customer = await customerProxy.GetCustomerForUser(userUid, customerUid, customHeaders);
+            if (customer == null)
             {
-              //Retry here to invalidate cache as association may have just been created
-              this.customerProxy.ClearCacheItem(userUid);
-              //And try again
-              customerResult =
-                await this.customerProxy.GetCustomersForMe(userUid, customHeaders);
-            }
-
-            //now validate second time
-
-            if (customerResult.status != 200 || customerResult.customer == null ||
-                customerResult.customer.Count < 1 ||
-                !customerResult.customer.Exists(x => x.uid == customerUid))
-            {
-
               var error = $"User {userUid} is not authorized to configure this customer {customerUid}";
               this.log.LogWarning(error);
               await SetResult(error, context);

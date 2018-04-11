@@ -436,6 +436,36 @@ namespace TestUtility
     }
 
     /// <summary>
+    /// Create the project via the web api. 
+    /// </summary>
+    /// <param name="projectUid">project UID</param>
+    /// <param name="projectId">legacy project id</param>
+    /// <param name="name">project name</param>
+    /// <param name="startDate">project start date</param>
+    /// <param name="endDate">project end date</param>
+    /// <param name="projectType">project type</param>
+    /// <param name="timezone">project time zone</param>
+    /// <param name="actionUtc">timestamp of the event</param>
+    /// <param name="boundary"></param>
+    /// <param name="statusCode">expected status code from web api call</param>
+    public void CreateProjectViaWebApiV2(Guid projectUid, int projectId, string name, DateTime startDate, DateTime endDate, string timezone, ProjectType projectType, DateTime actionUtc, string boundary, HttpStatusCode statusCode)
+    {
+      CreateProjectEvt = new CreateProjectEvent
+      {
+        ProjectID = projectId,
+        ProjectUID = projectUid,
+        ProjectName = name,
+        ProjectType = projectType,
+        ProjectBoundary = boundary,
+        ProjectStartDate = startDate,
+        ProjectEndDate = endDate,
+        ProjectTimezone = timezone,
+        ActionUTC = actionUtc
+      };
+      CallProjectWebApiV2(CreateProjectEvt, string.Empty, statusCode, "Create", HttpMethod.Post.ToString(), CustomerUid.ToString());
+    }
+
+    /// <summary>
     /// Call web api version 3
     /// </summary>
     /// <param name="statusCode"></param>
@@ -1744,6 +1774,32 @@ namespace TestUtility
     public string CallProjectWebApiV4(string routeSuffix, string method, string configJson, string customerUid = null, string jwt = null)
     {
       var uri = GetBaseUri() + routeSuffix;  // "http://localhost:20979/"
+      var restClient = new RestClientUtil();
+      var response = restClient.DoHttpRequest(uri, method, configJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
+      return response;
+    }
+
+    /// <summary>
+    /// Call the version 2 of the web api - used for BCC integration
+    /// </summary>
+    /// <param name="routeSuffix"></param>
+    /// <param name="method"></param>
+    /// <param name="configJson"></param>
+    /// <param name="customerUid"></param>
+    /// <param name="jwt"></param>
+    /// <returns></returns>
+    public string CallProjectWebApiV2(IProjectEvent evt, string routeSuffix, HttpStatusCode statusCode, string what, string method = "POST", string customerUid = null, string jwt = null)
+    {
+      string configJson;
+      if (evt == null)
+      {
+        configJson = null;
+      }
+      else
+      {
+        configJson = JsonConvert.SerializeObject(evt, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      }
+      var uri = GetBaseUri() + "api/v2/projects/" + routeSuffix;
       var restClient = new RestClientUtil();
       var response = restClient.DoHttpRequest(uri, method, configJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
       return response;

@@ -24,6 +24,18 @@ namespace WebApiTests
     }
 
     [TestMethod]
+    public void Create_ProjectV2_All_Ok()
+    {
+      var msg = new Msg();
+      msg.Title("projects 1", "Create a project");
+      var mysql = new MySqlHelper();
+      var ts = new TestSupport();
+      var projectId = ts.SetLegacyProjectId();
+      CreateProjectV2(ts, mysql, projectId, "project 1", ProjectType.Standard);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "LegacyProjectID,Name,ProjectTimezone,StartDate,EndDate", $"{projectId},project 1,New Zealand Standard Time, {ts.FirstEventDate}, {ts.LastEventDate}", ts.ProjectUid);
+    }
+
+    [TestMethod]
     public void Create_Project_Twice()
     {
       var msg = new Msg();
@@ -461,6 +473,12 @@ namespace WebApiTests
     private void CreateProject(TestSupport ts, MySqlHelper mysql, int projectId, string projectName, ProjectType projectType)
     {
       ts.CreateProjectViaWebApi(ts.ProjectUid, projectId, projectName, ts.FirstEventDate, ts.LastEventDate, "New Zealand Standard Time", projectType, DateTime.UtcNow, PROJECT_BOUNDARY, HttpStatusCode.OK);
+      mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, ts.ProjectUid);
+    }
+
+    private void CreateProjectV2(TestSupport ts, MySqlHelper mysql, int projectId, string projectName, ProjectType projectType)
+    {
+      ts.CreateProjectViaWebApiV2(ts.ProjectUid, projectId, projectName, ts.FirstEventDate, ts.LastEventDate, "New Zealand Standard Time", projectType, DateTime.UtcNow, PROJECT_BOUNDARY, HttpStatusCode.OK);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, ts.ProjectUid);
     }
 

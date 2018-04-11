@@ -51,7 +51,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public ProjectSettingsV4Controller(ILoggerFactory logger, IConfigurationStore configStore, 
       IServiceExceptionHandler serviceExceptionHandler, IKafka producer,
       IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ISubscriptionProxy subscriptionProxy,
-      IRepository<IProjectEvent> projectRepo, IRepository<ISubscriptionEvent> subscriptionsRepo,
+      IProjectRepository projectRepo, IRepository<ISubscriptionEvent> subscriptionsRepo,
       IRequestFactory requestFactory
       )
       : base(logger.CreateLogger<ProjectSettingsV4Controller>(), configStore, serviceExceptionHandler, 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,20 +10,14 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Project.WebAPI.Filters;
-using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.MasterData.Repositories.DBModels;
 using VSS.TCCFileAccess;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
@@ -49,26 +42,27 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="projectRepo"></param>
     /// <param name="subscriptionsRepo"></param>
     /// <param name="store"></param>
-    /// <param name="subsProxy"></param>
+    /// <param name="subscriptionProxy"></param>
     /// <param name="geofenceProxy"></param>
     /// <param name="raptorProxy"></param>
     /// <param name="fileRepo"></param>
     /// <param name="logger"></param>
     /// <param name="serviceExceptionHandler">The ServiceException handler.</param>
-    public ProjectV4Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
-      IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
+    public ProjectV4Controller(IKafka producer, IProjectRepository projectRepo,
+      ISubscriptionRepository subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
       IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, IFileRepository fileRepo,
       ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler)
-      : base(producer, projectRepo, subscriptionsRepo, store, subsProxy, geofenceProxy, raptorProxy, fileRepo,
+      : base(producer, projectRepo, subscriptionsRepo, store, subscriptionProxy, geofenceProxy, raptorProxy, fileRepo,
         logger, serviceExceptionHandler, logger.CreateLogger<ProjectV4Controller>())
     {
       this.logger = logger;
       this.projectRequestHelper = new ProjectRequestHelper(
-        serviceExceptionHandler, log, configStore,
-        subsProxy, geofenceProxy, raptorProxy,
-        subscriptionRepo, projectRepo as IProjectRepository, 
-        producer, customHeaders, customerUid, userId);
+        log, configStore, serviceExceptionHandler,
+        customerUid, userId, customHeaders,
+        producer,
+        geofenceProxy, raptorProxy, subscriptionProxy,
+        projectRepo, subscriptionRepo, fileRepo);
     }
 
     #region projects
@@ -181,7 +175,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<CreateProjectExecutor>(logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
-            geofenceProxy, raptorProxy, subsProxy,
+            geofenceProxy, raptorProxy, SubscriptionProxy,
             projectRepo, subscriptionRepo, fileRepo)
           .ProcessAsync(createProjectEvent)
       );

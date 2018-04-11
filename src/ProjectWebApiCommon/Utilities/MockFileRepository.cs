@@ -19,9 +19,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       throw new NotImplementedException();
     }
 
-    public Task<Stream> GetFile(string filespaceId, string fullName)
+    public async Task<Stream> GetFile(string filespaceId, string fullName)
     {
-      throw new NotImplementedException();
+      byte[] buffer = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3 };
+      return new MemoryStream(buffer);
     }
 
     public Task<bool> MoveFile(Organization org, string srcFullName, string dstFullName)
