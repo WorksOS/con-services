@@ -12,6 +12,8 @@ using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.ResultHandling;
+using VSS.MasterData.Project.WebAPI.Common.Executors;
+using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
@@ -33,6 +35,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   public class ProjectV4Controller : ProjectBaseController
   {
     /// <summary>
+    /// Logger factory for use by executor
+    /// </summary>
+    private readonly ILoggerFactory logger;
+
+    private ProjectRequestHelper projectRequestHelper;
+
+
+    /// <summary>
     /// 
     /// </summary>
     /// <param name="producer"></param>
@@ -52,7 +62,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       IServiceExceptionHandler serviceExceptionHandler)
       : base(producer, projectRepo, subscriptionsRepo, store, subsProxy, geofenceProxy, raptorProxy, fileRepo,
         logger, serviceExceptionHandler, logger.CreateLogger<ProjectV4Controller>())
-    { }
+    {
+      this.logger = logger;
+      this.projectRequestHelper = new ProjectRequestHelper(
+        serviceExceptionHandler, log, configStore,
+        subsProxy, geofenceProxy, raptorProxy,
+        subscriptionRepo, projectRepo as IProjectRepository, 
+        producer, customHeaders, customerUid, userId);
+    }
 
     #region projects
 
@@ -145,52 +162,36 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       //Landfill projects are not supported till l&s goes live
       if (projectRequest?.ProjectType == ProjectType.LandFill)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 73);
-
-
+      
       log.LogInformation("CreateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
 
       if (projectRequest.CustomerUID == null) projectRequest.CustomerUID = Guid.Parse(customerUid);
       if (projectRequest.ProjectUID == null) projectRequest.ProjectUID = Guid.NewGuid();
 
-      var project = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
-      project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
-      ProjectDataValidator.Validate(project, projectRepo);
-      if (project.CustomerUID.ToString() != customerUid)
+      var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
+      createProjectEvent.ReceivedUTC = createProjectEvent.ActionUTC = DateTime.UtcNow;
+      ProjectDataValidator.Validate(createProjectEvent, projectRepo);
+      if (createProjectEvent.CustomerUID.ToString() != customerUid)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 18);
       }
 
-      ProjectBoundaryValidator.ValidateWKT(((CreateProjectEvent)project).ProjectBoundary);
-      await ValidateCoordSystemInRaptor(project).ConfigureAwait(false);
+      await WithServiceExceptionTryExecuteAsync(() =>
+        RequestExecutorContainerFactory
+          .Build<CreateProjectExecutor>(logger, configStore, serviceExceptionHandler,
+            customerUid, userId, null, customHeaders,
+            producer, kafkaTopicName,
+            geofenceProxy, raptorProxy, subsProxy,
+            projectRepo, subscriptionRepo, fileRepo)
+          .ProcessAsync(createProjectEvent)
+      );
 
-      log.LogDebug($"Testing if there are overlapping projects for project {project.ProjectName}");
-      await DoesProjectOverlap(project, project.ProjectBoundary);
-
-      AssociateProjectCustomer customerProject = new AssociateProjectCustomer
-      {
-        CustomerUID = project.CustomerUID,
-        LegacyCustomerID = project.CustomerID,
-        ProjectUID = project.ProjectUID,
-        RelationType = RelationType.Owner,
-        ActionUTC = project.ActionUTC,
-        ReceivedUTC = project.ReceivedUTC
-      };
-      ProjectDataValidator.Validate(customerProject, projectRepo);
-
-
-      /*** now making changes, potentially needing rollback ***/
-      project = await CreateProjectInDb(project, customerProject).ConfigureAwait(false);
-      await CreateCoordSystemInRaptor(project.ProjectUID, project.ProjectID, project.CoordinateSystemFileName, project.CoordinateSystemFileContent, true).ConfigureAwait(false);
-      await AssociateProjectSubscriptionInSubscriptionService(project).ConfigureAwait(false);
-      await CreateGeofenceInGeofenceService(project).ConfigureAwait(false);
-
-      // doing this as late as possible in case something fails. We can't cleanup kafka que.
-      CreateKafkaEvents(project, customerProject);
-
-      log.LogDebug("CreateProjectV4. completed succesfully");
-      return new ProjectV4DescriptorsSingleResult(
-        AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await GetProject(project.ProjectUID.ToString())
+      var result = new ProjectV4DescriptorsSingleResult(
+        AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await GetProject(createProjectEvent.ProjectUID.ToString())
           .ConfigureAwait(false)));
+
+      log.LogResult(this.ToString(), JsonConvert.SerializeObject(projectRequest), result);
+      return result;
     }
 
     // PUT: api/v4/project
@@ -220,14 +221,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       // validation includes check that project must exist - otherwise there will be a null legacyID.
       ProjectDataValidator.Validate(project, projectRepo);
-      await ValidateCoordSystemInRaptor(project).ConfigureAwait(false);
-
+      await projectRequestHelper.ValidateCoordSystemInRaptor(project).ConfigureAwait(false);
 
       /*** now making changes, potentially needing rollback ***/
       if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
       {
         var projectWithLegacyProjectId = projectRepo.GetProjectOnly(project.ProjectUID.ToString()).Result;
-        await CreateCoordSystemInRaptor(project.ProjectUID, projectWithLegacyProjectId.LegacyProjectID,
+        await projectRequestHelper.CreateCoordSystemInRaptor(project.ProjectUID, projectWithLegacyProjectId.LegacyProjectID,
           project.CoordinateSystemFileName, project.CoordinateSystemFileContent, false).ConfigureAwait(false);
       }
 

@@ -23,6 +23,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 {
   /// <summary>
   /// Project controller v3
+  ///   This is used by Legacy during Lift and Shift
+  ///   The functionality is quite different (simplified) to v4 
   /// </summary>
   public class ProjectV3Controller : ProjectBaseController
   {

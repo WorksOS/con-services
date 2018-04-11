@@ -11,6 +11,7 @@ using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
@@ -75,7 +76,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     /// Repository factory used for subscription checking
     /// </summary>
-    protected IRepository<ISubscriptionEvent> subscriptionsRepo;
+    protected ISubscriptionRepository subscriptionsRepo;
+
+    /// <summary>
+    /// Repository factory used for accessing files in TCC (at present)
+    /// </summary>
+    /// 
+    protected IFileRepository fileRepo;
 
 
     /// <summary>
@@ -172,7 +179,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       string customerUid, string userId = null, string userEmailAddress = null, IDictionary<string, string> headers = null,
       IKafka producer = null, string kafkaTopicName = null,
       IGeofenceProxy geofenceProxy = null, IRaptorProxy raptorProxy = null, ISubscriptionProxy subscriptionProxy = null,
-      IProjectRepository projectRepo = null, IRepository<ISubscriptionEvent> subscriptionsRepo = null
+      IProjectRepository projectRepo = null, ISubscriptionRepository subscriptionsRepo = null, IFileRepository fileRepo = null
      )
     {
       log = logger;
@@ -189,6 +196,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.subscriptionProxy = subscriptionProxy;
       this.projectRepo = projectRepo;
       this.subscriptionsRepo = subscriptionsRepo;
+      this.fileRepo = fileRepo;
     }
 
     /// <summary>

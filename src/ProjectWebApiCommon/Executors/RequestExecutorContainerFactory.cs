@@ -5,6 +5,7 @@ using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
@@ -21,7 +22,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       string customerUid, string userId = null, string userEmailAddress = null, IDictionary<string, string> headers = null,
       IKafka producer = null, string kafkaTopicName = null,
       IGeofenceProxy geofenceProxy = null, IRaptorProxy raptorProxy = null, ISubscriptionProxy subscriptionProxy = null,
-      IProjectRepository projectRepo = null, IRepository<ISubscriptionEvent> subscriptionsRepo = null
+      IProjectRepository projectRepo = null, ISubscriptionRepository subscriptionsRepo = null, IFileRepository fileRepo = null
       ) 
       where TExecutor : RequestExecutorContainer, new()
     {
@@ -38,7 +39,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         customerUid, userId, userEmailAddress, headers,
         producer, kafkaTopicName,
         geofenceProxy, raptorProxy, subscriptionProxy,
-        projectRepo, subscriptionsRepo
+        projectRepo, subscriptionsRepo, fileRepo
         );
 
       return executor;
