@@ -35,7 +35,7 @@ node('Jenkins-Win2016-Raptor') {
 
         // Presence of the containers indicate another is building. Abort immediately.
         bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\check-container-state.ps1"
-        
+
         stage ('Restore packages') {
             bat "dotnet restore --no-cache VSS.Productivity3D.Service.sln"
         }
@@ -162,8 +162,8 @@ def SendBuildFailureMessage() {
     {
         echo "Unable to determine committer for failure email: ${error.getMessage()}"
     }
-    
-    def body = "${env.JOB_NAME} - build failed"    
+
+    def body = "${env.JOB_NAME} - build failed"
     body = "${body}\nBuild #: ${env.BUILD_ID}"
     body = "${body}\nCommitters: ${committer}"
     body = "${body}\nCommit SHA: ${commitId}"
@@ -177,7 +177,7 @@ def SendBuildFailureMessage() {
         cc: (env.BRANCH_NAME == 'master' ? 'VSSTeamMerino@trimble.com' : ''),
         to: committerEmail
     }
-}    
+}
 
 /* Get the changelogs for the commit which triggered this build. */
 @NonCPS

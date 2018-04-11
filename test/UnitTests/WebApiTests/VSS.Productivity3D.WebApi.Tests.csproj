@@ -40,7 +40,6 @@
     <PackageReference Include="System.Reflection" Version="4.3.0" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.4.0" />
     <PackageReference Include="System.Diagnostics.Process" Version="4.3.0" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.17.*" />
     <!-- END -->
   </ItemGroup>
 
@@ -48,7 +47,7 @@
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>
     <WarningsAsErrors />
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
