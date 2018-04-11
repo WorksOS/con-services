@@ -140,12 +140,18 @@ namespace VSS.Productivity3D.Filter.Tests
     [DataRow(DateRangeType.PreviousWeek, true)]
     [DataRow(DateRangeType.Today, true)]
     [DataRow(DateRangeType.Yesterday, true)]
+    [DataRow(DateRangeType.PriorToYesterday, true)]
+    [DataRow(DateRangeType.PriorToPreviousWeek, true)]
+    [DataRow(DateRangeType.PriorToPreviousMonth, true)]
     [DataRow(DateRangeType.CurrentMonth, false)]
     [DataRow(DateRangeType.CurrentWeek, false)]
     [DataRow(DateRangeType.PreviousMonth, false)]
     [DataRow(DateRangeType.PreviousWeek, false)]
     [DataRow(DateRangeType.Today, false)]
     [DataRow(DateRangeType.Yesterday, false)]
+    [DataRow(DateRangeType.PriorToYesterday, false)]
+    [DataRow(DateRangeType.PriorToPreviousWeek, false)]
+    [DataRow(DateRangeType.PriorToPreviousMonth, false)]
     public void Should_set_dates_based_on_DateRangeType_When_using_collection_of_Filters(DateRangeType dateRangeType, bool asAtDate)
     {
       var filters = new List<MasterData.Repositories.DBModels.Filter>();
@@ -169,12 +175,18 @@ namespace VSS.Productivity3D.Filter.Tests
     [DataRow(DateRangeType.PreviousWeek, true)]
     [DataRow(DateRangeType.Today, true)]
     [DataRow(DateRangeType.Yesterday, true)]
+    [DataRow(DateRangeType.PriorToYesterday, true)]
+    [DataRow(DateRangeType.PriorToPreviousWeek, true)]
+    [DataRow(DateRangeType.PriorToPreviousMonth, true)]
     [DataRow(DateRangeType.CurrentMonth, false)]
     [DataRow(DateRangeType.CurrentWeek, false)]
     [DataRow(DateRangeType.PreviousMonth, false)]
     [DataRow(DateRangeType.PreviousWeek, false)]
     [DataRow(DateRangeType.Today, false)]
     [DataRow(DateRangeType.Yesterday, false)]
+    [DataRow(DateRangeType.PriorToYesterday, false)]
+    [DataRow(DateRangeType.PriorToPreviousWeek, false)]
+    [DataRow(DateRangeType.PriorToPreviousMonth, false)]
     public void Should_set_dates_based_on_DateRangeType_When_using_Filter(DateRangeType dateRangeType, bool asAtDate)
     {
       var filter = new MasterData.Repositories.DBModels.Filter { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"elevationType\":null}}" };
@@ -191,12 +203,18 @@ namespace VSS.Productivity3D.Filter.Tests
     [DataRow(DateRangeType.PreviousWeek, true)]
     [DataRow(DateRangeType.Today, true)]
     [DataRow(DateRangeType.Yesterday, true)]
+    [DataRow(DateRangeType.PriorToYesterday, true)]
+    [DataRow(DateRangeType.PriorToPreviousWeek, true)]
+    [DataRow(DateRangeType.PriorToPreviousMonth, true)]
     [DataRow(DateRangeType.CurrentMonth, false)]
     [DataRow(DateRangeType.CurrentWeek, false)]
     [DataRow(DateRangeType.PreviousMonth, false)]
     [DataRow(DateRangeType.PreviousWeek, false)]
     [DataRow(DateRangeType.Today, false)]
     [DataRow(DateRangeType.Yesterday, false)]
+    [DataRow(DateRangeType.PriorToYesterday, false)]
+    [DataRow(DateRangeType.PriorToPreviousWeek, false)]
+    [DataRow(DateRangeType.PriorToPreviousMonth, false)]
     public void Should_set_dates_based_on_DateRangeType_When_using_FilterDescriptor(DateRangeType dateRangeType, bool asAtDate)
     {
       var filterDescriptor = new FilterDescriptor { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"elevationType\":null}}" };

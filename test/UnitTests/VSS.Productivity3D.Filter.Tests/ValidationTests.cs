@@ -308,7 +308,7 @@ namespace VSS.Productivity3D.Filter.Tests
     [DataRow(FilterType.Persistent)]
     [DataRow(FilterType.Report)]
     [DataRow(FilterType.Transient)]
-    public async Task FilterRequestValidation_InvalidAlignment(FilterType filterType)
+    public void FilterRequestValidation_InvalidAlignment(FilterType filterType)
     {
       var alignmentUid = Guid.NewGuid().ToString();
       var startStation = 100.456;
@@ -328,7 +328,7 @@ namespace VSS.Productivity3D.Filter.Tests
     [DataRow(FilterType.Persistent)]
     [DataRow(FilterType.Report)]
     [DataRow(FilterType.Transient)]
-    public async Task FilterRequestValidation_ValidAlignment(FilterType filterType)
+    public void FilterRequestValidation_ValidAlignment(FilterType filterType)
     {
       var alignmentUid = Guid.NewGuid().ToString();
       var startStation = 12.456;

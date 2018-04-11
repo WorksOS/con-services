@@ -291,12 +291,18 @@ namespace ExecutorTests
     [DataRow(DateRangeType.CurrentMonth, true)]
     [DataRow(DateRangeType.PreviousWeek, true)]
     [DataRow(DateRangeType.PreviousMonth, true)]
+    [DataRow(DateRangeType.PriorToYesterday, true)]
+    [DataRow(DateRangeType.PriorToPreviousWeek, true)]
+    [DataRow(DateRangeType.PriorToPreviousMonth, true)]
     [DataRow(DateRangeType.Today, false)]
     [DataRow(DateRangeType.Yesterday, false)]
     [DataRow(DateRangeType.CurrentWeek, false)]
     [DataRow(DateRangeType.CurrentMonth, false)]
     [DataRow(DateRangeType.PreviousWeek, false)]
     [DataRow(DateRangeType.PreviousMonth, false)]
+    [DataRow(DateRangeType.PriorToYesterday, false)]
+    [DataRow(DateRangeType.PriorToPreviousWeek, false)]
+    [DataRow(DateRangeType.PriorToPreviousMonth, false)]
     public void GetFilterExecutor_Should_add_start_end_dates(int dateRangeType, bool asAtDate)
     {
       var filterType = FilterType.Transient;
