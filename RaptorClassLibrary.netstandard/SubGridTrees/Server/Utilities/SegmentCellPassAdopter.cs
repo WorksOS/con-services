@@ -21,12 +21,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Utilities
         {
             SubGridUtilities.SubGridDimensionalIterator((i, j) =>
             {
-                uint thePassCount = sourceSegment.PassCount(i, j);
+                int thePassCount = (int)sourceSegment.PassCount(i, j);
 
                 if (thePassCount == 0)
                     return;
 
-                uint countInCell = 0;
+                int countInCell = 0;
 
                 for (uint PassIndex = 0; PassIndex < thePassCount; PassIndex++)
                 {
@@ -39,19 +39,19 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Utilities
                 // countInCell represents the number of cells that should remain in the
                 // source segment. The remainder are to be moved to this segment
 
-                uint adoptedPassCount = thePassCount - countInCell;
+                int adoptedPassCount = thePassCount - countInCell;
                 if (adoptedPassCount > 0)
                 {
                     // Copy the adopted passes from the 'from' cell to the 'to' cell
                     uint OldCellPassCount = segment.PassCount(i, j);
-                    segment.AllocatePasses(i, j, OldCellPassCount + adoptedPassCount);
 
                     for (uint PassIndex = OldCellPassCount; PassIndex < OldCellPassCount + adoptedPassCount; PassIndex++)
                         segment.AddPass(i, j, sourceSegment.Pass(i, j, PassIndex));
 
                     // Set the new number of passes and reset the length of the cell passes
                     // in the cell the passes were adopted from
-                    sourceSegment.AllocatePasses(i, j, countInCell);
+                    sourceSegment.SegmentPassCount -= adoptedPassCount;
+                    sourceSegment.AllocatePasses(i, j, (uint)countInCell);
                 }
             });
         }

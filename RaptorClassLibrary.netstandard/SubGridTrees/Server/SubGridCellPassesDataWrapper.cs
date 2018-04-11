@@ -32,9 +32,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public SubGridCellPassesDataSegment SelectSegment(DateTime time)
         {
-            int Index;
-            int DirectionIncrement;
-
             if (Owner.Directory.SegmentDirectory.Count == 0)
             {
                 if (PassesData.Count != 0)
@@ -56,8 +53,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 return null;
             }
 
-            Index = 0;
-            DirectionIncrement = 0;
+            int Index = 0;
+            int DirectionIncrement = 0;
 
             while (true)
             {
@@ -119,6 +116,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             //CleavingSegment.VerifyComputedAndRecordedSegmentTimeRangeBounds;
             //{$ENDIF}
 
+            if (TotalPassCount < RaptorConfig.VLPD_SubGridSegmentPassCountLimit)
+            {
+                return false; // There is no need to cleave this segment
+            }
+
             int NumRequiredClovenSegments = ((int) TotalPassCount - 1) / RaptorConfig.VLPD_SubGridSegmentPassCountLimit + 1;
 
             // Determine the actual time range of the passes within the segment
@@ -126,7 +128,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 out DateTime CoveredTimeRangeEnd);
 
             if (CoveredTimeRangeStart >= CoveredTimeRangeEnd) // There's nothing to do
-                return true;
+                return false;
 
             // Preserve the allotted time range of the segment being cleaved
             DateTime OldEndTime = CleavingSegment.SegmentInfo.EndTime;
@@ -139,12 +141,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             uint PassesInFirstTimeRange;
             DateTime TestTime;
 
-            do //Repeat
+            do
             {
                 TestTime = new DateTime((TestTimeRangeStart.Ticks + TestTimeRangeEnd.Ticks) / 2);
 
-                CleavingSegment.PassesData.CalculatePassesBeforeTime(TestTime, out PassesInFirstTimeRange,
-                    out uint _ /*MaxPassCount*/);
+                CleavingSegment.PassesData.CalculatePassesBeforeTime(TestTime, out PassesInFirstTimeRange, out uint _);
 
                 if (PassesInFirstTimeRange < (TotalPassCount / NumRequiredClovenSegments))
                     TestTimeRangeStart = TestTime;
@@ -161,6 +162,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 Owner = CleavingSegment.Owner as IServerLeafSubGrid
             };
 
+            NewSegment.AllocateFullPassStacks();
             NewSegment.PassesData.AdoptCellPassesFrom(CleavingSegment.PassesData, TestTime);
 
             // Modify the time range of Segment to match it's new time span and set up

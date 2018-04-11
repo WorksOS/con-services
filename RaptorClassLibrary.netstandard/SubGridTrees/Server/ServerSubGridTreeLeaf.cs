@@ -28,12 +28,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// <summary>
         /// The date time of the first observed cell pass within this subgrid
         /// </summary>
-        DateTime leafStartTime;
+        private DateTime leafStartTime;
 
         /// <summary>
         /// The date time of the last observed cell pass within this subgrid
         /// </summary>
-        DateTime leafEndTime;
+        private DateTime leafEndTime;
 
         /// <summary>
         /// The date time of the last observed cell pass within this subgrid
@@ -75,10 +75,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             Directory?.Clear();
         }
 
-        private void CellPassAdded(SubGridCellPassesDataSegment segment, CellPass pass)
+        private void CellPassAdded(CellPass pass)
         {
-            segment.PassesData.SegmentPassCount++;
-
             UpdateStartEndTimeRange(pass.Time);
 
             Dirty = true;
@@ -91,14 +89,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         public void UpdateStartEndTimeRange(DateTime time)
         {
             if (time < leafStartTime)
-            {
                 leafStartTime = time;
-            }
 
             if (time > leafEndTime)
-            {
                 leafEndTime = time;
-            }
         }
 
         /// <summary>
@@ -106,7 +100,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// </summary>
         public ServerSubGridTreeLeaf()
         {
-
         }
 
         public ServerSubGridTreeLeaf(ISubGridTree owner,
@@ -118,9 +111,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public void AddPass(uint cellX, uint cellY, CellPass Pass)
         {
-            SubGridCellPassesDataSegment Segment;
-
-            Segment = Cells.SelectSegment(Pass.Time);
+            SubGridCellPassesDataSegment Segment = Cells.SelectSegment(Pass.Time);
 
             if (Segment == null)
             {
@@ -135,27 +126,19 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
             // Add the processed pass to the cell
 
-            if (Segment.PassesData.PassCount(cellX, cellY) == 0)
+            if (Segment.PassesData.LocateTime(cellX, cellY, Pass.Time, out int PassIndex))
             {
-                Segment.PassesData.AddPass(cellX, cellY, Pass, 0);
-                CellPassAdded(Segment, Pass);
+                // Replace the existing cell pass with the new one. The assumption
+                // here is that more than one machine will never cross a cell center position
+                // within the same second (the resolution of the cell pass time stamps)
+                Segment.PassesData.ReplacePass(cellX, cellY, PassIndex, Pass);
+
+                Dirty = true;
             }
             else
             {
-                if (Segment.PassesData.LocateTime(cellX, cellY, Pass.Time, out int PassIndex))
-                {
-                    // Replace the existing cell pass with the new one. The assumption
-                    // here is that more than one machine will never cross a cell center position
-                    // within the same second (the resolution of the cell pass time stamps)
-                    Segment.PassesData.ReplacePass(cellX, cellY, PassIndex, Pass);
-
-                    Dirty = true;
-                }
-                else
-                {
-                    Segment.PassesData.AddPass(cellX, cellY, Pass, PassIndex);
-                    CellPassAdded(Segment, Pass);
-                }
+                Segment.PassesData.AddPass(cellX, cellY, Pass, PassIndex);
+                CellPassAdded(Pass);
             }
         }
 

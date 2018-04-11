@@ -54,10 +54,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         public SubGridCellPassesDataSegment AddNewSegment(IServerLeafSubGrid subGrid,
                                                           SubGridCellPassesDataSegmentInfo segmentInfo)
         {
-            //int J, Counter;
-
-            SubGridCellPassesDataSegment Result;
-
             if (segmentInfo == null)
             {
                 //TODO add when lgogin available
@@ -74,7 +70,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 return null;
             }
 
-            Result = new SubGridCellPassesDataSegment
+            SubGridCellPassesDataSegment Result = new SubGridCellPassesDataSegment
             {
                 Owner = subGrid,
                 SegmentInfo = segmentInfo
