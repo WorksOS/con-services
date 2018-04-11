@@ -84,7 +84,7 @@
       <Value Profile="(Default)">7</Value>
     </Setting>
     <Setting Name="TagFileEndpoint" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">http://localhost/v2/tagfile</Value>
+      <Value Profile="(Default)">http://10.97.96.42:4001/v2/tagfile</Value>
     </Setting>
   </Settings>
 </SettingsFile>

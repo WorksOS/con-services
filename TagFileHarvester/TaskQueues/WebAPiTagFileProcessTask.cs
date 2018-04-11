@@ -47,8 +47,9 @@ namespace TagFileHarvester.TaskQueues
         var requestData =
           CompactionTagFileRequest.CreateCompactionTagFileRequest(Path.GetFileName(tagFilename), data, org.orgId);
         var client = new RestClient(OrgsHandler.TagFileEndpoint);
+      //  client.Proxy=new WebProxy("127.0.0.1:8888",false);
         var request = new RestRequest(Method.POST);
-
+   
         request.AddParameter("application/json; charset=utf-8", JsonConvert.SerializeObject(requestData),
           ParameterType.RequestBody);
         request.RequestFormat = DataFormat.Json;
@@ -63,7 +64,7 @@ namespace TagFileHarvester.TaskQueues
         }
         finally
         {
-          result = response?.Data;
+          result = JsonConvert.DeserializeObject<BaseDataResult>(response?.Content);
           code = response?.StatusCode;
         }
 
@@ -115,9 +116,13 @@ namespace TagFileHarvester.TaskQueues
               }
               default:
               {
-                return null;
+                log.DebugFormat("Moving file {0} for org {1} to {2} folder", tagFilename, org.shortName,
+                  OrgsHandler.TCCSynchProjectBoundaryIssueFolder);
+
+                if (!MoveFileTo(tagFilename, org, fileRepository, OrgsHandler.TCCSynchOtherIssueFolder))
+                  return null;
                 break;
-              }
+                  }
             }
             break;
           }
@@ -137,7 +142,7 @@ namespace TagFileHarvester.TaskQueues
       }
       catch (Exception ex)
       {
-        log.ErrorFormat("Exception while processing file {0} occured {1}", tagFilename, ex.Message);
+        log.ErrorFormat("Exception while processing file {0} occured {1} {2}", tagFilename, ex.Message, ex.StackTrace);
       }
       return null;
     }
