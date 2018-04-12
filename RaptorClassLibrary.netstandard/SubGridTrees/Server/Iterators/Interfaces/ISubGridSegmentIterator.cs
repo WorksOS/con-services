@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces
@@ -17,8 +18,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces
         bool RetrieveLatestData { get; set; }
         bool ReturnCachedItemsOnly { get; set; }
         bool ReturnDirtyOnly { get; set; }
-//        SiteModel SiteModelReference { get; set; }
-        ServerSubGridTreeLeaf SubGrid { get; set; }
+        //        SiteModel SiteModelReference { get; set; }
+        IServerLeafSubGrid SubGrid { get; set; }
 
         void CurrentSubgridSegmentDestroyed();
         void InitialiseIterator();

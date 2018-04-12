@@ -153,7 +153,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
             CellPass[,][] cellPasses = new CellPass[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension][];
 
             // Create each sub array and add a test cell pass to it
-            SubGridUtilities.SubGridDimensionalIterator((x, y) => cellPasses[x, y] = new CellPass[] { TestCellPass() });
+            SubGridUtilities.SubGridDimensionalIterator((x, y) => cellPasses[x, y] = new [] { TestCellPass() });
 
             ISubGridCellSegmentPassesDataWrapper item1 = new SubGridCellSegmentPassesDataWrapper_NonStatic();
 
@@ -173,7 +173,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
 
             SubGridUtilities.SubGridDimensionalIterator((col, row) =>
             {
-                Assert.True(item1.ExtractCellPasses(col, row).Zip(item2.ExtractCellPasses(col, row), (a, b) => a.Equals(b)).All(x => x == true), "Read segment does not contain the same list of cell passes written into it");
+                Assert.True(item1.ExtractCellPasses(col, row)
+                                 .Zip(item2.ExtractCellPasses(col, row), (a, b) => a.Equals(b))
+                                 .All(x => x), 
+                            "Read segment does not contain the same list of cell passes written into it");
             });
         }
 
@@ -213,8 +216,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
             Cell_NonStatic integrateFrom = new Cell_NonStatic();
             integrateFrom.AddPass(pass2);
 
-            int addedCount, modifiedCount;
-            item.Integrate(1, 1, integrateFrom.Passes, 0, 0, out addedCount, out modifiedCount);
+            item.Integrate(1, 1, integrateFrom.Passes, 0, 0, out int addedCount, out int modifiedCount);
 
             Assert.Equal((uint)2, item.PassCount(1, 1));
             Assert.Equal(1, addedCount);
@@ -244,7 +246,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
 
             Cell_NonStatic cell = new Cell_NonStatic() { Passes = item.ExtractCellPasses(1, 1) };
 
-            Assert.True(cell.Passes.Zip(passes, (a, b) => a.Equals(b)).All(x => x == true), "Extracted cell does not contain the same cell passes added to it");
+            Assert.True(cell.Passes.Zip(passes, (a, b) => a.Equals(b)).All(x => x), 
+                        "Extracted cell does not contain the same cell passes added to it");
         }
 
         [Fact()]
@@ -269,7 +272,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
             CellPass[,][] cellPasses = new CellPass[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension][];
 
             // Create each sub array and add a test cell pass to it
-            SubGridUtilities.SubGridDimensionalIterator((x, y) => cellPasses[x, y] = new CellPass[] { TestCellPass() });
+            SubGridUtilities.SubGridDimensionalIterator((x, y) => cellPasses[x, y] = new [] { TestCellPass() });
 
             ISubGridCellSegmentPassesDataWrapper item = new SubGridCellSegmentPassesDataWrapper_NonStatic();
 

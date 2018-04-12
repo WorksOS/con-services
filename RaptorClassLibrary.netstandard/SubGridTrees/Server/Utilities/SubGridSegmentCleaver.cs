@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Utilities
@@ -12,7 +13,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Utilities
         /// Cleaves all segments requiring it within the given subgrid
         /// </summary>
         /// <param name="subGrid"></param>
-        public static void PerformSegmentCleaving(ServerSubGridTreeLeaf subGrid)
+        public static void PerformSegmentCleaving(IServerLeafSubGrid subGrid)
         {
             Debug.Assert(subGrid.Locked, "May not calculate latest pass information if the subgrid is not locked");
 

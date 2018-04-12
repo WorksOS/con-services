@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.SiteModels;
+using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.Utilities;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
@@ -16,7 +17,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
 
         public IterationDirection IterationDirection { get; set; } = IterationDirection.Forwards;
 
-        public ServerSubGridTreeLeaf SubGrid { get; set; }
+        public IServerLeafSubGrid SubGrid { get; set; }
 
         private SubGridDirectory _Directory;
 

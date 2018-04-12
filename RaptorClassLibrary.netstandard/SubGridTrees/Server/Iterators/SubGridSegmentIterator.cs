@@ -205,7 +205,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
         /// <summary>
         ///  The subgrid whose segments are being iterated across
         /// </summary>
-        public ServerSubGridTreeLeaf SubGrid
+        public IServerLeafSubGrid SubGrid
         {
             get
             {
@@ -235,7 +235,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
 
         public int NumberOfSegmentsScanned { get; set; }
 
-        public SubGridSegmentIterator(ServerSubGridTreeLeaf subgrid)
+        public SubGridSegmentIterator(IServerLeafSubGrid subgrid)
         {
             MarkReturnedSegmentsAsTouched = true;
             SubGrid = subgrid;
