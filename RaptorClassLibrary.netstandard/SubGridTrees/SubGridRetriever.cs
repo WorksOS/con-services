@@ -41,7 +41,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         private SubGridTreeBitmapSubGridBits SeiveBitmask;
 //        private SubGridTreeBitmapSubGridBits CellIterationBitmask = SubGridTreeBitmapSubGridBits.FullMask;
         ISubGrid _SubGrid;
-        ServerSubGridTreeLeaf _SubGridAsLeaf;
+        IServerLeafSubGrid _SubGridAsLeaf;
 
         FilteredValueAssignmentContext AssignmentContext;
         SubGridSegmentIterator SegmentIterator;
@@ -1396,7 +1396,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                         return Result;
                     }
 
-                    if (!(_SubGrid is ServerSubGridTreeLeaf))
+                    if (!(_SubGrid is IServerLeafSubGrid))
                     {
                         // TODO Readd when logging available
                         // SIGLogMessage.PublishNoODS(Nil, Format('_SubGrid %s is not a server grid leaf node', [_Subgrid.Moniker]), slmcAssert);
@@ -1405,7 +1405,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
                     // SIGLogMessage.PublishNoODS(Nil, Format('Getting subgrid leaf at %dx%d', [CellX, CellY]), slmcDebug);
 
-                    _SubGridAsLeaf = (ServerSubGridTreeLeaf)_SubGrid;
+                    _SubGridAsLeaf = (IServerLeafSubGrid)_SubGrid;
                     _GlobalLatestCells = _SubGridAsLeaf.Directory.GlobalLatestCells;
 
                     if (PruneSubGridRetrievalHere())

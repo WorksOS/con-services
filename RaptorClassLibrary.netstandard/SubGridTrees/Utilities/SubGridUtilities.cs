@@ -54,7 +54,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
                                  bool AcceptSpeculativeReadFailure)
         {
             ISubGrid SubGrid;
-            ServerSubGridTreeLeaf LeafSubGrid = null;
+            IServerLeafSubGrid LeafSubGrid = null;
             // bool SubGridLockAcquired = false;
             // bool IntentionLockCounterWound = false;
             bool CreatedANewSubgrid = false;
@@ -93,7 +93,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
                             // Create the leaf subgrid that will be used to read in the subgrid from the disk.
                             // In the case where the subgrid isn't present on the disk this reference will
                             // be destroyed
-                            SubGrid = ForSubGridTree.ConstructPathToCell(CellX, CellY, Types.SubGridPathConstructionType.CreateLeaf) as ServerSubGridTreeLeaf;
+                            SubGrid = ForSubGridTree.ConstructPathToCell(CellX, CellY, Types.SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
 
                             if (SubGrid != null)
                             {
@@ -141,7 +141,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
 
                 if (SubGrid.IsLeafSubGrid())
                 {
-                    LeafSubGrid = SubGrid as ServerSubGridTreeLeaf;
+                    LeafSubGrid = SubGrid as IServerLeafSubGrid;
                 }
 
                 if (LeafSubGrid == null)  // Something bad happened

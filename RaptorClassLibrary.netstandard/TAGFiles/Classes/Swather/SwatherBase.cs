@@ -3,6 +3,7 @@ using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.SiteModels;
+using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
 using VSS.VisionLink.Raptor.SubGridTrees.Types;
 using VSS.VisionLink.Raptor.TAGFiles.Types;
@@ -37,7 +38,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
 
         protected TAGProcessorBase Processor { get; set; }
 
-        protected ServerSubGridTreeLeaf LastInMemoryLeafSubGrid { get; set; }
+        protected IServerLeafSubGrid LastInMemoryLeafSubGrid { get; set; }
 
         protected Fence InterpolationFence { get; set; }
 
@@ -56,7 +57,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
             // server interlock (ICServerModule.Server.AquireLock) and we may interact
             // directly with the subgrid tree being populated
 
-            ServerSubGridTreeLeaf SubGrid = Grid.ConstructPathToCell(cellX, cellY, SubGridPathConstructionType.CreateLeaf) as ServerSubGridTreeLeaf;
+            IServerLeafSubGrid SubGrid = Grid.ConstructPathToCell(cellX, cellY, SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
             LastInMemoryLeafSubGrid = SubGrid;
 
             SubGrid.AllocateLeafFullPassStacks();

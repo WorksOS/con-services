@@ -431,7 +431,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             // the first cell with passes in it
             SubGridUtilities.SubGridDimensionalIterator((I, J) =>
             {
-                var UpdatedCell = false;
+                bool UpdatedCell = false;
 
                 if (TemporallyPrecedingSegment != null &&
                     TemporallyPrecedingSegment.LatestPasses.PassDataExistanceMap.BitSet(I, J))
@@ -698,7 +698,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             return Result;
         }
 
-
         public bool SaveDirectoryToStream(Stream stream)
         {
             bool Result;
@@ -882,17 +881,17 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             return Result;
         }
 
-        public void Integrate(ServerSubGridTreeLeaf Source,
+        public void Integrate(IServerLeafSubGrid Source,
                               SubGridSegmentIterator Iterator,
                               bool IntegratingIntoIntermediaryGrid)
         {
-            Debug.Assert(Source != null, "Source subgrid not defined in TICServerSubGridTreeLeaf.Integrate");
+            Debug.Assert(Source != null, "Source subgrid not defined in ServerSubGridTreeLeaf.Integrate");
 
             if (Source.Cells.PassesData.Count == 0)
             {
                 // No cells added to this subgrid during processing
                 // TODO readd when logging available
-                //SIGLogMessage.PublishNoODS(Self, Format('Empty subgrid %s passed to TICServerSubGridTreeLeaf.Integrate', [Moniker]), slmcAssert);
+                //SIGLogMessage.PublishNoODS(Self, Format('Empty subgrid %s passed to ServerSubGridTreeLeaf.Integrate', [Moniker]), slmcAssert);
                 return;
             }
 

@@ -77,7 +77,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather.Tests
             {
                 grid.Root.ScanSubGrids(grid.FullCellExtent(), x =>
                 {
-                    ((ServerSubGridTreeLeaf)x).ComputeLatestPassInformation(true);
+                    ((IServerLeafSubGrid)x).ComputeLatestPassInformation(true);
                     return true;
                 });
             }

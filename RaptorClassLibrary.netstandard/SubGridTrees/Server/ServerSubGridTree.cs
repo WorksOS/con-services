@@ -112,7 +112,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         public bool LoadLeafSubGrid(//IStorageProxy storageProxy,
                                     SubGridCellAddress CellAddress,
                                     bool loadAllPasses, bool loadLatestPasses,
-                                    ServerSubGridTreeLeaf SubGrid)
+                                    IServerLeafSubGrid SubGrid)
         {
             string FullFileName;
 

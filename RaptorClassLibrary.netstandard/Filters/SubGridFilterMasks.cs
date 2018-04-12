@@ -104,10 +104,10 @@ namespace VSS.VisionLink.Raptor.Filters
 
             // Handle the case when the passed in subgrid is a server leaf subgrid. In this case, construct the PDMask so that
             // it denotes the production data cells (only) that were selected by the spatial filter.
-            bool SubGridAsLeaf_is_TICServerSubGridTreeLeaf = SubGridAsLeaf is ServerSubGridTreeLeaf;
+            bool SubGridAsLeaf_is_TICServerSubGridTreeLeaf = SubGridAsLeaf is IServerLeafSubGrid;
             if (SubGridAsLeaf_is_TICServerSubGridTreeLeaf)
             {
-                PDMask.SetAndOf(FilterMask, ((ServerSubGridTreeLeaf)SubGridAsLeaf).Directory.GlobalLatestCells.PassDataExistanceMap);
+                PDMask.SetAndOf(FilterMask, ((IServerLeafSubGrid)SubGridAsLeaf).Directory.GlobalLatestCells.PassDataExistanceMap);
             }
             else
             {

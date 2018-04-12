@@ -242,7 +242,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
             Directory = subgrid == null ? null : SubGrid.Directory;
         }
 
-        public SubGridSegmentIterator(ServerSubGridTreeLeaf subgrid, SubGridDirectory directory) : this(subgrid)
+        public SubGridSegmentIterator(IServerLeafSubGrid subgrid, SubGridDirectory directory) : this(subgrid)
         {
             Directory = directory;
         }

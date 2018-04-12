@@ -13,6 +13,7 @@ using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
 using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.Compression;
 using System.Diagnostics;
+using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using Xunit;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
@@ -55,7 +56,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
             // and compare the mutable and immutable versions for consistency.
 
             // Create a leaf to contain the mutable directory
-            ServerSubGridTreeLeaf mutableLeaf = new ServerSubGridTreeLeaf(null, null, SubGridTree.SubGridTreeLevels);
+            IServerLeafSubGrid mutableLeaf = new ServerSubGridTreeLeaf(null, null, SubGridTree.SubGridTreeLevels);
             mutableLeaf.Directory.GlobalLatestCells = SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(true, false);
 
             // Load the mutable stream of information
@@ -76,7 +77,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
 
             MutabilityConverter.ConvertToImmutable(FileSystemStreamType.SubGridDirectory, outStream, out inStream);
 
-            ServerSubGridTreeLeaf immutableLeaf = new ServerSubGridTreeLeaf(null, null, SubGridTree.SubGridTreeLevels);
+            IServerLeafSubGrid immutableLeaf = new ServerSubGridTreeLeaf(null, null, SubGridTree.SubGridTreeLevels);
             immutableLeaf.Directory.GlobalLatestCells = SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(false, true);
 
             inStream.Position = 0;

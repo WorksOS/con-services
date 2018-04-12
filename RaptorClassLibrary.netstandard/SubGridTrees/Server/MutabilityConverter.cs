@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
 using VSS.VisionLink.Raptor.Types;
 
@@ -80,7 +81,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             try
             {
                 // create a leaf to contain the mutable directory (and ensure the global latest cells is the mutable variety)
-                ServerSubGridTreeLeaf leaf = new ServerSubGridTreeLeaf(null, null, SubGridTree.SubGridTreeLevels)
+                IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(null, null, SubGridTree.SubGridTreeLevels)
                 {
                     Directory =
                     {

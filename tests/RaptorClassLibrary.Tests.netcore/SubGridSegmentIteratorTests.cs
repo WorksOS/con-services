@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using Xunit;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators.Tests
@@ -14,7 +15,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators.Tests
         public void Test_SubGridSegmentIterator_SubGridSegmentIterator()
         {
             ServerSubGridTree tree = new ServerSubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
-            ServerSubGridTreeLeaf leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
+            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
 
             SubGridSegmentIterator iterator = new SubGridSegmentIterator(leaf, leaf.Directory);
 
@@ -26,7 +27,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators.Tests
         public void Test_SubGridSegmentIterator_SetTimeRange()
         {
             ServerSubGridTree tree = new ServerSubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
-            ServerSubGridTreeLeaf leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
+            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
 
             SubGridSegmentIterator iterator = new SubGridSegmentIterator(leaf, leaf.Directory);
 
@@ -66,7 +67,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators.Tests
         public void Test_SubGridSegmentIterator_InitialiseIterator()
         {
             ServerSubGridTree tree = new ServerSubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
-            ServerSubGridTreeLeaf leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
+            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
 
             SubGridSegmentIterator iterator = new SubGridSegmentIterator(leaf, leaf.Directory);
 
@@ -96,7 +97,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators.Tests
         public void Test_SubGridSegmentIterator_SetIteratorElevationRange()
         {
             ServerSubGridTree tree = new ServerSubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
-            ServerSubGridTreeLeaf leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
+            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
 
             SubGridSegmentIterator iterator = new SubGridSegmentIterator(leaf, leaf.Directory);
 
