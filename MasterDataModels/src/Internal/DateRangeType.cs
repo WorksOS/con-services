@@ -11,9 +11,7 @@
     ProjectExtents,
     Custom,
     PriorToYesterday,
-    PriorToCurrentWeek,
     PriorToPreviousWeek,
-    PriorToCurrentMonth,
     PriorToPreviousMonth
   }
 }
