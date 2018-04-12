@@ -125,6 +125,14 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         public bool BitSet(int CellX, int CellY) => (Bits[CellY] & (SubGridBitMapHighBitMask >> CellX)) != 0;
 
         /// <summary>
+        /// Determine if the bit at location (CellX, CellY) in the bit array is set (1)
+        /// </summary>
+        /// <param name="CellX"></param>
+        /// <param name="CellY"></param>
+        /// <returns></returns>
+        public bool BitSet(uint CellX, uint CellY) => (Bits[CellY] & (SubGridBitMapHighBitMask >> (int)CellX)) != 0;
+
+        /// <summary>
         /// Defines an overloaded bitwise equality operator for the Bits from a and b
         /// </summary>
         /// <param name="a"></param>
@@ -445,6 +453,20 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 Bits[CellY] |= SubGridBitMapHighBitMask >> CellX;
             else
                 Bits[CellY] &= ~(SubGridBitMapHighBitMask >> CellX);
+        }
+
+        /// <summary>
+        /// Set the bit at the location identified by [CellX, CellY] to unset (0) or set (1) based on the value parameter
+        /// </summary>
+        /// <param name="CellX"></param>
+        /// <param name="CellY"></param>
+        /// <param name="Value"></param>
+        public void SetBitValue(uint CellX, uint CellY, bool Value)
+        {
+            if (Value)
+                Bits[CellY] |= SubGridBitMapHighBitMask >> (int)CellX;
+            else
+                Bits[CellY] &= ~(SubGridBitMapHighBitMask >> (int)CellX);
         }
 
         /// <summary>

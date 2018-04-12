@@ -36,6 +36,11 @@
         /// <summary>
         /// Defines the maximum number of cell passes permitted in a subgrid segment before that segment will be split
         /// </summary>
-        public static int VLPD_SubGridSegmentPassCountLimit = 20000;
+        public static int VLPD_SubGridSegmentPassCountLimit = 15000;
+
+        /// <summary>
+        /// Defines the maximum number of cell passes that may occur within a single cell within a segment
+        /// </summary>
+        public static int VLPD_SubGridMaxSegmentCellPassesLimit = 250;
     }
 }

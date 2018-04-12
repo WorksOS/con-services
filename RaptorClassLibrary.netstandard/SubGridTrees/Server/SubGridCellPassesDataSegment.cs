@@ -7,7 +7,7 @@ using log4net;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
+using VSS.VisionLink.Raptor.SubGridTrees.Server.Utilities;
 using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server
@@ -219,29 +219,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public void CalculateElevationRangeOfPasses()
         {
-            double Min = 1E10;
-            double Max = -1E10;
-
-            SubGridUtilities.SubGridDimensionalIterator((i, j) =>
-            {
-                uint _PassCount = PassesData.PassCount(i, j);
-
-                if (_PassCount == 0)
-                    return;
-
-                for (uint PassIndex = 0; PassIndex < _PassCount; PassIndex++)
-                {
-                    float _height = PassesData.PassHeight(i, j, PassIndex);
-
-                    if (_height > Max)
-                        Max = _height;
-
-                    if (_height < Min)
-                        Min = _height;
-                }
-            });
-
-            if (Min < Max)
+            if (SegmentElevationRangeCalculator.CalculateElevationRangeOfPasses(PassesData, out double Min, out double Max))
             {
                 SegmentInfo.MinElevation = Min;
                 SegmentInfo.MaxElevation = Max;
@@ -252,7 +230,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                                string FileName,
                                out FileSystemErrorStatus FSError)
         {
-            //            int TotalPasses = 0, MaxPasses = 0;
             //  TODO          InvalidatedSpatialStreams: TInvalidatedSpatialStreamArray;
 
             bool Result;
@@ -263,7 +240,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             /* todo
              *   if (RecordSegmentCleavingOperationsToLog)
                {
-                   CalculateTotalPasses(ref TotalPasses, ref MaxPasses);
+                   CalculateTotalPasses(out int TotalPasses, out int MaxPasses);
 
                    // TODO ...
                    if (TotalPasses > VLPDSvcLocations.VLPD_SubGridSegmentPassCountLimit)
@@ -314,6 +291,21 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             }
 
             return Result;
+        }
+
+        /// <summary>
+        /// Determines if this segment violates either the maximum number of cell passes within a 
+        /// segment limit, or the maximum numebr of cell passes within a single cell within a
+        /// segment limit.
+        /// If either limit is breached, this segment requires cleaving
+        /// </summary>
+        /// <returns></returns>
+        public bool RequiresCleaving()
+        {
+            SegmentTotalPassesCalculator.CalculateTotalPasses(PassesData, out uint TotalPasses, out uint MaxPassCount);
+
+            return TotalPasses > RaptorConfig.VLPD_SubGridSegmentPassCountLimit ||
+                   MaxPassCount > RaptorConfig.VLPD_SubGridMaxSegmentCellPassesLimit;
         }
     }
 }

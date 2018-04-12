@@ -4,6 +4,9 @@ using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Utilities
 {
+    /// <summary>
+    /// Supports calculating elevation ranges across cell passes
+    /// </summary>
     public static class SegmentTimeRangeCalculator
     {
         /// <summary>
