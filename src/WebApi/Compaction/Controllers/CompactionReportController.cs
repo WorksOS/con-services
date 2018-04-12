@@ -155,12 +155,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetStationOffset: " + Request.QueryString);
 
-      var project = await (this.User as RaptorPrincipal)?.GetProject(projectUid);
+      var project = await (User as RaptorPrincipal)?.GetProject(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var cutFillDesignDescriptor = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
       var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
-      var userPreferences = await GetUserPreferences();
+      var userPreferences = (User as RaptorPrincipal).IsApplication ? new UserPreferenceData() : await GetUserPreferences();
 
       // Add 0.0 value to the offsets array, remove any duplicates and sort contents by ascending order...
       var updatedOffsets = offsets?.AddZeroDistinctSortBy();
