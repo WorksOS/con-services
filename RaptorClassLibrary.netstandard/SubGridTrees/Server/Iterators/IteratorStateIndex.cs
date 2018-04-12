@@ -84,7 +84,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
 
             do
             {
-                Idx = IterationDirection == IterationDirection.Forwards ? Idx + 1 : Idx - 1;
+                Idx = IterationDirection == IterationDirection.Forwards ? ++Idx : --Idx;
 
                 SegmentIndexInRange = Range.InRange(Idx, 0, _Directory.SegmentDirectory.Count - 1);
 

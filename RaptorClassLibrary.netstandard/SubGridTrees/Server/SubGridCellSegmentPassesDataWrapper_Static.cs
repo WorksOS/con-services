@@ -53,18 +53,14 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             // Shift all the cell pass information into the private arrays, setting the cell pass offsets for 
             // each cell to reference the correct set of cell passes in the collated array.
             uint runningPassCount = 0;
-            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
-            {
-                for (int j = 0; j < SubGridTree.SubGridTreeDimension; j++)
-                {
-                    PassData[i, j].CellPassOffset = runningPassCount;
 
-                    foreach (CellPass cellPass in cellPasses[i, j])
-                    {
-                        CellPasses[runningPassCount++] = cellPass;
-                    }
-                }
-            }
+            SubGridUtilities.SubGridDimensionalIterator((i, j) =>
+            {
+                PassData[i, j].CellPassOffset = runningPassCount;
+
+                foreach (CellPass cellPass in cellPasses[i, j])
+                    CellPasses[runningPassCount++] = cellPass;
+            });
         }
 
         /// <summary>

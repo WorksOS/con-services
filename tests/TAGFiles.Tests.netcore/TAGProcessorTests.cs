@@ -1,9 +1,5 @@
-﻿using VSS.VisionLink.Raptor.TAGFiles.Classes;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
 using VSS.VisionLink.Raptor.Types;
@@ -53,6 +49,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Tests
             DateTime EndTime = new DateTime(2000, 1, 1, 1, 1, 3);
             processor.DataLeft = new XYZ(0, 1, 5);
             processor.DataRight = new XYZ(1, 1, 5);
+            processor.DataTime = EndTime;
 
             Assert.True(processor.ProcessEpochContext(), "ProcessEpochContext returned false in default TAGProcessor state (2)");
 

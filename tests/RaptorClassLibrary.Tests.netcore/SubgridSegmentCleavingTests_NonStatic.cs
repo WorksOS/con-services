@@ -1,7 +1,9 @@
 ﻿using System;
 using VSS.VisionLink.Raptor.Cells;
+using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
+using VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Utilities;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 using Xunit;
@@ -66,6 +68,48 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 
             Assert.True(startSegmentTime == startTime, $"Start time {startSegmentTime} not equal to {startTime} as expected");
             Assert.True(endSegmentTime == startTime.AddSeconds(10239), $"End time {endSegmentTime} not equal to {startTime.AddSeconds(10239)} as expected");
+        }
+
+        [Fact()]
+        public void Test_SegmentIterator_MoveToFirstSegment()
+        {
+            IServerLeafSubGrid subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
+
+            SubGridSegmentIterator Iterator = new SubGridSegmentIterator(subGrid)
+            {
+                IterationDirection = IterationDirection.Forwards,
+                ReturnDirtyOnly = true,
+                RetrieveAllPasses = true
+            };
+
+            Assert.True(!Iterator.MoveToFirstSubGridSegment(), "Was able to move to first segment (forwards) when requesting only dirty segments");
+
+            Iterator = new SubGridSegmentIterator(subGrid)
+            {
+                IterationDirection = IterationDirection.Backwards,
+                ReturnDirtyOnly = true,
+                RetrieveAllPasses = true
+            };
+
+            Assert.True(!Iterator.MoveToFirstSubGridSegment(), "Was able to move to first segment (backwards) when requesting only dirty segments");
+
+            Iterator = new SubGridSegmentIterator(subGrid)
+            {
+                IterationDirection = IterationDirection.Forwards,
+                ReturnDirtyOnly = false,
+                RetrieveAllPasses = true
+            };
+
+            Assert.True(Iterator.MoveToFirstSubGridSegment(), "Was not able to move to first segment (forwards) when requesting all segments");
+
+            Iterator = new SubGridSegmentIterator(subGrid)
+            {
+                IterationDirection = IterationDirection.Backwards,
+                ReturnDirtyOnly = false,
+                RetrieveAllPasses = true
+            };
+
+            Assert.True(Iterator.MoveToFirstSubGridSegment(), "Was not able to move to first segment (backwards) when requesting all segments");
         }
 
         [Fact()]
@@ -212,23 +256,32 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             // Create a subgrid to hold the segment
             IServerLeafSubGrid subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
 
+            // Modify the cleaving limit to 10000 to force the segment not to be cloven = the cleave result should be true
+            RaptorConfig.VLPD_SubGridSegmentPassCountLimit = 10000;
+
             // Exercise the cleaver!
             // Instruct the segment container to cleave the segment, locking the owner while it occurs
             subGrid.AcquireLock(0);
             try
             {
-                // Modify the cleaving limit to 10000 to force the segment not to be cloven = the cleave result should be true
-                RaptorConfig.VLPD_SubGridSegmentPassCountLimit = 10000;
+                // Set the segment to not dirty - it shoudl be ignored
+                subGrid.Cells.PassesData[0].Dirty = false;
 
                 SubGridSegmentCleaver.PerformSegmentCleaving(subGrid);
+
+                Assert.True(1 == subGrid.Cells.PassesData.Count, $"After cleaving with no dirty segments there are {subGrid.Cells.PassesData.Count} segments instead of the expected one segments");
+
+                // Set the segment to not dirty - it shoudl be ignored
+                subGrid.Cells.PassesData[0].Dirty = true;
+                SubGridSegmentCleaver.PerformSegmentCleaving(subGrid);
+
+                //Check there are now two segments in total
+                Assert.True(2 == subGrid.Cells.PassesData.Count, $"After cleaving there are {subGrid.Cells.PassesData.Count} segments instead of the expected two segments");
             }
             finally
             {
                 subGrid.ReleaseLock(0);
             }
-
-            //Check there are now two segments in total
-            Assert.True(2 == subGrid.Cells.PassesData.Count, $"After cleaving there are {subGrid.Cells.PassesData.Count} segments instead of the expected two segments");
 
             //Check the total number of passes across the two segments is 10240, and the maximum pass count is 5
             SubGridCellPassesDataSegment segment1 = subGrid.Cells.PassesData[0];

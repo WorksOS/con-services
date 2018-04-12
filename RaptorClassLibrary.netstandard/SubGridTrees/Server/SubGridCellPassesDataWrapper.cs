@@ -159,7 +159,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             //ISubGridCellSegmentPassesDataWrapper NewSegment = SubGridCellSegmentPassesDataWrapperFactory.Instance().NewWrapper(true, false);
             SubGridCellPassesDataSegment NewSegment = new SubGridCellPassesDataSegment
             {
-                Owner = CleavingSegment.Owner as IServerLeafSubGrid
+                Owner = CleavingSegment.Owner 
             };
 
             NewSegment.AllocateFullPassStacks();

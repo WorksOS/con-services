@@ -83,7 +83,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather.Tests
             }
             catch (Exception E)
             {
-                Assert.False(true,"Exception {0} occured computing latest cell information");
+                Assert.False(true, $"Exception {E} occured computing latest cell information");
             }
 
             uint cellX, cellY;

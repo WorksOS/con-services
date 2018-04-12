@@ -10,7 +10,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Utilities
     public static class SubGridSegmentCleaver
     {
         /// <summary>
-        /// Cleaves all segments requiring it within the given subgrid
+        /// Cleaves all dirty segments requiring cleaving within the given subgrid
         /// </summary>
         /// <param name="subGrid"></param>
         public static void PerformSegmentCleaving(IServerLeafSubGrid subGrid)
