@@ -259,9 +259,11 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
         private void ViewPortChange(Action viewPortAction)
         {
-            viewPortAction();
-            DoScreenUpdate();
-        }
+          Cursor.Current = Cursors.WaitCursor;
+          viewPortAction();
+          DoScreenUpdate();
+          Cursor.Current = Cursors.Default;
+    }
 
         private void ZoomAll_Click(object sender, EventArgs e)
         {
@@ -662,8 +664,8 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
         private void btnCalculateVolumes_Click(object sender, EventArgs e)
         {
-            // Calculate a simple volume based on a filter to filter, earliest to latest context
-
+      // Calculate a simple volume based on a filter to filter, earliest to latest context
+            Cursor.Current = Cursors.WaitCursor;
             SimpleVolumesResponse volume = PerformVolume();
 
             if (volume == null)
@@ -671,8 +673,9 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 MessageBox.Show("Volume retuned no response");
                 return;
             }
+          Cursor.Current = Cursors.Default;
 
-            MessageBox.Show($"Simple Volume Response:\n{volume}");
+          MessageBox.Show($"Simple Volume Response:\n{volume}");
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)

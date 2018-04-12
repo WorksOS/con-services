@@ -71,6 +71,8 @@ namespace VSS.TRex.Tools.TagfileSubmitter
                 }
             }
 
+            Console.WriteLine(string.Format("Submitting {0} tagfiles for processing", files.Length));
+
             request.Execute(arg);
         }
 
@@ -145,21 +147,23 @@ namespace VSS.TRex.Tools.TagfileSubmitter
                 // Obtain a TAGFileProcessing client server
                 TAGFileProcessingClientServer TAGServer = new TAGFileProcessingClientServer();
 
+                Console.WriteLine(string.Format("Submitting Tagfiles for project ID {0} or folder path {1}", projectID, folderPath));
                 ProcessTAGFilesInFolder(projectID, folderPath);
+                Console.WriteLine("*** Tagfile Submission Complete ***");
 
-                // ProcessMachine10101TAGFiles(projectID);
-                // ProcessMachine333TAGFiles(projectID);
+        // ProcessMachine10101TAGFiles(projectID);
+        // ProcessMachine333TAGFiles(projectID);
 
-                //ProcessSingleTAGFile(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Machine10101\\2085J063SV--C01 XG 01 YANG--160804061209.tag");
-                //ProcessSingleTAGFile(projectID);
+        //ProcessSingleTAGFile(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Machine10101\\2085J063SV--C01 XG 01 YANG--160804061209.tag");
+        //ProcessSingleTAGFile(projectID);
 
-                // Process all TAG files for project 4733:
-                //ProcessTAGFilesInFolder(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 1");
-                //ProcessTAGFilesInFolder(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 2");
-                //ProcessTAGFilesInFolder(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 3");
-                //ProcessTAGFilesInFolder(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 4");
-            }
-            finally
+        // Process all TAG files for project 4733:
+        //ProcessTAGFilesInFolder(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 1");
+        //ProcessTAGFilesInFolder(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 2");
+        //ProcessTAGFilesInFolder(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 3");
+        //ProcessTAGFilesInFolder(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 4");
+      }
+      finally
             {
                 Console.ReadKey();
             }
