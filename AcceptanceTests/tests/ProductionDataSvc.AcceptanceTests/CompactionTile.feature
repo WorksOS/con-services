@@ -32,6 +32,7 @@ Examples:
 | BoundaryFilterELV | ff91dd40-1569-4765-a2bc-014321f76ace | 3ef41e3c-d1f5-40cd-b012-99d11ff432ef | 36.207160975535146, -115.01930236816406, 36.20771501855802, -115.01861572265624 | 256   | 256    | 0    | BoundaryFilterELV | 3          |
 | BoundaryFilterSPD | ff91dd40-1569-4765-a2bc-014321f76ace | 3ef41e3c-d1f5-40cd-b012-99d11ff432ef | 36.207160975535146, -115.01930236816406, 36.20771501855802, -115.01861572265624 | 256   | 256    | 26   | BoundaryFilterSPD | 3          |
 | BoundaryFilterPCS | ff91dd40-1569-4765-a2bc-014321f76ace | 3ef41e3c-d1f5-40cd-b012-99d11ff432ef | 36.207160975535146, -115.01930236816406, 36.20771501855802, -115.01861572265624 | 256   | 256    | 14   | BoundaryFilterPCS | 3          | 
+| BdryMDPAsAtToday  | ff91dd40-1569-4765-a2bc-014321f76ace | cefd0bda-53e4-45bf-a2b9-ca0cf6f6907a | 36.207160975535146, -115.01930236816406, 36.20771501855802, -115.01861572265624 | 256   | 256    | 20   | BoundaryFilterMDP | 5          |
 
 @Ignore
 Scenario Outline: Get CutFill Tiles
