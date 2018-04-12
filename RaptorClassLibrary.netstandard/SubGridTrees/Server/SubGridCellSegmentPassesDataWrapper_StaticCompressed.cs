@@ -344,6 +344,16 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             throw new InvalidOperationException("Immutable cell pass segment.");
         }
 
+        /// <summary>
+        /// Locates a cell pass occurring at or immediately after a given time within the passes for a specific cell within this segment.
+        /// If there is not an exact match, the returned index is the location in the cell pass list where a cell pass 
+        /// with the given time woule be inserted into the list to maintain correct time ordering of the cell passes in that cell.
+        /// </summary>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <param name="time"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public bool LocateTime(uint X, uint Y, DateTime time, out int index)
         {
             throw new NotImplementedException();

@@ -1,9 +1,6 @@
-﻿using VSS.VisionLink.Raptor.SubGridTrees.Server;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
 using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
@@ -133,19 +130,20 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
             Assert.Equal((uint)3, item.PassCount(1, 1));
 
             bool exactMatch = item.LocateTime(1, 1, new DateTime(1999, 12, 31, 0, 0, 0), out int index);
-            Assert.Equal(-1, index);
+            Assert.False(exactMatch, "Exact match found!!!");
+            Assert.Equal(0, index);
 
             exactMatch = item.LocateTime(1, 1, new DateTime(2000, 1, 1, 0, 0, 0), out index);
-            Assert.True(exactMatch && index > -1 && item.Pass(1, 1, (uint)index).Equals(pass1), $"Failed to locate pass at DateTime(2000, 1, 1, 0, 0, 0)");
+            Assert.True(exactMatch && index > -1 && item.Pass(1, 1, (uint)index).Equals(pass1), $"Failed to locate pass at DateTime(2000, 1, 1, 0, 0, 0), located pass is {item.Pass(1, 1, (uint)index)}");
 
             exactMatch = item.LocateTime(1, 1, new DateTime(2000, 1, 1, 0, 0, 1), out index);
-            Assert.True(exactMatch == false && item.Pass(1, 1, (uint)index).Equals(pass1), $"Failed to locate pass at DateTime(2000, 1, 1, 0, 0, 1), index = {index}");
+            Assert.True(exactMatch == false && item.Pass(1, 1, (uint)index - 1).Equals(pass1), $"Failed to locate pass at DateTime(2000, 1, 1, 0, 0, 1), index = {index}");
 
             exactMatch = item.LocateTime(1, 1, new DateTime(2000, 1, 2, 10, 0, 0), out index);
-            Assert.True(!exactMatch && index > -1 && item.Pass(1, 1, (uint)index).Equals(pass2), $"Failed to locate pass at DateTime(2001, 1, 2, 10, 0, 0), index = {index}");
+            Assert.True(!exactMatch && index > -1 && item.Pass(1, 1, (uint)index - 1).Equals(pass2), $"Failed to locate pass at DateTime(2001, 1, 2, 10, 0, 0), index = {index}");
 
             exactMatch = item.LocateTime(1, 1, new DateTime(2001, 1, 1, 0, 0, 0), out index);
-            Assert.True(!exactMatch && index > -1 && item.Pass(1, 1, (uint)index).Equals(pass3), $"Failed to locate pass at DateTime(2001, 1, 1, 0, 0, 0), index = {index}");
+            Assert.True(!exactMatch && index > -1 && item.Pass(1, 1, (uint)index - 1).Equals(pass3), $"Failed to locate pass at DateTime(2001, 1, 1, 0, 0, 0), index = {index}");
         }
 
         [Fact()]

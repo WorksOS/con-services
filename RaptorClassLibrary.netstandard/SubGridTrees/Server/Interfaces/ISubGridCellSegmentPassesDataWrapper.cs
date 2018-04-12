@@ -47,6 +47,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces
 
         /// <summary>
         /// Locates a cell pass occurring at or immediately after a given time within the passes for a specific cell within this segment.
+        /// If there is not an exact match, the returned index is the location in the cell pass list where a cell pass 
+        /// with the given time woule be inserted into the list to maintain correct time ordering of the cell passes in that cell.
         /// </summary>
         /// <param name="X"></param>
         /// <param name="Y"></param>
