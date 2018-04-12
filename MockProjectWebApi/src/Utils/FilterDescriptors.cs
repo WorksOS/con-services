@@ -82,6 +82,14 @@ namespace MockProjectWebApi.Utils
 
     public class Dimensions
     {
+      public static FilterDescriptor DimensionsAsAtCustom => new FilterDescriptor
+      {
+        FilterUid = "a8405aca-71f1-463d-8821-c2415d67e78c",
+        Name = "Dimensions as at Custom 5-11-2012 4:59:59",
+        FilterType = FilterType.Persistent,
+        FilterJson = JsonResourceHelper.GetFilterJson("DimensionsAsAtCustom")
+      };
+
       public static FilterDescriptor DimensionsBoundaryCmv => new FilterDescriptor
       {
         FilterUid = "a37f3008-65e5-44a8-b406-9a078ec62ece",

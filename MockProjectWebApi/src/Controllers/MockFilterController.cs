@@ -88,6 +88,7 @@ namespace MockProjectWebApi.Controllers
             {
               filterDescriptors = new List<FilterDescriptor>
               {
+                FilterDescriptors.Dimensions.DimensionsAsAtCustom,
                 FilterDescriptors.Dimensions.ElevationRangeAndPaletteNoDataFilter,
                 FilterDescriptors.Dimensions.DimensionsBoundaryFilterWithMachine,
                 FilterDescriptors.Dimensions.DimensionsBoundaryFilter,

@@ -20,6 +20,7 @@
     <Content Remove="Json\ColorSettings\7925f179-013d-4aaf-aff4-7b9833bb06d6.json" />
     <Content Remove="Json\Filters\DimensionsAlignmentFilter0to200.json" />
     <Content Remove="Json\Filters\DimensionsAlignmentFilter100to200.json" />
+    <Content Remove="Json\Filters\DimensionsAsAtCustom.json" />
     <Content Remove="Json\Filters\DimensionsBoundaryCMV.json" />
     <Content Remove="Json\Filters\DimensionsBoundaryCMVAsAtToday.json" />
     <Content Remove="Json\Filters\DimensionsBoundaryFilter.json" />
@@ -64,6 +65,7 @@
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryFilterAsAtToday.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryFilter.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryFilterWithMachine.json" />
+    <EmbeddedResource Include="Json\Filters\DimensionsAsAtCustom.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryMDPAsAtToday.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryMDP.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101First.json" />
