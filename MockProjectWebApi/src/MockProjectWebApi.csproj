@@ -21,9 +21,12 @@
     <Content Remove="Json\Filters\DimensionsAlignmentFilter0to200.json" />
     <Content Remove="Json\Filters\DimensionsAlignmentFilter100to200.json" />
     <Content Remove="Json\Filters\DimensionsBoundaryCMV.json" />
+    <Content Remove="Json\Filters\DimensionsBoundaryCMVAsAtToday.json" />
     <Content Remove="Json\Filters\DimensionsBoundaryFilter.json" />
+    <Content Remove="Json\Filters\DimensionsBoundaryFilterAsAtToday.json" />
     <Content Remove="Json\Filters\DimensionsBoundaryFilterWithMachine.json" />
     <Content Remove="Json\Filters\DimensionsBoundaryMDP.json" />
+    <Content Remove="Json\Filters\DimensionsBoundaryMDPAsAtToday.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101First.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101Last.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterNoLatLonToday.json" />
@@ -56,9 +59,12 @@
     <EmbeddedResource Include="Json\ColorSettings\7925f179-013d-4aaf-aff4-7b9833bb06d6.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsAlignmentFilter0to200.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsAlignmentFilter100to200.json" />
+    <EmbeddedResource Include="Json\Filters\DimensionsBoundaryCMVAsAtToday.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryCMV.json" />
+    <EmbeddedResource Include="Json\Filters\DimensionsBoundaryFilterAsAtToday.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryFilter.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryFilterWithMachine.json" />
+    <EmbeddedResource Include="Json\Filters\DimensionsBoundaryMDPAsAtToday.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryMDP.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101First.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101Last.json" />
@@ -102,7 +108,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.0" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.16.*" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.17.*" />
     <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.0.*" />
   </ItemGroup>
 

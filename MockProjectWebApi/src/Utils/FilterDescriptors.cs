@@ -90,6 +90,14 @@ namespace MockProjectWebApi.Utils
         FilterJson = JsonResourceHelper.GetFilterJson("DimensionsBoundaryCMV")
       };
 
+      public static FilterDescriptor DimensionsBoundaryCmvAsAtToday => new FilterDescriptor
+      {
+        FilterUid = "c638018c-5026-44be-af0b-006ecad65462",
+        Name = "Dimensions boundary CMV as at Today",
+        FilterType = FilterType.Persistent,
+        FilterJson = JsonResourceHelper.GetFilterJson("DimensionsBoundaryCMVAsAtToday")
+      };
+
       public static FilterDescriptor DimensionsBoundaryFilter => new FilterDescriptor
       {
         FilterUid = "154470b6-15ae-4cca-b281-eae8ac1efa6c",
@@ -98,12 +106,28 @@ namespace MockProjectWebApi.Utils
         FilterJson = JsonResourceHelper.GetFilterJson("DimensionsBoundaryFilter")
       };
 
+      public static FilterDescriptor DimensionsBoundaryFilterAsAtToday => new FilterDescriptor
+      {
+        FilterUid = "3c836562-bcd5-4a35-99a5-cb5655572be7",
+        Name = "Dimensions boundary filter as at today",
+        FilterType = FilterType.Persistent,
+        FilterJson = JsonResourceHelper.GetFilterJson("DimensionsBoundaryFilterAsAtToday")
+      };
+
       public static FilterDescriptor DimensionsBoundaryMdp => new FilterDescriptor
       {
         FilterUid = "3ef41e3c-d1f5-40cd-b012-99d11ff432ef",
         Name = "Dimensions boundary mdp",
         FilterType = FilterType.Persistent,
         FilterJson = JsonResourceHelper.GetFilterJson("DimensionsBoundaryMDP")
+      };
+
+      public static FilterDescriptor DimensionsBoundaryMdpAsAtToday => new FilterDescriptor
+      {
+        FilterUid = "cefd0bda-53e4-45bf-a2b9-ca0cf6f6907a",
+        Name = "Dimensions boundary mdp as at today",
+        FilterType = FilterType.Persistent,
+        FilterJson = JsonResourceHelper.GetFilterJson("DimensionsBoundaryMDPAsAtToday")
       };
 
       public static FilterDescriptor DimensionsBoundaryFilterWithMachine => new FilterDescriptor

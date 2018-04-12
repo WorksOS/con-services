@@ -151,7 +151,6 @@ namespace MockProjectWebApi.Utils
     {
       long myAssetId = 1000001;
       int myMachineLevel = 16;
-      long projectID = 9000001;
       bool myRes = true;
       foreach (GetAssetIDData myAss in listGA) //  haha :)
       {
