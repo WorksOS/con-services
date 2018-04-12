@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApiModels.TagfileProcessing.Models;
+using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models;
 
 namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Models
 {
@@ -26,8 +26,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Models
           WGS84Fence fence = WGS84Fence.CreateWGS84Fence(points.ToArray());
             TagFileRequest tagfile = TagFileRequest.CreateTagFile("test.dxf", data, 10, fence,
                     11, false, false);
-            ICollection<ValidationResult> results;
-            Assert.IsTrue(validator.TryValidate(tagfile, out results));
+          Assert.IsTrue(validator.TryValidate(tagfile, out ICollection<ValidationResult> results));
 
 
             /*tagfile = TAGFile.CreateTagFile("test.dxf", data, 10, null,

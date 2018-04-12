@@ -11,7 +11,6 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Extensions;
-using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
@@ -79,8 +78,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         {
           if (filter.AlignmentFile != null)
           {
-            log.LogDebug($"GetFilterBoundaries: adding alignment boundary for projectId={project.LegacyProjectId}, filter name={filter.Name}");
-            boundaries.Add(GetAlignmentPoints(project.LegacyProjectId, filter.AlignmentFile, 
+            this.log.LogDebug($"GetFilterBoundaries: adding design boundary polygons for projectId={project.LegacyProjectId}, filter name={filter.Name}");
+            boundaries.Add(GetAlignmentPoints(project.LegacyProjectId, filter.AlignmentFile,
               filter.StartStation ?? 0, filter.EndStation ?? 0, filter.LeftOffset ?? 0, filter.RightOffset ?? 0).ToList());
           }
         }
