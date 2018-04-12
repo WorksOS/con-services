@@ -24,6 +24,8 @@ docker rm $(docker ps -a -q)
 WriteMsg "Logging in to image host"
 Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)
 
+$Env:COMPOSE_CONVERT_WINDOWS_PATHS=1
+
 WriteMsg "Building solution"
 & .\RunLocalTesting.bat
 
