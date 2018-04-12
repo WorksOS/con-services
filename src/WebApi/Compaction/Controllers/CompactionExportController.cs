@@ -363,7 +363,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(LoggerFactory, raptorClient)
             .Process(request) as ProjectStatisticsResult;
 
-        return new Tuple<DateTime, DateTime>(result.startTime, result.endTime);
+        var startUtc = filter?.StartUtc == null ? result.startTime : filter.StartUtc.Value;
+        var endUtc = filter?.EndUtc == null ? result.endTime : filter.EndUtc.Value;
+        return new Tuple<DateTime, DateTime>(startUtc, endUtc);
       }
 
       return new Tuple<DateTime, DateTime>(filter.StartUtc.Value, filter.EndUtc.Value);

@@ -400,16 +400,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Dynamically set the date range according to the<see cref= "Filter.DateRangeType" /> property.
     /// </summary>
     /// <remarks>
-    /// Custom date range is unaltered.Project extents is always null. Other types are calculated in the project time zone.
+    /// Custom date range is unaltered. Project extents is always null. Other types are calculated in the project time zone.
     /// </remarks>
     private async Task ApplyDateRange(Guid projectUid, Filter filter)
     {
-      if (!filter.DateRangeType.HasValue || filter.DateRangeType.Value == DateRangeType.Custom)
-      {
-        Log.LogTrace("Filter provided doesn't have dateRangeType set or it is set to Custom. Returning without setting filter start and end dates.");
-        return;
-      }
-
       var project = await (this.User as RaptorPrincipal)?.GetProject(projectUid);
       if (project == null)
       {
@@ -423,12 +417,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
     private async Task ApplyDateRange(Guid projectUid, FilterResult filter)
     {
-      if (!filter.DateRangeType.HasValue || filter.DateRangeType.Value == DateRangeType.Custom)
-      {
-        Log.LogTrace("Filter provided doesn't have dateRangeType set or it is set to Custom. Returning without setting filter start and end dates.");
-        return;
-      }
-
       var project = await (this.User as RaptorPrincipal)?.GetProject(projectUid);
       if (project == null)
       {
