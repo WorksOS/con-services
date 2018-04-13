@@ -3,7 +3,15 @@ Write-Host "Running acceptance tests" -ForegroundColor DarkGray
 $global:ipAddress = ""
 
 function WaitForContainer {
-    PowerShell.exe -ExecutionPolicy Bypass -Command .\waitForContainer.ps1 -IP $global:ipAddress
+    PowerShell.exe -ExecutionPolicy Bypass -Command .\waitForContainer.ps1 -containerIPAddress $global:ipAddress
+
+    if ($LastExitCode -ne 0) {
+        Write-Host "Unable to connect to Raptor container service at $ipAddress, the '$3dpWebAPIcontainerName' container may not be responding or has stopped." -ForegroundColor DarkRed
+        Write-Host "Docker containers:" -ForegroundColor DarkGray
+        docker ps --all
+        Write-Host "Aborting..." -ForegroundColor DarkGray
+        Exit -1
+    }
 }
 
 # Validate the required containers are running
@@ -23,14 +31,6 @@ if ($3dpWebAPIcontainerName.Length -lt 1) {
 
 $global:ipAddress = docker inspect --format "{{ .NetworkSettings.Networks.nat.IPAddress }}" $3dpWebAPIcontainerName
 WaitForContainer
-
-# $? is true if last command was a success, false otherwise
-if (!$?) {
-    Write-Host "No IP address set, attempting again in 10 seconds..." - -ForegroundColor DarkRed
-    docker ps -a
-    Start-Sleep -Seconds 10
-    WaitForContainer
-}
 
 # Set (session) environment variables
 $env:TEST_DATA_PATH="../../TestData/"

@@ -47,7 +47,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
 
       return a.Equals(b);
     }
-
+    
     public static bool operator !=(CompactionPassCountSummaryResult a, CompactionPassCountSummaryResult b)
     {
       return !(a == b);

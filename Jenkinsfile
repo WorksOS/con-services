@@ -33,9 +33,6 @@ node('Jenkins-Win2016-Raptor') {
             checkout scm
         }
 
-        // Presence of the containers indicate another is building. Abort immediately.
-        bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\check-container-state.ps1"
-
         stage ('Restore packages') {
             bat "dotnet restore --no-cache VSS.Productivity3D.Service.sln"
         }
@@ -47,6 +44,9 @@ node('Jenkins-Win2016-Raptor') {
         }
 
         stage ('Prepare Acceptance tests') {
+            // Presence of the containers indicate another is building. Abort immediately.
+            bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\check-container-state.ps1"
+
             bat "./acceptancetests.bat"
             try {
                 stage ('Compose containers') {
