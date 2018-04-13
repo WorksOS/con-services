@@ -118,6 +118,7 @@ namespace VSS.VisionLink.Raptor.Events
 
         // protected bool LoadedFromPersistentStore = false;
 
+/*
         /// <summary>
         /// Adds an event of type T with the given date into the list. If the event is a duplicate
         /// of an existing event the passed event will be ignored and the existing duplicate event 
@@ -134,13 +135,24 @@ namespace VSS.VisionLink.Raptor.Events
             };
             return PutValueAtDate(newEvent);
         }
+*/
 
+        /// <summary>
+        /// Adds an event of type T with the given date into the list. If the event is a duplicate
+        /// of an existing event the passed event will be ignored and the existing duplicate event 
+        /// will be returned, otherwise passed event will be returned. 
+        /// The method returns the event instance that was added to the list
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <param name="value"></param>
+        /// <returns>The event instance that was added to the list</returns>
         public virtual T PutValueAtDate(DateTime dateTime, V value)
         {
             return PutValueAtDate(new T
             {
                 Date = dateTime,
-                State = value
+                State = value,
+                Type = EventListType
             });
         }
 
@@ -180,7 +192,7 @@ namespace VSS.VisionLink.Raptor.Events
                             {
                                 if (!Event.IsCustomEvent)
                                 {
-                                    if ((Event.Type != ProductionEventType.StartRecordedData) && (Event.Type != ProductionEventType.EndRecordedData))
+                                    if (Event.Type != ProductionEventType.StartRecordedData && Event.Type != ProductionEventType.EndRecordedData)
                                     {
                                         // Ignore the event and return the found item
                                         return this[EventIndex];
