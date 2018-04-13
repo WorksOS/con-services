@@ -5,6 +5,7 @@ using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators;
+using VSS.VisionLink.Raptor.SubGridTrees.Server.Utilities;
 using VSS.VisionLink.Raptor.SubGridTrees.Types;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 using VSS.VisionLink.Raptor.TAGFiles.Types;
@@ -12,39 +13,61 @@ using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 {
+    /// <summary>
+    /// Responsible for orchestrating integration of mini-sitemodels processed from one or
+    /// more TAG files into another sitemodel, either a temporary/transient artifact of the ingest
+    /// pipeline, or the persistent data store.
+    /// </summary>
     public class SubGridIntegrator
     {
+        /// <summary>
+        /// The subgrid tree from which information is being integarted
+        /// </summary>
         private ServerSubGridTree Source;
+
+        /// <summary>
+        /// Sitemodel representing the target sub grid tree
+        /// </summary>
         private SiteModel SiteModel;
+
+        /// <summary>
+        /// The subgrid tree the receives the subgrid information from the source subgrid tree
+        /// </summary>
         private ServerSubGridTree Target;
 
-        private ISubGrid SourceSubGrid;
+        private IServerLeafSubGrid /*ISubGrid*/ SourceSubGrid;
         private IServerLeafSubGrid TargetSubGrid;
 
         //const Persistor : TSVOICDeferredPersistor;
         private Action<uint, uint> SubGridChangeNotifier;
 
-        private IStorageProxy StorageProxy;  //IStorageProxy[] SpatialStorageProxy = null;
+        private IStorageProxy StorageProxy;
 
+        /// <summary>
+        ///  Default no-args constructor
+        /// </summary>
         public SubGridIntegrator()
         {
         }
 
-        public SubGridIntegrator(ServerSubGridTree source,
-        SiteModel siteModel,
-        ServerSubGridTree target,
-        IStorageProxy storageProxy /*IStorageProxy[] spatialStorageProxy*/) : this()
+        /// <summary>
+        /// Constructor the initialises state ready for integration
+        /// </summary>
+        /// <param name="source">The subgrid tree from which information is being integarted</param>
+        /// <param name="siteModel">The sitemodel representing the target subgrid tree</param>
+        /// <param name="target">The subgrid tree into which the data from the source subgrid tree is integrated</param>
+        /// <param name="storageProxy">The storage proxy providing storage semantics for persisting integration results</param>
+        public SubGridIntegrator(ServerSubGridTree source, SiteModel siteModel, ServerSubGridTree target, IStorageProxy storageProxy) : this()
         {
             Source = source;
             SiteModel = siteModel;
             Target = target;
-            StorageProxy = storageProxy;  //SpatialStorageProxy = spatialStorageProxy;
+            StorageProxy = storageProxy;
         }
 
         private void IntegrateIntoIntermediaryGrid(SubGridSegmentIterator SegmentIterator)
         {
-            // Note: There is no need to lock this subgrid as we are working
-            // in a private in-memory subgrid
+            // Note: There is no need to lock this subgrid as we are working in a private in-memory subgrid
             TargetSubGrid = Target.ConstructPathToCell(SourceSubGrid.OriginX,
                                                        SourceSubGrid.OriginY,
                                                        SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
@@ -67,42 +90,42 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
             }
 
             // As the integration is into the intermediary grid, these segments do not
-            // need to be involved with the cache, so instruct the iterator to not
-            // 'touch' them
+            // need to be involved with the cache, so instruct the iterator to not 'touch' them
             SegmentIterator.MarkReturnedSegmentsAsTouched = false;
 
-            TargetSubGrid.Integrate(SourceSubGrid as ServerSubGridTreeLeaf, SegmentIterator, true);
+            TargetSubGrid.Integrate(SourceSubGrid, SegmentIterator, true);
         }
 
         private bool IntegrateIntoLiveDatabase(SubGridSegmentIterator SegmentIterator)
         {
             // Note the fact that this subgrid will be changed and become dirty as a result
             // of the cell pass integration
-            TargetSubGrid.Dirty = true; 
+            TargetSubGrid.Dirty = true;
 
-            //    TargetSubGrid.CachedMemoryUpdateTrackingActive = true;
+            //   TODO
+            //   TargetSubGrid.CachedMemoryUpdateTrackingActive = true;
             //    try
             // As the integration is into the live database these segments do
             // need to be involved with the cache, so instruct the iterator to
             // 'touch' them
             SegmentIterator.MarkReturnedSegmentsAsTouched = true;
 
-            TargetSubGrid.Integrate(SourceSubGrid as ServerSubGridTreeLeaf, SegmentIterator, true);
+            TargetSubGrid.Integrate(SourceSubGrid, SegmentIterator, true);
             //    finally
             //      TargetSubGrid.CachedMemoryUpdateTrackingActive = false;
             //    end;
 
             /*
-            // TODO: Resolve when IFOPT C+ equivalent understood
+            // TODO: Resolve when IFOPT C+ equivalent understood [C+ = ASSERTs emabled]
             {$IFOPT C+}
             if (!TargetSubGrid.Locked)
             {
               // TODO readd when logging available
               // SIGLogMessage.PublishNoODS(self, 'Target subgrid not locked after integration operation', slmcAssert);
-            return false;
-        }
-    {$ENDIF}
-    */
+              return false;
+            }
+            {$ENDIF}
+            */ 
 
             SubGridChangeNotifier?.Invoke(TargetSubGrid.OriginX, TargetSubGrid.OriginY);
 
@@ -125,19 +148,18 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 
             SubGridCellAddress SubGridOriginAddress = new SubGridCellAddress(TargetSubGrid.OriginX, TargetSubGrid.OriginY);
 
-            // Replaced by argument in method signature
-            //IStorageProxy storageProxy = SpatialStorageProxy[SubGridOriginAddress.ToSpatialDivisionDescriptor(RaptorConfig.numSpatialProcessingDivisions)];
+            SubGridSegmentCleaver.PerformSegmentCleaving(TargetSubGrid);
 
-            (TargetSubGrid as ServerSubGridTreeLeaf).ComputeLatestPassInformation(true);
+            TargetSubGrid.ComputeLatestPassInformation(true);
 
-            foreach (var s in (TargetSubGrid as ServerSubGridTreeLeaf).Directory.SegmentDirectory)
+            foreach (var s in TargetSubGrid.Directory.SegmentDirectory)
             {
                 s.Segment?.SaveToFile(StorageProxy, ServerSubGridTree.GetLeafSubGridSegmentFullFileName(SubGridOriginAddress, s), out FileSystemErrorStatus FSError);
             }
 
             // Save the changed subgrid directory to allow Ignite to store & socialise the update
             // within the cluster
-            if ((TargetSubGrid as ServerSubGridTreeLeaf).SaveDirectoryToFile(StorageProxy, ServerSubGridTree.GetLeafSubGridFullFileName(SubGridOriginAddress)))
+            if (TargetSubGrid.SaveDirectoryToFile(StorageProxy, ServerSubGridTree.GetLeafSubGridFullFileName(SubGridOriginAddress)))
             {
                 // Successfully saving the subgrid directory information is the point at which this subgrid may be recognised to exist
                 // in the sitemodel. Note this by including it within the SiteModel existance map
@@ -161,9 +183,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 
         private void IntegrateIntoLiveGrid(SubGridSegmentIterator SegmentIterator)
         {
-            TargetSubGrid = LocateOrCreateAndLockSubgrid(Target,
-                SourceSubGrid.OriginX, SourceSubGrid.OriginY,
-                0 /* TODO:... FAggregatedDataIntegratorLockToken */);
+            TargetSubGrid = LocateOrCreateAndLockSubgrid(Target, SourceSubGrid.OriginX, SourceSubGrid.OriginY, 0
+                /* TODO:... FAggregatedDataIntegratorLockToken */);
             if (TargetSubGrid == null)
             {
                 //TODO add when logging available
@@ -184,17 +205,11 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
             }
         }
 
-        public bool IntegrateSubGridTree(//IServerSubGridTree source,
-                                         //SiteModel siteModel,
-                                         //IServerSubGridTree Target,
-                                         SubGridTreeIntegrationMode integrationMode,
+        public bool IntegrateSubGridTree(SubGridTreeIntegrationMode integrationMode,
                                          //const Persistor : TSVOICDeferredPersistor;
                                          Action<uint, uint> subGridChangeNotifier // : TICSubGridTreeGridCellChangedNotificationEvent
                                         )
         {
-            SubGridTreeIterator Iterator;
-            SubGridSegmentIterator SegmentIterator;
-            bool IntegratingIntoIntermediaryGrid;
             //int WaitCnt;
             //PrevInMemorySize: Integer;
             //PostFullRecalcInMemorySize: Integer;
@@ -224,16 +239,17 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
             // Iterate over the subgrids in source and merge the cell passes from source
             // into the subgrids in this sub grid tree;
 
-            Iterator = new SubGridTreeIterator(StorageProxy, false);
+            SubGridTreeIterator Iterator = new SubGridTreeIterator(StorageProxy, false)
+            {
+                Grid = Source
+            };
 
-            SegmentIterator = new SubGridSegmentIterator(null)
+            SubGridSegmentIterator SegmentIterator = new SubGridSegmentIterator(null)
             {
                 IterationDirection = IterationDirection.Forwards
             };
-            IntegratingIntoIntermediaryGrid = integrationMode == SubGridTreeIntegrationMode.UsingInMemoryTarget;
 
-            Iterator.Grid = Source;
-
+            bool IntegratingIntoIntermediaryGrid = integrationMode == SubGridTreeIntegrationMode.UsingInMemoryTarget;
             SubGridChangeNotifier = subGridChangeNotifier;
 
             // The acquiring and releasing of the server lock in the code below may initially seem strange
@@ -247,8 +263,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 
             while (Iterator.MoveToNextSubGrid())
             {
-                SourceSubGrid = Iterator.CurrentSubGrid;
-                SubGridCellAddress SubGridOriginAddress = new SubGridCellAddress(SourceSubGrid.OriginX, SourceSubGrid.OriginY);
+                SourceSubGrid = Iterator.CurrentSubGrid as IServerLeafSubGrid;
+                // SubGridCellAddress SubGridOriginAddress = new SubGridCellAddress(SourceSubGrid.OriginX, SourceSubGrid.OriginY);
 
                 /*
                  * // TODO...
@@ -278,16 +294,16 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
             return true;
         }
 
-        public ServerSubGridTreeLeaf LocateOrCreateAndLockSubgrid(ServerSubGridTree Grid,
-                                                                 uint CellX, uint CellY,
-                                                                 int LockToken)
+        public IServerLeafSubGrid LocateOrCreateAndLockSubgrid(ServerSubGridTree Grid,
+                                                               uint CellX, uint CellY,
+                                                               int LockToken)
         {
-            ServerSubGridTreeLeaf Result = SubGridUtilities.LocateSubGridContaining(
+            IServerLeafSubGrid Result = SubGridUtilities.LocateSubGridContaining(
                                     Grid,
                                     // DataStoreInstance.GridDataCache,
                                     CellX, CellY,
                                     Grid.NumLevels,
-                                    LockToken, false, true) as ServerSubGridTreeLeaf;
+                                    LockToken, false, true) as IServerLeafSubGrid;
 
             // Ensure the cells and segment directory are initialised if this is a new subgrid
             if (Result != null)

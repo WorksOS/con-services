@@ -9,8 +9,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
     {
         // FFSGranuleIndex and FFSGranuleCount record the location and size
         // of the subgrid leaf (directory) stream in the data model FS file
-        public uint FSGranuleIndex { get; set; }
-        public uint FSGranuleCount { get; set; }
+//        public uint FSGranuleIndex { get; set; }
+//        public uint FSGranuleCount { get; set; }
 
         // SegmentDirectory contains a list of all the segments that are present
         // in this subgrid. The list is time ordered and also contains references

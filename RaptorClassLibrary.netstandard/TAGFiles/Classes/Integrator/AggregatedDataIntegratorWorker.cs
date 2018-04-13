@@ -2,6 +2,8 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using log4net;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.Machines;
@@ -14,6 +16,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 {
     public class AggregatedDataIntegratorWorker
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         /// <summary>
         /// A queue of the tasks this worker will process into the Raptor data stores
         /// </summary>
@@ -104,10 +108,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 
             try
             {
+                AggregatedDataIntegratorTask Task = null;
                 try
                 {
-                    AggregatedDataIntegratorTask Task;
-
                     lock (TasksToProcess)
                     {
                         // ====== STAGE 0: DETERMINE THE SITEMODEL AND MACHINE TO PROCESS TAG FILES FOR FROM THE BASE TASK
@@ -133,11 +136,11 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                         if (!(AnyMachineEvents || AnyCellPasses))
                         {
                             // TODO add when logging available
-                            //SIGLogMessage.PublishNoODS(Self, 'No machine event or cell passes in base task', slmcMessage); // Nothing to do
+                            Log.Info("No machine event or cell passes in base task"); // Nothing to do
                             return true;
                         }
 
-                        //  SIGLogMessage.PublishNoODS(Self, 'Aggregation Task Process --> Filter tasks to aggregate', slmcDebug); {SKIP}
+                        Log.Info("Aggregation Task Process --> Filter tasks to aggregate");
 
                         // ====== STAGE 1: ASSEMBLE LIST OF TAG FILES TO AGGREGATE IN ONE OPERATION
 
@@ -177,9 +180,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                     // of building the similar tasks into a group to be processed.
                     // TODO... HandleDecapsulation(Task.AggregatedCellPasses);
 
-                    // TODO add when logging available
-                    // SIGLogMessage.PublishNoODS(Self, Format('Aggregation Task Process --> Integrating %d TAG files for machine %d in project %d',            
-                    //                                        [ProcessedTasks.Count, Task.TargetMachineID, Task.TargetSiteModelID]), slmcMessage);
+                    Log.Info($"Aggregation Task Process --> Integrating {ProcessedTasks.Count} TAG files for machine {Task.TargetMachineID} in project {Task.TargetSiteModelID}");
 
                     // ====== STAGE 2: AGGREGATE ALL EVENTS AND CELL PASSES FROM ALL TAG FILES INTO THE FIRST ONE IN THE LIST
 
@@ -193,11 +194,11 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                         // Integrate the machine events
                         if (AnyMachineEvents && (processedTask.AggregatedMachineEvents != null))
                         {
-                            eventIntegrator.IntegrateMachineEvents(processedTask.AggregatedMachineEvents, Task.AggregatedMachineEvents, true, false);
+                            eventIntegrator.IntegrateMachineEvents(processedTask.AggregatedMachineEvents, Task.AggregatedMachineEvents, false);
                             processedTask.AggregatedMachineEvents = null; // FreeAndNil(AggregatedMachineEvents);
                         }
 
-                        //    SIGLogMessage.PublishNoODS(Self, Format('Aggregation Task Process --> Integrate %d cell pass trees', [ProcessedTasks.Count]), slmcDebug);
+                        Log.Debug($"Aggregation Task Process --> Integrate {ProcessedTasks.Count} cell pass trees");
 
                         // Integrate the cell passes from all cell pass aggregators containing cell passes for this machine and sitemodel
                         if (AnyCellPasses && processedTask.AggregatedCellPasses != null)
@@ -231,8 +232,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 
                     if (SiteModelFromDM == null)
                     {
-                        // TODO readd when logging available
-                        //SIGLogMessage.PublishNoODS(Self, Format('Unable to lock SiteModel %d from the data model file', [Task.TargetSiteModelID]), slmcWarning);
+                        Log.Warn("Unable to lock SiteModel {Task.TargetSiteModelID} from the data model file");
                         return false;
                     }
 
@@ -300,7 +300,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                     {
                         // Perform machine event integration outside of the SiteModel write access interlock as the
                         // individual event lists have independent exclusive locks event integration uses.
-                        eventIntegrator.IntegrateMachineEvents(Task.AggregatedMachineEvents, SiteModelMachineTargetValues, true, true);
+                        eventIntegrator.IntegrateMachineEvents(Task.AggregatedMachineEvents, SiteModelMachineTargetValues, true);
 
                         // Integrate the machine events into the main site model. This requires the
                         // sitemodel interlock as aspects of the sitemodel state (machine) are being changed.
@@ -338,8 +338,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                             }
                             else
                             {
-                                // TODO add when logging available
-                                //SIGLogMessage.PublishNoODS(Self, 'SiteModelMachineTargetValues not located in aggregate machine events integrator', slmcError);
+                                Log.Error("SiteModelMachineTargetValues not located in aggregate machine events integrator");
                                 return false;
                             }
                         }
@@ -405,19 +404,15 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                 {
                     if (!(AnyMachineEvents || AnyCellPasses))
                     {
-                        // TODO add when logging available
-                        // SIGLogMessage.PublishNoODS(Self, Format('Suspicious task with no cell passes or machine events in Sitemodel %d', [Task.TargetSiteModelID]), slmcWarning); { SKIP}
+                        Log.Warn($"Suspicious task with no cell passes or machine events in Sitemodel {Task?.TargetSiteModelID}");
                     }
 
-                    // TODO add when logging available
-                    // SIGLogMessage.PublishNoODS(Self, Format('Aggregation Task Process --> Completed integrating %d TAG files for machine %d in project %d',
-                    //                                        [ProcessedTasks.Count, Task.TargetMachineID, Task.TargetSiteModelID]), slmcMessage);
+                    Log.Info($"Aggregation Task Process --> Completed integrating {ProcessedTasks.Count} TAG files for machine {Task?.TargetMachineID} in project {Task?.TargetSiteModelID}");
                 }
             }
-            catch // (Exception E)
+            catch (Exception E)
             {
-                // TODO add when logging available
-                // SIGLogMessage.PublishNoODS(Self, Format('Exception in %s.ProcessTask: %s', [Self.ClassName, E.Message]), slmcException);
+                Log.Error($"Exception in ProcessTask: {E}");
                 return false;
             }
 

@@ -133,30 +133,30 @@ namespace VSS.VisionLink.Raptor.Events
         /// </summary>
         private void CreateEventLists()
         {
-            StartEndRecordedDataEvents = new EfficientStartEndRecordedDataChangeList(MachineID, SiteModel.ID, ProductionEventType.StartRecordedData);
-            VibrationStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<VibrationState>, VibrationState>(MachineID, SiteModel.ID, ProductionEventType.VibrationStateChange);
-            AutoVibrationStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<AutoVibrationState>, AutoVibrationState>(MachineID, SiteModel.ID, ProductionEventType.AutoVibrationStateChange);
-            GPSModeStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<GPSMode>, GPSMode>(MachineID, SiteModel.ID, ProductionEventType.GPSModeChange);
-            PositioningTechStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<PositioningTech>, PositioningTech>(MachineID, SiteModel.ID, ProductionEventType.PositioningTech);
+            StartEndRecordedDataEvents = new EfficientStartEndRecordedDataChangeList(this, MachineID, SiteModel.ID, ProductionEventType.StartRecordedData);
+            VibrationStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<VibrationState>, VibrationState>(this, MachineID, SiteModel.ID, ProductionEventType.VibrationStateChange);
+            AutoVibrationStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<AutoVibrationState>, AutoVibrationState>(this, MachineID, SiteModel.ID, ProductionEventType.AutoVibrationStateChange);
+            GPSModeStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<GPSMode>, GPSMode>(this, MachineID, SiteModel.ID, ProductionEventType.GPSModeChange);
+            PositioningTechStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<PositioningTech>, PositioningTech>(this, MachineID, SiteModel.ID, ProductionEventType.PositioningTech);
 
-            DesignNameIDStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<int>, int>(MachineID, SiteModel.ID, ProductionEventType.DesignChange);
-            MachineAutomaticsStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<MachineAutomaticsMode>, MachineAutomaticsMode>(MachineID, SiteModel.ID, ProductionEventType.MachineAutomaticsChange);
-            MachineGearStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<MachineGear>, MachineGear>(MachineID, SiteModel.ID, ProductionEventType.MachineGearChange);
-            MinElevMappingStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<bool>, bool>(MachineID, SiteModel.ID, ProductionEventType.MinElevMappingStateChange);
-            GPSAccuracyAndToleranceStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<GPSAccuracyAndTolerance>, GPSAccuracyAndTolerance>(MachineID, SiteModel.ID, ProductionEventType.GPSAccuracyChange);
-            LayerIDStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<ushort>, ushort>(MachineID, SiteModel.ID, ProductionEventType.LayerID);
-            DesignNameStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<string>, string>(MachineID, SiteModel.ID, ProductionEventType.DesignChange);
-            ICFlagsStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<byte>, byte>(MachineID, SiteModel.ID, ProductionEventType.ICFlagsChange);
+            DesignNameIDStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<int>, int>(this, MachineID, SiteModel.ID, ProductionEventType.DesignChange);
+            MachineAutomaticsStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<MachineAutomaticsMode>, MachineAutomaticsMode>(this, MachineID, SiteModel.ID, ProductionEventType.MachineAutomaticsChange);
+            MachineGearStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<MachineGear>, MachineGear>(this, MachineID, SiteModel.ID, ProductionEventType.MachineGearChange);
+            MinElevMappingStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<bool>, bool>(this, MachineID, SiteModel.ID, ProductionEventType.MinElevMappingStateChange);
+            GPSAccuracyAndToleranceStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<GPSAccuracyAndTolerance>, GPSAccuracyAndTolerance>(this, MachineID, SiteModel.ID, ProductionEventType.GPSAccuracyChange);
+            LayerIDStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<ushort>, ushort>(this, MachineID, SiteModel.ID, ProductionEventType.LayerID);
+            DesignNameStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<string>, string>(this, MachineID, SiteModel.ID, ProductionEventType.DesignChange);
+            ICFlagsStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<byte>, byte>(this, MachineID, SiteModel.ID, ProductionEventType.ICFlagsChange);
 
-            TargetCCVStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<short>, short>(MachineID, SiteModel.ID, ProductionEventType.TargetCCV);
-            TargetCCAStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<short>, short>(MachineID, SiteModel.ID, ProductionEventType.TargetCCA);
-            TargetMDPStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<short>, short>(MachineID, SiteModel.ID, ProductionEventType.TargetMDP);
-            TargetPassCountStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<ushort>, ushort>(MachineID, SiteModel.ID, ProductionEventType.TargetPassCount);
-            TargetMinMaterialTemperature = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<ushort>, ushort>(MachineID, SiteModel.ID, ProductionEventType.TempWarningLevelMinChange);
-            TargetMaxMaterialTemperature = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<ushort>, ushort>(MachineID, SiteModel.ID, ProductionEventType.TempWarningLevelMaxChange);
-            TargetLiftThickness = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<float>, float>(MachineID, SiteModel.ID, ProductionEventType.TargetLiftThickness);
+            TargetCCVStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<short>, short>(this, MachineID, SiteModel.ID, ProductionEventType.TargetCCV);
+            TargetCCAStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<short>, short>(this, MachineID, SiteModel.ID, ProductionEventType.TargetCCA);
+            TargetMDPStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<short>, short>(this, MachineID, SiteModel.ID, ProductionEventType.TargetMDP);
+            TargetPassCountStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<ushort>, ushort>(this, MachineID, SiteModel.ID, ProductionEventType.TargetPassCount);
+            TargetMinMaterialTemperature = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<ushort>, ushort>(this, MachineID, SiteModel.ID, ProductionEventType.TempWarningLevelMinChange);
+            TargetMaxMaterialTemperature = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<ushort>, ushort>(this, MachineID, SiteModel.ID, ProductionEventType.TempWarningLevelMaxChange);
+            TargetLiftThickness = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<float>, float>(this, MachineID, SiteModel.ID, ProductionEventType.TargetLiftThickness);
 
-            RMVJumpThresholdEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<short>, short>(MachineID, SiteModel.ID, ProductionEventType.MachineRMVJumpValueChange);
+            RMVJumpThresholdEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<short>, short>(this, MachineID, SiteModel.ID, ProductionEventType.MachineRMVJumpValueChange);
         }
 
         /// <summary>

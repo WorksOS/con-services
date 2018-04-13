@@ -339,7 +339,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
                         Write(writer);
 
                         Result = StorageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, 
-                                                                           out uint _ /*StoreGranuleIndex&*/, out uint _ /*StoreGranuleCount*/, MS) == FileSystemErrorStatus.OK
+                                                                           /* out uint _ , out uint , */ MS) == FileSystemErrorStatus.OK
                                  && SaveProductionDataExistanceMapToStorage() == FileSystemErrorStatus.OK;
                     }
                 }

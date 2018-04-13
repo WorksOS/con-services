@@ -12,13 +12,12 @@ using VSS.VisionLink.Raptor.Utilities;
 namespace VSS.VisionLink.Raptor.Events
 {
     [Serializable]
-    public class ProductionEventChangeList<T> : List<T>, IProductionEventChangeList where T : ProductionEventChangeBase, new()
+    public class ProductionEventChangeList<T> : List<T>, IProductionEventChangeList<T> where T : ProductionEventChangeBase, new()
     {
         public long SiteModelID { get; set; }
         public long MachineID { get; set; }
 
-        [NonSerialized]
-        public ProductionEventChanges Container;
+        public ProductionEventChanges Container { get; }
 
         // FLastUpdateTimeUTC records the time at which this event change list was last updated
         // in the persistent store
@@ -360,7 +359,7 @@ namespace VSS.VisionLink.Raptor.Events
         /// Reads a binary serialisation of the content of the list
         /// </summary>
         /// <param name="reader"></param>
-        public static IProductionEventChangeList Read(BinaryReader reader)
+        public static IProductionEventChangeList<T> Read(BinaryReader reader)
         {
             BinaryFormatter formatter = new BinaryFormatter();
             return (ProductionEventChangeList<T>)formatter.Deserialize(reader.BaseStream);
@@ -386,7 +385,7 @@ namespace VSS.VisionLink.Raptor.Events
             }
         }
 
-        public IProductionEventChangeList LoadFromStore(IStorageProxy storageProxy)
+        public IProductionEventChangeList<T> LoadFromStore(IStorageProxy storageProxy)
         {
             storageProxy.ReadStreamFromPersistentStoreDirect(SiteModelID, EventChangeListPersistantFileName(), FileSystemStreamType.Events, out MemoryStream MS);
 
@@ -396,7 +395,7 @@ namespace VSS.VisionLink.Raptor.Events
 
                 using (var reader = new BinaryReader(MS, Encoding.UTF8, true))
                 {
-                    IProductionEventChangeList Result = Read(reader);
+                    IProductionEventChangeList<T> Result = Read(reader);
                     return Result ?? this;
                 }
             }
@@ -409,11 +408,6 @@ namespace VSS.VisionLink.Raptor.Events
     public class ProductionEventChangeList<T, V> : ProductionEventChangeList<T> where T : ProductionEventChangeBase<V>, new()
     {
         public ProductionEventChangeList()
-        {
-        }
-
-        public ProductionEventChangeList(long machineID, long siteModelID,
-                                         ProductionEventType eventListType) : base(machineID, siteModelID, eventListType)
         {
         }
 
@@ -472,10 +466,10 @@ namespace VSS.VisionLink.Raptor.Events
         /// Reads a binary serialisation of the content of the list
         /// </summary>
         /// <param name="reader"></param>
-        public new static IProductionEventChangeList Read(BinaryReader reader)
+        public new static IProductionEventChangeList<T> Read(BinaryReader reader)
         {
             BinaryFormatter formatter = new BinaryFormatter();
-            return (IProductionEventChangeList)formatter.Deserialize(reader.BaseStream);
+            return (IProductionEventChangeList<T>)formatter.Deserialize(reader.BaseStream);
         }
     }
 }

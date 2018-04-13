@@ -14,12 +14,10 @@ namespace RaptorServerApplication
 {
     public partial class Form1 : Form
     {
-        RaptorApplicationServiceServer server = null;
+        private RaptorApplicationServiceServer server = new RaptorApplicationServiceServer();
 
         public Form1()
         {
-            server = new RaptorApplicationServiceServer();
-
             InitializeComponent();
         }
     }

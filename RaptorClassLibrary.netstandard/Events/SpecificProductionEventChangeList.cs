@@ -21,11 +21,6 @@ namespace VSS.VisionLink.Raptor.Events
         {
         }
 
-        public SpecificProductionEventChangeList(long machineID, long siteModelID,
-                                                 ProductionEventType eventListType) : base(machineID, siteModelID, eventListType)
-        {
-        }
-
         public SpecificProductionEventChangeList(ProductionEventChanges container,
                                                  long machineID, long siteModelID,
                                                  ProductionEventType eventListType) : base(container, machineID, siteModelID, eventListType)

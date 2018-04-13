@@ -656,8 +656,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             {
                 FSError = storageProxy.ReadSpatialStreamFromPersistentStore
                             (Owner.ID, FileName, OriginX, OriginY, FileName,
-                             FileSystemStreamType.SubGridSegment, Segment.SegmentInfo.FSGranuleIndex, out MemoryStream SMS,
-                             out uint _ /*StoreGranuleIndex*/, out uint _ /*StoreGranuleCount*/);
+                             FileSystemStreamType.SubGridSegment, /* Segment.SegmentInfo.FSGranuleIndex, */ out MemoryStream SMS //,
+                             /*out uint _ , out uint _ */);
 
                 Result = FSError == FileSystemErrorStatus.OK;
 
@@ -739,7 +739,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
             Result = storage.WriteSpatialStreamToPersistentStore
              (Owner.ID, FileName, OriginX, OriginY, string.Empty, //AInvalidatedSpatialStreams,
-              FileSystemStreamType.SubGridDirectory, out uint _ /*StoreGranuleIndex*/, out uint _ /*StoreGranuleCount*/, MStream) == FileSystemErrorStatus.OK;
+              FileSystemStreamType.SubGridDirectory, /*out uint _ , out uint _ , */ MStream) == FileSystemErrorStatus.OK;
             if (Result)
             {
                 // update new index location and size
@@ -845,7 +845,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         public bool LoadDirectoryFromFile(IStorageProxy storage, string fileName)
         {
             FileSystemErrorStatus FSError = storage.ReadSpatialStreamFromPersistentStore(Owner.ID, fileName, OriginX, OriginY, string.Empty,
-                                                                                         FileSystemStreamType.SubGridDirectory, 0, out MemoryStream SMS, out uint StoreGranuleIndex, out uint StoreGranuleCount);
+                                                                                         FileSystemStreamType.SubGridDirectory, /*0, */ out MemoryStream SMS /*, out uint StoreGranuleIndex, out uint StoreGranuleCount*/);
 
             bool Result = FSError == FileSystemErrorStatus.OK;
 
@@ -872,11 +872,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             SMS.Position = 0;
             Result = LoadDirectoryFromStream(SMS);
 
-            if (Result)
-            {
-                Directory.FSGranuleIndex = StoreGranuleIndex;
-                Directory.FSGranuleCount = StoreGranuleCount;
-            }
+//            if (Result)
+//            {
+//                Directory.FSGranuleIndex = StoreGranuleIndex;
+//                Directory.FSGranuleCount = StoreGranuleCount;
+//            }
 
             return Result;
         }

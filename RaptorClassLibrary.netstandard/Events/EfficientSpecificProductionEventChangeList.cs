@@ -11,7 +11,7 @@ namespace VSS.VisionLink.Raptor.Events
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [Serializable]
-    public class EfficientSpecificProductionEventChangeList<T> : EfficientProductionEventChangeList<T, ProductionEventType> where T : IEfficientProductionEventChangeBase<ProductionEventType>, new()
+    public class EfficientSpecificProductionEventChangeList<T> : EfficientProductionEventChangeList<T, ProductionEventType> where T : struct, IEfficientProductionEventChangeBase<ProductionEventType>
     {
         // function MergeSpecificProductionEventChangeLists(const OverrideEvent: TICProductionEventChangeStartEndTimeBase) :  TICProductionEventChangeList;
 
@@ -22,12 +22,7 @@ namespace VSS.VisionLink.Raptor.Events
         {
         }
 
-        public EfficientSpecificProductionEventChangeList(long machineID, long siteModelID,
-            ProductionEventType eventListType) : base(machineID, siteModelID, eventListType)
-        {
-        }
-
-        public EfficientSpecificProductionEventChangeList(ProductionEventChanges container,
+        public EfficientSpecificProductionEventChangeList(EfficientProductionEventChanges container,
             long machineID, long siteModelID,
             ProductionEventType eventListType) : base(container, machineID, siteModelID, eventListType)
         {

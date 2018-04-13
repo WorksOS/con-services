@@ -146,11 +146,6 @@ namespace VSS.VisionLink.Raptor.Events
         {
         }
 
-        public StartEndRecordedDataChangeList(long machineID, long siteModelID,
-                                              ProductionEventType eventListType) : base(machineID, siteModelID, eventListType)
-        {
-        }
-
         public StartEndRecordedDataChangeList(ProductionEventChanges container,
                                               long machineID, long siteModelID,
                                               ProductionEventType eventListType) : base(container, machineID, siteModelID, eventListType)

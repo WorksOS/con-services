@@ -8,7 +8,7 @@ namespace VSS.VisionLink.Raptor.Events
     /// Base class to represent all event types in a Raptor data model.
     /// </summary>
     [Serializable]
-    public struct EfficientProductionEventChangeBase<V> :  IEfficientProductionEventChangeBase<V>, IComparable<EfficientProductionEventChangeBase<V>>
+    public struct EfficientProductionEventChangeBase<V> : IEfficientProductionEventChangeBase<V>, IComparable<EfficientProductionEventChangeBase<V>>
     {
         /// <summary>
         /// Flag constant indicating this event is a customer event

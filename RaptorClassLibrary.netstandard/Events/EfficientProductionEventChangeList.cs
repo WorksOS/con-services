@@ -12,12 +12,12 @@ using VSS.VisionLink.Raptor.Utilities;
 namespace VSS.VisionLink.Raptor.Events
 {
     /// <summary>
-    /// EfficientProductionEventChangeList implements a generic event list without using a list, or object instances for each event
+    /// EfficientProductionEventChangeList implements a generic event list without using class instances for each event
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="V"></typeparam>
     [Serializable]
-    public class EfficientProductionEventChangeList<T, V> : List<T>, IProductionEventChangeList where T : IEfficientProductionEventChangeBase<V>, new()
+    public class EfficientProductionEventChangeList<T, V> : List<T>, IProductionEventChangeList<T> where T : struct, IEfficientProductionEventChangeBase<V>
     {
         /// <summary>
         /// The Site Model to which these events relate
@@ -29,8 +29,7 @@ namespace VSS.VisionLink.Raptor.Events
         /// </summary>
         public long MachineID { get; set; }
 
-        [NonSerialized]
-        public ProductionEventChanges Container;
+        public EfficientProductionEventChanges Container { get; }
 
         // FLastUpdateTimeUTC records the time at which this event change list was last updated
         // in the persistent store
@@ -44,27 +43,20 @@ namespace VSS.VisionLink.Raptor.Events
         {
         }
 
-        public EfficientProductionEventChangeList(long machineID, long siteModelID,
-                                         ProductionEventType eventListType) : this()
+        public EfficientProductionEventChangeList(EfficientProductionEventChanges container,
+                                         long machineID, long siteModelID,
+                                         ProductionEventType eventListType)
         {
-            eventsListIsOutOfDate = true;
-
             MachineID = machineID;
             SiteModelID = siteModelID;
             EventListType = eventListType;
+            Container = container;
 
             // Machines created with the max machine ID are treated as transient and never
             // stored in or loaded from the FS file. 
             // LoadedFromPersistentStore = machineID == kICMachineIDMaxValue;
         }
 
-        public EfficientProductionEventChangeList(ProductionEventChanges container,
-                                         long machineID, long siteModelID,
-                                         ProductionEventType eventListType) : this(machineID, siteModelID, eventListType)
-        {
-            Container = container;
-        }
-        
         // Compare performs a date based comparison between the event identified
         // by <Item> and the date held in <Value>
         public bool Find(Func<T, int> Comparer, out int index)
@@ -135,7 +127,7 @@ namespace VSS.VisionLink.Raptor.Events
         /// <returns>The event instance that was added to the list</returns>
         public T PutValueAtDate(DateTime dateTime)
         {
-            T newEvent = new T()
+            T newEvent = new T
             {
                 Date = dateTime
             };
@@ -226,6 +218,7 @@ namespace VSS.VisionLink.Raptor.Events
             return Event;
         }
 
+        // public T PutValueAtDate(T Event) => PutValueAtDate(Event);
         public object PutValueAtDate(object Event) => PutValueAtDate((T)Event);
 
 
@@ -241,8 +234,10 @@ namespace VSS.VisionLink.Raptor.Events
 
         public virtual void Collate()
         {
-            ProductionEventChangeBase StartEvent = null;
-            ProductionEventChangeBase EndEvent = null;
+            bool HaveStartEndEventPair = false;
+
+            EfficientProductionEventChangeBase<ProductionEventType> StartEvent = new EfficientProductionEventChangeBase<ProductionEventType>();
+            EfficientProductionEventChangeBase<ProductionEventType> EndEvent = new EfficientProductionEventChangeBase<ProductionEventType>();
 
             int FirstIdx = 0;
             int SecondIdx = 1;
@@ -258,7 +253,7 @@ namespace VSS.VisionLink.Raptor.Events
             // saving the rest of the event lists.
             while (SecondIdx < Count)
             {
-                if ((StartEvent == null) || (EndEvent == null) ||
+                if (!HaveStartEndEventPair ||
                      !Range.InRange(this[FirstIdx].Date, StartEvent.Date, EndEvent.Date))
                 {
                     if (!Container.StartEndRecordedDataEvents.FindStartEventPairAtTime(this[FirstIdx].Date, out StartEvent, out EndEvent))
@@ -268,6 +263,8 @@ namespace VSS.VisionLink.Raptor.Events
 
                         continue;
                     }
+
+                    HaveStartEndEventPair = true;
                 }
 
                 if (this[FirstIdx].Equals(this[SecondIdx]) &&
@@ -372,7 +369,7 @@ namespace VSS.VisionLink.Raptor.Events
         /// Reads a binary serialisation of the content of the list
         /// </summary>
         /// <param name="reader"></param>
-        public static IProductionEventChangeList Read(BinaryReader reader)
+        public static IProductionEventChangeList<T> Read(BinaryReader reader)
         {
             BinaryFormatter formatter = new BinaryFormatter();
             return (EfficientProductionEventChangeList<T, V>)formatter.Deserialize(reader.BaseStream);
@@ -398,7 +395,7 @@ namespace VSS.VisionLink.Raptor.Events
             }
         }
 
-        public IProductionEventChangeList LoadFromStore(IStorageProxy storageProxy)
+        public IProductionEventChangeList<T> LoadFromStore(IStorageProxy storageProxy)
         {
             storageProxy.ReadStreamFromPersistentStoreDirect(SiteModelID, EventChangeListPersistantFileName(), FileSystemStreamType.Events, out MemoryStream MS);
 
@@ -408,7 +405,7 @@ namespace VSS.VisionLink.Raptor.Events
 
                 using (var reader = new BinaryReader(MS, Encoding.UTF8, true))
                 {
-                    IProductionEventChangeList Result = Read(reader);
+                    IProductionEventChangeList<T> Result = Read(reader);
                     return Result ?? this;
                 }
             }

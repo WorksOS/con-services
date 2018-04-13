@@ -10,8 +10,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         public DateTime StartTime { get; set; } = DateTime.MinValue;
         public DateTime EndTime { get; set; } = DateTime.MaxValue;
 
-        public uint FSGranuleIndex { get; set; }
-        public uint FSGranuleCount { get; set; }
+//        public uint FSGranuleIndex { get; set; }
+//        public uint FSGranuleCount { get; set; }
 
         public double MinElevation { get; set; } = Consts.NullDouble;
         public double MaxElevation { get; set; } = Consts.NullDouble;
@@ -67,8 +67,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         {
             writer.Write(StartTime.ToBinary());
             writer.Write(EndTime.ToBinary());
-            writer.Write(FSGranuleIndex);
-            writer.Write(FSGranuleCount);
+//            writer.Write(FSGranuleIndex);
+//            writer.Write(FSGranuleCount);
             writer.Write(MinElevation);
             writer.Write(MaxElevation);
        }
@@ -77,13 +77,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         {
             StartTime = DateTime.FromBinary(reader.ReadInt64());
             EndTime = DateTime.FromBinary(reader.ReadInt64());
-            FSGranuleIndex = reader.ReadUInt32();
-            FSGranuleCount = reader.ReadUInt32();
+//            FSGranuleIndex = reader.ReadUInt32();
+//            FSGranuleCount = reader.ReadUInt32();
             MinElevation = reader.ReadDouble();
             MaxElevation = reader.ReadDouble();
         }
     }
 }
-
-
-

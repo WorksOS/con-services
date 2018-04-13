@@ -14,12 +14,7 @@ namespace VSS.VisionLink.Raptor.Events
         {
         }
 
-        public EfficientStartEndRecordedDataChangeList(long machineID, long siteModelID,
-                                              ProductionEventType eventListType) : base(machineID, siteModelID, eventListType)
-        {
-        }
-
-        public EfficientStartEndRecordedDataChangeList(ProductionEventChanges container,
+        public EfficientStartEndRecordedDataChangeList(EfficientProductionEventChanges container,
                                               long machineID, long siteModelID,
                                               ProductionEventType eventListType) : base(container, machineID, siteModelID, eventListType)
         {
@@ -83,29 +78,19 @@ namespace VSS.VisionLink.Raptor.Events
                 bool DecNestingLevel = false;
 
                 if (this[I].State == ProductionEventType.StartRecordedData)
-                {
                     NestingLevel++;
-                }
                 else
                 {
                     if (this[I].State == ProductionEventType.EndRecordedData)
-                    {
                         DecNestingLevel = true;
-                    }
                     else
-                    {
                         Debug.Assert(false, "Unknown event type in list");
-                    }
 
                     if (NestingLevel > 1)
-                    {
                         RemoveAt(I);
-                    }
 
                     if (DecNestingLevel)
-                    {
                         NestingLevel--;
-                    }
                 }
 
                 I++;
@@ -123,13 +108,10 @@ namespace VSS.VisionLink.Raptor.Events
                 {
                     //Don't collate this pair - it's a single epoch tag file
                 }
-                else
+                else if (this[I].EquivalentTo(this[I + 1]) && this[I].State != this[I + 1].State)
                 {
-                    if (this[I].EquivalentTo(this[I + 1]) && this[I].State != this[I + 1].State)
-                    {
-                        RemoveAt(I); // this[I] = null;
-                        RemoveAt(I); // this[I + 1] = null;
-                    }
+                    RemoveAt(I); // this[I] = null;
+                    RemoveAt(I); // this[I + 1] = null;
                 }
 
                 I++;

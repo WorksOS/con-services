@@ -476,14 +476,49 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                     {
                         if (mutability == StorageMutability.Immutable)
                         {
-                            writeKeys(RaptorCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<string, byte[]>(RaptorCaches.ImmutableNonSpatialCacheName()));
-                            writeKeys(RaptorCaches.DesignTopologyExistenceMapsCacheName(), writer, ignite.GetCache<string, byte[]>(RaptorCaches.DesignTopologyExistenceMapsCacheName()));
-                            WriteKeysSpatial(RaptorCaches.ImmutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, byte[]>(RaptorCaches.ImmutableSpatialCacheName()));
+                            try
+                            {
+                                writeKeys(RaptorCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<string, byte[]>(RaptorCaches.ImmutableNonSpatialCacheName()));
+                            }
+                            catch (Exception E)
+                            {
+                                MessageBox.Show($"Exception occurred: {E}");
+                            }
+                            try
+                            {
+                                writeKeys(RaptorCaches.DesignTopologyExistenceMapsCacheName(), writer, ignite.GetCache<string, byte[]>(RaptorCaches.DesignTopologyExistenceMapsCacheName()));
+                            }
+                            catch (Exception E)
+                            {
+                                MessageBox.Show($"Exception occurred: {E}");
+                            }
+                            try
+                            {
+                                WriteKeysSpatial(RaptorCaches.ImmutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, byte[]>(RaptorCaches.ImmutableSpatialCacheName()));
+                            }
+                            catch (Exception E)
+                            {
+                                MessageBox.Show($"Exception occurred: {E}");
+                            }
                         }
                         if (mutability == StorageMutability.Mutable)
                         {
-                            writeKeys(RaptorCaches.MutableNonSpatialCacheName(), writer, ignite.GetCache<string, byte[]>(RaptorCaches.MutableNonSpatialCacheName()));
-                            WriteKeysSpatial(RaptorCaches.MutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, byte[]>(RaptorCaches.MutableSpatialCacheName()));
+                            try
+                            {
+                                writeKeys(RaptorCaches.MutableNonSpatialCacheName(), writer, ignite.GetCache<string, byte[]>(RaptorCaches.MutableNonSpatialCacheName()));
+                            }
+                            catch (Exception E)
+                            {
+                                MessageBox.Show($"Exception occurred: {E}");
+                            }
+                            try
+                            {
+                                WriteKeysSpatial(RaptorCaches.MutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, byte[]>(RaptorCaches.MutableSpatialCacheName()));
+                            }
+                            catch (Exception E)
+                            {
+                                MessageBox.Show($"Exception occurred: {E}");
+                            }
                         }
                     }
                 }

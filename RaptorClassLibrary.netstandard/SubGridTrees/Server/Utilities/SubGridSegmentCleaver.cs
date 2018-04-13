@@ -1,4 +1,7 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Reflection;
+using log4net;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators;
 
@@ -9,6 +12,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Utilities
     /// </summary>
     public static class SubGridSegmentCleaver
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public static bool RecordSegmentCleavingOperationsToLog = true;
+
         /// <summary>
         /// Cleaves all dirty segments requiring cleaving within the given subgrid
         /// </summary>
@@ -33,8 +40,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Utilities
             {
                 SubGridCellPassesDataSegment Segment = Iterator.CurrentSubGridSegment;
 
-                // TODO DateTime CleavedTimeRangeStart = Segment.SegmentInfo.StartTime;
-                // TODO DateTime CleavedTimeRangeEnd = Segment.SegmentInfo.EndTime;
+                DateTime CleavedTimeRangeStart = Segment.SegmentInfo.StartTime;
+                DateTime CleavedTimeRangeEnd = Segment.SegmentInfo.EndTime;
 
                 if (Segment.RequiresCleaving())
                 {
@@ -42,16 +49,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Utilities
                     {
                         Iterator.SegmentListExtended();
 
-                        /* TODO
                         if (RecordSegmentCleavingOperationsToLog)
-                        {
-                            SIGLogMessage.PublishNoODS(Self,
-                                Format('Info: Performed cleave on segment %d (%.6f-%.6f) of subgrid %s', 
-                                [FCells.PassesData.IndexOf(Segment), CleavedTimeRangeStart, CleavedTimeRangeEnd,
-                                    ExtractFileName(
-                                        (FOwner as TICServerSubGridTree).GetLeafSubGridFullFileName(Origin))]),
-                            slmcDebug);
-                        }*/
+                            Log.Info($"Info: Performed cleave on segment ({CleavedTimeRangeStart}-{CleavedTimeRangeEnd}) of subgrid {ServerSubGridTree.GetLeafSubGridFullFileName(Origin)}");
                     }
                     else
                     {
@@ -61,34 +60,22 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Utilities
                         // the future when it is modified again via tag file proccessing etc)
                         // it will be noted in the log.
 
-                        /* TODO
-                          SIGLogMessage.Publish(Self,
-                                                 Format('Info: Cleave of segment %d (%.6f-%.6f) of subgrid %s failed', 
-                                                 [FCells.PassesData.IndexOf(Segment),
-                                                  CleavedTimeRangeStart, CleavedTimeRangeEnd, Moniker,
-                                                   ExtractFileName((FOwner as TICServerSubGridTree).GetLeafSubGridFullFileName(Origin))]),
-                                                   slmcDebug);
-                        */
+                        if (RecordSegmentCleavingOperationsToLog)
+                            Log.Info($"Info: Cleave on segment ({CleavedTimeRangeStart}-{CleavedTimeRangeEnd}) of subgrid {ServerSubGridTree.GetLeafSubGridFullFileName(Origin)} failed");
                     }
                 }
 
-                /* TODO
-        if RecordSegmentCleavingOperationsToLog then
-        begin
-        for Segment in Iterator do
-            if Segment.RequiresCleaving then
-        begin
-        Segment.CalculateTotalPasses(out int TotalPassCount, out int MaximumPassCount);
-        SIGLogMessage.PublishNoODS(Self,
-            Format('Info: Cleave of segment %d (%.6f-%.6f) of subgrid %s failed to reduce cell pass count below maximums (max passes = %d/%d, per cell = %d/%d)',
-        [FCells.PassesData.IndexOf(Segment),
-        CleavedTimeRangeStart, CleavedTimeRangeEnd, Moniker,
-        TotalPassCount, VLPDSvcLocations.VLPD_SubGridSegmentPassCountLimit,
-        MaximumPassCount, VLPDSvcLocations.VLPD_SubGridMaxSegmentCellPassesLimit]),
-        slmcDebug);
-        end;
-        end;
-        */
+                if (RecordSegmentCleavingOperationsToLog)
+                {
+                    foreach (var segment in subGrid.Cells.PassesData.Items)
+                    {
+                        if (Segment.RequiresCleaving())
+                        {
+                            SegmentTotalPassesCalculator.CalculateTotalPasses(segment.PassesData,out uint TotalPassCount, out uint MaximumPassCount);
+                            Log.Info($"Info: Cleave on segment ({CleavedTimeRangeStart}-{CleavedTimeRangeEnd}) of subgrid {subGrid.Moniker()} failed to reduce cell pass count below maximums (max passes = {TotalPassCount}/{RaptorConfig.VLPD_SubGridSegmentPassCountLimit}, per cell = {MaximumPassCount}/{RaptorConfig.VLPD_SubGridMaxSegmentCellPassesLimit})");
+                        }
+                    }
+                }
             } while (Iterator.MoveToNextSubGridSegment());
         }
     }

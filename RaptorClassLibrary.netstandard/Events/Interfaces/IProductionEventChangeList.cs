@@ -7,9 +7,14 @@ namespace VSS.VisionLink.Raptor.Events.Interfaces
     {
         void Sort();
         void Collate();
-        object PutValueAtDate(object Event);
 
         void SaveToStore(IStorageProxy storageProxy);
-        IProductionEventChangeList LoadFromStore(IStorageProxy storageProxy);
+        object PutValueAtDate(object Event);
+    }
+
+    public interface IProductionEventChangeList<T> : IProductionEventChangeList
+    {
+
+        IProductionEventChangeList<T> LoadFromStore(IStorageProxy storageProxy);
     }
 }
