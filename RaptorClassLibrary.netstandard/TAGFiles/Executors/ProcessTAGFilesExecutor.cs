@@ -5,6 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using VSS.VisionLink.Raptor.Executors;
+using VSS.VisionLink.Raptor.Machines;
+using VSS.VisionLink.Raptor.SiteModels;
+using VSS.VisionLink.Raptor.Storage;
 //using VSS.VisionLink.Raptor.Machines;
 //using VSS.VisionLink.Raptor.SiteModels;
 //using VSS.VisionLink.Raptor.Storage;
@@ -37,8 +40,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Executors
             List<AggregatedDataIntegratorTask> ProcessedTasks = new List<AggregatedDataIntegratorTask>();
 
             // Create the site model and machine etc to aggregate the processed TAG file into
-//            SiteModel siteModel = SiteModels.SiteModels.Instance(StorageMutability.Mutable).GetSiteModel(ProjectID, true);
-//            Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
+            // Note: This creates these elements within the project itself, not jsut class instances...
+            SiteModel siteModel = SiteModels.SiteModels.Instance(StorageMutability.Mutable).GetSiteModel(ProjectID, true);
+            Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
 
             // Process each file into a task, and batch tasks into groups for integration to reduce the number of cache 
             // updates made for subgrid changes
