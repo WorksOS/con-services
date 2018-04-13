@@ -11,7 +11,18 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
   {
     public Task<List<Organization>> ListOrganizations()
     {
-      throw new NotImplementedException();
+      var orgs = new List<Organization>()
+      {
+        new Organization()
+        {
+          filespaceId = "5u8472cda0-9f59-41c9-a5e2-e19f922f91d8",
+          orgDisplayName = "the orgDisplayName",
+          orgId = "u8472cda0-9f59-41c9-a5e2-e19f922f91d8",
+          orgTitle = "the orgTitle",
+          shortName = "the sn"
+        }
+      };
+      return Task.FromResult(orgs);
     }
 
     public Task<Stream> GetFile(Organization org, string fullName)
@@ -21,7 +32,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 
     public Task<Stream> GetFile(string filespaceId, string fullName)
     {
-      byte[] buffer = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3 };
+      byte[] buffer = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3};
       return Task.FromResult((Stream) new MemoryStream(buffer));
     }
 
@@ -60,7 +71,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       return Task.FromResult(false);
     }
 
-    public Task<PutFileResponse> PutFile(Organization org, string path, string filename, Stream contents, long sizeOfContents)
+    public Task<PutFileResponse> PutFile(Organization org, string path, string filename, Stream contents,
+      long sizeOfContents)
     {
       throw new NotImplementedException();
     }
@@ -100,7 +112,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       throw new NotImplementedException();
     }
 
-    public Task<string> ExportToWebFormat(string srcFilespaceId, string srcPath, string dstFilespaceId, string dstPath, int zoomLevel)
+    public Task<string> ExportToWebFormat(string srcFilespaceId, string srcPath, string dstFilespaceId, string dstPath,
+      int zoomLevel)
     {
       throw new NotImplementedException();
     }

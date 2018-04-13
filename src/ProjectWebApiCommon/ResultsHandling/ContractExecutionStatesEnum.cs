@@ -93,6 +93,12 @@
       DynamicAddwithOffset("CreateProjectV2: Invalid businessCentreFile path.", 83);
       DynamicAddwithOffset("CreateProjectV2: Invalid businessCentreFile fileSpaceId.", 84);
       DynamicAddwithOffset("CreateProjectV2: Invalid ProjectType. Only ProjectMonitoring type is allowed.", 85);
+      DynamicAddwithOffset("ValidateTCCAuthorization: Invalid Request: {0}.", 86);
+      DynamicAddwithOffset("ValidateTCCAuthorization: Exception getting list of organizations from TCC: {0}.", 87);
+      DynamicAddwithOffset("ValidateTCCAuthorization: Unable to locate orgShortName in TCC {0}.", 88);
+      DynamicAddwithOffset("ValidateTCCAuthorization: This orgShortName is missing a filespaceId or orgId in TCC {0}.", 89);
+      DynamicAddwithOffset("ValidateTCCAuthorization: Exception getting customerTccOrg from database: {0.}", 90);
+      DynamicAddwithOffset("ValidateTCCAuthorization: Unable to match customer with tccOrg in database.", 91);
     }
 
     /// <summary>

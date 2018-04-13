@@ -17,6 +17,7 @@ using VSS.MasterData.Project.WebAPI.Filters;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.TCCFileAccess;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -66,6 +67,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected readonly IProjectRepository projectRepo;
 
     /// <summary>
+    /// Gets or sets the Subscription Repository.
+    /// </summary>
+    protected readonly ISubscriptionRepository subscriptionRepo;
+
+    /// <summary>
+    /// Gets or sets the TCC File Repository.
+    /// </summary>
+    protected readonly IFileRepository fileRepo;
+
+    /// <summary>
     /// Gets the custom customHeaders for the request.
     /// </summary>
     /// <value>
@@ -106,9 +117,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="producer">The producer.</param>
     /// <param name="raptorProxy">The raptorServices proxy.</param>
     /// <param name="projectRepo">The project repo.</param>
+    /// <param name="subscriptionRepo"></param>
+    /// <param name="fileRepo"></param>
     protected BaseController(ILogger log, IConfigurationStore configStore,
       IServiceExceptionHandler serviceExceptionHandler, IKafka producer,
-      IRaptorProxy raptorProxy, IProjectRepository projectRepo)
+      IRaptorProxy raptorProxy, 
+      IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null)
     {
       this.log = log;
       this.configStore = configStore;
@@ -124,6 +138,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
                         configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")).Trim();
 
       this.projectRepo = projectRepo;
+      this.subscriptionRepo = subscriptionRepo;
+      this.fileRepo = fileRepo;
       this.raptorProxy = raptorProxy;
     }
 

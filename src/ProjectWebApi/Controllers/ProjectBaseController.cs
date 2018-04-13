@@ -17,7 +17,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// </summary>
   public class ProjectBaseController : BaseController
   {
-     /// <summary>
+    /// <summary>
     /// Gets or sets the subscription proxy.
     /// </summary>
     protected readonly ISubscriptionProxy subscriptionProxy;
@@ -26,18 +26,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Gets or sets the Geofence proxy. 
     /// </summary>
     protected readonly IGeofenceProxy geofenceProxy;
-
-    /// <summary>
-    /// Gets or sets the FileRepository (TCC) proxy. 
-    /// </summary>
-    /// 
-    protected readonly IFileRepository fileRepo;
-
-
-    /// <summary>
-    /// Gets or sets the Subscription Repository.
-    /// </summary>
-    protected readonly ISubscriptionRepository subscriptionRepo;
 
     /// <summary>
     /// Save for potential rollback
@@ -59,21 +47,18 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="subscriptionProxy">The subs proxy.</param>
     /// <param name="geofenceProxy">The geofence proxy.</param>
     /// <param name="raptorProxy">The raptorServices proxy.</param>
-    /// <param name="fileRepo"></param>
     /// <param name="logger">The logger.</param>
     /// <param name="serviceExceptionHandler">The ServiceException handler</param>
     /// <param name="log"></param>
-    public ProjectBaseController(IKafka producer, IProjectRepository projectRepo, 
-      ISubscriptionRepository subscriptionsRepo, IConfigurationStore configStore, 
+    public ProjectBaseController(IKafka producer, 
+      IProjectRepository projectRepo, ISubscriptionRepository subscriptionsRepo, IFileRepository fileRepo,
+      IConfigurationStore configStore, 
       ISubscriptionProxy subscriptionProxy, IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy,
-      IFileRepository fileRepo,
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, ILogger log)
-      : base(log, configStore, serviceExceptionHandler, producer, raptorProxy, projectRepo)
+      : base(log, configStore, serviceExceptionHandler, producer, raptorProxy, projectRepo, subscriptionsRepo, fileRepo)
     {
-      subscriptionRepo = subscriptionsRepo;
       this.subscriptionProxy = subscriptionProxy;
       this.geofenceProxy = geofenceProxy;
-      this.fileRepo = fileRepo;
     }
 
     /// <summary>

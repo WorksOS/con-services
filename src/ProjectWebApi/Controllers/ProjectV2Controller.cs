@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -30,13 +31,20 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Logger factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
-    
+
+    /// <summary>
+    /// Gets or sets the Customer Repository.
+    /// </summary>
+    protected readonly ICustomerRepository customerRepo;
+
+
     /// <summary>
     /// 
     /// </summary>
     /// <param name="producer"></param>
     /// <param name="projectRepo"></param>
     /// <param name="subscriptionsRepo"></param>
+    /// <param name="customerRepo"></param>
     /// <param name="store"></param>
     /// <param name="subscriptionProxy"></param>
     /// <param name="geofenceProxy"></param>
@@ -44,14 +52,17 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="fileRepo"></param>
     /// <param name="logger"></param>
     /// <param name="serviceExceptionHandler">The ServiceException handler.</param>
-    public ProjectV2Controller(IKafka producer, IProjectRepository projectRepo,
-      ISubscriptionRepository subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
-      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, IFileRepository fileRepo,
+    public ProjectV2Controller(IKafka producer,
+      IProjectRepository projectRepo, ISubscriptionRepository subscriptionsRepo,
+      IFileRepository fileRepo, ICustomerRepository customerRepo,
+      IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
+      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy,
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
-      : base(producer, projectRepo, subscriptionsRepo, store, subscriptionProxy, geofenceProxy, raptorProxy, fileRepo,
+      : base(producer, projectRepo, subscriptionsRepo, fileRepo, store, subscriptionProxy, geofenceProxy, raptorProxy,
         logger, serviceExceptionHandler, logger.CreateLogger<ProjectV2Controller>())
     {
       this.logger = logger;
+      this.customerRepo = customerRepo;
     }
 
     #region projects
@@ -76,18 +87,20 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 81);
       }
-      log.LogInformation("CreateProjectV2. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
+
+      log.LogInformation($"CreateProjectV2. projectRequest: {JsonConvert.SerializeObject(projectRequest)}");
 
       var createProjectEvent = MapV2Models.MapCreateProjectV2RequestToEvent(projectRequest, customerUid);
 
       ProjectDataValidator.Validate(createProjectEvent, projectRepo);
       if (createProjectEvent.ProjectType != ProjectType.ProjectMonitoring)
       {
-         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 85);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 85);
       }
 
       // get CoordinateSystem file content from TCC
-      projectRequest.CoordinateSystem = ProjectDataValidator.ValidateBusinessCentreFile(projectRequest.CoordinateSystem);
+      projectRequest.CoordinateSystem =
+        ProjectDataValidator.ValidateBusinessCentreFile(projectRequest.CoordinateSystem);
 
       var projectRequestHelper = new ProjectRequestHelper(
         log, configStore, serviceExceptionHandler,
@@ -95,7 +108,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         producer,
         geofenceProxy, raptorProxy, subscriptionProxy,
         projectRepo, subscriptionRepo, fileRepo);
-      createProjectEvent.CoordinateSystemFileContent = await projectRequestHelper.GetCoordinateSystemContent(projectRequest.CoordinateSystem).ConfigureAwait(false);
+      createProjectEvent.CoordinateSystemFileContent = await projectRequestHelper
+        .GetCoordinateSystemContent(projectRequest.CoordinateSystem).ConfigureAwait(false);
 
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
@@ -112,5 +126,79 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     #endregion projects
+
+
+    #region TTCAuthorization
+
+    // POST: api/v2/preferences/tcc
+    /// <summary>
+    /// TBC ValidateTCCAuthorization. This validates that 
+    ///      a) the customer has access to the TCC organization and 
+    ///      b) that the Folder structure exists in TCC.
+    /// Footprint must remain the same as CGen: 
+    ///     POST /t/trimble.com/vss-projectmonitoring/1.0/api/v2/preferences/tcc HTTP/1.1
+    ///     Body: {"organization":"vssnz19"}     
+    ///     Response: {"success":true}
+    /// 
+    /// Happy path only to be handled at this point.
+    /// However this is a faillure Response:
+    ///     {"status":500,"message":"invalidUser001\r\n\r\n","errorcode":1000,"link":null}
+    /// 
+    /// </summary>
+    /// <response code="200">Ok</response>
+    /// <response code="400">Bad request</response>
+    [Route("api/v2/preferences/tcc")]
+    [HttpPost]
+    public async Task<ContractExecutionResult> ValidateTccAuthorization(
+      [FromBody] ValidateTccAuthorizationRequest tccAuthorizationRequest)
+    {
+      if (tccAuthorizationRequest == null)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 86);
+      }
+
+      log.LogInformation(
+        $"ValidateTCCAuthorization. tccAuthorizationRequest: {JsonConvert.SerializeObject(tccAuthorizationRequest)}");
+
+      tccAuthorizationRequest.Validate();
+
+      await WithServiceExceptionTryExecuteAsync(() =>
+        RequestExecutorContainerFactory
+          .Build<ValidateTccOrgExecutor>(logger, configStore, serviceExceptionHandler,
+            customerUid, null, null, customHeaders,
+            null, null,
+            null, null, null,
+            null, null, fileRepo, customerRepo)
+          .ProcessAsync(tccAuthorizationRequest)
+      );
+
+      //
+      // FileRepository.ListOrganizations()
+      //      ? organization == shortName in list of Organizations?
+      //      ? does it have a filespaceId?
+      //      use orgId to validate following?
+
+      //ValidateCustomerRepo 
+      //   GetCustomerWithTccOrg(customerUid())
+
+      // NGen:
+      //  customerUid from RequestHeader
+      //  organization is valid string: "vssnz19"
+      //  validate in our database: CustomerTccOrg
+
+      log.LogDebug("ValidateTccAuthorization. completed succesfully");
+      return new ContractExecutionResult((int) (HttpStatusCode.Created), string.Format("\"success\":true"));
+    }
+
+    #endregion TTCAuthorization
+
+
+    #region FileImport
+
+    //PUT /t/trimble.com/vss-projectmonitoring/1.0/api/v2/projects/6960/importedfiles HTTP/1.1
+    //Body: {"ImportedFileTypeID":1,"AlignmentFile":null,"SurfaceFile":{"SurveyedUTC":"2018-03-21T20:18:13.9631923Z"},"LineworkFile":null,"MassHaulPlanFile":null,"FileSpaceID":"u927f3be6-7987-4944-898f-42a088da94f2","Path":"/BC Data/Sites/Test  Create/Designs/TBC","Name":"Cell 9 inter 092717 switchback 112917.ttm","CreatedUTC":"2018-04-11T00:22:11.0266872Z"}
+
+    #endregion FileImport
+
   }
 }

@@ -83,6 +83,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// 
     protected IFileRepository fileRepo;
 
+    /// <summary>
+    /// Repository factory used for Customer db
+    /// </summary>
+    /// 
+    protected ICustomerRepository customerRepo;
 
     /// <summary>
     /// Generates the dynamic errorlist for instanciated executor.
@@ -174,12 +179,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     /// 
     /// </summary>
-    public void Initialise(ILogger logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler,
-      string customerUid, string userId = null, string userEmailAddress = null, IDictionary<string, string> headers = null,
+    public void Initialise(ILogger logger, IConfigurationStore configStore,
+      IServiceExceptionHandler serviceExceptionHandler,
+      string customerUid, string userId = null, string userEmailAddress = null,
+      IDictionary<string, string> headers = null,
       IKafka producer = null, string kafkaTopicName = null,
       IGeofenceProxy geofenceProxy = null, IRaptorProxy raptorProxy = null, ISubscriptionProxy subscriptionProxy = null,
-      IProjectRepository projectRepo = null, ISubscriptionRepository subscriptionsRepo = null, IFileRepository fileRepo = null
-     )
+      IProjectRepository projectRepo = null, ISubscriptionRepository subscriptionsRepo = null,
+      IFileRepository fileRepo = null, ICustomerRepository customerRepo = null)
     {
       log = logger;
       this.configStore = configStore;
@@ -196,6 +203,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.projectRepo = projectRepo;
       this.subscriptionRepo = subscriptionsRepo;
       this.fileRepo = fileRepo;
+      this.customerRepo = customerRepo;
     }
 
     /// <summary>

@@ -13,7 +13,6 @@ using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Repositories;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Proxies.Interfaces;
@@ -45,7 +44,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       ISubscriptionRepository subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
       IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, IFileRepository fileRepo, 
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
-      : base(producer, projectRepo, subscriptionsRepo, store, subscriptionProxy, geofenceProxy, raptorProxy, fileRepo,
+      : base(producer, projectRepo, subscriptionsRepo, fileRepo, store, subscriptionProxy, geofenceProxy, raptorProxy,
           logger, serviceExceptionHandler, logger.CreateLogger<ProjectV3Controller>())
     { }
 

@@ -7,7 +7,6 @@ using Swashbuckle.AspNetCore.Swagger;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Security.Principal;
 using Microsoft.AspNetCore.Http;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
@@ -23,7 +22,6 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.TCCFileAccess;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI
 {
@@ -94,6 +92,7 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IProjectRepository, ProjectRepository>();
       services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+      services.AddScoped<ICustomerRepository, CustomerRepository>();
       services.AddTransient<IProjectSettingsRequestHelper, ProjectSettingsRequestHelper>();
 
       services.AddMemoryCache();
