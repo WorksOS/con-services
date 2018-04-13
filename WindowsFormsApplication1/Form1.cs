@@ -425,7 +425,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
             foreach (ICacheEntry<SubGridSpatialAffinityKey, byte[]> cacheEntry in queryCursor)
             {
-                writer.WriteLine($"{count++}:{cacheEntry.Key.ToString()}");
+                writer.WriteLine($"{count++}:{cacheEntry.Key}, size = {cacheEntry.Value.Length}");
                 // writeCacheMetrics(writer, cache.GetMetrics());
             }
 

@@ -22,7 +22,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Utilities
         /// <param name="subGrid"></param>
         public static void PerformSegmentCleaving(IServerLeafSubGrid subGrid)
         {
-            Debug.Assert(subGrid.Locked, "May not calculate latest pass information if the subgrid is not locked");
+            // TODO Need to determine locking semantics governing this
+            // Debug.Assert(subGrid.Locked, "May not calculate latest pass information if the subgrid is not locked");
 
             SubGridSegmentIterator Iterator = new SubGridSegmentIterator(subGrid)
             {

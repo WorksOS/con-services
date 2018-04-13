@@ -276,18 +276,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                     FileName,
                     //  TODO         InvalidatedSpatialStreams,
                     FileSystemStreamType.SubGridSegment,
-                    //out uint StoreGranuleIndex,
-                    //out uint StoreGranuleCount,
                     MStream);
 
                 Result = FSError == FileSystemErrorStatus.OK;
-
-//                if (Result)
-//                {
-                    // Assign the store granule index and count into the segment for later reference
-//                    SegmentInfo.FSGranuleIndex = StoreGranuleIndex;
-//                    SegmentInfo.FSGranuleCount = StoreGranuleCount;
-//                }
             }
 
             return Result;

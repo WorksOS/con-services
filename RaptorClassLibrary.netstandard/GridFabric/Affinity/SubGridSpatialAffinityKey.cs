@@ -28,7 +28,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
         /// <summary>
         /// The segment identifier for the subgrid data. If the segment identifier is empty then the element represents
         /// the subgrid directory (or SGL file). Otherwise, the segment identitier is a string representation of the start
-        /// time of the segment and the time duration the segment contains data for.
+        /// and end times of the segment and the time duration the segment contains data for.
         /// </summary>
         public string SegmentIdentifier { get; set; }
 
@@ -92,8 +92,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
         public override string ToString()
         {
             return SegmentIdentifier == string.Empty
-                ? string.Format("{0}-{1}-{2}", ProjectID, SubGridX, SubGridY)
-                : string.Format("{0}-{1}-{2}-{3}", ProjectID, SubGridX, SubGridY, SegmentIdentifier);
+                ? $"{ProjectID}-{SubGridX}-{SubGridY}"
+                : $"{ProjectID}-{SubGridX}-{SubGridY}-{SegmentIdentifier}";
         }
     }
 }

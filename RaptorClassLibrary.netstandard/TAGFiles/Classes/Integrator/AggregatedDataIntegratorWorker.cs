@@ -232,7 +232,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 
                     if (SiteModelFromDM == null)
                     {
-                        Log.Warn("Unable to lock SiteModel {Task.TargetSiteModelID} from the data model file");
+                        Log.Error($"Unable to lock SiteModel {Task.TargetSiteModelID} from the data model file");
                         return false;
                     }
 
@@ -312,9 +312,11 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                                 int Comparison = MachineFromDM.LastKnownPositionTimeStamp.CompareTo(Task.TargetMachine.LastKnownPositionTimeStamp);
                                 if (Comparison < 1)
                                 {
-                                    MachineFromDM.LastKnownDesignName = SiteModelMachineTargetValues.DesignNameStateEvents.LastOrDefault().State;
+                                    // TODO: Convert design name list and id event list structure from Raptor
+                                    // MachineFromDM.LastKnownDesignName = SiteModelMachineTargetValues.DesignNameStateEvents.LastOrDefault().State;
+                                    MachineFromDM.LastKnownDesignName = "";
 
-                                    /*
+                                    /* TODO as above
                                     if (SiteModelMachineTargetValues.DesignNameStateEvents.Count > 0)
                                     {
                                         SiteModelFromDM.SiteModelMachineTargetValues.DesignNameStateEvents.Items[SiteModelMachineTargetValues.TargetValueChanges.EventDesignNames.Count - 1] as TICEventDesignNameValueChange).EventDesignNameID, out string LastKnownDesignName);

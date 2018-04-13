@@ -53,7 +53,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
                                  bool LookInCacheOnly,
                                  bool AcceptSpeculativeReadFailure)
         {
-            ISubGrid SubGrid;
             IServerLeafSubGrid LeafSubGrid = null;
             // bool SubGridLockAcquired = false;
             // bool IntentionLockCounterWound = false;
@@ -75,6 +74,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
 
                 // Use a subgrid tree specific interlock to permit multiple threads accessing
                 // different subgrid trees to operate concurrently
+                ISubGrid SubGrid;
                 lock (ForSubGridTree) //  ForSubGridTree.AcquireExternalAccessInterlock;
                 {
                     try

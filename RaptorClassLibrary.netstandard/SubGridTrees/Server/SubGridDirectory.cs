@@ -7,11 +7,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 {
     public class SubGridDirectory
     {
-        // FFSGranuleIndex and FFSGranuleCount record the location and size
-        // of the subgrid leaf (directory) stream in the data model FS file
-//        public uint FSGranuleIndex { get; set; }
-//        public uint FSGranuleCount { get; set; }
-
         // SegmentDirectory contains a list of all the segments that are present
         // in this subgrid. The list is time ordered and also contains references
         // to the segments that are currently loaded into memory
@@ -55,9 +50,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         // all the segments in the subgrid
         public ISubGridCellLatestPassDataWrapper GlobalLatestCells { get; set; }
 
-        //      property FSGranuleIndex : TICFSGranuleIndex read FFSGranuleIndex write FFSGranuleIndex;
-        //      property FSGranuleCount : Longword read FFSGranuleCount write FFSGranuleCount;
-
         public void AllocateGlobalLatestCells()
         {
             if (GlobalLatestCells == null)
@@ -73,9 +65,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public SubGridDirectory()
         {
-            //    FFSGranuleIndex = 0;
-            //    FFSGranuleCount = 0;
-
             //    PersistedClovenSegments = TICSubGridCellPassesDataSegmentInfoList.Create;
             //    PersistedClovenSegments.KeepSegmentsInOrder = False;
         }

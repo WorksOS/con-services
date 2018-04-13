@@ -48,16 +48,9 @@ namespace VSS.VisionLink.Raptor.Storage
                                                                           uint SubgridX, uint SubgridY,
                                                                           string SegmentIdentifier,
                                                                           FileSystemStreamType StreamType,
-                                                                          //uint GranuleIndex,
-                                                                          out MemoryStream Stream//,
-                                                                          //out uint StoreGranuleIndex,
-                                                                          //out uint StoreGranuleCount
-        )
+                                                                          out MemoryStream Stream)
         {
             Stream = null;
-
-            //StoreGranuleIndex = 0;
-            //StoreGranuleCount = 0;
 
             try
             {
@@ -139,26 +132,6 @@ namespace VSS.VisionLink.Raptor.Storage
             }
         }
 
-/*
-        /// <summary>
-        /// Supports reading a named stream from the persistent store via the grid cache
-        /// </summary>
-        /// <param name="DataModelID"></param>
-        /// <param name="StreamName"></param>
-        /// <param name="StreamType"></param>
-        /// <param name="Streamout"></param>
-        /// <param name="StoreGranuleIndex"></param>
-        /// <param name="StoreGranuleCount"></param>
-        /// <returns></returns>
-        public FileSystemErrorStatus ReadStreamFromPersistentStore(long DataModelID, string StreamName, FileSystemStreamType StreamType, out MemoryStream Streamout) //, out uint StoreGranuleIndex, out uint StoreGranuleCount
-        {
-//            StoreGranuleCount = 0;
-//            StoreGranuleIndex = 0;
-
-            return ReadStreamFromPersistentStore(DataModelID, StreamName, StreamType, out Streamout);
-        }
-*/
-
         /// <summary>
         /// Supports reading a named stream from the persistent store via the grid cache
         /// </summary>
@@ -221,13 +194,8 @@ namespace VSS.VisionLink.Raptor.Storage
                                                                          uint SubgridX, uint SubgridY,
                                                                          string SegmentIdentifier,
                                                                          FileSystemStreamType StreamType, 
-                                                                         // out uint StoreGranuleIndex, 
-                                                                         //out uint StoreGranuleCount, 
                                                                          MemoryStream Stream)
         {
-            //StoreGranuleCount = 0;
-            //StoreGranuleIndex = 0;
-
             try
             {
                 SubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(DataModelID, SubgridX, SubgridY, SegmentIdentifier);
@@ -268,11 +236,8 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="StreamType"></param>
         /// <param name="Stream"></param>
         /// <returns></returns>
-        public FileSystemErrorStatus WriteStreamToPersistentStore(long DataModelID, string StreamName, FileSystemStreamType StreamType, /*out uint StoreGranuleIndex, out uint StoreGranuleCount, */ MemoryStream Stream)
+        public FileSystemErrorStatus WriteStreamToPersistentStore(long DataModelID, string StreamName, FileSystemStreamType StreamType, MemoryStream Stream)
         {
-//            StoreGranuleCount = 0;
-//            StoreGranuleIndex = 0;
-
             try
             {
                 string cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);

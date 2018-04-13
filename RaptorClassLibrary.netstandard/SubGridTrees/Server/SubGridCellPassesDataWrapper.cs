@@ -96,12 +96,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         // two segments that each contain half the cell passes of the segment passed in
         public bool CleaveSegment(SubGridCellPassesDataSegment CleavingSegment)
         {
-            if (!Owner.Locked)
-            {
-                Log.Error(
-                    $"May not perform a segment cleave operation on a subgrid ({Owner.Moniker()}) that is not locked");
-                return false;
-            }
+            // TODO: Remove until locking semntics are reviewed
+            //if (!Owner.Locked)
+            //{
+            //  Log.Error(
+           //         $"May not perform a segment cleave operation on a subgrid ({Owner.Moniker()}) that is not locked");
+            //    return false;
+            //}
 
             if (!CleavingSegment.HasAllPasses)
             {
@@ -195,7 +196,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             if (CleavingSegment.SegmentInfo.ExistsInPersistentStore)
                 Owner.Directory.AddPersistedClovenSegment(new SubGridCellPassesDataSegmentInfo(
                     CleavingSegment.SegmentInfo.StartTime, OldEndTime,
-                    CleavingSegment)); //  CleavingSegment.SegmentInfo.FSGranuleIndex, CleavingSegment.SegmentInfo.FSGranuleCount));
+                    CleavingSegment));
 
             // Tidy up, marking both segments as dirty, and not existant in the persitant data store!
             CleavingSegment.Dirty = true;

@@ -72,7 +72,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// Private backign store for the Dirty property. Descendent classes can override the GetDirty/SetDirty virtual methods
         /// to additional semantics to setting the dirty flag if required
         /// </summary>
-        private bool dirty;
+        protected bool dirty;
 
         /// <summary>
         /// Dirty property used to indicate the presence of changes that are not persisted.
@@ -281,7 +281,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// externally to this subgrid
         /// 
         /// </summary>
-        public void AllChangesMigrated() => Dirty = false;
+        public void AllChangesMigrated() => dirty = false;
 
         /// <summary>
         /// IsEmpty determines if this subgrid contains any information. By default the base 

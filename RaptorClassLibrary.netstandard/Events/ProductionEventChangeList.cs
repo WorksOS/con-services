@@ -17,7 +17,8 @@ namespace VSS.VisionLink.Raptor.Events
         public long SiteModelID { get; set; }
         public long MachineID { get; set; }
 
-        public ProductionEventChanges Container { get; }
+        [NonSerialized]
+        public ProductionEventChanges Container;
 
         // FLastUpdateTimeUTC records the time at which this event change list was last updated
         // in the persistent store
@@ -208,6 +209,11 @@ namespace VSS.VisionLink.Raptor.Events
 
         public object PutValueAtDate(object Event) => PutValueAtDate((T)Event);
 
+        public void SetContainer(object container)
+        {
+            Container = (ProductionEventChanges) container;
+        }
+
 
         //    procedure ReadFromStream(const Stream: TStream); virtual;
         //    procedure WriteToStream(const Stream: TStream); virtual;
@@ -373,7 +379,7 @@ namespace VSS.VisionLink.Raptor.Events
             }
         }
 
-        public string EventChangeListPersistantFileName() => string.Format("Events-{0}-{1}", EventListType.ToString(), "Summary.evt");
+        public string EventChangeListPersistantFileName() => $"{MachineID}-Events-{EventListType}-Summary.evt";
 
         public void SaveToStore(IStorageProxy storageProxy)
         {

@@ -11,8 +11,6 @@ namespace VSS.VisionLink.Raptor.Interfaces
         FileSystemErrorStatus WriteStreamToPersistentStore(long DataModelID,
                                               string StreamName,
                                               FileSystemStreamType StreamType,
-                                              //out uint StoreGranuleIndex,
-                                              //out uint StoreGranuleCount,
                                               MemoryStream Stream);
 
         FileSystemErrorStatus WriteStreamToPersistentStoreDirect(long DataModelID,
@@ -27,17 +25,7 @@ namespace VSS.VisionLink.Raptor.Interfaces
                                               // Don't implement yet.....
                                               // const AInvalidatedSpatialStreams : TInvalidatedSpatialStreamArray;
                                               FileSystemStreamType StreamType,
-                                              //out uint StoreGranuleIndex,
-                                              //out uint StoreGranuleCount,
                                               MemoryStream Stream);
-
-/*        FileSystemErrorStatus ReadStreamFromPersistentStore(long DataModelID,
-                                              string StreamName,
-                                              FileSystemStreamType StreamType,
-                                              out MemoryStream Streamout//,
-                                              //out uint StoreGranuleIndex,
-                                              //out uint StoreGranuleCount
-                                                );*/
 
         FileSystemErrorStatus ReadStreamFromPersistentStore(long DataModelID,
                                                   string StreamName,
@@ -54,11 +42,7 @@ namespace VSS.VisionLink.Raptor.Interfaces
                                                   uint SubgridX, uint SubgridY,
                                                   string SegmentIdentifier,
                                                   FileSystemStreamType StreamType,
-                                                  //uint GranuleIndex,
-                                                  out MemoryStream Stream//,
-                                                  //out uint StoreGranuleIndex,
-                                                  //out uint StoreGranuleCount
-                                                      );
+                                                  out MemoryStream Stream);
 
         FileSystemErrorStatus RemoveStreamFromPersistentStore(long DataModelID,
                                                               string StreamName);

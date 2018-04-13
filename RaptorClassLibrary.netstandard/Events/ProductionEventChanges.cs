@@ -1,4 +1,5 @@
-﻿using VSS.VisionLink.Raptor.Events.Interfaces;
+﻿using System;
+using VSS.VisionLink.Raptor.Events.Interfaces;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.Types;
@@ -82,7 +83,7 @@ namespace VSS.VisionLink.Raptor.Events
         /// <summary>
         /// Records the selected design on the machine at the time the measurements were made
         /// </summary>
-        public ProductionEventChangeList<ProductionEventChangeBase<string>, string> DesignNameStateEvents;
+//        public ProductionEventChangeList<ProductionEventChangeBase<string>, string> DesignNameStateEvents;
 
         /// <summary>
         /// ICFlags control flags change events
@@ -145,7 +146,7 @@ namespace VSS.VisionLink.Raptor.Events
             MinElevMappingStateEvents = new ProductionEventChangeList< ProductionEventChangeBase<bool>, bool>(this, MachineID, SiteModel.ID, ProductionEventType.MinElevMappingStateChange);
             GPSAccuracyAndToleranceStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<GPSAccuracyAndTolerance>, GPSAccuracyAndTolerance>(this, MachineID, SiteModel.ID, ProductionEventType.GPSAccuracyChange);
             LayerIDStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<ushort>, ushort>(this, MachineID, SiteModel.ID, ProductionEventType.LayerID);
-            DesignNameStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<string>, string>(this, MachineID, SiteModel.ID, ProductionEventType.DesignChange);
+            //DesignNameStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<string>, string>(this, MachineID, SiteModel.ID, ProductionEventType.DesignChange);
             ICFlagsStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<byte>, byte>(this, MachineID, SiteModel.ID, ProductionEventType.ICFlagsChange);
 
             TargetCCVStateEvents = new ProductionEventChangeList<ProductionEventChangeBase<short>, short>(this, MachineID, SiteModel.ID, ProductionEventType.TargetCCV);
@@ -178,7 +179,7 @@ namespace VSS.VisionLink.Raptor.Events
                 MinElevMappingStateEvents,
                 GPSAccuracyAndToleranceStateEvents,
                 LayerIDStateEvents,
-                DesignNameStateEvents,
+//                DesignNameStateEvents,
                 ICFlagsStateEvents,
                 TargetCCVStateEvents,
                 TargetCCAStateEvents,
@@ -230,8 +231,8 @@ namespace VSS.VisionLink.Raptor.Events
             MinElevMappingStateEvents = MinElevMappingStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<bool>, bool>;
             GPSAccuracyAndToleranceStateEvents = GPSAccuracyAndToleranceStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<GPSAccuracyAndTolerance>, GPSAccuracyAndTolerance>;
             LayerIDStateEvents = LayerIDStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<ushort>, ushort>;
-            DesignNameStateEvents = DesignNameStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<string>, string>;
-            ICFlagsStateEvents = DesignNameStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<byte>, byte>;
+//            DesignNameStateEvents = DesignNameStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<string>, string>;
+            ICFlagsStateEvents = ICFlagsStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<byte>, byte>;
 
             TargetCCVStateEvents = TargetCCVStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<short>, short>;
             TargetCCAStateEvents = TargetCCAStateEvents.LoadFromStore(storageProxy) as ProductionEventChangeList<ProductionEventChangeBase<short>, short>;

@@ -187,7 +187,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
             base.SetDesign(Value);
 
             if (DataTime != DateTime.MinValue)
-                MachineTargetValueChangesAggregator.DesignNameStateEvents.PutValueAtDate(DataTime, Value);
+            {
+                // TODO: Not like this...
+                //   MachineTargetValueChangesAggregator.DesignNameStateEvents.PutValueAtDate(DataTime, Value);
+
+                // TODO: But like this:
+                // See: TICProductionEventChanges.AddDesignChangeEvent(
+            }
             else
             {
                 //{$IFDEF DENSE_TAG_FILE_LOGGING}

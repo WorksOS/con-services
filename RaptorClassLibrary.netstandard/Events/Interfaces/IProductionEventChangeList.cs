@@ -10,6 +10,8 @@ namespace VSS.VisionLink.Raptor.Events.Interfaces
 
         void SaveToStore(IStorageProxy storageProxy);
         object PutValueAtDate(object Event);
+
+        void SetContainer(object container);
     }
 
     public interface IProductionEventChangeList<T> : IProductionEventChangeList

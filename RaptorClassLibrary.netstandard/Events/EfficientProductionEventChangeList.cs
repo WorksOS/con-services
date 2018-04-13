@@ -29,7 +29,8 @@ namespace VSS.VisionLink.Raptor.Events
         /// </summary>
         public long MachineID { get; set; }
 
-        public EfficientProductionEventChanges Container { get; }
+        [NonSerialized]
+        public EfficientProductionEventChanges Container;
 
         // FLastUpdateTimeUTC records the time at which this event change list was last updated
         // in the persistent store
@@ -221,6 +222,10 @@ namespace VSS.VisionLink.Raptor.Events
         // public T PutValueAtDate(T Event) => PutValueAtDate(Event);
         public object PutValueAtDate(object Event) => PutValueAtDate((T)Event);
 
+        public void SetContainer(object container)
+        {
+            Container = (EfficientProductionEventChanges) container;
+        }
 
         //    procedure ReadFromStream(const Stream: TStream); virtual;
         //    procedure WriteToStream(const Stream: TStream); virtual;
@@ -243,13 +248,13 @@ namespace VSS.VisionLink.Raptor.Events
             int SecondIdx = 1;
 
             // We only want to collate items generally if they fall between a pair of Start/EndRecordedData events.
-            // The TICEventStartEndRecordedDataChangeList.Collate method overrides this one to collate those
+            // The EventStartEndRecordedDataChangeList.Collate method overrides this one to collate those
             // Start/EndRecordedData events slightly differently.
-            // All other FContainer.FEventStartEndRecordedData should use this method.
-            // This method also relies on the fact that the FContainer.FEventStartEndRecordedData instance should
-            // have been correctly collated BEFORE any of the other FContainer event lists are
-            // collated; this is currently achieved by the fact that TICProductionEventChanges.SaveToFile saves
-            // the FEventStartEndRecordedData list first, indirectly invoking Collate on that list first, before
+            // All other Container.EventStartEndRecordedData should use this method.
+            // This method also relies on the fact that the Container.FEventStartEndRecordedData instance should
+            // have been correctly collated BEFORE any of the other Container event lists are
+            // collated; this is currently achieved by the fact that ProductionEventChanges.SaveToFile saves
+            // the EventStartEndRecordedData list first, indirectly invoking Collate on that list first, before
             // saving the rest of the event lists.
             while (SecondIdx < Count)
             {
@@ -383,7 +388,7 @@ namespace VSS.VisionLink.Raptor.Events
             }
         }
 
-        public string EventChangeListPersistantFileName() => string.Format("Events-{0}-{1}", EventListType.ToString(), "Summary.evt");
+        public string EventChangeListPersistantFileName() => $"{MachineID}-Events-{EventListType}-Summary.evt";
 
         public void SaveToStore(IStorageProxy storageProxy)
         {
