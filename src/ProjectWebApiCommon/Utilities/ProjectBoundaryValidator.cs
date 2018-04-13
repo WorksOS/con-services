@@ -16,7 +16,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 
     private static IEnumerable<Point> ParseBoundaryData(string s, char pointSeparator, char coordSeparator)
     {
-
       string[] pointsArray = s. /*Remove(s.Length - 1).*/Split(pointSeparator);
 
       for (int i = 0; i < pointsArray.Length; i++)
@@ -24,6 +23,18 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
         //gets x and y coordinates split by comma, trims whitespace at pos 0, converts to double array
         var coordinates = pointsArray[i].Trim().Split(coordSeparator).Select(c => double.Parse(c)).ToArray();
         yield return (new Point(coordinates[1], coordinates[0]));
+      }
+    }
+
+    private static IEnumerable<PointLL> ParseBoundaryDataPointLL(string s, char pointSeparator, char coordSeparator)
+    {
+      string[] pointsArray = s. /*Remove(s.Length - 1).*/Split(pointSeparator);
+
+      for (int i = 0; i < pointsArray.Length; i++)
+      {
+        //gets x and y coordinates split by comma, trims whitespace at pos 0, converts to double array
+        var coordinates = pointsArray[i].Trim().Split(coordSeparator).Select(c => double.Parse(c)).ToArray();
+        yield return (new PointLL(coordinates[1], coordinates[0]));
       }
     }
 
@@ -86,13 +97,22 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       return wkt;
     }
 
-    private static IEnumerable<Point> ParseGeometryData(string s)
+    public static IEnumerable<Point> ParseGeometryData(string s)
     {
       foreach (string to_replace in _replacements)
       {
         s = s.Replace(to_replace, string.Empty);
       }
       return ParseBoundaryData(s, ',', ' ');
+    }
+
+    public static IEnumerable<PointLL> ParseGeometryDataPointLL(string s)
+    {
+      foreach (string to_replace in _replacements)
+      {
+        s = s.Replace(to_replace, string.Empty);
+      }
+      return ParseBoundaryDataPointLL(s, ',', ' ');
     }
 
     public static string GetWicketFromPoints(List<Point> points)

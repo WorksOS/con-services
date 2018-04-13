@@ -91,7 +91,7 @@ services:
     depends_on:
       - db      
   db:
-    image: mysql/mysql-server:5.7.15 
+    image: mysql/mysql-server:5.7.15
     command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci] 
     env_file:
      - docker-compose-local.env

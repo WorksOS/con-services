@@ -7,7 +7,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 namespace WebApiTests
 {
   [TestClass]
-  public class ProjectTests
+  public class ProjectV3Tests
   {
     private const string PROJECT_BOUNDARY = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
 
@@ -20,18 +20,6 @@ namespace WebApiTests
       var ts = new TestSupport();
       var projectId = ts.SetLegacyProjectId();
       CreateProject(ts, mysql, projectId, "project 1", ProjectType.Standard);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "LegacyProjectID,Name,ProjectTimezone,StartDate,EndDate", $"{projectId},project 1,New Zealand Standard Time, {ts.FirstEventDate}, {ts.LastEventDate}", ts.ProjectUid);
-    }
-
-    [TestMethod]
-    public void Create_ProjectV2_All_Ok()
-    {
-      var msg = new Msg();
-      msg.Title("projects 1", "Create a project");
-      var mysql = new MySqlHelper();
-      var ts = new TestSupport();
-      var projectId = ts.SetLegacyProjectId();
-      CreateProjectV2(ts, mysql, projectId, "project 1", ProjectType.Standard);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "LegacyProjectID,Name,ProjectTimezone,StartDate,EndDate", $"{projectId},project 1,New Zealand Standard Time, {ts.FirstEventDate}, {ts.LastEventDate}", ts.ProjectUid);
     }
 
@@ -400,9 +388,9 @@ namespace WebApiTests
       var projectId = ts.SetLegacyProjectId();
       CreateProjectAndAssociateWithCustomer(ts, mysql, projectId, "project 24", ProjectType.ProjectMonitoring, 222222222);
       CreateMockCustomer(ts);
-      CreateMockSubscription(ts, ts.FirstEventDate, ts.FirstEventDate.AddYears(1));
+      CreateMockProjectSubscription(ts, ts.FirstEventDate, ts.FirstEventDate.AddYears(1));
       ts.SetSubscriptionUid();
-      CreateMockSubscription(ts, ts.FirstEventDate.AddYears(1).AddDays(1), new DateTime(9999, 12, 31));
+      CreateMockProjectSubscription(ts, ts.FirstEventDate.AddYears(1).AddDays(1), new DateTime(9999, 12, 31));
       var dateRange = FormatProjectDateRangeWebApi(ts);
       var expectedProjects = new[] {
       "| IsArchived | ProjectName  | ProjectTimezone           | ProjectType       | ProjectStartDate | ProjectEndDate | ProjectUID      | ProjectID   | CustomerUID      | LegacyCustomerId | ProjectBoundary | ",
@@ -426,14 +414,14 @@ namespace WebApiTests
       var projectUid2 = ts.ProjectUid;
       var projectId2 = ts.SetLegacyProjectId();
       CreateProjectAndAssociateWithCustomer(ts, mysql, projectId2, "project 25-2", ProjectType.ProjectMonitoring, 222222222);
-      CreateMockSubscription(ts, ts.FirstEventDate, ts.FirstEventDate.AddYears(1));
+      CreateMockProjectSubscription(ts, ts.FirstEventDate, ts.FirstEventDate.AddYears(1));
 
       ts.SetProjectUid();
       var projectUid3 = ts.ProjectUid;
       var projectId3 = ts.SetLegacyProjectId();
       CreateProjectAndAssociateWithCustomer(ts, mysql, projectId3, "project 25-3", ProjectType.LandFill, 222222222);
       ts.SetSubscriptionUid();
-      CreateMockSubscription(ts, ts.FirstEventDate, ts.FirstEventDate.AddYears(1));
+      CreateMockProjectSubscription(ts, ts.FirstEventDate, ts.FirstEventDate.AddYears(1));
       CreateMockCustomer(ts);
 
       var dateRange = FormatProjectDateRangeWebApi(ts);
@@ -455,7 +443,7 @@ namespace WebApiTests
       var projectId = ts.SetLegacyProjectId();
       CreateProjectAndAssociateWithCustomer(ts, mysql, projectId, "project 26", ProjectType.ProjectMonitoring, 222222222);
       CreateMockCustomer(ts);
-      CreateMockSubscription(ts, ts.FirstEventDate.AddYears(-1), ts.FirstEventDate);
+      CreateMockProjectSubscription(ts, ts.FirstEventDate.AddYears(-1), ts.FirstEventDate);
       var dateRange = FormatProjectDateRangeWebApi(ts);
       var expectedProjects = new[] {
       "| IsArchived | ProjectName  | ProjectTimezone           | ProjectType       | ProjectStartDate | ProjectEndDate | ProjectUID      | ProjectID   |  CustomerUID     | LegacyCustomerId |ProjectBoundary | ",
@@ -476,12 +464,6 @@ namespace WebApiTests
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, ts.ProjectUid);
     }
 
-    private void CreateProjectV2(TestSupport ts, MySqlHelper mysql, int projectId, string projectName, ProjectType projectType)
-    {
-      ts.CreateProjectViaWebApiV2(ts.ProjectUid, projectId, projectName, ts.FirstEventDate, ts.LastEventDate, "New Zealand Standard Time", projectType, DateTime.UtcNow, PROJECT_BOUNDARY, HttpStatusCode.OK);
-      mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, ts.ProjectUid);
-    }
-
     private void CreateProjectAndAssociateWithCustomer(TestSupport ts, MySqlHelper mysql, int projectId, string projectName, ProjectType projectType, int customerId)
     {
       CreateProject(ts, mysql, projectId, projectName, projectType);
@@ -489,7 +471,7 @@ namespace WebApiTests
       mysql.VerifyTestResultDatabaseRecordCount("CustomerProject", "fk_ProjectUID", 1, ts.ProjectUid);
     }
 
-    private void CreateMockSubscription(TestSupport ts, DateTime subStartDate, DateTime subEndDate)
+    private void CreateMockProjectSubscription(TestSupport ts, DateTime subStartDate, DateTime subEndDate)
     {
       ts.CreateMockProjectSubscription(ts.ProjectUid.ToString(), ts.SubscriptionUid.ToString(), ts.CustomerUid.ToString(), subStartDate, subEndDate, subStartDate);
     }

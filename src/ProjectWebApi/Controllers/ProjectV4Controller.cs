@@ -31,10 +31,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Logger factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
-
-    private ProjectRequestHelper projectRequestHelper;
-
-
+    
     /// <summary>
     /// 
     /// </summary>
@@ -57,12 +54,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         logger, serviceExceptionHandler, logger.CreateLogger<ProjectV4Controller>())
     {
       this.logger = logger;
-      this.projectRequestHelper = new ProjectRequestHelper(
-        log, configStore, serviceExceptionHandler,
-        customerUid, userId, customHeaders,
-        producer,
-        geofenceProxy, raptorProxy, subscriptionProxy,
-        projectRepo, subscriptionRepo, fileRepo);
     }
 
     #region projects
@@ -175,7 +166,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<CreateProjectExecutor>(logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
-            geofenceProxy, raptorProxy, SubscriptionProxy,
+            geofenceProxy, raptorProxy, subscriptionProxy,
             projectRepo, subscriptionRepo, fileRepo)
           .ProcessAsync(createProjectEvent)
       );
@@ -215,6 +206,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       // validation includes check that project must exist - otherwise there will be a null legacyID.
       ProjectDataValidator.Validate(project, projectRepo);
+      var projectRequestHelper = new ProjectRequestHelper(
+        log, configStore, serviceExceptionHandler,
+        GetCustomerUid(), userId, customHeaders,
+        producer,
+        geofenceProxy, raptorProxy, subscriptionProxy,
+        projectRepo, subscriptionRepo, fileRepo);
       await projectRequestHelper.ValidateCoordSystemInRaptor(project).ConfigureAwait(false);
 
       /*** now making changes, potentially needing rollback ***/

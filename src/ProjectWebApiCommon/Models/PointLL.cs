@@ -7,18 +7,18 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// <summary>
     /// Gets or sets the latitude
     /// </summary>
-    [JsonProperty(PropertyName = "latitude", Required = Required.Always)]
-    public double latitude { get; set; }
+    [JsonProperty(PropertyName = "Latitude", Required = Required.Always)]
+    public double Latitude { get; set; }
     /// <summary>
     /// Gets or sets the longitude
     /// </summary>
-    [JsonProperty(PropertyName = "longitude", Required = Required.Always)]
-    public double longitude { get; set; }
+    [JsonProperty(PropertyName = "Longitude", Required = Required.Always)]
+    public double Longitude { get; set; }
 
     public PointLL(double latitude, double longitude)
     {
-      this.latitude = latitude;
-      this.longitude = longitude;
+      this.Latitude = latitude;
+      this.Longitude = longitude;
     }
   }
 }

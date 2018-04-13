@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
-
-namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
+﻿namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
 {
   /// <summary>
   ///   Defines standard return codes for a contract.
@@ -95,6 +92,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       DynamicAddwithOffset("CreateProjectV2: Missing BusinessCentreFile.", 82);
       DynamicAddwithOffset("CreateProjectV2: Invalid businessCentreFile path.", 83);
       DynamicAddwithOffset("CreateProjectV2: Invalid businessCentreFile fileSpaceId.", 84);
+      DynamicAddwithOffset("CreateProjectV2: Invalid ProjectType. Only ProjectMonitoring type is allowed.", 85);
     }
 
     /// <summary>

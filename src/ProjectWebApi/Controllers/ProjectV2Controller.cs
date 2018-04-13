@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
-using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -17,7 +14,6 @@ using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.TCCFileAccess;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
@@ -34,9 +30,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Logger factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
-
-    private ProjectRequestHelper projectRequestHelper;
-
+    
     /// <summary>
     /// 
     /// </summary>
@@ -58,35 +52,19 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         logger, serviceExceptionHandler, logger.CreateLogger<ProjectV2Controller>())
     {
       this.logger = logger;
-      this.projectRequestHelper = new ProjectRequestHelper(
-        log, configStore, serviceExceptionHandler,
-        customerUid, userId, customHeaders,
-        producer,
-        geofenceProxy, raptorProxy, subscriptionProxy,
-        projectRepo, subscriptionRepo, fileRepo);
     }
 
     #region projects
 
-    ///// <summary>
-    ///// Gets a project for a customer. 
-    ///// </summary>
-    ///// <returns>A project data</returns>
-    // not needed for BCC?
-    //[Route("api/v2/projects/{id}")]
-    //[HttpGet]
-    //public async Task<ProjectV2DescriptorResult> GetProjectV2(long id)
-    //{
-    //  logger.LogInformation("GetProjectV2");
-    //  var project = await GetProject(id).ConfigureAwait(false);
-    //  return AutoMapperUtility.Automapper.Map<ProjectV2DescriptorResult>(project);
-    //}
-
     // POST: api/v2/projects
     /// <summary>
-    /// Update Project
+    /// TBC CreateProject. Footprint must remain the same as CGen: 
+    ///     POST /t/trimble.com/vss-projectmonitoring/1.0/api/v2/projects HTTP/1.1
+    ///     Body: {"CoordinateSystem":{"FileSpaceID":"u927f3be6-7987-4944-898f-42a088da94f2","Path":"/BC Data/Sites/Svevia Vargarda","Name":"Svevia Vargarda.dc","CreatedUTC":"0001-01-01T00:00:00Z"},"ProjectType":2,"StartDate":"2018-04-11T00:00:00Z","EndDate":"2018-05-11T00:00:00Z","ProjectName":"Svevia Vargarda","TimeZoneName":"Romance Standard Time","BoundaryLL":[{"Latitude":58.021890362243404,"Longitude":12.778613775843427},{"Latitude":58.033751276149488,"Longitude":12.783760539866186},{"Latitude":58.035972399195963,"Longitude":12.812762795456051},{"Latitude":58.032604039701752,"Longitude":12.841590546413993},{"Latitude":58.024515931878035,"Longitude":12.842137844178708},{"Latitude":58.016620613589389,"Longitude":12.831491715508857},{"Latitude":58.0128142214101,"Longitude":12.793567555971942},{"Latitude":58.021890362243404,"Longitude":12.778613775843427}],"CustomerUid":"323e4a34-56aa-11e5-a400-0050569757e0","CustomerName":"MERINO CONSTRUCTION"}
+    ///     Result: {"id":6964} 
+    /// 
     /// </summary>
-    /// <param name="projectRequest">UpdateProjectRequest model</param>
+    /// <param name="projectRequest">CreateProjectV2Request model</param>
     /// <remarks>Updates existing project</remarks>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
@@ -98,14 +76,25 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 81);
       }
-
       log.LogInformation("CreateProjectV2. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
 
       var createProjectEvent = MapV2Models.MapCreateProjectV2RequestToEvent(projectRequest, customerUid);
 
       ProjectDataValidator.Validate(createProjectEvent, projectRepo);
-      projectRequest.CoordinateSystem = ProjectDataValidator.ValidateBusinessCentreFile(projectRequest.CoordinateSystem);
+      if (createProjectEvent.ProjectType != ProjectType.ProjectMonitoring)
+      {
+         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 85);
+      }
+
       // get CoordinateSystem file content from TCC
+      projectRequest.CoordinateSystem = ProjectDataValidator.ValidateBusinessCentreFile(projectRequest.CoordinateSystem);
+
+      var projectRequestHelper = new ProjectRequestHelper(
+        log, configStore, serviceExceptionHandler,
+        GetCustomerUid(), userId, customHeaders,
+        producer,
+        geofenceProxy, raptorProxy, subscriptionProxy,
+        projectRepo, subscriptionRepo, fileRepo);
       createProjectEvent.CoordinateSystemFileContent = await projectRequestHelper.GetCoordinateSystemContent(projectRequest.CoordinateSystem).ConfigureAwait(false);
 
       await WithServiceExceptionTryExecuteAsync(() =>
@@ -113,62 +102,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<CreateProjectExecutor>(logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
-            geofenceProxy, raptorProxy, SubscriptionProxy,
+            geofenceProxy, raptorProxy, subscriptionProxy,
             projectRepo, subscriptionRepo, fileRepo)
           .ProcessAsync(createProjectEvent)
       );
 
       log.LogDebug("CreateProjectV2. completed succesfully");
-      return new ContractExecutionResult((int)(HttpStatusCode.Created), string.Format($"{createProjectEvent.ProjectID}"));
+      return CreateProjectV2Result.CreateAProjectV2Result(createProjectEvent.ProjectID);
     }
-
-
-    //// DELETE: api/v2/projects/
-    ///// <summary>
-    ///// Delete Project
-    ///// </summary>
-    ///// <param name="id">legacyProjectId to delete</param>
-    ///// <remarks>Deletes existing project</remarks>
-    ///// <response code="200">Ok</response>
-    ///// <response code="400">Bad request</response>
-    //  not needed for BCC?
-    //[Route("api/v2/projects/{id}")]
-    //[HttpDelete]
-    //public async Task<ContractExecutionResult> DeleteProjectV2([FromUri] long id)
-    //{
-    //  LogCustomerDetails("DeleteProjectV2", id.ToString());
-
-    //  var project = await GetProject(id).ConfigureAwait(false);
-    //  if (project == null)
-    //  { 
-    //    // return new bool(); // todo
-    //    serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, /* 39 todo */ 0);
-    //  }
-
-    //  var deleteProjectEvent = new DeleteProjectEvent
-    //  {
-    //    ProjectUID = Guid.Parse(project.ProjectUID),
-    //    DeletePermanently = false,
-    //    ActionUTC = DateTime.UtcNow,
-    //    ReceivedUTC = DateTime.UtcNow
-    //  };
-    //  // no need to validate as already checked that it exists
-    //  // ProjectDataValidator.Validate(projectToDelete, projectRepo);
-
-    //  var messagePayload = JsonConvert.SerializeObject(new { DeleteProjectEvent = project });
-    //  var isDeleted = await projectRepo.StoreEvent(deleteProjectEvent).ConfigureAwait(false);
-    //  if (isDeleted == 0)
-    //    serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 66);
-
-    //  producer.Send(kafkaTopicName,
-    //    new List<KeyValuePair<string, string>>
-    //    {
-    //      new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
-    //    });
-
-    //  logger.LogInformation("DeleteProjectV2. Completed succesfully");
-    //  return new ContractExecutionResult();
-    //}
 
     #endregion projects
   }

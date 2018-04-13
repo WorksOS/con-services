@@ -14,6 +14,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
     public static CreateProjectEvent MapCreateProjectV2RequestToEvent(CreateProjectV2Request source, string customerUid)
     {
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(source);
+      createProjectEvent.ProjectUID = Guid.NewGuid();
       createProjectEvent.CustomerUID = Guid.Parse(customerUid);
       createProjectEvent.ProjectBoundary = ProjectBoundaryValidator.GetWicketFromPoints(ProjectBoundaryValidator.MakingValidPoints(ConvertPoints(source.BoundaryLL)));
       return createProjectEvent;
@@ -21,7 +22,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 
     private static List<Point> ConvertPoints(List<PointLL> latLngs)
     {
-      return latLngs.ConvertAll<Point>(delegate (PointLL ll) { return new Point(ll.latitude, ll.longitude); });
+      return latLngs.ConvertAll<Point>(delegate (PointLL ll) { return new Point(ll.Latitude, ll.Longitude); });
     }
 
   }

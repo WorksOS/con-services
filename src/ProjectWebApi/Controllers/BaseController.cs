@@ -17,7 +17,6 @@ using VSS.MasterData.Project.WebAPI.Filters;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -166,7 +165,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     /// <returns></returns>
     /// <exception cref="ArgumentException">Incorrect customer uid value.</exception>
-    private string GetCustomerUid()
+    protected string GetCustomerUid()
     {
       if (User is TIDCustomPrincipal principal)
       {

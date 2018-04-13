@@ -20,7 +20,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
      /// <summary>
     /// Gets or sets the subscription proxy.
     /// </summary>
-    protected readonly ISubscriptionProxy SubscriptionProxy;
+    protected readonly ISubscriptionProxy subscriptionProxy;
 
     /// <summary>
     /// Gets or sets the Geofence proxy. 
@@ -71,7 +71,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       : base(log, configStore, serviceExceptionHandler, producer, raptorProxy, projectRepo)
     {
       subscriptionRepo = subscriptionsRepo;
-      this.SubscriptionProxy = subscriptionProxy;
+      this.subscriptionProxy = subscriptionProxy;
       this.geofenceProxy = geofenceProxy;
       this.fileRepo = fileRepo;
     }

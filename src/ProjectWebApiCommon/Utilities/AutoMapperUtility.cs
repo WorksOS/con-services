@@ -100,7 +100,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ActionUTC, opt => opt.UseValue(DateTime.UtcNow))
             .ForMember(dest => dest.ReceivedUTC, opt => opt.UseValue(DateTime.UtcNow))
             .ForMember(dest => dest.ProjectID, opt => opt.UseValue(0))
-            .ForMember(dest => dest.ProjectUID, opt => opt.UseValue(Guid.NewGuid()))
+            .ForMember(dest => dest.ProjectUID, opt => opt.Ignore())
             .ForMember(dest => dest.Description, opt => opt.Ignore());
         }
       );

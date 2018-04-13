@@ -12,7 +12,6 @@ using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.TCCFileAccess;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {

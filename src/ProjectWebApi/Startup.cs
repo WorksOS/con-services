@@ -7,6 +7,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Security.Principal;
 using Microsoft.AspNetCore.Http;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
@@ -81,8 +82,6 @@ namespace VSS.MasterData.Project.WebAPI
       });
 
       // Add framework services.
-      services.AddTransient<IProjectRepository, ProjectRepository>();
-      services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
       services.AddSingleton<IKafka, RdKafkaDriver>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<ISubscriptionProxy, SubscriptionProxy>();

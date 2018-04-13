@@ -14,6 +14,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -448,21 +449,14 @@ namespace TestUtility
     /// <param name="actionUtc">timestamp of the event</param>
     /// <param name="boundary"></param>
     /// <param name="statusCode">expected status code from web api call</param>
-    public void CreateProjectViaWebApiV2(Guid projectUid, int projectId, string name, DateTime startDate, DateTime endDate, string timezone, ProjectType projectType, DateTime actionUtc, string boundary, HttpStatusCode statusCode)
+    public string CreateProjectViaWebApiV2(string name, DateTime startDate, DateTime endDate, string timezone, ProjectType projectType, DateTime actionUtc, string boundary, HttpStatusCode statusCode)
     {
-      CreateProjectEvt = new CreateProjectEvent
-      {
-        ProjectID = projectId,
-        ProjectUID = projectUid,
-        ProjectName = name,
-        ProjectType = projectType,
-        ProjectBoundary = boundary,
-        ProjectStartDate = startDate,
-        ProjectEndDate = endDate,
-        ProjectTimezone = timezone,
-        ActionUTC = actionUtc
-      };
-      CallProjectWebApiV2(CreateProjectEvt, string.Empty, statusCode, "Create", HttpMethod.Post.ToString(), CustomerUid.ToString());
+      var createProjectV2Request = CreateProjectV2Request.CreateACreateProjectV2Request(
+      projectType, startDate, endDate, name, timezone,
+        ProjectBoundaryValidator.ParseGeometryDataPointLL(boundary).ToList(),
+        new BusinessCenterFile() { FileSpaceId = "u3bdc38d-1afe-470e-8c1c-fc241d4c5e01", Name = "CTCTSITECAL.dc", Path = "/BC Data/Sites/Chch Test Site" }
+      );
+      return CallProjectWebApiV2(createProjectV2Request, string.Empty, statusCode, "Create", HttpMethod.Post.ToString(), CustomerUid.ToString());
     }
 
     /// <summary>
@@ -768,10 +762,41 @@ namespace TestUtility
     }
 
     /// <summary>
-    /// Check if the test is being debugged in VS. Set to different endpoind
+    /// Inject the MockSubscription and MockProjectSubscription
     /// </summary>
-    /// <returns></returns>
-    public string GetBaseUri()
+    /// <param name="serviceType"></param>
+    /// <param name="subscriptionUid">Subscription UID</param>
+    /// <param name="customerUid">Customer UID</param>
+    /// <param name="startDate">Start date of the subscription</param>
+    /// <param name="endDate">End date of the subscription</param>
+    public void CreateMockSubscription(ServiceTypeEnum serviceType, string subscriptionUid, string customerUid,
+      DateTime startDate, DateTime endDate)
+    {
+      MockSubscription = new Subscription
+      {
+        SubscriptionUID = subscriptionUid,
+        CustomerUID = customerUid,
+        ServiceTypeID = (int) serviceType,
+        StartDate = startDate,
+        EndDate = endDate,
+        LastActionedUTC = DateTime.UtcNow
+      };
+      var query = $@"INSERT INTO `{TsCfg.dbSchema}`.{"Subscription"} 
+                            (SubscriptionUID,fk_CustomerUID,fk_ServiceTypeID,StartDate,EndDate,LastActionedUTC) VALUES
+                            ('{MockSubscription.SubscriptionUID}','{MockSubscription.CustomerUID}',{
+          MockSubscription.ServiceTypeID
+        },'{MockSubscription.StartDate:yyyy-MM-dd HH}','{MockSubscription.EndDate:yyyy-MM-dd}','{
+          MockSubscription.LastActionedUTC
+        :yyyy-MM-dd HH\:mm\:ss.fffffff}');";
+      var mysqlHelper = new MySqlHelper();
+      mysqlHelper.ExecuteMySqlInsert(TsCfg.DbConnectionString, query);
+    }
+
+    /// <summary>
+      /// Check if the test is being debugged in VS. Set to different endpoind
+      /// </summary>
+      /// <returns></returns>
+      public string GetBaseUri()
     {
       var baseUri = TsCfg.webApiUri;
       if (Debugger.IsAttached || TsCfg.operatingSystem == "Windows_NT")
@@ -1788,7 +1813,7 @@ namespace TestUtility
     /// <param name="customerUid"></param>
     /// <param name="jwt"></param>
     /// <returns></returns>
-    public string CallProjectWebApiV2(IProjectEvent evt, string routeSuffix, HttpStatusCode statusCode, string what, string method = "POST", string customerUid = null, string jwt = null)
+    public string CallProjectWebApiV2(CreateProjectV2Request evt, string routeSuffix, HttpStatusCode statusCode, string what, string method = "POST", string customerUid = null, string jwt = null)
     {
       string configJson;
       if (evt == null)
