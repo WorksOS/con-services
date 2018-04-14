@@ -38,6 +38,7 @@ namespace VSS.VisionLink.Raptor.Events
         Sonic3DChange = 0x0000001B,
         DesignOverride = 0x0000001C,
         LayerOverride = 0x0000001D,
-        TargetCCA = 0x0000001E
+        TargetCCA = 0x0000001E,
+        StartEndRecordedData = 0x0000001F
     }
 }

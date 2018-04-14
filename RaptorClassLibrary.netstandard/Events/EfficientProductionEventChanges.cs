@@ -136,7 +136,7 @@ namespace VSS.VisionLink.Raptor.Events
         /// </summary>
         private void CreateEventLists()
         {
-            StartEndRecordedDataEvents = new EfficientStartEndRecordedDataChangeList(this, MachineID, SiteModel.ID, ProductionEventType.StartRecordedData);
+            StartEndRecordedDataEvents = new EfficientStartEndRecordedDataChangeList(this, MachineID, SiteModel.ID, ProductionEventType.StartEndRecordedData);
             VibrationStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<VibrationState>, VibrationState>(this, MachineID, SiteModel.ID, ProductionEventType.VibrationStateChange);
             AutoVibrationStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<AutoVibrationState>, AutoVibrationState>(this, MachineID, SiteModel.ID, ProductionEventType.AutoVibrationStateChange);
             GPSModeStateEvents = new EfficientProductionEventChangeList<EfficientProductionEventChangeBase<GPSMode>, GPSMode>(this, MachineID, SiteModel.ID, ProductionEventType.GPSModeChange);

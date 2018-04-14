@@ -25,6 +25,39 @@ namespace VSS.VisionLink.Raptor.Events
         //    var Index: Integer): Boolean; overload; override;
         //          protected Compare(Item1, Item2 : Pointer) : Integer; overload; override;
 
+        public int IndexOfClosestEventPriorToDate(DateTime eventDate, ProductionEventType eventType)
+        {
+            if ((Count == 0) || ((Count > 0) && (this[0].Date > eventDate)))
+                return -1;
+
+            bool FindResult = Find(eventDate, out int LastIndex);
+
+            // We're looking for the event prior to the requested date.
+            // If we didn't find an exact match for requested date, then
+            // LastIndex will be the event subsequent to the requested date,
+            // so subtract one from LastIndex to give us the event prior
+            if (!FindResult && LastIndex > 0)
+                LastIndex--;
+
+            while (LastIndex > 0 && this[LastIndex].State != eventType)
+                LastIndex--;
+
+            return LastIndex;
+        }
+
+        public int IndexOfClosestEventSubsequentToDate(DateTime eventDate, ProductionEventType eventType)
+        {
+            if ((Count == 0) || ((Count > 0) && (this[Count - 1].Date < eventDate)))
+                return -1;
+
+            Find(eventDate, out int LastIndex);
+
+            while (LastIndex < Count - 1 && this[LastIndex].State != eventType)
+                LastIndex++;
+
+            return LastIndex;
+        }
+
         /// <summary>
         /// Implements search semantics for paired events where it is important to locate bracketing pairs of
         /// start and stop evnets given a date/time
@@ -116,6 +149,78 @@ namespace VSS.VisionLink.Raptor.Events
 
                 I++;
             }
+        }
+
+        /// <summary>
+        /// Provides business logic for adding start/end production event types where events define contiguous ranges rather
+        /// then singular state changes at points in time
+        /// </summary>
+        /// <param name="Event"></param>
+        /// <returns></returns>
+        public override EfficientProductionEventChangeBase<ProductionEventType> PutValueAtDate(EfficientProductionEventChangeBase<ProductionEventType> Event)
+        {
+            bool ExistingEventFound = Find(Event, out int EventIndex);
+
+            if (ExistingEventFound)
+            {
+                Debug.Assert(this[EventIndex].Date == Event.Date,
+                "Have determined two events are the same but that they have different dates!!!");
+
+                // If we find an event with the same date then delete the existing one and replace it with the new one.
+                bool CorrectInsertLocationIdentified;
+                do
+                {
+                    CorrectInsertLocationIdentified = true;
+
+                    if (ExistingEventFound)
+                    {
+                        // Check is start==start or end==end
+                        if (Event.State == this[EventIndex].State)
+                        {
+                            // If we've got a machine event overriding a machine event or a custom event overriding a custom event
+                            // then delete the existing event.
+                            if (this[EventIndex].IsCustomEvent == Event.IsCustomEvent)
+                            {
+                                if (Event.IsCustomEvent)
+                                {
+                                    // TODO add when logging available
+                                    // SIGLogMessage.Publish(Self, Format('Deleting custom machine event: %s', [Items[EventIndex].ToText]), slmcDebug);
+                                    RemoveAt(EventIndex);
+                                }
+                            }
+                            else
+                            {
+                                if (Event.IsCustomEvent)
+                                {
+                                    // If we've got a custom event with the same date as a machine event
+                                    // then "bump" the custom event's date by a milli-second to ensure it's
+                                    // after the machine event.
+
+                                    Event.Date = Event.Date.AddMilliseconds(1);
+                                    CorrectInsertLocationIdentified = false;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // Ensure 'end' events are placed after 'start' events at the same time
+                            if (this[EventIndex].State == ProductionEventType.StartRecordedData &&
+                                Event.State == ProductionEventType.EndRecordedData)
+                            {
+                                Event.Date = Event.Date.AddMilliseconds(1);
+                                CorrectInsertLocationIdentified = false;
+                            }
+                        }
+                    }
+
+                    ExistingEventFound = Find(Event, out EventIndex);
+                }
+                while (!CorrectInsertLocationIdentified);
+            }
+
+            Insert(EventIndex, Event);
+
+            return Event;
         }
     }
 }

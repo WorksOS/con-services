@@ -29,13 +29,20 @@ namespace VSS.VisionLink.Raptor.Events
         /// </summary>
         public long MachineID { get; set; }
 
+        /// <summary>
+        /// The container of event changes lists for a machine in a project that this event list is a member of
+        /// </summary>
         [NonSerialized]
         public EfficientProductionEventChanges Container;
 
-        // FLastUpdateTimeUTC records the time at which this event change list was last updated
-        // in the persistent store
+        /// <summary>
+        /// Records the time at which this event change list was last updated in the persistent store
+        /// </summary>
         public DateTime LastUpdateTimeUTC { get; set; } = DateTime.MinValue;
 
+        /// <summary>
+        /// The event type this list stores
+        /// </summary>
         private ProductionEventType EventListType { get; set; } = ProductionEventType.Unknown;
 
         private bool eventsListIsOutOfDate;
@@ -152,7 +159,6 @@ namespace VSS.VisionLink.Raptor.Events
             {
                 Date = dateTime,
                 State = value,
-                Type = EventListType
             });
         }
 
@@ -164,12 +170,9 @@ namespace VSS.VisionLink.Raptor.Events
         /// </summary>
         /// <param name="Event"></param>
         /// <returns>The event instance that was added to the list</returns>
-        public T PutValueAtDate(T Event)
+        public virtual T PutValueAtDate(T Event)
         {
             bool ExistingEventFound = Find(Event, out int EventIndex);
-
-            //  if (Event._Type = icmetStartRecordedData) or (Event._Type = icmetEndRecordedData) then
-            //    SIGLOGMessage.PublishNoODS(Self, Format('Adding event %s', [Event.ToText]), slmcMessage); {SKIP}
 
             if (ExistingEventFound)
             {
@@ -184,40 +187,25 @@ namespace VSS.VisionLink.Raptor.Events
 
                     if (ExistingEventFound)
                     {
-                        if (Event.Type == this[EventIndex].Type)
+                        // If we've got a machine event overriding a machine event or a custom event overriding a custom event
+                        // then delete the existing event.
+                        if (this[EventIndex].IsCustomEvent == Event.IsCustomEvent)
                         {
-                            // If we've got a machine event overriding a machine event or a custom event overriding a custom event
-                            // then delete the existing event.
-                            if (this[EventIndex].IsCustomEvent == Event.IsCustomEvent)
-                            {
-                                if (!Event.IsCustomEvent)
-                                {
-                                    if (Event.Type != ProductionEventType.StartRecordedData && Event.Type != ProductionEventType.EndRecordedData)
-                                    {
-                                        // Ignore the event and return the found item
-                                        return this[EventIndex];
-                                    }
-                                }
-                                else
-                                {
-                                    // TODO add when logging available
-                                    // SIGLogMessage.Publish(Self, Format('Deleting custom machine event: %s', [Items[EventIndex].ToText]), slmcDebug);
-                                    RemoveAt(EventIndex);
-                                }
-                            }
-                            else
-                            {
-                                if (Event.IsCustomEvent)
-                                {
-                                    // If we've got a custom event with the same date as a machine event
-                                    // then "bump" the custom event's date by a milli-second to ensure it's
-                                    // after the machine event.
+                            if (!Event.IsCustomEvent)
+                                return this[EventIndex];
 
-                                    Event.Date.AddMilliseconds(1);
+                            // TODO add when logging available
+                            // SIGLogMessage.Publish(Self, Format('Deleting custom machine event: %s', [Items[EventIndex].ToText]), slmcDebug);
+                            RemoveAt(EventIndex);
+                        }
+                        else if (Event.IsCustomEvent)
+                        {
+                            // If we've got a custom event with the same date as a machine event
+                            // then "bump" the custom event's date by a milli-second to ensure it's
+                            // after the machine event.
 
-                                    CorrectInsertLocationIdentified = false;
-                                }
-                            }
+                            Event.Date = Event.Date.AddMilliseconds(1);
+                            CorrectInsertLocationIdentified = false;
                         }
                     }
 
@@ -232,8 +220,18 @@ namespace VSS.VisionLink.Raptor.Events
         }
 
         // public T PutValueAtDate(T Event) => PutValueAtDate(Event);
+
+        /// <summary>
+        /// Inserts an event into the appropriate location (given by the eventDate proprty of the event) 
+        /// </summary>
+        /// <param name="Event"></param>
+        /// <returns></returns>
         public object PutValueAtDate(object Event) => PutValueAtDate((T)Event);
 
+        /// <summary>
+        /// Sets the state of the owning 'container' of event list (the production event changes) that this list is a member of
+        /// </summary>
+        /// <param name="container"></param>
         public void SetContainer(object container)
         {
             Container = (EfficientProductionEventChanges) container;
@@ -249,6 +247,10 @@ namespace VSS.VisionLink.Raptor.Events
         //    function LoadFromFile(const FileName : TFileName) : Boolean; overload;
         //    function SaveToFile(const FileName : TFileName) : Boolean; overload;
 
+        /// <summary>
+        /// Collates a series of events within an event list by aggregating consecutive events where there is no change
+        /// in the underlying event state
+        /// </summary>
         public virtual void Collate()
         {
             bool HaveStartEndEventPair = false;
@@ -306,13 +308,15 @@ namespace VSS.VisionLink.Raptor.Events
         //                         const NumberEvents : Boolean;
         //                         const IncludeFilenameInDump : Boolean);
 
-        public int IndexOfClosestEventPriorToDate(DateTime eventDate,
-                                                 ProductionEventType eventType = ProductionEventType.Unknown)
+        /// <summary>
+        /// Determines the index of the event whose date immediately precedes the given eventData
+        /// </summary>
+        /// <param name="eventDate"></param>
+        /// <returns></returns>
+        public int IndexOfClosestEventPriorToDate(DateTime eventDate)
         {
             if ((Count == 0) || ((Count > 0) && (this[0].Date > eventDate)))
-            {
                 return -1;
-            }
 
             bool FindResult = Find(eventDate, out int LastIndex);
 
@@ -321,39 +325,22 @@ namespace VSS.VisionLink.Raptor.Events
             // LastIndex will be the event subsequent to the requested date,
             // so subtract one from LastIndex to give us the event prior
             if ((!FindResult) && (LastIndex > 0))
-            {
                 LastIndex--;
-            }
-
-            if (eventType != ProductionEventType.Unknown)
-            {
-                while (LastIndex > 0 && this[LastIndex].Type != eventType)
-                {
-                    LastIndex--;
-                }
-            }
 
             return LastIndex;
         }
 
-        public int IndexOfClosestEventSubsequentToDate(DateTime eventDate,
-                                                       ProductionEventType eventType = ProductionEventType.Unknown)
-
+        /// <summary>
+        /// Determines the index of the event whose date immediately follows the given eventData
+        /// </summary>
+        /// <param name="eventDate"></param>
+        /// <returns></returns>
+        public int IndexOfClosestEventSubsequentToDate(DateTime eventDate)
         {
             if ((Count == 0) || ((Count > 0) && (this[Count - 1].Date < eventDate)))
-            {
                 return -1;
-            }
 
             Find(eventDate, out int LastIndex);
-
-            if (LastIndex > -1 && eventType != ProductionEventType.Unknown)
-            {
-                while (LastIndex < Count - 1 && this[LastIndex].Type != eventType)
-                {
-                    LastIndex++;
-                }
-            }
 
             return LastIndex;
         }
@@ -392,6 +379,10 @@ namespace VSS.VisionLink.Raptor.Events
             return (EfficientProductionEventChangeList<T, V>)formatter.Deserialize(reader.BaseStream);
         }
 
+        /// <summary>
+        /// Serialises the contents of the event list using a binary writer
+        /// </summary>
+        /// <param name="stream"></param>
         public void SaveToStream(Stream stream)
         {
             using (BinaryWriter writer = new BinaryWriter(stream, Encoding.UTF8, true))
@@ -402,6 +393,10 @@ namespace VSS.VisionLink.Raptor.Events
 
         public string EventChangeListPersistantFileName() => $"{MachineID}-Events-{EventListType}-Summary.evt";
 
+        /// <summary>
+        /// Serialises the events and stores the serialised represented in the persistent store
+        /// </summary>
+        /// <param name="storageProxy"></param>
         public void SaveToStore(IStorageProxy storageProxy)
         {
             using (MemoryStream MS = new MemoryStream())
@@ -412,6 +407,12 @@ namespace VSS.VisionLink.Raptor.Events
             }
         }
 
+        /// <summary>
+        /// Loads the event list by requesting it's serialised representation from the persistent store and 
+        /// deserialising it into the event list
+        /// </summary>
+        /// <param name="storageProxy"></param>
+        /// <returns></returns>
         public IProductionEventChangeList<T> LoadFromStore(IStorageProxy storageProxy)
         {
             storageProxy.ReadStreamFromPersistentStoreDirect(SiteModelID, EventChangeListPersistantFileName(), FileSystemStreamType.Events, out MemoryStream MS);
@@ -430,6 +431,13 @@ namespace VSS.VisionLink.Raptor.Events
             return this;
         }
 
+        /// <summary>
+        /// Locates and returns the event occurring at or immediately prior to the given eventDate
+        /// </summary>
+        /// <param name="eventDate"></param>
+        /// <param name="stateChangeIndex"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
         public virtual V GetValueAtDate(DateTime eventDate, out int stateChangeIndex, V defaultValue = default(V))
         {
             if (Count == 0)

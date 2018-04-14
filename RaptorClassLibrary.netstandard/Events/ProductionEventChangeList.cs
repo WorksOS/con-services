@@ -144,9 +144,6 @@ namespace VSS.VisionLink.Raptor.Events
 
             bool ExistingEventFound = Find(Event, out EventIndex);
 
-            //  if (Event._Type = icmetStartRecordedData) or (Event._Type = icmetEndRecordedData) then
-            //    SIGLOGMessage.PublishNoODS(Self, Format('Adding event %s', [Event.ToText]), slmcMessage); {SKIP}
-
             if (ExistingEventFound)
             {
                 Debug.Assert(this[EventIndex].Date == Event.Date,
@@ -168,7 +165,7 @@ namespace VSS.VisionLink.Raptor.Events
                             {
                                 if (!Event.IsCustomEvent)
                                 {
-                                    if ((Event.Type != ProductionEventType.StartRecordedData) && (Event.Type != ProductionEventType.EndRecordedData))
+                                    if (Event.Type != ProductionEventType.StartRecordedData && Event.Type != ProductionEventType.EndRecordedData)
                                     {
                                         // Ignore the event and return the found item
                                         return this[EventIndex];
@@ -189,7 +186,7 @@ namespace VSS.VisionLink.Raptor.Events
                                     // then "bump" the custom event's date by a milli-second to ensure it's
                                     // after the machine event.
 
-                                    Event.Date.AddMilliseconds(1);
+                                    Event.Date = Event.Date.AddMilliseconds(1);
 
                                     CorrectInsertLocationIdentified = false;
                                 }
@@ -285,13 +282,10 @@ namespace VSS.VisionLink.Raptor.Events
         //                         const NumberEvents : Boolean;
         //                         const IncludeFilenameInDump : Boolean);
 
-        public int IndexOfClosestEventPriorToDate(DateTime eventDate,
-                                                 ProductionEventType eventType = ProductionEventType.Unknown)
+        public int IndexOfClosestEventPriorToDate(DateTime eventDate)
         {
             if ((Count == 0) || ((Count > 0) && (this[0].Date > eventDate)))
-            {
                 return -1;
-            }
 
             bool FindResult = Find(eventDate, out int LastIndex);
 
@@ -299,40 +293,18 @@ namespace VSS.VisionLink.Raptor.Events
             // If we didn't find an exact match for requested date, then
             // LastIndex will be the event subsequent to the requested date,
             // so subtract one from LastIndex to give us the event prior
-            if ((!FindResult) && (LastIndex > 0))
-            {
+            if (!FindResult && LastIndex > 0)
                 LastIndex--;
-            }
-
-            if (eventType != ProductionEventType.Unknown)
-            {
-                while (LastIndex > 0 && this[LastIndex].Type != eventType)
-                {
-                    LastIndex--;
-                }
-            }
 
             return LastIndex;
         }
 
-        public int IndexOfClosestEventSubsequentToDate(DateTime eventDate,
-                                                 ProductionEventType eventType = ProductionEventType.Unknown)
-
+        public int IndexOfClosestEventSubsequentToDate(DateTime eventDate)
         {
             if ((Count == 0) || ((Count > 0) && (this[Count - 1].Date < eventDate)))
-            {
                 return -1;
-            }
 
             Find(eventDate, out int LastIndex);
-
-            if (LastIndex > -1 && eventType != ProductionEventType.Unknown)
-            {
-                while (LastIndex < Count - 1 && this[LastIndex].Type != eventType)
-                {
-                    LastIndex++;
-                }
-            }
 
             return LastIndex;
         }

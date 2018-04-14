@@ -15,11 +15,6 @@ namespace VSS.VisionLink.Raptor.Events.Interfaces
         bool IsCustomEvent { get; set; }
 
         /// <summary>
-        /// The 'Type' of event, such as machine start or stop. See GetEventType for further informtion.
-        /// </summary>
-        ProductionEventType Type { set; get; }
-
-        /// <summary>
         /// The date/time at which this event occurred.
         /// </summary>
         DateTime Date { set; get; }
@@ -29,6 +24,6 @@ namespace VSS.VisionLink.Raptor.Events.Interfaces
         /// It is assigned the default value for the type. Make sure all enumerated and other types specify an
         /// appropriate default (or null) value
         /// </summary>
-        V State { get; set; } // = default(V);
+        V State { get; set; }
     }
 }

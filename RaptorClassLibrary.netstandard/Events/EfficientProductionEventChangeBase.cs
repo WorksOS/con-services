@@ -21,11 +21,6 @@ namespace VSS.VisionLink.Raptor.Events
         private byte flags;
 
         /// <summary>
-        /// The 'Type' of event, such as machine start or stop. See GetEventType for further informtion.
-        /// </summary>
-        public ProductionEventType Type { get; set; }
-
-        /// <summary>
         /// The date/time at which this event occurred.
         /// </summary>
         public DateTime Date { get; set; }
@@ -35,7 +30,7 @@ namespace VSS.VisionLink.Raptor.Events
         /// It is assigned the default value for the type. Make sure all enumerated and other types specify an
         /// appropriate default (or null) value
         /// </summary>
-        public V State { get; set; } // = default(V);
+        public V State { get; set; }
 
         /// <summary>
         /// Constructor taking the date/time the event occurred.
@@ -74,10 +69,7 @@ namespace VSS.VisionLink.Raptor.Events
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public int CompareTo(EfficientProductionEventChangeBase<V> other)
-        {
-            return Date.CompareTo(other.Date);
-        }
+        public int CompareTo(EfficientProductionEventChangeBase<V> other) => Date.CompareTo(other.Date);
 
         /// <summary>
         /// EquivalentTo defines equivalency between Self and Source defined
@@ -86,9 +78,6 @@ namespace VSS.VisionLink.Raptor.Events
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        public bool EquivalentTo(EfficientProductionEventChangeBase<V> source)
-        {
-            return !IsCustomEvent && !source.IsCustomEvent;
-        }
+        public bool EquivalentTo(EfficientProductionEventChangeBase<V> source) => !IsCustomEvent && !source.IsCustomEvent;
     }
 }
