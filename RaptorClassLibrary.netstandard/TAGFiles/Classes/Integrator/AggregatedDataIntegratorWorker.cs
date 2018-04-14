@@ -198,7 +198,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                             processedTask.AggregatedMachineEvents = null; // FreeAndNil(AggregatedMachineEvents);
                         }
 
-                        Log.Debug($"Aggregation Task Process --> Integrate {ProcessedTasks.Count} cell pass trees");
+                        //Log.Debug($"Aggregation Task Process --> Integrate {ProcessedTasks.Count} cell pass trees");
 
                         // Integrate the cell passes from all cell pass aggregators containing cell passes for this machine and sitemodel
                         if (AnyCellPasses && processedTask.AggregatedCellPasses != null)

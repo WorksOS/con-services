@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using log4net;
 using VSS.VisionLink.Raptor.Events.Interfaces;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.Types;
@@ -14,6 +16,8 @@ namespace VSS.VisionLink.Raptor.Events
     [Serializable]
     public class ProductionEventChangeList<T> : List<T>, IProductionEventChangeList<T> where T : ProductionEventChangeBase, new()
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public long SiteModelID { get; set; }
         public long MachineID { get; set; }
 
@@ -24,7 +28,7 @@ namespace VSS.VisionLink.Raptor.Events
         // in the persistent store
         public DateTime LastUpdateTimeUTC { get; set; } = DateTime.MinValue;
 
-        ProductionEventType EventListType { get; set; } = ProductionEventType.Unknown;
+        public ProductionEventType EventListType { get; } = ProductionEventType.Unknown;
 
         private bool eventsListIsOutOfDate;
 
@@ -211,7 +215,6 @@ namespace VSS.VisionLink.Raptor.Events
             Container = (ProductionEventChanges) container;
         }
 
-
         //    procedure ReadFromStream(const Stream: TStream); virtual;
         //    procedure WriteToStream(const Stream: TStream); virtual;
         //    function SaveToFile : Boolean; overload; Virtual;
@@ -327,7 +330,7 @@ namespace VSS.VisionLink.Raptor.Events
         /// Writes a binary serialisation of the content of the list
         /// </summary>
         /// <param name="writer"></param>
-        public void Write(BinaryWriter writer)
+        private void Write(BinaryWriter writer)
         {
             BinaryFormatter formatter = new BinaryFormatter();
             formatter.Serialize(writer.BaseStream, this);
@@ -337,7 +340,7 @@ namespace VSS.VisionLink.Raptor.Events
         /// Reads a binary serialisation of the content of the list
         /// </summary>
         /// <param name="reader"></param>
-        public static IProductionEventChangeList<T> Read(BinaryReader reader)
+        private static IProductionEventChangeList<T> Read(BinaryReader reader)
         {
             BinaryFormatter formatter = new BinaryFormatter();
             return (ProductionEventChangeList<T>)formatter.Deserialize(reader.BaseStream);
@@ -438,16 +441,6 @@ namespace VSS.VisionLink.Raptor.Events
             }
 
             return defaultValue;
-        }
-
-        /// <summary>
-        /// Reads a binary serialisation of the content of the list
-        /// </summary>
-        /// <param name="reader"></param>
-        public new static IProductionEventChangeList<T> Read(BinaryReader reader)
-        {
-            BinaryFormatter formatter = new BinaryFormatter();
-            return (IProductionEventChangeList<T>)formatter.Deserialize(reader.BaseStream);
         }
     }
 }

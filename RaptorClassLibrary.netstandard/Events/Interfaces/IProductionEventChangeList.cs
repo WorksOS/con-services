@@ -12,6 +12,8 @@ namespace VSS.VisionLink.Raptor.Events.Interfaces
         object PutValueAtDate(object Event);
 
         void SetContainer(object container);
+
+        ProductionEventType EventListType { get; }
     }
 
     public interface IProductionEventChangeList<T> : IProductionEventChangeList

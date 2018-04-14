@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
-using System.Security.Permissions;
+using System.Reflection;
+using log4net;
 using VSS.VisionLink.Raptor.Events.Interfaces;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.SiteModels;
@@ -14,6 +15,8 @@ namespace VSS.VisionLink.Raptor.Events
     /// </summary>
     public class EfficientProductionEventChanges
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         /// <summary>
         /// The SiteModel these events relate to
         /// </summary>
@@ -215,7 +218,9 @@ namespace VSS.VisionLink.Raptor.Events
         public void SaveMachineEventsToPersistentStore(IStorageProxy storageProxy)
         {
             foreach (IProductionEventChangeList list in GetEventLists())
-            {
+            {              
+                Log.Debug($"Saving {list.EventListType} with {list.Count} events for machine {MachineID} in project {SiteModel.ID}");
+
                 list.SaveToStore(storageProxy);
             }
         }

@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using log4net;
 using VSS.VisionLink.Raptor.Events.Interfaces;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.Types;
@@ -19,6 +21,8 @@ namespace VSS.VisionLink.Raptor.Events
     [Serializable]
     public class EfficientProductionEventChangeList<T, V> : List<T>, IProductionEventChangeList<T> where T : struct, IEfficientProductionEventChangeBase<V>
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         /// <summary>
         /// The Site Model to which these events relate
         /// </summary>
@@ -43,7 +47,7 @@ namespace VSS.VisionLink.Raptor.Events
         /// <summary>
         /// The event type this list stores
         /// </summary>
-        private ProductionEventType EventListType { get; set; } = ProductionEventType.Unknown;
+        public ProductionEventType EventListType { get; } = ProductionEventType.Unknown;
 
         private bool eventsListIsOutOfDate;
 
