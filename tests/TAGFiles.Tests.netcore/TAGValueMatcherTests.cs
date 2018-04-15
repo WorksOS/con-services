@@ -1435,7 +1435,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
                     10000000),
                 "Matcher process function returned false");
             Assert.Equal((uint) 10000000, sink.GPSWeekTime);
-            Assert.True(state.HaveSeenATimeValue, "Incorrect value after assignment");
+            Assert.True(state.HaveSeenATimeValue, "Incorrect HaveSeenATimeValue value after time assignment");
+            Assert.False(state.HaveSeenAWeekValue, "Incorrect HaveSeenAWeekValue value after time assignment");
 
             // Test the absolute Week aspect
             Assert.True(matcher.ProcessUnsignedIntegerValue(

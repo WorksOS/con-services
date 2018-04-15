@@ -26,20 +26,18 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Time
                 if (state.HaveSeenATimeValue)
                 {
                     if (!valueSink.ProcessEpochContext())
-                    {
                         return false;
-                    }
                 }
 
                 switch (valueType.Type)
                 {
                     case TAGDataType.t32bitUInt:
-                        //            {$IFDEF DENSE_TAG_FILE_LOGGING}
-                        //            SIGLogProcessMessage.Publish(Self, Format('Time Origin Update: Incremented Time: %d, new Origin: %d, Delta: %d', { SKIP}
-                        //                                                      [FValueSink.GPSWeekTime, Value, Value - FValueSink.GPSWeekTime]), slpmcMessage);
-                        //            {$ENDIF}
+                        // {$IFDEF DENSE_TAG_FILE_LOGGING}
+                        // SIGLogProcessMessage.Publish(Self, Format('Time Origin Update: Incremented Time: %d, new Origin: %d, Delta: %d', { SKIP}
+                        //                                           [FValueSink.GPSWeekTime, Value, Value - FValueSink.GPSWeekTime]), slpmcMessage);
+                        // {$ENDIF}
 
-                        valueSink.GPSWeekTime = value;                                  // Time value is GPS milliseconds since start of week
+                        valueSink.GPSWeekTime = value;                    // Time value is GPS milliseconds since start of week
                         break;
 
                     case TAGDataType.t4bitUInt:
@@ -61,9 +59,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Time
                 }
 
                 valueSink.GPSWeekNumber = (short)value;
+                state.HaveSeenAWeekValue = true;
             }
-
-            state.HaveSeenAWeekValue = true;
 
             // if we have seen both a GPS week and time then we can compute the DataTime
             // value for the value sink
