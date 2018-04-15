@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
 using log4net;
 using VSS.VisionLink.Raptor.Events.Interfaces;
@@ -203,7 +202,6 @@ namespace VSS.VisionLink.Raptor.Events
     /// <param name="machineID"></param>
     public EfficientProductionEventChanges(SiteModel siteModel, long machineID)
         {
-            //  FFileSystem := Nil;
             SiteModel = siteModel;
 
             MachineID = machineID;

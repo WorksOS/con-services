@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Reflection;
+using log4net;
 
 namespace VSS.VisionLink.Raptor.Events
 {
@@ -10,6 +12,8 @@ namespace VSS.VisionLink.Raptor.Events
     [Serializable]
     public class EfficientStartEndRecordedDataChangeList : EfficientSpecificProductionEventChangeList<EfficientProductionEventChangeBase<ProductionEventType>>
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public EfficientStartEndRecordedDataChangeList()
         {
         }
@@ -83,11 +87,7 @@ namespace VSS.VisionLink.Raptor.Events
 
                 if (StartIndex == Count - 1)
                 {
-                    // TODO add when logging available
-                    //                    SIGLogMessage.PublishNoODS(Self,
-                    //                                               Format('FindStartEventPairAtTime located only one event (index:%d) at search time %.6f (%s)', { SKIP}
-                    //                                            [StartIndex, EventDate, FormatDateTime(FormatSettings.LongDateFormat + ' ' + FormatSettings.LongTimeFormat, EventDate)]),
-                    //                                     slmcError);
+                    Log.Error($"FindStartEventPairAtTime located only one event (index:{StartIndex}) at search time {eventDate:6f} {eventDate:o}");
                 }
             }
 
@@ -183,8 +183,7 @@ namespace VSS.VisionLink.Raptor.Events
                             {
                                 if (Event.IsCustomEvent)
                                 {
-                                    // TODO add when logging available
-                                    // SIGLogMessage.Publish(Self, Format('Deleting custom machine event: %s', [Items[EventIndex].ToText]), slmcDebug);
+                                    Log.Debug($"Deleting custom machine event: {this[EventIndex]}");
                                     RemoveAt(EventIndex);
                                 }
                             }

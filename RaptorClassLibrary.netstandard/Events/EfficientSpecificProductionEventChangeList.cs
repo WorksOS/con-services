@@ -28,6 +28,7 @@ namespace VSS.VisionLink.Raptor.Events
         {
         }
 
+        /*
         /// <summary>
         /// Reads a binary serialisation of the content of the list
         /// </summary>
@@ -37,5 +38,6 @@ namespace VSS.VisionLink.Raptor.Events
             BinaryFormatter formatter = new BinaryFormatter();
             return (EfficientSpecificProductionEventChangeList<T>)formatter.Deserialize(reader.BaseStream);
         }
+        */
     }
 }

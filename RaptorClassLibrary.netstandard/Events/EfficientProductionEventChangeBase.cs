@@ -79,5 +79,11 @@ namespace VSS.VisionLink.Raptor.Events
         /// <param name="source"></param>
         /// <returns></returns>
         public bool EquivalentTo(EfficientProductionEventChangeBase<V> source) => !IsCustomEvent && !source.IsCustomEvent;
+
+        /// <summary>
+        /// provide a human readable string representation of the content of the event
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString() => $"Date:{Date:O}, State:{State}, flags:{flags}";
     }
 }
