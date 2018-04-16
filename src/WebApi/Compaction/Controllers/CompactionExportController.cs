@@ -64,63 +64,42 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       this.transferProxy = transferProxy;
     }
 
+    #region Schedule Veta Export
     /// <summary>
-    /// Gets an export of 3D project data in .TTM file format report.
+    /// Schedules the veta export job and returns JobId.
     /// </summary>
-    /// <param name="projectUid">Project unique identifier.</param>
-    /// <param name="fileName">Output file name.</param>
-    /// <param name="tolerance">Controls triangulation density in the output .TTM file.</param>
-    /// <param name="filterUid">The filter Uid to apply to the export results</param>
-    /// <returns>An instance of the ExportResult class.</returns>
+    /// <param name="projectUid">The project uid.</param>
+    /// <param name="fileName">Name of the file.</param>
+    /// <param name="machineNames">The machine names.</param>
+    /// <param name="filterUid">The filter uid.</param>
+    /// <param name="scheduler">The scheduler.</param>
     [ProjectUidVerifier]
-    [Route("api/v2/export/surface")]
+    [Route("api/v2/export/veta/schedulejob")]
     [HttpGet]
-    public async Task<ExportResult> GetExportReportSurface(
+    public ScheduleResult ScheduleVetaJob(
       [FromQuery] Guid projectUid,
       [FromQuery] string fileName,
-      [FromQuery] double? tolerance,
-      [FromQuery] Guid? filterUid)
+      [FromQuery] string machineNames,
+      [FromQuery] Guid? filterUid,
+      [FromServices] ISchedulerProxy scheduler)
     {
-      const double surfaceExportTollerance = 0.05;
-
-      Log.LogInformation("GetExportReportSurface: " + Request.QueryString);
-
-      var project = await (User as RaptorPrincipal).GetProject(projectUid);
-      var projectSettings = await GetProjectSettingsTargets(projectUid);
-      var filter = await GetCompactionFilter(projectUid, filterUid);
-      var userPreferences = await GetUserPreferences();
-
-      tolerance = tolerance ?? surfaceExportTollerance;
-
-      var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
-          .ProjectId(project.LegacyProjectId)
-          .Headers(this.CustomHeaders)
-          .ProjectSettings(projectSettings)
-          .Filter(filter))
-        .SetUserPreferences(userPreferences)
-        .SetRaptorClient(raptorClient)
-        .SetProjectDescriptor(project)
-        .CreateExportRequest(
-          null, //startUtc,
-          null, //endUtc,
-          CoordTypes.ptNORTHEAST,
-          ExportTypes.kSurfaceExport,
-          fileName,
-          false,
-          false,
-          OutputTypes.etVedaAllPasses,
-          string.Empty,
-          tolerance.Value);
-
-      exportRequest.Validate();
-
-      return WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainerFactory
-          .Build<CompactionExportExecutor>(LoggerFactory, raptorClient, null, this.ConfigStore)
-          .Process(exportRequest) as ExportResult
-      );
+      //The URL to get the export data is here in this controller, construct it based on this request
+      var exportDataUrl = $"{HttpContext.Request.Scheme}//{HttpContext.Request.Host}/export/veta?projectUid={projectUid}&fileName={fileName}&machineNames={machineNames}";
+      if (filterUid.HasValue)
+      {
+        exportDataUrl = $"{exportDataUrl}&filterUid={filterUid}";
+      }
+      exportDataUrl = $"\"{exportDataUrl}\"";
+      return
+        WithServiceExceptionTryExecute(() => new ScheduleResult
+        {
+          JobId =
+            scheduler.ScheduleExportJob(exportDataUrl, Request.Headers.GetCustomHeaders(true)).Result?.jobId
+        });
     }
-
+    #endregion
+    /*
+    #region Export To Veta - long running downloads (old)
     /// <summary>
     /// Tries to get export status.
     /// </summary>
@@ -204,7 +183,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/export/veta/schedulejob")]
     [HttpGet]
-    public ScheduleResult ScheduleVetaJob([FromQuery] Guid projectUid,
+    public ScheduleResult ScheduleVetaJobOld([FromQuery] Guid projectUid,
       [FromQuery] string fileName,
       [FromQuery] string machineNames,
       [FromQuery] Guid? filterUid,
@@ -218,7 +197,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
               Request.Headers.GetCustomHeaders(true)).Result?.jobId
         });
     }
-
+    #endregion
+  */
+    #region Exports
     /// <summary>
     /// Gets an export of production data in cell grid format report for import to VETA.
     /// </summary>
@@ -331,6 +312,66 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       );
     }
 
+
+    /// <summary>
+    /// Gets an export of 3D project data in .TTM file format report.
+    /// </summary>
+    /// <param name="projectUid">Project unique identifier.</param>
+    /// <param name="fileName">Output file name.</param>
+    /// <param name="tolerance">Controls triangulation density in the output .TTM file.</param>
+    /// <param name="filterUid">The filter Uid to apply to the export results</param>
+    /// <returns>An instance of the ExportResult class.</returns>
+    [ProjectUidVerifier]
+    [Route("api/v2/export/surface")]
+    [HttpGet]
+    public async Task<ExportResult> GetExportReportSurface(
+      [FromQuery] Guid projectUid,
+      [FromQuery] string fileName,
+      [FromQuery] double? tolerance,
+      [FromQuery] Guid? filterUid)
+    {
+      const double surfaceExportTollerance = 0.05;
+
+      Log.LogInformation("GetExportReportSurface: " + Request.QueryString);
+
+      var project = await (User as RaptorPrincipal).GetProject(projectUid);
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
+      var filter = await GetCompactionFilter(projectUid, filterUid);
+      var userPreferences = await GetUserPreferences();
+
+      tolerance = tolerance ?? surfaceExportTollerance;
+
+      var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
+          .ProjectId(project.LegacyProjectId)
+          .Headers(this.CustomHeaders)
+          .ProjectSettings(projectSettings)
+          .Filter(filter))
+        .SetUserPreferences(userPreferences)
+        .SetRaptorClient(raptorClient)
+        .SetProjectDescriptor(project)
+        .CreateExportRequest(
+          null, //startUtc,
+          null, //endUtc,
+          CoordTypes.ptNORTHEAST,
+          ExportTypes.kSurfaceExport,
+          fileName,
+          false,
+          false,
+          OutputTypes.etVedaAllPasses,
+          string.Empty,
+          tolerance.Value);
+
+      exportRequest.Validate();
+
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainerFactory
+          .Build<CompactionExportExecutor>(LoggerFactory, raptorClient, null, this.ConfigStore)
+          .Process(exportRequest) as ExportResult
+      );
+    }
+    #endregion
+
+    #region privates
     /// <summary>
     /// Get user preferences
     /// </summary>
@@ -370,5 +411,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return new Tuple<DateTime, DateTime>(filter.StartUtc.Value, filter.EndUtc.Value);
     }
+    #endregion
   }
 }
