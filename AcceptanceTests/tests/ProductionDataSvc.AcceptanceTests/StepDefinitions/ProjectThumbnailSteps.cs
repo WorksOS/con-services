@@ -2,11 +2,7 @@
 using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using TechTalk.SpecFlow;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
@@ -15,8 +11,6 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
   public class ProjectThumbnailSteps
   {
     private string uri;
-    private string projectUid;
-    private string filterUid;
     private string responseRepositoyFileName;
     private Getter<TileResult> tileRequester;
 
