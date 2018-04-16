@@ -30,6 +30,7 @@
     <Content Remove="Json\Filters\DimensionsBoundaryMDPAsAtToday.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101First.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101Last.json" />
+    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterNoDates.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterNoLatLonToday.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterNoLatLonYesterday.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterNull20121101.json" />
@@ -76,6 +77,7 @@
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtents.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtentsEarliest.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtentsLatest.json" />
+    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterNoDates.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterToday.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterYesterday.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesTemperature.json" />
