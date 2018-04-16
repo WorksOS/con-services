@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Hangfire;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -16,15 +17,61 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
   public class ExportController : Controller
   {
     private IVetaExportJob vetaExportJob;
+    private IExportJob exportJob;
+    protected readonly ILogger log;
+
 
     /// <summary>
-    /// Constrictor with dependency injection
+    /// Constructor with dependency injection
     /// </summary>
-    public ExportController(IVetaExportJob vetaExport)
+    public ExportController(IVetaExportJob vetaExport, ILoggerFactory loggerFactory, IExportJob exportJob)
     {
-      vetaExportJob = vetaExport;
+      log = loggerFactory.CreateLogger<ExportController>();
+      this.vetaExportJob = vetaExport;
+      this.exportJob = exportJob;
     }
-    
+
+    /// <summary>
+    /// Schedule an export
+    /// </summary>
+    /// <param name="exportDataUrl">URL to call to get the data for export</param>
+    /// <returns></returns>
+    [Route("api/v1/export")]
+    [HttpPost]
+    public ScheduleJobResult StartExport([FromBody] string exportDataUrl)
+    {
+      log.LogInformation($"StartExport: {exportDataUrl}");
+      var jobId = BackgroundJob.Enqueue(() => exportJob.GetExportData(
+        exportDataUrl, Request.Headers.GetCustomHeaders(true), null));
+      //Hangfire will substitute a PerformContext automatically
+      return new ScheduleJobResult { jobId = jobId };
+    }
+
+    /// <summary>
+    /// Get the status of an export
+    /// </summary>
+    /// <param name="jobId">The job id</param>
+    /// <returns>The AWS S3 key where the file has been saved and the current state of the job</returns>
+    [Route("api/v1/export/{jobId}")]
+    [HttpGet]
+    public JobStatusResult GetExportJobStatus(string jobId)
+    {
+      log.LogInformation($"GetExportJobStatus: {jobId}");
+
+      var status = JobStorage.Current.GetMonitoringApi().JobDetails(jobId)?.History.LastOrDefault()?.StateName;
+      if (string.IsNullOrEmpty(status))
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            $"Missing job details for {jobId}"));
+      }
+      log.LogInformation($"GetExportJobStatus: {jobId} status={status}");
+
+      return new JobStatusResult { key = jobId, status = status };//TODO: Update key if S3 key changes
+    }
+
+    /*
+    #region Export to Veta (old)
     /// <summary>
     /// Schedule a veta export
     /// </summary>
@@ -46,7 +93,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       var jobId = BackgroundJob.Enqueue(() => vetaExportJob.ExportDataToVeta(
         projectUid, fileName, machineNames, filterUid, Request.Headers.GetCustomHeaders(true), null));
       //Hangfire will substitute a PerformContext automatically
-      return new ScheduleJobResult {jobId = jobId };
+      return new ScheduleJobResult { jobId = jobId };
     }
 
     /// <summary>
@@ -69,6 +116,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       var customHeaders = Request.Headers.GetCustomHeaders(true);
       return new JobStatusResult{key = VetaExportJob.GetS3Key(customHeaders["X-VisionLink-CustomerUid"], projectUid, jobId), status = status};
     }
-
+    #endregion
+    */
   }
 }
