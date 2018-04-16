@@ -212,7 +212,8 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             SubGridCellPassesDataSegment segment = subGrid.Cells.PassesData[0];
 
             // Check cleacing is not permitted if the owning subgrid is not locked
-            Assert.False(subGrid.Cells.CleaveSegment(segment), "Segment managed to cleave with no active subgrid lock");
+            // Lock requirement currently removed
+            //Assert.False(subGrid.Cells.CleaveSegment(segment), "Segment managed to cleave with no active subgrid lock");
 
             // Instruct the segment container to cleave the segment, locking the owner while it occurs
             subGrid.AcquireLock(0);
