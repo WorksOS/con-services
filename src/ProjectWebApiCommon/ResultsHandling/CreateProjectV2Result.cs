@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.Net;
+using System.Security.Permissions;
+using Newtonsoft.Json;
 
 namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
 {
@@ -8,7 +10,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
     /// The projectId
     /// </summary>
     [JsonProperty(PropertyName = "id")]
-    public long projectId { get;  set; }
+    public long id { get;  set; }
     
     /// <summary>
     /// Private constructor
@@ -18,14 +20,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
 
 
     /// <summary>
-    /// ProjectSettingsResult create instance
+    /// CreateAProjectV2Result create instance
     /// </summary>
     /// <returns></returns>
-    public static CreateProjectV2Result CreateAProjectV2Result(int projectId)
+    public static CreateProjectV2Result CreateAProjectV2Result(HttpStatusCode code, int projectId)
     {
       return new CreateProjectV2Result
       {
-        projectId = projectId
+        Code = (int) code,
+        id = projectId
       };
     }
     

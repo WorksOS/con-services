@@ -1,5 +1,5 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -72,7 +72,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// TBC CreateProject. Footprint must remain the same as CGen: 
     ///     POST /t/trimble.com/vss-projectmonitoring/1.0/api/v2/projects HTTP/1.1
     ///     Body: {"CoordinateSystem":{"FileSpaceID":"u927f3be6-7987-4944-898f-42a088da94f2","Path":"/BC Data/Sites/Svevia Vargarda","Name":"Svevia Vargarda.dc","CreatedUTC":"0001-01-01T00:00:00Z"},"ProjectType":2,"StartDate":"2018-04-11T00:00:00Z","EndDate":"2018-05-11T00:00:00Z","ProjectName":"Svevia Vargarda","TimeZoneName":"Romance Standard Time","BoundaryLL":[{"Latitude":58.021890362243404,"Longitude":12.778613775843427},{"Latitude":58.033751276149488,"Longitude":12.783760539866186},{"Latitude":58.035972399195963,"Longitude":12.812762795456051},{"Latitude":58.032604039701752,"Longitude":12.841590546413993},{"Latitude":58.024515931878035,"Longitude":12.842137844178708},{"Latitude":58.016620613589389,"Longitude":12.831491715508857},{"Latitude":58.0128142214101,"Longitude":12.793567555971942},{"Latitude":58.021890362243404,"Longitude":12.778613775843427}],"CustomerUid":"323e4a34-56aa-11e5-a400-0050569757e0","CustomerName":"MERINO CONSTRUCTION"}
-    ///     Result: {"id":6964} 
+    ///     Result: HttpStatusCode.Created
+    ///            {"id":6964} 
     /// 
     /// </summary>
     /// <param name="projectRequest">CreateProjectV2Request model</param>
@@ -108,6 +109,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         producer,
         geofenceProxy, raptorProxy, subscriptionProxy,
         projectRepo, subscriptionRepo, fileRepo);
+
       createProjectEvent.CoordinateSystemFileContent = await projectRequestHelper
         .GetCoordinateSystemContent(projectRequest.CoordinateSystem).ConfigureAwait(false);
 
@@ -122,7 +124,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       );
 
       log.LogDebug("CreateProjectV2. completed succesfully");
-      return CreateProjectV2Result.CreateAProjectV2Result(createProjectEvent.ProjectID);
+      return CreateProjectV2Result.CreateAProjectV2Result(HttpStatusCode.Created, createProjectEvent.ProjectID);
     }
 
     #endregion projects
@@ -138,7 +140,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Footprint must remain the same as CGen: 
     ///     POST /t/trimble.com/vss-projectmonitoring/1.0/api/v2/preferences/tcc HTTP/1.1
     ///     Body: {"organization":"vssnz19"}     
-    ///     Response: {"success":true}
+    ///     Response: HttpStatusCode.OK
+    ///                {"success":true}
     /// 
     /// Happy path only to be handled at this point.
     /// However this is a faillure Response:
@@ -172,22 +175,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .ProcessAsync(tccAuthorizationRequest)
       );
 
-      //
-      // FileRepository.ListOrganizations()
-      //      ? organization == shortName in list of Organizations?
-      //      ? does it have a filespaceId?
-      //      use orgId to validate following?
-
-      //ValidateCustomerRepo 
-      //   GetCustomerWithTccOrg(customerUid())
-
-      // NGen:
-      //  customerUid from RequestHeader
-      //  organization is valid string: "vssnz19"
-      //  validate in our database: CustomerTccOrg
-
-      log.LogDebug("ValidateTccAuthorization. completed succesfully");
-      return new ContractExecutionResult((int) (HttpStatusCode.Created), string.Format("\"success\":true"));
+      log.LogInformation("ValidateTccAuthorization. completed succesfully");
+      return new ContractExecutionResult((int)HttpStatusCode.OK, "\"success\":true");
     }
 
     #endregion TTCAuthorization
@@ -199,6 +188,5 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     //Body: {"ImportedFileTypeID":1,"AlignmentFile":null,"SurfaceFile":{"SurveyedUTC":"2018-03-21T20:18:13.9631923Z"},"LineworkFile":null,"MassHaulPlanFile":null,"FileSpaceID":"u927f3be6-7987-4944-898f-42a088da94f2","Path":"/BC Data/Sites/Test  Create/Designs/TBC","Name":"Cell 9 inter 092717 switchback 112917.ttm","CreatedUTC":"2018-04-11T00:22:11.0266872Z"}
 
     #endregion FileImport
-
   }
 }

@@ -2,14 +2,10 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
-using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.TCCFileAccess.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -61,8 +57,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
         try
         {
-          var customerTccOrg = await customerRepo.GetCustomerWithTccOrg(customerUid);
-          if (customerTccOrg == null || string.Equals(customerTccOrg.TCCOrgID, tccOrganization.orgId, StringComparison.OrdinalIgnoreCase))
+          var customerTccOrg = await customerRepo.GetCustomerWithTccOrg(Guid.Parse(customerUid));
+          if (customerTccOrg == null || !string.Equals(customerTccOrg.TCCOrgID, tccOrganization.orgId, StringComparison.OrdinalIgnoreCase))
           {
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 91);
           }

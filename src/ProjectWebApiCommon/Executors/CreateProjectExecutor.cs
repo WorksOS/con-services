@@ -20,7 +20,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>
-    /// <returns>a ProjectSettingsResult if successful</returns>     
+    /// <returns>a ContractExecutionResult if successful</returns>     
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       CreateProjectEvent createProjectEvent = item as CreateProjectEvent;

@@ -30,6 +30,12 @@
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.16.*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="System.Net.Http.Formatting">
+      <HintPath>..\..\..\..\..\Users\jwalter\.nuget\packages\microsoft.aspnet.webapi.client\5.2.2\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>

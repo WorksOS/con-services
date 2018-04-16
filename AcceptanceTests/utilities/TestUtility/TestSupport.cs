@@ -13,6 +13,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Microsoft.AspNetCore.Mvc;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Repositories.DBModels;
@@ -456,8 +457,38 @@ namespace TestUtility
         ProjectBoundaryValidator.ParseGeometryDataPointLL(boundary).ToList(),
         new BusinessCenterFile() { FileSpaceId = "u3bdc38d-1afe-470e-8c1c-fc241d4c5e01", Name = "CTCTSITECAL.dc", Path = "/BC Data/Sites/Chch Test Site" }
       );
-      return CallProjectWebApiV2(createProjectV2Request, string.Empty, statusCode, "Create", HttpMethod.Post.ToString(), CustomerUid.ToString());
+      string requestJson;
+      if (createProjectV2Request == null)
+      {
+        requestJson = null;
+      }
+      else
+      {
+        requestJson = JsonConvert.SerializeObject(createProjectV2Request, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      }
+      return CallProjectWebApiV2(requestJson, string.Empty, "api/v2/projects/", statusCode, "Create", HttpMethod.Post.ToString(), CustomerUid.ToString());
     }
+
+    /// <summary>
+    /// Validate the TBC orgShortName for this customer via the web api. 
+    /// </summary>
+    /// <param name="orgShortName"></param>
+    /// <param name="statusCode">expected status code from web api call</param>
+    public string ValidateTbcOrgIdApiV2(string orgShortName, HttpStatusCode statusCode)
+    {
+      var validateTccAuthorizationRequest = ValidateTccAuthorizationRequest.CreateValidateTccAuthorizationRequest(orgShortName);
+      string requestJson;
+      if (validateTccAuthorizationRequest == null)
+      {
+        requestJson = null;
+      }
+      else
+      {
+        requestJson = JsonConvert.SerializeObject(validateTccAuthorizationRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      }
+      return CallProjectWebApiV2(requestJson, string.Empty, "api/v2/preferences/tcc", statusCode, "Create", HttpMethod.Post.ToString(), CustomerUid.ToString());
+    }
+
 
     /// <summary>
     /// Call web api version 3
@@ -762,7 +793,7 @@ namespace TestUtility
     }
 
     /// <summary>
-    /// Inject the MockSubscription and MockProjectSubscription
+    /// Inject the MockSubscription
     /// </summary>
     /// <param name="serviceType"></param>
     /// <param name="subscriptionUid">Subscription UID</param>
@@ -793,10 +824,26 @@ namespace TestUtility
     }
 
     /// <summary>
-      /// Check if the test is being debugged in VS. Set to different endpoind
-      /// </summary>
-      /// <returns></returns>
-      public string GetBaseUri()
+    /// Inject the MockSubscription
+    /// </summary>
+    /// <param name="orgId"></param>
+    /// <param name="customerUid">Customer UID</param>
+    public void CreateMockCustomerTbcOrgId(string orgId, string customerUid)
+    {
+      var lastActionedUtc = DateTime.UtcNow;
+
+      var query = $@"INSERT INTO `{TsCfg.dbSchema}`.{"CustomerTccOrg"} 
+                            (CustomerUID,TCCOrgID,LastActionedUTC) VALUES
+                            ('{customerUid}','{orgId}','{lastActionedUtc:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
+      var mysqlHelper = new MySqlHelper();
+      mysqlHelper.ExecuteMySqlInsert(TsCfg.DbConnectionString, query);
+    }
+
+    /// <summary>
+    /// Check if the test is being debugged in VS. Set to different endpoind
+    /// </summary>
+    /// <returns></returns>
+    public string GetBaseUri()
     {
       var baseUri = TsCfg.webApiUri;
       if (Debugger.IsAttached || TsCfg.operatingSystem == "Windows_NT")
@@ -1807,28 +1854,23 @@ namespace TestUtility
     /// <summary>
     /// Call the version 2 of the web api - used for BCC integration
     /// </summary>
+    /// <param name="requestJson"></param>
     /// <param name="routeSuffix"></param>
+    /// <param name="what"></param>
     /// <param name="method"></param>
-    /// <param name="configJson"></param>
     /// <param name="customerUid"></param>
     /// <param name="jwt"></param>
+    /// <param name="endPoint"></param>
+    /// <param name="statusCode"></param>
     /// <returns></returns>
-    public string CallProjectWebApiV2(CreateProjectV2Request evt, string routeSuffix, HttpStatusCode statusCode, string what, string method = "POST", string customerUid = null, string jwt = null)
+    public string CallProjectWebApiV2(string requestJson, string routeSuffix, string endPoint, HttpStatusCode statusCode, string what, string method = "POST", string customerUid = null, string jwt = null)
     {
-      string configJson;
-      if (evt == null)
-      {
-        configJson = null;
-      }
-      else
-      {
-        configJson = JsonConvert.SerializeObject(evt, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      }
-      var uri = GetBaseUri() + "api/v2/projects/" + routeSuffix;
+      var uri = GetBaseUri() + endPoint + routeSuffix;
       var restClient = new RestClientUtil();
-      var response = restClient.DoHttpRequest(uri, method, configJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
+      var response = restClient.DoHttpRequest(uri, method, requestJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
       return response;
     }
+
     #endregion
   }
 }
