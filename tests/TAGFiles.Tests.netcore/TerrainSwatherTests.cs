@@ -20,7 +20,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather.Tests
             var grid = new ServerSubGridTree(siteModel);
             var fence = new Fence();
             var SiteModelGridAggregator = new ServerSubGridTree(siteModel);
-            var MachineTargetValueChangesAggregator = new EfficientProductionEventChanges(siteModel, long.MaxValue);
+            var MachineTargetValueChangesAggregator = new ProductionEventLists(siteModel, long.MaxValue);
             var processor = new TAGProcessor(siteModel, machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
 
             TerrainSwather swather = new TerrainSwather(processor, MachineTargetValueChangesAggregator, siteModel, grid, machine.ID, fence);
@@ -37,7 +37,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather.Tests
             var machine = new Machine();
             var grid = new ServerSubGridTree(siteModel);
             var SiteModelGridAggregator = new ServerSubGridTree(siteModel);
-            var MachineTargetValueChangesAggregator = new EfficientProductionEventChanges(siteModel, long.MaxValue);
+            var MachineTargetValueChangesAggregator = new ProductionEventLists(siteModel, long.MaxValue);
             var processor = new TAGProcessor(siteModel, machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
 
             var fence = new Fence();

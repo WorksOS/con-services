@@ -4,6 +4,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace VSS.VisionLink.Raptor.Events
 {
+    /*
     /// <summary>
     /// Defines a base class for event lists that contain specific business logic governing their behaviour such as machine start
     /// stop and data recording start end events.
@@ -37,4 +38,5 @@ namespace VSS.VisionLink.Raptor.Events
             return (SpecificProductionEventChangeList<T>)formatter.Deserialize(reader.BaseStream);
         }
     }
+*/
 }

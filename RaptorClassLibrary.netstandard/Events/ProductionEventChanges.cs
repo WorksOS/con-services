@@ -6,6 +6,7 @@ using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.Events
 {
+/*
     /// <summary>
     /// A wrapper for all the event information related to a particular machine's activities within a particular
     /// site model.
@@ -247,4 +248,5 @@ namespace VSS.VisionLink.Raptor.Events
             return true;
         }
     }
+*/
 }

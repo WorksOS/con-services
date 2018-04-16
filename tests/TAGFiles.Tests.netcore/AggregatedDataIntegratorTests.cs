@@ -25,7 +25,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator.Tests
             Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
             ISubGridFactory factory = new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>();
             ServerSubGridTree tree = new ServerSubGridTree(siteModel);
-            EfficientProductionEventChanges events = new EfficientProductionEventChanges(siteModel, machine.ID);
+            ProductionEventLists events = new ProductionEventLists(siteModel, machine.ID);
 
             integrator.AddTaskToProcessList(siteModel, machine, tree, 0, events);
 

@@ -95,9 +95,7 @@ namespace VSS.VisionLink.Raptor.Executors
                 ReadResult = TagFile.Read(Reader, Sink);
 
                 if (ReadResult != TAGReadResult.NoError)
-                {
                     return false;
-                }
 
                 SetPublishedState(Processor);
             }

@@ -3,6 +3,7 @@ using VSS.VisionLink.Raptor.Interfaces;
 
 namespace VSS.VisionLink.Raptor.Events.Interfaces
 {
+    /*
     public interface IEfficientProductionEventChangeList : IList
 
     {
@@ -13,4 +14,5 @@ namespace VSS.VisionLink.Raptor.Events.Interfaces
     void SaveToStore(IStorageProxy storageProxy);
     IEfficientProductionEventChangeList LoadFromStore(IStorageProxy storageProxy);
     }
+    */
 }

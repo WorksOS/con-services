@@ -65,7 +65,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
         // that record how the cofigured target CCV and pass count settings on each
         // machine has changed over time.
         [NonSerialized]
-        public EfficientMachinesTargetValuesList MachinesTargetValues;
+        public /*EfficientMachinesTargetValuesList*/ MachinesProductionEventLists MachinesTargetValues;
 
         private SiteModelDesignList siteModelDesigns = new SiteModelDesignList();
 
@@ -131,7 +131,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
             // FCreationDate:= Now;
             // FMarkedForRemoval:= False;
 
-            MachinesTargetValues = new EfficientMachinesTargetValuesList(this);
+            MachinesTargetValues = new MachinesProductionEventLists(this); //EfficientMachinesTargetValuesList(this);
 
             // FName:= Format('SiteModel-%d', [AID]);
             // FDescription:= '';

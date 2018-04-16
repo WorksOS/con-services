@@ -5,7 +5,7 @@ using VSS.VisionLink.Raptor.Events;
 
 namespace VSS.VisionLink.Raptor.Events.Interfaces
 {
-    public interface IEfficientProductionEventChangeBase<V>
+/*    public interface IEfficientProductionEventChangeBase<V>
     {
         /// <summary>
         /// Defines whether this event is a custom event, ie: an event that was not recorded by a machine but which has been 
@@ -25,5 +25,10 @@ namespace VSS.VisionLink.Raptor.Events.Interfaces
         /// appropriate default (or null) value
         /// </summary>
         V State { get; set; }
+
+        byte Flags { get; set; }
+
+        bool EquivalentTo(IEfficientProductionEventChangeBase<V> source);
     }
+*/
 }

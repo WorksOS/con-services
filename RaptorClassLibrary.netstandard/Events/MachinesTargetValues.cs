@@ -4,6 +4,7 @@ using VSS.VisionLink.Raptor.SiteModels;
 
 namespace VSS.VisionLink.Raptor.Events
 {
+    /*
     /// <summary>
     /// Stores the list of sets of machine events. Each machine has a set of event lists. MachinesTargetValues 
     /// contains a list of these sets of event lists for multiple machines
@@ -57,4 +58,5 @@ namespace VSS.VisionLink.Raptor.Events
             MachineIDMap.Add(events.MachineID, events);
         }
     }
+*/
 }

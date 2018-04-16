@@ -13,6 +13,7 @@ using VSS.VisionLink.Raptor.Utilities;
 
 namespace VSS.VisionLink.Raptor.Events
 {
+    /*
     [Serializable]
     public class ProductionEventChangeList<T> : List<T>, IProductionEventChangeList<T> where T : ProductionEventChangeBase, new()
     {
@@ -24,9 +25,12 @@ namespace VSS.VisionLink.Raptor.Events
         [NonSerialized]
         public ProductionEventChanges Container;
 
-        // FLastUpdateTimeUTC records the time at which this event change list was last updated
-        // in the persistent store
-        public DateTime LastUpdateTimeUTC { get; set; } = DateTime.MinValue;
+        [NonSerialized]
+        private DateTime lastUpdateTimeUTC = DateTime.MinValue;
+        /// <summary>
+        /// Records the time at which this event change list was last updated in the persistent store
+        /// </summary>
+        public DateTime LastUpdateTimeUTC { get => lastUpdateTimeUTC; set => lastUpdateTimeUTC = value; }
 
         public ProductionEventType EventListType { get; } = ProductionEventType.Unknown;
 
@@ -179,7 +183,10 @@ namespace VSS.VisionLink.Raptor.Events
                                 {
                                     // TODO add when logging available
                                     // SIGLogMessage.Publish(Self, Format('Deleting custom machine event: %s', [Items[EventIndex].ToText]), slmcDebug);
-                                    RemoveAt(EventIndex);
+                                    // RemoveAt(EventIndex);
+
+                                    // Don't add the duplicate event, just return the preexisting one
+                                    return this[EventIndex];
                                 }
                             }
                             else
@@ -193,6 +200,11 @@ namespace VSS.VisionLink.Raptor.Events
                                     Event.Date = Event.Date.AddMilliseconds(1);
 
                                     CorrectInsertLocationIdentified = false;
+                                }
+                                else
+                                {
+                                    // Don't add the duplicate event, just return the preexisting one
+                                    return this[EventIndex];
                                 }
                             }
                         }
@@ -388,6 +400,28 @@ namespace VSS.VisionLink.Raptor.Events
     [Serializable]
     public class ProductionEventChangeList<T, V> : ProductionEventChangeList<T> where T : ProductionEventChangeBase<V>, new()
     {
+        /// <summary>
+        /// Dummy serialisation out support
+        /// </summary>
+        [NonSerialized]
+        private Action<BinaryWriter, T> serialiseStateOut;
+        public Action<BinaryWriter, T> SerialiseStateOut
+        {
+            get => serialiseStateOut;
+            set => serialiseStateOut = value;
+        }
+
+        /// <summary>
+        /// Dummy serialisation in support
+        /// </summary>
+        [NonSerialized]
+        private Func<BinaryReader, V> serialiseStateIn;
+        public Func<BinaryReader, V> SerialiseStateIn
+        {
+            get => serialiseStateIn;
+            set => serialiseStateIn = value;
+        }
+
         public ProductionEventChangeList()
         {
         }
@@ -443,4 +477,5 @@ namespace VSS.VisionLink.Raptor.Events
             return defaultValue;
         }
     }
+*/
 }

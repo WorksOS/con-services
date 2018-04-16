@@ -46,7 +46,7 @@ namespace VSS.VisionLink.Raptor.Executors
         /// <summary>
         /// The events from the primary target site model
         /// </summary>
-        public EfficientProductionEventChanges Events;
+        public ProductionEventLists Events;
 
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace VSS.VisionLink.Raptor.Executors
         // file. These are then integrated into the machine events in a single step
         // at a later point in processing
         /// </summary>
-        public EfficientProductionEventChanges MachineTargetValueChangesAggregator { get; set; }
+        public ProductionEventLists MachineTargetValueChangesAggregator { get; set; }
 
         /// <summary>
         /// Default no-arg constructor
@@ -79,7 +79,7 @@ namespace VSS.VisionLink.Raptor.Executors
             // so the SiteModel constructed to contain the data processed from a TAG file does not need a 
             // storage proxy assigned to it
             SiteModel = new SiteModel(-1, null /*StorageProxy.RaptorInstance(StorageMutability.Mutable)*/);
-            Events = new EfficientProductionEventChanges(SiteModel, 0 /*TODO: Machine.ID*/);
+            Events = new ProductionEventLists(SiteModel, 0 /*TODO: Machine.ID*/);
 
             Machine = new Machine()
             {
@@ -92,7 +92,7 @@ namespace VSS.VisionLink.Raptor.Executors
                 SiteModelGridAggregator.CellSize = SiteModel.Grid.CellSize;
             }
 
-            MachineTargetValueChangesAggregator = new EfficientProductionEventChanges(SiteModel, long.MaxValue);
+            MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, long.MaxValue);
         }
 
         /// <summary>
@@ -124,10 +124,11 @@ namespace VSS.VisionLink.Raptor.Executors
 
                 ReadResult = TagFile.Read(Reader, Sink);
 
+                // Notify the Processor that all reading operations have completed for the file
+                Processor.DoPostProcessFileAction(ReadResult == TAGReadResult.NoError);
+
                 if (ReadResult != TAGReadResult.NoError)
-                {
                     return false;
-                }
 
                 SetPublishedState(Processor);
             }

@@ -38,7 +38,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         public TAGProcessor(SiteModel targetSiteModel,
             Machine targetMachine,
             ServerSubGridTree siteModelGridAggregator,
-            EfficientProductionEventChanges machineTargetValueChangesAggregator) : this()
+            ProductionEventLists machineTargetValueChangesAggregator) : this()
         {
             SiteModel = targetSiteModel;
             Machine = targetMachine;
@@ -68,7 +68,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
         // machine state events of interest that we encounter while processing the
         // file. These are then integrated into the machine events in a single step
         // at a later point in processing
-        public EfficientProductionEventChanges MachineTargetValueChangesAggregator { get; set; }
+        public ProductionEventLists MachineTargetValueChangesAggregator { get; set; }
 
         /*
         // FOnProgressCheck provides a callback to the owner of the ST processing

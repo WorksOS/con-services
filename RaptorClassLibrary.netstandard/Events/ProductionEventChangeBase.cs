@@ -5,6 +5,7 @@ using VSS.VisionLink.Raptor.Utilities;
 
 namespace VSS.VisionLink.Raptor.Events
 {
+/*
     /// <summary>
     /// Base class to represent all event types in a Raptor data model.
     /// </summary>
@@ -154,7 +155,7 @@ namespace VSS.VisionLink.Raptor.Events
         /// It is assigned the default value for the type. Make sure all enumerated and other types specify an
         /// appropriate default (or null) value
         /// </summary>
-        public V State { get; set; } // = default(V);
+        public V State { get; set; }
 
         /// <summary>
         /// Provides the base comparer between two events for a generic event. Base events define only a date/time, this comparer
@@ -179,4 +180,5 @@ namespace VSS.VisionLink.Raptor.Events
           return base.EquivalentTo(source) && EqualityComparer<V>.Default.Equals(State, source.State);
         }
     }
+*/
 }

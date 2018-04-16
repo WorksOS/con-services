@@ -3,6 +3,7 @@ using System.Diagnostics;
 
 namespace VSS.VisionLink.Raptor.Events
 {
+    /*
     /// <summary>
     /// Implements an event list containing events that detail when a machine started recording production data, and when it stopped
     /// recording production data.
@@ -168,4 +169,5 @@ namespace VSS.VisionLink.Raptor.Events
             RemoveAll(x => x == null);
         }
     }    
+*/
 }

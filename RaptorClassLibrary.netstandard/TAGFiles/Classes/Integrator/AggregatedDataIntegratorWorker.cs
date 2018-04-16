@@ -83,7 +83,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 
         public bool ProcessTask(List<AggregatedDataIntegratorTask> ProcessedTasks)
         {
-            EfficientProductionEventChanges SiteModelMachineTargetValues = null;
+            ProductionEventLists /*EfficientProductionEventChanges*/ SiteModelMachineTargetValues = null;
 
             bool AnyMachineEvents = false;
             bool AnyCellPasses = false;
@@ -159,7 +159,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                                     if (TestTask.TargetSiteModelID == Task.TargetSiteModelID && TestTask.TargetMachineID == Task.TargetMachineID &&
                                       AnyCellPasses == (TestTask.AggregatedCellPasses != null) && AnyMachineEvents == (TestTask.AggregatedMachineEvents != null))
                                     {
-                                        // Removed for Ignite POC
+                                        //Todo Removed for Ignite POC
                                         //if (ProcessedTasks.Count < VLPDSvcLocations.VLPDTagProc_MaxMappedTAGFilesToProcessPerAggregationEpoch)
                                         //{
                                             TasksToProcess.TryDequeue(out TestTask);
@@ -278,7 +278,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 
                             if (SiteModelMachineTargetValues == null)
                             {
-                                SiteModelFromDM.MachinesTargetValues.Add(new EfficientProductionEventChanges(SiteModelFromDM, MachineFromDM.ID));
+                                SiteModelFromDM.MachinesTargetValues.Add(new ProductionEventLists /*EfficientProductionEventChanges*/(SiteModelFromDM, MachineFromDM.ID));
                                 //SiteModelFromDM.MachinesTargetValues.CreateNewMachineTargetValues(MachineFromDM, MachineFromDM.ID);
                             }
 
@@ -324,7 +324,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                                     }
                                     */
 
-                                    if (SiteModelMachineTargetValues.LayerIDStateEvents.Count > 0)
+                                    if (SiteModelMachineTargetValues.LayerIDStateEvents.Count() > 0)
                                     {
                                         MachineFromDM.LastKnownLayerId = SiteModelMachineTargetValues.LayerIDStateEvents.Last().State;
                                     }

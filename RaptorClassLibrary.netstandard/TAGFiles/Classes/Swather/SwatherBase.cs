@@ -34,7 +34,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
 
         //MachineTargetValueChanges is a reference to an object that records all the
         // machine state events of interest that we encounter while processing the file
-        protected EfficientProductionEventChanges MachineTargetValueChanges { get; set; }
+        protected ProductionEventLists MachineTargetValueChanges { get; set; }
 
         protected TAGProcessorBase Processor { get; set; }
 
@@ -106,7 +106,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
         public bool CompactionDataSupportedByMachine => true; // Need to wire this into subscriptions
 
         public SwatherBase(TAGProcessorBase processor,
-                           EfficientProductionEventChanges machineTargetValueChanges,
+                           ProductionEventLists machineTargetValueChanges,
                            SiteModel siteModel,
                            ServerSubGridTree grid,
                            long machineID,

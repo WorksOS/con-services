@@ -15,16 +15,16 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private EfficientProductionEventChanges Source;
-        private EfficientProductionEventChanges Target;
+        private ProductionEventLists /*EfficientProductionEventChanges*/ Source;
+        private ProductionEventLists /*EfficientProductionEventChanges*/ Target;
         private bool IntegratingIntoPersistentDataModel;
 
         public EventIntegrator()
         {
         }
 
-        public EventIntegrator(EfficientProductionEventChanges Source,
-                               EfficientProductionEventChanges Target,
+        public EventIntegrator(ProductionEventLists /*EfficientProductionEventChanges*/ Source,
+                               ProductionEventLists /*EfficientProductionEventChanges*/ Target,
                                bool IntegratingIntoPersistentDataModel) : this()
         {
             this.Source = Source;
@@ -108,13 +108,12 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
         // IntegrateList takes a list of machine events and merges them into the machine event list.
         // Note: This method assumes that the methods being merged into the new list
         // are machine events only, and do not include custom events.
-        private void IntegrateList(IProductionEventChangeList source,
-                                   IProductionEventChangeList target)
+        private void IntegrateList(IProductionEvents source, IProductionEvents target)
         {
-            if (source.Count == 0)
+            if (source.Count() == 0)
                 return;
 
-            if (source.Count > 1)
+            if (source.Count() > 1)
                 source.Sort();
 
             if (IntegratingIntoPersistentDataModel)
@@ -128,7 +127,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                 // If the numbers of events being added here become significant, then
                 // it may be worth using an event merge process similar to the one done
                 // in cell pass integration
-                foreach (var sourceItem in source)
+                foreach (var sourceItem in source.EventsList())
                     target.PutValueAtDate(sourceItem);
 
                 target.Collate();
@@ -143,14 +142,14 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
             }
         }
 
-        private void PerformListIntegration(IProductionEventChangeList source,
-                                            IProductionEventChangeList target)
+        private void PerformListIntegration(IProductionEvents source,
+                                            IProductionEvents target)
         {
             IntegrateList(source, target);
         }
 
-        public void IntegrateMachineEvents(EfficientProductionEventChanges source,
-                                           EfficientProductionEventChanges target,
+        public void IntegrateMachineEvents(ProductionEventLists /*EfficientProductionEventChanges*/ source,
+                                           ProductionEventLists /*EfficientProductionEventChanges*/ target,
                                            bool integratingIntoPersistentDataModel)
         {
             Source = source;
@@ -164,7 +163,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
         {
             IntegrateMachineDesignEventNames();
 
-            IProductionEventChangeList SourceStartEndRecordedDataList = Source.StartEndRecordedDataEvents; // EventStartEndRecordedData;
+            IProductionEvents SourceStartEndRecordedDataList = Source.StartEndRecordedDataEvents; // EventStartEndRecordedData;
 
             // Always integrate the machine recorded data start/stop events first, as collation
             // of the other events depends on collation of these events
@@ -176,12 +175,12 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
             // Integrate all remaining event lists and collate them wrt the machine start/stop recording events
             for (int I = 0; I < sourceEventLists.Length; I++)
             {
-                IProductionEventChangeList SourceList = sourceEventLists[I];
+                IProductionEvents SourceList = sourceEventLists[I];
 
                 if (SourceList == null)
                     return;
 
-                if (SourceList != SourceStartEndRecordedDataList && SourceList.Count > 0)
+                if (SourceList != SourceStartEndRecordedDataList && SourceList.Count() > 0)
                 {
                     // The source event list is always an in-memory list. The target event list
                     // will be an in-memory list unless IntegratingIntoPersistentDataModel is true,
@@ -190,7 +189,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                     // must be read from the persistent store (or be in a cached location) prior
                     // to the integration of the source events
 
-                    IProductionEventChangeList TargetList = targetEventLists[I];
+                    IProductionEvents TargetList = targetEventLists[I];
                     if (TargetList == null)
                     {
                         // TODO revisit if target lists become lazy loaded

@@ -28,7 +28,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
         public long TargetMachineID { get; set; }
 
         public ServerSubGridTree AggregatedCellPasses { get; set; }
-        public EfficientProductionEventChanges AggregatedMachineEvents { get; set; }
+        public ProductionEventLists AggregatedMachineEvents { get; set; }
         public SubGridTreeSubGridExistenceBitMask AggregateModifiedSubgrids { get; set; }
 
         //      Finalizer : TAggregationTaskFinalizer;

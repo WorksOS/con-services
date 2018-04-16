@@ -752,7 +752,7 @@ FAvoidZoneUndergroundServiceZones = false;
 
             // Extract the list of events for the machine referred to in the cell pass. Use this
             // reference for all filter criteria that depend on machine events
-            EfficientProductionEventChanges machineTargetValues = AnyMachineEventFilterSelections ? siteModel.MachinesTargetValues[PassValue.MachineID] : null;
+            ProductionEventLists machineTargetValues = AnyMachineEventFilterSelections ? siteModel.MachinesTargetValues[PassValue.MachineID] : null;
 
             if (HasDesignFilter)
             {

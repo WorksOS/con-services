@@ -5,6 +5,7 @@ using VSS.VisionLink.Raptor.Events.Interfaces;
 
 namespace VSS.VisionLink.Raptor.Events
 {
+/*
     /// <summary>
     /// Defines a base class for event lists that contain specific business logic governing their behaviour such as machine start
     /// stop and data recording start end events.
@@ -28,16 +29,13 @@ namespace VSS.VisionLink.Raptor.Events
         {
         }
 
-        /*
-        /// <summary>
-        /// Reads a binary serialisation of the content of the list
-        /// </summary>
-        /// <param name="reader"></param>
-        public new static EfficientSpecificProductionEventChangeList<T> Read(BinaryReader reader)
+        public EfficientSpecificProductionEventChangeList(EfficientProductionEventChanges container,
+            long machineID, long siteModelID,
+            ProductionEventType eventListType,
+            Action<BinaryWriter, ProductionEventType> serialiseStateOut,
+            Func<BinaryReader, ProductionEventType> serialiseStateIn) : base(container, machineID, siteModelID, eventListType, serialiseStateOut, serialiseStateIn)
         {
-            BinaryFormatter formatter = new BinaryFormatter();
-            return (EfficientSpecificProductionEventChangeList<T>)formatter.Deserialize(reader.BaseStream);
         }
-        */
     }
+*/
 }

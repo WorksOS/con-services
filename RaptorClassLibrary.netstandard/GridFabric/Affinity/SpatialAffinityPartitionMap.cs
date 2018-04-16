@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Apache.Ignite.Core.Cache;
+using Apache.Ignite.Core.Cluster;
+using Apache.Ignite.Core.Events;
 
 namespace VSS.TRex.GridFabric.Affinity
 {
@@ -9,7 +11,7 @@ namespace VSS.TRex.GridFabric.Affinity
     /// Provides capabilities for determining partition maps to nodes for Ignite caches. It is templated on 
     /// the ket (TK) and value (TV) types of the cache being referenced.
     /// </summary>
-    public class SpatialAffinityPartitionMap<TK, TV>
+    public class SpatialAffinityPartitionMap<TK, TV> : IEventListener<CacheRebalancingEvent>
     {
         /// <summary>
         /// Backing variable for PrimaryPartitions
@@ -42,6 +44,9 @@ namespace VSS.TRex.GridFabric.Affinity
         /// </summary>
         private ICache<TK, TV> Cache { get; set; }
 
+        private ICacheAffinity Affinity { get; set; }
+        private IClusterNode LocalNode { get; set; }
+
         /// <summary>
         /// Constructor accepting a cache reference to obtain the parition map information for
         /// </summary>
@@ -49,27 +54,36 @@ namespace VSS.TRex.GridFabric.Affinity
         public SpatialAffinityPartitionMap(ICache<TK, TV> cache)
         {
             Cache = cache ?? throw new ArgumentException("Supplied cache cannot be null", "cache");
+
+            Affinity = Cache.Ignite.GetAffinity(Cache.Name);
+            LocalNode = Cache.Ignite.GetCluster().GetLocalNode();
         }
 
         /// <summary>
         /// Asks Ignite for the list of primary partitions this node is reponsible for in the provided cache 
         /// </summary>
         /// <returns></returns>
-        private Dictionary<int, bool> GetPrimaryPartitions()
+        private Dictionary<int, bool> GetPrimaryPartitions() => Affinity.GetPrimaryPartitions(LocalNode).ToDictionary(k => k, v => true);
+
+        /// <summary>
+        /// Asks Ignite for the list of primary partitions this node is reponsible for in the provided cache 
+        /// </summary>
+        /// <returns></returns>
+        private bool [] GetPrimaryPartitionsArray()
         {
-            return Cache.Ignite.GetAffinity(Cache.Name).GetPrimaryPartitions(Cache.Ignite.GetCluster().GetLocalNode())
-                .ToDictionary(k => k, v => true);
+            bool[] partitionMap = new bool[Affinity.Partitions];
+            
+            foreach (int partition in Affinity.GetBackupPartitions(LocalNode))
+                partitionMap[partition] = true;
+
+            return partitionMap;
         }
 
         /// <summary>
         /// Asks Ignite for the list of primary partitions this node is reponsible for in the provided cache 
         /// </summary>
         /// <returns></returns>
-        private Dictionary<int, bool> GetBackupPartitions()
-        {
-            return Cache.Ignite.GetAffinity(Cache.Name).GetBackupPartitions(Cache.Ignite.GetCluster().GetLocalNode())
-                .ToDictionary(k => k, v => true);
-        }
+        private Dictionary<int, bool> GetBackupPartitions() => Affinity.GetBackupPartitions(LocalNode).ToDictionary(k => k, v => true);
 
         /// <summary>
         /// Determines the Ignite partition index responsible for hold this given key.
@@ -97,5 +111,17 @@ namespace VSS.TRex.GridFabric.Affinity
         /// <param name="key"></param>
         /// <returns></returns>
         public bool HasBackupPartitionFor(TK key) => BackupPartitions[PartitionFor(key)];
+
+        public bool Invoke(CacheRebalancingEvent evt)
+        {
+            if (evt.CacheName.Equals(Cache.Name)) // && evt.DiscoveryEventType == )
+            {
+                // Assign primary and backup partition maps to null to force them to be recalculated
+                primaryPartitions = null;
+                backupPartitions = null;
+            }
+
+            return true;
+        }
     }
 }
