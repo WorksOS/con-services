@@ -84,7 +84,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Tests
                           MachineTargetValueChangesAggregator.PositioningTechStateEvents.Last().Date == eventDate,
                           "DoPostProcessFileAction did not set positioning tech event");
 
-            Assert.True(MachineTargetValueChangesAggregator.StartEndRecordedDataEvents.Last().State == ProductionEventType.EndRecordedData &&
+            Assert.True(MachineTargetValueChangesAggregator.StartEndRecordedDataEvents.Last().State == ProductionEventType.EndEvent /*EndRecordedData*/ &&
                           MachineTargetValueChangesAggregator.StartEndRecordedDataEvents.Last().Date == eventDate,
                           "DoPostProcessFileAction did not set end recorded data event");
         }

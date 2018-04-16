@@ -6,13 +6,13 @@ namespace VSS.VisionLink.Raptor.Events
     /// Denotes the types of events processed and stored from ingested production data
     /// </summary>
     [Serializable]
-    public enum ProductionEventType //: IComparable<ProductionEventType>
+    public enum ProductionEventType
     {
         Unknown = 0x00000000,
-        MachineStartup = 0x00000001,
-        MachineShutdown = 0x00000002,
-        StartRecordedData = 0x00000003,
-        EndRecordedData = 0x00000004,
+        //MachineStartup = 0x00000001,
+        //MachineShutdown = 0x00000002,
+        StartEvent /*RecordedData */ = 0x00000003,
+        EndEvent /*EndRecordedData */ = 0x00000004,
         DesignChange = 0x00000005,
         TargetCCV = 0x00000006,
         TargetPassCount = 0x00000007,

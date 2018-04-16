@@ -124,12 +124,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 
             try
             {
-                // If the numbers of events being added here become significant, then
-                // it may be worth using an event merge process similar to the one done
-                // in cell pass integration
-                foreach (var sourceItem in source.EventsList())
-                    target.PutValueAtDate(sourceItem);
-
+                target.CopyEventsFrom(source);
                 target.Collate();
             }
             finally

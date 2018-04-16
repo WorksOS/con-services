@@ -170,7 +170,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
             if (RecordEvent)
             {
                 MachineTargetValueChangesAggregator.StartEndRecordedDataEvents.PutValueAtDate(Value,
-                    ProductionEventType.StartRecordedData);
+                    ProductionEventType.StartEvent /*StartRecordedData*/);
 
                 TagFileStartTime = Value;
             }
@@ -724,7 +724,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
             // Record the last data time as the data end event
             if (DataTime != DateTime.MinValue)
             {
-                MachineTargetValueChangesAggregator.StartEndRecordedDataEvents.PutValueAtDate(DataTime, ProductionEventType.EndRecordedData);
+                MachineTargetValueChangesAggregator.StartEndRecordedDataEvents.PutValueAtDate(DataTime, ProductionEventType.EndEvent /*EndRecordedData*/);
 
                 if (!HasGPSModeBeenSet)
                 {
