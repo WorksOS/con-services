@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -103,15 +102,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       projectRequest.CoordinateSystem =
         ProjectDataValidator.ValidateBusinessCentreFile(projectRequest.CoordinateSystem);
 
-      var projectRequestHelper = new ProjectRequestHelper(
-        log, configStore, serviceExceptionHandler,
-        GetCustomerUid(), userId, customHeaders,
-        producer,
-        geofenceProxy, raptorProxy, subscriptionProxy,
-        projectRepo, subscriptionRepo, fileRepo);
-
-      createProjectEvent.CoordinateSystemFileContent = await projectRequestHelper
-        .GetCoordinateSystemContent(projectRequest.CoordinateSystem).ConfigureAwait(false);
+      createProjectEvent.CoordinateSystemFileContent = 
+        await ProjectRequestHelper
+        .GetCoordinateSystemContent(projectRequest.CoordinateSystem,
+          log, serviceExceptionHandler, fileRepo).ConfigureAwait(false);
 
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory

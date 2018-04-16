@@ -244,7 +244,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       log.LogInformation($"projectUid {projectUid} validated");
     }
-
   }
 }
 

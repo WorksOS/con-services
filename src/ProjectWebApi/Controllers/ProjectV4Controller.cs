@@ -206,20 +206,18 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       // validation includes check that project must exist - otherwise there will be a null legacyID.
       ProjectDataValidator.Validate(project, projectRepo);
-      var projectRequestHelper = new ProjectRequestHelper(
-        log, configStore, serviceExceptionHandler,
-        GetCustomerUid(), userId, customHeaders,
-        producer,
-        geofenceProxy, raptorProxy, subscriptionProxy,
-        projectRepo, subscriptionRepo, fileRepo);
-      await projectRequestHelper.ValidateCoordSystemInRaptor(project).ConfigureAwait(false);
+      
+      await ProjectRequestHelper.ValidateCoordSystemInRaptor(project,
+        serviceExceptionHandler, customHeaders, raptorProxy).ConfigureAwait(false);
 
       /*** now making changes, potentially needing rollback ***/
       if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
       {
         var projectWithLegacyProjectId = projectRepo.GetProjectOnly(project.ProjectUID.ToString()).Result;
-        await projectRequestHelper.CreateCoordSystemInRaptor(project.ProjectUID, projectWithLegacyProjectId.LegacyProjectID,
-          project.CoordinateSystemFileName, project.CoordinateSystemFileContent, false).ConfigureAwait(false);
+        await ProjectRequestHelper.CreateCoordSystemInRaptor(project.ProjectUID, projectWithLegacyProjectId.LegacyProjectID,
+          project.CoordinateSystemFileName, project.CoordinateSystemFileContent, false,
+          log, serviceExceptionHandler, customerUid, customHeaders,
+          projectRepo, raptorProxy).ConfigureAwait(false);
       }
 
       var isUpdated = await projectRepo.StoreEvent(project).ConfigureAwait(false);
@@ -262,7 +260,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       };
       ProjectDataValidator.Validate(project, projectRepo);
 
-      var messagePayload = JsonConvert.SerializeObject(new { DeleteProjectEvent = project });
+      var messagePayload = JsonConvert.SerializeObject(new {DeleteProjectEvent = project});
       var isDeleted = await projectRepo.StoreEvent(project).ConfigureAwait(false);
       if (isDeleted == 0)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 66);
@@ -279,7 +277,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .ConfigureAwait(false)));
 
     }
-
     #endregion projects
 
 

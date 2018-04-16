@@ -64,32 +64,16 @@ namespace VSS.MasterData.ProjectTests
     [TestMethod]
     public async Task CreateProjectV2Executor_GetTCCFile()
     {
-      var userId = Guid.NewGuid().ToString();
-      var customHeaders = new Dictionary<string, string>();
-      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
-      var producer = new Mock<IKafka>();
-
-      var projectRepo = new Mock<IProjectRepository>();
-      var subscriptionRepo = new Mock<ISubscriptionRepository>();
+      
       var fileRepo = new Mock<IFileRepository>();
       fileRepo.Setup(fr => fr.FolderExists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
       byte[] buffer = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3 };
       fileRepo.Setup(fr => fr.GetFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new MemoryStream(buffer));
 
-      var geofenceProxy = new Mock<IGeofenceProxy>();
-      var raptorProxy = new Mock<IRaptorProxy>();
-      var subscriptionProxy = new Mock<ISubscriptionProxy>();
-
-      var projectRequestHelper = new ProjectRequestHelper(
-        logger.CreateLogger<CreateProjectExecutorTests>(), configStore, serviceExceptionHandler,
-        _customerUid, userId, customHeaders,
-        producer.Object,
-        geofenceProxy.Object, raptorProxy.Object, subscriptionProxy.Object,
-        projectRepo.Object, subscriptionRepo.Object, fileRepo.Object);
-
-      var coordinateSystemFileContent = await projectRequestHelper.GetCoordinateSystemContent(_businessCenterFile).ConfigureAwait(false);
+      var coordinateSystemFileContent = await ProjectRequestHelper.GetCoordinateSystemContent(_businessCenterFile,
+        logger.CreateLogger<CreateProjectExecutorTests>(), serviceExceptionHandler, fileRepo.Object).ConfigureAwait(false);
       Assert.IsTrue(buffer.SequenceEqual(coordinateSystemFileContent), "CoordinateSystemFileContent not read from DC.");
       }
 
@@ -136,14 +120,7 @@ namespace VSS.MasterData.ProjectTests
       subscriptionProxy.Setup(sp =>
           sp.AssociateProjectSubscription(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Dictionary<string, string>>()))
         .Returns(Task.FromResult(default(int)));
-
-      var projectRequestHelper = new ProjectRequestHelper(
-        logger.CreateLogger<CreateProjectExecutorTests>(), configStore, serviceExceptionHandler,
-        _customerUid, userId, customHeaders,
-        producer.Object,
-        geofenceProxy.Object, raptorProxy.Object, subscriptionProxy.Object,
-        projectRepo.Object, subscriptionRepo.Object, fileRepo.Object);
-
+      
       var executor = RequestExecutorContainerFactory.Build<CreateProjectExecutor>
         (logger, configStore, serviceExceptionHandler,
         _customerUid, userId, null, customHeaders,
