@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Reflection;
 using log4net;
+using VSS.TRex.Events.Interfaces;
 using VSS.VisionLink.Raptor.Events.Interfaces;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.SiteModels;
@@ -12,7 +13,8 @@ namespace VSS.VisionLink.Raptor.Events
     /// A wrapper for all the event information related to a particular machine's activities within a particular
     /// site model.co
     /// </summary>
-    public class ProductionEventLists
+    public class ProductionEventLists : IProductionEventLists
+
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -138,85 +140,106 @@ namespace VSS.VisionLink.Raptor.Events
         /// Create all defined event lists in one operation.
         /// </summary>
         private void CreateEventLists()
-        {        
-            MachineStartupShutdownEvents = new StartEndProductionEvents(this, MachineID, SiteModel.ID, ProductionEventType.MachineStartupShutdown,
-                (w, s) => w.Write((byte)s),
-                (r) => (ProductionEventType)r.ReadByte());
+        {
+            MachineStartupShutdownEvents = new StartEndProductionEvents(this, MachineID, SiteModel.ID,
+                ProductionEventType.MachineStartupShutdown,
+                (w, s) => w.Write((byte) s),
+                (r) => (ProductionEventType) r.ReadByte());
 
-            StartEndRecordedDataEvents = new StartEndProductionEvents(this, MachineID, SiteModel.ID, ProductionEventType.StartEndRecordedData,
-                (w, s) => w.Write((byte)s),
-                (r) => (ProductionEventType)r.ReadByte());
+            StartEndRecordedDataEvents = new StartEndProductionEvents(this, MachineID, SiteModel.ID,
+                ProductionEventType.StartEndRecordedData,
+                (w, s) => w.Write((byte) s),
+                (r) => (ProductionEventType) r.ReadByte());
 
-            VibrationStateEvents = new ProductionEvents<VibrationState>(this, MachineID, SiteModel.ID, ProductionEventType.VibrationStateChange,
-                (w, s) => w.Write((byte)s),
-                (r) => (VibrationState)r.ReadByte());
+            VibrationStateEvents = new ProductionEvents<VibrationState>(this, MachineID, SiteModel.ID,
+                ProductionEventType.VibrationStateChange,
+                (w, s) => w.Write((byte) s),
+                (r) => (VibrationState) r.ReadByte());
 
-            AutoVibrationStateEvents = new ProductionEvents<AutoVibrationState>(this, MachineID, SiteModel.ID, ProductionEventType.AutoVibrationStateChange,
-                (w, s) => w.Write((byte)s),
-                (r) => (AutoVibrationState)r.ReadByte());
+            AutoVibrationStateEvents = new ProductionEvents<AutoVibrationState>(this, MachineID, SiteModel.ID,
+                ProductionEventType.AutoVibrationStateChange,
+                (w, s) => w.Write((byte) s),
+                (r) => (AutoVibrationState) r.ReadByte());
 
-            GPSModeStateEvents = new ProductionEvents<GPSMode>(this, MachineID, SiteModel.ID, ProductionEventType.GPSModeChange,
-                (w, s) => w.Write((byte)s),
-                (r) => (GPSMode)r.ReadByte());
+            GPSModeStateEvents = new ProductionEvents<GPSMode>(this, MachineID, SiteModel.ID,
+                ProductionEventType.GPSModeChange,
+                (w, s) => w.Write((byte) s),
+                (r) => (GPSMode) r.ReadByte());
 
-            PositioningTechStateEvents = new ProductionEvents<PositioningTech>(this, MachineID, SiteModel.ID, ProductionEventType.PositioningTech,
-                (w, s) => w.Write((byte)s),
-                (r) => (PositioningTech)r.ReadByte());
+            PositioningTechStateEvents = new ProductionEvents<PositioningTech>(this, MachineID, SiteModel.ID,
+                ProductionEventType.PositioningTech,
+                (w, s) => w.Write((byte) s),
+                (r) => (PositioningTech) r.ReadByte());
 
-            DesignNameIDStateEvents = new ProductionEvents<int>(this, MachineID, SiteModel.ID, ProductionEventType.DesignChange,
+            DesignNameIDStateEvents = new ProductionEvents<int>(this, MachineID, SiteModel.ID,
+                ProductionEventType.DesignChange,
                 (w, s) => w.Write(s),
                 (r) => r.ReadInt32());
 
-            MachineAutomaticsStateEvents = new ProductionEvents<MachineAutomaticsMode>(this, MachineID, SiteModel.ID, ProductionEventType.MachineAutomaticsChange,
-                (w, s) => w.Write((byte)s),
-                (r) => (MachineAutomaticsMode)r.ReadByte());
+            MachineAutomaticsStateEvents = new ProductionEvents<MachineAutomaticsMode>(this, MachineID, SiteModel.ID,
+                ProductionEventType.MachineAutomaticsChange,
+                (w, s) => w.Write((byte) s),
+                (r) => (MachineAutomaticsMode) r.ReadByte());
 
-            MachineGearStateEvents = new ProductionEvents<MachineGear>(this, MachineID, SiteModel.ID, ProductionEventType.MachineGearChange,
-                (w, s) => w.Write((byte)s),
-                (r) => (MachineGear)r.ReadByte());
+            MachineGearStateEvents = new ProductionEvents<MachineGear>(this, MachineID, SiteModel.ID,
+                ProductionEventType.MachineGearChange,
+                (w, s) => w.Write((byte) s),
+                (r) => (MachineGear) r.ReadByte());
 
-            MinElevMappingStateEvents = new ProductionEvents<bool>(this, MachineID, SiteModel.ID, ProductionEventType.MinElevMappingStateChange,
+            MinElevMappingStateEvents = new ProductionEvents<bool>(this, MachineID, SiteModel.ID,
+                ProductionEventType.MinElevMappingStateChange,
                 (w, s) => w.Write(s),
                 (r) => r.ReadBoolean());
 
-            GPSAccuracyAndToleranceStateEvents = new ProductionEvents<GPSAccuracyAndTolerance>(this, MachineID, SiteModel.ID, ProductionEventType.GPSAccuracyChange,
+            GPSAccuracyAndToleranceStateEvents = new ProductionEvents<GPSAccuracyAndTolerance>(this, MachineID,
+                SiteModel.ID, ProductionEventType.GPSAccuracyChange,
                 (w, s) =>
                 {
                     w.Write(s.GPSTolerance);
-                    w.Write((byte)s.GPSAccuracy);
+                    w.Write((byte) s.GPSAccuracy);
                 },
-                (r) => new GPSAccuracyAndTolerance((GPSAccuracy)r.ReadByte(), r.ReadUInt16()));
+                (r) => new GPSAccuracyAndTolerance((GPSAccuracy) r.ReadByte(), r.ReadUInt16()));
 
-            LayerIDStateEvents = new ProductionEvents<ushort>(this, MachineID, SiteModel.ID, ProductionEventType.LayerID,
+            LayerIDStateEvents = new ProductionEvents<ushort>(this, MachineID, SiteModel.ID,
+                ProductionEventType.LayerID,
                 (w, s) => w.Write(s), (r) => r.ReadUInt16());
 
             //            DesignNameStateEvents = new ProductionEvents<string>(this, MachineID, SiteModel.ID, ProductionEventType.DesignChange);
 
-            ICFlagsStateEvents = new ProductionEvents<byte>(this, MachineID, SiteModel.ID, ProductionEventType.ICFlagsChange,
+            ICFlagsStateEvents = new ProductionEvents<byte>(this, MachineID, SiteModel.ID,
+                ProductionEventType.ICFlagsChange,
                 (w, s) => w.Write(s), (r) => r.ReadByte());
 
-            TargetCCVStateEvents = new ProductionEvents<short>(this, MachineID, SiteModel.ID, ProductionEventType.TargetCCV,
+            TargetCCVStateEvents = new ProductionEvents<short>(this, MachineID, SiteModel.ID,
+                ProductionEventType.TargetCCV,
                 (w, s) => w.Write(s), (r) => r.ReadInt16());
 
-            TargetCCAStateEvents = new ProductionEvents<short>(this, MachineID, SiteModel.ID, ProductionEventType.TargetCCA,
+            TargetCCAStateEvents = new ProductionEvents<short>(this, MachineID, SiteModel.ID,
+                ProductionEventType.TargetCCA,
                 (w, s) => w.Write(s), (r) => r.ReadInt16());
 
-            TargetMDPStateEvents = new ProductionEvents<short>(this, MachineID, SiteModel.ID, ProductionEventType.TargetMDP,
+            TargetMDPStateEvents = new ProductionEvents<short>(this, MachineID, SiteModel.ID,
+                ProductionEventType.TargetMDP,
                 (w, s) => w.Write(s), (r) => r.ReadInt16());
 
-            TargetPassCountStateEvents = new ProductionEvents<ushort>(this, MachineID, SiteModel.ID, ProductionEventType.TargetPassCount,
+            TargetPassCountStateEvents = new ProductionEvents<ushort>(this, MachineID, SiteModel.ID,
+                ProductionEventType.TargetPassCount,
                 (w, s) => w.Write(s), (r) => r.ReadUInt16());
 
-            TargetMinMaterialTemperature = new ProductionEvents<ushort>(this, MachineID, SiteModel.ID, ProductionEventType.TempWarningLevelMinChange,
+            TargetMinMaterialTemperature = new ProductionEvents<ushort>(this, MachineID, SiteModel.ID,
+                ProductionEventType.TempWarningLevelMinChange,
                 (w, s) => w.Write(s), (r) => r.ReadUInt16());
 
-            TargetMaxMaterialTemperature = new ProductionEvents<ushort>(this, MachineID, SiteModel.ID, ProductionEventType.TempWarningLevelMaxChange,
+            TargetMaxMaterialTemperature = new ProductionEvents<ushort>(this, MachineID, SiteModel.ID,
+                ProductionEventType.TempWarningLevelMaxChange,
                 (w, s) => w.Write(s), (r) => r.ReadUInt16());
 
-            TargetLiftThickness = new ProductionEvents<float>(this, MachineID, SiteModel.ID, ProductionEventType.TargetLiftThickness,
+            TargetLiftThickness = new ProductionEvents<float>(this, MachineID, SiteModel.ID,
+                ProductionEventType.TargetLiftThickness,
                 (w, s) => w.Write(s), (r) => r.ReadSingle());
 
-            RMVJumpThresholdEvents = new ProductionEvents<short>(this, MachineID, SiteModel.ID, ProductionEventType.MachineRMVJumpValueChange,
+            RMVJumpThresholdEvents = new ProductionEvents<short>(this, MachineID, SiteModel.ID,
+                ProductionEventType.MachineRMVJumpValueChange,
                 (w, s) => w.Write(s), (r) => r.ReadInt16());
         }
 
@@ -277,7 +300,8 @@ namespace VSS.VisionLink.Raptor.Events
         {
             foreach (IProductionEvents list in GetEventLists())
             {
-                Log.Debug($"Saving {list.EventListType} with {list.Count()} events for machine {MachineID} in project {SiteModel.ID}");
+                Log.Debug(
+                    $"Saving {list.EventListType} with {list.Count()} events for machine {MachineID} in project {SiteModel.ID}");
 
                 list.SaveToStore(storageProxy);
             }
@@ -285,9 +309,11 @@ namespace VSS.VisionLink.Raptor.Events
 
         public bool LoadEventsForMachine(IStorageProxy storageProxy)
         {
-            MachineStartupShutdownEvents = MachineStartupShutdownEvents.LoadFromStore(storageProxy) as StartEndProductionEvents;
-            StartEndRecordedDataEvents = StartEndRecordedDataEvents.LoadFromStore(storageProxy) as StartEndProductionEvents;
-            VibrationStateEvents = VibrationStateEvents.LoadFromStore(storageProxy); 
+            MachineStartupShutdownEvents =
+                MachineStartupShutdownEvents.LoadFromStore(storageProxy) as StartEndProductionEvents;
+            StartEndRecordedDataEvents =
+                StartEndRecordedDataEvents.LoadFromStore(storageProxy) as StartEndProductionEvents;
+            VibrationStateEvents = VibrationStateEvents.LoadFromStore(storageProxy);
             AutoVibrationStateEvents = AutoVibrationStateEvents.LoadFromStore(storageProxy);
             GPSModeStateEvents = GPSModeStateEvents.LoadFromStore(storageProxy);
             PositioningTechStateEvents = PositioningTechStateEvents.LoadFromStore(storageProxy);
@@ -321,5 +347,11 @@ namespace VSS.VisionLink.Raptor.Events
 
             return true;
         }
+
+        /// <summary>
+        /// Provides a refernece to the TAG file processing start/end events list
+        /// </summary>
+        /// <returns></returns>
+        public IProductionEventPairs GetStartEndRecordedDataEvents() => StartEndRecordedDataEvents;
     }
 }

@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using log4net;
+using VSS.TRex.Events.Interfaces;
 
 namespace VSS.VisionLink.Raptor.Events
 {
@@ -11,28 +12,20 @@ namespace VSS.VisionLink.Raptor.Events
     /// recording production data.
     /// </summary>
     [Serializable]
-    public class StartEndProductionEvents : ProductionEvents<ProductionEventType>
+    public class StartEndProductionEvents : ProductionEvents<ProductionEventType>, IProductionEventPairs
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public StartEndProductionEvents()
-        {
-        }
+        {}
 
-        public StartEndProductionEvents(ProductionEventLists container,
-            long machineID, long siteModelID,
-            ProductionEventType eventListType) : base(container, machineID, siteModelID, eventListType)
-        {
-        }
-
-        public StartEndProductionEvents(ProductionEventLists container,
+        public StartEndProductionEvents(IProductionEventLists container,
             long machineID, long siteModelID,
             ProductionEventType eventListType,
             Action<BinaryWriter, ProductionEventType> serialiseStateOut,
             Func<BinaryReader, ProductionEventType> serialiseStateIn) : base(container, machineID, siteModelID,
             eventListType, serialiseStateOut, serialiseStateIn)
-        {
-        }
+        {}
 
         public int IndexOfClosestEventPriorToDate(DateTime eventDate, ProductionEventType eventType)
         {
@@ -72,23 +65,23 @@ namespace VSS.VisionLink.Raptor.Events
         /// start and stop evnets given a date/time
         /// </summary>
         /// <param name="eventDate"></param>
-        /// <param name="StartEvent"></param>
-        /// <param name="EndEvent"></param>
+        /// <param name="StartEventDate"></param>
+        /// <param name="EndEventDate"></param>
         /// <returns></returns>
-        public bool FindStartEventPairAtTime(DateTime eventDate, out Event StartEvent, out Event EndEvent)
+        public bool FindStartEventPairAtTime(DateTime eventDate, out DateTime StartEventDate, out DateTime EndEventDate)
         {
-            int StartIndex = IndexOfClosestEventPriorToDate(eventDate, ProductionEventType.StartEvent /*StartRecordedData*/);
+            int StartIndex = IndexOfClosestEventPriorToDate(eventDate, ProductionEventType.StartEvent);
 
             if (StartIndex > -1 && StartIndex < Events.Count - 1)
             {
-                StartEvent = Events[StartIndex];
-                EndEvent = Events[StartIndex + 1];
+                StartEventDate = Events[StartIndex].Date;
+                EndEventDate = Events[StartIndex + 1].Date;
                 return true;
             }
             else
             {
-                StartEvent = default(Event);
-                EndEvent = default(Event);
+                StartEventDate = default(DateTime);
+                EndEventDate = default(DateTime);
 
                 if (StartIndex == Events.Count - 1)
                 {
@@ -120,11 +113,11 @@ namespace VSS.VisionLink.Raptor.Events
             {
                 bool DecNestingLevel = false;
 
-                if (Events[I].State == ProductionEventType.StartEvent /* StartRecordedData*/)
+                if (Events[I].State == ProductionEventType.StartEvent)
                     NestingLevel++;
                 else
                 {
-                    if (Events[I].State == ProductionEventType.EndEvent /* EndRecordedData */)
+                    if (Events[I].State == ProductionEventType.EndEvent)
                         DecNestingLevel = true;
                     else
                         Debug.Assert(false, "Unknown event type in list");
@@ -146,8 +139,8 @@ namespace VSS.VisionLink.Raptor.Events
                 Debug.Assert(Events[I].Date <= Events[I + 1].Date, "Start/end recorded data events are out of order");
 
                 if (Events[I].EquivalentTo(Events[I + 1]) &&
-                    Events[I].State == ProductionEventType.StartEvent /*StartRecordedData*/ &&
-                    Events[I + 1].State == ProductionEventType.EndEvent /*EndRecordedData*/)
+                    Events[I].State == ProductionEventType.StartEvent &&
+                    Events[I + 1].State == ProductionEventType.EndEvent)
                 {
                     //Don't collate this pair - it's a single epoch tag file
                     I++;
@@ -170,7 +163,7 @@ namespace VSS.VisionLink.Raptor.Events
         /// </summary>
         /// <param name="Event"></param>
         /// <returns></returns>
-        public override void /*Event*/ PutValueAtDate(Event Event)
+        public override void PutValueAtDate(Event Event)
         {
             bool ExistingEventFound = Find(Event, out int EventIndex);
 
@@ -199,11 +192,6 @@ namespace VSS.VisionLink.Raptor.Events
                                     Log.Debug($"Deleting custom machine event: {Events[EventIndex]}");
                                     Events.RemoveAt(EventIndex);
                                 }
-                                else
-                                {
-                                    // Don't add the duplicate event, just return the preexisting one
-                                    //return Events[EventIndex];
-                                }
                             }
                             else
                             {
@@ -216,18 +204,13 @@ namespace VSS.VisionLink.Raptor.Events
                                     Event.Date = Event.Date.AddMilliseconds(1);
                                     CorrectInsertLocationIdentified = false;
                                 }
-                                else
-                                {
-                                    // Don't add the duplicate event, just return the preexisting one
-                                    //return Events[EventIndex];
-                                }
                             }
                         }
                         else
                         {
                             // Ensure 'end' events are placed after 'start' events at the same time
-                            if (Events[EventIndex].State == ProductionEventType.StartEvent /*StartRecordedData*/ &&
-                                Event.State == ProductionEventType.EndEvent /* EndRecordedData */)
+                            if (Events[EventIndex].State == ProductionEventType.StartEvent &&
+                                Event.State == ProductionEventType.EndEvent)
                             {
                                 Event.Date = Event.Date.AddMilliseconds(1);
                                 CorrectInsertLocationIdentified = false;
@@ -240,10 +223,15 @@ namespace VSS.VisionLink.Raptor.Events
             }
 
             Events.Insert(EventIndex, Event);
-
-           // return Event;
         }
 
+        /// <summary>
+        /// Provides a Start-End event pair based comparator that takes into account both date of event
+        /// and 'start' and 'end' natures of the events states.
+        /// </summary>
+        /// <param name="I1"></param>
+        /// <param name="I2"></param>
+        /// <returns></returns>
         protected override int Compare(Event I1, Event I2)
         {
             const int LessThanValue = -1;
@@ -265,6 +253,7 @@ namespace VSS.VisionLink.Raptor.Events
                 return EqualsValue;
             }
 
+            // Not sure why control would ever get here...
             return base.Compare(I1, I2);
         }
     }

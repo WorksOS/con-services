@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-//using log4net;
+using log4net;
+using VSS.TRex.Events.Interfaces;
 using VSS.VisionLink.Raptor.Events.Interfaces;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.Types;
@@ -20,8 +21,11 @@ namespace VSS.VisionLink.Raptor.Events
     [Serializable]
     public class ProductionEvents<V> : IProductionEvents
     {
-        //[NonSerialized]
-        //private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        [NonSerialized]
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        private const int MajorVersion = 1;
+        private const int MinorVersion = 0;
 
         /// <summary>
         /// The structure that contains all information about this type of event.
@@ -78,15 +82,15 @@ namespace VSS.VisionLink.Raptor.Events
         /// The container of event changes lists for a machine in a project that this event list is a member of
         /// </summary>
         [NonSerialized]
-        public ProductionEventLists Container;
+        public IProductionEventLists Container;
 
-        [NonSerialized]
-        private DateTime lastUpdateTimeUTC = DateTime.MinValue;
+//        [NonSerialized]
+//        private DateTime lastUpdateTimeUTC = DateTime.MinValue;
 
         /// <summary>
         /// Records the time at which this event change list was last updated in the persistent store
         /// </summary>
-        public DateTime LastUpdateTimeUTC { get => lastUpdateTimeUTC; set => lastUpdateTimeUTC = value; }
+//        public DateTime LastUpdateTimeUTC { get => lastUpdateTimeUTC; set => lastUpdateTimeUTC = value; }
 
         [NonSerialized]
         private Action<BinaryWriter, V> serialiseStateOut;
@@ -109,20 +113,19 @@ namespace VSS.VisionLink.Raptor.Events
         /// </summary>
         public ProductionEventType EventListType { get; } = ProductionEventType.Unknown;
 
-        [NonSerialized]
-        private bool eventsListIsOutOfDate;
+       // [NonSerialized]
+       // private bool eventsListIsOutOfDate;
 
+        // The list containing all the time ordered instances of this event type
         public List<Event> Events = new List<Event>();
 
         /// <summary>
         /// Default no-args constructor
         /// </summary>
         public ProductionEvents()
-        {
+        {}
 
-        }
-
-        public ProductionEvents(ProductionEventLists container,
+        /*public ProductionEvents(IProductionEventLists container,
             long machineID, long siteModelID,
             ProductionEventType eventListType)
         {
@@ -134,9 +137,9 @@ namespace VSS.VisionLink.Raptor.Events
             // Machines created with the max machine ID are treated as transient and never
             // stored in or loaded from the FS file. 
             // LoadedFromPersistentStore = machineID == kICMachineIDMaxValue;
-        }
+        }*/
 
-        public ProductionEvents(ProductionEventLists container,
+        public ProductionEvents(IProductionEventLists container,
             long machineID, long siteModelID,
             ProductionEventType eventListType,
             Action<BinaryWriter, V> serialiseStateOut,
@@ -187,22 +190,15 @@ namespace VSS.VisionLink.Raptor.Events
             return Find(value.Date, out index);
         }
 
-        //    function Compare(Item : Pointer; const Value : Variant) : Integer; overload; override;
-        //    function Compare(Item1, Item2 : Pointer) : Integer; overload; override;
-        //    Function Compare_LongWord(const Item : Pointer;
-        //                              const Value : LongWord) : Integer; override;
-        //    Function Compare_DateTime(const Item : Pointer;
-        //                              const Value : TDateTime) : Integer; override;
-        //    function GetEventFilename: TFilename; virtual;
         //    property FileMajorVersion: Byte read FMajorVersion;
         //    property FileMinorVersion: Byte read FMinorVersion;
         //    function UpgradeEventListFile(const FileStream : TStream;
         //                                  const InternalStream: TMemoryStream;
         //                                  const FileMajorVersion, FileMinorVersion: Integer): Boolean; virtual;
 
-        protected void InvalidateEventList() => eventsListIsOutOfDate = true;
+        // protected void InvalidateEventList() => eventsListIsOutOfDate = true;
 
-        public bool EventsListIsOutOfDate() => eventsListIsOutOfDate;
+        // public bool EventsListIsOutOfDate() => eventsListIsOutOfDate;
 
         // protected bool LoadedFromPersistentStore = false;
 
@@ -215,9 +211,9 @@ namespace VSS.VisionLink.Raptor.Events
         /// <param name="dateTime"></param>
         /// <param name="value"></param>
         /// <returns>The event instance that was added to the list</returns>
-        public virtual void /*Event */ PutValueAtDate(DateTime dateTime, V value)
+        public virtual void PutValueAtDate(DateTime dateTime, V value)
         {
-            /*return */PutValueAtDate(new Event
+            PutValueAtDate(new Event
             {
                 Date = dateTime,
                 State = value,
@@ -232,7 +228,7 @@ namespace VSS.VisionLink.Raptor.Events
         /// </summary>
         /// <param name="Event"></param>
         /// <returns>The event instance that was added to the list</returns>
-        public virtual void /*Event*/ PutValueAtDate(Event Event)
+        public virtual void PutValueAtDate(Event Event)
         {
             bool ExistingEventFound = Find(Event.Date, out int EventIndex);
 
@@ -256,8 +252,7 @@ namespace VSS.VisionLink.Raptor.Events
                             //if (!Event.IsCustomEvent)
                             //    return Events[EventIndex];
 
-                            // TODO add when logging available
-                            // SIGLogMessage.Publish(Self, Format('Deleting custom machine event: %s', [Items[EventIndex].ToText]), slmcDebug);
+                            Log.Debug($"Deleting custom machine event: {Events[EventIndex]}");
                             Events.RemoveAt(EventIndex);
                         }
                         else if (Event.IsCustomEvent)
@@ -285,9 +280,9 @@ namespace VSS.VisionLink.Raptor.Events
         /// Sets the state of the owning 'container' of event list (the production event changes) that this list is a member of
         /// </summary>
         /// <param name="container"></param>
-        public void SetContainer(object container)
+        public void SetContainer(IProductionEventLists container)
         {
-            Container = (ProductionEventLists)container;
+            Container = container;
         }
 
         /// <summary>
@@ -298,8 +293,8 @@ namespace VSS.VisionLink.Raptor.Events
         {
             bool HaveStartEndEventPair = false;
 
-            ProductionEvents<ProductionEventType>.Event StartEvent = new ProductionEvents<ProductionEventType>.Event();
-            ProductionEvents<ProductionEventType>.Event EndEvent = new ProductionEvents<ProductionEventType>.Event();
+            DateTime StartEvent = new DateTime();
+            DateTime EndEvent = new DateTime();
 
             int FirstIdx = 0;
             int SecondIdx = 1;
@@ -318,7 +313,7 @@ namespace VSS.VisionLink.Raptor.Events
                 if (!HaveStartEndEventPair ||
                      !Range.InRange(Events[FirstIdx].Date, StartEvent.Date, EndEvent.Date))
                 {
-                    if (!Container.StartEndRecordedDataEvents.FindStartEventPairAtTime(Events[FirstIdx].Date, out StartEvent, out EndEvent))
+                    if (!Container.GetStartEndRecordedDataEvents().FindStartEventPairAtTime(Events[FirstIdx].Date, out StartEvent, out EndEvent))
                     {
                         FirstIdx = SecondIdx;
                         SecondIdx = FirstIdx + 1;
@@ -445,6 +440,10 @@ namespace VSS.VisionLink.Raptor.Events
             {
                 using (BinaryWriter writer = new BinaryWriter(MS))
                 {
+                    writer.Write(MajorVersion);
+                    writer.Write(MinorVersion);
+                    writer.Write(Events.Count);
+
                     foreach (var e in Events)
                     {
                         writer.Write(e.Date.ToBinary());
@@ -472,27 +471,58 @@ namespace VSS.VisionLink.Raptor.Events
         /// <returns></returns>
         public ProductionEvents<V> LoadFromStore(IStorageProxy storageProxy)
         {
-            storageProxy.ReadStreamFromPersistentStoreDirect(SiteModelID, EventChangeListPersistantFileName(), FileSystemStreamType.Events, out MemoryStream MS);
+            ProductionEvents<V> Result = null;
+
+            storageProxy.ReadStreamFromPersistentStoreDirect(SiteModelID, EventChangeListPersistantFileName() + ".BinaryWriter",
+                FileSystemStreamType.Events, out MemoryStream MS1);
+
+            if (MS1 != null)
+            {
+                ProductionEvents<V> Result1 = new ProductionEvents<V>();
+
+                // Practice the binary event reading...
+                MS1.Position = 0;
+                using (var reader = new BinaryReader(MS1, Encoding.UTF8, true))
+                {
+                    int majorVer = reader.ReadInt32();
+                    int minorVer = reader.ReadInt32();
+
+                    if (majorVer != 1 && minorVer != 0)
+                        throw new ArgumentException($"Unknown major/minor version numbers: {majorVer}/{minorVer}");
+
+                    int count = reader.ReadInt32();
+                    for (int i = 0; i < count; i++)
+                    {
+                        Result1.Events.Add(new Event
+                        {
+                            Date = DateTime.FromBinary(reader.ReadInt64()),
+                            Flags = reader.ReadByte(),
+                            State = SerialiseStateIn(reader)
+                        });
+                    }
+                }
+            }
+
+            storageProxy.ReadStreamFromPersistentStoreDirect(SiteModelID, EventChangeListPersistantFileName(),
+                FileSystemStreamType.Events, out MemoryStream MS);
 
             if (MS != null)
             {
                 MS.Position = 0;
-
                 using (var reader = new BinaryReader(MS, Encoding.UTF8, true))
                 {
-                    ProductionEvents<V> Result = Read(reader);
-
-                    if (Result != null)
-                    {
-                        // Copy the seriualisation lambdas into the new instance as these are not serialised into the persistent store
-                        Result.SerialiseStateOut = SerialiseStateOut;
-                        Result.SerialiseStateIn = SerialiseStateIn;
-                    }
-                    return Result ?? this;
+                    Result = Read(reader);
                 }
             }
 
-            return this;
+            if (Result != null)
+            {
+                // Copy the serialisation lambdas into the new instance as these are not serialised into the persistent store
+                Result.SerialiseStateOut = SerialiseStateOut;
+                Result.SerialiseStateIn = SerialiseStateIn;
+            }
+
+            return Result ?? this;
         }
 
         /// <summary>
@@ -511,29 +541,42 @@ namespace VSS.VisionLink.Raptor.Events
             }
 
             if (!Find(eventDate, out stateChangeIndex))
-            {
                 stateChangeIndex--;
-            }
 
             if (stateChangeIndex >= 0)
             {
                 Event StateChange = Events[stateChangeIndex];
 
                 if (StateChange.Date <= eventDate)
-                {
                     return StateChange.State;
-                }
             }
 
             return defaultValue;
         }
 
+        /// <summary>
+        /// Basic event sorting comparator based solely on Date
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         protected virtual int Compare(Event a, Event b) => a.Date.CompareTo(b.Date);
 
+        /// <summary>
+        /// Sorts the events in the list according to the semenatics of plain event lists, or start/end event lists.
+        /// </summary>
         public void Sort() => Events.Sort(Compare);
 
+        /// <summary>
+        /// Returns the count of elements present in the Event list
+        /// </summary>
+        /// <returns></returns>
         public int Count() => Events.Count;
 
+        /// <summary>
+        /// Provides the last element in the event list. Will through IndexOutOfRange exception if list is empty.
+        /// </summary>
+        /// <returns></returns>
         public Event Last() => Events[Events.Count - 1];
 
         /// <summary>

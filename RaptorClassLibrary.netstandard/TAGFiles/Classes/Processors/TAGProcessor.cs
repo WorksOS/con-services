@@ -170,7 +170,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
             if (RecordEvent)
             {
                 MachineTargetValueChangesAggregator.StartEndRecordedDataEvents.PutValueAtDate(Value,
-                    ProductionEventType.StartEvent /*StartRecordedData*/);
+                    ProductionEventType.StartEvent);
 
                 TagFileStartTime = Value;
             }

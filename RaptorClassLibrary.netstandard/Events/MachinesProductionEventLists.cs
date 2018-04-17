@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using VSS.VisionLink.Raptor.Machines.Interfaces;
+using VSS.VisionLink.Raptor.Events.Interfaces;
 using VSS.VisionLink.Raptor.SiteModels;
 
 namespace VSS.VisionLink.Raptor.Events
@@ -8,7 +8,7 @@ namespace VSS.VisionLink.Raptor.Events
     /// Stores the list of sets of machine events. Each machine has a set of event lists. MachinesTargetValues 
     /// contains a list of these sets of event lists for multiple machines
     /// </summary>
-    public class MachinesProductionEventLists : List<ProductionEventLists>, IMachinesTargetValuesList
+    public class MachinesProductionEventLists : List<ProductionEventLists>, IMachinesProductionEventLists
     {
         /// <summary>
         /// The Sitemodel instance that owns this set of machines target values

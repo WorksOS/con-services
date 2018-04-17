@@ -9,10 +9,12 @@ namespace VSS.VisionLink.Raptor.Events
     public enum ProductionEventType
     {
         Unknown = 0x00000000,
-        //MachineStartup = 0x00000001,
-        //MachineShutdown = 0x00000002,
-        StartEvent /*RecordedData */ = 0x00000003,
-        EndEvent /*EndRecordedData */ = 0x00000004,
+        //MachineStartup = 0x00000001, Obsolete, now replaced by StartEvent
+        //MachineShutdown = 0x00000002, Obsolete, now replaced by EndEvent
+        //StartRecordedData = 0x00000003, Obsolete, now replaced by StartEvent
+        //EndEndRecordedData = 0x00000004, Obsolete, now replaced by EndEvent
+        StartEvent = 0x00000003,
+        EndEvent = 0x00000004,
         DesignChange = 0x00000005,
         TargetCCV = 0x00000006,
         TargetPassCount = 0x00000007,
@@ -39,7 +41,17 @@ namespace VSS.VisionLink.Raptor.Events
         DesignOverride = 0x0000001C,
         LayerOverride = 0x0000001D,
         TargetCCA = 0x0000001E,
+
+        /// <summary>
+        /// Used by an event list that has state events of ProductionEventType.StartEvent and ProductionEventType.EndEvent 
+        /// to define periods of known recorded data (covered by processed TAG file data)
+        /// </summary>
         StartEndRecordedData = 0x0000001F,
+
+        /// <summary>
+        /// Used by an event list that has state events of ProductionEventType.StartEvent and ProductionEventType.EndEvent 
+        /// to define periods of known machine activity (startup -> shutdown periods)
+        /// </summary>
         MachineStartupShutdown = 0x00000020
     }
 }

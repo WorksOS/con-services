@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using VSS.TRex.Events.Interfaces;
 using VSS.VisionLink.Raptor.Interfaces;
 
 namespace VSS.VisionLink.Raptor.Events.Interfaces
@@ -13,7 +13,7 @@ namespace VSS.VisionLink.Raptor.Events.Interfaces
 
         void SaveToStore(IStorageProxy storageProxy);
 
-        void SetContainer(object container);
+        void SetContainer(IProductionEventLists container);
 
         ProductionEventType EventListType { get; }
 
