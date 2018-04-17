@@ -110,6 +110,21 @@
     "Code": 0,
     "Message": "success"
   },
+  "AsAtCustom_Summary": {
+    "passCountSummaryData": {
+      "percentEqualsTarget": 5.154569892473118,
+      "percentGreaterThanTarget": 41.122311827956985,
+      "percentLessThanTarget": 53.723118279569896,
+      "totalAreaCoveredSqMeters": 1720.1280000000004,
+      "PassCountTarget": {
+        "minPassCountMachineTarget": 5.0,
+        "maxPassCountMachineTarget": 5.0,
+        "targetVaries": true
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
   "DesignOutside_Details": {
     "passCountDetailsData": null,
     "Code": 0,
@@ -156,6 +171,29 @@
         "minPassCountMachineTarget": 0.0,
         "maxPassCountMachineTarget": 0.0,
         "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "AsAtCustomPCDetails": {
+    "passCountDetailsData": {
+      "percents": [
+        24.49270995716363,
+        10.388147294234775,
+        9.011357533044265,
+        6.8800188637227038,
+        5.5936177738187247,
+        3.7399950220731752,
+        3.003785844348088,
+        2.1889778220260161,
+        34.701389889568624
+      ],
+      "totalCoverageArea": 1720.1280000000004,
+      "PassCountTarget": {
+        "minPassCountMachineTarget": 0.0,
+        "maxPassCountMachineTarget": 0.0,
+        "targetVaries": true
       }
     },
     "Code": 0,

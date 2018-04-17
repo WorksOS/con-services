@@ -257,6 +257,9 @@ namespace VSS.Productivity3D.Common.Models
 
     [JsonIgnore]
     public DateRangeType? DateRangeType { get; private set; }
+  
+    [JsonIgnore]
+    public bool? AsAtDate { get; protected set; }
 
     /// <summary>
     /// Default private constructor.
@@ -446,7 +449,8 @@ namespace VSS.Productivity3D.Common.Models
         SurveyedSurfaceExclusionList = surveyedSurfaceExclusionList,
         ReturnEarliest = returnEarliest,
         DesignFile = designFile,
-        DateRangeType = filter.DateRangeType
+        DateRangeType = filter.DateRangeType,
+        AsAtDate = filter.AsAtDate
       };
     }
 
@@ -490,9 +494,29 @@ namespace VSS.Productivity3D.Common.Models
         }
         else
         {
-          throw new ServiceException(HttpStatusCode.BadRequest,
+          if (!AsAtDate.HasValue || AsAtDate.Value == false)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                  "If using a date range both dates must be provided"));
+                "If using a date range both dates must be provided"));
+          }
+          else if (!EndUtc.HasValue)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "Either EndUTC or DateRangeType must be provided for an as-at date filter"));
+          }
+        }
+      }
+      if (AsAtDate.HasValue)
+      {
+        bool valid = EndUtc.HasValue || DateRangeType.HasValue &&
+                     DateRangeType.Value != VSS.MasterData.Models.Internal.DateRangeType.Custom;//custom must have end UTC
+        if (!valid)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "Either EndUTC or DateRangeType must be provided for an as-at date filter"));
         }
       }
 
@@ -721,6 +745,11 @@ namespace VSS.Productivity3D.Common.Models
           StartUtc = DateRangeType?.UtcForDateRangeType(ianaTimeZoneName, true, true);
           EndUtc = DateRangeType?.UtcForDateRangeType(ianaTimeZoneName, false, true);
         }
+      }
+      //For as-at dates only use EndUTC, so make sure StartUTC is null
+      if (AsAtDate == true)
+      {
+        StartUtc = null;
       }
     }
   }

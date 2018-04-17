@@ -11,7 +11,7 @@ namespace Microsoft.AspNetCore.ResponseCaching.Internal
         IResponseCacheEntry Get(string key);
         Task<IResponseCacheEntry> GetAsync(string key);
 
-        void Set(string key, IResponseCacheEntry entry, TimeSpan validFor);
-        Task SetAsync(string key, IResponseCacheEntry entry, TimeSpan validFor);
+        void Set(string baseKey, string key, IResponseCacheEntry entry, TimeSpan validFor);
+        Task SetAsync(string baseKey, string key, IResponseCacheEntry entry, TimeSpan validFor);
     }
 }

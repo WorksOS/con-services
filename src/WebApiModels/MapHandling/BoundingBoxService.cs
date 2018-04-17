@@ -344,7 +344,13 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       Point zoomedPixelMax = pixelMax;
       long numTiles = parameters.numTiles;
 
-      while (zoomedWidth < parameters.mapWidth && zoomedHeight < parameters.mapHeight)
+      //allow a 15% margin extra otherwise if the tile is only a few pixels bigger than the calculated zoom
+      //we use the smaller zoom level and end up with lots of space around the data.
+      //AdjustBoundingBoxToFit handles the bigger size.
+      var mapWidth = parameters.mapWidth * 1.15;
+      var mapHeight = parameters.mapHeight * 1.15;
+
+      while (zoomedWidth < mapWidth && zoomedHeight < mapHeight)
       {
         parameters.zoomLevel = zoomLevel;
         parameters.numTiles = numTiles;

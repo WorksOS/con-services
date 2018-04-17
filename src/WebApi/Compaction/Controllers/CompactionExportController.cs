@@ -28,8 +28,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting Raptor production data for summary and details requests
   /// </summary>
-  // [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })] (Aaron) Disabled temporarily until we can resolve the cache invalidation problem
-  [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+  [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   public class CompactionExportController : BaseController
   {
     /// <summary>
@@ -363,7 +362,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(LoggerFactory, raptorClient)
             .Process(request) as ProjectStatisticsResult;
 
-        return new Tuple<DateTime, DateTime>(result.startTime, result.endTime);
+        var startUtc = filter?.StartUtc == null ? result.startTime : filter.StartUtc.Value;
+        var endUtc = filter?.EndUtc == null ? result.endTime : filter.EndUtc.Value;
+        return new Tuple<DateTime, DateTime>(startUtc, endUtc);
       }
 
       return new Tuple<DateTime, DateTime>(filter.StartUtc.Value, filter.EndUtc.Value);
