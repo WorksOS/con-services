@@ -178,6 +178,7 @@ namespace VSS.MasterData.Proxies
       return response;
     }
 
+    /*
     /// <summary>
     /// Gets the veta export data.
     /// </summary>
@@ -207,6 +208,7 @@ namespace VSS.MasterData.Proxies
       }
       return result;
     }
+    */
 
     /// <summary>
     /// Validates that filterUid has changed i.e. updated/deleted but not inserted

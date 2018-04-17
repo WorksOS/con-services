@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
+using VSS.MasterData.Models.Local.Models;
 using VSS.MasterData.Models.ResultHandling;
 
 namespace MockProjectWebApi.Controllers
@@ -8,12 +9,12 @@ namespace MockProjectWebApi.Controllers
   {
     [Route("/api/v1/mock/export")]
     [HttpPost]
-    public ScheduleJobResult StartMockExport([FromBody] string exportDataUrl)
+    public ScheduleJobResult StartMockExport([FromBody] ScheduleJobRequest request)
     {
       var jobId = IN_PROGRESS_JOB_ID;
-      if (exportDataUrl.Contains("Test-success"))
+      if (request.Url.Contains("Test-success"))
         jobId = SUCCESS_JOB_ID;
-      if (exportDataUrl.Contains("Test-failed"))
+      if (request.Url.Contains("Test-failed"))
         jobId = FAILURE_JOB_ID;
       return new ScheduleJobResult { jobId = jobId };
     }

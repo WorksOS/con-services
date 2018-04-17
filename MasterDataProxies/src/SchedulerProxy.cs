@@ -5,6 +5,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Local.Models;
 using VSS.MasterData.Models.ResultHandling;
 
 namespace VSS.MasterData.Proxies
@@ -19,12 +20,13 @@ namespace VSS.MasterData.Proxies
     /// <summary>
     /// Schedules the export job with a Scheduler Service.
     /// </summary>
-    /// <param name="exportDataUrl">The URL for getting the export data.</param>
+    /// <param name="request">Http request details of how to get the export data</param>
     /// <param name="customHeaders">The custom headers.</param>
     /// <returns></returns>
-    public async Task<ScheduleJobResult> ScheduleExportJob(string exportDataUrl, IDictionary<string, string> customHeaders)
+    public async Task<ScheduleJobResult> ScheduleExportJob(ScheduleJobRequest request, IDictionary<string, string> customHeaders)
     {
-      var result = await SendRequest<ScheduleJobResult>("SCHEDULER_EXPORT_URL", exportDataUrl, customHeaders, null, "POST", string.Empty);
+      var payload = JsonConvert.SerializeObject(request);
+      var result = await SendRequest<ScheduleJobResult>("SCHEDULER_EXPORT_URL", payload, customHeaders, null, "POST", string.Empty);
       if (result != null)
       {
         return result;
