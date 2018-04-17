@@ -25,6 +25,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       this.transferProxy = transferProxy;
     }
 
+    /*
     /// <summary>
     /// Gets the veta export data from 3dpm and saves it to AWS S3.
     /// </summary>
@@ -41,6 +42,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       transferProxy.Upload(new MemoryStream(data.ExportData), GetS3Key(customHeaders["X-VisionLink-CustomerUid"], projectUid, context.BackgroundJob.Id));
     }
 
+  */
     /// <summary>
     /// Gets the S3 key for a job
     /// </summary>

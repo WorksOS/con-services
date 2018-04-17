@@ -4,6 +4,7 @@ using System.IO;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Local.Models;
 using VSS.MasterData.Proxies;
 
 namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
@@ -27,17 +28,18 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       this.configurationStore = configurationStore;
     }
 
-    public async Task<T> SendRequest<T>(string url, IDictionary<string, string> customHeaders,
-      string method = "POST", string payload = null, Stream streamPayload = null)
+    public async Task<T> SendRequest<T>(ScheduleJobRequest jobRequest, IDictionary<string, string> customHeaders,
+      string payload = null, Stream streamPayload = null)
     {
+      var method = jobRequest.Method ?? "GET";
       var result = default(T);
       try
       {
         var request = new GracefulWebRequest(logger, configurationStore);
         if (streamPayload != null)
-          result = await request.ExecuteRequest<T>(url, streamPayload, customHeaders, method);
+          result = await request.ExecuteRequest<T>(jobRequest.Url, streamPayload, customHeaders, method);
         else
-          result = await request.ExecuteRequest<T>(url, method, customHeaders, payload);
+          result = await request.ExecuteRequest<T>(jobRequest.Url, method, customHeaders, payload);
         log.LogDebug("Result of send request: {0}", result);
       }
       catch (Exception ex)
