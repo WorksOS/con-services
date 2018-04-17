@@ -76,6 +76,16 @@ namespace VSS.Productivity3D.WebApiTests
       }
     }
 
+    [TestMethod]
+    public void CanGeneratePreSignedUrl()
+    {
+      var transfer = serviceProvider.GetRequiredService<ITransferProxy>();
+      var result = transfer.GeneratePreSignedUrl(s3Key);
+      Assert.IsFalse(string.IsNullOrEmpty(result));
+      Assert.IsTrue(result.Contains(s3Key));
+      //"https://vss-merino.s3.us-west-2.amazonaws.com/3dpm/87bdf851-44c5-e311-aa77-00505688274d/7925f179-013d-4aaf-aff4-7b9833bb06d6/Test_Job_1.zip?X-Amz-Expires=604799&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIBGOEETXHMANDX7A/20180417/us-west-2/s3/aws4_request&X-Amz-Date=20180417T042733Z&X-Amz-SignedHeaders=host&X-Amz-Signature=42a7e4052b5b62af324fb5082b88940cdd9e9e3ee29432cede4b808c989c3d94"
+    }
+
     private static string s3Key;
   }
 }

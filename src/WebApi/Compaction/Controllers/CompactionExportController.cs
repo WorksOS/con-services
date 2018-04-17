@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
-using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Local.Models;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
@@ -89,12 +89,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         exportDataUrl = $"{exportDataUrl}&filterUid={filterUid}";
       }
-      exportDataUrl = $"\"{exportDataUrl}\"";
+      var request = new ScheduleJobRequest {Url = exportDataUrl};
       return
         WithServiceExceptionTryExecute(() => new ScheduleResult
         {
           JobId =
-            scheduler.ScheduleExportJob(exportDataUrl, Request.Headers.GetCustomHeaders(true)).Result?.jobId
+            scheduler.ScheduleExportJob(request, Request.Headers.GetCustomHeaders(true)).Result?.jobId
         });
     }
     #endregion
