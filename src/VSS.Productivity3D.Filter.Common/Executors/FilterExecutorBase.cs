@@ -63,8 +63,11 @@ namespace VSS.Productivity3D.Filter.Common.Executors
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, errorCodes[0]);
         }
         else
-        {
-          await NotifyRaptor(filterRequest);
+        {     // Do not do this for transient filters
+          if (filterRequest.FilterType != FilterType.Transient)
+          {
+            await NotifyRaptor(filterRequest);
+          }
         }
       }
       catch (Exception e)
