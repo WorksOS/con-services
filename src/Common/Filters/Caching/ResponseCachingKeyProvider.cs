@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.ResponseCaching;
 using Microsoft.AspNetCore.ResponseCaching.Internal;
 using Microsoft.Extensions.Logging;
@@ -15,6 +15,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Extensions;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
 
 namespace VSS.Productivity3D.Common.Filters.Caching
 {
@@ -100,7 +101,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
       }
     }
 
-    //Here fun begins. VaryRule MASUT include proper filter uid hashing
+    //Here fun begins. VaryRule MUST include proper filter uid hashing
     public string CreateStorageVaryByKey(ResponseCachingContext context)
     {
       if (context == null)
@@ -128,9 +129,9 @@ namespace VSS.Productivity3D.Common.Filters.Caching
           .Append("QQ")
           .Append(request.Host.Value.ToUpperInvariant());
 
-          builder
-            .Append(request.PathBase.Value.ToUpperInvariant())
-            .Append(request.Path.Value.ToUpperInvariant());
+        builder
+          .Append(request.PathBase.Value.ToUpperInvariant())
+          .Append(request.Path.Value.ToUpperInvariant());
 
         // Vary by headers
         // This is the default implementation
@@ -151,6 +152,8 @@ namespace VSS.Productivity3D.Common.Filters.Caching
         }
 
         // Vary by query keys
+        var projectUid = string.Empty;
+
         if (varyByRules.QueryKeys.Count > 0)
         {
           // Append a group separator for the query key segment of the cache key
@@ -160,14 +163,13 @@ namespace VSS.Productivity3D.Common.Filters.Caching
           var projectUids = context.HttpContext.Request.Query
             ?.Where(s => string.Equals(s.Key, "projectUid", StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault().Value;
 
-          string projectUid = String.Empty;
-
           if (projectUids.HasValue && projectUids.Value.Count > 0)
+          {
             projectUid = projectUids.Value[0];
+          }
 
           if (varyByRules.QueryKeys.Count == 1 && string.Equals(varyByRules.QueryKeys[0], "*", StringComparison.Ordinal))
           {
-
             // Vary by all available query keys
             foreach (var query in context.HttpContext.Request.Query.OrderBy(q => q.Key,
               StringComparer.OrdinalIgnoreCase))
@@ -176,7 +178,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
               {
                 var value = query.Value;
 
-                if (!string.IsNullOrEmpty(projectUid) &&  query.Key.ToUpperInvariant() == "FILTERUID")
+                if (!string.IsNullOrEmpty(projectUid) && query.Key.ToUpperInvariant() == "FILTERUID")
                 {
                   value = GenerateFilterHash(projectUid, query.Value[0],
                     context.HttpContext.Request.Headers.GetCustomHeaders(true)).ToString();
@@ -212,6 +214,9 @@ namespace VSS.Productivity3D.Common.Filters.Caching
             }
           }
         }
+
+        builder.Append($"USERID={((RaptorPrincipal)context.HttpContext.User).UserEmail}");
+
         var key = builder.ToString();
         logger?.LogDebug($"Cache key: {key}");
         return key;
@@ -238,5 +243,4 @@ namespace VSS.Productivity3D.Common.Filters.Caching
       return JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filter.FilterJson).GetHashCode();
     }
   }
-
 }

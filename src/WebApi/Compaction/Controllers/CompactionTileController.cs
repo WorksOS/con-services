@@ -31,7 +31,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting tiles for displaying production data and linework.
   /// </summary>
-  [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)] // (Aaron) Disabled temporarily until we can resolve the cache invalidation problem.
+  [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   [ProjectUidVerifier]
   public class CompactionTileController : BaseController
   {
@@ -86,8 +86,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="volumeCalcType">Summary volumes calculation type</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>CompactionTileExecutor</executor> 
-    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)] // (Aaron) Disabled temporarily until we can resolve the cache invalidation problem.    
-    ///[ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
+    [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
     [ValidateTileParameters]
     [Route("api/v2/productiondatatiles")]
     [HttpGet]
@@ -156,8 +155,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// (number of cells across a subgrid) * 0.34 (default width in meters of a single cell).
     /// </returns>
     /// <executor>CompactionTileExecutor</executor> 
-    ///[ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
-    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)] // (Aaron) Disabled temporarily until we can resolve the cache invalidation problem.
+    [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
     [ValidateTileParameters]
     [Route("api/v2/productiondatatiles/png")]
     [HttpGet]
