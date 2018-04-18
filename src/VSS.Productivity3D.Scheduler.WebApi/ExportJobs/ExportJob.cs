@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Hangfire.Server;
 using VSS.MasterData.Models.Local.Models;
@@ -41,7 +39,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       var data = await apiClient.SendRequest<ExportResult>(request, customHeaders);
       //TODO: Do we want something like applicationName/customerUid/userId/jobId for S3 path?
       //where app name and userId (appId or userUid) from JWT
-      transferProxy.Upload(new MemoryStream(data.ExportData), context.BackgroundJob.Id);
+      transferProxy.Upload(new MemoryStream(data.ExportData), GetS3Key(context.BackgroundJob.Id));
     }
 
     /// <summary>
@@ -49,21 +47,17 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     /// </summary>
     public string GetDownloadLink(string jobId)
     {
-      return transferProxy.GeneratePreSignedUrl(jobId);
+      return transferProxy.GeneratePreSignedUrl(GetS3Key(jobId));
     }
 
-    /*
     /// <summary>
     /// Gets the S3 key for a job
     /// </summary>
-    /// <param name="customerUid">The customer Uid</param>
-    /// <param name="projectUid">The project Uid</param>
     /// <param name="jobId">The job id</param>
     /// <returns>The S3 key where the file is stored. This is the full path and file name in AWS.</returns>
-    public static string GetS3Key(string customerUid, Guid projectUid, string jobId)
+    public static string GetS3Key(string jobId)
     {
-      return $"3dpm/{customerUid}/{projectUid}/{jobId}.zip";
+      return $"3dpm/{jobId}.zip";
     }
-    */
   }
 }
