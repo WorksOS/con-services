@@ -170,6 +170,14 @@ namespace MockProjectWebApi.Utils
         FilterJson = JsonResourceHelper.GetFilterJson("SummaryVolumesTopFilter")
       };
 
+      public static FilterDescriptor SummaryVolumesFilterNoDates => new FilterDescriptor
+      {
+        FilterUid = "98f03939-e559-442b-b376-4dd25f86349e",
+        Name = "Summary Volumes Filter No Dates",
+        FilterType = FilterType.Persistent,
+        FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesFilterNoDates")
+      };
+
       public static FilterDescriptor SummaryVolumesFilterToday => new FilterDescriptor
       {
         FilterUid = "A54E5945-1AAA-4921-9CC1-C9D8C0A343D3",

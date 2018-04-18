@@ -102,6 +102,7 @@ namespace MockProjectWebApi.Controllers
                 FilterDescriptors.Dimensions.SummaryVolumesFilterExtentsEarliest,
                 FilterDescriptors.Dimensions.SummaryVolumesFilterExtentsLatest,
                 FilterDescriptors.Dimensions.SummaryVolumesFilterToday,
+                FilterDescriptors.Dimensions.SummaryVolumesFilterNoDates,
                 FilterDescriptors.Dimensions.SummaryVolumesFilterNoLatLonToday,
                 FilterDescriptors.Dimensions.SummaryVolumesFilterNoLatLonYesterday,
                 FilterDescriptors.Dimensions.SummaryVolumesFilterProjectExtents,
