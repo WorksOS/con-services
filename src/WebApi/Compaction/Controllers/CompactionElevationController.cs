@@ -26,8 +26,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// Controller for getting elevation data from Raptor
   /// </summary>
   //Turn off caching until settings caching problem resolved
-  [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-  // [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
+  [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   public class CompactionElevationController : BaseController
   {
     /// <summary>

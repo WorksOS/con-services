@@ -19,7 +19,7 @@ Examples:
 | BaseMap               | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | BaseMap                                | MAP       |      | 1          |          |
 | BaseMapZH             | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | BaseMap                                | MAP       |      | 1          | zh-CN    |
 | BaseMapEN             | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | BaseMap                                | MAP       |      | 1          | en_US    |
-| Elevation             | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 0    | 3.5        |          |
+| Elevation             | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 0    | 5          |          |
 | MDP                   | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 20   | 3          |          |
 | CMV                   | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 1    | 3          |          |
 | CMVchange             | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData                         |           | 27   | 3          |          |

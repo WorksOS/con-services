@@ -207,11 +207,11 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:overlayType", "ProductionData")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mapType", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mode", "0")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "3.5")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "5")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:language", "")]
         public virtual void ReportTiles_Elevation()
         {
-            this.ReportTiles("Elevation", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "ProductionData", "", "0", "3.5", "", ((string[])(null)));
+            this.ReportTiles("Elevation", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "ProductionData", "", "0", "5", "", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
