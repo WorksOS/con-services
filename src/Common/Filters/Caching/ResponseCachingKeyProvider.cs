@@ -15,6 +15,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Extensions;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
 
 namespace VSS.Productivity3D.Common.Filters.Caching
 {
@@ -128,9 +129,9 @@ namespace VSS.Productivity3D.Common.Filters.Caching
           .Append("QQ")
           .Append(request.Host.Value.ToUpperInvariant());
 
-          builder
-            .Append(request.PathBase.Value.ToUpperInvariant())
-            .Append(request.Path.Value.ToUpperInvariant());
+        builder
+          .Append(request.PathBase.Value.ToUpperInvariant())
+          .Append(request.Path.Value.ToUpperInvariant());
 
         // Vary by headers
         // This is the default implementation
@@ -177,7 +178,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
               {
                 var value = query.Value;
 
-                if (!string.IsNullOrEmpty(projectUid) &&  query.Key.ToUpperInvariant() == "FILTERUID")
+                if (!string.IsNullOrEmpty(projectUid) && query.Key.ToUpperInvariant() == "FILTERUID")
                 {
                   value = GenerateFilterHash(projectUid, query.Value[0],
                     context.HttpContext.Request.Headers.GetCustomHeaders(true)).ToString();
@@ -213,6 +214,9 @@ namespace VSS.Productivity3D.Common.Filters.Caching
             }
           }
         }
+
+        builder.Append($"USERID={((RaptorPrincipal)context.HttpContext.User).UserEmail}");
+
         var key = builder.ToString();
         logger?.LogDebug($"Cache key: {key}");
         return key;
@@ -239,5 +243,4 @@ namespace VSS.Productivity3D.Common.Filters.Caching
       return JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filter.FilterJson).GetHashCode();
     }
   }
-
 }
