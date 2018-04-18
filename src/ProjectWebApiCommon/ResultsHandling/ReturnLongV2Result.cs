@@ -1,10 +1,9 @@
 ﻿using System.Net;
-using System.Security.Permissions;
 using Newtonsoft.Json;
 
 namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
 {
-  public class CreateProjectV2Result : ContractExecutionResult
+  public class ReturnLongV2Result : ContractExecutionResult
   {
     /// <summary>
     /// The projectId
@@ -15,20 +14,20 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
     /// <summary>
     /// Private constructor
     /// </summary>
-    private CreateProjectV2Result()
+    private ReturnLongV2Result()
     { }
 
 
     /// <summary>
-    /// CreateAProjectV2Result create instance
+    /// CreateLongV2Result create instance
     /// </summary>
     /// <returns></returns>
-    public static CreateProjectV2Result CreateAProjectV2Result(HttpStatusCode code, int projectId)
+    public static ReturnLongV2Result CreateLongV2Result(HttpStatusCode code, long id)
     {
-      return new CreateProjectV2Result
+      return new ReturnLongV2Result
       {
         Code = (int) code,
-        id = projectId
+        id = id
       };
     }
     

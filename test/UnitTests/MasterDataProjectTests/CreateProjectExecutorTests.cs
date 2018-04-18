@@ -71,7 +71,7 @@ namespace VSS.MasterData.ProjectTests
       byte[] buffer = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3 };
       fileRepo.Setup(fr => fr.GetFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new MemoryStream(buffer));
 
-      var coordinateSystemFileContent = await ProjectRequestHelper.GetCoordinateSystemContent(_businessCenterFile,
+      var coordinateSystemFileContent = await ProjectRequestHelper.GetFileContentFromTcc(_businessCenterFile,
         logger.CreateLogger<CreateProjectExecutorTests>(), serviceExceptionHandler, fileRepo.Object).ConfigureAwait(false);
       Assert.IsTrue(buffer.SequenceEqual(coordinateSystemFileContent), "CoordinateSystemFileContent not read from DC.");
       }
