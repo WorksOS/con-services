@@ -13,7 +13,9 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Microsoft.AspNetCore.Mvc;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -436,6 +438,59 @@ namespace TestUtility
     }
 
     /// <summary>
+    /// Create the project via the web api. 
+    /// </summary>
+    /// <param name="projectUid">project UID</param>
+    /// <param name="projectId">legacy project id</param>
+    /// <param name="name">project name</param>
+    /// <param name="startDate">project start date</param>
+    /// <param name="endDate">project end date</param>
+    /// <param name="projectType">project type</param>
+    /// <param name="timezone">project time zone</param>
+    /// <param name="actionUtc">timestamp of the event</param>
+    /// <param name="boundary"></param>
+    /// <param name="statusCode">expected status code from web api call</param>
+    public string CreateProjectViaWebApiV2(string name, DateTime startDate, DateTime endDate, string timezone, ProjectType projectType, DateTime actionUtc, string boundary, HttpStatusCode statusCode)
+    {
+      var createProjectV2Request = CreateProjectV2Request.CreateACreateProjectV2Request(
+      projectType, startDate, endDate, name, timezone,
+        ProjectBoundaryValidator.ParseGeometryDataPointLL(boundary).ToList(),
+        new BusinessCenterFile() { FileSpaceId = "u3bdc38d-1afe-470e-8c1c-fc241d4c5e01", Name = "CTCTSITECAL.dc", Path = "/BC Data/Sites/Chch Test Site" }
+      );
+      string requestJson;
+      if (createProjectV2Request == null)
+      {
+        requestJson = null;
+      }
+      else
+      {
+        requestJson = JsonConvert.SerializeObject(createProjectV2Request, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      }
+      return CallProjectWebApiV2(requestJson, string.Empty, "api/v2/projects/", statusCode, "Create", HttpMethod.Post.ToString(), CustomerUid.ToString());
+    }
+
+    /// <summary>
+    /// Validate the TBC orgShortName for this customer via the web api. 
+    /// </summary>
+    /// <param name="orgShortName"></param>
+    /// <param name="statusCode">expected status code from web api call</param>
+    public string ValidateTbcOrgIdApiV2(string orgShortName, HttpStatusCode statusCode)
+    {
+      var validateTccAuthorizationRequest = ValidateTccAuthorizationRequest.CreateValidateTccAuthorizationRequest(orgShortName);
+      string requestJson;
+      if (validateTccAuthorizationRequest == null)
+      {
+        requestJson = null;
+      }
+      else
+      {
+        requestJson = JsonConvert.SerializeObject(validateTccAuthorizationRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      }
+      return CallProjectWebApiV2(requestJson, string.Empty, "api/v2/preferences/tcc", statusCode, "Create", HttpMethod.Post.ToString(), CustomerUid.ToString());
+    }
+
+
+    /// <summary>
     /// Call web api version 3
     /// </summary>
     /// <param name="statusCode"></param>
@@ -734,6 +789,53 @@ namespace TestUtility
       query = $@"INSERT INTO `{TsCfg.dbSchema}`.{"ProjectSubscription"} 
                             (fk_SubscriptionUID,fk_ProjectUID,EffectiveDate,LastActionedUTC) VALUES
                             ('{MockProjectSubscription.SubscriptionUID}','{MockProjectSubscription.ProjectUID}','{MockProjectSubscription.EffectiveDate:yyyy-MM-dd}','{MockProjectSubscription.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
+      mysqlHelper.ExecuteMySqlInsert(TsCfg.DbConnectionString, query);
+    }
+
+    /// <summary>
+    /// Inject the MockSubscription
+    /// </summary>
+    /// <param name="serviceType"></param>
+    /// <param name="subscriptionUid">Subscription UID</param>
+    /// <param name="customerUid">Customer UID</param>
+    /// <param name="startDate">Start date of the subscription</param>
+    /// <param name="endDate">End date of the subscription</param>
+    public void CreateMockSubscription(ServiceTypeEnum serviceType, string subscriptionUid, string customerUid,
+      DateTime startDate, DateTime endDate)
+    {
+      MockSubscription = new Subscription
+      {
+        SubscriptionUID = subscriptionUid,
+        CustomerUID = customerUid,
+        ServiceTypeID = (int) serviceType,
+        StartDate = startDate,
+        EndDate = endDate,
+        LastActionedUTC = DateTime.UtcNow
+      };
+      var query = $@"INSERT INTO `{TsCfg.dbSchema}`.{"Subscription"} 
+                            (SubscriptionUID,fk_CustomerUID,fk_ServiceTypeID,StartDate,EndDate,LastActionedUTC) VALUES
+                            ('{MockSubscription.SubscriptionUID}','{MockSubscription.CustomerUID}',{
+          MockSubscription.ServiceTypeID
+        },'{MockSubscription.StartDate:yyyy-MM-dd HH}','{MockSubscription.EndDate:yyyy-MM-dd}','{
+          MockSubscription.LastActionedUTC
+        :yyyy-MM-dd HH\:mm\:ss.fffffff}');";
+      var mysqlHelper = new MySqlHelper();
+      mysqlHelper.ExecuteMySqlInsert(TsCfg.DbConnectionString, query);
+    }
+
+    /// <summary>
+    /// Inject the MockSubscription
+    /// </summary>
+    /// <param name="orgId"></param>
+    /// <param name="customerUid">Customer UID</param>
+    public void CreateMockCustomerTbcOrgId(string orgId, string customerUid)
+    {
+      var lastActionedUtc = DateTime.UtcNow;
+
+      var query = $@"INSERT INTO `{TsCfg.dbSchema}`.{"CustomerTccOrg"} 
+                            (CustomerUID,TCCOrgID,LastActionedUTC) VALUES
+                            ('{customerUid}','{orgId}','{lastActionedUtc:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
+      var mysqlHelper = new MySqlHelper();
       mysqlHelper.ExecuteMySqlInsert(TsCfg.DbConnectionString, query);
     }
 
@@ -1748,6 +1850,27 @@ namespace TestUtility
       var response = restClient.DoHttpRequest(uri, method, configJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
       return response;
     }
+
+    /// <summary>
+    /// Call the version 2 of the web api - used for BCC integration
+    /// </summary>
+    /// <param name="requestJson"></param>
+    /// <param name="routeSuffix"></param>
+    /// <param name="what"></param>
+    /// <param name="method"></param>
+    /// <param name="customerUid"></param>
+    /// <param name="jwt"></param>
+    /// <param name="endPoint"></param>
+    /// <param name="statusCode"></param>
+    /// <returns></returns>
+    public string CallProjectWebApiV2(string requestJson, string routeSuffix, string endPoint, HttpStatusCode statusCode, string what, string method = "POST", string customerUid = null, string jwt = null)
+    {
+      var uri = GetBaseUri() + endPoint + routeSuffix;
+      var restClient = new RestClientUtil();
+      var response = restClient.DoHttpRequest(uri, method, requestJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
+      return response;
+    }
+
     #endregion
   }
 }

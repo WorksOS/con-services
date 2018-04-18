@@ -28,7 +28,6 @@ namespace VSS.MasterData.ProjectTests
 
     [TestMethod]
     [DataRow(ProjectSettingsType.Targets)]
-    //[DataRow(ProjectSettingsType.ImportedFiles)]
     [DataRow(ProjectSettingsType.Colors)]
     public async Task GetProjectSettingsExecutor_NoDataExists(ProjectSettingsType settingsType)
     {
@@ -65,7 +64,6 @@ namespace VSS.MasterData.ProjectTests
 
     [TestMethod]
     [DataRow(ProjectSettingsType.Targets)]
-    //[DataRow(ProjectSettingsType.ImportedFiles)]
     [DataRow(ProjectSettingsType.Colors)]
     public async Task GetProjectSettingsExecutor_DataExists(ProjectSettingsType settingsType)
     {

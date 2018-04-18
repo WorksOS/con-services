@@ -10,7 +10,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 namespace VSS.MasterData.ProjectTests
 {
   [TestClass]
-  public class UtilityTests
+  public class UtilityTestsV3
   {
     [ClassInitialize]
     public static void ClassInitialize(TestContext testContext)

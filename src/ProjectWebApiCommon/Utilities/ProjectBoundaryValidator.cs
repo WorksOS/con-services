@@ -16,7 +16,18 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 
     private static IEnumerable<Point> ParseBoundaryData(string s, char pointSeparator, char coordSeparator)
     {
+      string[] pointsArray = s. /*Remove(s.Length - 1).*/Split(pointSeparator);
 
+      for (int i = 0; i < pointsArray.Length; i++)
+      {
+        //gets x and y coordinates split by comma, trims whitespace at pos 0, converts to double array
+        var coordinates = pointsArray[i].Trim().Split(coordSeparator).Select(c => double.Parse(c)).ToArray();
+        yield return (new Point(coordinates[1], coordinates[0]));
+      }
+    }
+
+    private static IEnumerable<Point> ParseBoundaryDataPointLL(string s, char pointSeparator, char coordSeparator)
+    {
       string[] pointsArray = s. /*Remove(s.Length - 1).*/Split(pointSeparator);
 
       for (int i = 0; i < pointsArray.Length; i++)
@@ -52,7 +63,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
               var fixedGeometry = DbGeometry.FromText(wktText);
               if (fixedGeometry.IsValid)
               {
-                log.Info("Removed the Last Point in  GeometryWKT as it was duplicated");
+                logger.Info("Removed the Last Point in  GeometryWKT as it was duplicated");
                 return wktText;
               }
               else
@@ -64,18 +75,18 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
                 var adjustedFixedGeometry = DbGeometry.FromText(adjustedWktText);
                 if (adjustedFixedGeometry.IsValid)
                 {
-                  log.Info("Removed the All the Consecutive Point in  GeometryWKT");
+                  logger.Info("Removed the All the Consecutive Point in  GeometryWKT");
                   return adjustedWktText;
                 }
               }
             }
           }
-          log.Info("Not a valid GeometryWKT");
+          logger.Info("Not a valid GeometryWKT");
           return null;
         }
         catch
         {
-          log.Info("Not a valid GeometryWKT");
+          logger.Info("Not a valid GeometryWKT");
           return null;
         }
             */
@@ -86,7 +97,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       return wkt;
     }
 
-    private static IEnumerable<Point> ParseGeometryData(string s)
+    public static IEnumerable<Point> ParseGeometryData(string s)
     {
       foreach (string to_replace in _replacements)
       {
@@ -95,7 +106,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       return ParseBoundaryData(s, ',', ' ');
     }
 
-    private static string GetWicketFromPoints(List<Point> points)
+    public static IEnumerable<Point> ParseGeometryDataPointLL(string s)
+    {
+      foreach (string to_replace in _replacements)
+      {
+        s = s.Replace(to_replace, string.Empty);
+      }
+      return ParseBoundaryDataPointLL(s, ',', ' ');
+    }
+
+    public static string GetWicketFromPoints(List<Point> points)
     {
       if (points.Count == 0)
         return string.Empty;
@@ -108,11 +128,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       return polygonWkt.ToString().TrimEnd(',') + ("))");
     }
 
-    private static List<Point> MakingValidPoints(List<Point> points)
+    public static List<Point> MakingValidPoints(List<Point> points)
     {
       List<Point> adjustedPoints = new List<Point>();
+      if (!points[0].Equals(points[points.Count - 1]))
+        points.Add(points[0]);
       points.Add(new Point(Double.MaxValue, Double.MaxValue));
-      for (int i = 0; i < points.Count - 1; i++)
+      for (int i = 0; i < points.Count -1; i++)
       {
         var firstPoint = points[i];
         var secondPoint = points[i + 1];

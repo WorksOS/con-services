@@ -17,7 +17,7 @@ using VSS.MasterData.Project.WebAPI.Filters;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.TCCFileAccess;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -32,7 +32,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected readonly int customErrorMessageOffset = 2000;
 
     /// <summary>
-    /// Gets or sets the local log provider.
+    /// Gets or sets the local logger provider.
     /// </summary>
     protected readonly ILogger log;
 
@@ -64,13 +64,23 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Gets or sets the Project Repository. 
     /// </summary>
-    protected readonly ProjectRepository projectRepo;
+    protected readonly IProjectRepository projectRepo;
 
     /// <summary>
-    /// Gets the custom headers for the request.
+    /// Gets or sets the Subscription Repository.
+    /// </summary>
+    protected readonly ISubscriptionRepository subscriptionRepo;
+
+    /// <summary>
+    /// Gets or sets the TCC File Repository.
+    /// </summary>
+    protected readonly IFileRepository fileRepo;
+
+    /// <summary>
+    /// Gets the custom customHeaders for the request.
     /// </summary>
     /// <value>
-    /// The custom headers.
+    /// The custom customHeaders.
     /// </value>
     protected IDictionary<string, string> customHeaders => Request.Headers.GetCustomHeaders();
 
@@ -107,9 +117,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="producer">The producer.</param>
     /// <param name="raptorProxy">The raptorServices proxy.</param>
     /// <param name="projectRepo">The project repo.</param>
+    /// <param name="subscriptionRepo"></param>
+    /// <param name="fileRepo"></param>
     protected BaseController(ILogger log, IConfigurationStore configStore,
       IServiceExceptionHandler serviceExceptionHandler, IKafka producer,
-      IRaptorProxy raptorProxy, IRepository<IProjectEvent> projectRepo)
+      IRaptorProxy raptorProxy, 
+      IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null)
     {
       this.log = log;
       this.configStore = configStore;
@@ -124,7 +137,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       kafkaTopicName = (configStore.GetValueString("PROJECTSERVICE_KAFKA_TOPIC_NAME") +
                         configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")).Trim();
 
-      this.projectRepo = projectRepo as ProjectRepository;
+      this.projectRepo = projectRepo;
+      this.subscriptionRepo = subscriptionRepo;
+      this.fileRepo = fileRepo;
       this.raptorProxy = raptorProxy;
     }
 
@@ -166,7 +181,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     /// <returns></returns>
     /// <exception cref="ArgumentException">Incorrect customer uid value.</exception>
-    private string GetCustomerUid()
+    protected string GetCustomerUid()
     {
       if (User is TIDCustomPrincipal principal)
       {
@@ -212,18 +227,39 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="projectUid">The project uid.</param>
     protected async Task<Repositories.DBModels.Project> GetProject(string projectUid)
     {
-      var customerUid = LogCustomerDetails("GetProject", projectUid);
+      var customerUid = LogCustomerDetails("GetProject by projectUid", projectUid);
       var project =
         (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
           p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
 
       if (project == null)
       {
-        log.LogWarning($"User doesn't have access to {projectUid}");
+        log.LogWarning($"User doesn't have access to projectUid: {projectUid}");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 1);
       }
 
-      log.LogInformation($"Project {projectUid} retrieved");
+      log.LogInformation($"Project projectUid: {projectUid} retrieved");
+      return project;
+    }
+
+    /// <summary>
+    /// Gets the project.
+    /// </summary>
+    /// <param name="legacyProjectId"></param>
+    protected async Task<Repositories.DBModels.Project> GetProject(long legacyProjectId)
+    {
+      var customerUid = LogCustomerDetails("GetProject by legacyProjectId", legacyProjectId);
+      var project =
+        (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
+          p => p.LegacyProjectID == legacyProjectId);
+
+      if (project == null)
+      {
+        log.LogWarning($"User doesn't have access to legacyProjectId: {legacyProjectId}");
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 1);
+      }
+
+      log.LogInformation($"Project legacyProjectId: {legacyProjectId} retrieved");
       return project;
     }
 
@@ -237,6 +273,20 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       log.LogInformation(
         $"{functionName}: UserUID={userId}, CustomerUID={customerUid}  and projectUid={projectUid}");
+
+      return customerUid;
+    }
+
+    /// <summary>
+    /// Log the Customer and Project details.
+    /// </summary>
+    /// <param name="functionName">Calling function name</param>
+    /// <param name="legacyProjectId">The Project Id from legacy</param>
+    /// <returns>Returns <see cref="TIDCustomPrincipal.CustomerUid"/></returns>
+    protected string LogCustomerDetails(string functionName, long legacyProjectId = 0)
+    {
+      log.LogInformation(
+        $"{functionName}: UserUID={userId}, CustomerUID={customerUid}  and legacyProjectId={legacyProjectId}");
 
       return customerUid;
     }

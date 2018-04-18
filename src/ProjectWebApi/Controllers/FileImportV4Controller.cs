@@ -17,7 +17,6 @@ using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.TCCFileAccess;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Factories;
@@ -31,7 +30,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   public class FileImportV4Controller : FileImportBaseController
   {
     /// <summary>
-    /// Local log provider.
+    /// Local logger provider.
     /// </summary>
     protected static ILoggerFactory Logger;
 
@@ -46,7 +45,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="logger"></param>
     /// <param name="serviceExceptionHandler"></param>
     /// <param name="requestFactory"></param>
-    public FileImportV4Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
+    public FileImportV4Controller(IKafka producer, IProjectRepository projectRepo,
       IConfigurationStore store, IRaptorProxy raptorProxy, IFileRepository fileRepo, ILoggerFactory logger, 
       IServiceExceptionHandler serviceExceptionHandler, IRequestFactory requestFactory)
       : base(producer, projectRepo, store, raptorProxy, fileRepo, logger, serviceExceptionHandler, 

@@ -11,7 +11,7 @@ using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.TCCFileAccess;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -40,7 +40,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected string userId;
     protected string userEmailAddress;
 
-    protected IDictionary<string, string> headers;
+    protected IDictionary<string, string> customHeaders;
 
     /// <summary>
     /// Gets or sets the Kafak consumer.
@@ -75,8 +75,19 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     /// Repository factory used for subscription checking
     /// </summary>
-    protected IRepository<ISubscriptionEvent> subscriptionsRepo;
+    protected ISubscriptionRepository subscriptionRepo;
 
+    /// <summary>
+    /// Repository factory used for accessing files in TCC (at present)
+    /// </summary>
+    /// 
+    protected IFileRepository fileRepo;
+
+    /// <summary>
+    /// Repository factory used for Customer db
+    /// </summary>
+    /// 
+    protected ICustomerRepository customerRepo;
 
     /// <summary>
     /// Generates the dynamic errorlist for instanciated executor.
@@ -168,12 +179,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     /// 
     /// </summary>
-    public void Initialise(ILogger logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler,
-      string customerUid, string userId = null, string userEmailAddress = null, IDictionary<string, string> headers = null,
+    public void Initialise(ILogger logger, IConfigurationStore configStore,
+      IServiceExceptionHandler serviceExceptionHandler,
+      string customerUid, string userId = null, string userEmailAddress = null,
+      IDictionary<string, string> headers = null,
       IKafka producer = null, string kafkaTopicName = null,
       IGeofenceProxy geofenceProxy = null, IRaptorProxy raptorProxy = null, ISubscriptionProxy subscriptionProxy = null,
-      IProjectRepository projectRepo = null, IRepository<ISubscriptionEvent> subscriptionsRepo = null
-     )
+      IProjectRepository projectRepo = null, ISubscriptionRepository subscriptionsRepo = null,
+      IFileRepository fileRepo = null, ICustomerRepository customerRepo = null)
     {
       log = logger;
       this.configStore = configStore;
@@ -181,14 +194,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.customerUid = customerUid;
       this.userId = userId;
       this.userEmailAddress = userEmailAddress;
-      this.headers = headers;
+      this.customHeaders = headers;
       this.producer = producer;
       this.kafkaTopicName = kafkaTopicName;
       this.geofenceProxy = geofenceProxy;
       this.raptorProxy = raptorProxy;
       this.subscriptionProxy = subscriptionProxy;
       this.projectRepo = projectRepo;
-      this.subscriptionsRepo = subscriptionsRepo;
+      this.subscriptionRepo = subscriptionsRepo;
+      this.fileRepo = fileRepo;
+      this.customerRepo = customerRepo;
     }
 
     /// <summary>
@@ -229,7 +244,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       log.LogInformation($"projectUid {projectUid} validated");
     }
-
   }
 }
 

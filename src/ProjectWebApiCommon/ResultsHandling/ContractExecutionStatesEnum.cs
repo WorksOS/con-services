@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
-
-namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
+﻿namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
 {
   /// <summary>
   ///   Defines standard return codes for a contract.
@@ -88,6 +85,20 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       DynamicAddwithOffset("CreateImportedFileV4. DxfUnitsType is an unrecognized type.", 75);
       DynamicAddwithOffset("CreateImportedFileV4. DxfUnitsType is not supported at present.", 76);
       DynamicAddwithOffset("Unsupported ProjectSettings type.", 77);
+      DynamicAddwithOffset("GetCoordinateSystemFromFileRepo: Folder {0} doesn't exist.", 78);
+      DynamicAddwithOffset("GetCoordinateSystemFromFileRepo: Exception reading file {0}.", 79);
+      DynamicAddwithOffset("GetCoordinateSystemFromFileRepo: Returned file invalid {0}.", 80);
+      DynamicAddwithOffset("CreateProjectV2: Missing CreateProjectRequest.", 81);
+      DynamicAddwithOffset("CreateProjectV2: Missing BusinessCentreFile.", 82);
+      DynamicAddwithOffset("CreateProjectV2: Invalid businessCentreFile path.", 83);
+      DynamicAddwithOffset("CreateProjectV2: Invalid businessCentreFile fileSpaceId.", 84);
+      DynamicAddwithOffset("CreateProjectV2: Invalid ProjectType. Only ProjectMonitoring type is allowed.", 85);
+      DynamicAddwithOffset("ValidateTCCAuthorization: Invalid Request: {0}.", 86);
+      DynamicAddwithOffset("ValidateTCCAuthorization: Exception getting list of organizations from TCC: {0}.", 87);
+      DynamicAddwithOffset("ValidateTCCAuthorization: Unable to locate orgShortName in TCC {0}.", 88);
+      DynamicAddwithOffset("ValidateTCCAuthorization: This orgShortName is missing a filespaceId or orgId in TCC {0}.", 89);
+      DynamicAddwithOffset("ValidateTCCAuthorization: Exception getting customerTccOrg from database: {0.}", 90);
+      DynamicAddwithOffset("ValidateTCCAuthorization: Unable to match customer with tccOrg in database.", 91);
     }
 
     /// <summary>

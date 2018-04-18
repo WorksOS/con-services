@@ -33,13 +33,49 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
     }
 
     /// <summary>
+    /// Validate the coordinateSystem filename
+    /// </summary>
+    public static BusinessCenterFile ValidateBusinessCentreFile(BusinessCenterFile businessCenterFile)
+    {
+      if (businessCenterFile == null)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(82),
+            contractExecutionStatesEnum.FirstNameWithOffset(82)));
+      }
+      ProjectDataValidator.ValidateFileName(businessCenterFile.Name);
+
+      if (string.IsNullOrEmpty(businessCenterFile.Path) || businessCenterFile.Path.Length < 5)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(83),
+            contractExecutionStatesEnum.FirstNameWithOffset(83)));
+      }
+      // Validates the BCC file path. Checks if path contains / in the beginning and NOT at the and of the path. Otherwise add/remove it.
+      if (businessCenterFile.Path[0] != '/')
+        businessCenterFile.Path = businessCenterFile.Path.Insert(0, "/");
+      if (businessCenterFile.Path[businessCenterFile.Path.Length - 1] == '/')
+        businessCenterFile.Path = businessCenterFile.Path.Remove(businessCenterFile.Path.Length - 1);
+      
+      if (string.IsNullOrEmpty(businessCenterFile.FileSpaceId) || businessCenterFile.FileSpaceId.Length > 50)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(84),
+            contractExecutionStatesEnum.FirstNameWithOffset(84)));
+      }
+
+      return businessCenterFile;
+    }
+
+
+    /// <summary>
     /// Validates the data of a specific project event
     /// </summary>
     /// <param name="evt">The event containing the data to be validated</param>
     /// <param name="repo">Project repository to use in validation</param>
-    public static void Validate(IProjectEvent evt, IRepository<IProjectEvent> repo)
+    public static void Validate(IProjectEvent evt, IProjectRepository repo)
     {
-      var projectRepo = repo as ProjectRepository;
+      IProjectRepository projectRepo = repo;
       if (projectRepo == null)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,

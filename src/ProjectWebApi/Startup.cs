@@ -22,7 +22,6 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.TCCFileAccess;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI
 {
@@ -81,8 +80,6 @@ namespace VSS.MasterData.Project.WebAPI
       });
 
       // Add framework services.
-      services.AddTransient<IRepository<IProjectEvent>, ProjectRepository>();
-      services.AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
       services.AddSingleton<IKafka, RdKafkaDriver>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<ISubscriptionProxy, SubscriptionProxy>();
@@ -93,7 +90,9 @@ namespace VSS.MasterData.Project.WebAPI
 
       services.AddScoped<IRequestFactory, RequestFactory>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
-      services.AddScoped<IRepository<IProjectEvent>, ProjectRepository>();
+      services.AddScoped<IProjectRepository, ProjectRepository>();
+      services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+      services.AddScoped<ICustomerRepository, CustomerRepository>();
       services.AddTransient<IProjectSettingsRequestHelper, ProjectSettingsRequestHelper>();
 
       services.AddMemoryCache();

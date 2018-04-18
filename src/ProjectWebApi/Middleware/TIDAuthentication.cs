@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Net;
-using System.Net.Http;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -8,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Authentication.JWT;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Filters;
 using VSS.MasterData.Proxies;
@@ -82,7 +79,7 @@ namespace VSS.MasterData.Project.WebAPI.Middleware
           await SetResult("No account selected", context);
           return;
         }
-        //log.LogTrace("JWT token used: {0}", authorization);
+        //logger.LogTrace("JWT token used: {0}", authorization);
         try
         {
           var jwtToken = new TPaaSJWT(authorization);

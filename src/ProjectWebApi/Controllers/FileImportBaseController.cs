@@ -23,7 +23,6 @@ using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.TCCFileAccess;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
@@ -60,7 +59,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="serviceExceptionHandler">For correctly throwing ServiceException errors</param>
     /// <param name="requestFactory"></param>
     /// <param name="log"></param>
-    public FileImportBaseController(IKafka producer, IRepository<IProjectEvent> projectRepo,
+    public FileImportBaseController(IKafka producer, IProjectRepository projectRepo,
       IConfigurationStore configStore, IRaptorProxy raptorProxy,
       IFileRepository fileRepo, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
       IRequestFactory requestFactory, ILogger log)

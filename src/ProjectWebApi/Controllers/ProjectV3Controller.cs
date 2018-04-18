@@ -13,15 +13,17 @@ using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Repositories;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.TCCFileAccess;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
   /// <summary>
   /// Project controller v3
+  ///   This is used by Legacy during Lift and Shift
+  ///   The functionality is quite different (simplified) to v4 
   /// </summary>
   public class ProjectV3Controller : ProjectBaseController
   {
@@ -32,15 +34,17 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="projectRepo">The project repo.</param>
     /// <param name="subscriptionsRepo">The subscriptions repo.</param>
     /// <param name="store">The configStore.</param>
-    /// <param name="subsProxy">The subs proxy.</param>
+    /// <param name="subscriptionProxy">The subs proxy.</param>
     /// <param name="geofenceProxy">The geofence proxy.</param>
     /// <param name="raptorProxy">The raptorServices proxy.</param>
+    /// <param name="fileRepo"></param>
     /// <param name="logger">The logger.</param>
     /// <param name="serviceExceptionHandler">The ServiceException handler</param>
-    public ProjectV3Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
-      IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
-      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
-      : base(producer, projectRepo, subscriptionsRepo, store, subsProxy, geofenceProxy, raptorProxy, 
+    public ProjectV3Controller(IKafka producer, IProjectRepository projectRepo,
+      ISubscriptionRepository subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
+      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, IFileRepository fileRepo, 
+      ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
+      : base(producer, projectRepo, subscriptionsRepo, fileRepo, store, subscriptionProxy, geofenceProxy, raptorProxy,
           logger, serviceExceptionHandler, logger.CreateLogger<ProjectV3Controller>())
     { }
 
@@ -55,7 +59,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       log.LogInformation("GetProjectsV3");
       var projects = (await GetProjectList());
-      var customerUid = LogCustomerDetails("GetProjectsV3");
+      var customerUid = LogCustomerDetails("GetProjectsV3", "");
 
 
       return projects.Where(p => p.CustomerUID == customerUid).ToImmutableDictionary(key => key.LegacyProjectID,
