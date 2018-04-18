@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
@@ -168,6 +169,43 @@ namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Models
         null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
       Assert.ThrowsException<ServiceException>(() => filter.Validate());
 
+    }
+
+    [TestMethod]
+    public void AsAtDateFilterCustom_Success()
+    {
+      var filter = Filter.CreateFilter(null, DateTime.UtcNow.AddDays(-1), null, null, null, null, null, null, null, null,
+        null, null, null, null, null, null, null, true);
+      var filterResult = FilterResult.CreateFilter(filter, null, null, null, null, null, null);
+      filterResult.Validate();
+    }
+
+    [TestMethod]
+    public void AsAtDateFilterWithDateRangeType_Success()
+    {
+      //Need to use filter JSON as cannot set DateRangeType directly
+      var filterJson = "{\"asAtDate\":true, \"dateRangeType\":0}";
+      var filter = JsonConvert.DeserializeObject<Filter>(filterJson);
+      var filterResult = FilterResult.CreateFilter(filter, null, null, null, null, null, null);
+      filterResult.Validate();
+    }
+
+    [TestMethod]
+    public void AsAtDateFilterFailure_MissingEndUtc()
+    {
+      var filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null,
+        null, null, null, null, true);
+      var filterResult = FilterResult.CreateFilter(filter, null, null, null, null, null, null);
+      Assert.ThrowsException<ServiceException>(() => filterResult.Validate());
+    }
+
+    [TestMethod]
+    public void AsAtDateFilterFailure_MissingStartUtc()
+    {
+      var filter = Filter.CreateFilter(null, DateTime.UtcNow.AddDays(-1), null, null, null, null, null, null, null, null, null, null, null,
+        null, null, null, null, false);
+      var filterResult = FilterResult.CreateFilter(filter, null, null, null, null, null, null);
+      Assert.ThrowsException<ServiceException>(() => filterResult.Validate());
     }
 
 

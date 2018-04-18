@@ -282,13 +282,13 @@ testRunner.Then(string.Format("the Compaction Cell Datum response should match \
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUID", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CutFillDesignUID", "")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:DisplayMode", "24")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Latitude", "36.20696541")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Longitude", "-115.02021047")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:DisplayMode", "27")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Latitude", "36.206958")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Longitude", "-115.020144")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "CMVPercentChange")]
         public virtual void CompactionCellDatum_GoodRequest_CMVPercentChange()
         {
-            this.CompactionCellDatum_GoodRequest("CMVPercentChange", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "", "24", "36.20696541", "-115.02021047", "CMVPercentChange", ((string[])(null)));
+            this.CompactionCellDatum_GoodRequest("CMVPercentChange", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "", "27", "36.206958", "-115.020144", "CMVPercentChange", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]

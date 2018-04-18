@@ -345,6 +345,7 @@ namespace VSS.Productivity3D.Common.Proxies
         case TICDisplayMode.icdmCCVPercentChange: return DisplayMode.CCVPercentChange;
         case TICDisplayMode.icdmTargetThicknessSummary: return DisplayMode.TargetThicknessSummary;
         case TICDisplayMode.icdmTargetSpeedSummary: return DisplayMode.TargetSpeedSummary;
+        case TICDisplayMode.icdmCCVChange: return DisplayMode.CMVChange ;
         case TICDisplayMode.icdmCCA: return DisplayMode.CCA;
         case TICDisplayMode.icdmCCASummary: return DisplayMode.CCASummary;
         default: throw new Exception($"Unknown TICDisplayMode {Convert.ToInt16(mode)}");

@@ -1,41 +1,38 @@
-# param (
-#   [Parameter(Mandatory=$true)][string]$CONTAINER_NAME
-# )
+Write-Host "Running acceptance tests" -ForegroundColor DarkGray
 
-#Sleep for a second make sure previous script is completed writing files
-Start-Sleep -Seconds 1
-foreach($line in Get-Content .\container.txt) {
-    if($line -match "\w*_webapi_\w*"){
-        $CONTAINER_NAME = $line
-        break
+$global:ipAddress = ""
+
+function WaitForContainer {
+    PowerShell.exe -ExecutionPolicy Bypass -Command .\waitForContainer.ps1 -containerIPAddress $global:ipAddress
+
+    if ($LastExitCode -ne 0) {
+        Write-Host "Unable to connect to Raptor container service at $ipAddress, the '$3dpWebAPIcontainerName' container may not be responding or has stopped." -ForegroundColor DarkRed
+        Write-Host "Docker containers:" -ForegroundColor DarkGray
+        docker ps --all
+        Write-Host "Aborting..." -ForegroundColor DarkGray
+        Exit -1
     }
 }
 
-if ($CONTAINER_NAME.length -lt 1) {
-    Write-Host "Did not read container name successfully, retrying in 5 seconds..."
-    Start-Sleep 5
-    foreach($line in Get-Content .\container.txt) {
-        if($line -match "\w*_webapi_\w*"){
-            $CONTAINER_NAME = $line
-            break
-        }
-    }
+# Validate the required containers are running
+$containers = docker ps
+$mockWebAPIContainerName = $containers | Select-String -Pattern "[a-zA-Z0-9-_-]+mockprojectwebapi_\d"  | Select-Object -ExpandProperty Matches |  Select-Object -First 1 -ExpandProperty Value
+$3dpWebAPIcontainerName = $containers | Select-String -Pattern "[a-zA-Z0-9-_-]+_webapi_\d"  | Select-Object -ExpandProperty Matches |  Select-Object -First 1 -ExpandProperty Value
+
+if ($mockWebAPIContainerName.Length -lt 1) {
+    Write-Host "Failed to find `mockprojectwebapi` container. Exiting" -ForegroundColor DarkRed
+    Exit -1
 }
 
-$IP_ADDRESS = docker inspect --format "{{ .NetworkSettings.Networks.nat.IPAddress }}" $CONTAINER_NAME
-
-PowerShell.exe -ExecutionPolicy Bypass -Command .\waitForContainer.ps1 -IP $IP_ADDRESS
-
-# $? is true if last command was a success, false otherwise
-if (!$?) {
-    "NO IP ADRESS SET, attempting again in 10 seconds..."
-    docker ps -a
-    Start-Sleep -Seconds 10
-    $IP_ADDRESS = docker inspect --format "{{ .NetworkSettings.Networks.nat.IPAddress }}" $CONTAINER_NAME
-    PowerShell.exe -ExecutionPolicy Bypass -Command .\waitForContainer.ps1 -IP $IP_ADDRESS   
+if ($3dpWebAPIcontainerName.Length -lt 1) {
+    Write-Host "Failed to find `3DP webapi` container. Exiting" -ForegroundColor DarkRed
+    Exit -1
 }
 
-# SET ENVIRONMENT VARIABLES
+$global:ipAddress = docker inspect --format "{{ .NetworkSettings.Networks.nat.IPAddress }}" $3dpWebAPIcontainerName
+WaitForContainer
+
+# Set (session) environment variables
 $env:TEST_DATA_PATH="../../TestData/"
 $env:COMPACTION_SVC_BASE_URI=":80"
 $env:NOTIFICATION_SVC_BASE_URI=":80"
@@ -44,11 +41,14 @@ $env:TAG_SVC_BASE_URI=":80"
 $env:COORD_SVC_BASE_URI=":80"
 $env:PROD_SVC_BASE_URI=":80"
 $env:FILE_ACCESS_SVC_BASE_URI=":80"
-$env:RAPTOR_WEBSERVICES_HOST=$IP_ADDRESS
+$env:RAPTOR_WEBSERVICES_HOST=$ipAddress
 
-cd AcceptanceTests\tests\ProductionDataSvc.AcceptanceTests\bin\Debug
-del *.trx
-$IP_ADDRESS > TestData\webapiaddress.txt
+Set-Location AcceptanceTests\tests\ProductionDataSvc.AcceptanceTests\bin\Debug
+Remove-Item *.trx
+
+$ipAddress > TestData\webapiaddress.txt
+
 mstest /testcontainer:ProductionDataSvc.AcceptanceTests.dll /resultsfile:testresults.trx
-docker logs $CONTAINER_NAME > logs.txt
-exit 0
+docker logs $3dpWebAPIcontainerName > logs.txt
+
+Exit 0

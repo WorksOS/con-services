@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using DesignProfiler.ComputeDesignBoundary.RPC;
+﻿using DesignProfiler.ComputeDesignBoundary.RPC;
 using DesignProfiler.ComputeDesignFilterBoundary.RPC;
 using DesignProfilerDecls;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,10 +6,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using SVOICStatistics;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using VLPDDecls;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Extensions;
-using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
@@ -128,11 +127,11 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
 
       var raptorClient = new Mock<IASNodeClient>();
 
-      TDesignProfilerRequestResult designProfilerResult = TDesignProfilerRequestResult.dppiOK;
+      TDesignProfilerRequestResult designProfilerResult;
       var ms = new MemoryStream();
       using (var writer = new StreamWriter(ms))
       {
-        writer.Write(designGeoJson);
+        writer.Write(DESIGN_GEO_JSON);
         writer.Flush();
 
         raptorClient
@@ -160,11 +159,11 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
 
       var raptorClient = new Mock<IASNodeClient>();
 
-      TDesignProfilerRequestResult designProfilerResult = TDesignProfilerRequestResult.dppiOK;
+      TDesignProfilerRequestResult designProfilerResult;
       var ms = new MemoryStream();
       using (var writer = new StreamWriter(ms))
       {
-        writer.Write(designGeoJson);
+        writer.Write(DESIGN_GEO_JSON);
         writer.Flush();
 
         raptorClient
@@ -189,11 +188,11 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
 
       var raptorClient = new Mock<IASNodeClient>();
 
-      TDesignProfilerRequestResult designProfilerResult = TDesignProfilerRequestResult.dppiOK;
+      TDesignProfilerRequestResult designProfilerResult;
       var ms = new MemoryStream();
       using (var writer = new StreamWriter(ms))
       {
-        writer.Write(designGeoJson);
+        writer.Write(DESIGN_GEO_JSON);
         writer.Flush();
 
         raptorClient
@@ -231,11 +230,11 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
 
       var raptorClient = new Mock<IASNodeClient>();
 
-      TDesignProfilerRequestResult designProfilerResult = TDesignProfilerRequestResult.dppiOK;
+      TDesignProfilerRequestResult designProfilerResult;
       var ms = new MemoryStream();
       using (var writer = new StreamWriter(ms))
       {
-        writer.Write(designGeoJson);
+        writer.Write(DESIGN_GEO_JSON);
         writer.Flush();
 
         raptorClient
@@ -262,7 +261,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
 
       var raptorClient = new Mock<IASNodeClient>();
 
-      TWGS84Point[] fence = 
+      TWGS84Point[] fence =
       {
         new TWGS84Point{Lat = 36.1.LatDegreesToRadians(), Lon = -115.1.LonDegreesToRadians()},
         new TWGS84Point{Lat = 36.2.LatDegreesToRadians(), Lon = -115.1.LonDegreesToRadians()},
@@ -272,18 +271,18 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         new TWGS84Point{Lat = 36.2.LatDegreesToRadians(), Lon = -115.2.LonDegreesToRadians()},
         new TWGS84Point{Lat = 36.1.LatDegreesToRadians(), Lon = -115.1.LonDegreesToRadians()}
       };
- 
+
       raptorClient
         .Setup(x => x.GetDesignFilterBoundaryAsPolygon(It.IsAny<TDesignProfilerServiceRPCVerb_ComputeDesignFilterBoundary_Args>(),
           out fence))
         .Returns(true);
 
       var service = new BoundingBoxService(serviceProvider.GetRequiredService<ILoggerFactory>(), raptorClient.Object);
-      var bbox = service.GetBoundingBox(project, filter, new[] { TileOverlayType.BaseMap }, null, null,null);
+      var bbox = service.GetBoundingBox(project, filter, new[] { TileOverlayType.BaseMap }, null, null, null);
       Assert.AreEqual(-115.3.LonDegreesToRadians(), bbox.minLng);
       Assert.AreEqual(36.1.LatDegreesToRadians(), bbox.minLat);
       Assert.AreEqual(-115.1.LonDegreesToRadians(), bbox.maxLng);
-      Assert.AreEqual(36.3.LatDegreesToRadians(), bbox.maxLat);      
+      Assert.AreEqual(36.3.LatDegreesToRadians(), bbox.maxLat);
     }
 
     [TestMethod]
@@ -342,6 +341,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
       var raptorClient = new Mock<IASNodeClient>();
 
       TICDataModelStatistics statistics = new TICDataModelStatistics();
+
       raptorClient
         .Setup(x => x.GetDataModelStatistics(project.LegacyProjectId, It.IsAny<TSurveyedSurfaceID[]>(), out statistics))
         .Returns(true);
@@ -358,6 +358,8 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
           }
         }
       };
+
+
       raptorClient
         .Setup(x => x.GetGridCoordinates(project.LegacyProjectId, It.IsAny<TWGS84FenceContainer>(),
           TCoordConversionType.ctNEEtoLLH, out pointList))
@@ -383,6 +385,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
       var raptorClient = new Mock<IASNodeClient>();
 
       TICDataModelStatistics statistics = new TICDataModelStatistics();
+
       raptorClient
         .Setup(x => x.GetDataModelStatistics(project.LegacyProjectId, It.IsAny<TSurveyedSurfaceID[]>(), out statistics))
         .Returns(true);
@@ -392,13 +395,14 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         ReturnCode = TCoordReturnCode.nercNoError,
         Points = new TCoordContainer
         {
-          Coords = new TCoordPoint[]
+          Coords = new[]
           {
             new TCoordPoint {X = prodDataMinLng, Y = prodDataMinLat},
             new TCoordPoint {X = prodDataMaxLng, Y = prodDataMaxLat}
           }
         }
       };
+
       raptorClient
         .Setup(x => x.GetGridCoordinates(project.LegacyProjectId, It.IsAny<TWGS84FenceContainer>(),
           TCoordConversionType.ctNEEtoLLH, out pointList))
@@ -417,7 +421,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
     {
       var raptorClient = new Mock<IASNodeClient>();
 
-      TICDataModelStatistics statistics = new TICDataModelStatistics();
+      TICDataModelStatistics statistics;
       raptorClient
         .Setup(x => x.GetDataModelStatistics(project.LegacyProjectId, It.IsAny<TSurveyedSurfaceID[]>(), out statistics))
         .Returns(false);
@@ -469,7 +473,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
     private static double projMaxLatRadians = projectPoints.Max(p => p.Latitude).LatDegreesToRadians();
     private static double projMaxLngRadians = projectPoints.Max(p => p.Longitude).LonDegreesToRadians();
 
-    private string designGeoJson = @"
+    private const string DESIGN_GEO_JSON = @"
       {
         ""type"": ""FeatureCollection"",
         ""features"": [
@@ -505,6 +509,5 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         ]
 		  }
     ";
-
   }
 }

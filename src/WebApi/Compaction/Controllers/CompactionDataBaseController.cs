@@ -116,6 +116,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         if (filter.StartUtc != null && filter.EndUtc != null)
           return projectExtents.startTime <= filter.EndUtc && filter.StartUtc <= projectExtents.endTime;
 
+        //Handle 'as-at' dates where StartUTC is null but EndUTC is not null
+        if (filter.StartUtc == null && filter.EndUtc != null)
+          return projectExtents.startTime <= filter.EndUtc;
+
         //All other cases - proceed further
         return true;
       }

@@ -10,8 +10,8 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.WebApiModels.TagfileProcessing.Executors;
-using VSS.Productivity3D.WebApiModels.TagfileProcessing.Models;
+using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors;
+using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models;
 
 namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 {
@@ -34,19 +34,19 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
     [TestMethod]
     public void TagP_TagFileSubmitterSuccessful()
     {
-      byte[] tagData = new byte[] { 0x1, 0x2, 0x3 };
+      byte[] tagData = { 0x1, 0x2, 0x3 };
       WGS84Fence fence = CreateAFence();
       TagFileRequest request = TagFileRequest.CreateTagFile("dummy.tag", tagData, 544, fence, 1244020666025812, false, false);
-      TWGS84FenceContainer fenceContainer = RaptorConverters.convertWGS84Fence(request.boundary);
+      TWGS84FenceContainer fenceContainer = RaptorConverters.convertWGS84Fence(request.Boundary);
 
       // create the mock PDSClient with successful result
       var mockTagProcessor = new Mock<ITagProcessor>();
       var mockRaptorClient = new Mock<IASNodeClient>();
       var mockLogger = new Mock<ILoggerFactory>(); TTAGProcServerProcessResult raptorResult = TTAGProcServerProcessResult.tpsprOK;
       mockTagProcessor.Setup(prj => prj.ProjectDataServerTAGProcessorClient().SubmitTAGFileToTAGFileProcessor(
-         request.fileName,
-         new MemoryStream(request.data),
-         request.projectId ?? -1,
+         request.FileName,
+         new MemoryStream(request.Data),
+         request.ProjectId ?? -1,
          0,
          0,
          fenceContainer,
@@ -71,7 +71,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       byte[] tagData = new byte[] { 0x1, 0x2, 0x3 };
       WGS84Fence fence = CreateAFence();
       TagFileRequest request = TagFileRequest.CreateTagFile("dummy.tag", tagData, 544, fence, 1244020666025812, false, false);
-      TWGS84FenceContainer fenceContainer = RaptorConverters.convertWGS84Fence(request.boundary);
+      RaptorConverters.convertWGS84Fence(request.Boundary);
 
       // create the mock PDSClient with successful result
       var mockTagProcessor = new Mock<ITagProcessor>();
@@ -80,9 +80,9 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 
       TTAGProcServerProcessResult raptorResult = TTAGProcServerProcessResult.tpsprOnChooseMachineInvalidSubscriptions;
       mockTagProcessor.Setup(prj => prj.ProjectDataServerTAGProcessorClient().SubmitTAGFileToTAGFileProcessor(
-         request.fileName,
+         request.FileName,
          It.IsAny<MemoryStream>(),
-         request.projectId ?? -1,
+         request.ProjectId ?? -1,
          0,
          0,
          1244020666025812,

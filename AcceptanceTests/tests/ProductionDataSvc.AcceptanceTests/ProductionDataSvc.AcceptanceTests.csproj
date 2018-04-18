@@ -113,6 +113,7 @@
       <DependentUpon>CompactionCellDatum.feature</DependentUpon>
     </Compile>
     <Compile Include="Models\CompactionCellDatumResult.cs" />
+    <Compile Include="Models\CompactionTagFile.cs" />
     <Compile Include="StepDefinitions\CompactionCellDatumSteps.cs" />
     <Compile Include="CompactionCmv.feature.cs">
       <AutoGen>True</AutoGen>
@@ -301,7 +302,6 @@
     <Compile Include="Models\CompactionProfileResult.cs" />
     <Compile Include="Models\CompactionReportResult.cs" />
     <Compile Include="Models\CompactionSpeedSummaryResult.cs" />
-    <Compile Include="Models\CompactionTagFile.cs" />
     <Compile Include="Models\CompactionTemperatureSummaryResult.cs" />
     <Compile Include="Models\CompactionTileRequest.cs" />
     <Compile Include="Models\CompactionVolumesSummaryResult.cs" />

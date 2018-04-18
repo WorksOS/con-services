@@ -28,8 +28,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// Controller for getting Raptor production data for details requests.
   /// </summary>
   [ProjectUidVerifier]
-  // [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })] (Aaron) Disabled temporarily until we can resolve the cache invalidation problem
   [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+  // [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   public class CompactionDetailsDataController : CompactionDataBaseController
   {
     /// <summary>

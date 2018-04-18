@@ -7,10 +7,10 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApiModels.TagfileProcessing.Models;
+using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models;
 using VSS.Productivity3D.WebApiModels.TagfileProcessing.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.Executors
+namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
 {
   /// <summary>
   /// TagFileExecutor for submitting tag files to Raptor
@@ -30,13 +30,6 @@ namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.Executors
       RaptorResult.AddTagProcessorErrorMessages(ContractExecutionStates);
     }
 
-
-    /// <summary>
-    /// ContractExecutionResult
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <returns></returns>
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       try
@@ -45,12 +38,12 @@ namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.Executors
 
         TTAGProcServerProcessResult returnResult = tagProcessor.ProjectDataServerTAGProcessorClient()
           .SubmitTAGFileToTAGFileProcessor
-          (request.fileName,
-            new MemoryStream(request.data),
-            request.projectId ?? -1, 0, 0, request.machineId ?? -1,
-            request.boundary != null
-              ? RaptorConverters.convertWGS84Fence(request.boundary)
-              : TWGS84FenceContainer.Null(),request.tccOrgId);
+          (request.FileName,
+            new MemoryStream(request.Data),
+            request.ProjectId ?? -1, 0, 0, request.MachineId ?? -1,
+            request.Boundary != null
+              ? RaptorConverters.convertWGS84Fence(request.Boundary)
+              : TWGS84FenceContainer.Null(),request.TccOrgId);
 
         if (returnResult == TTAGProcServerProcessResult.tpsprOK)
           return TAGFilePostResult.CreateTAGFilePostResult();

@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.ResponseCaching;
 using Microsoft.AspNetCore.ResponseCaching.Internal;
 using Microsoft.Extensions.Logging;
@@ -100,7 +100,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
       }
     }
 
-    //Here fun begins. VaryRule MASUT include proper filter uid hashing
+    //Here fun begins. VaryRule MUST include proper filter uid hashing
     public string CreateStorageVaryByKey(ResponseCachingContext context)
     {
       if (context == null)
@@ -151,6 +151,8 @@ namespace VSS.Productivity3D.Common.Filters.Caching
         }
 
         // Vary by query keys
+        var projectUid = string.Empty;
+
         if (varyByRules.QueryKeys.Count > 0)
         {
           // Append a group separator for the query key segment of the cache key
@@ -160,14 +162,13 @@ namespace VSS.Productivity3D.Common.Filters.Caching
           var projectUids = context.HttpContext.Request.Query
             ?.Where(s => string.Equals(s.Key, "projectUid", StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault().Value;
 
-          string projectUid = String.Empty;
-
           if (projectUids.HasValue && projectUids.Value.Count > 0)
+          {
             projectUid = projectUids.Value[0];
+          }
 
           if (varyByRules.QueryKeys.Count == 1 && string.Equals(varyByRules.QueryKeys[0], "*", StringComparison.Ordinal))
           {
-
             // Vary by all available query keys
             foreach (var query in context.HttpContext.Request.Query.OrderBy(q => q.Key,
               StringComparer.OrdinalIgnoreCase))

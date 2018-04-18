@@ -38,38 +38,49 @@ namespace VSS.Productivity3D.Common.Filters
       if (cacheUsed)
         cacheAge = Int32.Parse(context.Response.Headers[HeaderNames.Age]);
 
-        if (context.User is RaptorPrincipal principal)
+      string name = String.Empty;
+      string customerUid = String.Empty;
+      string userEmail = String.Empty;
+      string customerName = String.Empty;
+      string projectUid = String.Empty;
+      string origin = String.Empty;
+
+
+      if (context.User is RaptorPrincipal principal)
       {
-        string projectUid = String.Empty;
-        string origin = String.Empty;
-
-        if (context.Request.Query.ContainsKey("projectuid"))
-        {
-          projectUid = context.Request.Query["projectuid"];
-        }
-
-        if (context.Request.Headers.ContainsKey("Origin"))
-        {
-          origin = context.Request.Headers["Origin"];
-        }
-
-        var eventAttributes = new Dictionary<string, object>
-        {
-          {"endpoint", context.Request.Path.ToString()},
-          {"cacheUsed", cacheUsed.ToString()},
-          {"cacheAge", (Single) Convert.ToDouble(cacheAge)},
-          {"userUid", principal.Identity.Name.ToString()},
-          {"customerUid", principal.CustomerUid.ToString()},
-          {"userName", principal.UserEmail.ToString()},
-          {"customerName", principal.CustomerName.ToString()},
-          {"executionTime",(Single) Convert.ToDouble(watch.ElapsedMilliseconds)},
-          {"projectUid",projectUid.ToString() },
-          {"origin",origin.ToString() },
-          {"result", context.Response.StatusCode.ToString() }
-        };
-
-        NewRelic.Api.Agent.NewRelic.RecordCustomEvent("3DPM_Request", eventAttributes);
+        name = principal.Identity.Name.ToString();
+        customerUid = principal.CustomerUid.ToString();
+        userEmail = principal.UserEmail.ToString();
+        customerName = principal.CustomerName.ToString();
       }
+
+      if (context.Request.Query.ContainsKey("projectuid"))
+      {
+        projectUid = context.Request.Query["projectuid"];
+      }
+
+      if (context.Request.Headers.ContainsKey("Origin"))
+      {
+        origin = context.Request.Headers["Origin"];
+      }
+
+      var eventAttributes = new Dictionary<string, object>
+      {
+        {"endpoint", context.Request.Path.ToString()},
+        {"cacheUsed", cacheUsed.ToString()},
+        {"cacheAge", (Single) Convert.ToDouble(cacheAge)},
+        {"userUid", name},
+        {"customerUid", customerUid},
+        {"userName", userEmail},
+        {"customerName", customerName},
+        {"executionTime", (Single) Convert.ToDouble(watch.ElapsedMilliseconds)},
+        {"projectUid", projectUid.ToString()},
+        {"origin", origin.ToString()},
+        {"result", context.Response.StatusCode.ToString()}
+      };
+
+      NewRelic.Api.Agent.NewRelic.RecordCustomEvent("3DPM_Request", eventAttributes);
+
     }
   }
 }

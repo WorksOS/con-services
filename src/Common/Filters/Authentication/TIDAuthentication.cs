@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -11,7 +10,6 @@ using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Common.Filters.Authentication
 {
@@ -33,7 +31,6 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
 
     public async Task Invoke(HttpContext context)
     {
-
       //HACK allow internal connections without authn for tagfile submission by the harvester
       bool internalConnection =
         (context.Request.Path.Value.Contains("api/v1/tagfiles") ||
