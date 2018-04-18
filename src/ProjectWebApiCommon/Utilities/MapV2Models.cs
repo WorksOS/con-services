@@ -20,9 +20,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       return createProjectEvent;
     }
 
-    private static List<Point> ConvertPoints(List<PointLL> latLngs)
+    private static List<Point> ConvertPoints(List<Point> latLngs)
     {
-      return latLngs.ConvertAll<Point>(delegate (PointLL ll) { return new Point(ll.Latitude, ll.Longitude); });
+      return latLngs.ConvertAll<Point>(delegate (Point ll) { return new Point(ll.Latitude, ll.Longitude); });
     }
 
   }

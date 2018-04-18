@@ -26,7 +26,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       }
     }
 
-    private static IEnumerable<PointLL> ParseBoundaryDataPointLL(string s, char pointSeparator, char coordSeparator)
+    private static IEnumerable<Point> ParseBoundaryDataPointLL(string s, char pointSeparator, char coordSeparator)
     {
       string[] pointsArray = s. /*Remove(s.Length - 1).*/Split(pointSeparator);
 
@@ -34,7 +34,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       {
         //gets x and y coordinates split by comma, trims whitespace at pos 0, converts to double array
         var coordinates = pointsArray[i].Trim().Split(coordSeparator).Select(c => double.Parse(c)).ToArray();
-        yield return (new PointLL(coordinates[1], coordinates[0]));
+        yield return (new Point(coordinates[1], coordinates[0]));
       }
     }
 
@@ -106,7 +106,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       return ParseBoundaryData(s, ',', ' ');
     }
 
-    public static IEnumerable<PointLL> ParseGeometryDataPointLL(string s)
+    public static IEnumerable<Point> ParseGeometryDataPointLL(string s)
     {
       foreach (string to_replace in _replacements)
       {

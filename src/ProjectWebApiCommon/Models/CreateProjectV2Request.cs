@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
@@ -52,7 +53,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     //[Required(ErrorMessage = "Required Field")]
     //[MoreThanTwoPointsAttribute("boundaryLL")]
     [JsonProperty(PropertyName = "BoundaryLL", Required = Required.Always)]
-    public List<Models.PointLL> BoundaryLL { get; set; }
+    public List<Point> BoundaryLL { get; set; }
     /// <summary>
     /// The details of the coordinate system file from Trimble Business Center.
     /// </summary>
@@ -72,7 +73,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// </summary>
     public static CreateProjectV2Request CreateACreateProjectV2Request(
       ProjectType projectType, DateTime projectStartDate, DateTime projectEndDate, string projectName, 
-      string projectTimezone, List<PointLL> boundaryLL,
+      string projectTimezone, List<Point> boundaryLL,
       BusinessCenterFile coordinateSystem
       )
     {
