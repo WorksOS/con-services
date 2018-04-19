@@ -35,6 +35,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4NetExtensions.Local
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.KafkaConsumer.Local", "..\..\MerinoSandbox\KafkaConsumer\src\VSS.KafkaConsumer.Local.csproj", "{39AED270-E786-4992-B481-EEA8E902D159}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3CE601EB-D28E-4201-A7A0-09B013E6E2BD}"
+	ProjectSection(SolutionItems) = preProject
+		..\.editorconfig = ..\.editorconfig
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -109,5 +114,8 @@ Global
 		{A655A2F0-618C-4E54-9D9C-236626F2FEA3} = {B4B5A6DC-07EC-4C16-81AA-131902BB4110}
 		{DB80D4ED-656B-402B-A332-FB84B98EABE6} = {B4B5A6DC-07EC-4C16-81AA-131902BB4110}
 		{B7D3B2D1-3E55-4A2A-8EED-6D62667217B7} = {B4B5A6DC-07EC-4C16-81AA-131902BB4110}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C6AEAF3B-79E5-4717-B4BC-BDB9DB46CC53}
 	EndGlobalSection
 EndGlobal
