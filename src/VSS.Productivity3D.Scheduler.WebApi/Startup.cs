@@ -141,6 +141,8 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddTransient<IFileRepository, FileRepository>();
       services.AddTransient<IImportedFileProxy, ImportedFileProxy>();
       services.AddTransient<IExportJob, ExportJob>();
+      services.AddTransient<IApiClient, ApiClient>();
+      services.AddTransient<ITransferProxy, TransferProxy>();
       _serviceCollection = services;
     }
 
@@ -159,6 +161,8 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
       _serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
       _serviceProvider = _serviceCollection.BuildServiceProvider();
+
+      app.UseMvc();
 
       var configStore = _serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = _serviceProvider.GetRequiredService<ILoggerFactory>();
