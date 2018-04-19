@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using Hangfire.Server;
-using VSS.MasterData.Models.Local.Models;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
 

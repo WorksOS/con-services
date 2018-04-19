@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Hangfire.Server;
-using VSS.MasterData.Models.Local.Models;
+using VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
 {

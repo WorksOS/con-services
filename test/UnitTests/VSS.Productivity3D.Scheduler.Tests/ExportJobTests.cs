@@ -7,7 +7,7 @@ using Hangfire;
 using Hangfire.Common;
 using Hangfire.Server;
 using Hangfire.Storage;
-using VSS.MasterData.Models.Local.Models;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Scheduler.WebAPI.ExportJobs;
@@ -17,6 +17,15 @@ namespace VSS.Productivity3D.Scheduler.Tests
   [TestClass]
   public class ExportJobTests
   {
+    [TestMethod]
+    public void CanGetS3KeyForExport()
+    {
+      var jobId = "Some id";
+      var key = ExportJob.GetS3Key(jobId);
+      var expectedKey = $"3dpm/{jobId}.zip";
+      Assert.AreEqual(expectedKey, key, "Wrong S3 key");
+    }
+
     [TestMethod]
     public void CanGetDownloadLink()
     {

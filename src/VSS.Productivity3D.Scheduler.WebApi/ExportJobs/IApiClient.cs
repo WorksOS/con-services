@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using VSS.MasterData.Models.Local.Models;
+using VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
 {

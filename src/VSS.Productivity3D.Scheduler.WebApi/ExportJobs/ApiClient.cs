@@ -4,7 +4,7 @@ using System.IO;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Local.Models;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
 
 namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs

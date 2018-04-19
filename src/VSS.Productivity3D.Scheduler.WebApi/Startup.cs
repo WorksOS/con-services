@@ -140,7 +140,6 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddTransient<ITPaasProxy, TPaasProxy>();
       services.AddTransient<IFileRepository, FileRepository>();
       services.AddTransient<IImportedFileProxy, ImportedFileProxy>();
-      services.AddTransient<IVetaExportJob, VetaExportJob>();
       services.AddTransient<IExportJob, ExportJob>();
       _serviceCollection = services;
     }

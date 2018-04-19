@@ -23,8 +23,8 @@
     <PackageReference Include="AutoMapper" Version="6.1.1" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.1.*" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.0.*" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.16.*" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.25.*" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.17.*" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.27.*" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.8.*" />
     <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.7.*" />
 
