@@ -178,38 +178,6 @@ namespace VSS.MasterData.Proxies
       return response;
     }
 
-    /*
-    /// <summary>
-    /// Gets the veta export data.
-    /// </summary>
-    /// <param name="projectUid">The project uid.</param>
-    /// <param name="fileName">Name of the file.</param>
-    /// <param name="machineNames">The machine names.</param>
-    /// <param name="filterUid">The filter uid.</param>
-    /// <param name="customHeaders">The custom headers.</param>
-    /// <returns></returns>
-    public async Task<ExportResult> GetVetaExportData(Guid projectUid,
-      string fileName,
-      string machineNames,
-      Guid? filterUid,
-      IDictionary<string, string> customHeaders)
-    {
-      log.LogDebug($"RaptorProxy.GetVetaExportData: filterUid: {filterUid}, projectUid: {projectUid}, fileName: {fileName}, machineNames: {machineNames}");
-      var result = await GetMasterDataItem<ExportResult>("VETA_EXPORT_URL",
-        customHeaders,
-        $"?projectUid={projectUid}&fileName={fileName}&machineNames={machineNames}&filterUid={filterUid}");
-      if (result.ResultCode==0)
-      {
-        log.LogDebug("RaptorProxy.GetVetaExportData: Successful Export" );
-      }
-      else
-      {
-        log.LogDebug("Failed to execute Veta Export");
-      }
-      return result;
-    }
-    */
-
     /// <summary>
     /// Validates that filterUid has changed i.e. updated/deleted but not inserted
     /// </summary>

@@ -1,7 +1,7 @@
 ﻿namespace VSS.MasterData.Models.ResultHandling
 {
   /// <summary>
-  /// Result of a veta export job status query
+  /// Result of an export job status query
   /// </summary>
   public class JobStatusResult
   {

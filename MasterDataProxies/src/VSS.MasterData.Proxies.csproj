@@ -35,9 +35,9 @@
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.0.*" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.16.*" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.17.*" />
     <PackageReference Include="AWSSDK.S3" Version="3.3.14" />
-	<PackageReference Include="VSS.Authentication.JWT" Version="1.2.1" />
+	  <PackageReference Include="VSS.Authentication.JWT" Version="1.2.1" />
 
   </ItemGroup>
 

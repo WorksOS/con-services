@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace VSS.MasterData.Models.Local.Models
+namespace VSS.MasterData.Models.Models
 {
   /// <summary>
   /// Used to request an export job to be scheduled
