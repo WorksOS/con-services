@@ -184,19 +184,25 @@ testRunner.Then(string.Format("the report result should contain error code {0} a
         
         public virtual void ScheduleExportToVETA_GoodRequest_Download(string requestName, string projectUID, string jobId, string resultName, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ScheduleExportToVETA - Good Request - Download", exampleTags);
-#line 36
+            string[] @__tags = new string[] {
+                    "Ignore"};
+            if ((exampleTags != null))
+            {
+                @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
+            }
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ScheduleExportToVETA - Good Request - Download", @__tags);
+#line 38
 this.ScenarioSetup(scenarioInfo);
-#line 37
+#line 39
 testRunner.Given("the Export Report To VETA service URI \"/api/v2/export/veta\" for operation \"downlo" +
                     "ad\" and the result file \"ScheduleExportToVETAResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 38
-testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 39
-testRunner.And(string.Format("JobId \"{0}\"", jobId), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 40
-testRunner.When("I request a Export To VETA Download", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 41
+testRunner.And(string.Format("JobId \"{0}\"", jobId), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 42
+testRunner.When("I request a Export To VETA Download", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 43
 testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -205,6 +211,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ScheduleExportToVETA - Good Request - Download")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ScheduleExportToVETA")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:JobId", "Test_Job_1")]
@@ -217,18 +224,18 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         public virtual void ScheduleExportToVETA_BadRequest_Download(string requestName, string projectUID, string jobId, string errorCode, string errorMessage, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ScheduleExportToVETA - Bad Request - Download", exampleTags);
-#line 47
+#line 49
 this.ScenarioSetup(scenarioInfo);
-#line 48
+#line 50
 testRunner.Given("the Export Report To VETA service URI \"/api/v2/export/veta\" for operation \"downlo" +
                     "ad\" and the result file \"ScheduleExportToVETAResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 49
-testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 50
-testRunner.And(string.Format("JobId \"{0}\"", jobId), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 51
-testRunner.When("I request an Export To VETA Download expecting InternalServerError", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 52
+testRunner.And(string.Format("JobId \"{0}\"", jobId), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 53
+testRunner.When("I request an Export To VETA Download expecting InternalServerError", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 54
 testRunner.Then(string.Format("the report result should contain error code {0} and error message \"{1}\"", errorCode, errorMessage), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
