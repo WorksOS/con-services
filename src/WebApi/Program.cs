@@ -46,6 +46,7 @@ namespace VSS.Productivity3D.WebApi
       var host = new WebHostBuilder()
         .UseConfiguration(config)
         .UseKestrel()
+        //.UseUrls("http://127.0.0.1:5002") //DO NOT REMOVE (used for local debugging of long running veta exports)
         .UseLibuv(opts =>
         {
           if (libuvConfigured)
