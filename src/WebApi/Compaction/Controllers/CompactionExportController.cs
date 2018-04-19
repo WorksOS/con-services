@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Local.Models;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
@@ -97,107 +96,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         });
     }
     #endregion
-    /*
-    #region Export To Veta - long running downloads (old)
-    /// <summary>
-    /// Tries to get export status.
-    /// </summary>
-    /// <param name="projectUid">The project uid.</param>
-    /// <param name="jobId">The job identifier.</param>
-    /// <param name="scheduler">The scheduler.</param>
-    /// <exception cref="ServiceException">new ContractExecutionResult(-4,"Job failed for some reason")</exception>
-    /// <exception cref="ContractExecutionResult">-4 - Job failed for some reason</exception>
-    [ProjectUidVerifier]
-    [Route("api/v2/export/veta/status")]
-    [HttpGet]
-    public async Task<ContractExecutionResult> TryGetExportStatus([FromQuery] Guid projectUid, [FromQuery] string jobId,
-      [FromServices] ISchedulerProxy scheduler)
-    {
-      var jobResult = await scheduler.GetVetaExportJobStatus(projectUid, jobId, Request.Headers.GetCustomHeaders(true));
-      if (jobResult.status.Equals("SUCCEEDED", StringComparison.OrdinalIgnoreCase))
-      {
-        return new ContractExecutionResult();
-      }
-      if (!jobResult.status.Equals("FAILED", StringComparison.OrdinalIgnoreCase))
-      {
-        return new ContractExecutionResult(ContractExecutionStatesEnum.PartialData, "Job is running");
-      }
-      throw new ServiceException(HttpStatusCode.InternalServerError, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "Job failed for some reason"));
-    }
-
-    /// <summary>
-    /// Tries the download of the exported file.
-    /// </summary>
-    /// <param name="projectUid">The project uid.</param>
-    /// <param name="jobId">The job identifier.</param>
-    /// <param name="scheduler">The scheduler.</param>
-    /// <exception cref="ServiceException">new ContractExecutionResult(-4, "File is not likely ready to be downloaded")</exception>
-    /// <exception cref="ContractExecutionResult">-4 - File is not likely ready to be downloaded</exception>
-    [ProjectUidVerifier]
-    [Route("api/v2/export/veta/download")]
-    [HttpGet]
-    public async Task<FileResult> TryDownload([FromQuery] Guid projectUid, [FromQuery] string jobId,
-      [FromServices] ISchedulerProxy scheduler)
-    {
-      var jobResult = await scheduler.GetVetaExportJobStatus(projectUid, jobId, Request.Headers.GetCustomHeaders(true));
-
-      if (jobResult.status.Equals("SUCCEEDED", StringComparison.OrdinalIgnoreCase))
-      {
-        return await transferProxy.Download(jobResult.key);
-      }
-      throw new ServiceException(HttpStatusCode.InternalServerError,
-        new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "File is likely not ready to be downloaded"));
-    }
-
-    /// <summary>
-    /// Tries the download of the exported file. Used for acceptance tests.
-    /// </summary>
-    /// <param name="projectUid">The project uid.</param>
-    /// <param name="jobId">The job identifier.</param>
-    /// <param name="scheduler">The scheduler.</param>
-    /// <exception cref="ServiceException">new ContractExecutionResult(-4, "File is not likely ready to be downloaded")</exception>
-    /// <exception cref="ContractExecutionResult">-4 - File is not likely ready to be downloaded</exception>
-    [ProjectUidVerifier]
-    [Route("api/v2/export/veta/downloadtest")]
-    [HttpGet]
-    public async Task<ExportResult> TryDownloadTest([FromQuery] Guid projectUid, [FromQuery] string jobId,
-      [FromServices] ISchedulerProxy scheduler)
-    {
-      var result = await TryDownload(projectUid, jobId, scheduler) as FileStreamResult;
-
-      using (var reader = new BinaryReader(result.FileStream))
-      {
-        return ExportResult.Create(reader.ReadBytes((int)result.FileStream.Length), 0);
-      }
-    }
-
-    /// <summary>
-    /// Schedules the veta export job and returns JobId.
-    /// </summary>
-    /// <param name="projectUid">The project uid.</param>
-    /// <param name="fileName">Name of the file.</param>
-    /// <param name="machineNames">The machine names.</param>
-    /// <param name="filterUid">The filter uid.</param>
-    /// <param name="scheduler">The scheduler.</param>
-    [ProjectUidVerifier]
-    [Route("api/v2/export/veta/schedulejob")]
-    [HttpGet]
-    public ScheduleResult ScheduleVetaJobOld([FromQuery] Guid projectUid,
-      [FromQuery] string fileName,
-      [FromQuery] string machineNames,
-      [FromQuery] Guid? filterUid,
-      [FromServices] ISchedulerProxy scheduler)
-    {
-      return
-        WithServiceExceptionTryExecute(() => new ScheduleResult
-        {
-          JobId =
-            scheduler.ScheduleVetaExportJob(projectUid, fileName, machineNames, filterUid,
-              Request.Headers.GetCustomHeaders(true)).Result?.jobId
-        });
-    }
-    #endregion
-  */
+ 
     #region Exports
     /// <summary>
     /// Gets an export of production data in cell grid format report for import to VETA.
