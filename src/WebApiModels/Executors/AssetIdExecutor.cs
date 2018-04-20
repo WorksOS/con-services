@@ -8,11 +8,9 @@ using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
 using VSS.MasterData.Repositories.DBModels;
-using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Utilities;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 {
@@ -29,12 +27,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// <returns>a GetAssetIdResult if successful</returns>      
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      GetAssetIdRequest request = item as GetAssetIdRequest;
+      var request = item as GetAssetIdRequest;
       log.LogDebug("AssetIdExecutor: Going to process request {0}", JsonConvert.SerializeObject(request));
 
       long legacyAssetId = -1;
-      int serviceType = 0;
-      bool result = false;
+      var serviceType = 0;
+      var result = false;
 
       Project project = null;
       IEnumerable<Subscriptions> projectCustomerSubs = new List<Subscriptions>();
@@ -58,6 +56,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       //Special case: Allow manual import of tag file if user has manual 3D subscription.
       //ProjectID is -1 for auto processing of tag files and non-zero for manual processing.
       //Radio serial may not be present in the tag file. The logic below replaces the 'john doe' handling in Raptor for these tag files.
+      var assetDevice =
+        await dataRepository.LoadAssetDevice(request.radioSerial, ((DeviceTypeEnum) request.deviceType).ToString());
       if (string.IsNullOrEmpty(request.radioSerial) || request.deviceType == (int) DeviceTypeEnum.MANUALDEVICE)
       {
         //Check for manual 3D subscription for the projects customer, Only allowed to process tag file if legacyProjectId is > 0.
@@ -70,8 +70,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       else
       {
         //Radio serial in tag file. Use it to map to asset in VL.
-        AssetDeviceIds assetDevice =
-          await dataRepository.LoadAssetDevice(request.radioSerial, ((DeviceTypeEnum) request.deviceType).ToString());
 
         // special case in CGen US36833 If fails on DT SNM940 try as again SNM941 
         if (assetDevice == null && (DeviceTypeEnum) request.deviceType == DeviceTypeEnum.SNM940)
@@ -152,7 +150,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     {
       log.LogDebug("AssetIdExecutor: GetMostSignificantServiceType() for asset UID {0} and project UID {1}", assetUID, JsonConvert.SerializeObject(project));
 
-      int serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "Unknown").NGEnum;
+      var serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "Unknown").NGEnum;
 
       IEnumerable<Subscriptions> subs = new List<Subscriptions>();
       if (projectCustomerSubs != null && projectCustomerSubs.Any()) subs = subs.Concat(projectCustomerSubs.Select(s => s));
@@ -164,8 +162,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (subs.Any())
       {
         //Look for highest level machine subscription which is current
-        int utcNowKeyDate = DateTime.UtcNow.KeyDate();
-        foreach (Subscriptions sub in subs)
+        foreach (var sub in subs)
         {
           // Manual3d is least significant
           if (sub.serviceTypeId == serviceTypeMappings.serviceTypes.Find(st => st.name == "Manual 3D Project Monitoring").NGEnum)
@@ -195,10 +192,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         }
       }
 
-      int CGenServiceTypeID = serviceTypeMappings.serviceTypes.Find(st => st.NGEnum == serviceType).CGEnum;
+      var CGenServiceTypeID = serviceTypeMappings.serviceTypes.Find(st => st.NGEnum == serviceType).CGEnum;
       log.LogDebug("AssetIdExecutor: GetMostSignificantServiceType() for asset ID {0}, returning serviceTypeNG {1} actually serviceTypeCG {2}", assetUID, serviceType, CGenServiceTypeID);
       return CGenServiceTypeID;
     }
   }
 }
-    

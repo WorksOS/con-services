@@ -11,8 +11,11 @@ using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
-namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
+namespace VSS.MasterData.Project.WebAPI.Controllers
 {
+  /// <summary>
+  /// Project controller.
+  /// </summary>
   public class ProjectController : BaseController
   {
     private readonly ILogger log;
@@ -20,14 +23,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    /// <param name="logger">Service implementation of ILogger</param>
-    /// <param name="configStore"></param>
-    /// <param name="assetRepository"></param>
-    /// <param name="deviceRepository"></param>
-    /// <param name="customerRepository"></param>
-    /// <param name="projectRepository"></param>
-    /// <param name="subscriptionsRepository"></param>
-    /// <param name="producer"></param>
     public ProjectController(ILoggerFactory logger, IConfigurationStore configStore,
       IRepository<IAssetEvent> assetRepository, IRepository<IDeviceEvent> deviceRepository,
       IRepository<ICustomerEvent> customerRepository, IRepository<IProjectEvent> projectRepository,
@@ -36,7 +31,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
         customerRepository, projectRepository,
         subscriptionsRepository, producer)
     {
-      this.log = logger.CreateLogger<ProjectController>();
+      log = logger.CreateLogger<ProjectController>();
     }
     
     /// <summary>
@@ -58,7 +53,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
       var result = await executor.ProcessAsync(request) as GetProjectIdResult;
 
-      log.LogResult(this.ToString(), request, result);      
+      log.LogResult(ToString(), request, result);      
       return result;
     }
 
@@ -80,7 +75,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       var executor = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
       var result = await executor.ProcessAsync(request) as GetProjectBoundaryAtDateResult;
 
-      log.LogResult(this.ToString(), request, result);
+      log.LogResult(ToString(), request, result);
       return result;
     }
 
@@ -102,7 +97,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
       var result = await executor.ProcessAsync(request) as GetProjectBoundariesAtDateResult;
 
-      log.LogResult(this.ToString(), request, result);
+      log.LogResult(ToString(), request, result);
       return result;
     }
   }

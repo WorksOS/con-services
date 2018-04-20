@@ -48,13 +48,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// <returns>a GetProjectIdResult if successful</returns>      
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      GetProjectIdRequest request = item as GetProjectIdRequest;
+      var request = item as GetProjectIdRequest;
       log.LogDebug("ProjectIdExecutor: Going to process request {0}", JsonConvert.SerializeObject(request));
 
       long projectId = -1;
       IEnumerable<Project> potentialProjects = null;
 
-      Asset asset = null;
       IEnumerable<Subscriptions> assetSubs = null;
       CustomerTccOrg customerTCCOrg = null;
       CustomerTccOrg customerAssetOwner = null;
@@ -69,7 +68,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       // assetId could be valid (>0) or -1 (john doe i.e. landfill) or -2 (imported tagfile)
       if (request.assetId > 0)
       {
-        asset = await dataRepository.LoadAsset(request.assetId);
+        var asset = await dataRepository.LoadAsset(request.assetId);
         log.LogDebug("ProjectIdExecutor: Loaded asset? {0}", JsonConvert.SerializeObject(asset));
 
         if (asset != null && !string.IsNullOrEmpty(asset.OwningCustomerUID))
@@ -94,7 +93,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         //  standard 2d / 3d project aka construction project
         //    IGNORE any tccOrgID
         //    must have valid assetID, which must have a 3d sub.
-        if (customerAssetOwner != null && assetSubs != null && assetSubs.Count() > 0)
+        if (customerAssetOwner != null && assetSubs != null && assetSubs.Any())
         {
           var p = await dataRepository.GetStandardProject(customerAssetOwner.CustomerUID, request.latitude, request.longitude,
             request.timeOfPosition);

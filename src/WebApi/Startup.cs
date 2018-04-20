@@ -1,5 +1,5 @@
-﻿using System.IO;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -18,13 +18,19 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
   using VSS.Productivity3D.Common.Filters;
 #endif
 
-namespace VSS.Productivity3D.TagFileAuth.WebAPI
+namespace VSS.MasterData.Project.WebAPI
 {
+  /// <summary>
+  /// Configures services and request pipelines.
+  /// </summary>
   public class Startup
   {
-    private readonly string _loggerRepoName = "WebApi";
-    IServiceCollection _serviceCollection;
+    private const string LOGGER_REPO_NAME = "WebApi";
+    private IServiceCollection serviceCollection;
 
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
     public Startup(IHostingEnvironment env)
     {
       var builder = new ConfigurationBuilder()
@@ -32,12 +38,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
         .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
         .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
-      env.ConfigureLog4Net("log4net.xml", _loggerRepoName);
+      env.ConfigureLog4Net("log4net.xml", LOGGER_REPO_NAME);
 
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
     }
 
+    /// <summary>
+    /// Gets the root configuration object.
+    /// </summary>
     public IConfigurationRoot Configuration { get; }
 
     /// <summary>
@@ -98,7 +107,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
         options.IgnoreObsoleteProperties();
         options.DescribeAllEnumsAsStrings();
       });
-      _serviceCollection = services;
+      serviceCollection = services;
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -110,11 +119,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
     /// <param name="loggerFactory">The logger factory.</param>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
-      _serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
-      _serviceCollection.BuildServiceProvider();
+      serviceCollection.AddSingleton(loggerFactory);
+      serviceCollection.BuildServiceProvider();
 
       loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(_loggerRepoName);
+      loggerFactory.AddLog4Net(LOGGER_REPO_NAME);
 
       app.UseExceptionTrap();
 #if NET_4_7
