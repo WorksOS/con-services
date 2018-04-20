@@ -38,7 +38,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
 
     /// <summary>
-    /// 
+    /// Default constructor.
     /// </summary>
     /// <param name="producer"></param>
     /// <param name="projectRepo"></param>
@@ -73,6 +73,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///     Body: {"CoordinateSystem":{"FileSpaceID":"u927f3be6-7987-4944-898f-42a088da94f2","Path":"/BC Data/Sites/Svevia Vargarda","Name":"Svevia Vargarda.dc","CreatedUTC":"0001-01-01T00:00:00Z"},"ProjectType":2,"StartDate":"2018-04-11T00:00:00Z","EndDate":"2018-05-11T00:00:00Z","ProjectName":"Svevia Vargarda","TimeZoneName":"Romance Standard Time","BoundaryLL":[{"Latitude":58.021890362243404,"Longitude":12.778613775843427},{"Latitude":58.033751276149488,"Longitude":12.783760539866186},{"Latitude":58.035972399195963,"Longitude":12.812762795456051},{"Latitude":58.032604039701752,"Longitude":12.841590546413993},{"Latitude":58.024515931878035,"Longitude":12.842137844178708},{"Latitude":58.016620613589389,"Longitude":12.831491715508857},{"Latitude":58.0128142214101,"Longitude":12.793567555971942},{"Latitude":58.021890362243404,"Longitude":12.778613775843427}],"CustomerUid":"323e4a34-56aa-11e5-a400-0050569757e0","CustomerName":"MERINO CONSTRUCTION"}
     ///     Result: HttpStatusCode.Created
     ///            {"id":6964} 
+    /// 
+    ///   This US only handles happy path. ServiceExceptions will be mapped in a future US.
     /// 
     /// </summary>
     /// <param name="projectRequest">CreateProjectV2Request model</param>
@@ -142,7 +144,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///     Response: HttpStatusCode.OK
     ///                {"success":true}
     /// 
-    /// Happy path only to be handled at this point.
+    /// Happy path only to be handled in this US. ServiceExceptions will be mapped in a future US.
     /// However this is a faillure Response:
     ///     {"status":500,"message":"invalidUser001\r\n\r\n","errorcode":1000,"link":null}
     /// 

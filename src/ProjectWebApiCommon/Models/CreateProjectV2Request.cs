@@ -41,7 +41,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// <summary>
     /// The name of time zone of the project. This must be a standard Windows time zone name.
     /// </summary>
-    //[Required(ErrorMessage = "Required Field")]
     [JsonProperty(PropertyName = "TimeZoneName", Required = Required.Always)]
     public string ProjectTimezone { get; set; }
 
@@ -50,14 +49,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// The list must contain at least three points and no more than 50 points.
     /// The boundary must not self-intersect nor overlap (temporarally or spatially) other projects.
     /// </summary>
-    //[Required(ErrorMessage = "Required Field")]
-    //[MoreThanTwoPointsAttribute("boundaryLL")]
     [JsonProperty(PropertyName = "BoundaryLL", Required = Required.Always)]
     public List<Point> BoundaryLL { get; set; }
+
     /// <summary>
     /// The details of the coordinate system file from Trimble Business Center.
     /// </summary>
-    //[Required(ErrorMessage = "Required Field")]
     [JsonProperty(PropertyName = "CoordinateSystem", Required = Required.Always)]
     public BusinessCenterFile CoordinateSystem;
 

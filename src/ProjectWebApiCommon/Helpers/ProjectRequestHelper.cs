@@ -149,16 +149,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
       try
       {
-        // todo change mock or MOQ to return true
-        // MockFileRepository.FolderExists and FileExists always returns false so can't check first
-        //// check for exists first to avoid an misleading exception in our logs.
-        //var folderExists = await fileRepo.FolderExists(businessCentreFile.FileSpaceId, tccPath).ConfigureAwait(false);
-        //if (!folderExists)
-        //{
-        //  serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 78,
-        //    $"{businessCentreFile.FileSpaceId} {tccPath}");
-        //}
-
         log.LogInformation(
           $"GetFileContentFromTcc: getBusinessCentreFile fielspaceID: {businessCentreFile.FileSpaceId} tccPath: {tccPath}");
         memStream = await fileRepo.GetFile(businessCentreFile.FileSpaceId, tccPath).ConfigureAwait(false);
@@ -172,7 +162,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         else
         {
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
-              80, $" isAbleToRead {memStream != null && memStream.CanRead} bytesReturned: {memStream?.Length ?? 0}");
+              80, $" isAbleToRead: {memStream != null && memStream.CanRead} bytesReturned: {memStream?.Length ?? 0}");
         }
       }
       catch (Exception e)

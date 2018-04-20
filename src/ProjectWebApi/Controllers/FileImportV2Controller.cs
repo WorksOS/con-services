@@ -31,7 +31,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private readonly ILoggerFactory logger;
 
     /// <summary>
-    /// File import controller v2
+    /// Default constructor.
     /// </summary>
     /// <param name="producer"></param>
     /// <param name="projectRepo"></param>
@@ -67,6 +67,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///   Body: {"ImportedFileTypeID":1,"AlignmentFile":null,"SurfaceFile":{"SurveyedUTC":"2018-03-21T20:18:13.9631923Z"},"LineworkFile":null,"MassHaulPlanFile":null,"FileSpaceID":"u927f3be6-7987-4944-898f-42a088da94f2","Path":"/BC Data/Sites/Test  Create/Designs/TBC","Name":"Cell 9 inter 092717 switchback 112917.ttm","CreatedUTC":"2018-04-11T00:22:11.0266872Z"}
     ///   Response: HttpStatusCode.OK
     ///            {"id":6964} 
+    ///   This US only handles happy path. ServiceExceptions will be mapped in a future US.
     /// </summary>
     /// <param name="projectId"></param>
     /// <param name="importedFileTbc"></param>

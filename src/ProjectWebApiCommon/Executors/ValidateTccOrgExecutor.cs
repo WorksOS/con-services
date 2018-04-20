@@ -29,45 +29,28 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 86);
       }
-      else
+
+      try
       {
-        Organization tccOrganization = null;
-
-        try
+        var organizations = await fileRepo.ListOrganizations();
+        var tccOrganization
+          = (from o in organizations
+            where o.shortName == validateTccAuthorizationRequest.OrgShortName
+            select o)
+          .FirstOrDefault();
+        if (tccOrganization == null)
         {
-          var organizations = await fileRepo.ListOrganizations();
-          tccOrganization
-            = (from o in organizations
-              where o.shortName == validateTccAuthorizationRequest.OrgShortName
-              select o)
-            .First();
-          if (tccOrganization == null)
-          {
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 88);
-          }
-          else if(string.IsNullOrEmpty(tccOrganization.filespaceId) || string.IsNullOrEmpty(tccOrganization.orgId))
-          {
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 89, JsonConvert.SerializeObject(tccOrganization));
-          }
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 88);
         }
-        catch (Exception e)
+        else if (string.IsNullOrEmpty(tccOrganization.filespaceId) || string.IsNullOrEmpty(tccOrganization.orgId))
         {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 87, e.Message);
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 89,
+            JsonConvert.SerializeObject(tccOrganization));
         }
-
-        // Nice, but probably overkill and not done in CGen. Potentially needed for TagFileprocessing. 
-        //try
-        //{
-        //  var customerTccOrg = await customerRepo.GetCustomerWithTccOrg(Guid.Parse(customerUid));
-        //  if (customerTccOrg == null || !string.Equals(customerTccOrg.TCCOrgID, tccOrganization.orgId, StringComparison.OrdinalIgnoreCase))
-        //  {
-        //    serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 91);
-        //  }
-        //}
-        //catch (Exception e)
-        //{
-        //  serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 90, e.Message);
-        //}
+      }
+      catch (Exception e)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 87, e.Message);
       }
 
       return new ContractExecutionResult();

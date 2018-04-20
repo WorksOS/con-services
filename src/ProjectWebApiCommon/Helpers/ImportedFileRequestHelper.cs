@@ -200,6 +200,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <param name="fileCreatedUtc"></param>
     /// <param name="fileUpdatedUtc"></param>
     /// <param name="importedBy"></param>
+    /// <param name="log"></param>
+    /// <param name="serviceExceptionHandler"></param>
+    /// <param name="projectRepo"></param>
     /// <returns></returns>
     public static async Task<UpdateImportedFileEvent> UpdateImportedFileInDb(
       ImportedFile existing,

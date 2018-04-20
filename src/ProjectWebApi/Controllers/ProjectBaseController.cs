@@ -43,6 +43,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="producer">The producer.</param>
     /// <param name="projectRepo">The project repo.</param>
     /// <param name="subscriptionsRepo">The subscriptions repo.</param>
+    /// <param name="fileRepo"></param>
     /// <param name="configStore">The configStore.</param>
     /// <param name="subscriptionProxy">The subs proxy.</param>
     /// <param name="geofenceProxy">The geofence proxy.</param>

@@ -79,7 +79,7 @@ namespace VSS.MasterData.Project.WebAPI.Middleware
           await SetResult("No account selected", context);
           return;
         }
-        //logger.LogTrace("JWT token used: {0}", authorization);
+
         try
         {
           var jwtToken = new TPaaSJWT(authorization);
