@@ -56,8 +56,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       //Special case: Allow manual import of tag file if user has manual 3D subscription.
       //ProjectID is -1 for auto processing of tag files and non-zero for manual processing.
       //Radio serial may not be present in the tag file. The logic below replaces the 'john doe' handling in Raptor for these tag files.
-      var assetDevice =
-        await dataRepository.LoadAssetDevice(request.radioSerial, ((DeviceTypeEnum) request.deviceType).ToString());
       if (string.IsNullOrEmpty(request.radioSerial) || request.deviceType == (int) DeviceTypeEnum.MANUALDEVICE)
       {
         //Check for manual 3D subscription for the projects customer, Only allowed to process tag file if legacyProjectId is > 0.
@@ -70,6 +68,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       else
       {
         //Radio serial in tag file. Use it to map to asset in VL.
+        var assetDevice =
+          await dataRepository.LoadAssetDevice(request.radioSerial, ((DeviceTypeEnum) request.deviceType).ToString());
 
         // special case in CGen US36833 If fails on DT SNM940 try as again SNM941 
         if (assetDevice == null && (DeviceTypeEnum) request.deviceType == DeviceTypeEnum.SNM940)

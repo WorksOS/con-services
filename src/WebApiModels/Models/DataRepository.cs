@@ -48,7 +48,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       ISubscriptionRepository subscriptionsRepository,
       IKafka producer, string kafkaTopicName)
     {
-      this.log = logger;
+      log = logger;
       this.configStore = configStore;
       this.assetRepository = assetRepository;
       this.deviceRepository = deviceRepository;
@@ -137,7 +137,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         var a = await customerRepository.GetCustomer(new Guid(customerUid)).ConfigureAwait(false);
         if (a != null && 
-          (a.CustomerType == VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer || a.CustomerType == VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
+          (a.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer || a.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
           )
           customer = a;
       }
@@ -168,7 +168,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         var a = await customerRepository.GetCustomerWithTccOrg(new Guid(customerUid)).ConfigureAwait(false);
         if (a != null &&
-            (a.CustomerType == VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer || a.CustomerType == VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
+            (a.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer || a.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
             )
           customer = a;
       }
@@ -228,21 +228,20 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       // WKT string should be in 'lon lat,' format
       // TWG84Point is 'lon, lat'
       var points = new List<TWGS84Point>();
-      string[] pointsArray = s.Substring(9, s.Length - 11).Split(',');
+      var pointsArray = s.Substring(9, s.Length - 11).Split(',');
 
-      for (int i = 0; i < pointsArray.Length; i++)
+      for (var i = 0; i < pointsArray.Length; i++)
       {
-        double[] coordinates = new double[2];
+        var coordinates = new double[2];
         coordinates = pointsArray[i].Trim().Split(' ').Select(c => double.Parse(c)).ToArray();
         points.Add(new TWGS84Point(coordinates[0], coordinates[1]));
       }
 
       // is it a valid WKT polygon?
       // note that an invalid polygon can't be created via the ProjectRepo
-      if (points.Count() > 3 && points[0].Equals(points[points.Count() - 1]))
+      if (points.Count > 3 && points[0].Equals(points[points.Count - 1]))
       {
-        var fencePoints = new TWGS84Point[points.Count()];
-        fencePoints = points.ToArray();
+        var fencePoints = points.ToArray();
         return fencePoints;
       }
       return new TWGS84Point[0];
