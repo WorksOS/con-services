@@ -28,8 +28,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       this.configurationStore = configurationStore;
     }
 
-    public async Task<T> SendRequest<T>(ScheduleJobRequest jobRequest, IDictionary<string, string> customHeaders,
-      string payload = null, Stream streamPayload = null)
+    public async Task<T> SendRequest<T>(ScheduleJobRequest jobRequest, IDictionary<string, string> customHeaders, Stream streamPayload = null)
     {
       var method = jobRequest.Method ?? "GET";
       var result = default(T);
@@ -39,7 +38,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
         if (streamPayload != null)
           result = await request.ExecuteRequest<T>(jobRequest.Url, streamPayload, customHeaders, method);
         else
-          result = await request.ExecuteRequest<T>(jobRequest.Url, method, customHeaders, payload);
+          result = await request.ExecuteRequest<T>(jobRequest.Url, method, customHeaders, jobRequest.Payload);
         log.LogDebug("Result of send request: {0}", result);
       }
       catch (Exception ex)

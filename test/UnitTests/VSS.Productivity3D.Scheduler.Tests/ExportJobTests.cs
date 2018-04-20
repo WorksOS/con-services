@@ -58,7 +58,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
       var context = new PerformContext(connection.Object, backJob, token.Object);
 
       Mock<IApiClient> apiClient = new Mock<IApiClient>();
-      apiClient.Setup(a => a.SendRequest<ExportResult>(scheduleRequest, customHeaders, null, null)).ReturnsAsync(new ExportResult { ExportData = new byte[0] });
+      apiClient.Setup(a => a.SendRequest<ExportResult>(scheduleRequest, customHeaders, null)).ReturnsAsync(new ExportResult { ExportData = new byte[0] });
 
       Mock<ITransferProxy> transferProxy = new Mock<ITransferProxy>();
       transferProxy.Setup(t => t.Upload(It.IsAny<Stream>(), It.IsAny<string>())).Verifiable();

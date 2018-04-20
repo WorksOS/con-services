@@ -57,7 +57,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     {
       log.LogInformation($"GetExportJobStatus: {jobId}");
 
-      var status = JobStorage.Current.GetConnection().GetJobData(jobId).State;
+      var status = JobStorage.Current.GetConnection()?.GetJobData(jobId)?.State;
       if (string.IsNullOrEmpty(status))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,

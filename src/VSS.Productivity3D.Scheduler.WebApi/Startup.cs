@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
+using VSS.MasterData.Models.FIlters;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
@@ -161,6 +162,8 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
       _serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
       _serviceProvider = _serviceCollection.BuildServiceProvider();
+
+      app.UseFilterMiddleware<ExceptionsTrap>();
 
       app.UseMvc();
 

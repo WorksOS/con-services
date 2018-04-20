@@ -1,0 +1,91 @@
+﻿using System;
+using System.Net;
+using System.Text;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
+using TestUtility;
+using TestUtility.Model.WebApi;
+using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling;
+
+namespace WebApiTests
+{
+  [TestClass]
+  public class ExportJobTests
+  {
+    private TestSupport ts;
+    private readonly Msg Msg = new Msg();
+    private static readonly Guid CustomerUid = new Guid("48003241-851d-4145-8c2a-7b099bbfd117");
+
+    private const string GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1 = "7925f179-013d-4aaf-aff4-7b9833bb06d6";
+    private const string SUCCESS_JOB_ID = "Test_Job_1";
+    private const string FilterUid = "81422acc-9b0c-401c-9987-0aedbf153f1d";
+
+
+    [TestInitialize]
+    public void Initialize()
+    {
+      ts = new TestSupport
+      {
+        IsPublishToWebApi = true,
+        CustomerUid = CustomerUid
+      };
+    }
+
+    [TestMethod]
+    public void CanDoExportSuccess()
+    {
+      Msg.Title("Scheduler web test 1", "Schedule export job happy path");
+
+      //Schedule the export job...
+      var url = $"{ts.tsCfg.vetaExportUrl}?projectUid={GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1}&fileName={SUCCESS_JOB_ID}&filterUid={FilterUid}";
+      var request = new ScheduleJobRequest {Url = url};
+      var requestJson = JsonConvert.SerializeObject(request);
+      var responseJson = ts.CallSchedulerWebApi("api/v1/export", "POST", requestJson);
+      var scheduleResult = JsonConvert.DeserializeObject<ScheduleJobResult>(responseJson,
+        new JsonSerializerSettings {DateTimeZoneHandling = DateTimeZoneHandling.Unspecified});
+      Assert.IsNotNull(scheduleResult, "Should get a schedule job response");
+      Assert.IsTrue(!string.IsNullOrEmpty(scheduleResult.jobId), "Should get a job id");
+
+      //Get the job status...
+      JobStatusResult statusResult = new JobStatusResult{status = string.Empty};
+      //Avoid infinite loop if something goes wrong
+      var timeout = DateTime.Now.AddSeconds(30);
+      while (!statusResult.status.Equals("SUCCEEDED", StringComparison.OrdinalIgnoreCase) && DateTime.Now < timeout)
+      {
+        responseJson = ts.CallSchedulerWebApi($"api/v1/export/{scheduleResult.jobId}", "GET");
+        statusResult = JsonConvert.DeserializeObject<JobStatusResult>(responseJson,
+          new JsonSerializerSettings {DateTimeZoneHandling = DateTimeZoneHandling.Unspecified});
+
+        Assert.IsNotNull(statusResult, "Should get a job status response");
+        Console.WriteLine($"Scheduled Job Status: {statusResult.status}");
+      }
+      if (!statusResult.status.Equals("SUCCEEDED", StringComparison.OrdinalIgnoreCase))
+        Assert.Fail("Test timed out");
+      Assert.IsTrue(!string.IsNullOrEmpty(statusResult.downloadLink), "Should get a download link on success");
+
+      //Download the zip file...
+      var restClient = new RestClientUtil();
+      var response = restClient.DoHttpRequest(statusResult.downloadLink, "GET", null, HttpStatusCode.OK, string.Empty, CustomerUid.ToString());
+      var actualSorted = Common.SortCsvFileIntoString(response);
+      var expectedBytes = JsonConvert.DeserializeObject<byte[]>(
+        "\"UEsDBBQAAAgIAEsQe0tesHMI2AEAANUIAAAIAAAAVGVzdC5jc3bNlM1um0AQgO+V+g4op1aabPeH5Sc3Sn4q1SDLRpZ6stawjVcB1gXiqn21HvpIfYUu1CZSAlVRKsVcZhdmhk/fDvz68TNRhYRQ5nm8Lrp4ZeJVLveiUbo067mo6/i+2MgKZqJuFiJTetaU6Te4lLW6LWNhGkQi3apSwnInZba+K95tu+Sb+TLSmQQTgzRNdG76JaK6bXuG+r5sYCVylc11DTP1uelqwmjV5bSx3UeX827fxg7gcP+6kl/WH75366DYrYs/rZOtSu9KWdfmVQeqGykqWKmNXDaikV1BIk1F+voVxYSex3p/jrmF/QtuXzAHMQ8DoZgjwjBQj1LECQbue4i75glgiIK5hQmchUFihUvuvD8DijDMdNpZsxbJRwi1qGppvcGIYq94Cww+ydpUA8cmlTAX+UC6tbnaJAwLuZemBmLdWMFul6tUbHIJg5juA6btPsJ0qDuGySZi2m3BMzD5gE2PH2xye9ymPc0mRu5jzGtdfRVV9k+YQ4feY7Z6T+PQ+cCh95hs9NB9RKbatJ9jc2g2j5iOwRyx+fKzyRDxj7Ppj39C7jSbBNH/ZPMp5knOZo/J2QHTYadss8c8bZuee7T5l9/7y9vsMV06bpNPw/Qn2PwNUEsBAhQAFAAACAgASxB7S16wcwjYAQAA1QgAAAgAAAAAAAAAAAAgAAAAAAAAAFRlc3QuY3N2UEsFBgAAAAABAAEANgAAAP4BAAAAAA==\"");
+      var expected = Encoding.Default.GetString(Common.Decompress(expectedBytes));
+      var expectedSorted = Common.SortCsvFileIntoString(expected);
+      Assert.AreEqual(expectedSorted, actualSorted, "Export data does not match");
+    }
+
+    [TestMethod]
+    public void CanGetExportJobStatusMissingJob()
+    {
+      Msg.Title("Scheduler web test 2", "Get Scheduled export job status for missing job");
+
+      const string jobId = "999999";
+      var responseJson = ts.CallSchedulerWebApi($"api/v1/export/{jobId}", "GET", null, HttpStatusCode.BadRequest);
+      var result = JsonConvert.DeserializeObject<ContractExecutionResult>(responseJson,
+        new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      Assert.IsNotNull(result, "Should be a error message");
+      Assert.AreEqual($"Missing job details for {jobId}", result.Message, "Wrong error message");
+    }
+  }
+}
