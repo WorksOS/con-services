@@ -54,16 +54,18 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="configStore">The configStore.</param>
     /// <param name="raptorProxy">The raptorServices proxy.</param>
     /// <param name="logger">The logger.</param>
+    /// <param name="subscriptionRepo"></param>
     /// <param name="fileRepo">For TCC file transfer</param>
     /// <param name="serviceExceptionHandler">For correctly throwing ServiceException errors</param>
     /// <param name="requestFactory"></param>
     /// <param name="log"></param>
-    public FileImportBaseController(IKafka producer, IProjectRepository projectRepo,
-      IConfigurationStore configStore, IRaptorProxy raptorProxy,
-      IFileRepository fileRepo, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      IRequestFactory requestFactory, ILogger log)
+    public FileImportBaseController(IKafka producer,
+      IConfigurationStore configStore, ILoggerFactory logger, ILogger log, IServiceExceptionHandler serviceExceptionHandler,
+      IRaptorProxy raptorProxy,
+      IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
+      IFileRepository fileRepo, IRequestFactory requestFactory )
       : base(log, configStore, serviceExceptionHandler, producer,
-        raptorProxy, projectRepo, null, fileRepo)
+        raptorProxy, projectRepo, subscriptionRepo, fileRepo)
     {
       this.logger = logger;
       this.requestFactory = requestFactory;

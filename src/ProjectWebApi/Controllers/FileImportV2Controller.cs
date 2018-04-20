@@ -37,15 +37,19 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="projectRepo"></param>
     /// <param name="store"></param>
     /// <param name="raptorProxy"></param>
+    /// <param name="subscriptionRepo"></param>
     /// <param name="fileRepo"></param>
     /// <param name="logger"></param>
     /// <param name="serviceExceptionHandler"></param>
     /// <param name="requestFactory"></param>
-    public FileImportV2Controller(IKafka producer, IProjectRepository projectRepo,
-      IConfigurationStore store, IRaptorProxy raptorProxy, IFileRepository fileRepo, ILoggerFactory logger, 
-      IServiceExceptionHandler serviceExceptionHandler, IRequestFactory requestFactory)
-      : base(producer, projectRepo, store, raptorProxy, fileRepo, logger, serviceExceptionHandler, 
-          requestFactory, logger.CreateLogger<FileImportV2Controller>())
+    public FileImportV2Controller(IKafka producer,
+      IConfigurationStore store, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
+      IRaptorProxy raptorProxy,
+      IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
+      IFileRepository fileRepo, IRequestFactory requestFactory)
+      : base(producer, store, logger, logger.CreateLogger<FileImportV4Controller>(), serviceExceptionHandler,
+        raptorProxy,
+        projectRepo, subscriptionRepo, fileRepo, requestFactory)
     {
       this.logger = logger;
       fileSpaceId = store.GetValueString("TCCFILESPACEID");
@@ -105,7 +109,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var importedFile = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<UpsertImportedFileExecutor>(logger, configStore, serviceExceptionHandler,
-            customerUid, userId, null, customHeaders,
+            customerUid, userId, userEmailAddress, customHeaders,
             producer, kafkaTopicName,
             null, raptorProxy, null,
             projectRepo, null, fileRepo)
