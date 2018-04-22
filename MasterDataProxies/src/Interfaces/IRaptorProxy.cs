@@ -23,6 +23,9 @@ namespace VSS.MasterData.Proxies.Interfaces
     Task<BaseDataResult> DeleteFile(Guid projectUid, ImportedFileType fileType, Guid fileUid, string fileDescriptor,
       long fileId, long? legacyFileId, IDictionary<string, string> customHeaders = null);
 
+    Task<ProjectStatisticsResult> GetProjectStatistics(Guid projectUid,
+      IDictionary<string, string> customHeaders = null);
+
     Task<BaseDataResult> UpdateFiles(Guid projectUid, IEnumerable<Guid> fileUids,
       IDictionary<string, string> customHeaders = null);
 
