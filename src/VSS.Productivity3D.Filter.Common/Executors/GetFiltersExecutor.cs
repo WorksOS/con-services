@@ -84,7 +84,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 10, e.Message);
       }
 
-      FilterJsonHelper.ParseFilterJson(filterRequest.ProjectData, filters);
+      FilterJsonHelper.ParseFilterJson(filterRequest.ProjectData, filters, raptorProxy);
 
       // may be none, return success and empty list
       return new FilterDescriptorListResult

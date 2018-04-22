@@ -2,8 +2,12 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Moq;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Filter.Common.Utilities;
 
 namespace VSS.Productivity3D.Filter.Tests
@@ -11,13 +15,34 @@ namespace VSS.Productivity3D.Filter.Tests
   [TestClass]
   public class FilterResponseHelperTests
   {
+    private IRaptorProxy mockedRaptorProxy;
+
+    [TestInitialize]
+    public void TestInit()
+    {
+      var mockedRaptorProxySetup = new Mock<IRaptorProxy>();
+      mockedRaptorProxySetup.Setup(IRaptorProxy =>
+          IRaptorProxy.GetProjectStatistics(Guid.NewGuid(), new Dictionary<string, string>()))
+        .Returns(Task.FromResult(new ProjectStatisticsResult
+        {
+          startTime = DateTime.Now
+        }));
+
+      mockedRaptorProxy = mockedRaptorProxySetup.Object;
+
+
+    }
+
     [TestMethod]
     public void Should_return_When_project_is_null()
     {
       try
       {
+
+    
+      
         var filter = new MasterData.Repositories.DBModels.Filter { FilterJson = "{\"dateRangeType\":\"0\",\"elevationType\":null}" };
-        FilterJsonHelper.ParseFilterJson(null, filter);
+        FilterJsonHelper.ParseFilterJson(null, filter, mockedRaptorProxy);
 
         MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filter.FilterJson);
         Assert.AreEqual(DateRangeType.Today, filterObj.DateRangeType);
@@ -33,7 +58,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       try
       {
-        FilterJsonHelper.ParseFilterJson(new ProjectData(), filter: (MasterData.Repositories.DBModels.Filter)null);
+        FilterJsonHelper.ParseFilterJson(new ProjectData(), filter: (MasterData.Repositories.DBModels.Filter)null, raptorProxy: mockedRaptorProxy);
       }
       catch (Exception exception)
       {
@@ -46,7 +71,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       try
       {
-        FilterJsonHelper.ParseFilterJson(new ProjectData(), filter: (FilterDescriptor)null);
+        FilterJsonHelper.ParseFilterJson(new ProjectData(), filter: (FilterDescriptor)null, raptorProxy: mockedRaptorProxy);
       }
       catch (Exception exception)
       {
@@ -59,7 +84,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       try
       {
-        FilterJsonHelper.ParseFilterJson(new ProjectData(), filters: null);
+        FilterJsonHelper.ParseFilterJson(new ProjectData(), filters: null, raptorProxy: mockedRaptorProxy);
       }
       catch (Exception exception)
       {
@@ -73,7 +98,7 @@ namespace VSS.Productivity3D.Filter.Tests
       try
       {
         var filter = new MasterData.Repositories.DBModels.Filter { FilterJson = "{\"dateRangeType\":\"4\",\"elevationType\":null}" };
-        FilterJsonHelper.ParseFilterJson(new ProjectData(), filter);
+        FilterJsonHelper.ParseFilterJson(new ProjectData(), filter, raptorProxy: mockedRaptorProxy);
 
         MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filter.FilterJson);
         Assert.AreEqual(DateRangeType.CurrentMonth, filterObj.DateRangeType);
@@ -98,7 +123,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var endUtcStr = endUtc?.ToString("MM/dd/yyyy");
       var filter = new MasterData.Repositories.DBModels.Filter { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"startUTC\":\"{startUtcStr}\",\"endUTC\":\"{endUtcStr}\",\"elevationType\":null}}" };
 
-      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filter);
+      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filter, raptorProxy: mockedRaptorProxy);
 
       MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filter.FilterJson);
       Assert.AreEqual(dateRangeType, filterObj.DateRangeType);
@@ -123,7 +148,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var endUtcStr = endUtc?.ToString("MM/dd/yyyy");
       var filterDescriptor = new FilterDescriptor { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"startUTC\":\"{startUtcStr}\",\"endUTC\":\"{endUtcStr}\",\"elevationType\":null}}" };
 
-      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filterDescriptor);
+      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filterDescriptor, raptorProxy: mockedRaptorProxy);
 
       MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterDescriptor.FilterJson);
       if (asAtDate)
@@ -160,7 +185,7 @@ namespace VSS.Productivity3D.Filter.Tests
       {
         filters.Add(new MasterData.Repositories.DBModels.Filter { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"elevationType\":null}}" });
       }
-      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filters);
+      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filters, raptorProxy: mockedRaptorProxy);
 
       foreach (var filter in filters)
       {
@@ -191,7 +216,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var filter = new MasterData.Repositories.DBModels.Filter { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"elevationType\":null}}" };
 
-      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filter);
+      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filter, raptorProxy: mockedRaptorProxy);
 
       ValidateDates(filter.FilterJson, asAtDate);
     }
@@ -219,7 +244,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var filterDescriptor = new FilterDescriptor { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"elevationType\":null}}" };
 
-      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filterDescriptor);
+      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filterDescriptor, raptorProxy: mockedRaptorProxy);
 
       ValidateDates(filterDescriptor.FilterJson, asAtDate);
     }
