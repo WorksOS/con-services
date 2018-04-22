@@ -1,11 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Net;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Filter.Common.Extensions;
 using DbFilter = VSS.MasterData.Repositories.DBModels.Filter;
 
 namespace VSS.Productivity3D.Filter.Common.Utilities
