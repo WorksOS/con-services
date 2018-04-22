@@ -8,7 +8,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
     /// <summary>
     ///  Represents a request that can be made against the design profiler cluster group in the Raptor grid
     /// </summary>
-    public class TAGFileProcessingPoolRequest : BaseRaptorRequest<ProcessTAGFileRequestArgument, ProcessTAGFileResponse>
+    public class TAGFileProcessingPoolRequest<ProcessTAGFileRequestArgument, ProcessTAGFileResponse> : BaseRaptorRequest<ProcessTAGFileRequestArgument, ProcessTAGFileResponse>
     {
         /// <summary>
         /// Default no-arg constructor that sets up cluster and compute projections available for use by the TAG file processing pipeline

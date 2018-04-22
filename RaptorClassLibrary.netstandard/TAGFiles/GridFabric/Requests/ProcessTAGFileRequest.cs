@@ -7,7 +7,7 @@ using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Responses;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.GridFabric.Requests
 {
-    public class ProcessTAGFileRequest : TAGFileProcessingPoolRequest
+    public class ProcessTAGFileRequest : TAGFileProcessingPoolRequest<ProcessTAGFileRequestArgument, ProcessTAGFileResponse>
     {
         /// <summary>
         /// Processes a set of TAG files from a machine into a project
