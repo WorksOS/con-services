@@ -247,7 +247,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
                       Path.GetExtension(tccFileName);
       }
 
-      string fileSpaceId = FileDescriptor.GetFileSpaceId(this.ConfigStore, this.Log);
+      string fileSpaceId = FileDescriptorExtensions.GetFileSpaceId(this.ConfigStore, this.Log);
       FileDescriptor fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, file.Path, tccFileName);
 
       return DesignDescriptor.CreateDesignDescriptor(file.LegacyFileId, fileDescriptor, 0.0);

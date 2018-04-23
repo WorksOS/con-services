@@ -7,6 +7,7 @@ using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -36,7 +37,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
       DxfTileRequest request = item as DxfTileRequest;
 
-      string filespaceId = FileDescriptor.GetFileSpaceId(configStore, log);
+      string filespaceId = FileDescriptorExtensions.GetFileSpaceId(configStore, log);
 
       //Calculate zoom level
       int zoomLevel = TileServiceUtils.CalculateZoomLevel(request.bbox.topRightLat - request.bbox.bottomLeftLat,

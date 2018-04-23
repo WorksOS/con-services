@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
+using VSS.MasterData.Models.FIlters;
 using VSS.Productivity3D.Common.Filters.Validation;
 
 namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models

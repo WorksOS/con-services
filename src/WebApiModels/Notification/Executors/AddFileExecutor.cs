@@ -8,15 +8,16 @@ using System.Text;
 using System.Threading.Tasks;
 using VLPDDecls;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
-using VSS.Productivity3D.WebApi.Models.Notification.Models;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using AddFileResult = VSS.Productivity3D.WebApi.Models.Notification.Models.AddFileResult;
 
 namespace VSS.Productivity3D.WebApiModels.Notification.Executors
 {
