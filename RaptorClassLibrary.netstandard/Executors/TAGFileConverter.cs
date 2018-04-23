@@ -28,7 +28,7 @@ namespace VSS.VisionLink.Raptor.Executors
         public int ProcessedEpochCount { get; set; }
 
         /// <summary>
-        /// The numebr of cell passes generatyed from the cell data
+        /// The numebr of cell passes generated from the cell data
         /// </summary>
         public int ProcessedCellPassCount { get; set; }
 
