@@ -183,6 +183,7 @@ namespace VSS.MasterData.Proxies
     /// Get the statistics for a project.
     /// </summary>
     /// <param name="request">Description of the Project Settings request.</param>
+    /// <param name="projectUid">Project UID</param>
     /// <param name="customHeaders">The custom headers.</param>
     public async Task<ProjectStatisticsResult> GetProjectStatistics(Guid projectUid, IDictionary<string, string> customHeaders = null)
     {
