@@ -9,6 +9,8 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using BoundingBox3DGrid = VSS.Productivity3D.Common.Models.BoundingBox3DGrid;
+
 
 namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 {

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Interfaces;
 
 namespace VSS.Productivity3D.Common.Models
