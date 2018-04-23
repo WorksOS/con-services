@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
+using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
@@ -80,7 +81,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [Route("api/v2/projects/{projectId}/importedfiles")]
     [HttpPut]
     public async Task<ContractExecutionResult> UpsertImportedFileV2(
-      [FromUri] long projectId, 
+      [FromUri] long projectId,
       [FromUri] ImportedFileTbc importedFileTbc)
     {
       importedFileTbc = FileImportV2DataValidator.ValidateUpsertImportedFileRequest(projectId, importedFileTbc);
@@ -89,22 +90,23 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       // this also validates that this customer has access to the projectUid
       var project = await GetProject(projectId);
-      
-      var fileDescriptor = await CopyFileWithinTccRepository(importedFileTbc, 
-          customerUid, project.ProjectUID).ConfigureAwait(false);
 
-      var importedFileUpsertEvent = new ImportedFileUpsertEvent()
-      {
-        Project = project,
-        ImportedFileTypeId = importedFileTbc.ImportedFileTypeId,
-        SurveyedUtc = importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
-          ? importedFileTbc.SurfaceFile.SurveyedUtc : (DateTime?) null,
-        DxfUnitsTypeId = importedFileTbc.ImportedFileTypeId == ImportedFileType.Linework
-          ? importedFileTbc.LineworkFile.DxfUnitsTypeId : DxfUnitsType.Meters, 
-        FileCreatedUtc = DateTime.UtcNow, // todo what should this be?
-        FileUpdatedUtc = DateTime.UtcNow, // todo what should this be?
-        ImportedFileInTcc = fileDescriptor
-      };
+      var fileDescriptor = await ImportedFileRequestHelper.CopyFileWithinTccRepository(importedFileTbc,
+        customerUid, project.ProjectUID, fileSpaceId,
+        log, serviceExceptionHandler, fileRepo).ConfigureAwait(false);
+
+      var importedFileUpsertEvent = ImportedFileUpsertEvent.CreateImportedFileUpsertEvent
+      (
+        project, importedFileTbc.ImportedFileTypeId,
+        importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
+          ? importedFileTbc.SurfaceFile.SurveyedUtc
+          : (DateTime?) null,
+        importedFileTbc.ImportedFileTypeId == ImportedFileType.Linework
+          ? importedFileTbc.LineworkFile.DxfUnitsTypeId
+          : DxfUnitsType.Meters,
+        DateTime.UtcNow, DateTime.UtcNow, // todo what should these be?
+        fileDescriptor
+      );
 
       var importedFile = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory

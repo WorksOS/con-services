@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -7,14 +9,15 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
+using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.TCCFileAccess;
@@ -44,47 +47,61 @@ namespace VSS.MasterData.ProjectTests
     [TestMethod]
     public async Task UpsertImportedFileExecutorTests_CopyTCCFile()
     {
-      throw new NotImplementedException();
-    }
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
 
-    [TestMethod]
-    public async Task UpsertImportedFileExecutor_HappyPath_Update()
-    {
-      throw new NotImplementedException();
+      var importedFileTbc = new ImportedFileTbc()
+      {
+        FileSpaceId = "u710e3466-1d47-45e3-87b8-81d1127ed4ed",
+        Name = "MoundRoadlinework.dxf",
+        Path = "/BC Data/Sites/Chch Test Site/Designs/Mound Road",
+        ImportedFileTypeId = ImportedFileType.DesignSurface,
+        CreatedUtc = DateTime.UtcNow
+      };
+
+      var fileRepo = new Mock<IFileRepository>();
+      fileRepo.Setup(fr => fr.FolderExists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
+      byte[] buffer = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3 };
+      var stream = new MemoryStream(buffer);
+      fileRepo.Setup(fr => fr.GetFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(stream);
+      fileRepo.Setup(fr => fr.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<long>())).ReturnsAsync(true);
+
+      var fileDescriptor = await ImportedFileRequestHelper.CopyFileWithinTccRepository(importedFileTbc,
+        _customerUid, Guid.NewGuid().ToString(), "f9sdg0sf9",
+        logger.CreateLogger<UpsertImportedFileExecutorTests>(), serviceExceptionHandler, fileRepo.Object).ConfigureAwait(false);
+      // todo Assert.IsTrue(fileDescriptor.path, "CoordinateSystemFileContent not read from DC.");
+      stream.Dispose();
     }
 
 
     [TestMethod]
     public async Task UpsertImportedFileExecutor_HappyPath_Create()
     {
-      throw new NotImplementedException();
-
       var customHeaders = new Dictionary<string, string>();
 
       var project = new Repositories.DBModels.Project() { CustomerUID = _customerUid, ProjectUID = _projectUid };
 
       var importedFileUid = Guid.NewGuid().ToString();
       var existingImportedFileList = new List<ImportedFile>();
-      ImportedFile existingImportedFile = new ImportedFile() {ImportedFileUid = importedFileUid};
+      ImportedFile existingImportedFile = new ImportedFile() {ImportedFileUid = importedFileUid, ImportedFileId = 200000};
 
-      var importedFileUpsertEvent = new ImportedFileUpsertEvent()
-      {
-        Project = project,
-        ImportedFileTypeId = ImportedFileType.DesignSurface,
-        SurveyedUtc = null,
-        DxfUnitsTypeId = DxfUnitsType.Meters,
-        FileCreatedUtc = DateTime.UtcNow.AddHours(-45),
-        FileUpdatedUtc = DateTime.UtcNow.AddHours(-44),
-        ImportedFileInTcc = FileDescriptor.CreateFileDescriptor("u3bdc38d-1afe-470e-8c1c-fc241d4c5e01", "/BC Data/Sites/Chch Test Site", "CTCTSITECAL.dc")
-      };
+      var importedFileUpsertEvent = ImportedFileUpsertEvent.CreateImportedFileUpsertEvent(
+       project,ImportedFileType.DesignSurface, null, DxfUnitsType.Meters,
+       DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44),
+       FileDescriptor.CreateFileDescriptor("u3bdc38d-1afe-470e-8c1c-fc241d4c5e01", "/BC Data/Sites/Chch Test Site", "CTCTSITECAL.dc")
+      );
 
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
       var producer = new Mock<IKafka>();
-
+      producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
+      producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
+      
       var raptorProxy = new Mock<IRaptorProxy>();
-     
+      var raptorAddFileResult = new AddFileResult();
+      raptorProxy.Setup(rp => rp.AddFile(It.IsAny<Guid>(), It.IsAny<ImportedFileType>(), It.IsAny<Guid>(),
+        It.IsAny<string>(), It.IsAny<long>(), It.IsAny<DxfUnitsType>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(raptorAddFileResult);
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<CreateProjectEvent>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<CreateImportedFileEvent>())).ReturnsAsync(1);

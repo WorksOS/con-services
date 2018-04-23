@@ -39,7 +39,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       if (importedFiles.Count > 0)
       {
         existing = importedFiles.FirstOrDefault(
-          f => string.Equals(f.Name, importedFileUpsertEvent.ImportedFileInTcc.BaseFileName(), StringComparison.OrdinalIgnoreCase)
+          f => string.Equals(f.Name, importedFileUpsertEvent.FileDescriptor.BaseFileName(), StringComparison.OrdinalIgnoreCase)
                && f.ImportedFileType == importedFileUpsertEvent.ImportedFileTypeId
                && (
                  importedFileUpsertEvent.ImportedFileTypeId == ImportedFileType.SurveyedSurface &&
@@ -50,7 +50,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       bool creating = existing == null;
       log.LogInformation(
         creating
-          ? $"UpdateImportedFileV4. file doesn't exist already in DB: {importedFileUpsertEvent.ImportedFileInTcc.fileName} projectUid {importedFileUpsertEvent.Project.ProjectUID} ImportedFileType: {importedFileUpsertEvent.ImportedFileTypeId} surveyedUtc {(importedFileUpsertEvent.SurveyedUtc == null ? "N/A" : importedFileUpsertEvent.SurveyedUtc.ToString())}"
+          ? $"UpdateImportedFileV4. file doesn't exist already in DB: {importedFileUpsertEvent.FileDescriptor.fileName} projectUid {importedFileUpsertEvent.Project.ProjectUID} ImportedFileType: {importedFileUpsertEvent.ImportedFileTypeId} surveyedUtc {(importedFileUpsertEvent.SurveyedUtc == null ? "N/A" : importedFileUpsertEvent.SurveyedUtc.ToString())}"
           : $"UpdateImportedFileV4. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
 
 
@@ -62,8 +62,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         // need to write to Db prior to notifying raptor, as raptor needs the legacyImportedFileID 
         createImportedFileEvent = await ImportedFileRequestHelper.CreateImportedFileinDb(Guid.Parse(customerUid), Guid.Parse(importedFileUpsertEvent.Project.ProjectUID),
-            importedFileUpsertEvent.ImportedFileTypeId, importedFileUpsertEvent.DxfUnitsTypeId, importedFileUpsertEvent.ImportedFileInTcc.BaseFileName(), importedFileUpsertEvent.SurveyedUtc, 
-            JsonConvert.SerializeObject(importedFileUpsertEvent.ImportedFileInTcc),
+            importedFileUpsertEvent.ImportedFileTypeId, importedFileUpsertEvent.DxfUnitsTypeId, importedFileUpsertEvent.FileDescriptor.BaseFileName(), importedFileUpsertEvent.SurveyedUtc, 
+            JsonConvert.SerializeObject(importedFileUpsertEvent.FileDescriptor),
             importedFileUpsertEvent.FileCreatedUtc, importedFileUpsertEvent.FileUpdatedUtc, userEmailAddress,
             log, serviceExceptionHandler, projectRepo)
           .ConfigureAwait(false);
@@ -72,7 +72,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       }
 
       var result = await ImportedFileRequestHelper.NotifyRaptorAddFile(importedFileUpsertEvent.Project.LegacyProjectID, Guid.Parse(importedFileUpsertEvent.Project.ProjectUID),
-          importedFileUpsertEvent.ImportedFileTypeId, importedFileUpsertEvent.DxfUnitsTypeId, importedFileUpsertEvent.ImportedFileInTcc, importedFileId.Value,
+          importedFileUpsertEvent.ImportedFileTypeId, importedFileUpsertEvent.DxfUnitsTypeId, importedFileUpsertEvent.FileDescriptor, importedFileId.Value,
           Guid.Parse(importedFileUid), (existing == null), log, customHeaders, serviceExceptionHandler, raptorProxy, projectRepo)
         .ConfigureAwait(false);
 
@@ -86,7 +86,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       //Need to update zoom levels in Db for both create  and update
       var updateImportedFileEvent = await ImportedFileRequestHelper.UpdateImportedFileInDb(existing, 
-          JsonConvert.SerializeObject(importedFileUpsertEvent.ImportedFileInTcc),
+          JsonConvert.SerializeObject(importedFileUpsertEvent.FileDescriptor),
           importedFileUpsertEvent.SurveyedUtc, result.MinZoomLevel, result.MaxZoomLevel,
           importedFileUpsertEvent.FileCreatedUtc, importedFileUpsertEvent.FileUpdatedUtc, userEmailAddress,
           log, serviceExceptionHandler, projectRepo)

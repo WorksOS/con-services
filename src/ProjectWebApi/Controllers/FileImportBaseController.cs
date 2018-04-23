@@ -324,95 +324,95 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       return FileDescriptor.CreateFileDescriptor(fileSpaceId, tccPath, tccFileName);
     }
 
-    /// <summary>
-    /// Copies importedFile between filespaces in TCC
-    ///     From FilespaceIDBcCustomer\BC Data to FilespaceIdVisionLink\CustomerUid\ProjectUid
-    ///   returns filespaceID; path and filename which identifies it uniquely in TCC
-    ///   this may be a create or update, so ok if it already exists
-    /// </summary>
-    /// <returns></returns>
-    protected async Task<FileDescriptor> CopyFileWithinTccRepository(BusinessCenterFile sourceFile, 
-      string customerUid, string projectUid)
-    {
-      // todo see if there is a TCC command to CopyFile BETWEEN filespaceIDs?
-      Stream memStream = null;
-      var tccPathSource = $"{sourceFile.Path}/{sourceFile.Name}";
+    ///// <summary>
+    ///// Copies importedFile between filespaces in TCC
+    /////     From FilespaceIDBcCustomer\BC Data to FilespaceIdVisionLink\CustomerUid\ProjectUid
+    /////   returns filespaceID; path and filename which identifies it uniquely in TCC
+    /////   this may be a create or update, so ok if it already exists
+    ///// </summary>
+    ///// <returns></returns>
+    //protected async Task<FileDescriptor> CopyFileWithinTccRepository(BusinessCenterFile sourceFile, 
+    //  string customerUid, string projectUid)
+    //{
+    //  // todo see if there is a TCC command to CopyFile BETWEEN filespaceIDs?
+    //  Stream memStream = null;
+    //  var tccPathSource = $"{sourceFile.Path}/{sourceFile.Name}";
 
-      var tccPathTarget = $"/{customerUid}/{projectUid}";
-      var tccFileNameTarget = sourceFile.Name;
+    //  var tccPathTarget = $"/{customerUid}/{projectUid}";
+    //  var tccFileNameTarget = sourceFile.Name;
 
-      try
-      {
-        /*
-         // todo change mock or MOQ to return true
-         MockFileRepository.FolderExists and FileExists always returns false so can't check first
-        // check for exists first to avoid an misleading exception in our logs.
-        var folderExists = await fileRepo.FolderExists(businessCentreFile.FileSpaceId, tccPath).ConfigureAwait(false);
-        if (!folderExists)
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 78,
-            $"{businessCentreFile.FileSpaceId} {tccPath}");
-        }
-        */
+    //  try
+    //  {
+    //    /*
+    //     // todo change mock or MOQ to return true
+    //     MockFileRepository.FolderExists and FileExists always returns false so can't check first
+    //    // check for exists first to avoid an misleading exception in our logs.
+    //    var folderExists = await fileRepo.FolderExists(businessCentreFile.FileSpaceId, tccPath).ConfigureAwait(false);
+    //    if (!folderExists)
+    //    {
+    //      serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 78,
+    //        $"{businessCentreFile.FileSpaceId} {tccPath}");
+    //    }
+    //    */
 
-        log.LogInformation(
-          $"CopyFileWithinTccRepository: getFile filespaceID: {sourceFile.FileSpaceId} tccPathSource: {tccPathSource}");
-        memStream = await fileRepo.GetFile(sourceFile.FileSpaceId, tccPathSource).ConfigureAwait(false);
+    //    log.LogInformation(
+    //      $"CopyFileWithinTccRepository: getFile filespaceID: {sourceFile.FileSpaceId} tccPathSource: {tccPathSource}");
+    //    memStream = await fileRepo.GetFile(sourceFile.FileSpaceId, tccPathSource).ConfigureAwait(false);
 
-        if (memStream != null && memStream.CanRead && memStream.Length > 0)
-        {
-          // note that the filename already contains the surveyUtc where appropriate
+    //    if (memStream != null && memStream.CanRead && memStream.Length > 0)
+    //    {
+    //      // note that the filename already contains the surveyUtc where appropriate
 
-          bool ccPutFileResult = false;
-          try
-          {
-            log.LogInformation(
-              $"CopyFileWithinTccRepository: fileSpaceId {fileSpaceId} tccPathTarget {tccPathTarget} tccFileNameTarget {tccFileNameTarget}");
-            // check for exists first to avoid an misleading exception in our logs.
-            var folderAlreadyExists = await fileRepo.FolderExists(fileSpaceId, tccPathTarget).ConfigureAwait(false);
-            if (folderAlreadyExists == false)
-              await fileRepo.MakeFolder(fileSpaceId, tccPathTarget).ConfigureAwait(false);
+    //      bool ccPutFileResult = false;
+    //      try
+    //      {
+    //        log.LogInformation(
+    //          $"CopyFileWithinTccRepository: fileSpaceId {fileSpaceId} tccPathTarget {tccPathTarget} tccFileNameTarget {tccFileNameTarget}");
+    //        // check for exists first to avoid an misleading exception in our logs.
+    //        var folderAlreadyExists = await fileRepo.FolderExists(fileSpaceId, tccPathTarget).ConfigureAwait(false);
+    //        if (folderAlreadyExists == false)
+    //          await fileRepo.MakeFolder(fileSpaceId, tccPathTarget).ConfigureAwait(false);
 
-            // this does an upsert
-            ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPathTarget, tccFileNameTarget, memStream, memStream.Length)
-              .ConfigureAwait(false);
-          }
-          catch (Exception e)
-          {
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "fileRepo.PutFile",
-              e.Message);
-          }
-          finally
-          {
-            memStream.Dispose();
-          }
+    //        // this does an upsert
+    //        ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPathTarget, tccFileNameTarget, memStream, memStream.Length)
+    //          .ConfigureAwait(false);
+    //      }
+    //      catch (Exception e)
+    //      {
+    //        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "fileRepo.PutFile",
+    //          e.Message);
+    //      }
+    //      finally
+    //      {
+    //        memStream.Dispose();
+    //      }
 
 
-          if (ccPutFileResult == false)
-          {
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 53);
-          }
-        }
-        else
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
-            80, $" isAbleToRead {memStream != null && memStream.CanRead} bytesReturned: {memStream?.Length ?? 0}");
-        }
-      }
-      catch (Exception e)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 79, e.Message);
-      }
-      finally
-      {
-        memStream?.Dispose();
-      }
+    //      if (ccPutFileResult == false)
+    //      {
+    //        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 53);
+    //      }
+    //    }
+    //    else
+    //    {
+    //      serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
+    //        80, $" isAbleToRead {memStream != null && memStream.CanRead} bytesReturned: {memStream?.Length ?? 0}");
+    //    }
+    //  }
+    //  catch (Exception e)
+    //  {
+    //    serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 79, e.Message);
+    //  }
+    //  finally
+    //  {
+    //    memStream?.Dispose();
+    //  }
 
-      var fileDescriptorTarget = FileDescriptor.CreateFileDescriptor(fileSpaceId, tccPathTarget, tccFileNameTarget);
-      log.LogInformation(
-        $"CopyFileWithinTccRepository: fileDescriptorTarget {JsonConvert.SerializeObject(fileDescriptorTarget)}");
-      return fileDescriptorTarget;
-    }
+    //  var fileDescriptorTarget = FileDescriptor.CreateFileDescriptor(fileSpaceId, tccPathTarget, tccFileNameTarget);
+    //  log.LogInformation(
+    //    $"CopyFileWithinTccRepository: fileDescriptorTarget {JsonConvert.SerializeObject(fileDescriptorTarget)}");
+    //  return fileDescriptorTarget;
+    //}
 
     /// <summary>
     /// Deletes the importedFile from TCC

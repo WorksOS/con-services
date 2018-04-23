@@ -328,17 +328,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var fileDescriptor = await WriteFileToTCCRepository(customerUid, projectUid.ToString(), file.path,
           importedFileType, surveyedUtc).ConfigureAwait(false);
 
-      var importedFileUpsertEvent = new ImportedFileUpsertEvent()
-        {
-          Project = project,
-          ImportedFileTypeId = importedFileType,
-          SurveyedUtc = importedFileType == ImportedFileType.SurveyedSurface
+      var importedFileUpsertEvent = ImportedFileUpsertEvent.CreateImportedFileUpsertEvent(
+         project, importedFileType,
+          importedFileType == ImportedFileType.SurveyedSurface
                         ? surveyedUtc : null,
-          DxfUnitsTypeId = dxfUnitsType,
-          FileCreatedUtc = fileCreatedUtc,
-          FileUpdatedUtc = fileUpdatedUtc,
-          ImportedFileInTcc = fileDescriptor
-        };
+          dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, fileDescriptor
+        );
 
         var importedFile = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory

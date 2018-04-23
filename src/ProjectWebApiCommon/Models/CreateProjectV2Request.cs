@@ -56,9 +56,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// The details of the coordinate system file from Trimble Business Center.
     /// </summary>
     [JsonProperty(PropertyName = "CoordinateSystem", Required = Required.Always)]
-    public BusinessCenterFile CoordinateSystem;
+    public BusinessCenterFile CoordinateSystem { get; set; }
 
-    
+
     /// <summary>
     /// Private constructor
     /// </summary>
