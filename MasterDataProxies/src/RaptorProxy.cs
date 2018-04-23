@@ -178,6 +178,24 @@ namespace VSS.MasterData.Proxies
       return response;
     }
 
+
+    /// <summary>
+    /// Get the statistics for a project.
+    /// </summary>
+    /// <param name="request">Description of the Project Settings request.</param>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="customHeaders">The custom headers.</param>
+    public async Task<ProjectStatisticsResult> GetProjectStatistics(Guid projectUid, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"RaptorProxy.GetProjectStatistics: {projectUid}");
+      ProjectStatisticsResult response = await SendRequest<ProjectStatisticsResult>("RAPTOR_PROJECT_SETTINGS_API_URL",
+        string.Empty, customHeaders, "/projectstatistics", "GET", $"projectUid={projectUid}");
+
+      return response;
+    }
+
+
+
     /// <summary>
     /// Validates that filterUid has changed i.e. updated/deleted but not inserted
     /// </summary>
