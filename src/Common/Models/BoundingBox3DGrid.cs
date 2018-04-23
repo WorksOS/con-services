@@ -1,3 +1,4 @@
+﻿using System;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
@@ -6,6 +7,7 @@ namespace VSS.Productivity3D.Common.Models
   /// <summary>
   /// A 3D spatial extents structure
   /// </summary>
+  [Obsolete("This should be aligned with the Models package")]
   public class BoundingBox3DGrid
   {
     /// <summary>
