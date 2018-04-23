@@ -61,6 +61,13 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
       TComputeICVolumesType volType = RaptorConverters.ConvertVolumesType(request.VolumeCalcType);
 
+      // #68799 - Temporarily revert v2 executor behaviour to match that of v1 by adjusting filter dates on Filter to Filter calculations.
+      if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
+      {
+        RaptorConverters.AdjustFilterToFilter(baseFilter, topFilter);
+      }
+      // End #68799 fix.
+
       bool success;
 
       if (request.CutTolerance != null && request.FillTolerance != null)
