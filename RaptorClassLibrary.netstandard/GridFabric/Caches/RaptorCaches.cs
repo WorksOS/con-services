@@ -23,6 +23,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.Caches
 
         private const string kDesignTopologyExistenceMaps = "DesignTopologyExistenceMaps";
 
+        private const string kTAGFileBufferQueueCacheName = "TAGFileBufferQueue";
+
         /// <summary>
         /// Returns the name of the spatial grid cache to use to locate cell and cell pass information
         /// </summary>
@@ -99,5 +101,17 @@ namespace VSS.VisionLink.Raptor.GridFabric.Caches
         /// </summary>
         /// <returns></returns>
         public static string DesignTopologyExistenceMapsCacheName() => kDesignTopologyExistenceMaps;
+
+        /// <summary>
+        /// Name of the cache holding queued & buffered TAG files awaiting processing
+        /// </summary>
+        /// <returns></returns>
+        public static string TAGFileBufferQueueCacheName() => kTAGFileBufferQueueCacheName;
+
+        /// <summary>
+        /// Name of the cache holding the segments in the data model that need to be retired due to being
+        /// replaced by small cloven segments as a result of TAG file processing
+        /// </summary>
+        public static string SegmentRetirementQueueCacheName() => "SegmentRetirementQueue";
     }
 }

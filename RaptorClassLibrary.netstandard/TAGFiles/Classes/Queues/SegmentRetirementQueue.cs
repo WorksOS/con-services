@@ -5,18 +5,13 @@ using Apache.Ignite.Core.Cache.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using VSS.VisionLink.Raptor.GridFabric.Caches;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Queues
 {
     public class SegmentRetirementQueue
     {
         private ICache<long, SegmentRetirementQueueItem> QueueCache;
-
-        /// <summary>
-        /// Name of the cache holding the segments in the data model that need to be retired due to being
-        /// replaced by small cloven segments as a result of TAG file processing
-        /// </summary>
-        private const string SEGMENT_RETIREMENT_QUEUE_CACHE_NAME = "SegmentRetirementQueue";
 
         private void Add(DateTime date, string value)
         {
@@ -30,7 +25,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Queues
             QueueCache = Ignite.GetOrCreateCache<long, SegmentRetirementQueueItem>(
                 new CacheConfiguration
                 {
-                    Name = SEGMENT_RETIREMENT_QUEUE_CACHE_NAME,
+                    Name = RaptorCaches.SegmentRetirementQueueCacheName(),
                     QueryEntities = new[] 
                     {
                         new QueryEntity(typeof(long), typeof(SegmentRetirementQueueItem))
@@ -42,7 +37,6 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Queues
         public IEnumerable<SegmentRetirementQueueItem> Query(DateTime earlierThan)
         {
             var sql = new SqlQuery(typeof(SegmentRetirementQueueItem), $"_key < {earlierThan.ToBinary()}");
-            // var cursor = QueueCache.Query(sql);
 
             try
             {

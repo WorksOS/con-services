@@ -68,7 +68,7 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.Servers
 
             if (DesignTopologyExistanceMapsCache == null)
             {
-                Log.InfoFormat($"Failed to get or create Ignite cache {RaptorCaches.DesignTopologyExistenceMapsCacheName()}");
+                Log.Info($"Failed to get or create Ignite cache {RaptorCaches.DesignTopologyExistenceMapsCacheName()}");
                 throw new ArgumentException("Ignite cache not available");
             }
         }
