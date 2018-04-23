@@ -92,6 +92,7 @@ namespace TagFileHarvester.TaskQueues
           {
             switch (result.Code)
             {
+              case 2010:
               case 2011:
               case 2014:
               case 2013:
@@ -104,14 +105,21 @@ namespace TagFileHarvester.TaskQueues
                 break;
               }
               case 2008:
-                //SecondCondition
-              {
+              case 2009:
+              case 2006:
+                  //SecondCondition
+                  {
                 log.DebugFormat("Moving file {0} for org {1} to {2} folder", tagFilename, org.shortName,
                   OrgsHandler.TCCSynchSubscriptionIssueFolder);
 
                 if (!MoveFileTo(tagFilename, org, fileRepository, OrgsHandler.TCCSynchSubscriptionIssueFolder))
                   return null;
 
+                break;
+              }
+              case 2021:
+              {
+                log.ErrorFormat("TFA is likely down for {0} org {1}", tagFilename, org.shortName);
                 break;
               }
               default:
