@@ -98,29 +98,30 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// By default it will choose a set of TAG files in the cache where the project and asset IDs match
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<TAGFileBufferQueueItem> ProcessBatch()
+        public IEnumerable<ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem>> SelectBatch()
         {
             IEnumerable<ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem>> localItems = QueueCache.GetLocalEntries(new [] {CachePeekMode.Primary});
 
-            ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem> first = localItems.FirstOrDefault();
+            ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem> first = localItems?.FirstOrDefault();
 
-            if (first != null)
-            {
-                // Get the list of all TAG files in the buffer matching the project and asset IDs of the first item
+            if (first == null) // There's no work to do!
+                return null;
+
+            // Get the list of all TAG files in the buffer matching the project and asset IDs of the first item
                 // in the list, limiting the result set to 100 TAG files.
                 List<ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem>> candidates = localItems
+                    .Take(1000)
                     .Where(x => x.Value.ProjectUID == first.Value.ProjectUID && x.Value.AssetUID == first.Value.AssetUID)
                     .Take(100)
                     .ToList();
 
                 if (candidates?.Count > 0)
                 {
-                    // Submit the list of TAG files to the processor
+                    // Submit the list of TAG files to the processor [should delegate this to responsibility of caller]
                     // ...
                 }
-            }
 
-            return null;
+            return candidates;
         }
 
         /// <summary>
