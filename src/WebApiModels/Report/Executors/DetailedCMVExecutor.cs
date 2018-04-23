@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Net;
 using ASNodeDecls;
+using ASNodeRPC;
 using SVOICFilterSettings;
+using SVOICLiftBuildSettings;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -28,13 +30,35 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId,
         request.overrideStartUTC, request.overrideEndUTC, request.overrideAssetIds);
 
-      bool success = raptorClient.GetCMVDetails(request.projectId ?? -1,
-        ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.callId ?? Guid.NewGuid(), 0,
-          TASNodeCancellationDescriptorType.cdtCMVDetailed),
-        ConvertSettings(request.cmvSettings),
-        raptorFilter,
-        RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
-        out var cmvDetails);
+      TASNodeRequestDescriptor externalRequestDescriptor = ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(
+        request.callId ?? Guid.NewGuid(), 0,
+        TASNodeCancellationDescriptorType.cdtCMVDetailed);
+
+      TICLiftBuildSettings liftBuildSettings = RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod);
+
+      TCMVDetails cmvDetails;
+      bool success;
+
+      if (!request.isCustomCMVTargets)
+      {
+        success = raptorClient.GetCMVDetails(
+          request.projectId ?? -1,
+          externalRequestDescriptor,
+          ConvertSettings(request.cmvSettings),
+          raptorFilter,
+          liftBuildSettings,
+          out cmvDetails);
+      }
+      else
+      {
+        success = raptorClient.GetCMVDetailsExt(
+          request.projectId ?? -1,
+          externalRequestDescriptor,
+          ConvertSettingsExt((CMVSettingsEx) request.cmvSettings),
+          raptorFilter,
+          liftBuildSettings,
+          out cmvDetails);
+      }
 
       if (success)
       {
@@ -67,5 +91,20 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         OverrideTargetCMV = settings.overrideTargetCMV
       };
     }
+    private TCMVSettingsExt ConvertSettingsExt(CMVSettingsEx settings)
+    {
+      return new TCMVSettingsExt()
+      {
+        CMVTarget = settings.cmvTarget,
+        IsSummary = false,
+        MaxCMV = settings.maxCMV,
+        MaxCMVPercent = settings.maxCMVPercent,
+        MinCMV = settings.minCMV,
+        MinCMVPercent = settings.minCMVPercent,
+        OverrideTargetCMV = settings.overrideTargetCMV,
+        CMVDetailPercents = settings.customCMVDetailTargets
+      };
+    }
+
   }
 }

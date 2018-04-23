@@ -90,6 +90,41 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Get CMV details from Raptor for the specified project and date range.
     /// </summary>
+    [Route("api/v2/cmv/details/targets")]
+    [HttpGet]
+    public async Task<CompactionCmvDetailedResult> GetCmvDetailsTargets(
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid? filterUid)
+    {
+      Log.LogInformation("GetCmvDetailsTargets: " + Request.QueryString);
+
+      CMVRequest request = await GetCmvRequest(projectUid, filterUid);
+      request.Validate();
+
+      try
+      {
+        var result = RequestExecutorContainerFactory.Build<DetailedCMVExecutor>(LoggerFactory, RaptorClient)
+          .Process(request) as CMVDetailedResult;
+        var returnResult = CompactionCmvDetailedResult.CreateCmvDetailedResult(result);
+
+        Log.LogInformation("GetCmvDetailsTargets result: " + JsonConvert.SerializeObject(returnResult));
+
+        return returnResult;
+      }
+      catch (ServiceException exception)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, exception.Message));
+      }
+      finally
+      {
+        Log.LogInformation("GetCmvDetailsTargets returned: " + Response.StatusCode);
+      }
+    }
+
+    /// <summary>
+    /// Get CMV details from Raptor for the specified project and date range.
+    /// </summary>
     [Route("api/v2/cmv/details")]
     [HttpGet]
     public async Task<CompactionCmvDetailedResult> GetCmvDetails(
@@ -98,7 +133,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetCmvDetails: " + Request.QueryString);
 
-      CMVRequest request = await GetCmvRequest(projectUid, filterUid);
+      CMVRequest request = await GetCmvRequest(projectUid, filterUid, true);
       request.Validate();
 
       try

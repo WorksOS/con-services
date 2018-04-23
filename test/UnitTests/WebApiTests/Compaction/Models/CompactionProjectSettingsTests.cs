@@ -356,5 +356,39 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
       Assert.ThrowsException<ServiceException>(() => settings.Validate());
     }
 
+    [TestMethod]
+    public void ValidateCmvDetailsSettingsTest()
+    {
+      //Pass count missing values
+      CompactionProjectSettings settings = CompactionProjectSettings.CreateProjectSettings(
+        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 1, 3, 5, 8, 11, 16, 20, 25 }, false, null);
+      Assert.ThrowsException<ServiceException>(() => settings.Validate());
+
+      //Pass count too many values
+      settings = CompactionProjectSettings.CreateProjectSettings(
+        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 1, 3, 5, 8, 11, 16, 20, 25, 30 }, false, new List<int> { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160 });
+      Assert.ThrowsException<ServiceException>(() => settings.Validate());
+
+      //Pass count too few values
+      settings = CompactionProjectSettings.CreateProjectSettings(
+        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 1, 3, 5, 8, 11, 16, 20 }, false, new List<int> { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140});
+      Assert.ThrowsException<ServiceException>(() => settings.Validate());
+
+      //Pass count out of range value
+      settings = CompactionProjectSettings.CreateProjectSettings(
+        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 500, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 1, 3, 5, 8, 11, 16, 20, 100 }, false, new List<int> { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 1510 });
+      Assert.ThrowsException<ServiceException>(() => settings.Validate());
+
+      //Pass count out of order value
+      settings = CompactionProjectSettings.CreateProjectSettings(
+        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 1, 3, 5, 8, 11, 20, 16, 25 }, false, new List<int> { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 150, 140, 130 });
+      Assert.ThrowsException<ServiceException>(() => settings.Validate());
+
+      //Pass count first value not 1
+      settings = CompactionProjectSettings.CreateProjectSettings(
+        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 0, 3, 5, 8, 11, 16, 20, 25 }, false, new List<int> { 1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150 });
+      Assert.ThrowsException<ServiceException>(() => settings.Validate());
+    }
+
   }
 }

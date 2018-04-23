@@ -15,6 +15,7 @@ namespace VSS.Productivity3D.WebApiTests.Report.Models
     [TestMethod]
     public void CanCreateCMVRequestTest()
     {
+      //******************* isCustomCMVTargets = false **************************
       var validator = new DataAnnotationsValidator();
       CMVRequest request = CMVRequest.CreateCMVRequest(projectId, callId, cmvSettings, liftSettings, null, 0, null, null, null);
       ICollection<ValidationResult> results;
@@ -27,20 +28,42 @@ namespace VSS.Productivity3D.WebApiTests.Report.Models
       //missing CMV settings
       request = CMVRequest.CreateCMVRequest(projectId, callId, null, liftSettings, null, 0, null, null, null);
       Assert.IsFalse(validator.TryValidate(request, out results));
+
+      //******************* isCustomCMVTargets = true ***************************
+      request = CMVRequest.CreateCMVRequest(projectId, callId, cmvSettingsEx, liftSettings, null, 0, null, null, null, true);
+      Assert.IsTrue(validator.TryValidate(request, out results));
+
+      //missing project id
+      request = CMVRequest.CreateCMVRequest(-1, callId, cmvSettingsEx, liftSettings, null, 0, null, null, null, true);
+      Assert.IsFalse(validator.TryValidate(request, out results));
+
+      //missing CMV settings
+      request = CMVRequest.CreateCMVRequest(projectId, callId, null, liftSettings, null, 0, null, null, null, true);
+      Assert.IsFalse(validator.TryValidate(request, out results));
     }
 
     [TestMethod]
     public void ValidateSuccessTest()
     {
+      //******************* isCustomCMVTargets = false **************************
       CMVRequest request = CMVRequest.CreateCMVRequest(projectId, callId, cmvSettings, liftSettings, null, 0, null, null, null);
+      request.Validate();
+
+      //******************* isCustomCMVTargets = true **************************
+      request = CMVRequest.CreateCMVRequest(projectId, callId, cmvSettingsEx, liftSettings, null, 0, null, null, null, true);
       request.Validate();
     }
 
     [TestMethod]
     public void ValidateFailInvalidOverrideDatesTest()
     {
-      //override startUTC > override end UTC
+      // override startUTC > override end UTC
+      //******************* isCustomCMVTargets = false **************************
       CMVRequest request = CMVRequest.CreateCMVRequest(projectId, callId, cmvSettings, liftSettings, null, 0, new DateTime(2014, 1, 31), new DateTime(2014, 1, 1), null);
+      Assert.ThrowsException<ServiceException>(() => request.Validate());
+
+      //******************* isCustomCMVTargets = true **************************
+      request = CMVRequest.CreateCMVRequest(projectId, callId, cmvSettingsEx, liftSettings, null, 0, new DateTime(2014, 1, 31), new DateTime(2014, 1, 1), null, true);
       Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
@@ -48,7 +71,12 @@ namespace VSS.Productivity3D.WebApiTests.Report.Models
     public void ValidateFailMissingOverrideDatesTest()
     {
       //missing override end UTC
+      //******************* isCustomCMVTargets = false **************************
       CMVRequest request = CMVRequest.CreateCMVRequest(projectId, callId, cmvSettings, liftSettings, null, 0, new DateTime(2014, 1, 1), null, null);
+      Assert.ThrowsException<ServiceException>(() => request.Validate());
+
+      //******************* isCustomCMVTargets = true **************************
+      request = CMVRequest.CreateCMVRequest(projectId, callId, cmvSettingsEx, liftSettings, null, 0, new DateTime(2014, 1, 1), null, null, true);
       Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
@@ -61,7 +89,8 @@ namespace VSS.Productivity3D.WebApiTests.Report.Models
 
     private long projectId = 1234;
     private Guid callId = new Guid();
-    private CMVSettings cmvSettings = CMVSettings.CreateCMVSettings(800, 1200, 110.0, 700, 85.0, false);
+    private CMVSettings cmvSettings = CMVSettings.CreateCMVSettings(800, 1200, 110.0, 700, 85.0, false/*, new []{ 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150 }*/);
+    private CMVSettingsEx cmvSettingsEx = CMVSettingsEx.CreateCMVSettingsEx(800, 1200, 110.0, 700, 85.0, false, new []{ 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150 });
     private LiftBuildSettings liftSettings = LiftBuildSettings.CreateLiftBuildSettings(
       CCVRangePercentage.CreateCcvRangePercentage(80, 110), false, 1.0, 2.0, 0.2f, LiftDetectionType.Automatic, LiftThicknessType.Compacted,
       MDPRangePercentage.CreateMdpRangePercentage(70, 120), false, null, null, null, null, null, null, LiftThicknessTarget, null);

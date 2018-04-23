@@ -262,6 +262,13 @@ namespace VSS.Productivity3D.Common.Proxies
           liftBuildSettings, out cmvDetails) == TASNodeErrorStatus.asneOK;
     }
 
+    public bool GetCMVDetailsExt(long projectId, TASNodeRequestDescriptor externalRequestDescriptor, TCMVSettingsExt cmvSettings,
+      TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings, out TCMVDetails cmvDetails)
+    {
+      return client.GetCMVDetailsExt(projectId, externalRequestDescriptor, cmvSettings, filter,
+               liftBuildSettings, out cmvDetails) == TASNodeErrorStatus.asneOK;
+    }
+
     public bool GetTemperatureSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
       TTemperatureSettings temperatureSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
       out TTemperature temperatureSummary)

@@ -55,15 +55,19 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Creates an instance of the CMVRequest class and populate it with data.
     /// </summary>
-    protected async Task<CMVRequest> GetCmvRequest(Guid projectUid, Guid? filterUid)
+    protected async Task<CMVRequest> GetCmvRequest(Guid projectUid, Guid? filterUid, bool isCustomCMVTargets = false)
     {
       var projectSettings = await GetProjectSettingsTargets(projectUid);
-      CMVSettings cmvSettings = this.SettingsManager.CompactionCmvSettings(projectSettings);
+
+      CMVSettings cmvSettings = !isCustomCMVTargets ? 
+        SettingsManager.CompactionCmvSettings(projectSettings) :
+        SettingsManager.CompactionCmvSettingsEx(projectSettings);
+
       LiftBuildSettings liftSettings = this.SettingsManager.CompactionLiftBuildSettings(projectSettings);
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var projectId = await GetLegacyProjectId(projectUid);
-      return CMVRequest.CreateCMVRequest(projectId, null, cmvSettings, liftSettings, filter, -1, null, null, null);
+      return CMVRequest.CreateCMVRequest(projectId, null, cmvSettings, liftSettings, filter, -1, null, null, null, isCustomCMVTargets);
     }
 
     /// <summary>

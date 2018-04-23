@@ -5,7 +5,7 @@
     "cmvSettings": {
       "minCMV": 0,
       "cmvTarget": 46,
-      "maxCMV": 10000,
+      "maxCMV": 1500,
       "minCMVPercent": 100,
       "maxCMVPercent": 100,
       "overrideTargetCMV": true
@@ -93,7 +93,7 @@
     "cmvSettings": {
       "minCMV": 0,
       "cmvTarget": 46,
-      "maxCMV": 10000,
+      "maxCMV": 1500,
       "minCMVPercent": 100,
       "maxCMVPercent": 100,
       "overrideTargetCMV": true
@@ -181,7 +181,7 @@
     "cmvSettings": {
       "minCMV": 0,
       "cmvTarget": 0,
-      "maxCMV": 10000,
+      "maxCMV": 1500,
       "minCMVPercent": 6,
       "maxCMVPercent": 7,
       "overrideTargetCMV": false
@@ -269,7 +269,7 @@
     "cmvSettings": {
       "minCMV": 0,
       "cmvTarget": 0,
-      "maxCMV": 10000,
+      "maxCMV": 1500,
       "minCMVPercent": 6,
       "maxCMVPercent": 7,
       "overrideTargetCMV": false
@@ -356,7 +356,7 @@
     "callId": null,
     "cmvSettings": {
       "cmvTarget": 150,
-      "maxCMV": 10000,
+      "maxCMV": 1500,
       "maxCMVPercent": 30,
       "minCMV": 0,
       "minCMVPercent": -1,
@@ -426,7 +426,7 @@
     "callId": null,
     "cmvSettings": {
       "cmvTarget": 150,
-      "maxCMV": 10000,
+      "maxCMV": 1500,
       "maxCMVPercent": 251,
       "minCMV": 0,
       "minCMVPercent": 10,
@@ -496,7 +496,7 @@
     "callId": null,
     "cmvSettings": {
       "cmvTarget": 150,
-      "maxCMV": 10000,
+      "maxCMV": 1500,
       "maxCMVPercent": 50,
       "minCMV": 0,
       "minCMVPercent": 100,

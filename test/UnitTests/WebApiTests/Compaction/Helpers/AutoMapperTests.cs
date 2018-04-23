@@ -46,6 +46,41 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     }
 
     [TestMethod]
+    public void MapProjectSettingsToCMVSettingsEx()
+    {
+      // The useDefaultCMVTargets is set to "false".
+      var ps = CompactionProjectSettings.CreateProjectSettings(
+        useMachineTargetCmv: false, customTargetCmv: 50, 
+        useDefaultTargetRangeCmvPercent: false, customTargetCmvPercentMinimum: 30, customTargetCmvPercentMaximum: 140,
+        useDefaultCMVTargets: false, customCMVTargets: new List<int> { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 160, 170 });
+
+      var cmv = AutoMapperUtility.Automapper.Map<CMVSettingsEx>(ps);
+      Assert.AreNotEqual(ps.useMachineTargetCmv, cmv.overrideTargetCMV, "overrideTargetCMV not mapped correctly");
+      Assert.AreEqual(ps.CustomTargetCmv, cmv.cmvTarget, "cmvTarget not mapped correctly");
+      Assert.AreEqual(ps.CmvMinimum, cmv.minCMV, "minCMV not mapped correctly");
+      Assert.AreEqual(ps.CmvMaximum, cmv.maxCMV, "maxCMV not mapped correctly");
+      Assert.AreEqual(ps.customTargetCmvPercentMinimum, cmv.minCMVPercent, "minCMVPercent not mapped correctly");
+      Assert.AreEqual(ps.customTargetCmvPercentMaximum, cmv.maxCMVPercent, "maxCMVPercent not mapped correctly");
+      Assert.AreNotEqual(ps.customCMVTargets, cmv.customCMVDetailTargets, "customCMVDetailTargets not mapped correctly");
+
+      // The useDefaultCMVTargets is set to "true".
+      ps = CompactionProjectSettings.CreateProjectSettings(
+        useMachineTargetCmv: false, customTargetCmv: 50,
+        useDefaultTargetRangeCmvPercent: false, customTargetCmvPercentMinimum: 30, customTargetCmvPercentMaximum: 140,
+        useDefaultCMVTargets: true, customCMVTargets: new List<int> { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 160, 170 });
+
+      cmv = AutoMapperUtility.Automapper.Map<CMVSettingsEx>(ps);
+      Assert.AreNotEqual(ps.useMachineTargetCmv, cmv.overrideTargetCMV, "overrideTargetCMV not mapped correctly");
+      Assert.AreEqual(ps.CustomTargetCmv, cmv.cmvTarget, "cmvTarget not mapped correctly");
+      Assert.AreEqual(ps.CmvMinimum, cmv.minCMV, "minCMV not mapped correctly");
+      Assert.AreEqual(ps.CmvMaximum, cmv.maxCMV, "maxCMV not mapped correctly");
+      Assert.AreEqual(ps.customTargetCmvPercentMinimum, cmv.minCMVPercent, "minCMVPercent not mapped correctly");
+      Assert.AreEqual(ps.customTargetCmvPercentMaximum, cmv.maxCMVPercent, "maxCMVPercent not mapped correctly");
+      Assert.AreNotEqual(CompactionProjectSettings.DefaultSettings.customCMVTargets, cmv.customCMVDetailTargets, "customCMVDetailTargets not mapped correctly");
+
+    }
+
+    [TestMethod]
     public void MapProjectSettingsToMDPSettings()
     {
       // The useDefaultTargetRangeMdpPercent is set to "false".

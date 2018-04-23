@@ -28,6 +28,11 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       return AutoMapperUtility.Automapper.Map<CMVSettings>(ps);
     }
 
+    public CMVSettingsEx CompactionCmvSettingsEx(CompactionProjectSettings ps)
+    {
+      return AutoMapperUtility.Automapper.Map<CMVSettingsEx>(ps);
+    }
+
     public MDPSettings CompactionMdpSettings(CompactionProjectSettings ps)
     {
       return AutoMapperUtility.Automapper.Map<MDPSettings>(ps);

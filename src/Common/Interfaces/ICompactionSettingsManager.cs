@@ -10,6 +10,8 @@ namespace VSS.Productivity3D.Common.Interfaces
     
     CMVSettings CompactionCmvSettings(CompactionProjectSettings projectSettings);
 
+    CMVSettingsEx CompactionCmvSettingsEx(CompactionProjectSettings projectSettings);
+
     MDPSettings CompactionMdpSettings(CompactionProjectSettings projectSettings);
     TemperatureSettings CompactionTemperatureSettings(CompactionProjectSettings projectSettings, bool nativeValues = true);
 

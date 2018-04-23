@@ -165,6 +165,17 @@ namespace VSS.Productivity3D.Common.Models
     /// </summary>
     [JsonProperty(PropertyName = "customPassCountTargets", Required = Required.Default)]
     public List<int> customPassCountTargets { get; private set; }
+    /// <summary>
+    /// Flag to determine if machine default CMV details settings or custom settings are used. Default is true.
+    /// </summary>
+    [JsonProperty(PropertyName = "useDefaultCMVTargets", Required = Required.Default)]
+    public bool? useDefaultCMVTargets { get; private set; } = true;
+    /// <summary>
+    /// The collection of CMV targets when overriding the defaults. Values are in ascending order.
+    /// There must be 16 values and the first value must be 0.
+    /// </summary>
+    [JsonProperty(PropertyName = "customCMVTargets", Required = Required.Default)]
+    public List<int> customCMVTargets { get; private set; }
     #endregion
 
     #region Construction
@@ -205,9 +216,11 @@ namespace VSS.Productivity3D.Common.Models
       double? customShrinkagePercent = null,
       double? customBulkingPercent = null,
       bool? useDefaultPassCountTargets = null,
-      List<int> customPassCountTargets = null
+      List<int> customPassCountTargets = null,
+      bool? useDefaultCMVTargets = null,
+      List<int> customCMVTargets = null
       )
-   
+
     {
       return new CompactionProjectSettings
       {
@@ -236,7 +249,9 @@ namespace VSS.Productivity3D.Common.Models
         customShrinkagePercent = customShrinkagePercent,
         customBulkingPercent = customBulkingPercent,
         useDefaultPassCountTargets = useDefaultPassCountTargets,
-        customPassCountTargets = customPassCountTargets
+        customPassCountTargets = customPassCountTargets,
+        useDefaultCMVTargets = useDefaultCMVTargets,
+        customCMVTargets = customCMVTargets
       };
     }
 
@@ -268,16 +283,22 @@ namespace VSS.Productivity3D.Common.Models
           customShrinkagePercent = 0.0,
           customBulkingPercent = 0.0,
           useDefaultPassCountTargets = true,
-          customPassCountTargets = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8 }
+          customPassCountTargets = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8 },
+          useDefaultCMVTargets = true,
+          customCMVTargets = new List<int> { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150 }
         };
     #endregion
 
     #region Getters 
 
     /// <summary>
-    /// Flag to determine if default or custom CMV used
+    /// Flag to determine if default or custom CMV used for summary
     /// </summary>
     public bool OverrideMachineTargetCmv => useMachineTargetCmv.HasValue && !useMachineTargetCmv.Value;
+    /// <summary>
+    /// Flag to determine if default or custom CMV targets used for details
+    /// </summary>
+    public bool OverrideDefaultCMVTargets => useDefaultCMVTargets.HasValue && !useDefaultCMVTargets.Value;
     /// <summary>
     /// Flag to determine if default or custom MDP used
     /// </summary>
@@ -385,6 +406,13 @@ namespace VSS.Productivity3D.Common.Models
       ? customPassCountTargets.ToArray()
       : DefaultSettings.customPassCountTargets.ToArray();
     /// <summary>
+    /// Get the CMV details targets as a value for Raptor
+    /// </summary>
+    public int[] CustomCMVs => OverrideDefaultCMVTargets &&
+      customCMVTargets != null && customCMVTargets.Count > 0
+      ? customCMVTargets.ToArray()
+      : DefaultSettings.customCMVTargets.ToArray();
+    /// <summary>
     /// Get the cut-fill details targets as a value for Raptor
     /// </summary>
     public double[] CustomCutFillTolerances => OverrideDefaultCutFillTolerances &&
@@ -454,6 +482,7 @@ namespace VSS.Productivity3D.Common.Models
 
       ValidateCutFill();
       ValidatePassCounts();
+      ValidateCMVs();
     }
 
     /// <summary>
@@ -542,6 +571,47 @@ namespace VSS.Productivity3D.Common.Models
       }
     }
 
+    private void ValidateCMVs()
+    {
+      if (useDefaultCMVTargets.HasValue && !useDefaultCMVTargets.Value)
+      {
+        const int CMV_TARGETS_TOTAL = 16;
+        if (customCMVTargets == null || customCMVTargets.Count != CMV_TARGETS_TOTAL)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              $"Exactly {CMV_TARGETS_TOTAL} CMV targets must be specified"));
+        }
+
+        for (int i = 0; i < CMV_TARGETS_TOTAL; i++)
+        {
+          if (customCMVTargets[i] < MIN_CMV_MDP_VALUE || customCMVTargets[i] > MAX_CMV_MDP_VALUE)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                $"CMV targets must be between {MIN_CMV_MDP_VALUE} and {MAX_CMV_MDP_VALUE}"));
+          }
+        }
+
+        for (int i = 1; i < CMV_TARGETS_TOTAL; i++)
+        {
+          if (customCMVTargets[i - 1] > customCMVTargets[i])
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "CMV targets must be in ascending order"));
+          }
+        }
+
+        if (customCMVTargets[0] != 0)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "First CMV target must be 0"));
+        }
+      }
+    }
+
     /// <summary>
     /// Validates a single target value
     /// </summary>
@@ -619,6 +689,6 @@ namespace VSS.Productivity3D.Common.Models
     private const double MAX_CUT_FILL = 400.0;
 
     private const short MIN_CMV_MDP_VALUE = 0;
-    private const short MAX_CMV_MDP_VALUE = 2000;
+    private const short MAX_CMV_MDP_VALUE = 1500;
   }
 }

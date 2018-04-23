@@ -69,6 +69,12 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     [JsonProperty(PropertyName = "overrideAssetIds", Required = Required.Default)]
     public List<long> overrideAssetIds { get; private set; }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    [JsonProperty(PropertyName = "isCustomCMVTargets", Required = Required.Default)]
+    public bool isCustomCMVTargets { get; private set; }
+
       /// <summary>
     /// Private constructor
     /// </summary>
@@ -88,8 +94,9 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
       long filterID,
       DateTime? overrideStartUTC,
       DateTime? overrideEndUTC,
-      List<long> overrideAssetIds
-        )
+      List<long> overrideAssetIds,
+      bool isCustomCMVTargets = false
+    )
     {
       return new CMVRequest
       {
@@ -101,7 +108,8 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
         filterID = filterID,
         overrideStartUTC = overrideStartUTC,
         overrideEndUTC = overrideEndUTC,
-        overrideAssetIds = overrideAssetIds
+        overrideAssetIds = overrideAssetIds,
+        isCustomCMVTargets = isCustomCMVTargets
       };
     }
     

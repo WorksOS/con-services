@@ -17,52 +17,52 @@ namespace VSS.Productivity3D.Common.Models
     /// </summary>
     [Range(MIN_CMV, MAX_CMV)]
     [JsonProperty(PropertyName = "cmvTarget", Required = Required.Default)]
-    public short cmvTarget { get; private set; }
+    public short cmvTarget { get; protected set; }
 
     /// <summary>
     /// The maximum CMV value to be considered 'compacted' expressed in 10ths of units
     /// </summary>
     [Range(MIN_CMV, MAX_CMV)]
     [JsonProperty(PropertyName = "maxCMV", Required = Required.Default)]
-    public short maxCMV { get; private set; }
+    public short maxCMV { get; protected set; }
 
     /// <summary>
     /// The maximum percentage the measured CMV may be compared to the cmvTarget from the machine, or the cmvTarget override if overrideTargetCMV is true
     /// </summary>
     [Range(MIN_PERCENT_CMV, MAX_PERCENT_CMV)]
     [JsonProperty(PropertyName = "maxCMVPercent", Required = Required.Default)]
-    public double maxCMVPercent { get; private set; }
+    public double maxCMVPercent { get; protected set; }
 
     /// <summary>
     /// The minimum CMV value to be considered 'compacted' expressed in 10ths of units
     /// </summary>
     [Range(MIN_CMV, MAX_CMV)]
     [JsonProperty(PropertyName = "minCMV", Required = Required.Default)]
-    public short minCMV { get; private set; }
+    public short minCMV { get; protected set; }
 
     /// <summary>
     /// The minimum percentage the measured CMV may be compared to the cmvTarget from the machine, or the cmvTarget override if overrideTargetCMV is true
     /// </summary>
     [Range(MIN_PERCENT_CMV, MAX_PERCENT_CMV)]
     [JsonProperty(PropertyName = "minCMVPercent", Required = Required.Default)]
-    public double minCMVPercent { get; private set; }
+    public double minCMVPercent { get; protected set; }
 
     /// <summary>
     /// Override the target CMV recorded from the machine with the value of cmvTarget
     /// </summary>
-    [JsonProperty(PropertyName = "overrideTargetCMV", Required = Required.Always)]
+    [JsonProperty(PropertyName = "overrideTargetCMV", Required = Required.Default)]
     [Required]
-    public bool overrideTargetCMV { get; private set; }
+    public bool overrideTargetCMV { get; protected set; }
 
-    private const short MIN_CMV = 0;
-    private const short MAX_CMV = 10000;
+    protected const ushort MIN_CMV = 0;
+    protected const ushort MAX_CMV = 1500;
     private const double MIN_PERCENT_CMV = 0.0;
     private const double MAX_PERCENT_CMV = 250.0;
 
     /// <summary>
     /// Private constructor
     /// </summary>
-    private CMVSettings()
+    protected CMVSettings()
     {
     }
 
@@ -92,7 +92,7 @@ namespace VSS.Productivity3D.Common.Models
     /// <summary>
     /// Validates all properties
     /// </summary>
-    public void Validate()
+    public virtual void Validate()
     {
       if (overrideTargetCMV)
       {

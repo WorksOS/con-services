@@ -167,6 +167,10 @@ namespace VSS.Productivity3D.Common.Interfaces
      TCMVSettings cmvSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
      out TCMVDetails cmvDetails);
 
+    bool GetCMVDetailsExt(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
+      TCMVSettingsExt cmvSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
+      out TCMVDetails cmvDetails);
+
     bool GetTemperatureSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
       TTemperatureSettings temperatureSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
       out TTemperature temperatureSummary);

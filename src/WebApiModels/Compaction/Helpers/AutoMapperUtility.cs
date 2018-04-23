@@ -49,6 +49,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
         {
           cfg.AllowNullCollections = true; // so that byte[] can be null
           cfg.AddProfile<CmvSettingsProfile>();
+          cfg.AddProfile<CmvSettingsExProfile>(); 
           cfg.AddProfile<MdpSettingsProfile>();
           cfg.AddProfile<TemperatureSettingsProfile>();
           cfg.AddProfile<PassCountSettingsProfile>();
@@ -126,6 +127,17 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
             opt => opt.MapFrom(ps => ps.CustomTargetCmvPercentMinimum))
           .ForMember(x => x.maxCMVPercent,
             opt => opt.MapFrom(ps => ps.CustomTargetCmvPercentMaximum));
+      }
+    }
+
+    public class CmvSettingsExProfile : Profile
+    {
+      public CmvSettingsExProfile()
+      {
+        CreateMap<CompactionProjectSettings, CMVSettingsEx>()
+          .IncludeBase<CompactionProjectSettings, CMVSettings>()
+          .ForMember(x => x.customCMVDetailTargets,
+            opt => opt.MapFrom(ps => ps.CustomCMVs));
       }
     }
 
