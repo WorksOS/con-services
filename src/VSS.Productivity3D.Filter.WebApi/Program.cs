@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections;
+using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -68,6 +69,15 @@ namespace VSS.Productivity3D.Filter.WebApi
         })
         .UseStartup<Startup>()
         .Build();
+
+            var log = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
+      log.LogInformation("3D Filter service starting");
+      log.LogInformation("*************CONFIGURATION DETAILS*******************");
+      foreach(DictionaryEntry entry in System.Environment.GetEnvironmentVariables())
+      {
+        log.LogInformation(entry.Key + ":" + entry.Value);
+      }
+
 
       host.Run();
 #endif
