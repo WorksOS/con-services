@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.MasterData.Models.FIlters;
 using VSS.Productivity3D.Common.Filters.Validation;
 using VSS.Productivity3D.Common.Models;
 

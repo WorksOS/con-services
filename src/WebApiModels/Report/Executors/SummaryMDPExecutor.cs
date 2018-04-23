@@ -4,6 +4,7 @@ using System;
 using System.Net;
 using VLPDDecls;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -47,7 +48,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
               "Undefined requested data MDPRequest"));
         }
 
-        string fileSpaceName = FileDescriptor.GetFileSpaceId(configStore, log);
+        string fileSpaceName = FileDescriptorExtensions.GetFileSpaceId(configStore, log);
 
         TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId,
             request.overrideStartUTC, request.overrideEndUTC, request.overrideAssetIds, fileSpaceName);
