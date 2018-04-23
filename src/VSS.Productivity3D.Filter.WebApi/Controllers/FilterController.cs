@@ -68,7 +68,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       requestFull.Validate(ServiceExceptionHandler, true);
 
       var executor =
-        RequestExecutorContainer.Build<GetFiltersExecutor>(ConfigStore, Logger, ServiceExceptionHandler, this.filterRepo, null);
+        RequestExecutorContainer.Build<GetFiltersExecutor>(ConfigStore, Logger, ServiceExceptionHandler, this.filterRepo, null, null, RaptorProxy);
       var result = await executor.ProcessAsync(requestFull) as FilterDescriptorListResult;
 
       Log.LogInformation($"{ToString()}.GetProjectFilters Completed: resultCode: {result?.Code} filterCount={result?.FilterDescriptors.Count}");
@@ -100,7 +100,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       requestFull.Validate(ServiceExceptionHandler, true);
 
       var executor =
-        RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, this.filterRepo, null, this.ProjectListProxy);
+        RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, this.filterRepo, null, this.ProjectListProxy, RaptorProxy);
       var result = await executor.ProcessAsync(requestFull) as FilterDescriptorSingleResult;
 
       Log.LogInformation($"{ToString()}.GetProjectFilter Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");
