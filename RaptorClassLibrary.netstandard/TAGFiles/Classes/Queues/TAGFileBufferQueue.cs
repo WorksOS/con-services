@@ -6,6 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Apache.Ignite.Core.Cache.Event;
+using Apache.Ignite.Core.Cache.Query;
+using Apache.Ignite.Core.Cache.Query.Continuous;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Storage;
@@ -36,6 +39,117 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     */
 
     /// <summary>
+    /// The grouper accepts individual keys representing TAG files in the TAG file buffer queue and groups it with
+    /// TAG files to be processed with the smae project and asste. To reduce storage, only the key values are grouped,
+    /// the values may be requested from the cache at the time the TAG file is processed.
+    /// </summary>
+    public class TAGFileBufferQueueGrouper
+    {
+        private const int kMaxNumberOfTAGFilesPerBucket = 100;
+
+        /// <summary>
+        /// GroupMap is a dictionary (keyed on project UID) of dictionaries (keyes on AssetUID) of
+        /// TAG files to be processed for that projectUID/assetUID combination 
+        /// </summary>
+        private Dictionary<Guid, Dictionary<Guid, List<TAGFileBufferQueueKey>>> groupMap;
+
+        /// <summary>
+        /// fullBuckets is a list of arrays of TAG files where each array is a collection of TAG files for a
+        /// particular asset/project combination. New arrays of these keys are added as the groupMap dictionary
+        /// for a project/assert ID combination hits a critical limit (eg: 100 TAG files)
+        /// </summary>
+        private List<TAGFileBufferQueueKey[]> fullBuckets;
+
+        /// <summary>
+        /// Defaultno-arg constructor
+        /// </summary>
+        public TAGFileBufferQueueGrouper()
+        {
+            groupMap = new Dictionary<Guid, Dictionary<Guid, List<TAGFileBufferQueueKey>>>();
+            fullBuckets = new List<TAGFileBufferQueueKey[]>();
+        }
+
+        /// <summary>
+        /// Adds another TAG file buffer queue key into the tracked groups for processing
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public void Add(TAGFileBufferQueueKey key, TAGFileBufferQueueItem value)
+        {
+            lock (this)
+            {
+                if (groupMap.TryGetValue(key.ProjectUID, out Dictionary<Guid, List<TAGFileBufferQueueKey>> assetsDict))
+                {
+                    if (!assetsDict.TryGetValue(value.AssetUID, out List<TAGFileBufferQueueKey> keyList))
+                    {
+                        keyList = new List<TAGFileBufferQueueKey> {key};
+                        assetsDict.Add(value.AssetUID, keyList);
+                    }
+                    else
+                    {
+                        keyList.Add(key);
+                    }
+
+                    // Check if this bucket is full
+                    if (keyList.Count > kMaxNumberOfTAGFilesPerBucket)
+                    {
+                        fullBuckets.Add(keyList.ToArray());
+                        assetsDict.Remove(value.AssetUID);
+                    }
+                }
+                else
+                {
+                    Dictionary<Guid, List<TAGFileBufferQueueKey>> newDict = new Dictionary<Guid, List<TAGFileBufferQueueKey>> {{value.AssetUID, new List<TAGFileBufferQueueKey>{ key }}};
+
+                    groupMap.Add(key.ProjectUID, newDict);
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Returns a list of TAG files for a project and asset
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<TAGFileBufferQueueKey> Extract(Guid projectUID, Guid assetUID)
+        {
+            lock (this)
+            {
+                //groupMap.Remove()
+                //groupMap.Keys.FirstOrDefault()?.
+                return null;
+            }
+        }
+    }
+
+    public class RemoteTAGFileFilter : ICacheEntryEventFilter<TAGFileBufferQueueKey, TAGFileBufferQueueItem>
+    {
+        public bool Evaluate(ICacheEntryEvent<TAGFileBufferQueueKey, TAGFileBufferQueueItem> evt)
+        {
+            // Add the keys for the given events into the Project/Asset mapping buckets ready for a processing context
+            // to acquire them. That context needs to be available through some kind of static namespace, such as the
+            // TAG file processor context.
+            // ....
+
+            // Advise the caller this item is not filtered [as have already dealth with it so no futher 
+            // processing of the item is required.
+            return false;
+
+            // Currently accept all TAG files on the primary node
+        }
+    }
+
+    public class RemoteTAGFileListener : ICacheEntryEventListener<TAGFileBufferQueueKey, TAGFileBufferQueueItem>
+    {
+        public void OnEvent(IEnumerable<ICacheEntryEvent<TAGFileBufferQueueKey, TAGFileBufferQueueItem>> evts)
+        {
+            // Add the keys for the given events into the Project/Asset mapping buckets ready for a processing context
+            // to acquire them. That context needs to be available through some kind of static namespace, such as the
+            // TAG file processor context.
+            // ....
+        }
+    }
+
+    /// <summary>
     /// Represents a buffered queue of TAG files awaiting processing. The queue of TAG files is stored in a 
     /// partitioned Ignite cache based on the ProjectUID
     /// </summary>
@@ -49,6 +163,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// The key is a string that 
         /// </summary>
         private ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> QueueCache;
+
+        private IContinuousQueryHandle<ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem>> queryHandle;
 
         /// <summary>
         /// Creates or obtains a reference to an already created TAG file buffer queue
@@ -93,6 +209,14 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         public TAGFileBufferQueue()
         {
             InstantiateCache();
+
+            // Construct the continuous query machinery
+            // Set the initial query to return all elements in the cache
+            // Instantiate the queryHandle and start the continous query on the remote nodes
+            queryHandle = QueueCache.QueryContinuous
+            (qry: new ContinuousQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(new RemoteTAGFileListener())
+                { Filter = new RemoteTAGFileFilter() },
+             initialQry: new ScanQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem>());
         }
 
         /// <summary>

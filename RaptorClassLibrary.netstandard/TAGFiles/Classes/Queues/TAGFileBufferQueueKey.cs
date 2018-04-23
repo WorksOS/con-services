@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Apache.Ignite.Core.Cache.Affinity;
 
 namespace VSS.TRex.TAGFiles.Classes.Queues
 {
@@ -15,8 +16,10 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         public string FileName;
 
         /// <summary>
-        /// The project to process that TAG file into 
+        /// The project to process that TAG file into.
+        /// This field also provides the affinity key mapping to the nodes in the mutable data grid
         /// </summary>
+        [AffinityKeyMapped]
         public Guid ProjectUID;
 
         public TAGFileBufferQueueKey(string fileName, Guid projectUID)

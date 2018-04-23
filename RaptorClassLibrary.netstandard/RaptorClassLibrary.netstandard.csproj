@@ -22,7 +22,6 @@
   <ItemGroup>
     <Folder Include="Analytics\Foundation\GridFabric\Arguments\" />
     <Folder Include="Analytics\Foundation\GridFabric\Requests\" />
-    <Folder Include="TAGFiles\Classes\BufferQueue\" />
   </ItemGroup>
 
 </Project>
