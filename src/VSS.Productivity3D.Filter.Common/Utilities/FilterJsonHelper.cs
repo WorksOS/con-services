@@ -14,7 +14,7 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
 {
   public class FilterJsonHelper
   {
-    public static void ParseFilterJson(ProjectData project, IEnumerable<DbFilter> filters, IRaptorProxy raptorProxy)
+    public static void ParseFilterJson(ProjectData project, IEnumerable<DbFilter> filters, IRaptorProxy raptorProxy, IDictionary<string, string> customHeaders)
     {
       if (filters == null)
       {
@@ -23,41 +23,41 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
 
       foreach (var filter in filters)
       {
-        GenerateIanaBasedDateTime(project, filter, raptorProxy);
+        GenerateIanaBasedDateTime(project, filter, raptorProxy, customHeaders);
       }
     }
 
-    public static void ParseFilterJson(ProjectData project, DbFilter filter, IRaptorProxy raptorProxy)
+    public static void ParseFilterJson(ProjectData project, DbFilter filter, IRaptorProxy raptorProxy, IDictionary<string, string> customHeaders)
     {
       if (filter == null)
       {
         return;
       }
 
-      GenerateIanaBasedDateTime(project, filter, raptorProxy);
+      GenerateIanaBasedDateTime(project, filter, raptorProxy, customHeaders);
     }
 
-    public static void ParseFilterJson(ProjectData project, FilterDescriptor filter, IRaptorProxy raptorProxy)
+    public static void ParseFilterJson(ProjectData project, FilterDescriptor filter, IRaptorProxy raptorProxy, IDictionary<string, string> customHeaders)
     {
       if (filter == null)
       {
         return;
       }
 
-      filter.FilterJson = ProcessFilterJson(project, filter.FilterJson, raptorProxy);
+      filter.FilterJson = ProcessFilterJson(project, filter.FilterJson, raptorProxy, customHeaders);
     }
 
-    private static void GenerateIanaBasedDateTime(ProjectData project, DbFilter filter, IRaptorProxy raptorProxy)
+    private static void GenerateIanaBasedDateTime(ProjectData project, DbFilter filter, IRaptorProxy raptorProxy, IDictionary<string, string> customHeaders)
     {
-      filter.FilterJson = ProcessFilterJson(project, filter, raptorProxy);
+      filter.FilterJson = ProcessFilterJson(project, filter, raptorProxy, customHeaders);
     }
 
-    private static string ProcessFilterJson(ProjectData project, DbFilter filter, IRaptorProxy raptorProxy)
+    private static string ProcessFilterJson(ProjectData project, DbFilter filter, IRaptorProxy raptorProxy, IDictionary<string, string> customHeaders)
     {
-      return ProcessFilterJson(project, filter.FilterJson, raptorProxy);
+      return ProcessFilterJson(project, filter.FilterJson, raptorProxy, customHeaders);
     }
 
-    private static string ProcessFilterJson(ProjectData project, string filterJson, IRaptorProxy raptorProxy)
+    private static string ProcessFilterJson(ProjectData project, string filterJson, IRaptorProxy raptorProxy, IDictionary<string, string> customHeaders)
     {
       try
       {
@@ -68,7 +68,7 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
         if (filterObj.DateRangeType == DateRangeType.ProjectExtents)
         {
           //get extents from 3d pm
-          ProjectStatisticsResult statistics = raptorProxy?.GetProjectStatistics(Guid.Parse(project?.ProjectUid)).Result;
+          ProjectStatisticsResult statistics = raptorProxy?.GetProjectStatistics(Guid.Parse(project?.ProjectUid), customHeaders).Result;
           filterObj.StartUtc = statistics?.startTime;
           filterObj.EndUtc = statistics?.endTime;
         }

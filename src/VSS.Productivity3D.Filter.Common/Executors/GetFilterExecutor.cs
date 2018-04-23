@@ -79,7 +79,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       }
 
 
-      FilterJsonHelper.ParseFilterJson(filterRequest.ProjectData, filter, raptorProxy);
+      FilterJsonHelper.ParseFilterJson(filterRequest.ProjectData, filter, raptorProxy, filterRequest.CustomHeaders);
 
       return new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
     }

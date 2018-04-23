@@ -65,7 +65,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       else
         result = await ProcessPersistent(filterRequest).ConfigureAwait(false);
 
-      FilterJsonHelper.ParseFilterJson(filterRequest.ProjectData, result.FilterDescriptor, raptorProxy);
+      FilterJsonHelper.ParseFilterJson(filterRequest.ProjectData, result.FilterDescriptor, raptorProxy, filterRequest.CustomHeaders);
 
       return result;
     }
