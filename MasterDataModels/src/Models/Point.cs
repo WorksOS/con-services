@@ -38,7 +38,8 @@ namespace VSS.MasterData.Models.Models
     }
 
     public Point()
-    { }
+    {
+    }
 
     /// <summary>
     /// Create instance of Point
@@ -64,6 +65,7 @@ namespace VSS.MasterData.Models.Models
     }
 
     #region Equality test
+
     public bool Equals(Point other)
     {
       if (other == null)
@@ -88,7 +90,7 @@ namespace VSS.MasterData.Models.Models
 
     public static bool operator ==(Point a, Point b)
     {
-      if ((object)a == null || (object)b == null)
+      if ((object) a == null || (object) b == null)
         return Object.Equals(a, b);
 
       return a.Equals(b);
@@ -101,7 +103,9 @@ namespace VSS.MasterData.Models.Models
 
     public override bool Equals(object obj)
     {
-      return obj is Point && this == (Point)obj;
+      return obj is Point && this == (Point) obj;
     }
+
     #endregion
   }
+}
