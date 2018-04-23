@@ -16,7 +16,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// The date at which the TAG file was inserted into the buffer queue. This field is indexed to permit
         /// processing TAG files in the order they arrived
         /// </summary>
-        [QuerySqlField(IsIndexed = true)]
         public DateTime InsertUTC;
 
         /// <summary>
