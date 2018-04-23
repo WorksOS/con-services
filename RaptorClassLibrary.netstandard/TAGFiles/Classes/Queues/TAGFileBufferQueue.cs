@@ -12,6 +12,7 @@ using VSS.VisionLink.Raptor.Storage;
 
 namespace VSS.TRex.TAGFiles.Classes.Queues
 {
+    /*
     [Serializable]
     public class TAGFileBufferQueueQueryFilter : ICacheEntryFilter<TAGFileBufferQueueKey, TAGFileBufferQueueItem>
     {
@@ -32,6 +33,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
         }
     }
+    */
 
     /// <summary>
     /// Represents a buffered queue of TAG files awaiting processing. The queue of TAG files is stored in a 
@@ -100,26 +102,22 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// <returns></returns>
         public IEnumerable<ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem>> SelectBatch()
         {
-            IEnumerable<ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem>> localItems = QueueCache.GetLocalEntries(new [] {CachePeekMode.Primary});
+            IEnumerable<ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem>> localItems = QueueCache.GetLocalEntries(CachePeekMode.Primary);
 
+            // ReSharper disable once PossibleMultipleEnumeration
             ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem> first = localItems?.FirstOrDefault();
 
             if (first == null) // There's no work to do!
                 return null;
 
             // Get the list of all TAG files in the buffer matching the project and asset IDs of the first item
-                // in the list, limiting the result set to 100 TAG files.
+            // in the list, limiting the result set to 100 TAG files.
+            // ReSharper disable once PossibleMultipleEnumeration
                 List<ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem>> candidates = localItems
                     .Take(1000)
                     .Where(x => x.Value.ProjectUID == first.Value.ProjectUID && x.Value.AssetUID == first.Value.AssetUID)
                     .Take(100)
                     .ToList();
-
-                if (candidates?.Count > 0)
-                {
-                    // Submit the list of TAG files to the processor [should delegate this to responsibility of caller]
-                    // ...
-                }
 
             return candidates;
         }

@@ -9,6 +9,11 @@ using VSS.VisionLink.Raptor.GridFabric.Caches;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Queues
 {
+    /// <summary>
+    /// Implements a queue of segments requiring 'retiring' from the cache. Each retiree has an expiry date at which it
+    /// will be removed. This date is intended to be beyond the eventual consistency requirements of any active query in 
+    /// progress on the immutable data grid.
+    /// </summary>
     public class SegmentRetirementQueue
     {
         private ICache<long, SegmentRetirementQueueItem> QueueCache;
