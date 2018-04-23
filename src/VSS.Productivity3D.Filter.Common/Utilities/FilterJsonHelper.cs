@@ -1,8 +1,12 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Nito.AsyncEx;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
 using DbFilter = VSS.MasterData.Repositories.DBModels.Filter;
 
@@ -64,10 +68,11 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
         if (filterObj.DateRangeType == DateRangeType.ProjectExtents)
         {
           //get extents from 3d pm
-          raptorProxy?.GetProjectStatistics(Guid.Parse(project?.ProjectUid));
-          //add start & end utc values to filter
+          ProjectStatisticsResult statistics = raptorProxy?.GetProjectStatistics(Guid.Parse(project?.ProjectUid)).Result;
+          filterObj.StartUtc = statistics?.startTime;
+          filterObj.EndUtc = statistics?.endTime;
         }
-        
+
         return JsonConvert.SerializeObject(filterObj);
       }
       catch(Exception)

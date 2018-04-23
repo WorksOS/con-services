@@ -16,16 +16,20 @@ namespace VSS.Productivity3D.Filter.Tests
   public class FilterResponseHelperTests
   {
     private IRaptorProxy mockedRaptorProxy;
+    private Guid ProjectGuid = Guid.NewGuid();
+    private DateTime mockedStartTime = new DateTime(2016, 11, 5);
+    private DateTime mockedEndTime = new DateTime(2018, 11, 6);
 
     [TestInitialize]
     public void TestInit()
     {
       var mockedRaptorProxySetup = new Mock<IRaptorProxy>();
       mockedRaptorProxySetup.Setup(IRaptorProxy =>
-          IRaptorProxy.GetProjectStatistics(Guid.NewGuid(), new Dictionary<string, string>()))
+          IRaptorProxy.GetProjectStatistics(It.IsAny<Guid>(), It.IsAny<Dictionary<string, string>>()))
         .Returns(Task.FromResult(new ProjectStatisticsResult
         {
-          startTime = DateTime.Now
+          startTime = mockedStartTime,
+          endTime = mockedEndTime
         }));
 
       mockedRaptorProxy = mockedRaptorProxySetup.Object;
@@ -38,9 +42,6 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       try
       {
-
-    
-      
         var filter = new MasterData.Repositories.DBModels.Filter { FilterJson = "{\"dateRangeType\":\"0\",\"elevationType\":null}" };
         FilterJsonHelper.ParseFilterJson(null, filter, mockedRaptorProxy);
 
@@ -111,9 +112,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
     [TestMethod]
     [DataRow(DateRangeType.Custom, true)]
-    [DataRow(DateRangeType.ProjectExtents, true)]
     [DataRow(DateRangeType.Custom, false)]
-    [DataRow(DateRangeType.ProjectExtents, false)]
     public void Should_not_set_dates_based_on_DateRangeType(DateRangeType dateRangeType, bool asAtDate)
     {
       var startUtc = dateRangeType == DateRangeType.Custom ? new DateTime(2017, 11, 5) : (DateTime?)null;
@@ -123,7 +122,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var endUtcStr = endUtc?.ToString("MM/dd/yyyy");
       var filter = new MasterData.Repositories.DBModels.Filter { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"startUTC\":\"{startUtcStr}\",\"endUTC\":\"{endUtcStr}\",\"elevationType\":null}}" };
 
-      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filter, raptorProxy: mockedRaptorProxy);
+      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString() }, filter, raptorProxy: mockedRaptorProxy);
 
       MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filter.FilterJson);
       Assert.AreEqual(dateRangeType, filterObj.DateRangeType);
@@ -136,27 +135,46 @@ namespace VSS.Productivity3D.Filter.Tests
 
     [TestMethod]
     [DataRow(DateRangeType.Custom, true)]
-    [DataRow(DateRangeType.ProjectExtents, true)]
     [DataRow(DateRangeType.Custom, false)]
-    [DataRow(DateRangeType.ProjectExtents, false)]
-    public void Should_not_set_dates_based_on_DateRangeType_When_using_FilterDescriptor(DateRangeType dateRangeType, bool asAtDate)
+    public void Should_not_set_dates_based_on_DateRangeType_When_using_Custom(DateRangeType dateRangeType, bool asAtDate)
     {
       var startUtc = dateRangeType == DateRangeType.Custom ? new DateTime(2017, 11, 5) : (DateTime?)null;
       var endUtc = dateRangeType == DateRangeType.Custom ? new DateTime(2017, 11, 6) : (DateTime?)null;
+
+
       //Json deserialize interprets date as mm/dd/yyyy so format date that way
       var startUtcStr = startUtc?.ToString("MM/dd/yyyy");
       var endUtcStr = endUtc?.ToString("MM/dd/yyyy");
       var filterDescriptor = new FilterDescriptor { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"startUTC\":\"{startUtcStr}\",\"endUTC\":\"{endUtcStr}\",\"elevationType\":null}}" };
 
-      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filterDescriptor, raptorProxy: mockedRaptorProxy);
+      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString() }, filterDescriptor, raptorProxy: mockedRaptorProxy);
 
       MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterDescriptor.FilterJson);
-      if (asAtDate)
-        Assert.AreEqual(null, filterObj.StartUtc);
-      else
-        Assert.AreEqual(startUtc, filterObj.StartUtc);
+      Assert.AreEqual(asAtDate ? null : startUtc, filterObj.StartUtc);
       Assert.AreEqual(endUtc, filterObj.EndUtc);
     }
+
+
+    [TestMethod]
+    [DataRow(DateRangeType.ProjectExtents, true)]
+    [DataRow(DateRangeType.ProjectExtents, false)]
+    public void Should_return_project_extents_for_project_extents(DateRangeType dateRangeType, bool useNullDate)
+    {
+      var startUtc = useNullDate ? (DateTime?)null : new DateTime(2017, 11, 5);
+      var endUtc = useNullDate ? (DateTime?)null : new DateTime(2017, 11, 6);
+
+      //Json deserialize interprets date as mm/dd/yyyy so format date that way
+      var startUtcStr = startUtc?.ToString("MM/dd/yyyy");
+      var endUtcStr = endUtc?.ToString("MM/dd/yyyy");
+      var filterDescriptor = new FilterDescriptor { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"false\",\"startUTC\":\"{startUtcStr}\",\"endUTC\":\"{endUtcStr}\",\"elevationType\":null}}" };
+
+      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString() }, filterDescriptor, raptorProxy: mockedRaptorProxy);
+
+      MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterDescriptor.FilterJson);
+      Assert.AreEqual(mockedStartTime, filterObj.StartUtc);
+      Assert.AreEqual(mockedEndTime, filterObj.EndUtc);
+    }
+
 
     [TestMethod]
     [DataRow(DateRangeType.CurrentMonth, true)]
