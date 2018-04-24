@@ -970,9 +970,9 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\RaptorSvcAcceptTestsCommon\RaptorSvcAcceptTestsCommon.csproj">
+    <ProjectReference Include="..\Common\Common.csproj">
       <Project>{eff9d18e-1a7d-47bb-8421-69a08d0cabae}</Project>
-      <Name>RaptorSvcAcceptTestsCommon</Name>
+      <Name>Common</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>
