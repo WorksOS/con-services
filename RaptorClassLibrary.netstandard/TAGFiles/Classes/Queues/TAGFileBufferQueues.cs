@@ -30,12 +30,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         public IEnumerable<ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem>> SelectBatch()
         {
             return realTimeQueue.SelectBatch() ?? latentQueue.SelectBatch();
-
-/*            if (candidates?.Count > 0)
-            {
-                // Submit the list of TAG files to the processor [should delegate this to responsibility of caller]
-                // ...
-            }*/
         }
     }
 }

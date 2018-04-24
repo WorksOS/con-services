@@ -72,7 +72,6 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         {
             Log.Info($"TAGFileBufferQueueService {context.Name} starting executing");
 
-            bool hadWorkToDo;
             List<Guid> ProjectsToAvoid = new List<Guid>();
 
             // Get the ignite grid and cache references
@@ -88,10 +87,17 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
                 (qry: new ContinuousQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(new LocalTAGFileListener()) { Local = true },
                     initialQry: new ScanQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem> { Local = true}))
             {
-                // Cycle looking for work to do until aborted...
+                // Perform the initial query to grab all existing elements and add them to the grouper
+                foreach (var item in queryHandle.GetInitialQueryCursor())
+                {
+                    grouper.Add(item.Key, item.Value);
+                }
+
+                // Cycle looking for new work to do as TAG files arrive until aborted...
                 do
                 {
-                    hadWorkToDo = false;
+                    var hadWorkToDo = false;
+
                     // Check to see if there is a work package to feed to the processing pipline
                     // -> Ask the grouper for a package 
                     var package = grouper.Extract(ProjectsToAvoid, out Guid projectUID);
@@ -117,8 +123,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
                         }
                         catch (Exception E)
                         {
-                            Log.Error(
-                                $"Error, exception {E} occurred while attempting to retrieve TAG files from the TAG file buffer queue cache");
+                            Log.Error($"Error, exception {E} occurred while attempting to retrieve TAG files from the TAG file buffer queue cache");
                         }
 
                         // -> Supply the package to the processor
@@ -136,10 +141,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
                             try
                             {
                                 if (!tagFileResponse.Success)
-                                {
-                                    Log.Error(
-                                        $"TAG file failed to process, with exception {tagFileResponse.Exception}");
-                                }
+                                    Log.Error($"TAG file failed to process, with exception {tagFileResponse.Exception}");
 
                                 queueCache.Remove(new TAGFileBufferQueueKey
                                 {
@@ -149,8 +151,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
                             }
                             catch (Exception e)
                             {
-                                Log.Error(
-                                    $"Exception {e} occurred while removing TAG file {tagFileResponse.FileName} in project {projectUID} from the TAG file buffer queue");
+                                Log.Error($"Exception {e} occurred while removing TAG file {tagFileResponse.FileName} in project {projectUID} from the TAG file buffer queue");
                                 throw;
                             }
                         }
@@ -162,8 +163,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
                     // if there was no work to do in the last epoch, sleep for a bit until the next check epoch
                     if (!hadWorkToDo)
                     {
-                        Log.Info(
-                            $"TAGFileBufferQueueService {context.Name} sleeping for {kTAGFileBufferQueueServiceCheckIntervalMS}ms");
+                        Log.Info($"TAGFileBufferQueueService {context.Name} sleeping for {kTAGFileBufferQueueServiceCheckIntervalMS}ms");
 
                         waitHandle.WaitOne(kTAGFileBufferQueueServiceCheckIntervalMS);
                     }

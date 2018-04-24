@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Apache.Ignite.Core.Cache.Affinity;
 
 namespace VSS.TRex.TAGFiles.Classes.Queues
