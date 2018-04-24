@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
+using VSS.MasterData.Models.FIlters;
 using VSS.Productivity3D.Common.Filters.Validation;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApiModels.Interfaces;

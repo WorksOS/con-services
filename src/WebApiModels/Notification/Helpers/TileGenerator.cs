@@ -2,16 +2,19 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.TCCFileAccess;
+using Point = VSS.MasterData.Models.Models.Point;
 
 namespace VSS.Productivity3D.WebApi.Models.Notification.Helpers
 {
   /// <summary>
   /// Generates tiles for a DXF file using Global Mapper in TCC.
   /// </summary>
+  [Obsolete("Migrated to the Scheduler")]
   public class TileGenerator : ITileGenerator
   {
     /// <summary>

@@ -7,6 +7,7 @@ using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -15,7 +16,8 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using Point = VSS.Productivity3D.Common.Models.Point;
+using Point = VSS.MasterData.Models.Models.Point;
+using WebMercatorProjection = VSS.MasterData.Models.Models.WebMercatorProjection;
 
 namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 {
@@ -36,7 +38,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
       DxfTileRequest request = item as DxfTileRequest;
 
-      string filespaceId = FileDescriptor.GetFileSpaceId(configStore, log);
+      string filespaceId = FileDescriptorExtensions.GetFileSpaceId(configStore, log);
 
       //Calculate zoom level
       int zoomLevel = TileServiceUtils.CalculateZoomLevel(request.bbox.topRightLat - request.bbox.bottomLeftLat,

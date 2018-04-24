@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Interfaces;

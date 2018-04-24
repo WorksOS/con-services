@@ -6,6 +6,7 @@ using System.IO;
 using System.Net;
 using VLPDDecls;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -47,7 +48,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 
             MemoryStream memoryStream;
             TDesignProfilerRequestResult designProfilerResult;
-            string fileSpaceId = FileDescriptor.GetFileSpaceId(configStore, log);
+            string fileSpaceId = FileDescriptorExtensions.GetFileSpaceId(configStore, log);
             FileDescriptor fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, fileList[i].Path, fileList[i].Name);
 
             bool result = raptorClient.GetDesignBoundary(
