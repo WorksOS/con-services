@@ -26,12 +26,12 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         private IServices services;
 
         /// <summary>
-        /// The proxy to the deploy service
+        /// The proxy to the deployed service
         /// </summary>
         private ISurveyedSurfaceService proxy;
 
         /// <summary>
-        /// No-arg constructor that instantiates the Ignitre instance, cluster, service and proxy members
+        /// No-arg constructor that instantiates the Ignite instance, cluster, service and proxy members
         /// </summary>
         public SurveyedSurfaceServiceProxy()
         {

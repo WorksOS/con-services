@@ -18,7 +18,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
         public long RequestDescriptor = -1;
 
         /// <summary>
-        /// Determines if the processing of the task activities as been cencelled by external control
+        /// Determines if the processing of the task activities as been cancelled by external control
         /// </summary>
         public bool IsCancelled;
 
