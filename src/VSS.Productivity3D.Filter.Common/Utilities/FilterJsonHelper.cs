@@ -73,6 +73,14 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
           filterObj.EndUtc = statistics?.endTime;
         }
 
+        //The UI needs to know the start date for specified ranges, this is actually the range data will be returned for
+        if (filterObj.AsAtDate == true)
+        {
+          ProjectStatisticsResult statistics = raptorProxy?.GetProjectStatistics(Guid.Parse(project?.ProjectUid), customHeaders).Result;
+          filterObj.StartUtc = statistics?.startTime;
+          filterObj.DateRangeType = DateRangeType.Custom;
+        }
+
         return JsonConvert.SerializeObject(filterObj);
       }
       catch(Exception)

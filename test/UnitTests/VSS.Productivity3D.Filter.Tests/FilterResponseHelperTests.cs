@@ -17,7 +17,7 @@ namespace VSS.Productivity3D.Filter.Tests
   {
     private IRaptorProxy mockedRaptorProxy;
     private Guid ProjectGuid = Guid.NewGuid();
-    private DateTime mockedStartTime = new DateTime(2016, 11, 5);
+    private static DateTime mockedStartTime = new DateTime(2016, 11, 5);
     private DateTime mockedEndTime = new DateTime(2018, 11, 6);
 
     [TestInitialize]
@@ -127,7 +127,7 @@ namespace VSS.Productivity3D.Filter.Tests
       MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filter.FilterJson);
       Assert.AreEqual(dateRangeType, filterObj.DateRangeType);
       if (asAtDate)
-        Assert.AreEqual(null, filterObj.StartUtc);
+        Assert.AreEqual(mockedStartTime, filterObj.StartUtc);
       else
         Assert.AreEqual(startUtc, filterObj.StartUtc);
       Assert.AreEqual(endUtc, filterObj.EndUtc);
@@ -150,7 +150,7 @@ namespace VSS.Productivity3D.Filter.Tests
       FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString() }, filterDescriptor, raptorProxy: mockedRaptorProxy, customHeaders: new Dictionary<string, string>());
 
       MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterDescriptor.FilterJson);
-      Assert.AreEqual(asAtDate ? null : startUtc, filterObj.StartUtc);
+      Assert.AreEqual(asAtDate ? mockedStartTime : startUtc, filterObj.StartUtc);
       Assert.AreEqual(endUtc, filterObj.EndUtc);
     }
 
@@ -203,7 +203,7 @@ namespace VSS.Productivity3D.Filter.Tests
       {
         filters.Add(new MasterData.Repositories.DBModels.Filter { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"elevationType\":null}}" });
       }
-      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filters, raptorProxy: mockedRaptorProxy, customHeaders: new Dictionary<string, string>());
+      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString() }, filters, raptorProxy: mockedRaptorProxy, customHeaders: new Dictionary<string, string>());
 
       foreach (var filter in filters)
       {
@@ -234,7 +234,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var filter = new MasterData.Repositories.DBModels.Filter { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"elevationType\":null}}" };
 
-      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filter, raptorProxy: mockedRaptorProxy, customHeaders: new Dictionary<string, string>());
+      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" , ProjectUid = ProjectGuid.ToString() }, filter, raptorProxy: mockedRaptorProxy, customHeaders: new Dictionary<string, string>());
 
       ValidateDates(filter.FilterJson, asAtDate);
     }
@@ -262,19 +262,23 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var filterDescriptor = new FilterDescriptor { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"elevationType\":null}}" };
 
-      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" }, filterDescriptor, raptorProxy: mockedRaptorProxy, customHeaders: new Dictionary<string, string>());
+      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filterDescriptor, raptorProxy: mockedRaptorProxy, customHeaders: new Dictionary<string, string>());
 
       ValidateDates(filterDescriptor.FilterJson, asAtDate);
     }
 
-    private static void ValidateDates(string filterJson, bool startUtcShouldBeNull)
+    private static void ValidateDates(string filterJson, bool startUtcShouldBeExtents)
     {
       MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterJson);
-
-      if (startUtcShouldBeNull)
-        Assert.IsNull(filterObj.StartUtc);
+      //todo tidy this up
+      if (startUtcShouldBeExtents)
+      {
+        Assert.AreEqual(mockedStartTime, filterObj.StartUtc);
+      }
       else
+      {
         Assert.IsNotNull(filterObj.StartUtc);
+      }
       Assert.IsNotNull(filterObj.EndUtc);
     }
   }
