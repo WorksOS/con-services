@@ -10,7 +10,7 @@ services:
      - CUSTOMERSERVICE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me
      - PROJECT_SETTINGS_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4
      - FILTER_API_URL=http://10.97.96.103:3010/api/v1
-     - SCHEDULER_EXPORT_URL=http://10.97.96.103:3011/api/v1/export/veta
+     - SCHEDULER_EXPORT_URL=http://10.97.96.103:3011/api/v1/export
      - GEOFENCE_CACHE_LIFE=00:15:00
      - PROJECT_CACHE_LIFE=00:30:00
      - IMPORTED_FILE_CACHE_LIFE=00:15:00
@@ -35,6 +35,7 @@ services:
      - AWS_BUCKET_NAME=vss-exports-stg
      - AWS_ACCESS_KEY=AKIAIBGOEETXHMANDX7A
      - AWS_SECRET_KEY=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
+     - AWS_PRESIGNED_URL_EXPIRY=7.00:00:00
      - LOG_MAX_CHAR=1000
     ports:
      - "5001:80"

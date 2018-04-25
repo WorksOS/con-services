@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
-using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
@@ -63,135 +62,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       this.transferProxy = transferProxy;
     }
 
-    /// <summary>
-    /// Gets an export of 3D project data in .TTM file format report.
-    /// </summary>
-    /// <param name="projectUid">Project unique identifier.</param>
-    /// <param name="fileName">Output file name.</param>
-    /// <param name="tolerance">Controls triangulation density in the output .TTM file.</param>
-    /// <param name="filterUid">The filter Uid to apply to the export results</param>
-    /// <returns>An instance of the ExportResult class.</returns>
-    [ProjectUidVerifier]
-    [Route("api/v2/export/surface")]
-    [HttpGet]
-    public async Task<ExportResult> GetExportReportSurface(
-      [FromQuery] Guid projectUid,
-      [FromQuery] string fileName,
-      [FromQuery] double? tolerance,
-      [FromQuery] Guid? filterUid)
-    {
-      const double surfaceExportTollerance = 0.05;
-
-      Log.LogInformation("GetExportReportSurface: " + Request.QueryString);
-
-      var project = await (User as RaptorPrincipal).GetProject(projectUid);
-      var projectSettings = await GetProjectSettingsTargets(projectUid);
-      var filter = await GetCompactionFilter(projectUid, filterUid);
-      var userPreferences = await GetUserPreferences();
-
-      tolerance = tolerance ?? surfaceExportTollerance;
-
-      var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
-          .ProjectId(project.LegacyProjectId)
-          .Headers(this.CustomHeaders)
-          .ProjectSettings(projectSettings)
-          .Filter(filter))
-        .SetUserPreferences(userPreferences)
-        .SetRaptorClient(raptorClient)
-        .SetProjectDescriptor(project)
-        .CreateExportRequest(
-          null, //startUtc,
-          null, //endUtc,
-          CoordTypes.ptNORTHEAST,
-          ExportTypes.kSurfaceExport,
-          fileName,
-          false,
-          false,
-          OutputTypes.etVedaAllPasses,
-          string.Empty,
-          tolerance.Value);
-
-      exportRequest.Validate();
-
-      return WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainerFactory
-          .Build<CompactionExportExecutor>(LoggerFactory, raptorClient, null, this.ConfigStore)
-          .Process(exportRequest) as ExportResult
-      );
-    }
-
-    /// <summary>
-    /// Tries to get export status.
-    /// </summary>
-    /// <param name="projectUid">The project uid.</param>
-    /// <param name="jobId">The job identifier.</param>
-    /// <param name="scheduler">The scheduler.</param>
-    /// <exception cref="ServiceException">new ContractExecutionResult(-4,"Job failed for some reason")</exception>
-    /// <exception cref="ContractExecutionResult">-4 - Job failed for some reason</exception>
-    [ProjectUidVerifier]
-    [Route("api/v2/export/veta/status")]
-    [HttpGet]
-    public async Task<ContractExecutionResult> TryGetExportStatus([FromQuery] Guid projectUid, [FromQuery] string jobId,
-      [FromServices] ISchedulerProxy scheduler)
-    {
-      var jobResult = await scheduler.GetVetaExportJobStatus(projectUid, jobId, Request.Headers.GetCustomHeaders(true));
-      if (jobResult.status.Equals("SUCCEEDED", StringComparison.OrdinalIgnoreCase))
-      {
-        return new ContractExecutionResult();
-      }
-      if (!jobResult.status.Equals("FAILED", StringComparison.OrdinalIgnoreCase))
-      {
-        return new ContractExecutionResult(ContractExecutionStatesEnum.PartialData, "Job is running");
-      }
-      throw new ServiceException(HttpStatusCode.InternalServerError, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "Job failed for some reason"));
-    }
-
-    /// <summary>
-    /// Tries the download of the exported file.
-    /// </summary>
-    /// <param name="projectUid">The project uid.</param>
-    /// <param name="jobId">The job identifier.</param>
-    /// <param name="scheduler">The scheduler.</param>
-    /// <exception cref="ServiceException">new ContractExecutionResult(-4, "File is not likely ready to be downloaded")</exception>
-    /// <exception cref="ContractExecutionResult">-4 - File is not likely ready to be downloaded</exception>
-    [ProjectUidVerifier]
-    [Route("api/v2/export/veta/download")]
-    [HttpGet]
-    public async Task<FileResult> TryDownload([FromQuery] Guid projectUid, [FromQuery] string jobId,
-      [FromServices] ISchedulerProxy scheduler)
-    {
-      var jobResult = await scheduler.GetVetaExportJobStatus(projectUid, jobId, Request.Headers.GetCustomHeaders(true));
-
-      if (jobResult.status.Equals("SUCCEEDED", StringComparison.OrdinalIgnoreCase))
-      {
-        return await transferProxy.Download(jobResult.key);
-      }
-      throw new ServiceException(HttpStatusCode.InternalServerError,
-        new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "File is likely not ready to be downloaded"));
-    }
-
-    /// <summary>
-    /// Tries the download of the exported file. Used for acceptance tests.
-    /// </summary>
-    /// <param name="projectUid">The project uid.</param>
-    /// <param name="jobId">The job identifier.</param>
-    /// <param name="scheduler">The scheduler.</param>
-    /// <exception cref="ServiceException">new ContractExecutionResult(-4, "File is not likely ready to be downloaded")</exception>
-    /// <exception cref="ContractExecutionResult">-4 - File is not likely ready to be downloaded</exception>
-    [ProjectUidVerifier]
-    [Route("api/v2/export/veta/downloadtest")]
-    [HttpGet]
-    public async Task<ExportResult> TryDownloadTest([FromQuery] Guid projectUid, [FromQuery] string jobId,
-      [FromServices] ISchedulerProxy scheduler)
-    {
-      var result = await TryDownload(projectUid, jobId, scheduler) as FileStreamResult;
-
-      using (var reader = new BinaryReader(result.FileStream))
-      {
-        return ExportResult.Create(reader.ReadBytes((int)result.FileStream.Length), 0);
-      }
-    }
-
+    #region Schedule Veta Export
     /// <summary>
     /// Schedules the veta export job and returns JobId.
     /// </summary>
@@ -203,21 +74,30 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/export/veta/schedulejob")]
     [HttpGet]
-    public ScheduleResult ScheduleVetaJob([FromQuery] Guid projectUid,
+    public ScheduleResult ScheduleVetaJob(
+      [FromQuery] Guid projectUid,
       [FromQuery] string fileName,
       [FromQuery] string machineNames,
       [FromQuery] Guid? filterUid,
       [FromServices] ISchedulerProxy scheduler)
     {
+      //The URL to get the export data is here in this controller, construct it based on this request
+      var exportDataUrl = $"{HttpContext.Request.Scheme}//{HttpContext.Request.Host}/export/veta?projectUid={projectUid}&fileName={fileName}&machineNames={machineNames}";
+      if (filterUid.HasValue)
+      {
+        exportDataUrl = $"{exportDataUrl}&filterUid={filterUid}";
+      }
+      var request = new ScheduleJobRequest {Url = exportDataUrl};
       return
         WithServiceExceptionTryExecute(() => new ScheduleResult
         {
           JobId =
-            scheduler.ScheduleVetaExportJob(projectUid, fileName, machineNames, filterUid,
-              Request.Headers.GetCustomHeaders(true)).Result?.jobId
+            scheduler.ScheduleExportJob(request, Request.Headers.GetCustomHeaders(true)).Result?.jobId
         });
     }
-
+    #endregion
+ 
+    #region Exports
     /// <summary>
     /// Gets an export of production data in cell grid format report for import to VETA.
     /// </summary>
@@ -330,6 +210,66 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       );
     }
 
+
+    /// <summary>
+    /// Gets an export of 3D project data in .TTM file format report.
+    /// </summary>
+    /// <param name="projectUid">Project unique identifier.</param>
+    /// <param name="fileName">Output file name.</param>
+    /// <param name="tolerance">Controls triangulation density in the output .TTM file.</param>
+    /// <param name="filterUid">The filter Uid to apply to the export results</param>
+    /// <returns>An instance of the ExportResult class.</returns>
+    [ProjectUidVerifier]
+    [Route("api/v2/export/surface")]
+    [HttpGet]
+    public async Task<ExportResult> GetExportReportSurface(
+      [FromQuery] Guid projectUid,
+      [FromQuery] string fileName,
+      [FromQuery] double? tolerance,
+      [FromQuery] Guid? filterUid)
+    {
+      const double surfaceExportTollerance = 0.05;
+
+      Log.LogInformation("GetExportReportSurface: " + Request.QueryString);
+
+      var project = await (User as RaptorPrincipal).GetProject(projectUid);
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
+      var filter = await GetCompactionFilter(projectUid, filterUid);
+      var userPreferences = await GetUserPreferences();
+
+      tolerance = tolerance ?? surfaceExportTollerance;
+
+      var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
+          .ProjectId(project.LegacyProjectId)
+          .Headers(this.CustomHeaders)
+          .ProjectSettings(projectSettings)
+          .Filter(filter))
+        .SetUserPreferences(userPreferences)
+        .SetRaptorClient(raptorClient)
+        .SetProjectDescriptor(project)
+        .CreateExportRequest(
+          null, //startUtc,
+          null, //endUtc,
+          CoordTypes.ptNORTHEAST,
+          ExportTypes.kSurfaceExport,
+          fileName,
+          false,
+          false,
+          OutputTypes.etVedaAllPasses,
+          string.Empty,
+          tolerance.Value);
+
+      exportRequest.Validate();
+
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainerFactory
+          .Build<CompactionExportExecutor>(LoggerFactory, raptorClient, null, this.ConfigStore)
+          .Process(exportRequest) as ExportResult
+      );
+    }
+    #endregion
+
+    #region privates
     /// <summary>
     /// Get user preferences
     /// </summary>
@@ -369,5 +309,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return new Tuple<DateTime, DateTime>(filter.StartUtc.Value, filter.EndUtc.Value);
     }
+    #endregion
   }
 }
