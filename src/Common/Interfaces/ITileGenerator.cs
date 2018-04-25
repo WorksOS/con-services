@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
 
 namespace VSS.Productivity3D.Common.Interfaces

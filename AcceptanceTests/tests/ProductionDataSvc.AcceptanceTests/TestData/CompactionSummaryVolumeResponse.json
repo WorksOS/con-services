@@ -27,11 +27,11 @@
   },
   "GroundToGroundLatestToEarliest": {
     "volumeSummaryData": {
-      "netVolume": -228.68299062499978,
-      "totalVolume": 1134.0952675781248,
-      "totalCutVolume": 452.7061384765625,
-      "totalFillVolume": 681.38912910156228,
-      "totalMachineCoveragePlanArea": 137012.47240000003,
+      "netVolume": -206.62090983886719,
+      "totalVolume": 1111.4519270751953,
+      "totalCutVolume": 452.41550861816404,
+      "totalFillVolume": 659.03641845703123,
+      "totalMachineCoveragePlanArea": 5298.5260000000017,
       "shrinkage": 0,
       "bulking": 0
     },

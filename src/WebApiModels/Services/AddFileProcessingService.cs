@@ -82,7 +82,7 @@ namespace VSS.Productivity3D.WebApi.Models.Services
           }
         }
         else
-          Thread.Sleep(1000);
+          Thread.Sleep(500);
       }
       stopSemaphore.Release();
       log.LogInformation($"Stopped file processing thread");

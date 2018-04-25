@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -13,6 +12,9 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
+using VSS.MasterData.Models.Models;
+using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
+
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
