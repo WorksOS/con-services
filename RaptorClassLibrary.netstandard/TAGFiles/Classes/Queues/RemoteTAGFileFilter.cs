@@ -1,21 +1,60 @@
-﻿using Apache.Ignite.Core.Cache.Event;
+﻿using Apache.Ignite.Core.Cache;
+using Apache.Ignite.Core.Cache.Event;
+using System;
 
 namespace VSS.TRex.TAGFiles.Classes.Queues
 {
-    public class RemoteTAGFileFilter : ICacheEntryEventFilter<TAGFileBufferQueueKey, TAGFileBufferQueueItem>
+    /// <summary>
+    /// Provides a 'remote filter' for a continuous query watching the TAG file buffer queue. The filter itself
+    /// performs some orchestration of the elements ready for further processing but does not pass the TAG file
+    /// so as to suppress the TAG file being sent to the local context that emitted the conitous query itself
+    /// </summary>
+    [Serializable]
+    public class RemoteTAGFileFilter : 
+        ICacheEntryFilter<TAGFileBufferQueueKey, TAGFileBufferQueueItem>,
+        ICacheEntryEventFilter<TAGFileBufferQueueKey, TAGFileBufferQueueItem>,
+        IDisposable
     {
-        public bool Evaluate(ICacheEntryEvent<TAGFileBufferQueueKey, TAGFileBufferQueueItem> evt)
-        {
-            // Add the keys for the given events into the Project/Asset mapping buckets ready for a processing context
-            // to acquire them. That context needs to be available through some kind of static namespace, such as the
-            // TAG file processor context.
-            // ....
+        [NonSerialized]
+        private TAGFileBufferQueueItemHandler tagFileHandler;
 
-            // Advise the caller this item is not filtered [as have already dealth with it so no futher 
+        public void Dispose()
+        {
+            tagFileHandler?.Dispose();
+        }
+
+        private void EnsureTagFileInstance()
+        {
+            if (tagFileHandler == null)
+            {
+                tagFileHandler = TAGFileBufferQueueItemHandler.Instance();
+            }
+        }
+
+        public bool Invoke(ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem> entry)
+        {
+            EnsureTagFileInstance();
+
+            // Add the keys for the given events into the Project/Asset mapping buckets ready for a processing context
+            // to acquire them
+            tagFileHandler.Add(entry.Key, entry.Value);
+
+            // Advise the caller this item is not filtered [as have already dealt with it so no futher 
             // processing of the item is required.
             return false;
+        }
 
-            // Currently accept all TAG files on the primary node
+        public bool Evaluate(ICacheEntryEvent<TAGFileBufferQueueKey, TAGFileBufferQueueItem> evt)
+        {
+            EnsureTagFileInstance();
+
+            // Add the keys for the given events into the Project/Asset mapping buckets ready for a processing context
+            // to acquire them
+            tagFileHandler.Add(evt.Key, evt.Value);
+
+            // Advise the caller this item is not filtered [as have already dealt with it so no futher 
+            // processing of the item is required.
+            return false;
         }
     }
 }
