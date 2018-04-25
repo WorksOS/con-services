@@ -8,9 +8,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		local.testsettings = local.testsettings
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProdDataTests", "tests\ProdDataTests\ProdDataTests.csproj", "{6E7BACCA-3049-45F5-8118-8B45A5D39F85}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductionDataSvc.AcceptanceTests", "tests\ProductionDataSvc.AcceptanceTests\ProductionDataSvc.AcceptanceTests.csproj", "{6E7BACCA-3049-45F5-8118-8B45A5D39F85}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "tests\Common\Common.csproj", "{EFF9D18E-1A7D-47BB-8421-69A08D0CABAE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaptorSvcAcceptTestsCommon", "tests\RaptorSvcAcceptTestsCommon\RaptorSvcAcceptTestsCommon.csproj", "{EFF9D18E-1A7D-47BB-8421-69A08D0CABAE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
