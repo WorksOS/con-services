@@ -59,28 +59,21 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         {
             IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
 
-            try
-            {
-                QueueCache = ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(RaptorCaches.TAGFileBufferQueueCacheName());
-            }
-            catch // Exception is thrown if the cache does not exist
-            {
-                QueueCache = ignite.GetOrCreateCache <TAGFileBufferQueueKey, TAGFileBufferQueueItem> (
-                    new CacheConfiguration
-                    {
-                        Name = RaptorCaches.TAGFileBufferQueueCacheName(),                       
+            QueueCache = ignite.GetOrCreateCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(
+                new CacheConfiguration
+                {
+                    Name = RaptorCaches.TAGFileBufferQueueCacheName(),
 
-                        KeepBinaryInStore = true,
+                    KeepBinaryInStore = true,
 
-                        // Replicate the maps across nodes
-                        CacheMode = CacheMode.Partitioned,
+                    // Replicate the maps across nodes
+                    CacheMode = CacheMode.Partitioned,
 
-                        // No backups for now
-                        Backups = 0,
+                    // No backups for now
+                    Backups = 0,
 
-                        DataRegionName = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION
-                    });
-            }
+                    DataRegionName = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION
+                });
 
             if (QueueCache == null)
             {

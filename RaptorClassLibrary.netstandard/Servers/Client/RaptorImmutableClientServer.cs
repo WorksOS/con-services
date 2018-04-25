@@ -91,7 +91,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
                         Logger = new IgniteLog4NetLogger(Log),
 
                         // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
-                        DataStorageConfiguration = new DataStorageConfiguration()
+                        DataStorageConfiguration = new DataStorageConfiguration
                         {
                             PageSize = DataRegions.DEFAULT_IMMUTABLE_DATA_REGION_PAGE_SIZE,
 
@@ -100,6 +100,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
                                 Name = DataRegions.DEFAULT_IMMUTABLE_DATA_REGION_NAME,
                                 InitialSize = 128 * 1024 * 1024,  // 128 MB
                                 MaxSize = 1L * 1024 * 1024 * 1024,  // 1 GB    
+                                PersistenceEnabled = false
                             },
                         },
 

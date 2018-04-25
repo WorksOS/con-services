@@ -63,6 +63,19 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
                     MaxSize = 1L * 1024 * 1024 * 1024,  // 1 GB                               
 
                     PersistenceEnabled = true                    
+                },
+
+                // Establish a separate data region for the TAG file buffer queue
+                DataRegionConfigurations = new List<DataRegionConfiguration>
+                {
+                    new DataRegionConfiguration
+                    {
+                        Name = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION,
+                        InitialSize = 128 * 1024 * 1024,  // 128 MB
+                        MaxSize = 128 * 1024 * 1024,  // 128 MB
+
+                        PersistenceEnabled = true
+                    }
                 }
             };
 
