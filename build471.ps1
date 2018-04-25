@@ -29,7 +29,7 @@ if ($LastExitCode -ne 0)
    {   throw "Build unit tests project **** Failed ****"  }
 
 Write-Host "Build Acceptance Tests project..." -ForegroundColor "darkgray"
-Invoke-Expression "dotnet build ./AcceptanceTests/VSS.Productivity3D.Service.AcceptanceTests.sln"
+Invoke-Expression "msbuild ./AcceptanceTests/VSS.Productivity3D.Service.AcceptanceTests.sln"
 if ($LastExitCode -ne 0)
    {   throw "Build Acceptance Tests project **** Failed ****"  }
 
