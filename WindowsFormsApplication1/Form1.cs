@@ -837,6 +837,8 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         string fileName =
             "J:\\PP\\Construction\\Office software\\SiteVision Office\\Test Files\\VisionLink Data\\Southern Motorway\\TAYLORS COMP\\IgniteTestData\\0201J004SV--TAYLORS COMP--110504215856.tag";
 
+        string tccOrgID = new Guid().ToString(); 
+
         using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
         {
           byte[] bytes = new byte[fs.Length];
@@ -847,7 +849,8 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                     ProjectID = ID(),
                     AssetID = machine.ID,
                     TAGFileName = "0201J004SV--TAYLORS COMP--110504215856.tag",
-                    TagFileContent = bytes
+                    TagFileContent = bytes,
+                    TCCOrgID = tccOrgID
                 };
 
         }

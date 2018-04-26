@@ -29,7 +29,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
         /// <returns></returns>
         public SubmitTAGFileResponse Invoke(SubmitTAGFileRequestArgument arg)
         {
-            return SubmitTAGFileExecutor.Execute(arg.ProjectID, arg.AssetID, arg.TAGFileName, arg.TagFileContent);
+            return SubmitTAGFileExecutor.Execute(arg.ProjectID, arg.AssetID, arg.TAGFileName, arg.TagFileContent,arg.TCCOrgID);
         }
     }
 }
