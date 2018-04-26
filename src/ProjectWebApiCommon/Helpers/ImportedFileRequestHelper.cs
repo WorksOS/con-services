@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -15,6 +16,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.TCCFileAccess;
+using VSS.TCCFileAccess.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
@@ -29,7 +31,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Gets the imported file list for a project
     /// </summary>
     /// <returns></returns>
-    public static async Task<ImmutableList<ImportedFile>> GetImportedFiles(string projectUid, ILogger log, IProjectRepository projectRepo)
+    public static async Task<ImmutableList<ImportedFile>> GetImportedFiles(string projectUid, ILogger log,
+      IProjectRepository projectRepo)
     {
       var importedFiles = (await projectRepo.GetImportedFiles(projectUid).ConfigureAwait(false))
         .ToImmutableList();
@@ -42,7 +45,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Gets the imported file list for a project in Response
     /// </summary>
     /// <returns></returns>
-    public static async Task<ImmutableList<ImportedFileDescriptor>> GetImportedFileList(string projectUid, ILogger log, string userId, IProjectRepository projectRepo)
+    public static async Task<ImmutableList<ImportedFileDescriptor>> GetImportedFileList(string projectUid, ILogger log,
+      string userId, IProjectRepository projectRepo)
     {
       var importedFiles = await GetImportedFiles(projectUid, log, projectRepo).ConfigureAwait(false);
 
@@ -50,7 +54,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           AutoMapperUtility.Automapper.Map<ImportedFileDescriptor>(importedFile))
         .ToList();
 
-      var deactivatedFileList = await GetImportedFileProjectSettings(projectUid, userId, projectRepo).ConfigureAwait(false);
+      var deactivatedFileList =
+        await GetImportedFileProjectSettings(projectUid, userId, projectRepo).ConfigureAwait(false);
       if (deactivatedFileList != null)
       {
         foreach (var activatedFileDescr in deactivatedFileList)
@@ -67,14 +72,17 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       return importedFileList.ToImmutableList();
     }
 
-    public static async Task<List<ActivatedFileDescriptor>> GetImportedFileProjectSettings(string projectUid, string userId, IProjectRepository projectRepo)
+    public static async Task<List<ActivatedFileDescriptor>> GetImportedFileProjectSettings(string projectUid,
+      string userId, IProjectRepository projectRepo)
     {
       List<ActivatedFileDescriptor> deactivatedFileList = null;
-      var importFileSettings = await projectRepo.GetProjectSettings(projectUid, userId, ProjectSettingsType.ImportedFiles).ConfigureAwait(false);
+      var importFileSettings = await projectRepo
+        .GetProjectSettings(projectUid, userId, ProjectSettingsType.ImportedFiles).ConfigureAwait(false);
       if (importFileSettings != null)
       {
         deactivatedFileList = JsonConvert.DeserializeObject<List<ActivatedFileDescriptor>>(importFileSettings.Settings);
       }
+
       return deactivatedFileList;
     }
 
@@ -134,8 +142,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     ///     if it already knows about it, it will just update and re-notify raptor and return success.
     /// </summary>
     /// <returns></returns>
-    public static async Task<AddFileResult> NotifyRaptorAddFile(long? projectId, Guid projectUid, ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, FileDescriptor fileDescriptor, long importedFileId, Guid importedFileUid, bool isCreate,
-      ILogger log, IDictionary<string, string> headers, IServiceExceptionHandler serviceExceptionHandler, IRaptorProxy raptorProxy, IProjectRepository projectRepo )
+    public static async Task<AddFileResult> NotifyRaptorAddFile(long? projectId, Guid projectUid,
+      ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, FileDescriptor fileDescriptor, long importedFileId,
+      Guid importedFileUid, bool isCreate,
+      ILogger log, IDictionary<string, string> headers, IServiceExceptionHandler serviceExceptionHandler,
+      IRaptorProxy raptorProxy, IProjectRepository projectRepo)
     {
       AddFileResult notificationResult = null;
       try
@@ -150,20 +161,27 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         log.LogError(
           $"FileImport AddFile in RaptorServices failed with exception. projectId:{projectId} projectUid:{projectUid} FileDescriptor:{fileDescriptor}. isCreate: {isCreate}. Exception Thrown: {e.Message}. ");
         if (isCreate)
-          await DeleteImportedFileInDb(projectUid, importedFileUid, serviceExceptionHandler, projectRepo, true).ConfigureAwait(false);
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "raptorProxy.AddFile", e.Message);
+          await DeleteImportedFileInDb(projectUid, importedFileUid, serviceExceptionHandler, projectRepo, true)
+            .ConfigureAwait(false);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "raptorProxy.AddFile",
+          e.Message);
       }
+
       log.LogDebug(
         $"NotifyRaptorAddFile: projectId: {projectId} projectUid: {projectUid}, FileDescriptor: {JsonConvert.SerializeObject(fileDescriptor)}. RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
 
       if (notificationResult != null && notificationResult.Code != 0)
       {
-        log.LogError($"FileImport AddFile in RaptorServices failed. projectId:{projectId} projectUid:{projectUid} FileDescriptor:{fileDescriptor}. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"} isCreate: {isCreate}. ");
+        log.LogError(
+          $"FileImport AddFile in RaptorServices failed. projectId:{projectId} projectUid:{projectUid} FileDescriptor:{fileDescriptor}. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"} isCreate: {isCreate}. ");
         if (isCreate)
-          await DeleteImportedFileInDb(projectUid, importedFileUid, serviceExceptionHandler, projectRepo, true).ConfigureAwait(false);
+          await DeleteImportedFileInDb(projectUid, importedFileUid, serviceExceptionHandler, projectRepo, true)
+            .ConfigureAwait(false);
 
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 67, notificationResult.Code.ToString(), notificationResult.Message);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 67,
+          notificationResult.Code.ToString(), notificationResult.Message);
       }
+
       return notificationResult;
     }
 
@@ -171,7 +189,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Deletes imported file from the Db.
     /// </summary>
     /// <returns />
-    public static async Task<DeleteImportedFileEvent> DeleteImportedFileInDb(Guid projectUid, Guid importedFileUid, 
+    public static async Task<DeleteImportedFileEvent> DeleteImportedFileInDb(Guid projectUid, Guid importedFileUid,
       IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo, bool deletePermanently = false)
     {
       var nowUtc = DateTime.UtcNow;
@@ -235,6 +253,53 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     }
 
     /// <summary>
+    /// Get the FileCreated and Updated UTCs
+    ///    and checks that the file exists.
+    /// </summary>
+    /// <returns></returns>
+    public static async Task<DirResult> GetFileInfoFromTccRepository(BusinessCenterFile sourceFile,
+      string fileSpaceId,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IFileRepository fileRepo)
+    {
+      var tccPathSource = $"/{sourceFile.Path}";
+      DirResult fileEntry = null;
+
+      try
+      {
+        log.LogInformation(
+          $"CopyFileWithinTccRepository: GetFileList filespaceID: {sourceFile.FileSpaceId} tccPathSource: {tccPathSource} sourceFile.Name: {sourceFile.Name}");
+
+        var dirResult = await fileRepo.GetFileList(sourceFile.FileSpaceId, tccPathSource, sourceFile.Name);
+
+        log.LogInformation(
+          $"CopyFileWithinTccRepository: GetFileList dirResult: {JsonConvert.SerializeObject(dirResult)}");
+
+
+        if (dirResult == null || dirResult.entries.Length == 0)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 94, "fileRepo.GetFileList");
+        }
+        else
+        {
+          fileEntry = dirResult.entries.FirstOrDefault(f =>
+            !f.isFolder && (string.Compare(f.entryName, sourceFile.Name, true, CultureInfo.InvariantCulture) == 0));
+          if (fileEntry == null)
+          {
+            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 94,
+              "fileRepo.GetFileList");
+          }
+        }
+      }
+      catch (Exception e)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 94, "fileRepo.GetFileList",
+          e.Message);
+      }
+
+      return fileEntry;
+    }
+
+    /// <summary>
     /// Copies importedFile between filespaces in TCC
     ///     From FilespaceIDBcCustomer\BC Data to FilespaceIdVisionLink\CustomerUid\ProjectUid
     ///   returns filespaceID; path and filename which identifies it uniquely in TCC
@@ -242,84 +307,42 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// </summary>
     /// <returns></returns>
     public static async Task<FileDescriptor> CopyFileWithinTccRepository(BusinessCenterFile sourceFile,
-      string customerUid, string projectUid, string fileSpaceId,
+      string customerUid, string projectUid, string dstFileSpaceId,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IFileRepository fileRepo)
     {
-      // todo see if there is a TCC command to CopyFile BETWEEN filespaceIDs?
-      Stream memStream = null;
-      var tccPathSource = $"{sourceFile.Path}/{sourceFile.Name}";
-
-      var tccPathTarget = $"/{customerUid}/{projectUid}";
-      var tccFileNameTarget = sourceFile.Name;
+      var srcTccPathAndFile = $"/{sourceFile.Path}/{sourceFile.Name}";
+      var destTccPath = $"/{customerUid}/{projectUid}";
+      var destTccPathAndFile = $"/{customerUid}/{projectUid}/{sourceFile.Name}";
+      var tccCopyFileResult = false;
 
       try
       {
-        /*
-         // todo change mock or MOQ to return true
-         MockFileRepository.FolderExists and FileExists always returns false so can't check first
-        // check for exists first to avoid an misleading exception in our logs.
-        var folderExists = await fileRepo.FolderExists(businessCentreFile.FileSpaceId, tccPath).ConfigureAwait(false);
-        if (!folderExists)
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 78,
-            $"{businessCentreFile.FileSpaceId} {tccPath}");
-        }
-        */
-
+        // The filename already contains the surveyUtc where appropriate
         log.LogInformation(
-          $"CopyFileWithinTccRepository: getFile filespaceID: {sourceFile.FileSpaceId} tccPathSource: {tccPathSource}");
-        memStream = await fileRepo.GetFile(sourceFile.FileSpaceId, tccPathSource).ConfigureAwait(false);
+          $"CopyFileWithinTccRepository: srcFileSpaceId: {sourceFile.FileSpaceId} destFileSpaceId {dstFileSpaceId} srcTccPathAndFile {srcTccPathAndFile} destTccPathAndFile {destTccPathAndFile}");
 
-        if (memStream != null && memStream.CanRead && memStream.Length > 0)
-        {
-          // note that the filename already contains the surveyUtc where appropriate
+        // check for exists first to avoid an misleading exception in our logs.
+        var folderAlreadyExists = await fileRepo.FolderExists(dstFileSpaceId, destTccPathAndFile).ConfigureAwait(false);
+        if (folderAlreadyExists == false)
+          await fileRepo.MakeFolder(dstFileSpaceId, destTccPath).ConfigureAwait(false);
 
-          bool ccPutFileResult = false;
-          try
-          {
-            log.LogInformation(
-              $"CopyFileWithinTccRepository: fileSpaceId {fileSpaceId} tccPathTarget {tccPathTarget} tccFileNameTarget {tccFileNameTarget}");
-            // check for exists first to avoid an misleading exception in our logs.
-            var folderAlreadyExists = await fileRepo.FolderExists(fileSpaceId, tccPathTarget).ConfigureAwait(false);
-            if (folderAlreadyExists == false)
-              await fileRepo.MakeFolder(fileSpaceId, tccPathTarget).ConfigureAwait(false);
-
-            // this does an upsert
-            ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPathTarget, tccFileNameTarget, memStream, memStream.Length)
-              .ConfigureAwait(false);
-          }
-          catch (Exception e)
-          {
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "fileRepo.PutFile",
-              e.Message);
-          }
-          finally
-          {
-            memStream.Dispose();
-          }
-
-
-          if (ccPutFileResult == false)
-          {
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 53);
-          }
-        }
-        else
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
-            80, $" isAbleToRead {memStream != null && memStream.CanRead} bytesReturned: {memStream?.Length ?? 0}");
-        }
+        // this does an upsert
+        tccCopyFileResult = await fileRepo
+          .CopyFile(sourceFile.FileSpaceId, dstFileSpaceId, srcTccPathAndFile, destTccPathAndFile)
+          .ConfigureAwait(false);
       }
       catch (Exception e)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 79, e.Message);
-      }
-      finally
-      {
-        memStream?.Dispose();
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 92, "fileRepo.PutFile",
+          e.Message);
       }
 
-      var fileDescriptorTarget = FileDescriptor.CreateFileDescriptor(fileSpaceId, tccPathTarget, tccFileNameTarget);
+      if (tccCopyFileResult == false)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 92);
+      }
+
+      var fileDescriptorTarget = FileDescriptor.CreateFileDescriptor(dstFileSpaceId, destTccPath, sourceFile.Name);
       log.LogInformation(
         $"CopyFileWithinTccRepository: fileDescriptorTarget {JsonConvert.SerializeObject(fileDescriptorTarget)}");
       return fileDescriptorTarget;

@@ -46,14 +46,24 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       throw new NotImplementedException();
     }
 
-    public Task<DirResult> GetFolders(Organization org, DateTime lastModifiedUTC, string path)
+    public Task<bool> CopyFile(string srcFilespaceId, string destFilespaceId, string srcFullName, string dstFullName)
+    {
+      // todo implement in FileRepo
+      return Task.FromResult(true);
+    }
+
+  public Task<DirResult> GetFolders(Organization org, DateTime lastModifiedUTC, string path)
     {
       throw new NotImplementedException();
     }
 
     public Task<DirResult> GetFileList(string filespaceId, string path, string fileMasks = null)
     {
-      throw new NotImplementedException();
+      var directoryList = new DirResult()
+      { entryName = path,
+        entries = new DirResult[1] {new DirResult(){ entryName = fileMasks, createTime = DateTime.UtcNow, modifyTime = DateTime.UtcNow} }
+      };
+      return Task.FromResult(directoryList);
     }
 
     public Task<DateTime> GetLastChangedTime(string filespaceId, string path)

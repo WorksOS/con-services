@@ -99,6 +99,10 @@
       DynamicAddwithOffset("ValidateTCCAuthorization: This orgShortName is missing a filespaceId or orgId in TCC {0}.", 89);
       DynamicAddwithOffset("ValidateTCCAuthorization: Exception getting customerTccOrg from database: {0.}", 90);
       DynamicAddwithOffset("ValidateTCCAuthorization: Unable to match customer with tccOrg in database.", 91);
+      DynamicAddwithOffset("CopyTccImportedFile: Unable to copy file {0}.", 92);
+      DynamicAddwithOffset("CopyTccImportedFile: Unable to read file {0}.", 93);
+      DynamicAddwithOffset("CopyTccImportedFile: Unable to obtain file properties {0}.", 94);
+      DynamicAddwithOffset("UpsertImportedFileV2: Alignment type is missing detail parameter.", 95);
     }
 
     /// <summary>

@@ -30,7 +30,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       ImportedFileUpsertEvent importedFileUpsertEvent = item as ImportedFileUpsertEvent;
       if (importedFileUpsertEvent == null)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68 /* todo */);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
         return new ContractExecutionResult();
       }
 

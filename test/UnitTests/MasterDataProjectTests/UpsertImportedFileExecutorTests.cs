@@ -69,7 +69,7 @@ namespace VSS.MasterData.ProjectTests
       var fileDescriptor = await ImportedFileRequestHelper.CopyFileWithinTccRepository(importedFileTbc,
         _customerUid, Guid.NewGuid().ToString(), "f9sdg0sf9",
         logger.CreateLogger<UpsertImportedFileExecutorTests>(), serviceExceptionHandler, fileRepo.Object).ConfigureAwait(false);
-      // todo Assert.IsTrue(fileDescriptor.path, "CoordinateSystemFileContent not read from DC.");
+
       stream.Dispose();
     }
 

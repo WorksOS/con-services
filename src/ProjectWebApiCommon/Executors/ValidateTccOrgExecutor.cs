@@ -34,10 +34,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         var organizations = await fileRepo.ListOrganizations();
         var tccOrganization
-          = (from o in organizations
-            where o.shortName == validateTccAuthorizationRequest.OrgShortName
-            select o)
-          .FirstOrDefault();
+          = organizations.FirstOrDefault(o => o.shortName == validateTccAuthorizationRequest.OrgShortName);
         if (tccOrganization == null)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 88);

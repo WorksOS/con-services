@@ -82,7 +82,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpPut]
     public async Task<ContractExecutionResult> UpsertImportedFileV2(
       [FromUri] long projectId,
-      [FromUri] ImportedFileTbc importedFileTbc)
+      [FromBody] ImportedFileTbc importedFileTbc)
     {
       importedFileTbc = FileImportV2DataValidator.ValidateUpsertImportedFileRequest(projectId, importedFileTbc);
       log.LogInformation(
@@ -90,6 +90,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       // this also validates that this customer has access to the projectUid
       var project = await GetProject(projectId);
+
+      var fileEntry = await ImportedFileRequestHelper.GetFileInfoFromTccRepository(importedFileTbc,
+        fileSpaceId, log, serviceExceptionHandler, fileRepo).ConfigureAwait(false);
 
       var fileDescriptor = await ImportedFileRequestHelper.CopyFileWithinTccRepository(importedFileTbc,
         customerUid, project.ProjectUID, fileSpaceId,
@@ -104,7 +107,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         importedFileTbc.ImportedFileTypeId == ImportedFileType.Linework
           ? importedFileTbc.LineworkFile.DxfUnitsTypeId
           : DxfUnitsType.Meters,
-        DateTime.UtcNow, DateTime.UtcNow, // todo what should these be?
+        fileEntry.createTime, fileEntry.modifyTime,
         fileDescriptor
       );
 
@@ -121,7 +124,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       log.LogInformation(
         $"UpsertImportedFileV2. Completed succesfully. Response: {JsonConvert.SerializeObject(importedFile)}");
 
-      // todo is it LegacyFilId or ImportedFileId identifying the file in raptor/tcc?
+      // Automapper maps src.ImportedFileId to LegacyFileId, so this IS the one sent to Raptor and used to ref via TCC
       return ReturnLongV2Result.CreateLongV2Result(HttpStatusCode.OK, importedFile.ImportedFileDescriptor.LegacyFileId);
     }
   }

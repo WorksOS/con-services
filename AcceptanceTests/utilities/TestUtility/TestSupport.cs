@@ -585,6 +585,24 @@ namespace TestUtility
       }
     }
 
+    /// <summary>
+    /// Get project details for one project
+    /// </summary>
+    /// <param name="customerUid"></param>
+    /// <param name="projectUid"></param>
+    public ProjectV4Descriptor GetProjectDetailsViaWebApiV4(Guid customerUid, string projectUid)
+    {
+      var response = CallProjectWebApiV4("api/v4/project/" + projectUid, HttpMethod.Get.ToString(), null, customerUid.ToString());
+      ProjectV4DescriptorsSingleResult projectDescriptorResult = null;
+
+      if (!string.IsNullOrEmpty(response))
+      {
+        projectDescriptorResult = JsonConvert.DeserializeObject<ProjectV4DescriptorsSingleResult>(response);
+      }
+
+      return projectDescriptorResult?.ProjectDescriptor;
+    }
+
 
     /// <summary>
     /// Compare the two lists of projects

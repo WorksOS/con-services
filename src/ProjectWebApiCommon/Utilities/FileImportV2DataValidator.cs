@@ -27,7 +27,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.GetErrorNumberwithOffset(5),
-            ContractExecutionStatesEnum.FirstNameWithOffset(5 /* todo */)));
+            ContractExecutionStatesEnum.FirstNameWithOffset(5)));
       }
 
       if (!Enum.IsDefined(typeof(ImportedFileType), importedFile.ImportedFileTypeId))
@@ -82,7 +82,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.GetErrorNumberwithOffset(33),
-            ContractExecutionStatesEnum.FirstNameWithOffset(33 /* todo */)));
+            ContractExecutionStatesEnum.FirstNameWithOffset(95)));
       }
 
       ProjectDataValidator.ValidateBusinessCentreFile(importedFile as BusinessCenterFile);

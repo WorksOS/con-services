@@ -27,7 +27,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   public abstract class BaseController : Controller
   {
     /// <summary>
-    /// todo this should be resolved with MIP story to set these per service.
+    /// base message number for ProjectService
     /// </summary>
     protected readonly int customErrorMessageOffset = 2000;
 
