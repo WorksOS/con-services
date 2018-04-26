@@ -1,16 +1,20 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Nito.AsyncEx;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
-using VSS.Productivity3D.Filter.Common.Extensions;
+using VSS.MasterData.Models.ResultHandling;
+using VSS.MasterData.Proxies.Interfaces;
 using DbFilter = VSS.MasterData.Repositories.DBModels.Filter;
 
 namespace VSS.Productivity3D.Filter.Common.Utilities
 {
   public class FilterJsonHelper
   {
-    public static void ParseFilterJson(ProjectData project, IEnumerable<DbFilter> filters)
+    public static void ParseFilterJson(ProjectData project, IEnumerable<DbFilter> filters, IRaptorProxy raptorProxy, IDictionary<string, string> customHeaders)
     {
       if (filters == null)
       {
@@ -19,52 +23,62 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
 
       foreach (var filter in filters)
       {
-        GenerateIanaBasedDateTime(project, filter);
+        GenerateIanaBasedDateTime(project, filter, raptorProxy, customHeaders);
       }
     }
 
-    public static void ParseFilterJson(ProjectData project, DbFilter filter)
+    public static void ParseFilterJson(ProjectData project, DbFilter filter, IRaptorProxy raptorProxy, IDictionary<string, string> customHeaders)
     {
       if (filter == null)
       {
         return;
       }
 
-      GenerateIanaBasedDateTime(project, filter);
+      GenerateIanaBasedDateTime(project, filter, raptorProxy, customHeaders);
     }
 
-    public static void ParseFilterJson(ProjectData project, FilterDescriptor filter)
+    public static void ParseFilterJson(ProjectData project, FilterDescriptor filter, IRaptorProxy raptorProxy, IDictionary<string, string> customHeaders)
     {
       if (filter == null)
       {
         return;
       }
 
-      filter.FilterJson = ProcessFilterJson(project, filter.FilterJson);
+      filter.FilterJson = ProcessFilterJson(project, filter.FilterJson, raptorProxy, customHeaders);
     }
 
-    private static void GenerateIanaBasedDateTime(ProjectData project, DbFilter filter)
+    private static void GenerateIanaBasedDateTime(ProjectData project, DbFilter filter, IRaptorProxy raptorProxy, IDictionary<string, string> customHeaders)
     {
-      filter.FilterJson = ProcessFilterJson(project, filter);
+      filter.FilterJson = ProcessFilterJson(project, filter, raptorProxy, customHeaders);
     }
 
-    private static string ProcessFilterJson(ProjectData project, DbFilter filter)
+    private static string ProcessFilterJson(ProjectData project, DbFilter filter, IRaptorProxy raptorProxy, IDictionary<string, string> customHeaders)
     {
-      return ProcessFilterJson(project, filter.FilterJson);
+      return ProcessFilterJson(project, filter.FilterJson, raptorProxy, customHeaders);
     }
 
-    private static string ProcessFilterJson(ProjectData project, string filterJson)
+    private static string ProcessFilterJson(ProjectData project, string filterJson, IRaptorProxy raptorProxy, IDictionary<string, string> customHeaders)
     {
       try
       {
         MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterJson);
+   
+        filterObj.ApplyDateRange(project?.IanaTimeZone);
 
-        if (!string.IsNullOrEmpty(project?.IanaTimeZone) && 
-            filterObj.DateRangeType != null &&
-            filterObj.DateRangeType != DateRangeType.ProjectExtents && 
-            filterObj.DateRangeType != DateRangeType.Custom)
+        if (filterObj.DateRangeType == DateRangeType.ProjectExtents)
         {
-          filterObj.ApplyDateRange(project?.IanaTimeZone);
+          //get extents from 3d pm
+          ProjectStatisticsResult statistics = raptorProxy?.GetProjectStatistics(Guid.Parse(project?.ProjectUid), customHeaders).Result;
+          filterObj.StartUtc = statistics?.startTime;
+          filterObj.EndUtc = statistics?.endTime;
+        }
+
+        //The UI needs to know the start date for specified ranges, this is actually the range data will be returned for
+        if (filterObj.AsAtDate == true)
+        {
+          ProjectStatisticsResult statistics = raptorProxy?.GetProjectStatistics(Guid.Parse(project?.ProjectUid), customHeaders).Result;
+          filterObj.StartUtc = statistics?.startTime;
+          filterObj.DateRangeType = DateRangeType.Custom;
         }
 
         return JsonConvert.SerializeObject(filterObj);

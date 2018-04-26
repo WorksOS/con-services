@@ -99,7 +99,7 @@ namespace RepositoryTests
         FilterUID = Guid.NewGuid(),
         Name = "dateRangeType=Today with polygonLL",//match a peristent filter name on purpose
         FilterType = FilterType.Report,
-        FilterJson = "{\"startUtc\":null,\"endUtc\":null,\"dateRangeType\":0,\"designUID\":null,\"contributingMachines\":null,\"onMachineDesignID\":null,\"vibeStateOn\":null,\"polygonUID\":\"ca9c91c3-513b-4082-b2d7-0568899e56d5\",\"polygonName\":null,\"polygonLL\":[{\"Lat\":36.207118,\"Lon\":-115.01848},{\"Lat\":36.207334,\"Lon\":-115.018394},{\"Lat\":36.207492,\"Lon\":-115.019604},{\"Lat\":36.207101,\"Lon\":-115.019478}],\"forwardDirection\":null,\"layerNumber\":null}",
+        FilterJson = "{\"startUtc\":null,\"endUtc\":null,\"dateRangeType\":0,\"asAtDate\":\"false\",\"designUID\":null,\"contributingMachines\":null,\"onMachineDesignID\":null,\"vibeStateOn\":null,\"polygonUID\":\"ca9c91c3-513b-4082-b2d7-0568899e56d5\",\"polygonName\":null,\"polygonLL\":[{\"Lat\":36.207118,\"Lon\":-115.01848},{\"Lat\":36.207334,\"Lon\":-115.018394},{\"Lat\":36.207492,\"Lon\":-115.019604},{\"Lat\":36.207101,\"Lon\":-115.019478}],\"forwardDirection\":null,\"layerNumber\":null}",
         ActionUTC = firstCreatedUtc,
         ReceivedUTC = firstCreatedUtc
       };
@@ -112,7 +112,7 @@ namespace RepositoryTests
         FilterUID = Guid.NewGuid(),
         Name = "Report 2",
         FilterType = FilterType.Report,
-        FilterJson = "{\"startUtc\":null,\"endUtc\":null,\"dateRangeType\":1,\"designUID\":null,\"contributingMachines\":null,\"onMachineDesignID\":null,\"vibeStateOn\":null,\"polygonUID\":\"ca9c91c3-513b-4082-2d7-0568899e56d5\",\"polygonName\":null,\"polygonLL\":[{\"Lat\":36.207118,\"Lon\":-115.01848},{\"Lat\":36.207334,\"Lon\":-115.018394},{\"Lat\":36.207492,\"Lon\":-115.019604},{\"Lat\":36.207101,\"Lon\":-115.019478}],\"forwardDirection\":null,\"layerNumber\":null}",
+        FilterJson = "{\"startUtc\":null,\"endUtc\":null,\"dateRangeType\":1,\"asAtDate\":\"true\",\"designUID\":null,\"contributingMachines\":null,\"onMachineDesignID\":null,\"vibeStateOn\":null,\"polygonUID\":\"ca9c91c3-513b-4082-2d7-0568899e56d5\",\"polygonName\":null,\"polygonLL\":[{\"Lat\":36.207118,\"Lon\":-115.01848},{\"Lat\":36.207334,\"Lon\":-115.018394},{\"Lat\":36.207492,\"Lon\":-115.019604},{\"Lat\":36.207101,\"Lon\":-115.019478}],\"forwardDirection\":null,\"layerNumber\":null}",
         ActionUTC = firstCreatedUtc,
         ReceivedUTC = firstCreatedUtc
       };
