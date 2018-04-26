@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Requests;
@@ -138,7 +139,7 @@ namespace VSS.VisionLink.Raptor.Client
                 }
                 catch
                 {
-                    Console.WriteLine(string.Format("Invalid project ID {0} or folder path {1}", args[0], args[1]));
+                    Console.WriteLine($"Invalid project ID {args[0]} or folder path {args[1]}");
                     return;
                 }
 
@@ -149,6 +150,9 @@ namespace VSS.VisionLink.Raptor.Client
 
                 // Obtain a TAGFileProcessing client server
                 TAGFileProcessingClientServer TAGServer = new TAGFileProcessingClientServer();
+
+                // Obtain a TAG file buffer queue manager
+                TAGFileBufferQueueManager queueManager = new TAGFileBufferQueueManager();
 
                 ProcessTAGFilesInFolder(projectID, folderPath);
 

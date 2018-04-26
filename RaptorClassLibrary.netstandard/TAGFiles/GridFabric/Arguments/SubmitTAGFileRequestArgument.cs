@@ -16,18 +16,22 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
         /// Overridden ID of the asset to process the TAG files into
         /// </summary>
         public long AssetID { get; set; } = -1;
+
         /// <summary>
         /// Name of physical tagfile
         /// </summary>
         public string TAGFileName { get; set; } = string.Empty;
+
         /// <summary>
         /// The content of the TAG file being submitted
         /// </summary>
         public byte[] TagFileContent { get; set; }
+
         /// <summary>
         /// Helps TFA service determine correct project
         /// </summary>
         public string TCCOrgID { get; set; } = string.Empty;
+
         /// <summary>
         ///  Default no-arg constructor
         /// </summary>

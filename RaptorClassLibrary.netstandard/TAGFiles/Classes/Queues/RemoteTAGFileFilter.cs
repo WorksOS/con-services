@@ -25,10 +25,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
         private void EnsureTagFileInstance()
         {
-            if (tagFileHandler == null)
-            {
-                tagFileHandler = TAGFileBufferQueueItemHandler.Instance();
-            }
+            tagFileHandler = tagFileHandler ?? (tagFileHandler = TAGFileBufferQueueItemHandler.Instance());
         }
 
         public bool Invoke(ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem> entry)
