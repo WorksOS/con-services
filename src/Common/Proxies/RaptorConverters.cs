@@ -1,4 +1,7 @@
-﻿using BoundingExtents;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using BoundingExtents;
 using Fences;
 using Microsoft.Extensions.Logging;
 using SubGridTreesDecls;
@@ -8,15 +11,12 @@ using SVOICFilterSettings;
 using SVOICLiftBuildSettings;
 using SVOICOptionsDecls;
 using SVOICVolumeCalculationsDecls;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using VLPDDecls;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
+using __Global = ProductionServer_TLB.__Global;
 using BoundingBox3DGrid = VSS.Productivity3D.Common.Models.BoundingBox3DGrid;
 using Point = VSS.MasterData.Models.Models.Point;
-using __Global = ProductionServer_TLB.__Global;
 using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
 
 namespace VSS.Productivity3D.Common.Proxies
@@ -55,6 +55,8 @@ namespace VSS.Productivity3D.Common.Proxies
       if (baseFilter.HasTimeComponent() && baseFilter.ReturnEarliestFilteredCellPass &&
           topFilter.HasTimeComponent() && !topFilter.ReturnEarliestFilteredCellPass)
       {
+        topFilter.SetElevationTypeCellpassState(false);
+
         baseFilter = AdjustBaseFilter(baseFilter);
       }
     }
@@ -71,6 +73,7 @@ namespace VSS.Productivity3D.Common.Proxies
       copy.StartTime = PDS_MIN_DATE;
       copy.ReturnEarliestFilteredCellPass = false;
       copy.ElevationType = TICElevationType.etLast;
+      copy.SetElevationTypeCellpassState(false);
 
       return copy;
     }
