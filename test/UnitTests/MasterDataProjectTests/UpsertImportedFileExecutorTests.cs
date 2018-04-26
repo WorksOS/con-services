@@ -61,16 +61,11 @@ namespace VSS.MasterData.ProjectTests
 
       var fileRepo = new Mock<IFileRepository>();
       fileRepo.Setup(fr => fr.FolderExists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
-      byte[] buffer = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3 };
-      var stream = new MemoryStream(buffer);
-      fileRepo.Setup(fr => fr.GetFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(stream);
-      fileRepo.Setup(fr => fr.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<long>())).ReturnsAsync(true);
+      fileRepo.Setup(fr => fr.CopyFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
 
-      var fileDescriptor = await ImportedFileRequestHelper.CopyFileWithinTccRepository(importedFileTbc,
+      await ImportedFileRequestHelper.CopyFileWithinTccRepository(importedFileTbc,
         _customerUid, Guid.NewGuid().ToString(), "f9sdg0sf9",
         logger.CreateLogger<UpsertImportedFileExecutorTests>(), serviceExceptionHandler, fileRepo.Object).ConfigureAwait(false);
-
-      stream.Dispose();
     }
 
 
