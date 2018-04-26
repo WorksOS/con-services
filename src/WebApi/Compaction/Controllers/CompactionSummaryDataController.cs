@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
@@ -27,7 +27,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting Raptor production data for summary data requests
   /// </summary>
-  [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
+  /// <remarks>
+  /// There is no response caching for this provided because at the moment the caching middleware doesn't handle requests with more than one filter.
+  /// </remarks>
   public class CompactionSummaryDataController : CompactionDataBaseController
   {
     /// <inheritdoc />
@@ -116,7 +118,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var returnResult = CompactionMdpSummaryResult.CreateMdpSummaryResult(result, mdpSettings);
         Log.LogInformation("GetMdpSummary result: " + JsonConvert.SerializeObject(returnResult));
 
-       await  SetCacheControlPolicy(projectUid);
+        await SetCacheControlPolicy(projectUid);
 
         return returnResult;
       }
