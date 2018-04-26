@@ -45,7 +45,7 @@ namespace VSS.Productivity3D.Common.Proxies
       return latlngs;
     }
 
-    public static void AdjustFilterToFilter(TICFilterSettings baseFilter, TICFilterSettings topFilter)
+    public static void AdjustFilterToFilter(ref TICFilterSettings baseFilter, TICFilterSettings topFilter)
     {
       //Special case for Raptor filter to filter comparisons.
       //If base filter is earliest and top filter is latest with a DateTime filter then replace
@@ -55,16 +55,24 @@ namespace VSS.Productivity3D.Common.Proxies
       if (baseFilter.HasTimeComponent() && baseFilter.ReturnEarliestFilteredCellPass &&
           topFilter.HasTimeComponent() && !topFilter.ReturnEarliestFilteredCellPass)
       {
-        AdjustBaseFilter(baseFilter);
+        baseFilter = AdjustBaseFilter(baseFilter);
       }
     }
 
-    public static void AdjustBaseFilter(TICFilterSettings baseFilter)
+    public static TICFilterSettings AdjustBaseFilter(TICFilterSettings baseFilter)
     {
-      baseFilter.OverrideTimeBoundary = true;
-      baseFilter.EndTime = baseFilter.StartTime;
-      baseFilter.StartTime = PDS_MIN_DATE;
-      baseFilter.ReturnEarliestFilteredCellPass = false;
+      {
+        //Adjust a copy for case of cached filter
+        TICFilterSettings copy = new TICFilterSettings();
+        copy.Assign(baseFilter);
+        copy.OverrideTimeBoundary = true;
+        copy.EndTime = baseFilter.StartTime;
+        copy.StartTime = PDS_MIN_DATE;
+        copy.ReturnEarliestFilteredCellPass = false;
+        copy.ElevationType = TICElevationType.etLast;
+        return copy;
+      }
+      return baseFilter;
     }
 
     public static TColourPalettes convertColorPalettes(List<ColorPalette> palettes, DisplayMode mode)

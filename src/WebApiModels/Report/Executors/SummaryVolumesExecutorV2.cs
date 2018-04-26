@@ -64,8 +64,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       // #68799 - Temporarily revert v2 executor behaviour to match that of v1 by adjusting filter dates on Filter to Filter calculations.
       if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
       {
-        RaptorConverters.AdjustFilterToFilter(baseFilter, topFilter);
+        RaptorConverters.AdjustFilterToFilter(ref baseFilter, topFilter);
       }
+      RaptorConverters.reconcileTopFilterAndVolumeComputationMode(ref baseFilter, ref topFilter, request.VolumeCalcType);
       // End #68799 fix.
 
       bool success;
@@ -83,7 +84,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           RaptorConverters.ConvertFilter(request.AdditionalSpatialFilterId,
             request.AdditionalSpatialFilter, request.projectId), (double)request.CutTolerance,
           (double)request.FillTolerance,
-          RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmAutomatic),
+          RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone),
           out result);
       }
       else
@@ -98,7 +99,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           topDesignDescriptor,
           RaptorConverters.ConvertFilter(request.AdditionalSpatialFilterId,
             request.AdditionalSpatialFilter, request.projectId),
-          RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmAutomatic),
+          RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone),
           out result);
       }
 
