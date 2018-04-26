@@ -108,7 +108,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     protected async Task<long> GetLegacyProjectId(Guid projectUid)
     {
       return await ((RaptorPrincipal)this.User).GetLegacyProjectId(projectUid);
-    } 
+    }
 
     /// <summary>
     /// Gets the User uid/applicationID from the context.
@@ -322,7 +322,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     protected async Task<FilterResult> GetCompactionFilter(Guid projectUid, Guid? filterUid)
     {
       // Filter models are immutable except for their Name.
-      // This service doesn't consider the Name in any of it's operations so we don't mind if our 
+      // This service doesn't consider the Name in any of it's operations so we don't mind if our
       // cached object is out of date in this regard.
       if (filterUid.HasValue && this.FilterCache.TryGetValue(filterUid, out FilterResult cachedFilter))
       {

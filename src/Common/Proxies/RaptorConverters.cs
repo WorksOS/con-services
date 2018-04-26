@@ -45,7 +45,7 @@ namespace VSS.Productivity3D.Common.Proxies
       return latlngs;
     }
 
-    public static void AdjustFilterToFilter(TICFilterSettings baseFilter, TICFilterSettings topFilter)
+    public static void AdjustFilterToFilter(ref TICFilterSettings baseFilter, TICFilterSettings topFilter)
     {
       //Special case for Raptor filter to filter comparisons.
       //If base filter is earliest and top filter is latest with a DateTime filter then replace
@@ -55,16 +55,24 @@ namespace VSS.Productivity3D.Common.Proxies
       if (baseFilter.HasTimeComponent() && baseFilter.ReturnEarliestFilteredCellPass &&
           topFilter.HasTimeComponent() && !topFilter.ReturnEarliestFilteredCellPass)
       {
-        AdjustBaseFilter(baseFilter);
+        baseFilter = AdjustBaseFilter(baseFilter);
       }
     }
 
-    public static void AdjustBaseFilter(TICFilterSettings baseFilter)
+    /// <summary>
+    /// Returns adjusted filter settings copy for case of cached filter.
+    /// </summary>
+    public static TICFilterSettings AdjustBaseFilter(TICFilterSettings baseFilter)
     {
-      baseFilter.OverrideTimeBoundary = true;
-      baseFilter.EndTime = baseFilter.StartTime;
-      baseFilter.StartTime = PDS_MIN_DATE;
-      baseFilter.ReturnEarliestFilteredCellPass = false;
+      var copy = new TICFilterSettings();
+      copy.Assign(baseFilter);
+      copy.OverrideTimeBoundary = true;
+      copy.EndTime = baseFilter.StartTime;
+      copy.StartTime = PDS_MIN_DATE;
+      copy.ReturnEarliestFilteredCellPass = false;
+      copy.ElevationType = TICElevationType.etLast;
+
+      return copy;
     }
 
     public static TColourPalettes convertColorPalettes(List<ColorPalette> palettes, DisplayMode mode)
@@ -347,7 +355,7 @@ namespace VSS.Productivity3D.Common.Proxies
         case TICDisplayMode.icdmCCVPercentChange: return DisplayMode.CCVPercentChange;
         case TICDisplayMode.icdmTargetThicknessSummary: return DisplayMode.TargetThicknessSummary;
         case TICDisplayMode.icdmTargetSpeedSummary: return DisplayMode.TargetSpeedSummary;
-        case TICDisplayMode.icdmCCVChange: return DisplayMode.CMVChange ;
+        case TICDisplayMode.icdmCCVChange: return DisplayMode.CMVChange;
         case TICDisplayMode.icdmCCA: return DisplayMode.CCA;
         case TICDisplayMode.icdmCCASummary: return DisplayMode.CCASummary;
         default: throw new Exception($"Unknown TICDisplayMode {Convert.ToInt16(mode)}");
@@ -655,7 +663,7 @@ namespace VSS.Productivity3D.Common.Proxies
             pdf.DesignFile.file.path,
             pdf.DesignFile.file.fileName,
             pdf.DesignFile.offset);
-          
+
           filter.SetDesignFilterMaskCellSelectionState(true);
         }
       }
@@ -673,7 +681,7 @@ namespace VSS.Productivity3D.Common.Proxies
 
       filter.ReturnEarliestFilteredCellPass = (pdf != null) && pdf.ReturnEarliest.HasValue && pdf.ReturnEarliest.Value;
 
-    //  log?.LogDebug($"Filter to be sent to Raptor: {JsonConvert.SerializeObject(filter)}");
+      //  log?.LogDebug($"Filter to be sent to Raptor: {JsonConvert.SerializeObject(filter)}");
 
       return filter;
     }
