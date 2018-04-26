@@ -60,7 +60,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
       if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
       {
-        RaptorConverters.AdjustFilterToFilter(baseFilter, topFilter);
+        RaptorConverters.AdjustFilterToFilter(ref baseFilter, topFilter);
       }
 
       RaptorConverters.reconcileTopFilterAndVolumeComputationMode(ref baseFilter, ref topFilter, request.VolumeCalcType);
@@ -80,7 +80,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           RaptorConverters.ConvertFilter(request.AdditionalSpatialFilterId,
             request.AdditionalSpatialFilter, request.projectId), (double)request.CutTolerance,
           (double)request.FillTolerance,
-          RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmAutomatic),
+          RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone),
           out result);
       }
       else
@@ -95,7 +95,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           RaptorConverters.DesignDescriptor(request.TopDesignDescriptor),
           RaptorConverters.ConvertFilter(request.AdditionalSpatialFilterId,
             request.AdditionalSpatialFilter, request.projectId),
-          RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmAutomatic),
+          RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone),
           out result);
       }
 

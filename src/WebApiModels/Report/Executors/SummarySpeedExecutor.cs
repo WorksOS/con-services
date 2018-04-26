@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           TASNodeCancellationDescriptorType.cdtVolumeSummary),
         RaptorConverters.ConvertFilter(request.FilterId, request.Filter, request.projectId, null, null,
           new List<long>()),
-        RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmAutomatic),
+        RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone),
         out var result);
 
       if (success)

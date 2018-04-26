@@ -46,7 +46,7 @@ namespace VSS.Productivity3D.Common.Executors
           RaptorConverters.ConvertFilter(request.filterId2, request.filter2, request.projectId);
         TComputeICVolumesType volType = RaptorConverters.ConvertVolumesType(request.computeVolType);
         if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
-          RaptorConverters.AdjustFilterToFilter(filter1, filter2);
+          RaptorConverters.AdjustFilterToFilter(ref filter1, filter2);
 
         RaptorConverters.reconcileTopFilterAndVolumeComputationMode(ref filter1, ref filter2, request.mode, request.computeVolType);
 
