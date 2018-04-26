@@ -178,35 +178,23 @@ namespace VSS.MasterData.Proxies
       return response;
     }
 
+
     /// <summary>
-    /// Gets the veta export data.
+    /// Get the statistics for a project.
     /// </summary>
-    /// <param name="projectUid">The project uid.</param>
-    /// <param name="fileName">Name of the file.</param>
-    /// <param name="machineNames">The machine names.</param>
-    /// <param name="filterUid">The filter uid.</param>
+    /// <param name="request">Description of the Project Settings request.</param>
+    /// <param name="projectUid">Project UID</param>
     /// <param name="customHeaders">The custom headers.</param>
-    /// <returns></returns>
-    public async Task<ExportResult> GetVetaExportData(Guid projectUid,
-      string fileName,
-      string machineNames,
-      Guid? filterUid,
-      IDictionary<string, string> customHeaders)
+    public async Task<ProjectStatisticsResult> GetProjectStatistics(Guid projectUid, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.GetVetaExportData: filterUid: {filterUid}, projectUid: {projectUid}, fileName: {fileName}, machineNames: {machineNames}");
-      var result = await GetMasterDataItem<ExportResult>("VETA_EXPORT_URL",
-        customHeaders,
-        $"?projectUid={projectUid}&fileName={fileName}&machineNames={machineNames}&filterUid={filterUid}");
-      if (result.ResultCode==0)
-      {
-        log.LogDebug("RaptorProxy.GetVetaExportData: Successful Export" );
-      }
-      else
-      {
-        log.LogDebug("Failed to execute Veta Export");
-      }
-      return result;
+      log.LogDebug($"RaptorProxy.GetProjectStatistics: {projectUid}");
+      ProjectStatisticsResult response = await SendRequest<ProjectStatisticsResult>("RAPTOR_PROJECT_SETTINGS_API_URL",
+        string.Empty, customHeaders, "/projectstatistics", "GET", $"projectUid={projectUid}");
+
+      return response;
     }
+
+
 
     /// <summary>
     /// Validates that filterUid has changed i.e. updated/deleted but not inserted

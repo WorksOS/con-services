@@ -23,14 +23,14 @@ namespace VSS.MasterData.Models.Models
     /// Optional. If not present then there is no start time bound.
     /// </summary>
     [JsonProperty(PropertyName = "startUtc", Required = Required.Default)]
-    public DateTime? StartUtc { get; private set; }
+    public DateTime? StartUtc { get; set; }
 
     /// <summary>
     /// The 'end' time for a time based filter. Data recorded after this time is not considered.
     /// Optional. If not present there is no end time bound.
     /// </summary>
     [JsonProperty(PropertyName = "endUtc", Required = Required.Default)]
-    public DateTime? EndUtc { get; private set; }
+    public DateTime? EndUtc { get; set; }
 
     /// <summary>
     /// Gets the date range type for this filter, e.g. day, week, project extents.

@@ -43,6 +43,8 @@ namespace MockProjectWebApi.Controllers
 
       if (projectUid == ConstantsUtil.CUSTOM_SETTINGS_DIMENSIONS_PROJECT_UID)
         settings = JsonConvert.DeserializeObject<JObject>(projectSettingsTargets);
+      else if (projectUid == ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_2)
+        settings = JsonConvert.DeserializeObject<JObject>(projectSettingsTargetsEx);
 
       return new ProjectSettingsDataResult { ProjectUid = projectUid, Settings = settings };
     }
@@ -106,6 +108,36 @@ namespace MockProjectWebApi.Controllers
             useMachineTargetTemperature: false
           }";
 
+    private readonly string projectSettingsTargetsEx = @"{
+            customBulkingPercent: 6,
+            customCutFillTolerances: [0.22, 0.11, 0.055, 0, -0.055, -0.11, -0.22],
+            customPassCountTargets: [1,2,3,4,5,10,20,30],
+            customShrinkagePercent: 3,
+            customTargetCmv: 10,
+            customTargetCmvPercentMaximum: 100,
+            customTargetCmvPercentMinimum: 75,
+            customTargetMdp: 145,
+            customTargetMdpPercentMaximum: 100,
+            customTargetMdpPercentMinimum: 90,
+            customTargetPassCountMaximum: 3,
+            customTargetPassCountMinimum: 2,
+            customTargetSpeedMaximum: 11,
+            customTargetSpeedMinimum: 7,
+            customTargetTemperatureMaximum: 130,
+            customTargetTemperatureMinimum: 75,
+            customCMVTargets: [0, 5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 145],
+            useDefaultCutFillTolerances: false,
+            useDefaultPassCountTargets: false,
+            useDefaultTargetRangeCmvPercent: false,
+            useDefaultTargetRangeMdpPercent: false,
+            useDefaultTargetRangeSpeed: false,
+            useDefaultVolumeShrinkageBulking: false,
+            useMachineTargetCmv: false,
+            useMachineTargetMdp: false,
+            useMachineTargetPassCount: false,
+            useMachineTargetTemperature: false,
+            useDefaultCMVTargets: false            
+          }";
     private readonly string projectSettingsColors = @"{
             useDefaultElevationColors: false,
             elevationColors: [0xC80000, 0xFF0000, 0xFF3C00, 0xFF5A00, 0xFF8200, 0xFFAA00, 0xFFC800, 

@@ -136,6 +136,19 @@ namespace VSS.ConfigurationStore
       return theBoolToReturn;
     }
 
+    public TimeSpan? GetValueTimeSpan(string key)
+    {
+      TimeSpan? theTimeSpanToReturn = null;
+      if (TimeSpan.TryParse(_configuration[key], out TimeSpan theTimeSpan))
+      {
+        theTimeSpanToReturn = theTimeSpan;
+      }
+
+      _log.LogTrace($"Served configuration value {key}:{theTimeSpanToReturn}");
+
+      return theTimeSpanToReturn;
+    }
+
     public IConfigurationSection GetSection(string key)
     {
       return _configuration.GetSection(key);

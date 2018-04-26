@@ -9,5 +9,7 @@ namespace VSS.MasterData.Proxies.Interfaces
     Task<FileStreamResult> Download(string s3Key);
 
     void Upload(Stream stream, string s3Key);
+
+    string GeneratePreSignedUrl(string s3Key);
   }
 }

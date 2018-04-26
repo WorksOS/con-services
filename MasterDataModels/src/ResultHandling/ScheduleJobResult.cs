@@ -1,7 +1,7 @@
 ﻿namespace VSS.MasterData.Models.ResultHandling
 {
   /// <summary>
-  /// Result of a veta export job schedule request
+  /// Result of an export job schedule request
   /// </summary>
   public class ScheduleJobResult
   {
