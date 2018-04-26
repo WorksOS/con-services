@@ -1395,26 +1395,8 @@ Then the Compaction Profile should be
       "type": "firstPass",
       "data": [
         {
-          "cellType": 2,
-          "x": 0.0,
-          "y": "NaN",
-          "value": "NaN",
-          "valueType": null,
-          "y2": null,
-          "value2": null
-        },
-        {
-          "cellType": 0,
-          "x": 2.1966538188278949E-09,
-          "y": 618.241455,
-          "value": 618.207,
-          "valueType": null,
-          "y2": null,
-          "value2": null
-        },
-        {
           "cellType": 1,
-          "x": 0.18309560477664602,
+          "x": 0.0,
           "y": 618.207,
           "value": 618.207,
           "valueType": null,
@@ -1424,7 +1406,7 @@ Then the Compaction Profile should be
         {
           "cellType": 0,
           "x": 0.36619120735663818,
-          "y": 618.1725,
+          "y": 618.161,
           "value": 618.138,
           "valueType": null,
           "y2": null,
@@ -1469,7 +1451,7 @@ Then the Compaction Profile should be
         {
           "cellType": 0,
           "x": 1.4647648281594636,
-          "y": 618.3275,
+          "y": 618.2993,
           "value": 618.412,
           "valueType": null,
           "y2": null,
@@ -1477,27 +1459,9 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.6478604316232093,
+          "x": 1.8309560350869552,
           "y": 618.412,
           "value": 618.412,
-          "valueType": null,
-          "y2": null,
-          "value2": null
-        },
-        {
-          "cellType": 2,
-          "x": 1.8309560350869549,
-          "y": 618.49646,
-          "value": "NaN",
-          "valueType": null,
-          "y2": null,
-          "value2": null
-        },
-        {
-          "cellType": 2,
-          "x": 1.8309560378419556,
-          "y": "NaN",
-          "value": "NaN",
           "valueType": null,
           "y2": null,
           "value2": null
@@ -1508,26 +1472,8 @@ Then the Compaction Profile should be
       "type": "highestPass",
       "data": [
         {
-          "cellType": 2,
-          "x": 0.0,
-          "y": "NaN",
-          "value": "NaN",
-          "valueType": null,
-          "y2": null,
-          "value2": null
-        },
-        {
-          "cellType": 0,
-          "x": 2.1966538188278949E-09,
-          "y": 618.150452,
-          "value": 618.207,
-          "valueType": null,
-          "y2": null,
-          "value2": null
-        },
-        {
           "cellType": 1,
-          "x": 0.18309560477664602,
+          "x": 0.0,
           "y": 618.207,
           "value": 618.207,
           "valueType": null,
@@ -1537,7 +1483,7 @@ Then the Compaction Profile should be
         {
           "cellType": 0,
           "x": 0.36619120735663818,
-          "y": 618.2635,
+          "y": 618.282349,
           "value": 618.32,
           "valueType": null,
           "y2": null,
@@ -1582,7 +1528,7 @@ Then the Compaction Profile should be
         {
           "cellType": 0,
           "x": 1.4647648281594636,
-          "y": 618.3385,
+          "y": 618.306641,
           "value": 618.434,
           "valueType": null,
           "y2": null,
@@ -1590,27 +1536,9 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.6478604316232093,
+          "x": 1.8309560350869552,
           "y": 618.434,
           "value": 618.434,
-          "valueType": null,
-          "y2": null,
-          "value2": null
-        },
-        {
-          "cellType": 2,
-          "x": 1.8309560350869549,
-          "y": 618.529541,
-          "value": "NaN",
-          "valueType": null,
-          "y2": null,
-          "value2": null
-        },
-        {
-          "cellType": 2,
-          "x": 1.8309560378419556,
-          "y": "NaN",
-          "value": "NaN",
           "valueType": null,
           "y2": null,
           "value2": null
@@ -1621,26 +1549,8 @@ Then the Compaction Profile should be
       "type": "lastPass",
       "data": [
         {
-          "cellType": 2,
-          "x": 0.0,
-          "y": "NaN",
-          "value": "NaN",
-          "valueType": null,
-          "y2": null,
-          "value2": null
-        },
-        {
-          "cellType": 0,
-          "x": 2.1966538188278949E-09,
-          "y": 618.201965,
-          "value": 618.207,
-          "valueType": null,
-          "y2": null,
-          "value2": null
-        },
-        {
           "cellType": 1,
-          "x": 0.18309560477664602,
+          "x": 0.0,
           "y": 618.207,
           "value": 618.207,
           "valueType": null,
@@ -1650,7 +1560,7 @@ Then the Compaction Profile should be
         {
           "cellType": 0,
           "x": 0.36619120735663818,
-          "y": 618.212,
+          "y": 618.2136,
           "value": 618.217,
           "valueType": null,
           "y2": null,
@@ -1695,7 +1605,7 @@ Then the Compaction Profile should be
         {
           "cellType": 0,
           "x": 1.4647648281594636,
-          "y": 618.2535,
+          "y": 618.25,
           "value": 618.264,
           "valueType": null,
           "y2": null,
@@ -1703,27 +1613,9 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.6478604316232093,
+          "x": 1.8309560350869552,
           "y": 618.264,
           "value": 618.264,
-          "valueType": null,
-          "y2": null,
-          "value2": null
-        },
-        {
-          "cellType": 2,
-          "x": 1.8309560350869549,
-          "y": 618.2745,
-          "value": "NaN",
-          "valueType": null,
-          "y2": null,
-          "value2": null
-        },
-        {
-          "cellType": 2,
-          "x": 1.8309560378419556,
-          "y": "NaN",
-          "value": "NaN",
           "valueType": null,
           "y2": null,
           "value2": null
@@ -1734,26 +1626,8 @@ Then the Compaction Profile should be
       "type": "lowestPass",
       "data": [
         {
-          "cellType": 2,
-          "x": 0.0,
-          "y": "NaN",
-          "value": "NaN",
-          "valueType": null,
-          "y2": null,
-          "value2": null
-        },
-        {
-          "cellType": 0,
-          "x": 2.1966538188278949E-09,
-          "y": 618.2639,
-          "value": 618.207,
-          "valueType": null,
-          "y2": null,
-          "value2": null
-        },
-        {
           "cellType": 1,
-          "x": 0.18309560477664602,
+          "x": 0.0,
           "y": 618.207,
           "value": 618.207,
           "valueType": null,
@@ -1763,7 +1637,7 @@ Then the Compaction Profile should be
         {
           "cellType": 0,
           "x": 0.36619120735663818,
-          "y": 618.15,
+          "y": 618.131,
           "value": 618.093,
           "valueType": null,
           "y2": null,
@@ -1808,7 +1682,7 @@ Then the Compaction Profile should be
         {
           "cellType": 0,
           "x": 1.4647648281594636,
-          "y": 618.246948,
+          "y": 618.245667,
           "value": 618.251,
           "valueType": null,
           "y2": null,
@@ -1816,27 +1690,9 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.6478604316232093,
+          "x": 1.8309560350869552,
           "y": 618.251,
           "value": 618.251,
-          "valueType": null,
-          "y2": null,
-          "value2": null
-        },
-        {
-          "cellType": 2,
-          "x": 1.8309560350869549,
-          "y": 618.255,
-          "value": "NaN",
-          "valueType": null,
-          "y2": null,
-          "value2": null
-        },
-        {
-          "cellType": 2,
-          "x": 1.8309560378419556,
-          "y": "NaN",
-          "value": "NaN",
           "valueType": null,
           "y2": null,
           "value2": null
@@ -1847,26 +1703,8 @@ Then the Compaction Profile should be
       "type": "lastComposite",
       "data": [
         {
-          "cellType": 2,
-          "x": 0.0,
-          "y": "NaN",
-          "value": "NaN",
-          "valueType": null,
-          "y2": null,
-          "value2": null
-        },
-        {
-          "cellType": 0,
-          "x": 2.1966538188278949E-09,
-          "y": 618.201965,
-          "value": 618.207,
-          "valueType": null,
-          "y2": null,
-          "value2": null
-        },
-        {
           "cellType": 1,
-          "x": 0.18309560477664602,
+          "x": 0.0,
           "y": 618.207,
           "value": 618.207,
           "valueType": null,
@@ -1876,7 +1714,7 @@ Then the Compaction Profile should be
         {
           "cellType": 0,
           "x": 0.36619120735663818,
-          "y": 618.212,
+          "y": 618.2136,
           "value": 618.217,
           "valueType": null,
           "y2": null,
@@ -1921,7 +1759,7 @@ Then the Compaction Profile should be
         {
           "cellType": 0,
           "x": 1.4647648281594636,
-          "y": 618.2535,
+          "y": 618.25,
           "value": 618.264,
           "valueType": null,
           "y2": null,
@@ -1929,27 +1767,9 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.6478604316232093,
+          "x": 1.8309560350869552,
           "y": 618.264,
           "value": 618.264,
-          "valueType": null,
-          "y2": null,
-          "value2": null
-        },
-        {
-          "cellType": 2,
-          "x": 1.8309560350869549,
-          "y": 618.2745,
-          "value": "NaN",
-          "valueType": null,
-          "y2": null,
-          "value2": null
-        },
-        {
-          "cellType": 2,
-          "x": 1.8309560378419556,
-          "y": "NaN",
-          "value": "NaN",
           "valueType": null,
           "y2": null,
           "value2": null
@@ -1980,26 +1800,8 @@ Then the Compaction Profile should be
       "type": "speedSummary",
       "data": [
         {
-          "cellType": 2,
-          "x": 0.0,
-          "y": "NaN",
-          "value": 2359.26,
-          "valueType": -1,
-          "y2": null,
-          "value2": 0.0
-        },
-        {
-          "cellType": 0,
-          "x": 2.1966538188278949E-09,
-          "y": 618.201965,
-          "value": 1.836,
-          "valueType": 2,
-          "y2": null,
-          "value2": 1.836
-        },
-        {
           "cellType": 1,
-          "x": 0.18309560477664602,
+          "x": 0.0,
           "y": 618.207,
           "value": 1.836,
           "valueType": 2,
@@ -2009,7 +1811,7 @@ Then the Compaction Profile should be
         {
           "cellType": 0,
           "x": 0.36619120735663818,
-          "y": 618.212,
+          "y": 618.2136,
           "value": 0.0,
           "valueType": 2,
           "y2": null,
@@ -2054,7 +1856,7 @@ Then the Compaction Profile should be
         {
           "cellType": 0,
           "x": 1.4647648281594636,
-          "y": 618.2535,
+          "y": 618.25,
           "value": 0.0,
           "valueType": 2,
           "y2": null,
@@ -2062,30 +1864,12 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.6478604316232093,
+          "x": 1.8309560350869552,
           "y": 618.264,
           "value": 0.0,
           "valueType": 2,
           "y2": null,
           "value2": 3.672
-        },
-        {
-          "cellType": 2,
-          "x": 1.8309560350869549,
-          "y": 618.2745,
-          "value": 2359.26,
-          "valueType": -1,
-          "y2": null,
-          "value2": 0.0
-        },
-        {
-          "cellType": 2,
-          "x": 1.8309560378419556,
-          "y": "NaN",
-          "value": 2359.26,
-          "valueType": -1,
-          "y2": null,
-          "value2": 0.0
         }
       ]
     },
@@ -2093,26 +1877,8 @@ Then the Compaction Profile should be
       "type": "passCountSummary",
       "data": [
         {
-          "cellType": 2,
-          "x": 0.0,
-          "y": "NaN",
-          "value": -1.0,
-          "valueType": -1,
-          "y2": null,
-          "value2": null
-        },
-        {
-          "cellType": 0,
-          "x": 2.1966538188278949E-09,
-          "y": 618.201965,
-          "value": 1.0,
-          "valueType": 0,
-          "y2": null,
-          "value2": null
-        },
-        {
           "cellType": 1,
-          "x": 0.18309560477664602,
+          "x": 0.0,
           "y": 618.207,
           "value": 1.0,
           "valueType": 0,
@@ -2122,7 +1888,7 @@ Then the Compaction Profile should be
         {
           "cellType": 0,
           "x": 0.36619120735663818,
-          "y": 618.212,
+          "y": 618.2136,
           "value": 68.0,
           "valueType": 0,
           "y2": null,
@@ -2167,7 +1933,7 @@ Then the Compaction Profile should be
         {
           "cellType": 0,
           "x": 1.4647648281594636,
-          "y": 618.2535,
+          "y": 618.25,
           "value": 20.0,
           "valueType": 0,
           "y2": null,
@@ -2175,28 +1941,10 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.6478604316232093,
+          "x": 1.8309560350869552,
           "y": 618.264,
           "value": 20.0,
           "valueType": 0,
-          "y2": null,
-          "value2": null
-        },
-        {
-          "cellType": 2,
-          "x": 1.8309560350869549,
-          "y": 618.2745,
-          "value": -1.0,
-          "valueType": -1,
-          "y2": null,
-          "value2": null
-        },
-        {
-          "cellType": 2,
-          "x": 1.8309560378419556,
-          "y": "NaN",
-          "value": -1.0,
-          "valueType": -1,
           "y2": null,
           "value2": null
         }
@@ -2206,26 +1954,8 @@ Then the Compaction Profile should be
       "type": "passCountDetail",
       "data": [
         {
-          "cellType": 2,
-          "x": 0.0,
-          "y": "NaN",
-          "value": -1.0,
-          "valueType": null,
-          "y2": null,
-          "value2": null
-        },
-        {
-          "cellType": 0,
-          "x": 2.1966538188278949E-09,
-          "y": 618.201965,
-          "value": 1.0,
-          "valueType": null,
-          "y2": null,
-          "value2": null
-        },
-        {
           "cellType": 1,
-          "x": 0.18309560477664602,
+          "x": 0.0,
           "y": 618.207,
           "value": 1.0,
           "valueType": null,
@@ -2235,7 +1965,7 @@ Then the Compaction Profile should be
         {
           "cellType": 0,
           "x": 0.36619120735663818,
-          "y": 618.212,
+          "y": 618.2136,
           "value": 68.0,
           "valueType": null,
           "y2": null,
@@ -2280,7 +2010,7 @@ Then the Compaction Profile should be
         {
           "cellType": 0,
           "x": 1.4647648281594636,
-          "y": 618.2535,
+          "y": 618.25,
           "value": 20.0,
           "valueType": null,
           "y2": null,
@@ -2288,27 +2018,9 @@ Then the Compaction Profile should be
         },
         {
           "cellType": 1,
-          "x": 1.6478604316232093,
+          "x": 1.8309560350869552,
           "y": 618.264,
           "value": 20.0,
-          "valueType": null,
-          "y2": null,
-          "value2": null
-        },
-        {
-          "cellType": 2,
-          "x": 1.8309560350869549,
-          "y": 618.2745,
-          "value": -1.0,
-          "valueType": null,
-          "y2": null,
-          "value2": null
-        },
-        {
-          "cellType": 2,
-          "x": 1.8309560378419556,
-          "y": "NaN",
-          "value": -1.0,
           "valueType": null,
           "y2": null,
           "value2": null
@@ -2334,8 +2046,8 @@ Then the Compaction Profile should be
         {
           "cellType": 0,
           "x": 0.36619120735663818,
-          "y": 618.161,
-          "value": 0.07897949,
+          "y": 618.2136,
+          "value": 0.0,
           "valueType": null,
           "y2": 618.2136,
           "value2": null
@@ -2343,8 +2055,8 @@ Then the Compaction Profile should be
         {
           "cellType": 1,
           "x": 0.54928681082374053,
-          "y": 618.138,
-          "value": 0.07897949,
+          "y": 618.217,
+          "value": 0.0,
           "valueType": null,
           "y2": 618.217,
           "value2": null
@@ -2352,8 +2064,8 @@ Then the Compaction Profile should be
         {
           "cellType": 0,
           "x": 0.73238241429084294,
-          "y": 618.138,
-          "value": 0.07897949,
+          "y": 618.217,
+          "value": 0.0,
           "valueType": null,
           "y2": 618.217,
           "value2": null
@@ -2361,8 +2073,8 @@ Then the Compaction Profile should be
         {
           "cellType": 1,
           "x": 0.73238241429084294,
-          "y": 618.138,
-          "value": 0.07897949,
+          "y": 618.217,
+          "value": 0.0,
           "valueType": null,
           "y2": 618.217,
           "value2": null
@@ -2370,7 +2082,7 @@ Then the Compaction Profile should be
         {
           "cellType": 2,
           "x": 0.73238241429084294,
-          "y": 618.138,
+          "y": 618.217,
           "value": "NaN",
           "valueType": null,
           "y2": 618.217,
@@ -2379,7 +2091,7 @@ Then the Compaction Profile should be
         {
           "cellType": 0,
           "x": 1.0985736212252588,
-          "y": 618.208,
+          "y": 618.2343,
           "value": 0.0,
           "valueType": null,
           "y2": 618.2343,
@@ -2397,8 +2109,8 @@ Then the Compaction Profile should be
         {
           "cellType": 0,
           "x": 1.4647648281594636,
-          "y": 618.2993,
-          "value": -0.148010254,
+          "y": 618.25,
+          "value": 0.0,
           "valueType": null,
           "y2": 618.25,
           "value2": null
@@ -2406,8 +2118,8 @@ Then the Compaction Profile should be
         {
           "cellType": 1,
           "x": 1.8309560350869552,
-          "y": 618.412,
-          "value": -0.148010254,
+          "y": 618.264,
+          "value": 0.0,
           "valueType": null,
           "y2": 618.264,
           "value2": null

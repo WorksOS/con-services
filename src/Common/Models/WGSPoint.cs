@@ -8,6 +8,7 @@ namespace VSS.Productivity3D.Common.Models
   /// <summary>
   /// A point specified in WGS 84 latitude/longtitude coordinates
   /// </summary>
+  [Obsolete("This should be aligned with the models package")]
   public class WGSPoint : IValidatable
   {
     private WGSPoint()

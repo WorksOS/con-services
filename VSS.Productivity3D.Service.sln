@@ -10,6 +10,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{F214C460-58CD-4C60-8459-E4DD3451588B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{10857FA4-B367-4356-83BF-7E672F62AB3A}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.WebApi", "src\WebApi\VSS.Productivity3D.WebApi.csproj", "{142CBC21-B945-4324-90EB-BBEDD26AD0B2}"
 EndProject

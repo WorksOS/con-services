@@ -235,6 +235,9 @@ namespace VSS.Productivity3D.Common.ResultHandling
         (int) TTAGProcServerProcessResult.tpsprServiceStopped);
       contractExecutionStates.DynamicAddwithOffset("OnOverrideEvent. Failed on target data validation.",
         (int) TTAGProcServerProcessResult.tpsprFailedValidation);
+      contractExecutionStates.DynamicAddwithOffset("TFA service error. Can not request Project ro Asset from TFA.",
+        (int)TTAGProcServerProcessResult.tpsprTFAServiceError);
+
     }
 
     public static void AddDesignProfileErrorMessages(ContractExecutionStatesEnum contractExecutionStates)

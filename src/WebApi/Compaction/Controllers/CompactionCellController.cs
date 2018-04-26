@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -13,6 +12,9 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
+using VSS.MasterData.Models.Models;
+using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
+
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -20,8 +22,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// Controller for getting production data cell value from Raptor
   /// </summary>
   [ProjectUidVerifier]
-  //[ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })] (Aaron) Disabled temporarily until we can resolve the cache invalidation problem
-  [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+  [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   public class CompactionCellController : BaseController
   {
     /// <summary>

@@ -1,8 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Extensions;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
+using Point = VSS.MasterData.Models.Models.Point;
 
 namespace VSS.Productivity3D.WebApiTests.Notification.Helpers
 {

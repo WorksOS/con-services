@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCaching.Internal;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -23,7 +23,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// Controller for validating 3D project settings
   /// </summary>
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-
   public class CompactionSettingsController : Controller
   {
     /// <summary>

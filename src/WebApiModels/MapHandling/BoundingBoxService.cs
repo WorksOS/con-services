@@ -11,7 +11,6 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Extensions;
-using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
@@ -21,6 +20,7 @@ using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Coord.Executors;
 using VSS.Productivity3D.WebApiModels.Coord.Models;
 using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
+using Point = VSS.MasterData.Models.Models.Point;
 using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
@@ -79,8 +79,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         {
           if (filter.AlignmentFile != null)
           {
-            log.LogDebug($"GetFilterBoundaries: adding alignment boundary for projectId={project.LegacyProjectId}, filter name={filter.Name}");
-            boundaries.Add(GetAlignmentPoints(project.LegacyProjectId, filter.AlignmentFile, 
+            this.log.LogDebug($"GetFilterBoundaries: adding design boundary polygons for projectId={project.LegacyProjectId}, filter name={filter.Name}");
+            boundaries.Add(GetAlignmentPoints(project.LegacyProjectId, filter.AlignmentFile,
               filter.StartStation ?? 0, filter.EndStation ?? 0, filter.LeftOffset ?? 0, filter.RightOffset ?? 0).ToList());
           }
         }
@@ -345,7 +345,13 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       Point zoomedPixelMax = pixelMax;
       long numTiles = parameters.numTiles;
 
-      while (zoomedWidth < parameters.mapWidth && zoomedHeight < parameters.mapHeight)
+      //allow a 15% margin extra otherwise if the tile is only a few pixels bigger than the calculated zoom
+      //we use the smaller zoom level and end up with lots of space around the data.
+      //AdjustBoundingBoxToFit handles the bigger size.
+      var mapWidth = parameters.mapWidth * 1.15;
+      var mapHeight = parameters.mapHeight * 1.15;
+
+      while (zoomedWidth < mapWidth && zoomedHeight < mapHeight)
       {
         parameters.zoomLevel = zoomLevel;
         parameters.numTiles = numTiles;

@@ -25,7 +25,7 @@ Examples:
 | MDP                 | ff91dd40-1569-4765-a2bc-014321f76ace |                                      |                                      | 17          | 36.207499   | -115.018843   | MDP                 |
 | MDPBoundary         | ff91dd40-1569-4765-a2bc-014321f76ace | 3ef41e3c-d1f5-40cd-b012-99d11ff432ef |                                      | 17          | 36.207499   | -115.018843   | MDP2                |
 | MachineSpeed        | ff91dd40-1569-4765-a2bc-014321f76ace |                                      |                                      | 23          | 36.20696541 | -115.02021047 | MachineSpeed        |
-| CMVPercentChange    | ff91dd40-1569-4765-a2bc-014321f76ace |                                      |                                      | 24          | 36.20696541 | -115.02021047 | CMVPercentChange    |
+| CMVPercentChange    | ff91dd40-1569-4765-a2bc-014321f76ace |                                      |                                      | 27          | 36.206958   | -115.020144   | CMVPercentChange    |
 | HeightOutsideFilter | ff91dd40-1569-4765-a2bc-014321f76ace | 154470b6-15ae-4cca-b281-eae8ac1efa6c |                                      | 0           | 36.20696541 | -115.02021047 | HeightOutsideFilter |
 | CutFillWithDesign   | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | 8           | 36.20735707 | -115.01959313 | CutFillWithDesign   |
 

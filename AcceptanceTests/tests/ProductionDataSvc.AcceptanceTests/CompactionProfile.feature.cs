@@ -595,149 +595,100 @@ testRunner.When("I request a Compaction Profile", ((string)(null)), ((TechTalk.S
 #line 1389
 testRunner.Then("the Compaction Profile should be", "{\r\n  \"gridDistanceBetweenProfilePoints\": 1.8309560378419556,\r\n  \"results\": [\r\n   " +
                     " {\r\n      \"type\": \"firstPass\",\r\n      \"data\": [\r\n        {\r\n          \"cellType\"" +
-                    ": 2,\r\n          \"x\": 0.0,\r\n          \"y\": \"NaN\",\r\n          \"value\": \"NaN\",\r\n   " +
-                    "       \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n    " +
-                    "    },\r\n        {\r\n          \"cellType\": 0,\r\n          \"x\": 2.1966538188278949E-" +
-                    "09,\r\n          \"y\": 618.241455,\r\n          \"value\": 618.207,\r\n          \"valueTy" +
-                    "pe\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n       " +
-                    " {\r\n          \"cellType\": 1,\r\n          \"x\": 0.18309560477664602,\r\n          \"y\"" +
-                    ": 618.207,\r\n          \"value\": 618.207,\r\n          \"valueType\": null,\r\n         " +
-                    " \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cellTy" +
-                    "pe\": 0,\r\n          \"x\": 0.36619120735663818,\r\n          \"y\": 618.1725,\r\n        " +
-                    "  \"value\": 618.138,\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n      " +
-                    "    \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 1,\r\n          \"" +
-                    "x\": 0.54928681082374053,\r\n          \"y\": 618.138,\r\n          \"value\": 618.138,\r\n" +
-                    "          \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n " +
-                    "       },\r\n        {\r\n          \"cellType\": 2,\r\n          \"x\": 0.732382414290842" +
-                    "94,\r\n          \"y\": 618.164246,\r\n          \"value\": \"NaN\",\r\n          \"valueType" +
-                    "\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {" +
-                    "\r\n          \"cellType\": 0,\r\n          \"x\": 1.0985736212252588,\r\n          \"y\": 6" +
-                    "18.216736,\r\n          \"value\": 618.243,\r\n          \"valueType\": null,\r\n         " +
-                    " \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cellTy" +
-                    "pe\": 1,\r\n          \"x\": 1.2816692246923611,\r\n          \"y\": 618.243,\r\n          " +
-                    "\"value\": 618.243,\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n        " +
-                    "  \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 0,\r\n          \"x\"" +
-                    ": 1.4647648281594636,\r\n          \"y\": 618.3275,\r\n          \"value\": 618.412,\r\n  " +
-                    "        \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n   " +
-                    "     },\r\n        {\r\n          \"cellType\": 1,\r\n          \"x\": 1.6478604316232093," +
-                    "\r\n          \"y\": 618.412,\r\n          \"value\": 618.412,\r\n          \"valueType\": n" +
-                    "ull,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n  " +
-                    "        \"cellType\": 2,\r\n          \"x\": 1.8309560350869549,\r\n          \"y\": 618.4" +
-                    "9646,\r\n          \"value\": \"NaN\",\r\n          \"valueType\": null,\r\n          \"y2\": " +
-                    "null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 2," +
-                    "\r\n          \"x\": 1.8309560378419556,\r\n          \"y\": \"NaN\",\r\n          \"value\": " +
-                    "\"NaN\",\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\":" +
-                    " null\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"type\": \"highestPass\",\r\n      \"d" +
-                    "ata\": [\r\n        {\r\n          \"cellType\": 2,\r\n          \"x\": 0.0,\r\n          \"y\"" +
-                    ": \"NaN\",\r\n          \"value\": \"NaN\",\r\n          \"valueType\": null,\r\n          \"y2" +
-                    "\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\":" +
-                    " 0,\r\n          \"x\": 2.1966538188278949E-09,\r\n          \"y\": 618.150452,\r\n       " +
-                    "   \"value\": 618.207,\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n     " +
-                    "     \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 1,\r\n          " +
-                    "\"x\": 0.18309560477664602,\r\n          \"y\": 618.207,\r\n          \"value\": 618.207,\r" +
+                    ": 1,\r\n          \"x\": 0.0,\r\n          \"y\": 618.207,\r\n          \"value\": 618.207,\r" +
                     "\n          \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n" +
                     "        },\r\n        {\r\n          \"cellType\": 0,\r\n          \"x\": 0.36619120735663" +
-                    "818,\r\n          \"y\": 618.2635,\r\n          \"value\": 618.32,\r\n          \"valueType" +
+                    "818,\r\n          \"y\": 618.161,\r\n          \"value\": 618.138,\r\n          \"valueType" +
                     "\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {" +
                     "\r\n          \"cellType\": 1,\r\n          \"x\": 0.54928681082374053,\r\n          \"y\": " +
-                    "618.32,\r\n          \"value\": 618.32,\r\n          \"valueType\": null,\r\n          \"y2" +
-                    "\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\":" +
-                    " 2,\r\n          \"x\": 0.73238241429084294,\r\n          \"y\": 618.3008,\r\n          \"v" +
-                    "alue\": \"NaN\",\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n          \"v" +
-                    "alue2\": null\r\n        },\r\n        {\r\n          \"cellType\": 0,\r\n          \"x\": 1." +
-                    "0985736212252588,\r\n          \"y\": 618.2622,\r\n          \"value\": 618.243,\r\n      " +
-                    "    \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n       " +
-                    " },\r\n        {\r\n          \"cellType\": 1,\r\n          \"x\": 1.2816692246923611,\r\n  " +
-                    "        \"y\": 618.243,\r\n          \"value\": 618.243,\r\n          \"valueType\": null," +
-                    "\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n      " +
-                    "    \"cellType\": 0,\r\n          \"x\": 1.4647648281594636,\r\n          \"y\": 618.3385," +
-                    "\r\n          \"value\": 618.434,\r\n          \"valueType\": null,\r\n          \"y2\": nul" +
-                    "l,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 1,\r\n " +
-                    "         \"x\": 1.6478604316232093,\r\n          \"y\": 618.434,\r\n          \"value\": 6" +
-                    "18.434,\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\"" +
-                    ": null\r\n        },\r\n        {\r\n          \"cellType\": 2,\r\n          \"x\": 1.830956" +
-                    "0350869549,\r\n          \"y\": 618.529541,\r\n          \"value\": \"NaN\",\r\n          \"v" +
-                    "alueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n " +
-                    "       {\r\n          \"cellType\": 2,\r\n          \"x\": 1.8309560378419556,\r\n        " +
-                    "  \"y\": \"NaN\",\r\n          \"value\": \"NaN\",\r\n          \"valueType\": null,\r\n        " +
-                    "  \"y2\": null,\r\n          \"value2\": null\r\n        }\r\n      ]\r\n    },\r\n    {\r\n    " +
-                    "  \"type\": \"lastPass\",\r\n      \"data\": [\r\n        {\r\n          \"cellType\": 2,\r\n   " +
-                    "       \"x\": 0.0,\r\n          \"y\": \"NaN\",\r\n          \"value\": \"NaN\",\r\n          \"v" +
-                    "alueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n " +
-                    "       {\r\n          \"cellType\": 0,\r\n          \"x\": 2.1966538188278949E-09,\r\n    " +
-                    "      \"y\": 618.201965,\r\n          \"value\": 618.207,\r\n          \"valueType\": null" +
-                    ",\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n     " +
-                    "     \"cellType\": 1,\r\n          \"x\": 0.18309560477664602,\r\n          \"y\": 618.207" +
-                    ",\r\n          \"value\": 618.207,\r\n          \"valueType\": null,\r\n          \"y2\": nu" +
-                    "ll,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 0,\r\n" +
-                    "          \"x\": 0.36619120735663818,\r\n          \"y\": 618.212,\r\n          \"value\":" +
-                    " 618.217,\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value" +
-                    "2\": null\r\n        },\r\n        {\r\n          \"cellType\": 1,\r\n          \"x\": 0.5492" +
-                    "8681082374053,\r\n          \"y\": 618.217,\r\n          \"value\": 618.217,\r\n          " +
-                    "\"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r" +
-                    "\n        {\r\n          \"cellType\": 2,\r\n          \"x\": 0.73238241429084294,\r\n     " +
-                    "     \"y\": 618.2235,\r\n          \"value\": \"NaN\",\r\n          \"valueType\": null,\r\n  " +
-                    "        \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          " +
-                    "\"cellType\": 0,\r\n          \"x\": 1.0985736212252588,\r\n          \"y\": 618.23645,\r\n " +
-                    "         \"value\": 618.243,\r\n          \"valueType\": null,\r\n          \"y2\": null,\r" +
-                    "\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 1,\r\n    " +
-                    "      \"x\": 1.2816692246923611,\r\n          \"y\": 618.243,\r\n          \"value\": 618." +
-                    "243,\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": n" +
-                    "ull\r\n        },\r\n        {\r\n          \"cellType\": 0,\r\n          \"x\": 1.464764828" +
-                    "1594636,\r\n          \"y\": 618.2535,\r\n          \"value\": 618.264,\r\n          \"valu" +
-                    "eType\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n    " +
-                    "    {\r\n          \"cellType\": 1,\r\n          \"x\": 1.6478604316232093,\r\n          \"" +
-                    "y\": 618.264,\r\n          \"value\": 618.264,\r\n          \"valueType\": null,\r\n       " +
-                    "   \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cell" +
-                    "Type\": 2,\r\n          \"x\": 1.8309560350869549,\r\n          \"y\": 618.2745,\r\n       " +
-                    "   \"value\": \"NaN\",\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n       " +
-                    "   \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 2,\r\n          \"x" +
-                    "\": 1.8309560378419556,\r\n          \"y\": \"NaN\",\r\n          \"value\": \"NaN\",\r\n      " +
-                    "    \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n       " +
-                    " }\r\n      ]\r\n    },\r\n    {\r\n      \"type\": \"lowestPass\",\r\n      \"data\": [\r\n      " +
-                    "  {\r\n          \"cellType\": 2,\r\n          \"x\": 0.0,\r\n          \"y\": \"NaN\",\r\n     " +
-                    "     \"value\": \"NaN\",\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n     " +
-                    "     \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 0,\r\n          " +
-                    "\"x\": 2.1966538188278949E-09,\r\n          \"y\": 618.2639,\r\n          \"value\": 618.2" +
-                    "07,\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": nu" +
-                    "ll\r\n        },\r\n        {\r\n          \"cellType\": 1,\r\n          \"x\": 0.1830956047" +
-                    "7664602,\r\n          \"y\": 618.207,\r\n          \"value\": 618.207,\r\n          \"value" +
-                    "Type\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n     " +
-                    "   {\r\n          \"cellType\": 0,\r\n          \"x\": 0.36619120735663818,\r\n          \"" +
-                    "y\": 618.15,\r\n          \"value\": 618.093,\r\n          \"valueType\": null,\r\n        " +
-                    "  \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cellT" +
-                    "ype\": 1,\r\n          \"x\": 0.54928681082374053,\r\n          \"y\": 618.093,\r\n        " +
-                    "  \"value\": 618.093,\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n      " +
-                    "    \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 2,\r\n          \"" +
-                    "x\": 0.73238241429084294,\r\n          \"y\": 618.1305,\r\n          \"value\": \"NaN\",\r\n " +
-                    "         \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n  " +
-                    "      },\r\n        {\r\n          \"cellType\": 0,\r\n          \"x\": 1.0985736212252588" +
-                    ",\r\n          \"y\": 618.2055,\r\n          \"value\": 618.243,\r\n          \"valueType\":" +
+                    "618.138,\r\n          \"value\": 618.138,\r\n          \"valueType\": null,\r\n          \"" +
+                    "y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cellType" +
+                    "\": 2,\r\n          \"x\": 0.73238241429084294,\r\n          \"y\": 618.164246,\r\n        " +
+                    "  \"value\": \"NaN\",\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n        " +
+                    "  \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 0,\r\n          \"x\"" +
+                    ": 1.0985736212252588,\r\n          \"y\": 618.216736,\r\n          \"value\": 618.243,\r\n" +
+                    "          \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n " +
+                    "       },\r\n        {\r\n          \"cellType\": 1,\r\n          \"x\": 1.281669224692361" +
+                    "1,\r\n          \"y\": 618.243,\r\n          \"value\": 618.243,\r\n          \"valueType\":" +
                     " null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n" +
-                    "          \"cellType\": 1,\r\n          \"x\": 1.2816692246923611,\r\n          \"y\": 618" +
-                    ".243,\r\n          \"value\": 618.243,\r\n          \"valueType\": null,\r\n          \"y2\"" +
-                    ": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": " +
-                    "0,\r\n          \"x\": 1.4647648281594636,\r\n          \"y\": 618.246948,\r\n          \"v" +
-                    "alue\": 618.251,\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n          " +
-                    "\"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 1,\r\n          \"x\": " +
-                    "1.6478604316232093,\r\n          \"y\": 618.251,\r\n          \"value\": 618.251,\r\n     " +
-                    "     \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n      " +
-                    "  },\r\n        {\r\n          \"cellType\": 2,\r\n          \"x\": 1.8309560350869549,\r\n " +
-                    "         \"y\": 618.255,\r\n          \"value\": \"NaN\",\r\n          \"valueType\": null,\r" +
-                    "\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n       " +
-                    "   \"cellType\": 2,\r\n          \"x\": 1.8309560378419556,\r\n          \"y\": \"NaN\",\r\n  " +
-                    "        \"value\": \"NaN\",\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n  " +
-                    "        \"value2\": null\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"type\": \"lastCo" +
-                    "mposite\",\r\n      \"data\": [\r\n        {\r\n          \"cellType\": 2,\r\n          \"x\": " +
-                    "0.0,\r\n          \"y\": \"NaN\",\r\n          \"value\": \"NaN\",\r\n          \"valueType\": n" +
-                    "ull,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n  " +
-                    "        \"cellType\": 0,\r\n          \"x\": 2.1966538188278949E-09,\r\n          \"y\": 6" +
-                    "18.201965,\r\n          \"value\": 618.207,\r\n          \"valueType\": null,\r\n         " +
-                    " \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cellTy" +
-                    "pe\": 1,\r\n          \"x\": 0.18309560477664602,\r\n          \"y\": 618.207,\r\n         " +
-                    " \"value\": 618.207,\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n       " +
-                    "   \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 0,\r\n          \"x" +
-                    "\": 0.36619120735663818,\r\n          \"y\": 618.212,\r\n          \"value\": 618.217,\r\n " +
+                    "          \"cellType\": 0,\r\n          \"x\": 1.4647648281594636,\r\n          \"y\": 618" +
+                    ".2993,\r\n          \"value\": 618.412,\r\n          \"valueType\": null,\r\n          \"y2" +
+                    "\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\":" +
+                    " 1,\r\n          \"x\": 1.8309560350869552,\r\n          \"y\": 618.412,\r\n          \"val" +
+                    "ue\": 618.412,\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n          \"v" +
+                    "alue2\": null\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"type\": \"highestPass\",\r\n " +
+                    "     \"data\": [\r\n        {\r\n          \"cellType\": 1,\r\n          \"x\": 0.0,\r\n      " +
+                    "    \"y\": 618.207,\r\n          \"value\": 618.207,\r\n          \"valueType\": null,\r\n  " +
+                    "        \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          " +
+                    "\"cellType\": 0,\r\n          \"x\": 0.36619120735663818,\r\n          \"y\": 618.282349,\r" +
+                    "\n          \"value\": 618.32,\r\n          \"valueType\": null,\r\n          \"y2\": null," +
+                    "\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 1,\r\n   " +
+                    "       \"x\": 0.54928681082374053,\r\n          \"y\": 618.32,\r\n          \"value\": 618" +
+                    ".32,\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": n" +
+                    "ull\r\n        },\r\n        {\r\n          \"cellType\": 2,\r\n          \"x\": 0.732382414" +
+                    "29084294,\r\n          \"y\": 618.3008,\r\n          \"value\": \"NaN\",\r\n          \"value" +
+                    "Type\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n     " +
+                    "   {\r\n          \"cellType\": 0,\r\n          \"x\": 1.0985736212252588,\r\n          \"y" +
+                    "\": 618.2622,\r\n          \"value\": 618.243,\r\n          \"valueType\": null,\r\n       " +
+                    "   \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cell" +
+                    "Type\": 1,\r\n          \"x\": 1.2816692246923611,\r\n          \"y\": 618.243,\r\n        " +
+                    "  \"value\": 618.243,\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n      " +
+                    "    \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 0,\r\n          \"" +
+                    "x\": 1.4647648281594636,\r\n          \"y\": 618.306641,\r\n          \"value\": 618.434," +
+                    "\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r" +
+                    "\n        },\r\n        {\r\n          \"cellType\": 1,\r\n          \"x\": 1.8309560350869" +
+                    "552,\r\n          \"y\": 618.434,\r\n          \"value\": 618.434,\r\n          \"valueType" +
+                    "\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        }\r\n      ]\r\n " +
+                    "   },\r\n    {\r\n      \"type\": \"lastPass\",\r\n      \"data\": [\r\n        {\r\n          \"" +
+                    "cellType\": 1,\r\n          \"x\": 0.0,\r\n          \"y\": 618.207,\r\n          \"value\": " +
+                    "618.207,\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2" +
+                    "\": null\r\n        },\r\n        {\r\n          \"cellType\": 0,\r\n          \"x\": 0.36619" +
+                    "120735663818,\r\n          \"y\": 618.2136,\r\n          \"value\": 618.217,\r\n          " +
+                    "\"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r" +
+                    "\n        {\r\n          \"cellType\": 1,\r\n          \"x\": 0.54928681082374053,\r\n     " +
+                    "     \"y\": 618.217,\r\n          \"value\": 618.217,\r\n          \"valueType\": null,\r\n " +
+                    "         \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n         " +
+                    " \"cellType\": 2,\r\n          \"x\": 0.73238241429084294,\r\n          \"y\": 618.2235,\r\n" +
+                    "          \"value\": \"NaN\",\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n" +
+                    "          \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 0,\r\n     " +
+                    "     \"x\": 1.0985736212252588,\r\n          \"y\": 618.23645,\r\n          \"value\": 618" +
+                    ".243,\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": " +
+                    "null\r\n        },\r\n        {\r\n          \"cellType\": 1,\r\n          \"x\": 1.28166922" +
+                    "46923611,\r\n          \"y\": 618.243,\r\n          \"value\": 618.243,\r\n          \"valu" +
+                    "eType\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n    " +
+                    "    {\r\n          \"cellType\": 0,\r\n          \"x\": 1.4647648281594636,\r\n          \"" +
+                    "y\": 618.25,\r\n          \"value\": 618.264,\r\n          \"valueType\": null,\r\n        " +
+                    "  \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cellT" +
+                    "ype\": 1,\r\n          \"x\": 1.8309560350869552,\r\n          \"y\": 618.264,\r\n         " +
+                    " \"value\": 618.264,\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n       " +
+                    "   \"value2\": null\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"type\": \"lowestPass\"" +
+                    ",\r\n      \"data\": [\r\n        {\r\n          \"cellType\": 1,\r\n          \"x\": 0.0,\r\n  " +
+                    "        \"y\": 618.207,\r\n          \"value\": 618.207,\r\n          \"valueType\": null," +
+                    "\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n      " +
+                    "    \"cellType\": 0,\r\n          \"x\": 0.36619120735663818,\r\n          \"y\": 618.131," +
+                    "\r\n          \"value\": 618.093,\r\n          \"valueType\": null,\r\n          \"y2\": nul" +
+                    "l,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 1,\r\n " +
+                    "         \"x\": 0.54928681082374053,\r\n          \"y\": 618.093,\r\n          \"value\": " +
+                    "618.093,\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2" +
+                    "\": null\r\n        },\r\n        {\r\n          \"cellType\": 2,\r\n          \"x\": 0.73238" +
+                    "241429084294,\r\n          \"y\": 618.1305,\r\n          \"value\": \"NaN\",\r\n          \"v" +
+                    "alueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n " +
+                    "       {\r\n          \"cellType\": 0,\r\n          \"x\": 1.0985736212252588,\r\n        " +
+                    "  \"y\": 618.2055,\r\n          \"value\": 618.243,\r\n          \"valueType\": null,\r\n   " +
+                    "       \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"" +
+                    "cellType\": 1,\r\n          \"x\": 1.2816692246923611,\r\n          \"y\": 618.243,\r\n    " +
+                    "      \"value\": 618.243,\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n  " +
+                    "        \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 0,\r\n       " +
+                    "   \"x\": 1.4647648281594636,\r\n          \"y\": 618.245667,\r\n          \"value\": 618." +
+                    "251,\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": n" +
+                    "ull\r\n        },\r\n        {\r\n          \"cellType\": 1,\r\n          \"x\": 1.830956035" +
+                    "0869552,\r\n          \"y\": 618.251,\r\n          \"value\": 618.251,\r\n          \"value" +
+                    "Type\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        }\r\n      " +
+                    "]\r\n    },\r\n    {\r\n      \"type\": \"lastComposite\",\r\n      \"data\": [\r\n        {\r\n  " +
+                    "        \"cellType\": 1,\r\n          \"x\": 0.0,\r\n          \"y\": 618.207,\r\n          " +
+                    "\"value\": 618.207,\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n        " +
+                    "  \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 0,\r\n          \"x\"" +
+                    ": 0.36619120735663818,\r\n          \"y\": 618.2136,\r\n          \"value\": 618.217,\r\n " +
                     "         \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n  " +
                     "      },\r\n        {\r\n          \"cellType\": 1,\r\n          \"x\": 0.5492868108237405" +
                     "3,\r\n          \"y\": 618.217,\r\n          \"value\": 618.217,\r\n          \"valueType\":" +
@@ -751,149 +702,111 @@ testRunner.Then("the Compaction Profile should be", "{\r\n  \"gridDistanceBetwee
                     ".2816692246923611,\r\n          \"y\": 618.243,\r\n          \"value\": 618.243,\r\n      " +
                     "    \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n       " +
                     " },\r\n        {\r\n          \"cellType\": 0,\r\n          \"x\": 1.4647648281594636,\r\n  " +
-                    "        \"y\": 618.2535,\r\n          \"value\": 618.264,\r\n          \"valueType\": null" +
-                    ",\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n     " +
-                    "     \"cellType\": 1,\r\n          \"x\": 1.6478604316232093,\r\n          \"y\": 618.264," +
-                    "\r\n          \"value\": 618.264,\r\n          \"valueType\": null,\r\n          \"y2\": nul" +
-                    "l,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 2,\r\n " +
-                    "         \"x\": 1.8309560350869549,\r\n          \"y\": 618.2745,\r\n          \"value\": " +
-                    "\"NaN\",\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\":" +
-                    " null\r\n        },\r\n        {\r\n          \"cellType\": 2,\r\n          \"x\": 1.8309560" +
-                    "378419556,\r\n          \"y\": \"NaN\",\r\n          \"value\": \"NaN\",\r\n          \"valueTy" +
-                    "pe\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        }\r\n      ]\r" +
-                    "\n    },\r\n    {\r\n      \"type\": \"cmvSummary\",\r\n      \"data\": []\r\n    },\r\n    {\r\n  " +
-                    "    \"type\": \"cmvDetail\",\r\n      \"data\": []\r\n    },\r\n    {\r\n      \"type\": \"cmvPer" +
-                    "centChange\",\r\n      \"data\": []\r\n    },\r\n    {\r\n      \"type\": \"mdpSummary\",\r\n    " +
-                    "  \"data\": []\r\n    },\r\n    {\r\n      \"type\": \"temperatureSummary\",\r\n      \"data\": " +
-                    "[]\r\n    },\r\n    {\r\n      \"type\": \"speedSummary\",\r\n      \"data\": [\r\n        {\r\n  " +
-                    "        \"cellType\": 2,\r\n          \"x\": 0.0,\r\n          \"y\": \"NaN\",\r\n          \"v" +
-                    "alue\": 2359.26,\r\n          \"valueType\": -1,\r\n          \"y2\": null,\r\n          \"v" +
-                    "alue2\": 0.0\r\n        },\r\n        {\r\n          \"cellType\": 0,\r\n          \"x\": 2.1" +
-                    "966538188278949E-09,\r\n          \"y\": 618.201965,\r\n          \"value\": 1.836,\r\n   " +
-                    "       \"valueType\": 2,\r\n          \"y2\": null,\r\n          \"value2\": 1.836\r\n      " +
-                    "  },\r\n        {\r\n          \"cellType\": 1,\r\n          \"x\": 0.18309560477664602,\r\n" +
-                    "          \"y\": 618.207,\r\n          \"value\": 1.836,\r\n          \"valueType\": 2,\r\n " +
-                    "         \"y2\": null,\r\n          \"value2\": 1.836\r\n        },\r\n        {\r\n        " +
-                    "  \"cellType\": 0,\r\n          \"x\": 0.36619120735663818,\r\n          \"y\": 618.212,\r\n" +
-                    "          \"value\": 0.0,\r\n          \"valueType\": 2,\r\n          \"y2\": null,\r\n     " +
-                    "     \"value2\": 3.672\r\n        },\r\n        {\r\n          \"cellType\": 1,\r\n         " +
-                    " \"x\": 0.54928681082374053,\r\n          \"y\": 618.217,\r\n          \"value\": 0.0,\r\n  " +
-                    "        \"valueType\": 2,\r\n          \"y2\": null,\r\n          \"value2\": 3.672\r\n     " +
-                    "   },\r\n        {\r\n          \"cellType\": 2,\r\n          \"x\": 0.73238241429084294,\r" +
-                    "\n          \"y\": 618.2235,\r\n          \"value\": 2359.26,\r\n          \"valueType\": -" +
-                    "1,\r\n          \"y2\": null,\r\n          \"value2\": 0.0\r\n        },\r\n        {\r\n     " +
-                    "     \"cellType\": 0,\r\n          \"x\": 1.0985736212252588,\r\n          \"y\": 618.2364" +
-                    "5,\r\n          \"value\": 1.836,\r\n          \"valueType\": 2,\r\n          \"y2\": null,\r" +
-                    "\n          \"value2\": 1.836\r\n        },\r\n        {\r\n          \"cellType\": 1,\r\n   " +
-                    "       \"x\": 1.2816692246923611,\r\n          \"y\": 618.243,\r\n          \"value\": 1.8" +
-                    "36,\r\n          \"valueType\": 2,\r\n          \"y2\": null,\r\n          \"value2\": 1.836" +
-                    "\r\n        },\r\n        {\r\n          \"cellType\": 0,\r\n          \"x\": 1.464764828159" +
-                    "4636,\r\n          \"y\": 618.2535,\r\n          \"value\": 0.0,\r\n          \"valueType\":" +
-                    " 2,\r\n          \"y2\": null,\r\n          \"value2\": 3.672\r\n        },\r\n        {\r\n  " +
-                    "        \"cellType\": 1,\r\n          \"x\": 1.6478604316232093,\r\n          \"y\": 618.2" +
-                    "64,\r\n          \"value\": 0.0,\r\n          \"valueType\": 2,\r\n          \"y2\": null,\r\n" +
-                    "          \"value2\": 3.672\r\n        },\r\n        {\r\n          \"cellType\": 2,\r\n    " +
-                    "      \"x\": 1.8309560350869549,\r\n          \"y\": 618.2745,\r\n          \"value\": 235" +
-                    "9.26,\r\n          \"valueType\": -1,\r\n          \"y2\": null,\r\n          \"value2\": 0." +
-                    "0\r\n        },\r\n        {\r\n          \"cellType\": 2,\r\n          \"x\": 1.83095603784" +
-                    "19556,\r\n          \"y\": \"NaN\",\r\n          \"value\": 2359.26,\r\n          \"valueType" +
-                    "\": -1,\r\n          \"y2\": null,\r\n          \"value2\": 0.0\r\n        }\r\n      ]\r\n    " +
-                    "},\r\n    {\r\n      \"type\": \"passCountSummary\",\r\n      \"data\": [\r\n        {\r\n      " +
-                    "    \"cellType\": 2,\r\n          \"x\": 0.0,\r\n          \"y\": \"NaN\",\r\n          \"value" +
-                    "\": -1.0,\r\n          \"valueType\": -1,\r\n          \"y2\": null,\r\n          \"value2\":" +
-                    " null\r\n        },\r\n        {\r\n          \"cellType\": 0,\r\n          \"x\": 2.1966538" +
-                    "188278949E-09,\r\n          \"y\": 618.201965,\r\n          \"value\": 1.0,\r\n          \"" +
-                    "valueType\": 0,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n   " +
-                    "     {\r\n          \"cellType\": 1,\r\n          \"x\": 0.18309560477664602,\r\n         " +
-                    " \"y\": 618.207,\r\n          \"value\": 1.0,\r\n          \"valueType\": 0,\r\n          \"y" +
-                    "2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\"" +
-                    ": 0,\r\n          \"x\": 0.36619120735663818,\r\n          \"y\": 618.212,\r\n          \"v" +
-                    "alue\": 68.0,\r\n          \"valueType\": 0,\r\n          \"y2\": null,\r\n          \"value" +
-                    "2\": null\r\n        },\r\n        {\r\n          \"cellType\": 1,\r\n          \"x\": 0.5492" +
-                    "8681082374053,\r\n          \"y\": 618.217,\r\n          \"value\": 68.0,\r\n          \"va" +
-                    "lueType\": 0,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n     " +
-                    "   {\r\n          \"cellType\": 2,\r\n          \"x\": 0.73238241429084294,\r\n          \"" +
-                    "y\": 618.2235,\r\n          \"value\": -1.0,\r\n          \"valueType\": -1,\r\n          \"" +
-                    "y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cellType" +
-                    "\": 0,\r\n          \"x\": 1.0985736212252588,\r\n          \"y\": 618.23645,\r\n          " +
-                    "\"value\": 1.0,\r\n          \"valueType\": 0,\r\n          \"y2\": null,\r\n          \"valu" +
-                    "e2\": null\r\n        },\r\n        {\r\n          \"cellType\": 1,\r\n          \"x\": 1.281" +
-                    "6692246923611,\r\n          \"y\": 618.243,\r\n          \"value\": 1.0,\r\n          \"val" +
-                    "ueType\": 0,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n      " +
-                    "  {\r\n          \"cellType\": 0,\r\n          \"x\": 1.4647648281594636,\r\n          \"y\"" +
-                    ": 618.2535,\r\n          \"value\": 20.0,\r\n          \"valueType\": 0,\r\n          \"y2\"" +
-                    ": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": " +
-                    "1,\r\n          \"x\": 1.6478604316232093,\r\n          \"y\": 618.264,\r\n          \"valu" +
-                    "e\": 20.0,\r\n          \"valueType\": 0,\r\n          \"y2\": null,\r\n          \"value2\":" +
-                    " null\r\n        },\r\n        {\r\n          \"cellType\": 2,\r\n          \"x\": 1.8309560" +
-                    "350869549,\r\n          \"y\": 618.2745,\r\n          \"value\": -1.0,\r\n          \"value" +
-                    "Type\": -1,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n       " +
-                    " {\r\n          \"cellType\": 2,\r\n          \"x\": 1.8309560378419556,\r\n          \"y\":" +
-                    " \"NaN\",\r\n          \"value\": -1.0,\r\n          \"valueType\": -1,\r\n          \"y2\": n" +
-                    "ull,\r\n          \"value2\": null\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"type\":" +
-                    " \"passCountDetail\",\r\n      \"data\": [\r\n        {\r\n          \"cellType\": 2,\r\n     " +
-                    "     \"x\": 0.0,\r\n          \"y\": \"NaN\",\r\n          \"value\": -1.0,\r\n          \"valu" +
-                    "eType\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n    " +
-                    "    {\r\n          \"cellType\": 0,\r\n          \"x\": 2.1966538188278949E-09,\r\n       " +
-                    "   \"y\": 618.201965,\r\n          \"value\": 1.0,\r\n          \"valueType\": null,\r\n    " +
-                    "      \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"c" +
-                    "ellType\": 1,\r\n          \"x\": 0.18309560477664602,\r\n          \"y\": 618.207,\r\n    " +
-                    "      \"value\": 1.0,\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n      " +
-                    "    \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 0,\r\n          \"" +
-                    "x\": 0.36619120735663818,\r\n          \"y\": 618.212,\r\n          \"value\": 68.0,\r\n   " +
-                    "       \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n    " +
-                    "    },\r\n        {\r\n          \"cellType\": 1,\r\n          \"x\": 0.54928681082374053," +
-                    "\r\n          \"y\": 618.217,\r\n          \"value\": 68.0,\r\n          \"valueType\": null" +
-                    ",\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n     " +
-                    "     \"cellType\": 2,\r\n          \"x\": 0.73238241429084294,\r\n          \"y\": 618.223" +
-                    "5,\r\n          \"value\": -1.0,\r\n          \"valueType\": null,\r\n          \"y2\": null" +
-                    ",\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 0,\r\n  " +
-                    "        \"x\": 1.0985736212252588,\r\n          \"y\": 618.23645,\r\n          \"value\": " +
-                    "1.0,\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": n" +
-                    "ull\r\n        },\r\n        {\r\n          \"cellType\": 1,\r\n          \"x\": 1.281669224" +
-                    "6923611,\r\n          \"y\": 618.243,\r\n          \"value\": 1.0,\r\n          \"valueType" +
-                    "\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {" +
-                    "\r\n          \"cellType\": 0,\r\n          \"x\": 1.4647648281594636,\r\n          \"y\": 6" +
-                    "18.2535,\r\n          \"value\": 20.0,\r\n          \"valueType\": null,\r\n          \"y2\"" +
-                    ": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": " +
-                    "1,\r\n          \"x\": 1.6478604316232093,\r\n          \"y\": 618.264,\r\n          \"valu" +
-                    "e\": 20.0,\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value" +
-                    "2\": null\r\n        },\r\n        {\r\n          \"cellType\": 2,\r\n          \"x\": 1.8309" +
-                    "560350869549,\r\n          \"y\": 618.2745,\r\n          \"value\": -1.0,\r\n          \"va" +
-                    "lueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n  " +
-                    "      {\r\n          \"cellType\": 2,\r\n          \"x\": 1.8309560378419556,\r\n         " +
-                    " \"y\": \"NaN\",\r\n          \"value\": -1.0,\r\n          \"valueType\": null,\r\n          " +
-                    "\"y2\": null,\r\n          \"value2\": null\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      " +
-                    "\"type\": \"cutFill\",\r\n      \"data\": []\r\n    },\r\n    {\r\n      \"type\": \"summaryVolum" +
-                    "es\",\r\n      \"data\": [\r\n        {\r\n          \"cellType\": 1,\r\n          \"x\": 2.196" +
-                    "6538188278949E-09,\r\n          \"y\": 618.207,\r\n          \"value\": 0.0,\r\n          " +
-                    "\"valueType\": null,\r\n          \"y2\": 618.207,\r\n          \"value2\": null\r\n        " +
-                    "},\r\n        {\r\n          \"cellType\": 0,\r\n          \"x\": 0.36619120735663818,\r\n  " +
-                    "        \"y\": 618.161,\r\n          \"value\": 0.07897949,\r\n          \"valueType\": nu" +
-                    "ll,\r\n          \"y2\": 618.2136,\r\n          \"value2\": null\r\n        },\r\n        {\r" +
-                    "\n          \"cellType\": 1,\r\n          \"x\": 0.54928681082374053,\r\n          \"y\": 6" +
-                    "18.138,\r\n          \"value\": 0.07897949,\r\n          \"valueType\": null,\r\n         " +
-                    " \"y2\": 618.217,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cel" +
-                    "lType\": 0,\r\n          \"x\": 0.73238241429084294,\r\n          \"y\": 618.138,\r\n      " +
-                    "    \"value\": 0.07897949,\r\n          \"valueType\": null,\r\n          \"y2\": 618.217," +
-                    "\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 1,\r\n   " +
-                    "       \"x\": 0.73238241429084294,\r\n          \"y\": 618.138,\r\n          \"value\": 0." +
-                    "07897949,\r\n          \"valueType\": null,\r\n          \"y2\": 618.217,\r\n          \"va" +
-                    "lue2\": null\r\n        },\r\n        {\r\n          \"cellType\": 2,\r\n          \"x\": 0.7" +
-                    "3238241429084294,\r\n          \"y\": 618.138,\r\n          \"value\": \"NaN\",\r\n         " +
-                    " \"valueType\": null,\r\n          \"y2\": 618.217,\r\n          \"value2\": null\r\n       " +
-                    " },\r\n        {\r\n          \"cellType\": 0,\r\n          \"x\": 1.0985736212252588,\r\n  " +
-                    "        \"y\": 618.208,\r\n          \"value\": 0.0,\r\n          \"valueType\": null,\r\n  " +
-                    "        \"y2\": 618.2343,\r\n          \"value2\": null\r\n        },\r\n        {\r\n      " +
-                    "    \"cellType\": 1,\r\n          \"x\": 1.2816692246923611,\r\n          \"y\": 618.243,\r" +
-                    "\n          \"value\": 0.0,\r\n          \"valueType\": null,\r\n          \"y2\": 618.243," +
-                    "\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 0,\r\n   " +
-                    "       \"x\": 1.4647648281594636,\r\n          \"y\": 618.2993,\r\n          \"value\": -0" +
-                    ".148010254,\r\n          \"valueType\": null,\r\n          \"y2\": 618.25,\r\n          \"v" +
-                    "alue2\": null\r\n        },\r\n        {\r\n          \"cellType\": 1,\r\n          \"x\": 1." +
-                    "8309560350869552,\r\n          \"y\": 618.412,\r\n          \"value\": -0.148010254,\r\n  " +
-                    "        \"valueType\": null,\r\n          \"y2\": 618.264,\r\n          \"value2\": null\r\n" +
-                    "        }\r\n      ]\r\n    }\r\n  ],\r\n  \"Code\": 0,\r\n  \"Message\": \"success\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+                    "        \"y\": 618.25,\r\n          \"value\": 618.264,\r\n          \"valueType\": null,\r" +
+                    "\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n       " +
+                    "   \"cellType\": 1,\r\n          \"x\": 1.8309560350869552,\r\n          \"y\": 618.264,\r\n" +
+                    "          \"value\": 618.264,\r\n          \"valueType\": null,\r\n          \"y2\": null," +
+                    "\r\n          \"value2\": null\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"type\": \"cm" +
+                    "vSummary\",\r\n      \"data\": []\r\n    },\r\n    {\r\n      \"type\": \"cmvDetail\",\r\n      \"" +
+                    "data\": []\r\n    },\r\n    {\r\n      \"type\": \"cmvPercentChange\",\r\n      \"data\": []\r\n " +
+                    "   },\r\n    {\r\n      \"type\": \"mdpSummary\",\r\n      \"data\": []\r\n    },\r\n    {\r\n    " +
+                    "  \"type\": \"temperatureSummary\",\r\n      \"data\": []\r\n    },\r\n    {\r\n      \"type\": " +
+                    "\"speedSummary\",\r\n      \"data\": [\r\n        {\r\n          \"cellType\": 1,\r\n         " +
+                    " \"x\": 0.0,\r\n          \"y\": 618.207,\r\n          \"value\": 1.836,\r\n          \"value" +
+                    "Type\": 2,\r\n          \"y2\": null,\r\n          \"value2\": 1.836\r\n        },\r\n       " +
+                    " {\r\n          \"cellType\": 0,\r\n          \"x\": 0.36619120735663818,\r\n          \"y\"" +
+                    ": 618.2136,\r\n          \"value\": 0.0,\r\n          \"valueType\": 2,\r\n          \"y2\":" +
+                    " null,\r\n          \"value2\": 3.672\r\n        },\r\n        {\r\n          \"cellType\": " +
+                    "1,\r\n          \"x\": 0.54928681082374053,\r\n          \"y\": 618.217,\r\n          \"val" +
+                    "ue\": 0.0,\r\n          \"valueType\": 2,\r\n          \"y2\": null,\r\n          \"value2\":" +
+                    " 3.672\r\n        },\r\n        {\r\n          \"cellType\": 2,\r\n          \"x\": 0.732382" +
+                    "41429084294,\r\n          \"y\": 618.2235,\r\n          \"value\": 2359.26,\r\n          \"" +
+                    "valueType\": -1,\r\n          \"y2\": null,\r\n          \"value2\": 0.0\r\n        },\r\n   " +
+                    "     {\r\n          \"cellType\": 0,\r\n          \"x\": 1.0985736212252588,\r\n          " +
+                    "\"y\": 618.23645,\r\n          \"value\": 1.836,\r\n          \"valueType\": 2,\r\n         " +
+                    " \"y2\": null,\r\n          \"value2\": 1.836\r\n        },\r\n        {\r\n          \"cellT" +
+                    "ype\": 1,\r\n          \"x\": 1.2816692246923611,\r\n          \"y\": 618.243,\r\n         " +
+                    " \"value\": 1.836,\r\n          \"valueType\": 2,\r\n          \"y2\": null,\r\n          \"v" +
+                    "alue2\": 1.836\r\n        },\r\n        {\r\n          \"cellType\": 0,\r\n          \"x\": 1" +
+                    ".4647648281594636,\r\n          \"y\": 618.25,\r\n          \"value\": 0.0,\r\n          \"" +
+                    "valueType\": 2,\r\n          \"y2\": null,\r\n          \"value2\": 3.672\r\n        },\r\n  " +
+                    "      {\r\n          \"cellType\": 1,\r\n          \"x\": 1.8309560350869552,\r\n         " +
+                    " \"y\": 618.264,\r\n          \"value\": 0.0,\r\n          \"valueType\": 2,\r\n          \"y" +
+                    "2\": null,\r\n          \"value2\": 3.672\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"" +
+                    "type\": \"passCountSummary\",\r\n      \"data\": [\r\n        {\r\n          \"cellType\": 1," +
+                    "\r\n          \"x\": 0.0,\r\n          \"y\": 618.207,\r\n          \"value\": 1.0,\r\n       " +
+                    "   \"valueType\": 0,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r" +
+                    "\n        {\r\n          \"cellType\": 0,\r\n          \"x\": 0.36619120735663818,\r\n     " +
+                    "     \"y\": 618.2136,\r\n          \"value\": 68.0,\r\n          \"valueType\": 0,\r\n      " +
+                    "    \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cel" +
+                    "lType\": 1,\r\n          \"x\": 0.54928681082374053,\r\n          \"y\": 618.217,\r\n      " +
+                    "    \"value\": 68.0,\r\n          \"valueType\": 0,\r\n          \"y2\": null,\r\n          " +
+                    "\"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 2,\r\n          \"x\": " +
+                    "0.73238241429084294,\r\n          \"y\": 618.2235,\r\n          \"value\": -1.0,\r\n      " +
+                    "    \"valueType\": -1,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        }" +
+                    ",\r\n        {\r\n          \"cellType\": 0,\r\n          \"x\": 1.0985736212252588,\r\n    " +
+                    "      \"y\": 618.23645,\r\n          \"value\": 1.0,\r\n          \"valueType\": 0,\r\n     " +
+                    "     \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"ce" +
+                    "llType\": 1,\r\n          \"x\": 1.2816692246923611,\r\n          \"y\": 618.243,\r\n      " +
+                    "    \"value\": 1.0,\r\n          \"valueType\": 0,\r\n          \"y2\": null,\r\n          \"" +
+                    "value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 0,\r\n          \"x\": 1" +
+                    ".4647648281594636,\r\n          \"y\": 618.25,\r\n          \"value\": 20.0,\r\n          " +
+                    "\"valueType\": 0,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n  " +
+                    "      {\r\n          \"cellType\": 1,\r\n          \"x\": 1.8309560350869552,\r\n         " +
+                    " \"y\": 618.264,\r\n          \"value\": 20.0,\r\n          \"valueType\": 0,\r\n          \"" +
+                    "y2\": null,\r\n          \"value2\": null\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"" +
+                    "type\": \"passCountDetail\",\r\n      \"data\": [\r\n        {\r\n          \"cellType\": 1,\r" +
+                    "\n          \"x\": 0.0,\r\n          \"y\": 618.207,\r\n          \"value\": 1.0,\r\n        " +
+                    "  \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        }" +
+                    ",\r\n        {\r\n          \"cellType\": 0,\r\n          \"x\": 0.36619120735663818,\r\n   " +
+                    "       \"y\": 618.2136,\r\n          \"value\": 68.0,\r\n          \"valueType\": null,\r\n " +
+                    "         \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n         " +
+                    " \"cellType\": 1,\r\n          \"x\": 0.54928681082374053,\r\n          \"y\": 618.217,\r\n " +
+                    "         \"value\": 68.0,\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n  " +
+                    "        \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 2,\r\n       " +
+                    "   \"x\": 0.73238241429084294,\r\n          \"y\": 618.2235,\r\n          \"value\": -1.0," +
+                    "\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r" +
+                    "\n        },\r\n        {\r\n          \"cellType\": 0,\r\n          \"x\": 1.0985736212252" +
+                    "588,\r\n          \"y\": 618.23645,\r\n          \"value\": 1.0,\r\n          \"valueType\":" +
+                    " null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        },\r\n        {\r\n" +
+                    "          \"cellType\": 1,\r\n          \"x\": 1.2816692246923611,\r\n          \"y\": 618" +
+                    ".243,\r\n          \"value\": 1.0,\r\n          \"valueType\": null,\r\n          \"y2\": nu" +
+                    "ll,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 0,\r\n" +
+                    "          \"x\": 1.4647648281594636,\r\n          \"y\": 618.25,\r\n          \"value\": 2" +
+                    "0.0,\r\n          \"valueType\": null,\r\n          \"y2\": null,\r\n          \"value2\": n" +
+                    "ull\r\n        },\r\n        {\r\n          \"cellType\": 1,\r\n          \"x\": 1.830956035" +
+                    "0869552,\r\n          \"y\": 618.264,\r\n          \"value\": 20.0,\r\n          \"valueTyp" +
+                    "e\": null,\r\n          \"y2\": null,\r\n          \"value2\": null\r\n        }\r\n      ]\r\n" +
+                    "    },\r\n    {\r\n      \"type\": \"cutFill\",\r\n      \"data\": []\r\n    },\r\n    {\r\n      " +
+                    "\"type\": \"summaryVolumes\",\r\n      \"data\": [\r\n        {\r\n          \"cellType\": 1,\r" +
+                    "\n          \"x\": 2.1966538188278949E-09,\r\n          \"y\": 618.207,\r\n          \"val" +
+                    "ue\": 0.0,\r\n          \"valueType\": null,\r\n          \"y2\": 618.207,\r\n          \"va" +
+                    "lue2\": null\r\n        },\r\n        {\r\n          \"cellType\": 0,\r\n          \"x\": 0.3" +
+                    "6619120735663818,\r\n          \"y\": 618.2136,\r\n          \"value\": 0.0,\r\n          " +
+                    "\"valueType\": null,\r\n          \"y2\": 618.2136,\r\n          \"value2\": null\r\n       " +
+                    " },\r\n        {\r\n          \"cellType\": 1,\r\n          \"x\": 0.54928681082374053,\r\n " +
+                    "         \"y\": 618.217,\r\n          \"value\": 0.0,\r\n          \"valueType\": null,\r\n " +
+                    "         \"y2\": 618.217,\r\n          \"value2\": null\r\n        },\r\n        {\r\n      " +
+                    "    \"cellType\": 0,\r\n          \"x\": 0.73238241429084294,\r\n          \"y\": 618.217," +
+                    "\r\n          \"value\": 0.0,\r\n          \"valueType\": null,\r\n          \"y2\": 618.217" +
+                    ",\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 1,\r\n  " +
+                    "        \"x\": 0.73238241429084294,\r\n          \"y\": 618.217,\r\n          \"value\": 0" +
+                    ".0,\r\n          \"valueType\": null,\r\n          \"y2\": 618.217,\r\n          \"value2\":" +
+                    " null\r\n        },\r\n        {\r\n          \"cellType\": 2,\r\n          \"x\": 0.7323824" +
+                    "1429084294,\r\n          \"y\": 618.217,\r\n          \"value\": \"NaN\",\r\n          \"valu" +
+                    "eType\": null,\r\n          \"y2\": 618.217,\r\n          \"value2\": null\r\n        },\r\n " +
+                    "       {\r\n          \"cellType\": 0,\r\n          \"x\": 1.0985736212252588,\r\n        " +
+                    "  \"y\": 618.2343,\r\n          \"value\": 0.0,\r\n          \"valueType\": null,\r\n       " +
+                    "   \"y2\": 618.2343,\r\n          \"value2\": null\r\n        },\r\n        {\r\n          \"" +
+                    "cellType\": 1,\r\n          \"x\": 1.2816692246923611,\r\n          \"y\": 618.243,\r\n    " +
+                    "      \"value\": 0.0,\r\n          \"valueType\": null,\r\n          \"y2\": 618.243,\r\n   " +
+                    "       \"value2\": null\r\n        },\r\n        {\r\n          \"cellType\": 0,\r\n        " +
+                    "  \"x\": 1.4647648281594636,\r\n          \"y\": 618.25,\r\n          \"value\": 0.0,\r\n   " +
+                    "       \"valueType\": null,\r\n          \"y2\": 618.25,\r\n          \"value2\": null\r\n  " +
+                    "      },\r\n        {\r\n          \"cellType\": 1,\r\n          \"x\": 1.8309560350869552" +
+                    ",\r\n          \"y\": 618.264,\r\n          \"value\": 0.0,\r\n          \"valueType\": null" +
+                    ",\r\n          \"y2\": 618.264,\r\n          \"value2\": null\r\n        }\r\n      ]\r\n    }" +
+                    "\r\n  ],\r\n  \"Code\": 0,\r\n  \"Message\": \"success\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

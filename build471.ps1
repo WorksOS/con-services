@@ -20,8 +20,18 @@ Invoke-Expression "dotnet restore ./VSS.Productivity3D.Service.sln --no-cache"
 
 Write-Host "Publishing WebApi project..." -ForegroundColor "darkgray"
 Invoke-Expression "dotnet publish ./src/WebApi/VSS.Productivity3D.WebApi.csproj -o ../../Artifacts/WebApi -f net471"
+if ($LastExitCode -ne 0)
+   {   throw "Publish of web api project **** Failed ****"  }
+
+Write-Host "Build Unit Tests project..." -ForegroundColor "darkgray"
 Invoke-Expression "dotnet build ./test/UnitTests/WebApiTests/VSS.Productivity3D.WebApi.Tests.csproj"
-Invoke-Expression "#msbuild ./AcceptanceTests/VSS.Productivity3D.Service.AcceptanceTests.sln"
+if ($LastExitCode -ne 0)
+   {   throw "Build unit tests project **** Failed ****"  }
+
+Write-Host "Build Acceptance Tests project..." -ForegroundColor "darkgray"
+Invoke-Expression "msbuild ./AcceptanceTests/VSS.Productivity3D.Service.AcceptanceTests.sln"
+if ($LastExitCode -ne 0)
+   {   throw "Build Acceptance Tests project **** Failed ****"  }
 
 $artifactsWorkingDir = "$artifactsDir\webapi"
 

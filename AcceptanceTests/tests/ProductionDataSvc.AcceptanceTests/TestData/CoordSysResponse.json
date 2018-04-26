@@ -1,58 +1,223 @@
 {
   "CoordinateSystem": {
     "csName": "Zone from Data Collector",
+    "csFileName": "Marylands MH5-IntegrationTest.dc",
     "csGroup": "Projection from Data Collector",
     "csib": "",
-    "datumName": "Molodensky",
-    "siteCalibration": true,
-    "geoidFileName": "None",
+    "ellipsoidName": "(WGS 84)",
+    "ellipsoidSemiMajorAxis": 6378137,
+    "ellipsoidSemiMinorAxis": 6356752.3141,
+    "ellipsoidFlattening": 298.2572215381486,
+    "ellipsoidFirstEccentricity": 0.081819191119888335,
+    "ellipsoidSecondEccentricity": 0.082094438229770347,
+    "datumName": "(WGS 84)",
+    "datumMethod": "Molodensky",
+    "datumMethodType": 2,
+    "latitudeShiftDatumGridFileName": "",
+    "longitudeShiftDatumGridFileName": "",
+    "isDatumGridHeightShiftDefined": false,
+    "heightShiftDatumGridFileName": "",
+    "datumDirection": "Local To WGS84",
+    "datumTranslationX": 0,
+    "datumTranslationY": 0,
+    "datumTranslationZ": 0,
+    "datumRotationX": 0,
+    "datumRotationY": 0,
+    "datumRotationZ": 0,
+    "datumScaleFactor": 0,
+    "datumParametersFileName": "",
     "geoidName": "None",
-    "isDatumGrid": false,
-    "unsupportedProjection": false,
-    "latitudeDatumGridFileName": "",
-    "longitudeDatumGridFileName": "",
-    "heightDatumGridFileName": "",
+    "geoidMethod": "None",
+    "geoidMethodType": 0,
+    "geoidFileName": "",
+    "geoidConstantSeparation": 0,
+    "geoidOriginX": 0,
+    "geoidOriginY": 0,
+    "geoidOriginZ": 0,
+    "geoidTranslationZ": 0,
+    "geoidRotationX": 0,
+    "geoidRotationY": 0,
+    "geoidScaleFactor": 0,
+    "projectionType": "Transverse Mercator",
+    "projectionParameters": {
+      "projectionParameters": [
+        {
+          "name": "Central Latitude",
+          "value": -0.76079871721795822
+        },
+        {
+          "name": "Central Longitude",
+          "value": 3.0146538874648057
+        },
+        {
+          "name": "False Northing",
+          "value": 800000
+        },
+        {
+          "name": "False Easting",
+          "value": 400000
+        },
+        {
+          "name": "Scale Factor",
+          "value": 1
+        }
+      ]
+    },
+    "azimuthDirection": "North Azimuth",
+    "positiveCoordinateDirection": "NorthEast",
+    "siteCalibration": true,
+    "verticalDatumName": "None",
     "shiftGridName": "None",
     "snakeGridName": "None",
-    "verticalDatumName": "None",
+    "unsupportedProjection": false,
     "Code": 0,
     "Message": "success"
   },
   "CoordinateSystemWithGeoid": {
-  "csName": "Zone from Data Collector",
-  "csGroup": "Projection from Data Collector",
-  "csib": "",
-  "datumName": "Molodensky",
-  "siteCalibration": true,
-  "geoidFileName": "None",
-  "geoidName": "None",
-  "isDatumGrid": false,
-  "unsupportedProjection": false,
-  "latitudeDatumGridFileName": "",
-  "longitudeDatumGridFileName": "",
-  "heightDatumGridFileName": "",
-  "shiftGridName": "None",
-  "snakeGridName": "None",
-  "verticalDatumName": "None",
-  "Code": 0,
-  "Message": "success"
-},
-  "GetCoordinateSystem": {
     "csName": "Zone from Data Collector",
+    "csFileName": "TA 50.dc",
     "csGroup": "Projection from Data Collector",
-    "csib": "VE5MIENTSUJAJQAAAAAAAFByb2plY3Rpb24gZnJvbSBEYXRhIENvbGxlY3RvcgAwMDcwMTE4Wm9uZSBmcm9tIERhdGEgQ29sbGVjdG9yAFpvbmUgZnJvbSBEYXRhIENvbGxlY3RvcgAAWm9uZSBmcm9tIERhdGEgQ29sbGVjdG9yAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQAAKFdHUyA4NCkAAChXR1MgODQpAABBWFSmQAAAAEFYP8QUGjbjgAAAAAAAAACAAAAAAAAAAIAAAAAAAAAADgAAv+hYdo0pRrhACB4C23tdZkEoagAAAAAAQRhqAAAAAAA/8AAAAAAAAD/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAf+HM84XryKB/4czzhevIoAAAAAAAAAAAAAAAAAAAAAAAAAABAABBKIjCqy14iUEXnZO2IjwVv3870YeZ83A/KWi7149PDz7KcnLDYAAAP/AAAt1R8R8BAABBKIGk1d3jdkEXj4v3Hu8EwCe26E20Fly+8BzBissq0L6uJZU6m0skAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAQEBAQMAUAByAG8AagBlAGMAdABpAG8AbgAgAGYAcgBvAG0AIABEAGEAdABhACAAQwBvAGwAbABlAGMAdABvAHIAAABaAG8AbgBlACAAZgByAG8AbQAgAEQAYQB0AGEAIABDAG8AbABsAGUAYwB0AG8AcgAAAFoAbwBuAGUAIABmAHIAbwBtACAARABhAHQAYQAgAEMAbwBsAGwAZQBjAHQAbwByAAAAAAAoAFcARwBTACAAOAA0ACkAAAAoAFcARwBTACAAOAA0ACkAAAAAAAAAAAAAAAAAAAAAAA==",
-    "datumName": "Molodensky",
-    "siteCalibration": true,
-    "geoidFileName": "None",
+    "csib": "",
+    "ellipsoidName": "(WGS 84)",
+    "ellipsoidSemiMajorAxis": 6378137.0000074962,
+    "ellipsoidSemiMinorAxis": 6356752.3142074728,
+    "ellipsoidFlattening": 298.25722293289544,
+    "ellipsoidFirstEccentricity": 0.081819190928902857,
+    "ellipsoidSecondEccentricity": 0.082094438036850778,
+    "datumName": "(WGS 84)",
+    "datumMethod": "Molodensky",
+    "datumMethodType": 2,
+    "latitudeShiftDatumGridFileName": "",
+    "longitudeShiftDatumGridFileName": "",
+    "isDatumGridHeightShiftDefined": false,
+    "heightShiftDatumGridFileName": "",
+    "datumDirection": "Local To WGS84",
+    "datumTranslationX": 0,
+    "datumTranslationY": 0,
+    "datumTranslationZ": 0,
+    "datumRotationX": 0,
+    "datumRotationY": 0,
+    "datumRotationZ": 0,
+    "datumScaleFactor": 0,
+    "datumParametersFileName": "",
     "geoidName": "None",
-    "isDatumGrid": false,
-    "unsupportedProjection": false,
-    "latitudeDatumGridFileName": "",
-    "longitudeDatumGridFileName": "",
-    "heightDatumGridFileName": "",
+    "geoidMethod": "None",
+    "geoidMethodType": 0,
+    "geoidFileName": "",
+    "geoidConstantSeparation": 0,
+    "geoidOriginX": 0,
+    "geoidOriginY": 0,
+    "geoidOriginZ": 0,
+    "geoidTranslationZ": 0,
+    "geoidRotationX": 0,
+    "geoidRotationY": 0,
+    "geoidScaleFactor": 0,
+    "projectionType": "Transverse Mercator",
+    "projectionParameters": {
+      "projectionParameters": [
+        {
+          "name": "Central Latitude",
+          "value": 0.62598166431806213
+        },
+        {
+          "name": "Central Longitude",
+          "value": -1.8554975129664792
+        },
+        {
+          "name": "False Northing",
+          "value": 539902.92405439669
+        },
+        {
+          "name": "False Easting",
+          "value": 494607.64053898357
+        },
+        {
+          "name": "Scale Factor",
+          "value": 1.000348301
+        }
+      ]
+    },
+    "azimuthDirection": "North Azimuth",
+    "positiveCoordinateDirection": "NorthEast",
+    "siteCalibration": true,
+    "verticalDatumName": "None",
     "shiftGridName": "None",
     "snakeGridName": "None",
+    "unsupportedProjection": false,
+    "Code": 0,
+    "Message": "success"
+  },
+  "GetCoordinateSystem": {
+    "csName": "Zone from Data Collector",
+    "csFileName": "Marylands MH5-IntegrationTest.dc",
+    "csGroup": "Projection from Data Collector",
+    "csib": "VE5MIENTSUJAJQAAAAAAAFByb2plY3Rpb24gZnJvbSBEYXRhIENvbGxlY3RvcgAwMDcwMTE4Wm9uZSBmcm9tIERhdGEgQ29sbGVjdG9yAFpvbmUgZnJvbSBEYXRhIENvbGxlY3RvcgAAWm9uZSBmcm9tIERhdGEgQ29sbGVjdG9yAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQAAKFdHUyA4NCkAAChXR1MgODQpAABBWFSmQAAAAEFYP8QUGjbjgAAAAAAAAACAAAAAAAAAAIAAAAAAAAAADgAAv+hYdo0pRrhACB4C23tdZkEoagAAAAAAQRhqAAAAAAA/8AAAAAAAAD/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAf+HM84XryKB/4czzhevIoAAAAAAAAAAAAAAAAAAAAAAAAAABAABBKIjCqy14iUEXnZO2IjwVv3870YeZ83A/KWi7149PDz7KcnLDYAAAP/AAAt1R8R8BAABBKIGk1d3jdkEXj4v3Hu8EwCe26E20Fly+8BzBissq0L6uJZU6m0skAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAQEBAQMAUAByAG8AagBlAGMAdABpAG8AbgAgAGYAcgBvAG0AIABEAGEAdABhACAAQwBvAGwAbABlAGMAdABvAHIAAABaAG8AbgBlACAAZgByAG8AbQAgAEQAYQB0AGEAIABDAG8AbABsAGUAYwB0AG8AcgAAAFoAbwBuAGUAIABmAHIAbwBtACAARABhAHQAYQAgAEMAbwBsAGwAZQBjAHQAbwByAAAAAAAoAFcARwBTACAAOAA0ACkAAAAoAFcARwBTACAAOAA0ACkAAAAAAAAAAAAAAAAAAAAAAA==",
+    "ellipsoidName": "(WGS 84)",
+    "ellipsoidSemiMajorAxis": 6378137,
+    "ellipsoidSemiMinorAxis": 6356752.3141,
+    "ellipsoidFlattening": 298.2572215381486,
+    "ellipsoidFirstEccentricity": 0.081819191119888335,
+    "ellipsoidSecondEccentricity": 0.082094438229770347,
+    "datumName": "(WGS 84)",
+    "datumMethod": "Molodensky",
+    "datumMethodType": 2,
+    "latitudeShiftDatumGridFileName": "",
+    "longitudeShiftDatumGridFileName": "",
+    "isDatumGridHeightShiftDefined": false,
+    "heightShiftDatumGridFileName": "",
+    "datumDirection": "Local To WGS84",
+    "datumTranslationX": 0,
+    "datumTranslationY": 0,
+    "datumTranslationZ": 0,
+    "datumRotationX": 0,
+    "datumRotationY": 0,
+    "datumRotationZ": 0,
+    "datumScaleFactor": 0,
+    "datumParametersFileName": "",
+    "geoidName": "None",
+    "geoidMethod": "None",
+    "geoidMethodType": 0,
+    "geoidFileName": "",
+    "geoidConstantSeparation": 0,
+    "geoidOriginX": 0,
+    "geoidOriginY": 0,
+    "geoidOriginZ": 0,
+    "geoidTranslationZ": 0,
+    "geoidRotationX": 0,
+    "geoidRotationY": 0,
+    "geoidScaleFactor": 0,
+    "projectionType": "Transverse Mercator",
+    "projectionParameters": {
+      "projectionParameters": [
+        {
+          "name": "Central Latitude",
+          "value": -0.76079871721795822
+        },
+        {
+          "name": "Central Longitude",
+          "value": 3.0146538874648057
+        },
+        {
+          "name": "False Northing",
+          "value": 800000
+        },
+        {
+          "name": "False Easting",
+          "value": 400000
+        },
+        {
+          "name": "Scale Factor",
+          "value": 1
+        }
+      ]
+    },
+    "azimuthDirection": "North Azimuth",
+    "positiveCoordinateDirection": "NorthEast",
+    "siteCalibration": true,
     "verticalDatumName": "None",
+    "shiftGridName": "None",
+    "snakeGridName": "None",
+    "unsupportedProjection": false,
     "Code": 0,
     "Message": "success"
   }

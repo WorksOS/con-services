@@ -14,6 +14,8 @@ using System.Linq;
 using VLPDDecls;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
+using BoundingBox3DGrid = VSS.Productivity3D.Common.Models.BoundingBox3DGrid;
+using Point = VSS.MasterData.Models.Models.Point;
 using __Global = ProductionServer_TLB.__Global;
 using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
 
@@ -345,6 +347,7 @@ namespace VSS.Productivity3D.Common.Proxies
         case TICDisplayMode.icdmCCVPercentChange: return DisplayMode.CCVPercentChange;
         case TICDisplayMode.icdmTargetThicknessSummary: return DisplayMode.TargetThicknessSummary;
         case TICDisplayMode.icdmTargetSpeedSummary: return DisplayMode.TargetSpeedSummary;
+        case TICDisplayMode.icdmCCVChange: return DisplayMode.CMVChange ;
         case TICDisplayMode.icdmCCA: return DisplayMode.CCA;
         case TICDisplayMode.icdmCCASummary: return DisplayMode.CCASummary;
         default: throw new Exception($"Unknown TICDisplayMode {Convert.ToInt16(mode)}");

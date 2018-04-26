@@ -98,11 +98,12 @@
     "Message": "success"
   },
   "CMVPercentChange": {
-    "northing": 1165.2625185966872,
-    "easting": 2738.7511710978069,
-    "displayMode": 24,
-    "returnCode": 1,
-    "timestamp": "2012-10-31T21:56:24.807",
+    "northing": 1164.4403782310362,
+    "easting": 2744.7292733398417,
+    "displayMode": 27,
+    "returnCode": 0,
+    "value": 37.209300994873047,
+    "timestamp": "2012-11-06T00:11:49.321",
     "Code": 0,
     "Message": "success"
   },
