@@ -136,7 +136,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.CacheMode = CacheMode.Partitioned;
 
             // Configure the function that maps subgrid data into the affinity map for the nodes in the grid
-            cfg.AffinityFunction = new RaptorSpatialAffinityFunction(role: ServerRoles.PSNODE, numPartitions:(int)RaptorConfig.numSpatialProcessingDivisions);
+            cfg.AffinityFunction = new ImmutableSpatialAffinityFunction();
         }
 
         public override ICache<SubGridSpatialAffinityKey, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
