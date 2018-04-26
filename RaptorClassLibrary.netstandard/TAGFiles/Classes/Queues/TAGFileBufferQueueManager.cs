@@ -35,11 +35,15 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// </summary>
         public TAGFileBufferQueueManager()
         {
+            Log.Info("Establishing Ignite and TAG file buffer queue cache contexts");
+
             // Get the ignite grid and cache references
             ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
             ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> queueCache = ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(RaptorCaches.TAGFileBufferQueueCacheName());
 
             RemoteTAGFileFilter TAGFileFilter = new RemoteTAGFileFilter();
+
+            Log.Info("Creating continuous query");
 
             // Construct the continuous query machinery
             // Set the initial query to return all elements in the cache
@@ -62,8 +66,10 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             foreach (var item in queryHandle.GetInitialQueryCursor())
             {
                 Log.Error(
-                    $"A cache entry ({item.Key}) from the TAG file buffer queue was passed back tot eh local scan query rather than intercepted by the remote filter fiulre");
+                    $"A cache entry ({item.Key}) from the TAG file buffer queue was passed back to the local scan query rather than intercepted by the remote filter fiulre");
             }
+
+            Log.Info("Completed TAG file buffer queue manager initialisation");
         }
 
         public void Dispose()

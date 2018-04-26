@@ -57,8 +57,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             // Get the ignite grid and cache references
             IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
             ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> queueCache =
-                ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(
-                    RaptorCaches.TAGFileBufferQueueCacheName());
+                ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(RaptorCaches.TAGFileBufferQueueCacheName());
 
             // Cycle looking for new work to do as TAG files arrive until aborted...
             do

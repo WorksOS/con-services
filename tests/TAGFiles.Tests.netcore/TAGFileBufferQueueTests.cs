@@ -15,12 +15,19 @@ namespace TAGFiles.Tests.netcore
     public class TAGFileBufferQueueTests
     {
         private static RaptorMutableClientServer TAGClientServer = null;
+        private static IIgnite ignite;
 
         private static void EnsureServer()
         {
-            TAGClientServer = TAGClientServer ?? new RaptorMutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT);
-
-            Assert.NotNull(TAGClientServer);
+            try
+            {
+                ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
+            }
+            catch (Exception e)
+            {
+                TAGClientServer = TAGClientServer ?? new RaptorMutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT);
+                ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
+            }
         }
 
         [Fact()]
@@ -69,7 +76,6 @@ namespace TAGFiles.Tests.netcore
             queue.Add(tagKey, tagItem);
 
             // Read it back from the cache to ensure it was added as expected.
-            IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
             ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> QueueCache =
                 ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(RaptorCaches.TAGFileBufferQueueCacheName());
 
