@@ -48,7 +48,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       IRaptorProxy raptorProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
       IFileRepository fileRepo, IRequestFactory requestFactory)
-      : base(producer, store, logger, logger.CreateLogger<FileImportV4Controller>(), serviceExceptionHandler,
+      : base(producer, store, logger, logger.CreateLogger<FileImportV2Controller>(), serviceExceptionHandler,
         raptorProxy,
         projectRepo, subscriptionRepo, fileRepo, requestFactory)
     {
@@ -121,11 +121,17 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .ProcessAsync(importedFileUpsertEvent)
       ) as ImportedFileDescriptorSingleResult;
 
-      log.LogInformation(
-        $"UpsertImportedFileV2. Completed succesfully. Response: {JsonConvert.SerializeObject(importedFile)}");
-
       // Automapper maps src.ImportedFileId to LegacyFileId, so this IS the one sent to Raptor and used to ref via TCC
-      return ReturnLongV2Result.CreateLongV2Result(HttpStatusCode.OK, importedFile.ImportedFileDescriptor.LegacyFileId);
+      ReturnLongV2Result response;
+      if (importedFile != null && importedFile.ImportedFileDescriptor != null)
+        response = ReturnLongV2Result.CreateLongV2Result(HttpStatusCode.OK, importedFile.ImportedFileDescriptor.LegacyFileId);
+      else
+        response = ReturnLongV2Result.CreateLongV2Result(HttpStatusCode.InternalServerError, -1);
+
+      log.LogInformation(
+        $"UpsertImportedFileV2. Completed succesfully. Response: {response} importedFile: {JsonConvert.SerializeObject(importedFile)}");
+      
+      return response;
     }
   }
 }

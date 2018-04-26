@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -49,6 +48,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       string userId, IProjectRepository projectRepo)
     {
       var importedFiles = await GetImportedFiles(projectUid, log, projectRepo).ConfigureAwait(false);
+      log.LogInformation($"GetImportedFileList importedFilesList contains {importedFiles.Count} importedFiles");
 
       var importedFileList = importedFiles.Select(importedFile =>
           AutoMapperUtility.Automapper.Map<ImportedFileDescriptor>(importedFile))
@@ -58,6 +58,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         await GetImportedFileProjectSettings(projectUid, userId, projectRepo).ConfigureAwait(false);
       if (deactivatedFileList != null)
       {
+        log.LogInformation($"GetImportedFileList deactivatedFileList contains {deactivatedFileList.Count} importedFiles");
         foreach (var activatedFileDescr in deactivatedFileList)
         {
           var importedFile =
@@ -326,7 +327,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         if (folderAlreadyExists == false)
           await fileRepo.MakeFolder(dstFileSpaceId, destTccPath).ConfigureAwait(false);
 
-        // this does an upsert
+        // this creates folder if it doesn't exist, and upserts file if it does
         tccCopyFileResult = await fileRepo
           .CopyFile(sourceFile.FileSpaceId, dstFileSpaceId, srcTccPathAndFile, destTccPathAndFile)
           .ConfigureAwait(false);

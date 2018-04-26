@@ -50,8 +50,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       bool creating = existing == null;
       log.LogInformation(
         creating
-          ? $"UpdateImportedFileV4. file doesn't exist already in DB: {importedFileUpsertEvent.FileDescriptor.fileName} projectUid {importedFileUpsertEvent.Project.ProjectUID} ImportedFileType: {importedFileUpsertEvent.ImportedFileTypeId} surveyedUtc {(importedFileUpsertEvent.SurveyedUtc == null ? "N/A" : importedFileUpsertEvent.SurveyedUtc.ToString())}"
-          : $"UpdateImportedFileV4. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
+          ? $"UpsertImportedFileExecutor. file doesn't exist already in DB: {importedFileUpsertEvent.FileDescriptor.fileName} projectUid {importedFileUpsertEvent.Project.ProjectUID} ImportedFileType: {importedFileUpsertEvent.ImportedFileTypeId} surveyedUtc {(importedFileUpsertEvent.SurveyedUtc == null ? "N/A" : importedFileUpsertEvent.SurveyedUtc.ToString())}"
+          : $"UpsertImportedFileExecutor. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
 
 
       // if all succeeds, send insert to Db and kafka que
@@ -112,11 +112,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           });
       }
 
-      return new ImportedFileDescriptorSingleResult(
+      var importedFile = new ImportedFileDescriptorSingleResult(
         (await ImportedFileRequestHelper.GetImportedFileList(importedFileUpsertEvent.Project.ProjectUID, log, userId, projectRepo).ConfigureAwait(false))
         .ToImmutableList()
         .FirstOrDefault(f => f.ImportedFileUid == importedFileUid)
       );
+
+      log.LogInformation(
+        $"UpsertImportedFileExecutor. entry {(importedFile.ImportedFileDescriptor == null ? "not " : "")}retrieved from DB : {JsonConvert.SerializeObject(importedFile)}");
+
+      return importedFile;
     }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)

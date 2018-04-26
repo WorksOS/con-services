@@ -48,7 +48,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 
     public Task<bool> CopyFile(string srcFilespaceId, string destFilespaceId, string srcFullName, string dstFullName)
     {
-      // todo implement in FileRepo
       return Task.FromResult(true);
     }
 
