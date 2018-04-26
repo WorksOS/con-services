@@ -81,7 +81,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 // Perform the initial query to grab all existing elements and add them to the grouper
                 foreach (var item in queryHandle.GetInitialQueryCursor())
                 {
-                    grouper.Add(item.Key, item.Value);
+                    grouper.Add(item.Key /*, item.Value*/);
                 }
 
                 // Cycle looking for new work to do as TAG files arrive until aborted...
@@ -183,9 +183,9 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// Adds a new TAG file item from the buffer queue via the remote filter supplied tot he continous query
         /// </summary>
         /// <param name="evt"></param>
-        public void Add(TAGFileBufferQueueKey key, TAGFileBufferQueueItem value)
+        public void Add(TAGFileBufferQueueKey key /*, TAGFileBufferQueueItem value*/)
         {
-            grouper.Add(key, value);
+            grouper.Add(key /*, value*/);
         }
 
         public void Dispose()

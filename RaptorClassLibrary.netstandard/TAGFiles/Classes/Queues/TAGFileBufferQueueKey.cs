@@ -20,10 +20,13 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         [AffinityKeyMapped]
         public Guid ProjectUID;
 
-        public TAGFileBufferQueueKey(string fileName, Guid projectUID)
+        public Guid AssetUID;
+
+        public TAGFileBufferQueueKey(string fileName, Guid projectUID, Guid assetUID)
         {
             FileName = fileName;
             ProjectUID = projectUID;
+            AssetUID = assetUID;
         }
     }
 }

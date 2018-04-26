@@ -2,13 +2,11 @@
 using System.IO;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
-using Apache.Ignite.Core.Cache.Configuration;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Servers;
 using VSS.VisionLink.Raptor.Servers.Client;
-using VSS.VisionLink.Raptor.Servers.Compute;
 using VSSTests.TRex.Tests.Common;
 using Xunit;
 
@@ -35,7 +33,7 @@ namespace TAGFiles.Tests.netcore
         }
 
         [Fact()]
-        public void Test_TAGFileBufferQueue_AddingTAGFiles()
+        public void Test_TAGFileBufferQueue_AddingTAGFile()
         {
             EnsureServer();
 
@@ -45,7 +43,9 @@ namespace TAGFiles.Tests.netcore
             // Load a TAG file and add it to the queue. Verify the TAG file appears in the cache
 
             string tagFileName = "TestTAGFile - TAGFile - Read - Stream.tag";
-            Guid ProjectUID = Guid.NewGuid();
+            Guid projectUID = Guid.NewGuid();
+            Guid assetUID = Guid.NewGuid();
+
             byte[] tagContent;
             using (FileStream tagFileStream =
                 new FileStream(TAGTestConsts.TestDataFilePath() + "TAGFiles\\TestTAGFile-TAGFile-Read-Stream.tag",
@@ -55,18 +55,20 @@ namespace TAGFiles.Tests.netcore
                 tagFileStream.Read(tagContent, 0, (int) tagFileStream.Length);
             }
 
-            TAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(tagFileName, ProjectUID);
+            TAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(tagFileName, projectUID, assetUID);
             TAGFileBufferQueueItem tagItem = new TAGFileBufferQueueItem
             {
                 InsertUTC = DateTime.Now,
-                ProjectUID = ProjectUID,
-                AssetUID = Guid.NewGuid(),
+                ProjectUID = projectUID,
+                AssetUID = assetUID,
                 FileName = tagFileName,
                 Content = tagContent
             };
 
+            // Perform the actual add
             queue.Add(tagKey, tagItem);
 
+            // Read it back from the cache to ensure it was added as expected.
             IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
             ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> QueueCache =
                 ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(RaptorCaches.TAGFileBufferQueueCacheName());

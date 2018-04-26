@@ -98,7 +98,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
                 // Perform the initial query to grab all existing elements and add them to the grouper
                 foreach (var item in queryHandle.GetInitialQueryCursor())
                 {
-                    grouper.Add(item.Key, item.Value);
+                    grouper.Add(item.Key /*, item.Value*/);
                 }
 
                 // Cycle looking for new work to do as TAG files arrive until aborted...

@@ -37,7 +37,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
             // Add the keys for the given events into the Project/Asset mapping buckets ready for a processing context
             // to acquire them
-            tagFileHandler.Add(entry.Key, entry.Value);
+            tagFileHandler.Add(entry.Key /*, entry.Value*/);
 
             // Advise the caller this item is not filtered [as have already dealt with it so no futher 
             // processing of the item is required.
@@ -50,7 +50,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
             // Add the keys for the given events into the Project/Asset mapping buckets ready for a processing context
             // to acquire them
-            tagFileHandler.Add(evt.Key, evt.Value);
+            tagFileHandler.Add(evt.Key /*, evt.Value*/);
 
             // Advise the caller this item is not filtered [as have already dealt with it so no futher 
             // processing of the item is required.

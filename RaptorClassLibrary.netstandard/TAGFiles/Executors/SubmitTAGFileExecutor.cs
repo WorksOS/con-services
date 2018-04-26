@@ -68,10 +68,11 @@ namespace VSS.TRex.TAGFiles.Executors
             // ...
 
               Guid projectUID = Guid.NewGuid(); // todo convert to use GUID
+            Guid assetUID = Guid.NewGuid(); // todo convert to use GUID
 
-              TAGFileBufferQueue queue = new TAGFileBufferQueue();
+            TAGFileBufferQueue queue = new TAGFileBufferQueue();
 
-              TAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(TAGFileName, projectUID);
+              TAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(TAGFileName, projectUID, assetUID);
               // todo AssetID is now GUID
               TAGFileBufferQueueItem tagItem = new TAGFileBufferQueueItem
                                                {
