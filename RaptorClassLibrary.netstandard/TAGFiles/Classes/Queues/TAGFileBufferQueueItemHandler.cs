@@ -5,8 +5,6 @@ using System.Reflection;
 using System.Threading;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
-using Apache.Ignite.Core.Cache.Query;
-using Apache.Ignite.Core.Cache.Query.Continuous;
 using log4net;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
@@ -20,7 +18,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private static TAGFileBufferQueueItemHandler _Instance = null;
+        private static TAGFileBufferQueueItemHandler _Instance;
+
         public static TAGFileBufferQueueItemHandler Instance() => _Instance ?? (_Instance = new TAGFileBufferQueueItemHandler());
 
         /// <summary>
@@ -58,113 +57,92 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             // Get the ignite grid and cache references
             IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
             ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> queueCache =
-                ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(RaptorCaches.TAGFileBufferQueueCacheName());
+                ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(
+                    RaptorCaches.TAGFileBufferQueueCacheName());
 
-            RemoteTAGFileFilter TAGFileFilter = new RemoteTAGFileFilter();
-
-            // Construct the continuous query machinery
-            // Set the initial query to return all elements in the cache
-            // Instantiate the queryHandle and start the continous query on the remote nodes
-            // Note: Only cache items held on this local node will be handled here
-            using (IContinuousQueryHandle<ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem>> queryHandle = queueCache.QueryContinuous
-                (qry: new ContinuousQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(new LocalTAGFileListener())
-                {
-                    Local = false,
-                    Filter = TAGFileFilter
-                },
-                initialQry: new ScanQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem>
-                {
-                    Local = false,
-                    Filter = TAGFileFilter
-                }))
+            // Cycle looking for new work to do as TAG files arrive until aborted...
+            do
             {
-                // Perform the initial query to grab all existing elements and add them to the grouper
-                foreach (var item in queryHandle.GetInitialQueryCursor())
+                var hadWorkToDo = false;
+
+                // Check to see if there is a work package to feed to the processing pipline
+                // -> Ask the grouper for a package 
+                var package = grouper.Extract(ProjectsToAvoid, out Guid projectUID);
+
+                if (package != null)
                 {
-                    grouper.Add(item.Key /*, item.Value*/);
+                    hadWorkToDo = true;
+
+                    // Add the project to the avoid list
+                    ProjectsToAvoid.Add(projectUID);
+
+                    List<TAGFileBufferQueueItem> TAGQueueItems = null;
+                    List<ProcessTAGFileRequestFileItem> fileItems = null;
+                    try
+                    {
+                        TAGQueueItems = package.Select(x => queueCache.Get(x)).ToList();
+                        fileItems = TAGQueueItems.Select(x =>
+                            new ProcessTAGFileRequestFileItem
+                            {
+                                FileName = x.FileName,
+                                TagFileContent = x.Content,
+                            }).ToList();
+                    }
+                    catch (Exception E)
+                    {
+                        Log.Error(
+                            $"Error, exception {E} occurred while attempting to retrieve TAG files from the TAG file buffer queue cache");
+                    }
+
+                    if (TAGQueueItems?.Count > 0)
+                    {
+                        // -> Supply the package to the processor
+                        ProcessTAGFileRequest request = new ProcessTAGFileRequest();
+                        ProcessTAGFileResponse response = request.Execute(new ProcessTAGFileRequestArgument
+                        {
+                            AssetUID = TAGQueueItems[0].AssetUID,
+                            ProjectUID = projectUID,
+                            TAGFiles = fileItems
+                        });
+
+                        // -> Remove the set of processed TAG files from the buffer queue cache (depending on processing status?...)
+                        foreach (var tagFileResponse in response.Results)
+                        {
+                            try
+                            {
+                                if (!tagFileResponse.Success)
+                                    Log.Error(
+                                        $"TAG file failed to process, with exception {tagFileResponse.Exception}");
+
+                                queueCache.Remove(new TAGFileBufferQueueKey
+                                {
+                                    ProjectUID = projectUID,
+                                    FileName = tagFileResponse.FileName
+                                });
+                            }
+                            catch (Exception e)
+                            {
+                                Log.Error(
+                                    $"Exception {e} occurred while removing TAG file {tagFileResponse.FileName} in project {projectUID} from the TAG file buffer queue");
+                                throw;
+                            }
+                        }
+
+                        // Remove the project from the avoid list
+                        ProjectsToAvoid.Remove(projectUID);
+                    }
                 }
 
-                // Cycle looking for new work to do as TAG files arrive until aborted...
-                do
+                // if there was no work to do in the last epoch, sleep for a bit until the next check epoch
+                if (!hadWorkToDo)
                 {
-                    var hadWorkToDo = false;
+                    Log.Info($"ProcessTAGFilesFromGrouper sleeping for {kTAGFileBufferQueueServiceCheckIntervalMS}ms");
 
-                    // Check to see if there is a work package to feed to the processing pipline
-                    // -> Ask the grouper for a package 
-                    var package = grouper.Extract(ProjectsToAvoid, out Guid projectUID);
+                    waitHandle.WaitOne(kTAGFileBufferQueueServiceCheckIntervalMS);
+                }
+            } while (!aborted);
 
-                    if (package != null)
-                    {
-                        hadWorkToDo = true;
-
-                        // Add the project to the avoid list
-                        ProjectsToAvoid.Add(projectUID);
-
-                        List<TAGFileBufferQueueItem> TAGQueueItems = null;
-                        List<ProcessTAGFileRequestFileItem> fileItems = null;
-                        try
-                        {
-                            TAGQueueItems = package.Select(x => queueCache.Get(x)).ToList();
-                            fileItems = TAGQueueItems.Select(x =>
-                                new ProcessTAGFileRequestFileItem
-                                {
-                                    FileName = x.FileName,
-                                    TagFileContent = x.Content,
-                                }).ToList();
-                        }
-                        catch (Exception E)
-                        {
-                            Log.Error($"Error, exception {E} occurred while attempting to retrieve TAG files from the TAG file buffer queue cache");
-                        }
-
-                        if (TAGQueueItems?.Count > 0)
-                        {
-                            // -> Supply the package to the processor
-                            ProcessTAGFileRequest request = new ProcessTAGFileRequest();
-                            ProcessTAGFileResponse response = request.Execute(new ProcessTAGFileRequestArgument
-                            {
-                                AssetUID = TAGQueueItems[0].AssetUID,
-                                ProjectUID = projectUID,
-                                TAGFiles = fileItems
-                            });
-
-                            // -> Remove the set of processed TAG files from the buffer queue cache (depending on processing status?...)
-                            foreach (var tagFileResponse in response.Results)
-                            {
-                                try
-                                {
-                                    if (!tagFileResponse.Success)
-                                        Log.Error($"TAG file failed to process, with exception {tagFileResponse.Exception}");
-
-                                    queueCache.Remove(new TAGFileBufferQueueKey
-                                    {
-                                        ProjectUID = projectUID,
-                                        FileName = tagFileResponse.FileName
-                                    });
-                                }
-                                catch (Exception e)
-                                {
-                                    Log.Error($"Exception {e} occurred while removing TAG file {tagFileResponse.FileName} in project {projectUID} from the TAG file buffer queue");
-                                    throw;
-                                }
-                            }
-
-                            // Remove the project from the avoid list
-                            ProjectsToAvoid.Remove(projectUID);
-                        }
-                    }
-
-                    // if there was no work to do in the last epoch, sleep for a bit until the next check epoch
-                    if (!hadWorkToDo)
-                    {
-                        Log.Info($"ProcessTAGFilesFromGrouper sleeping for {kTAGFileBufferQueueServiceCheckIntervalMS}ms");
-
-                        waitHandle.WaitOne(kTAGFileBufferQueueServiceCheckIntervalMS);
-                    }
-                } while (!aborted);
-            }
-
-            Log.Info($"ProcessTAGFilesFromGrouper completed executing");
+            Log.Info("ProcessTAGFilesFromGrouper completed executing");
         }
 
         /// <summary>
@@ -182,7 +160,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// <summary>
         /// Adds a new TAG file item from the buffer queue via the remote filter supplied tot he continous query
         /// </summary>
-        /// <param name="evt"></param>
+        /// <param name="key"></param>
         public void Add(TAGFileBufferQueueKey key /*, TAGFileBufferQueueItem value*/)
         {
             grouper.Add(key /*, value*/);
@@ -194,6 +172,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             waitHandle?.Set();
             waitHandle?.Dispose();
             waitHandle = null;
+            thread.Abort();
         }
     }
 }

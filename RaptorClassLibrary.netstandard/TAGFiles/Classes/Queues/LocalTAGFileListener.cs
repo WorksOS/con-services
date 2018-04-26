@@ -29,7 +29,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             {
                 try
                 {
-                    Grouper.Add(evt.Key /*, evt.Value*/);
+                    Grouper?.Add(evt.Key /*, evt.Value*/);
                 }
                 catch (Exception e)
                 {
