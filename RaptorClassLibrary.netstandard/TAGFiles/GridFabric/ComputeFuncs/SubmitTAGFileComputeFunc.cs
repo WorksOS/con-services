@@ -18,7 +18,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
         /// <summary>
         /// Default no-arg constructor that orients the request to the available TAG processing server nodes on the mutable grid projection
         /// </summary>
-        public SubmitTAGFileComputeFunc() : base(RaptorGrids.RaptorImmutableGridName(), ServerRoles.TAG_PROCESSING_NODE)
+        public SubmitTAGFileComputeFunc() : base(RaptorGrids.RaptorMutableGridName(), ServerRoles.TAG_PROCESSING_NODE)
         {
         }
 
@@ -29,7 +29,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
         /// <returns></returns>
         public SubmitTAGFileResponse Invoke(SubmitTAGFileRequestArgument arg)
         {
-            return SubmitTAGFileExecutor.Execute(arg.ProjectID, arg.AssetID, arg.TagFileContent);
+            return SubmitTAGFileExecutor.Execute(arg.ProjectID, arg.AssetID, arg.TAGFileName, arg.TagFileContent);
         }
     }
 }

@@ -11,6 +11,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses;
+using VSS.TRex.TAGFiles.GridFabric.Arguments;
+using VSS.TRex.TAGFiles.GridFabric.Requests;
 using VSS.Velociraptor.DesignProfiling;
 using VSS.VisionLink.Analytics.Operations;
 using VSS.VisionLink.Raptor;
@@ -26,6 +28,7 @@ using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Events;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.GridFabric.Queues;
+using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Rendering.Servers.Client;
 using VSS.VisionLink.Raptor.Servers.Client;
@@ -34,6 +37,7 @@ using VSS.VisionLink.Raptor.Services.Surfaces;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.Surfaces;
+using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Volumes;
 using VSS.VisionLink.Raptor.Volumes.GridFabric.Arguments;
@@ -817,5 +821,37 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
             MessageBox.Show($"{numPatches} patches requested in {sw.Elapsed}, {(numPatches * 1024.0) / (sw.ElapsedMilliseconds / 1000.0)} per second");
         }
+
+    private void btnRedraw_Click_1(object sender, EventArgs e)
+    {
+
+    }
+
+      private void button7_Click(object sender, EventArgs e)
+      {
+
+        Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
+
+        SubmitTAGFileRequest request = new SubmitTAGFileRequest();
+        SubmitTAGFileRequestArgument arg = null;
+        string fileName =
+            "J:\\PP\\Construction\\Office software\\SiteVision Office\\Test Files\\VisionLink Data\\Southern Motorway\\TAYLORS COMP\\IgniteTestData\\0201J004SV--TAYLORS COMP--110504215856.tag";
+
+        using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+        {
+          byte[] bytes = new byte[fs.Length];
+          fs.Read(bytes, 0, bytes.Length);
+
+          arg = new SubmitTAGFileRequestArgument()
+                {
+                    ProjectID = ID(),
+                    AssetID = machine.ID,
+                    TAGFileName = "0201J004SV--TAYLORS COMP--110504215856.tag",
+                    TagFileContent = bytes
+                };
+
+        }
+        request.Execute(arg);
+      }
     }
 }
