@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
@@ -148,6 +149,26 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             return mutableRaptorGrid.GetOrCreateCache<SubGridSpatialAffinityKey, byte[]>(CacheCfg);
         }
 
+        public void ConfigureTAGFileBufferQueueCache(CacheConfiguration cfg)
+        {
+            cfg.Name = RaptorCaches.TAGFileBufferQueueCacheName();
+
+            cfg.KeepBinaryInStore = true;
+
+            // Replicate the maps across nodes
+            cfg.CacheMode = CacheMode.Partitioned;
+
+            // No backups for now
+            cfg.Backups = 0;
+
+            cfg.DataRegionName = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION;
+        }
+
+        public /*ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>*/ void InstantiateTAGFileBufferQueueCacheReference(CacheConfiguration CacheCfg)
+        {
+            mutableRaptorGrid.GetOrCreateCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> (CacheCfg);
+        }
+        
         public static bool SetGridActive(string gridName)
         {
             // Get an ignite reference to the named grid
@@ -203,6 +224,10 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             CacheCfg = new CacheConfiguration();
             ConfigureMutableSpatialCache(CacheCfg);
             SpatialMutableCache = InstantiateSpatialCacheReference(CacheCfg);
+
+            CacheCfg = new CacheConfiguration();
+            ConfigureTAGFileBufferQueueCache(CacheCfg);
+            InstantiateTAGFileBufferQueueCacheReference(CacheCfg);            
         }
 
         /// <summary>

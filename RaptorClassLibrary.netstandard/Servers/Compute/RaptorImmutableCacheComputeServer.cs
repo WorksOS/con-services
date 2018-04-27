@@ -95,11 +95,6 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.BinaryConfiguration = new BinaryConfiguration(typeof(TestQueueItem));
         }
 
-//        public override void ConfigureNonSpatialMutableCache(CacheConfiguration cfg)
-//        {
-//            base.ConfigureNonSpatialMutableCache(cfg);
-//        }
-
         public override void ConfigureNonSpatialImmutableCache(CacheConfiguration cfg)
         {
             base.ConfigureNonSpatialImmutableCache(cfg);
@@ -117,11 +112,6 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
         {
             return immutableRaptorGrid.GetOrCreateCache<string, byte[]>(CacheCfg);
         }
-
-//        public override void ConfigureMutableSpatialCache(CacheConfiguration cfg)
-//        {
-//            base.ConfigureMutableSpatialCache(cfg);
-//        }
 
         public override void ConfigureImmutableSpatialCache(CacheConfiguration cfg)
         {
