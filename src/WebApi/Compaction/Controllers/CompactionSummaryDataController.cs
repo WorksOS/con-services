@@ -30,6 +30,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <remarks>
   /// There is no response caching for this provided because at the moment the caching middleware doesn't handle requests with more than one filter.
   /// </remarks>
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class CompactionSummaryDataController : CompactionDataBaseController
   {
     /// <inheritdoc />
