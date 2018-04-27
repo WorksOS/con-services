@@ -22,11 +22,23 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
         public Guid AssetUID;
 
+        /// <summary>
+        /// TAG File Buffer Queue key constructor taking project, asset and filename
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="projectUID"></param>
+        /// <param name="assetUID"></param>
         public TAGFileBufferQueueKey(string fileName, Guid projectUID, Guid assetUID)
         {
             FileName = fileName;
             ProjectUID = projectUID;
             AssetUID = assetUID;
         }
+
+        /// <summary>
+        /// Provides string representation of the state of the key
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString() => $"Project: {ProjectUID}, Asset: {AssetUID}, FileName: {FileName}";
     }
 }

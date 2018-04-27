@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses;
+using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
 using VSS.Velociraptor.DesignProfiling;
@@ -405,6 +406,31 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             writer.WriteLine();
         }
 
+        private void writeTAGFileBufferQueueKeys(string title, StreamWriter writer, ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> cache)
+        {
+            int count = 0;
+
+            writer.WriteLine(title);
+            writer.WriteLine("#####################");
+            writer.WriteLine();
+
+            if (cache == null)
+            {
+                return;
+            }
+
+            var scanQuery = new ScanQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem>();
+            IQueryCursor<ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem>> queryCursor = cache.Query(scanQuery);
+            scanQuery.PageSize = 1; // Restrict the number of keys requested in each page to reduce memory consumption
+
+            foreach (ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem> cacheEntry in queryCursor)
+            {
+                writer.WriteLine($"{count++}:{cacheEntry.Key}, size = {cacheEntry.Value.Content.Length}");
+            }
+
+            writer.WriteLine();
+        }
+
         private void WriteKeysSpatial(string title, StreamWriter writer, ICache<SubGridSpatialAffinityKey, byte[]> cache)
         {
             int count = 0;
@@ -518,6 +544,14 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                             try
                             {
                                 WriteKeysSpatial(RaptorCaches.MutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, byte[]>(RaptorCaches.MutableSpatialCacheName()));
+                            }
+                            catch (Exception E)
+                            {
+                                MessageBox.Show($"Exception occurred: {E}");
+                            }
+                            try
+                            {
+                                writeTAGFileBufferQueueKeys(RaptorCaches.TAGFileBufferQueueCacheName(), writer, ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(RaptorCaches.TAGFileBufferQueueCacheName()));
                             }
                             catch (Exception E)
                             {
