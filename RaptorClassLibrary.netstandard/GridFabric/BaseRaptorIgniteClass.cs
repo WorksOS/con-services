@@ -4,6 +4,7 @@ using Apache.Ignite.Core.Compute;
 using log4net;
 using System;
 using System.Reflection;
+using Apache.Ignite.Core.Common;
 using VSS.VisionLink.Raptor.Servers;
 
 namespace VSS.VisionLink.Raptor.GridFabric
@@ -103,8 +104,34 @@ namespace VSS.VisionLink.Raptor.GridFabric
         {
             if (!string.IsNullOrEmpty(Role))
             {
-                _group = _ignite?.GetCluster().ForRemotes().ForAttribute($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{Role}", "True");
+                if (_ignite == null)
+                {
+                    Log.Info("Ignite reference is null in AcquireIgniteTopologyProjections");
+                }
+
+                //_group = _ignite?.GetCluster().ForRemotes().ForAttribute($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{Role}", "True");
+                _group = _ignite?.GetCluster().ForAttribute($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{Role}", "True");
+
+                if (_group == null)
+                {
+                    Log.Info($"Cluster group reference is null in AcquireIgniteTopologyProjections for role {Role} on grid {GridName}");
+                }
+
+                if (_group?.GetNodes().Count == 0)
+                {
+                    Log.Info($"_group cluster topology is empty for role {Role} on grid {GridName}");
+                }
+
                 _compute = _group?.GetCompute();
+
+                if (_compute == null)
+                {
+                    Log.Info($"_compute projection is null in AcquireIgniteTopologyProjections on grid {GridName}");
+                }
+            }
+            else
+            {
+                Log.Info("Role name not defined when acquiring topology projection");
             }
         }
     }
