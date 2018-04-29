@@ -3,6 +3,7 @@ using Apache.Ignite.Core.Services;
 using log4net;
 using System;
 using System.Reflection;
+using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.GridFabric.NodeFilters;
 
@@ -37,10 +38,12 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         /// </summary>
         public TAGFileBufferQueueServiceProxy()
         {
-            IIgnite _ignite = RaptorGridFactory.Grid(RaptorGrids.RaptorImmutableGridName());
+            IIgnite _ignite = RaptorGridFactory.Grid(RaptorGrids.RaptorMutableGridName());
+
+            //var cacheGroup = _ignite.GetCluster().ForCacheNodes(RaptorCaches.TAGFileBufferQueueCacheName());
 
             // Get an instance of IServices for the cluster group.
-            services = _ignite.GetCluster().GetServices();
+            services = _ignite.GetServices();
         }
 
         /// <summary>
@@ -51,6 +54,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
             // Attempt to cancel any previously deployed service
             try
             {
+                Log.Info("Cancelling deployed service");
                 services.Cancel(ServiceName);
             }
             catch (Exception E)
@@ -61,6 +65,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
 
             try
             {
+                Log.Info("Deploying new service");
+
                 services.Deploy(new ServiceConfiguration()
                 {
                     Name = ServiceName,
@@ -78,6 +84,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
 
             try
             {
+                Log.Info("Obtaining service proxy");
                 proxy = services.GetServiceProxy<ITAGFileBufferQueueService>(ServiceName);
             }
             catch (Exception E)

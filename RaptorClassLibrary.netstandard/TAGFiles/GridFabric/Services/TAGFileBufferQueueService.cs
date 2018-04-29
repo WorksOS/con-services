@@ -9,11 +9,10 @@ using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Query;
 using Apache.Ignite.Core.Cache.Query.Continuous;
+using Apache.Ignite.Core.Resource;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
-using VSS.VisionLink.Raptor.Servers;
-using VSS.VisionLink.Raptor.Services;
 using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Requests;
 using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Responses;
@@ -24,7 +23,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// Service metaphor providing access andmanagement control over designs stored for site models
     /// </summary>
     [Serializable]
-    public class TAGFileBufferQueueService : BaseRaptorService, IService, ITAGFileBufferQueueService
+    public class TAGFileBufferQueueService : IService, ITAGFileBufferQueueService
     {
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -50,12 +49,13 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         /// <summary>
         /// The event wait handle used to mediate sleep periods between operation epochs of the service
         /// </summary>
+        [NonSerialized]
         private EventWaitHandle waitHandle;
 
         /// <summary>
         /// Default no-args constructor that tailors this service to apply to TAG processign node in the mutable data grid
         /// </summary>
-        public TAGFileBufferQueueService() : base(RaptorGrids.RaptorMutableGridName(), ServerRoles.TAG_PROCESSING_NODE)
+        public TAGFileBufferQueueService()
         {
         }
 
@@ -83,17 +83,32 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
             List<Guid> ProjectsToAvoid = new List<Guid>();
 
             // Get the ignite grid and cache references
-            IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
+
+            IIgnite _ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
+
+            if (_ignite == null)
+            {
+                Log.Info("Ignite reference in service is null");
+            }
+
             ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> queueCache =
-                ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(RaptorCaches.TAGFileBufferQueueCacheName());
+                _ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(RaptorCaches.TAGFileBufferQueueCacheName());
+
+            ProcessTAGFileRequest request = new ProcessTAGFileRequest();
 
             // Construct the continuous query machinery
             // Set the initial query to return all elements in the cache
             // Instantiate the queryHandle and start the continous query on the remote nodes
             // Note: Only cache items held on this local node will be handled here
             using (IContinuousQueryHandle<ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem>> queryHandle = queueCache.QueryContinuous
-                (qry: new ContinuousQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(new LocalTAGFileListener()) { Local = true },
-                    initialQry: new ScanQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem> { Local = true}))
+                (qry: new ContinuousQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(new LocalTAGFileListener())
+                {
+                    Local = true
+                },
+                initialQry: new ScanQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem>
+                {
+                    Local = true
+                }))
             {
                 // Perform the initial query to grab all existing elements and add them to the grouper
                 foreach (var item in queryHandle.GetInitialQueryCursor())
@@ -137,7 +152,6 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
                         if (TAGQueueItems?.Count > 0)
                         {
                             // -> Supply the package to the processor
-                            ProcessTAGFileRequest request = new ProcessTAGFileRequest();
                             ProcessTAGFileResponse response = request.Execute(new ProcessTAGFileRequestArgument
                             {
                                 AssetUID = TAGQueueItems[0].AssetUID,

@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using VSS.TRex.TAGFiles.Classes.Queues;
+using VSS.TRex.TAGFiles.GridFabric.Arguments;
+using VSS.TRex.TAGFiles.GridFabric.Requests;
+using VSS.TRex.TAGFiles.GridFabric.Services;
 using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Requests;
@@ -22,15 +25,39 @@ namespace VSS.VisionLink.Raptor.Client
 {
     class Program
     {
-        private static ILog Log = null;
-//        private static int tAGFileCount = 0;
+        private static ILog Log;
+        //        private static int tAGFileCount = 0;
+
+        public static void SubmitSingleTAGFile(long projectID, long assetID, string fileName)
+        {
+            SubmitTAGFileRequest request = new SubmitTAGFileRequest();
+            SubmitTAGFileRequestArgument arg;
+
+            using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+            {
+                byte[] bytes = new byte[fs.Length];
+                fs.Read(bytes, 0, bytes.Length);
+
+                arg = new SubmitTAGFileRequestArgument()
+                {
+                    ProjectID = projectID,
+                    AssetID = assetID,
+                    TagFileContent = bytes,
+                    TAGFileName = fileName
+                };
+            }
+
+            Log.Info($"Submitting TAG file {fileName}");
+
+            request.Execute(arg);
+        }
 
         public static void ProcessSingleTAGFile(long projectID, string fileName)
         {
             Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
 
             ProcessTAGFileRequest request = new ProcessTAGFileRequest();
-            ProcessTAGFileRequestArgument arg = null;
+            ProcessTAGFileRequestArgument arg;
 
             using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
             {
@@ -63,7 +90,7 @@ namespace VSS.VisionLink.Raptor.Client
             ProcessTAGFileRequestArgument arg = new ProcessTAGFileRequestArgument()
             {
                 ProjectID = projectID,
-                AssetID = machine.ID
+                AssetID = machine.ID                
             };
 
             arg.TAGFiles = new List<ProcessTAGFileRequestFileItem>();
@@ -82,12 +109,21 @@ namespace VSS.VisionLink.Raptor.Client
             request.Execute(arg);
         }
 
+        public static void SubmitTAGFiles(long projectID, string[] files)
+        {
+            Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
+
+            foreach (string file in files)
+                SubmitSingleTAGFile(projectID, machine.ID, file);
+        }
+
         public static void ProcessTAGFilesInFolder(long projectID, string folder)
         {
             // If it is a single file, just process it
             if (File.Exists(folder))
             {
-                ProcessTAGFiles(projectID, new string[] { folder });
+                // ProcessTAGFiles(projectID, new string[] { folder });
+                SubmitTAGFiles(projectID, new [] { folder });
             }
             else
             {
@@ -97,7 +133,8 @@ namespace VSS.VisionLink.Raptor.Client
                     ProcessTAGFilesInFolder(projectID, f);
                 }
 
-                ProcessTAGFiles(projectID, Directory.GetFiles(folder));
+                // ProcessTAGFiles(projectID, Directory.GetFiles(folder));
+                SubmitTAGFiles(projectID, Directory.GetFiles(folder));
             }
         }
 
@@ -114,7 +151,7 @@ namespace VSS.VisionLink.Raptor.Client
         static void Main(string[] args)
         {
             string logFileName = System.Diagnostics.Process.GetCurrentProcess().ProcessName + ".log";
-            log4net.GlobalContext.Properties["LogName"] = logFileName;
+            GlobalContext.Properties["LogName"] = logFileName;
             log4net.Config.XmlConfigurator.Configure();
 
             Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -130,8 +167,8 @@ namespace VSS.VisionLink.Raptor.Client
                     return;
                 }
 
-                long projectID = -1;
-                string folderPath = "";
+                long projectID;
+                string folderPath;
                 try
                 {
                     projectID = Convert.ToInt64(args[0]);
@@ -146,13 +183,24 @@ namespace VSS.VisionLink.Raptor.Client
                 if (projectID == -1)
                 {
                     return;
-                }
+               }
 
                 // Obtain a TAGFileProcessing client server
                 TAGFileProcessingClientServer TAGServer = new TAGFileProcessingClientServer();
 
+                // Ensure the continuous query service is installed
+                TAGFileBufferQueueServiceProxy proxy = new TAGFileBufferQueueServiceProxy();
+                try
+                {
+                    proxy.Deploy();
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Exception occurred deploying service: {e}");
+                }
+
                 // Obtain a TAG file buffer queue manager
-                TAGFileBufferQueueManager queueManager = new TAGFileBufferQueueManager();
+                TAGFileBufferQueueManager queueManager = new TAGFileBufferQueueManager(true);
 
                 ProcessTAGFilesInFolder(projectID, folderPath);
 

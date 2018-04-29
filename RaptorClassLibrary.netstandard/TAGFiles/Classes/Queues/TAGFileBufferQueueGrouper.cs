@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using log4net.Core;
 
 namespace VSS.TRex.TAGFiles.Classes.Queues
 {
@@ -43,7 +44,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// Adds another TAG file buffer queue key into the tracked groups for processing
         /// </summary>
         /// <param name="key"></param>
-        /// <param name="value"></param>
         public void Add(TAGFileBufferQueueKey key /*, TAGFileBufferQueueItem _value*/)
         {
             lock (this)

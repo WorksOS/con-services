@@ -1,6 +1,7 @@
 ﻿using System;
 using Apache.Ignite.Core.Cache.Event;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using log4net;
 
@@ -25,18 +26,26 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             // Add the keys for the given events into the Project/Asset mapping buckets ready for a processing context
             // to acquire them. 
 
+            Log.Info($"About to add TAG file items to the grouper");
+            int count = 0;
+
             foreach (var evt in evts)
             {
+                count++;
                 try
                 {
                     Grouper?.Add(evt.Key /*, evt.Value*/);
+                    Log.Info($"Added TAG file item [{evt.Key}] to the grouper");
                 }
                 catch (Exception e)
                 {
                     Log.Error(
-                        $"Exception {e} occurred addign TAG file item {evt.Key} to the grouper from the continuous query");
+                        $"Exception {e} occurred addign TAG file item {evt.Key} to the grouper");
                 }
             }
+
+            Log.Info($"Added {count} TAG file items to the grouper");
+
         }
     }
 }

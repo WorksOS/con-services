@@ -33,7 +33,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// No-arg constructor. Instantiates the continouus query and performs initial scan of elements that the remote filter 
         /// will populate into the node-local groupers within the mutable grid./
         /// </summary>
-        public TAGFileBufferQueueManager()
+        public TAGFileBufferQueueManager(bool runLocally)
         {
             Log.Info("Establishing Ignite and TAG file buffer queue cache contexts");
 
@@ -52,12 +52,12 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             queryHandle = queueCache.QueryContinuous
                 (qry: new ContinuousQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(new LocalTAGFileListener())
                     {
-                        Local = false,
+                        Local = runLocally,
                         Filter = TAGFileFilter
                     },
                     initialQry: new ScanQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem>
                     {
-                        Local = false,
+                        Local = runLocally,
                         Filter = TAGFileFilter
                     });
 
