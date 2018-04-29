@@ -1,7 +1,6 @@
 ﻿using System;
 using Apache.Ignite.Core.Cache.Event;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using log4net;
 
@@ -11,11 +10,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     {
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
-        /// <summary>
-        /// The TAG file grouper to submit new TAG cache items discovered by the continuous query
-        /// </summary>
-        public TAGFileBufferQueueGrouper Grouper { get; set; }
 
         /// <summary>
         /// Evnet called whenever there are new items in the TAG file buffer queue discovered by the continuous query
@@ -34,7 +28,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 count++;
                 try
                 {
-                    Grouper?.Add(evt.Key /*, evt.Value*/);
+                    TAGFileBufferQueueItemHandler.Instance().Add(evt.Key /*, evt.Value*/);
                     Log.Info($"Added TAG file item [{evt.Key}] to the grouper");
                 }
                 catch (Exception e)
@@ -45,7 +39,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             }
 
             Log.Info($"Added {count} TAG file items to the grouper");
-
         }
     }
 }

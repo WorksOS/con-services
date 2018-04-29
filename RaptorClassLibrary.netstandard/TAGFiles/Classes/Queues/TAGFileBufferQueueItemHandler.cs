@@ -57,7 +57,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             // Get the ignite grid and cache references
             IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
             ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> queueCache =
-                ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(RaptorCaches.TAGFileBufferQueueCacheName());
+                ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(
+                    RaptorCaches.TAGFileBufferQueueCacheName());
 
             // Cycle looking for new work to do as TAG files arrive until aborted...
             do
@@ -66,69 +67,76 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
                 // Check to see if there is a work package to feed to the processing pipline
                 // -> Ask the grouper for a package 
-                var package = grouper.Extract(ProjectsToAvoid, out long projectID);
+                var package = grouper.Extract(ProjectsToAvoid, out long projectID)?.ToList();
 
-                if (package != null)
+                Log.Info($"Extracted package from grouper, ProjectID:{projectID}, with {package?.Count} items");
+
+                if (package?.Count > 0)
                 {
                     hadWorkToDo = true;
 
                     // Add the project to the avoid list
                     ProjectsToAvoid.Add(projectID);
 
-                    List<TAGFileBufferQueueItem> TAGQueueItems = null;
-                    List<ProcessTAGFileRequestFileItem> fileItems = null;
                     try
                     {
-                        TAGQueueItems = package.Select(x => queueCache.Get(x)).ToList();
-                        fileItems = TAGQueueItems.Select(x =>
-                            new ProcessTAGFileRequestFileItem
-                            {
-                                FileName = x.FileName,
-                                TagFileContent = x.Content,
-                            }).ToList();
-                    }
-                    catch (Exception E)
-                    {
-                        Log.Error(
-                            $"Error, exception {E} occurred while attempting to retrieve TAG files from the TAG file buffer queue cache");
-                    }
-
-                    if (TAGQueueItems?.Count > 0)
-                    {
-                        // -> Supply the package to the processor
-                        ProcessTAGFileRequest request = new ProcessTAGFileRequest();
-                        ProcessTAGFileResponse response = request.Execute(new ProcessTAGFileRequestArgument
+                        List<TAGFileBufferQueueItem> TAGQueueItems = null;
+                        List<ProcessTAGFileRequestFileItem> fileItems = null;
+                        try
                         {
-                            //AssetUID = TAGQueueItems[0].AssetUID,
-                            //ProjectUID = TAGQueueItems[0].ProjectUID,
-                            AssetID = TAGQueueItems[0].AssetID,
-                            ProjectID = TAGQueueItems[0].ProjectID,
-                            TAGFiles = fileItems
-                        });
-
-                        // -> Remove the set of processed TAG files from the buffer queue cache (depending on processing status?...)
-                        foreach (var tagFileResponse in response.Results)
-                        {
-                            try
-                            {
-                                if (!tagFileResponse.Success)
-                                    Log.Error(
-                                        $"TAG file failed to process, with exception {tagFileResponse.Exception}");
-
-                                queueCache.Remove(new TAGFileBufferQueueKey
+                            TAGQueueItems = package.Select(x => queueCache.Get(x)).ToList();
+                            fileItems = TAGQueueItems.Select(x =>
+                                new ProcessTAGFileRequestFileItem
                                 {
-                                    ProjectID = projectID,
-                                    FileName = tagFileResponse.FileName
-                                });
-                            }
-                            catch (Exception e)
-                            {
-                                Log.Error(
-                                    $"Exception {e} occurred while removing TAG file {tagFileResponse.FileName} in project {projectID} from the TAG file buffer queue");
-                                throw;
-                            }
+                                    FileName = x.FileName,
+                                    TagFileContent = x.Content,
+                                }).ToList();
+                        }
+                        catch (Exception E)
+                        {
+                            Log.Error(
+                                $"Error, exception {E} occurred while attempting to retrieve TAG files from the TAG file buffer queue cache");
                         }
 
+                        if (TAGQueueItems?.Count > 0)
+                        {
+                            // -> Supply the package to the processor
+                            ProcessTAGFileRequest request = new ProcessTAGFileRequest();
+                            ProcessTAGFileResponse response = request.Execute(new ProcessTAGFileRequestArgument
+                            {
+                                //AssetUID = TAGQueueItems[0].AssetUID,
+                                //ProjectUID = TAGQueueItems[0].ProjectUID,
+                                AssetID = TAGQueueItems[0].AssetID,
+                                ProjectID = TAGQueueItems[0].ProjectID,
+                                TAGFiles = fileItems
+                            });
+
+                            // -> Remove the set of processed TAG files from the buffer queue cache (depending on processing status?...)
+                            foreach (var tagFileResponse in response.Results)
+                            {
+                                try
+                                {
+                                    if (!tagFileResponse.Success)
+                                        Log.Error(
+                                            $"TAG file failed to process, with exception {tagFileResponse.Exception}");
+
+                                    queueCache.Remove(new TAGFileBufferQueueKey
+                                    {
+                                        ProjectID = projectID,
+                                        FileName = tagFileResponse.FileName
+                                    });
+                                }
+                                catch (Exception e)
+                                {
+                                    Log.Error(
+                                        $"Exception {e} occurred while removing TAG file {tagFileResponse.FileName} in project {projectID} from the TAG file buffer queue");
+                                    throw;
+                                }
+                            }
+                        }
+                    }
+                    finally
+                    {
                         // Remove the project from the avoid list
                         ProjectsToAvoid.Remove(projectID);
                     }
@@ -156,6 +164,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             grouper = new TAGFileBufferQueueGrouper();
             waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
             thread = new Thread(ProcessTAGFilesFromGrouper);
+            thread.Start();
         }
 
         /// <summary>
