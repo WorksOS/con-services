@@ -32,13 +32,13 @@ using VSS.VisionLink.Raptor.GridFabric.Queues;
 using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Rendering.Servers.Client;
+using VSS.VisionLink.Raptor.Servers;
 using VSS.VisionLink.Raptor.Servers.Client;
 using VSS.VisionLink.Raptor.Services.Designs;
 using VSS.VisionLink.Raptor.Services.Surfaces;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.Surfaces;
-using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Volumes;
 using VSS.VisionLink.Raptor.Volumes.GridFabric.Arguments;
@@ -53,7 +53,6 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         //        RaptorGenericApplicationServiceServer genericApplicationServiceServer = new RaptorGenericApplicationServiceServer();
         RaptorTileRenderingServer tileRenderServer;
         RaptorSimpleVolumesServer simpleVolumesServer;
-        RaptorMutableClientServer mutableClient;
 
         SiteModelAttributesChangedEventListener SiteModelAttrubutesChanged;
 
@@ -147,10 +146,8 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             displayMode.Items.AddRange(Enum.GetNames(typeof(DisplayMode)));
             displayMode.SelectedIndex = (int)DisplayMode.Height;
 
-            tileRenderServer = RaptorTileRenderingServer.NewInstance();
-            simpleVolumesServer = RaptorSimpleVolumesServer.NewInstance();
-
-            mutableClient = new RaptorMutableClientServer("TestApplication");
+            tileRenderServer = RaptorTileRenderingServer.NewInstance(new[] { RaptorApplicationServiceServer.DEFAULT_ROLE_CLIENT, ServerRoles.TILE_RENDERING_NODE });
+            simpleVolumesServer = RaptorSimpleVolumesServer.NewInstance(new [] { RaptorSimpleVolumesServer.DEFAULT_ROLE_CLIENT });
 
             // Instantiate a site model changed listener to catch changes to site model attributes
             SiteModelAttrubutesChanged = new SiteModelAttributesChangedEventListener(RaptorGrids.RaptorImmutableGridName());

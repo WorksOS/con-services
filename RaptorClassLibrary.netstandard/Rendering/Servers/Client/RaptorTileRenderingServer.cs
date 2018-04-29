@@ -18,13 +18,17 @@ namespace VSS.VisionLink.Raptor.Rendering.Servers.Client
         {
         }
 
+        public RaptorTileRenderingServer(string [] roles) : base(roles)
+        {
+        }
+
         /// <summary>
         /// Creates a new instance of a tile rendering server. 
         /// </summary>
         /// <returns></returns>
-        public static RaptorTileRenderingServer NewInstance()
+        public static RaptorTileRenderingServer NewInstance(string [] roles)
         {
-            return new RaptorTileRenderingServer();
+            return new RaptorTileRenderingServer(roles);
         }
 
         /// <summary>

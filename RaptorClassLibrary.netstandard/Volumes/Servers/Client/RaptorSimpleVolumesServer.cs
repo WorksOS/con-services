@@ -18,12 +18,19 @@ namespace VSS.VisionLink.Raptor.Rendering.Servers.Client
         }
 
         /// <summary>
+        /// Default no-arg constructor
+        /// </summary>
+        public RaptorSimpleVolumesServer(string [] roles) : base(roles)
+        {
+        }
+
+        /// <summary>
         /// Creates a new instance of a simple volumes server. 
         /// </summary>
         /// <returns></returns>
-        public static RaptorSimpleVolumesServer NewInstance()
+        public static RaptorSimpleVolumesServer NewInstance(string [] roles)
         {
-            return new RaptorSimpleVolumesServer();
+            return new RaptorSimpleVolumesServer(roles);
         }
 
         /// <summary>

@@ -7,6 +7,7 @@
     public class RaptorApplicationServiceServer : RaptorImmutableClientServer
     {
         public const string DEFAULT_ROLE = ServerRoles.ASNODE;
+        public const string DEFAULT_ROLE_CLIENT = ServerRoles.ASNODE_CLIENT;
 
         public RaptorApplicationServiceServer() : base(new [] { DEFAULT_ROLE })
         {

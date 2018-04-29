@@ -21,6 +21,11 @@
         public const string ASNODE = "ASNode";
 
         /// <summary>
+        /// The generaic 'ASNode', application service, client role
+        /// </summary>
+        public const string ASNODE_CLIENT = "ASNodeClient";
+
+        /// <summary>
         /// A server responsible for processing TAG files into the production data models
         /// </summary>
         public const string TAG_PROCESSING_NODE = "TagProc";
