@@ -50,7 +50,7 @@ namespace WebApiTests
     [TestMethod]
     public void TestImportSvlFile()
     {
-      const string testName = "File Import 2";
+      const string testName = "File Import 4";
       msg.Title(testName, "Create standard project and customer then upload svl file");
       var ts = new TestSupport();
       var importFile = new ImportFile();

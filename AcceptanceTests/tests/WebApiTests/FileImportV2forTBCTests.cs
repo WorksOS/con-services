@@ -17,11 +17,11 @@ namespace WebApiTests
     [TestMethod]
     public void TestImportV2ForTbcSvlFile()
     {
-      const string testName = "File Import 2";
-      msg.Title(testName, "Create standard project and customer then upload svl file");
+      const string testName = "File Import 2 for TBC v2 endpoint";
+      msg.Title(testName, "Create standard project and customer then upload svl file via TBC V2 API");
       var ts = new TestSupport();
       var importFile = new ImportFile();
-      var legacyProjectId = ts.SetLegacyProjectId();
+      var legacyCustomerId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -41,10 +41,13 @@ namespace WebApiTests
 
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
-       "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
-      $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
+       "| EventType          | EventDate   | ProjectUID   | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
+      $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyCustomerId} | false      | BootCampDimensions.dc | {testName}  |"};
       ts.PublishEventCollection(projectEventArray);
+
       var project = ts.GetProjectDetailsViaWebApiV4(customerUid, projectUid);
+      Assert.IsNotNull(project, $"unable to retrieve project. customerUid: {customerUid} projectUid: {projectUid} projectname: {testName}");
+
       var importFileArray = new[] {
        "| EventType              | ProjectUid   | CustomerUid   | Name                      | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment1} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};

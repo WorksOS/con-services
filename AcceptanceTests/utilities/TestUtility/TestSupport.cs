@@ -594,10 +594,15 @@ namespace TestUtility
     {
       var response = CallProjectWebApiV4("api/v4/project/" + projectUid, HttpMethod.Get.ToString(), null, customerUid.ToString());
       ProjectV4DescriptorsSingleResult projectDescriptorResult = null;
+      Log.Info($"GetProjectDetailsViaWebApiV4. response: {JsonConvert.SerializeObject(response)}", Log.ContentType.ApiSend);
 
       if (!string.IsNullOrEmpty(response))
       {
         projectDescriptorResult = JsonConvert.DeserializeObject<ProjectV4DescriptorsSingleResult>(response);
+      }
+      else
+      {
+        Assert.IsTrue(true, " There should be one project");
       }
 
       return projectDescriptorResult?.ProjectDescriptor;

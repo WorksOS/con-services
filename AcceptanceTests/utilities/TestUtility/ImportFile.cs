@@ -122,14 +122,13 @@ namespace TestUtility
       string method = "PUT";
       var uri = ts.GetBaseUri();
       uri = uri + $"api/v2/projects/{projectId}/importedfiles";
-
       var ed = ts.ConvertImportFileArrayToObject(importFileArray, row);
-      var elements = ed.Name.Split('\\'); 
+
       var importedFileTbc = new ImportedFileTbc()
       {
         FileSpaceId = "u710e3466-1d47-45e3-87b8-81d1127ed4ed",
-        Name = elements[1],
-        Path = elements[0],
+        Path = Path.GetFullPath(ed.Name),
+        Name = Path.GetFileName(ed.Name),
         ImportedFileTypeId = ed.ImportedFileType,
         CreatedUtc = ed.FileCreatedUtc,
         AlignmentFile = ed.ImportedFileType == VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.Alignment
