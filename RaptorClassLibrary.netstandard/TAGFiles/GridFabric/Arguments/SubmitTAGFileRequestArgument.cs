@@ -11,11 +11,13 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
         /// Overridden ID of the project to process the TAG files into
         /// </summary>
         public long ProjectID { get; set; } = -1;
+//        public Guid ProjectUID { get; set; }
 
         /// <summary>
         /// Overridden ID of the asset to process the TAG files into
         /// </summary>
         public long AssetID { get; set; } = -1;
+//        public Guid AssetUID { get; set; }
 
         /// <summary>
         /// Name of physical tagfile

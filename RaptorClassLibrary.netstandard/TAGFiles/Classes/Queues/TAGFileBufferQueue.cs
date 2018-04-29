@@ -12,29 +12,6 @@ using VSS.VisionLink.Raptor.Storage;
 
 namespace VSS.TRex.TAGFiles.Classes.Queues
 {
-    /*
-    [Serializable]
-    public class TAGFileBufferQueueQueryFilter : ICacheEntryFilter<TAGFileBufferQueueKey, TAGFileBufferQueueItem>
-    {
-        public bool Invoke(ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem> entry)
-        {
-            IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
-            var QueueCache = ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(RaptorCaches.TAGFileBufferQueueCacheName());
-
-            ICacheAffinity affinity = ignite.GetAffinity(RaptorCaches.TAGFileBufferQueueCacheName());
-
-           // affinity.GetAffinityKey<>()<Guid>(entry.Value.ProjectUID);
-
-            throw new NotImplementedException();
-        }
-
-        public TAGFileBufferQueueQueryFilter()
-        {
-
-        }
-    }
-    */
-
     /// <summary>
     /// Represents a buffered queue of TAG files awaiting processing. The queue of TAG files is stored in a 
     /// partitioned Ignite cache based on the ProjectUID
@@ -49,8 +26,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// The key is a string that 
         /// </summary>
         private ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> QueueCache;
-
-//        private IContinuousQueryHandle<ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem>> queryHandle;
 
         /// <summary>
         /// Creates or obtains a reference to an already created TAG file buffer queue
@@ -74,14 +49,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         public TAGFileBufferQueue()
         {
             InstantiateCache();
-
-            // Construct the continuous query machinery
-            // Set the initial query to return all elements in the cache
-            // Instantiate the queryHandle and start the continous query on the remote nodes
-//            queryHandle = QueueCache.QueryContinuous
-//            (qry: new ContinuousQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(new LocalTAGFileListener())
-//                { Filter = new RemoteTAGFileFilter() },
-//             initialQry: new ScanQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem>());
         }
 
         /// <summary>
@@ -104,7 +71,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             // ReSharper disable once PossibleMultipleEnumeration
                 List<ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem>> candidates = localItems
                     .Take(1000)
-                    .Where(x => x.Value.ProjectUID == first.Value.ProjectUID && x.Value.AssetUID == first.Value.AssetUID)
+                    .Where(x => x.Value.ProjectID == first.Value.ProjectID && x.Value.AssetID == first.Value.AssetID)
                     .Take(100)
                     .ToList();
 

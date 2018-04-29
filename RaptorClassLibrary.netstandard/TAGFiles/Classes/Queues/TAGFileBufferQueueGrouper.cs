@@ -22,7 +22,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// GroupMap is a dictionary (keyed on project UID) of dictionaries (keyed on AssetUID) of
         /// TAG files to be processed for that projectUID/assetUID combination 
         /// </summary>
-        private Dictionary<Guid, Dictionary<Guid, List<TAGFileBufferQueueKey>>> groupMap;
+//        private Dictionary<Guid, Dictionary<Guid, List<TAGFileBufferQueueKey>>> groupMap;
+        private Dictionary<long, Dictionary<long, List<TAGFileBufferQueueKey>>> groupMap;
 
         /// <summary>
         /// fullBuckets is a list of arrays of TAG files where each array is a collection of TAG files for a
@@ -36,7 +37,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// </summary>
         public TAGFileBufferQueueGrouper()
         {
-            groupMap = new Dictionary<Guid, Dictionary<Guid, List<TAGFileBufferQueueKey>>>();
+            //groupMap = new Dictionary<Guid, Dictionary<Guid, List<TAGFileBufferQueueKey>>>();
+            groupMap = new Dictionary<long, Dictionary<long, List<TAGFileBufferQueueKey>>>();
             fullBuckets = new List<TAGFileBufferQueueKey[]>();
         }
 
@@ -48,12 +50,13 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         {
             lock (this)
             {
-                if (groupMap.TryGetValue(key.ProjectUID, out Dictionary<Guid, List<TAGFileBufferQueueKey>> assetsDict))
+                //                if (groupMap.TryGetValue(key.ProjectID, out Dictionary<Guid, List<TAGFileBufferQueueKey>> assetsDict))
+                if (groupMap.TryGetValue(key.ProjectID, out Dictionary<long, List<TAGFileBufferQueueKey>> assetsDict))
                 {
-                    if (!assetsDict.TryGetValue(key.AssetUID, out List<TAGFileBufferQueueKey> keyList))
+                    if (!assetsDict.TryGetValue(key.AssetID, out List<TAGFileBufferQueueKey> keyList))
                     {
                         keyList = new List<TAGFileBufferQueueKey> {key};
-                        assetsDict.Add(key.AssetUID, keyList);
+                        assetsDict.Add(key.AssetID, keyList);
                     }
                     else
                     {
@@ -64,18 +67,20 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                     if (keyList.Count >= kMaxNumberOfTAGFilesPerBucket)
                     {
                         fullBuckets.Add(keyList.ToArray());
-                        assetsDict.Remove(key.AssetUID);
+                        assetsDict.Remove(key.AssetID);
                     }
                 }
                 else
                 {
-                    Dictionary<Guid, List<TAGFileBufferQueueKey>> newDict =
-                        new Dictionary<Guid, List<TAGFileBufferQueueKey>>
+                    //Dictionary<Guid, List<TAGFileBufferQueueKey>> newDict =
+                    //new Dictionary<Guid, List<TAGFileBufferQueueKey>>
+                    Dictionary<long, List<TAGFileBufferQueueKey>> newDict =
+                        new Dictionary<long, List<TAGFileBufferQueueKey>>
                         {
-                            { key.AssetUID, new List<TAGFileBufferQueueKey> {key} }
+                            { key.AssetID, new List<TAGFileBufferQueueKey> {key} }
                         };
 
-                    groupMap.Add(key.ProjectUID, newDict);
+                    groupMap.Add(key.ProjectID, newDict);
                 }
             }
         }
@@ -87,35 +92,36 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// <param name="avoidProjects"></param>
         /// <param name="selectedProject"></param>
         /// <returns></returns>
-        private bool SelectProject(List<Guid> avoidProjects, out Guid selectedProject)
+        private bool SelectProject(List<long> avoidProjects, out long selectedProject)
+//        private bool SelectProject(List<Guid> avoidProjects, out Guid selectedProject)
         {
             // Preferentially selected a project from the full buckets list
             if (fullBuckets.Count > 0)
                 foreach (var bucket in fullBuckets)
                     if (bucket.Any())
                     {
-                        if (avoidProjects != null && avoidProjects.Any(x => x == bucket[0].ProjectUID))
+                        if (avoidProjects != null && avoidProjects.Any(x => x == bucket[0].ProjectID))
                             continue;
 
-                        selectedProject = bucket[0].ProjectUID;
+                        selectedProject = bucket[0].ProjectID;
                         return true;
                     }
 
-            foreach (Guid projectGuid in groupMap.Keys)
+            foreach (/*Guid*/ long projectID in groupMap.Keys)
             {
                 // Check the project is not in the avoid list
-                if (avoidProjects != null && avoidProjects.Any(x => x == projectGuid))
+                if (avoidProjects != null && avoidProjects.Any(x => x == projectID))
                     continue;
 
                 // Check the project has grouped TAG files for an asset
-                if (groupMap[projectGuid].Keys.Count > 0)
+                if (groupMap[projectID].Keys.Count > 0)
                 {
-                    selectedProject = projectGuid;
+                    selectedProject = projectID;
                     return true;
                 }
             }
 
-            selectedProject = default(Guid);
+            selectedProject = -1; //default(Guid);
             return false;
         }
 
@@ -128,19 +134,19 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// and any appropriate failure mode handling while processing the bucket of TAG files returned.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<TAGFileBufferQueueKey> Extract(List<Guid> avoidProjects, out Guid projectUID)
+        public IEnumerable<TAGFileBufferQueueKey> Extract(List<long> avoidProjects, out long projectID)
         {
             lock (this)
             {
                 // Choose an appropriate project and return the first set of asset grouped TAG files for it
-                if (!SelectProject(avoidProjects, out projectUID))
+                if (!SelectProject(avoidProjects, out projectID))
                     return null;
 
-                Guid _projectUID = projectUID;
+                long _projectID = projectID;
                 IEnumerable<TAGFileBufferQueueKey> result;
 
                 // Determine if there is a full bucket for the requested project
-                int resultIndex = fullBuckets.FindIndex(x => x[0].ProjectUID == _projectUID);
+                int resultIndex = fullBuckets.FindIndex(x => x[0].ProjectID == _projectID);
                 if (resultIndex >= 0)
                 {
                     result = fullBuckets[resultIndex];
@@ -150,8 +156,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 }
 
                 // No full buckets - extract the first list of asset based TAG files from the grouper for the selected project
-                result = groupMap[projectUID].Values.First();
-                groupMap[projectUID].Remove(result.First().AssetUID);
+                result = groupMap[projectID].Values.First();
+                groupMap[projectID].Remove(result.First().AssetID);
 
                 return result;
             }

@@ -34,11 +34,14 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// store this TAG file.
         /// </summary>
         [AffinityKeyMapped]
-        public Guid ProjectUID;
+        public long ProjectID;
+        //public Guid ProjectUID;
 
         /// <summary>
         /// UID identifier of the asset to process this TAG file into
         /// </summary>
-        public Guid AssetUID;
+        //public Guid AssetUID;
+
+        public long AssetID;
     }
 }

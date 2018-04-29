@@ -52,7 +52,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         {
             Log.Info("ProcessTAGFilesFromGrouper starting executing");
 
-            List<Guid> ProjectsToAvoid = new List<Guid>();
+            List<long> ProjectsToAvoid = new List<long>();
 
             // Get the ignite grid and cache references
             IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
@@ -66,14 +66,14 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
                 // Check to see if there is a work package to feed to the processing pipline
                 // -> Ask the grouper for a package 
-                var package = grouper.Extract(ProjectsToAvoid, out Guid projectUID);
+                var package = grouper.Extract(ProjectsToAvoid, out long projectID);
 
                 if (package != null)
                 {
                     hadWorkToDo = true;
 
                     // Add the project to the avoid list
-                    ProjectsToAvoid.Add(projectUID);
+                    ProjectsToAvoid.Add(projectID);
 
                     List<TAGFileBufferQueueItem> TAGQueueItems = null;
                     List<ProcessTAGFileRequestFileItem> fileItems = null;
@@ -99,8 +99,10 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                         ProcessTAGFileRequest request = new ProcessTAGFileRequest();
                         ProcessTAGFileResponse response = request.Execute(new ProcessTAGFileRequestArgument
                         {
-                            AssetUID = TAGQueueItems[0].AssetUID,
-                            ProjectUID = projectUID,
+                            //AssetUID = TAGQueueItems[0].AssetUID,
+                            //ProjectUID = TAGQueueItems[0].ProjectUID,
+                            AssetID = TAGQueueItems[0].AssetID,
+                            ProjectID = TAGQueueItems[0].ProjectID,
                             TAGFiles = fileItems
                         });
 
@@ -115,20 +117,20 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
                                 queueCache.Remove(new TAGFileBufferQueueKey
                                 {
-                                    ProjectUID = projectUID,
+                                    ProjectID = projectID,
                                     FileName = tagFileResponse.FileName
                                 });
                             }
                             catch (Exception e)
                             {
                                 Log.Error(
-                                    $"Exception {e} occurred while removing TAG file {tagFileResponse.FileName} in project {projectUID} from the TAG file buffer queue");
+                                    $"Exception {e} occurred while removing TAG file {tagFileResponse.FileName} in project {projectID} from the TAG file buffer queue");
                                 throw;
                             }
                         }
 
                         // Remove the project from the avoid list
-                        ProjectsToAvoid.Remove(projectUID);
+                        ProjectsToAvoid.Remove(projectID);
                     }
                 }
 
