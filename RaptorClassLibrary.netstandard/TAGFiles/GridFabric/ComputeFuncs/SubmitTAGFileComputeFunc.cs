@@ -8,8 +8,6 @@ using VSS.TRex.TAGFiles.GridFabric.Responses;
 using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Servers;
-using VSS.VisionLink.Raptor.TAGFiles.Executors;
-using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Arguments;
 
 namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
 {

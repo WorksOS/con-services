@@ -25,11 +25,16 @@ namespace VSS.VisionLink.Raptor.Client
     class Program
     {
         private static ILog Log;
-        //        private static int tAGFileCount = 0;
+
+        // Singleton request object for submitting TAG files. Creating these is relatively slow and support concurrent operations.
+        private static SubmitTAGFileRequest submitTAGFileRequest;
+        private static ProcessTAGFileRequest processTAGFileRequest;
+
+        private static int tAGFileCount = 0;
 
         public static void SubmitSingleTAGFile(long projectID, long assetID, string fileName)
         {
-            SubmitTAGFileRequest request = new SubmitTAGFileRequest();
+            submitTAGFileRequest = submitTAGFileRequest ?? new SubmitTAGFileRequest();
             SubmitTAGFileRequestArgument arg;
 
             using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
@@ -46,16 +51,16 @@ namespace VSS.VisionLink.Raptor.Client
                 };
             }
 
-            Log.Info($"Submitting TAG file {fileName}");
+            Log.Info($"Submitting TAG file #{++tAGFileCount}: {fileName}");
 
-            request.Execute(arg);
+            submitTAGFileRequest.Execute(arg);
         }
 
         public static void ProcessSingleTAGFile(long projectID, string fileName)
         {
             Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
 
-            ProcessTAGFileRequest request = new ProcessTAGFileRequest();
+            processTAGFileRequest = processTAGFileRequest ?? new ProcessTAGFileRequest();
             ProcessTAGFileRequestArgument arg;
 
             using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
@@ -78,14 +83,14 @@ namespace VSS.VisionLink.Raptor.Client
                 };
             }
 
-            request.Execute(arg);
+            processTAGFileRequest.Execute(arg);
         }
 
         public static void ProcessTAGFiles(long projectID, string[] files)
         {
             Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
 
-            ProcessTAGFileRequest request = new ProcessTAGFileRequest();
+            processTAGFileRequest = processTAGFileRequest ?? new ProcessTAGFileRequest();
             ProcessTAGFileRequestArgument arg = new ProcessTAGFileRequestArgument
             {
                 ProjectID = projectID,
@@ -104,7 +109,7 @@ namespace VSS.VisionLink.Raptor.Client
                 }
             }
 
-            request.Execute(arg);
+            processTAGFileRequest.Execute(arg);
         }
 
         public static void SubmitTAGFiles(long projectID, string[] files)
