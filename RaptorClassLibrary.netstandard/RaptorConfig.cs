@@ -24,16 +24,6 @@
         public static int VLPDPSNode_CellPassAggregationListSizeIncrement => 100;
 
         /// <summary>
-        /// The number of spatial processing divisions within the Raptor cluster (immutable/read grid)
-        /// </summary>
-        public static uint numSpatialProcessingDivisions = 1;
-
-        /// <summary>
-        /// The number of nodes processing and storing data from TAG files (mutable grid)
-        /// </summary>
-        public static uint numTAGFileProcessingDivisions = 1;
-
-        /// <summary>
         /// Defines the maximum number of cell passes permitted in a subgrid segment before that segment will be split
         /// </summary>
         public static int VLPD_SubGridSegmentPassCountLimit = 15000;
@@ -42,5 +32,10 @@
         /// Defines the maximum number of cell passes that may occur within a single cell within a segment
         /// </summary>
         public static int VLPD_SubGridMaxSegmentCellPassesLimit = 250;
+
+        /// <summary>
+        /// The number of paritions configured for caches that store spatial subgrid data
+        /// </summary>
+        public static uint NumPartitionsPerSpatialDataCache = 1024;
     }
 }

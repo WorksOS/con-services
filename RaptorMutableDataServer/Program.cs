@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using VSS.VisionLink.Raptor;
 
 namespace RaptorMutableDataServer
 {
@@ -15,7 +11,7 @@ namespace RaptorMutableDataServer
         [STAThread]
         static void Main()
         {
-            string logFileName = System.Diagnostics.Process.GetCurrentProcess().ProcessName + string.Format("({0})", RaptorServerConfig.Instance().SpatialSubdivisionDescriptor) + ".log";
+            string logFileName = System.Diagnostics.Process.GetCurrentProcess().ProcessName + $"-({DateTime.Now.Ticks}).log";
             log4net.GlobalContext.Properties["LogName"] = logFileName;
             log4net.Config.XmlConfigurator.Configure();
 

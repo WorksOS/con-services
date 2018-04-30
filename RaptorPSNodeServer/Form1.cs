@@ -21,8 +21,6 @@ namespace RaptorPSNodeServer
             server = new RaptorSubGridProcessingServer();
 
             InitializeComponent();
-
-            Text = string.Format("{0}: Spatial Division {1}", Text, RaptorServerConfig.Instance().SpatialSubdivisionDescriptor);
         }
     }
 }

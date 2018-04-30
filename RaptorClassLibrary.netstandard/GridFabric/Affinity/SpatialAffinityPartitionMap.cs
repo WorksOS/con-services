@@ -4,9 +4,10 @@ using System.Linq;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Events;
+using VSS.VisionLink.Raptor;
 
 namespace VSS.TRex.GridFabric.Affinity
-{
+{    
     /// <summary>
     /// Provides capabilities for determining partition maps to nodes for Ignite caches. It is templated on 
     /// the ket (TK) and value (TV) types of the cache being referenced.
@@ -16,12 +17,12 @@ namespace VSS.TRex.GridFabric.Affinity
         /// <summary>
         /// Backing variable for PrimaryPartitions
         /// </summary>
-        public Dictionary<int, bool> primaryPartitions;
+        private bool[] primaryPartitions;
 
         /// <summary>
         /// Provides a map of primary partitions that this node is responsible for
         /// </summary>
-        public Dictionary<int, bool> PrimaryPartitions
+        public bool[] PrimaryPartitions
         {
             get => primaryPartitions ?? (primaryPartitions = GetPrimaryPartitions());
         }
@@ -63,20 +64,14 @@ namespace VSS.TRex.GridFabric.Affinity
         /// Asks Ignite for the list of primary partitions this node is reponsible for in the provided cache 
         /// </summary>
         /// <returns></returns>
-        private Dictionary<int, bool> GetPrimaryPartitions() => Affinity.GetPrimaryPartitions(LocalNode).ToDictionary(k => k, v => true);
-
-        /// <summary>
-        /// Asks Ignite for the list of primary partitions this node is reponsible for in the provided cache 
-        /// </summary>
-        /// <returns></returns>
-        private bool [] GetPrimaryPartitionsArray()
+        private bool[] GetPrimaryPartitions()
         {
-            bool[] partitionMap = new bool[Affinity.Partitions];
-            
-            foreach (int partition in Affinity.GetBackupPartitions(LocalNode))
-                partitionMap[partition] = true;
+            bool[] result = new bool[RaptorConfig.NumPartitionsPerSpatialDataCache];
 
-            return partitionMap;
+            foreach (int partition in Affinity.GetPrimaryPartitions(LocalNode))
+                result[partition] = true;
+
+            return result;
         }
 
         /// <summary>

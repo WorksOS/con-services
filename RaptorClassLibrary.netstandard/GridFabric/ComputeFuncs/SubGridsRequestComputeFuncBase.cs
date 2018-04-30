@@ -14,6 +14,7 @@ using VSS.VisionLink.Raptor.SiteModels;
 using log4net;
 using System.Reflection;
 using System.Diagnostics;
+using VSS.TRex.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.Utilities;
 using VSS.VisionLink.Raptor.Designs.Storage;
 using VSS.VisionLink.Raptor.Services.Designs;
@@ -35,18 +36,6 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        /// <summary>
-        /// Local copy of the number of processing subdivisions
-        /// </summary>
-        [NonSerialized]
-        private static uint numSpatialProcessingDivisions = RaptorConfig.numSpatialProcessingDivisions;
-
-        /// <summary>
-        /// Local copy of the spatial subdision descriptor supplied to this compute server
-        /// </summary>
-        [NonSerialized]
-        private static uint spatialSubdivisionDescriptor = RaptorServerConfig.Instance().SpatialSubdivisionDescriptor;
-
         [NonSerialized]
         private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
 
@@ -58,7 +47,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// It is marked as non serialised so the Ignite GridCompute Broadcast method does not attempt 
         /// to serialise this member as an aspect of the compute func.
         /// </summary>
-        [NonSerialized] private SubGridTreeSubGridExistenceBitMask ProdDataMask;
+        [NonSerialized]
+        private SubGridTreeSubGridExistenceBitMask ProdDataMask;
 
         /// <summary>
         /// Mask is the internal sub grid bit mask tree created from the serialised mask contained in the 
@@ -66,25 +56,32 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// It is marked as non serialised so the Ignite GridCompute Broadcast method does not attempt 
         /// to serialise this member as an aspect of the compute func.
         /// </summary>
-        [NonSerialized] private SubGridTreeSubGridExistenceBitMask SurveyedSurfaceOnlyMask;
+        [NonSerialized]
+        private SubGridTreeSubGridExistenceBitMask SurveyedSurfaceOnlyMask;
 
-        [NonSerialized] protected SubGridsRequestArgument localArg;
+        [NonSerialized]
+        protected SubGridsRequestArgument localArg;
 
-        [NonSerialized] private SiteModel siteModel;
+        [NonSerialized]
+        private SiteModel siteModel;
 
-        [NonSerialized] private IClientLeafSubGrid[][] clientGrids;
+        [NonSerialized]
+        private IClientLeafSubGrid[][] clientGrids;
 
         /// <summary>
         /// The list of address being constructed prior to summission to the processing engine
         /// </summary>
-        [NonSerialized] private SubGridCellAddress[] addresses;
+        [NonSerialized]
+        private SubGridCellAddress[] addresses;
 
         /// <summary>
         /// The number of subgrids currently present in the process pending list
         /// </summary>
-        [NonSerialized] private int listCount;
+        [NonSerialized]
+        private int listCount;
 
-        [NonSerialized] private SubGridRequestor[] Requestors;
+        [NonSerialized]
+        private SubGridRequestor[] Requestors;
 
         [NonSerialized]
         private AreaControlSet AreaControlSet = AreaControlSet.Null();
@@ -92,7 +89,11 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// <summary>
         /// The Design to be used for querying elevation information from in the process of calculating cut-fill values
         /// </summary>
-        [NonSerialized] private Design CutFillDesign;
+        [NonSerialized]
+        private Design CutFillDesign;
+
+        [NonSerialized]
+        private bool[] PrimaryPartitionMap; 
 
         /// <summary>
         /// Default no-arg constructor
@@ -247,9 +248,6 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         {
             try
             {
-                //Log.Info(String.Format("PerformSubgridRequest: {0} --> Examine spatial descriptor ({1} vs {2}) on {3} divisions", 
-                //    address.ToString(), address.ToSpatialDivisionDescriptor(numSpatialProcessingDivisions), 
-                //    spatialSubdivisionDescriptor, numSpatialProcessingDivisions));
                 // Log.InfoFormat("Requesting subgrid #{0}:{1}", ++requestCount, address.ToString());
 
                 clientGrid = ClientLeafSubGridFactory.GetSubGrid(SubGridTrees.Client.Utilities.IntermediaryICGridDataTypeForDataType(localArg.GridDataType, address.SurveyedSurfaceDataRequested));
@@ -413,11 +411,15 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
             addresses = new SubGridCellAddress[addressBucketSize];
 
+            // Obtain the primary partition map to allow this request to determine the elements it needs to process
+            PrimaryPartitionMap = ImmutableSpatialAffinityPartitionMap.Instance().PrimaryPartitions;
+
             // Request production data only, or hybrid production data and surveyd surface data subgrids
             ProdDataMask?.ScanAllSetBitsAsSubGridAddresses(address =>
             {
                 // Is this subgrid is the responsibility of this server?
-                if (address.ToSpatialDivisionDescriptor(numSpatialProcessingDivisions) != spatialSubdivisionDescriptor) return;
+                if (!PrimaryPartitionMap[address.ToSpatialPartitionDescriptor()])
+                   return;
 
                 // Decorate the address with the production data and surveyed surface flags
                 address.ProdDataRequested = true;
@@ -430,7 +432,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
             SurveyedSurfaceOnlyMask?.ScanAllSetBitsAsSubGridAddresses(address =>
             {
                 // Is this subgrid the responsibility of this server?
-                if (address.ToSpatialDivisionDescriptor(numSpatialProcessingDivisions) != spatialSubdivisionDescriptor) return;
+                if (!PrimaryPartitionMap[address.ToSpatialPartitionDescriptor()])
+                    return;
 
                 // Decorate the address with the production data and surveyed surface flags
                 address.ProdDataRequested = false; // TODO: This is a bit of an assumption and assumes the subgrid request is not solely driven by the existance of a subgrid in a surveyed surface
@@ -459,9 +462,6 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
             {
                 try
                 {
-                    Debug.Assert(Range.InRange(spatialSubdivisionDescriptor, 0, numSpatialProcessingDivisions),
-                                 $"Invalid spatial sub division descriptor (must in be in range {spatialSubdivisionDescriptor} -> [0, {numSpatialProcessingDivisions}])");
-
                     UnpackArgument(arg);
 
                     long NumSubgridsToBeExamined = ProdDataMask?.CountBits() ?? 0 + SurveyedSurfaceOnlyMask?.CountBits() ?? 0;

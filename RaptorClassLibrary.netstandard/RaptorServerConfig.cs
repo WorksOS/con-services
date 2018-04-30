@@ -34,10 +34,7 @@ namespace VSS.VisionLink.Raptor
                     Log.Info($"Process args: {args.Aggregate((s1, s2) => s1 + " " + s2 + "\n")}");
                 }
 
-                instance = new RaptorServerConfig
-                {
-                    SpatialSubdivisionDescriptor = args.Where(x => x.Contains("SpatialDivision=")).Select(x => x.Split(new [] { "=" }, StringSplitOptions.RemoveEmptyEntries)[1]).Select(x => Convert.ToUInt16(x)).FirstOrDefault()
-                };
+                instance = new RaptorServerConfig();
             }
 
             return instance;
@@ -47,12 +44,6 @@ namespace VSS.VisionLink.Raptor
         {
             // Pick up the parameters from command line or other sources...
         }
-
-        /// <summary>
-        /// SpatialSubdivisionDescriptor records which division of the spatial data in the system this node instance is responsible
-        /// for serving requests against.
-        /// </summary>
-        public uint SpatialSubdivisionDescriptor { get; set; }
 
         /// <summary>
         /// UseMutableCellPassSegments controls whether the subgrid segments containing cell passes use a mutable structure 

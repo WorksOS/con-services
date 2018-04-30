@@ -109,7 +109,15 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// of the parent subgrid that contains it. All cell addresses within that subgrid will return the same normalised 
         /// origin descriptor.
         /// </summary>
-        public static uint ToSpatialPartitionDescriptor(uint X, uint Y, uint numPartitions) => (((X >> SubGridTree.SubGridIndexBitsPerLevel) & 0xAAAAAAAA) | ((Y >> SubGridTree.SubGridIndexBitsPerLevel) & 0x55555555)) % numPartitions;
+        public static uint ToSpatialPartitionDescriptor(uint X, uint Y) => (((X >> SubGridTree.SubGridIndexBitsPerLevel) & 0xAAAAAAAA) | ((Y >> SubGridTree.SubGridIndexBitsPerLevel) & 0x55555555)) % RaptorConfig.NumPartitionsPerSpatialDataCache;
+
+        /// <summary>
+        /// Constructs a spatial partition descriptor from a cell address that skips and interleaves alternate bits from each of the 
+        /// X and Y components of the cell address with the variation that the cell address is restricted to the address
+        /// of the parent subgrid that contains it. All cell addresses within that subgrid will return the same normalised 
+        /// origin descriptor.
+        /// </summary>
+        public uint ToSpatialPartitionDescriptor() => (((X >> SubGridTree.SubGridIndexBitsPerLevel) & 0xAAAAAAAA) | ((Y >> SubGridTree.SubGridIndexBitsPerLevel) & 0x55555555)) % RaptorConfig.NumPartitionsPerSpatialDataCache;
 
         /// <summary>
         /// Constructs a descriptor from a cell address that skips and interleaves alternate bits from each of the 

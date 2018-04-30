@@ -81,8 +81,6 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             // Enable use of immutable data pools when processing requests
             RaptorServerConfig.Instance().UseMutableSpatialData = false;
             RaptorServerConfig.Instance().UseMutableNonSpatialData = false;
-
-            Log.InfoFormat("RaptorSubGridProcessingServer initialisation: Spatial subdivision descriptor = {0}", RaptorServerConfig.Instance().SpatialSubdivisionDescriptor);
         }
     }
 }

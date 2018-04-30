@@ -21,8 +21,6 @@ namespace RaptorMutableDataServer
             server = new RaptorTAGProcComputeServer();
 
             InitializeComponent();
-
-            Text = string.Format("{0}: Spatial Division {1}", Text, RaptorServerConfig.Instance().SpatialSubdivisionDescriptor);
         }
     }
 }

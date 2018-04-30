@@ -16,8 +16,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
     {
         protected static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        // Set NumPartitions to the default of 1024 partitions
-        protected int NumPartitions = 1024;
+        // Set NumPartitions to the default number of partitions
+        protected int NumPartitions = (int)RaptorConfig.NumPartitionsPerSpatialDataCache;
 
         /// <summary>
         /// Return the number of partitions to use for affinity. For this affinity function, the number of partitions
