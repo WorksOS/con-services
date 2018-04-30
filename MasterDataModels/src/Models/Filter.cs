@@ -485,8 +485,7 @@ namespace VSS.MasterData.Models.Models
           EndUtc = DateRangeType?.UtcForDateRangeType(ianaTimeZoneName, false, useEndOfCurrentDay);
         }
       }
-      //For as-at dates only use EndUTC, so make sure StartUTC is null -- 
-      //todo double check this, the filter web api will set this to project extents start to keep ui happy
+      //For as-at dates only use EndUTC, so make sure StartUTC is null 
       if (AsAtDate == true)
       {
         StartUtc = null;
