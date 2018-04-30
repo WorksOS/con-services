@@ -351,29 +351,34 @@ namespace VSS.TCCFileAccess
       return false;
     }
 
-    public async Task<bool> CopyFile(string filespaceId, string srcFullName, string dstFullName)
+
+    public Task<bool> CopyFile(string filespaceId, string srcFullName, string dstFullName)
     {
-      Log.LogDebug("CopyFile: filespaceId={0}, srcFullName={1}, dstFullName={2}", filespaceId,
-        srcFullName, dstFullName);
+      return CopyFile(filespaceId, filespaceId, srcFullName, dstFullName);
+    }
+
+    public async Task<bool> CopyFile(string srcFilespaceId, string dstFilespaceId, string srcFullName, string dstFullName)
+    {
+      Log.LogDebug(
+        $"CopyFile: srcFilespaceId={srcFilespaceId}, srcFilespaceId={srcFilespaceId}, dstFilespaceId={dstFilespaceId} srcFullName={srcFullName}, dstFullName={dstFullName}");
       try
       {
         var dstPath = dstFullName.Substring(0, dstFullName.LastIndexOf("/")) + "/";
-        if (!await FolderExists(filespaceId, dstPath))
+        if (!await FolderExists(dstFilespaceId, dstPath))
         {
-          var resultCreate = await MakeFolder(filespaceId, dstPath);
+          var resultCreate = await MakeFolder(dstFilespaceId, dstPath);
           if (!resultCreate)
           {
-            Log.LogError("Can not create folder for filespaceId {0} folder {1}", filespaceId,
-              dstPath);
+            Log.LogError("Can not create folder for filespaceId {dstFilespaceId} folder {dstPath}");
             return false;
           }
         }
 
         CopyParams copyParams = new CopyParams
         {
-          filespaceid = filespaceId,
+          filespaceid = srcFilespaceId,
           path = srcFullName, //WebUtility.UrlEncode(srcFullName),
-          newfilespaceid = filespaceId,
+          newfilespaceid = dstFilespaceId,
           newPath = dstFullName,//WebUtility.UrlEncode(dstFullName),
           merge = false,
           replace = true//Not sure if we want true or false here
@@ -389,13 +394,12 @@ namespace VSS.TCCFileAccess
         }
         else
         {
-          Log.LogError("Null result from CopyFile for filespaceId {0} file {1}", filespaceId, srcFullName);
+          Log.LogError($"Null result from CopyFile for filespaceId {srcFilespaceId} file {srcFullName}");
         }
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to copy TCC file for filespaceId {0} file {1}: {2}", filespaceId, srcFullName,
-          ex.Message);
+        Log.LogError($"Failed to copy TCC file for srcFilespaceId={srcFilespaceId}, srcFilespaceId={srcFilespaceId}, dstFilespaceId={dstFilespaceId} srcFullName={srcFullName}, dstFullName={dstFullName} error:{ex.Message}");
       }
       return false;
     }

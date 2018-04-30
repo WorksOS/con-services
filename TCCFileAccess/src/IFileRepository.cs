@@ -25,6 +25,7 @@ namespace VSS.TCCFileAccess
         Task<Stream> GetFile(string filespaceId, string fullName);
         Task<bool> MoveFile(Organization org, string srcFullName, string dstFullName);
         Task<bool> CopyFile(string filespaceId, string srcFullName, string dstFullName);
+        Task<bool> CopyFile(string srcFilespaceId, string dstFilespaceId, string srcFullName, string dstFullName);
         Task<DirResult> GetFolders(Organization org, DateTime lastModifiedUTC, string path);
         Task<DirResult> GetFileList(string filespaceId, string path, string fileMasks=null);
         Task<DateTime> GetLastChangedTime(string filespaceId, string path);
