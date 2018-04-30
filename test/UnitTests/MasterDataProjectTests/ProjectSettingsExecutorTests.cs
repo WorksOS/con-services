@@ -200,7 +200,8 @@ namespace VSS.MasterData.ProjectTests
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
       var producer = new Mock<IKafka>();
- 
+      producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
+
       var raptorProxy = new Mock<IRaptorProxy>();
       raptorProxy.Setup(r => r.ValidateProjectSettings(It.IsAny<ProjectSettingsRequest>(),
         It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new BaseDataResult());
@@ -267,6 +268,8 @@ namespace VSS.MasterData.ProjectTests
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
       var producer = new Mock<IKafka>();
+      producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
+      producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
 
       var raptorProxy = new Mock<IRaptorProxy>();
       raptorProxy.Setup(r => r.ValidateProjectSettings(It.IsAny<ProjectSettingsRequest>(),

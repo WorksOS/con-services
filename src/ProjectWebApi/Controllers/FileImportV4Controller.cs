@@ -21,6 +21,8 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.MasterData.Project.WebAPI.Common.Executors;
+using VSS.MasterData.Project.WebAPI.Common.Helpers;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -30,28 +32,33 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   public class FileImportV4Controller : FileImportBaseController
   {
     /// <summary>
-    /// Local logger provider.
+    /// Logger factory for use by executor
     /// </summary>
-    protected static ILoggerFactory Logger;
+    private readonly ILoggerFactory logger;
+
 
     /// <summary>
     /// File import controller v4
     /// </summary>
     /// <param name="producer"></param>
-    /// <param name="projectRepo"></param>
     /// <param name="store"></param>
-    /// <param name="raptorProxy"></param>
-    /// <param name="fileRepo"></param>
     /// <param name="logger"></param>
     /// <param name="serviceExceptionHandler"></param>
+    /// <param name="raptorProxy"></param>
+    /// <param name="projectRepo"></param>
     /// <param name="requestFactory"></param>
-    public FileImportV4Controller(IKafka producer, IProjectRepository projectRepo,
-      IConfigurationStore store, IRaptorProxy raptorProxy, IFileRepository fileRepo, ILoggerFactory logger, 
-      IServiceExceptionHandler serviceExceptionHandler, IRequestFactory requestFactory)
-      : base(producer, projectRepo, store, raptorProxy, fileRepo, logger, serviceExceptionHandler, 
-          requestFactory, logger.CreateLogger<FileImportV4Controller>())
+    /// <param name="subscriptionRepo"></param>
+    /// <param name="fileRepo"></param>
+    public FileImportV4Controller(IKafka producer,
+      IConfigurationStore store, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
+      IRaptorProxy raptorProxy, 
+      IProjectRepository projectRepo,  ISubscriptionRepository subscriptionRepo, 
+      IFileRepository fileRepo, IRequestFactory requestFactory)
+      : base(producer, store, logger, logger.CreateLogger<FileImportV4Controller>(), serviceExceptionHandler, 
+        raptorProxy,
+        projectRepo, subscriptionRepo, fileRepo, requestFactory)
     {
-      Logger = logger;
+      this.logger = logger;
       fileSpaceId = store.GetValueString("TCCFILESPACEID");
       if (string.IsNullOrEmpty(fileSpaceId))
       {
@@ -72,7 +79,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       return new ImportedFileDescriptorListResult
       {
-        ImportedFileDescriptors = await GetImportedFileList(projectUid).ConfigureAwait(false)
+        ImportedFileDescriptors = await ImportedFileRequestHelper.GetImportedFileList(projectUid, log, userId, projectRepo).ConfigureAwait(false)
       };
     }
 
@@ -101,7 +108,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       log.LogInformation($"{functionId}. projectUid: {projectUid}, fileUids: {fileIds}");
 
-      var importedFiles = await GetImportedFileList(projectUid).ConfigureAwait(false);
+      var importedFiles = await ImportedFileRequestHelper.GetImportedFileList(projectUid, log, userId, projectRepo).ConfigureAwait(false);
       if (!importedFiles.Any())
       {
         log.LogInformation($"{functionId}. Attempt to set file activation state when project contains no files");
@@ -211,7 +218,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var project = await GetProject(projectUid.ToString());
 
-      var importedFileList = await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false);
+      var importedFileList = await ImportedFileRequestHelper.GetImportedFileList(projectUid.ToString(), log, userId, projectRepo).ConfigureAwait(false);
       ImportedFileDescriptor importedFileDescriptor = null;
       if (importedFileList.Count > 0)
         importedFileDescriptor = importedFileList.FirstOrDefault(
@@ -232,21 +239,24 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         .ConfigureAwait(false);
 
       // need to write to Db prior to notifying raptor, as raptor needs the legacyImportedFileID 
-      CreateImportedFileEvent createImportedFileEvent = await CreateImportedFileinDb(Guid.Parse(customerUid), projectUid,
+      CreateImportedFileEvent createImportedFileEvent = await ImportedFileRequestHelper.CreateImportedFileinDb(Guid.Parse(customerUid), projectUid,
           importedFileType, dxfUnitsType, file.flowFilename, surveyedUtc, JsonConvert.SerializeObject(fileDescriptor),
-          fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
+          fileCreatedUtc, fileUpdatedUtc, userEmailAddress,
+          log, serviceExceptionHandler, projectRepo)
         .ConfigureAwait(false);
 
-      var result = await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, importedFileType, dxfUnitsType, fileDescriptor,
-        createImportedFileEvent.ImportedFileID, createImportedFileEvent.ImportedFileUID, true).ConfigureAwait(false);
+      var result = await ImportedFileRequestHelper.NotifyRaptorAddFile(project.LegacyProjectID, projectUid, importedFileType, dxfUnitsType, fileDescriptor,
+        createImportedFileEvent.ImportedFileID, createImportedFileEvent.ImportedFileUID, true,
+        log, customHeaders, serviceExceptionHandler, raptorProxy, projectRepo).ConfigureAwait(false);
       createImportedFileEvent.MinZoomLevel = result.MinZoomLevel;
       createImportedFileEvent.MaxZoomLevel = result.MaxZoomLevel;
       var existing = await projectRepo.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString())
         .ConfigureAwait(false);
       //Need to update zoom levels in Db 
-      var updateImportedFileEvent = await UpdateImportedFileInDb(existing, JsonConvert.SerializeObject(fileDescriptor),
+      var updateImportedFileEvent = await ImportedFileRequestHelper.UpdateImportedFileInDb(existing, JsonConvert.SerializeObject(fileDescriptor),
           surveyedUtc, result.MinZoomLevel, result.MaxZoomLevel,
-          fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
+          fileCreatedUtc, fileUpdatedUtc, userEmailAddress,
+          log, serviceExceptionHandler, projectRepo)
         .ConfigureAwait(false);
 
       var messagePayload = JsonConvert.SerializeObject(new { CreateImportedFileEvent = createImportedFileEvent });
@@ -260,7 +270,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       //System.IO.File.Delete(file.path);
 
       var importedFile = new ImportedFileDescriptorSingleResult(
-        (await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false))
+        (await ImportedFileRequestHelper.GetImportedFileList(projectUid.ToString(), log, userId, projectRepo).ConfigureAwait(false))
         .ToImmutableList()
         .First(f => f.ImportedFileUid == createImportedFileEvent.ImportedFileUID.ToString())
       );
@@ -293,7 +303,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       "svl", "dxf", "ttm"
     }, Size = 1000000000)]
 
-    public async Task<ImportedFileDescriptorSingleResult> UpdateImportedFileV4(
+    public async Task<ImportedFileDescriptorSingleResult> UpsertImportedFileV4(
       FlowFile file,
       [FromUri] Guid projectUid, 
       [FromUri] ImportedFileType importedFileType,
@@ -312,94 +322,32 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 55);
       }
 
+      // this also validates that this customer has access to the projectUid
       var project = await GetProject(projectUid.ToString());
 
-      var importedFiles = await GetImportedFiles(projectUid.ToString()).ConfigureAwait(false);
-      ImportedFile existing = null;
-      if (importedFiles.Count > 0)
-      {
-        existing = importedFiles.FirstOrDefault(
-          f => string.Equals(f.Name, file.flowFilename, StringComparison.OrdinalIgnoreCase)
-               && f.ImportedFileType == importedFileType
-               && (
-                 importedFileType == ImportedFileType.SurveyedSurface &&
-                 f.SurveyedUtc == surveyedUtc ||
-                 importedFileType != ImportedFileType.SurveyedSurface
-               ));
-      }
-      bool creating = existing == null;
-      if (creating)
-        log.LogInformation(
-          $"UpdateImportedFileV4. file doesn't exist already in DB: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
-      else
-        log.LogInformation(
-          $"UpdateImportedFileV4. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
-
-      /*** now making changes, potentially needing rollback ***/
       var fileDescriptor = await WriteFileToTCCRepository(customerUid, projectUid.ToString(), file.path,
           importedFileType, surveyedUtc).ConfigureAwait(false);
 
-      // if all succeeds, send insert to Db and kafka que
-      var importedFileUid = existing?.ImportedFileUid;
-      var importedFileId = existing?.ImportedFileId;
-      CreateImportedFileEvent createImportedFileEvent = null;
-      if (creating)
-      {
-        // need to write to Db prior to notifying raptor, as raptor needs the legacyImportedFileID 
-        createImportedFileEvent = await CreateImportedFileinDb(Guid.Parse(customerUid), projectUid,
-            importedFileType, dxfUnitsType, file.flowFilename, surveyedUtc, JsonConvert.SerializeObject(fileDescriptor),
-            fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
-          .ConfigureAwait(false);
-        importedFileUid = createImportedFileEvent.ImportedFileUID.ToString();
-        importedFileId = createImportedFileEvent.ImportedFileID;
-      }
+      var importedFileUpsertEvent = ImportedFileUpsertEvent.CreateImportedFileUpsertEvent(
+         project, importedFileType,
+          importedFileType == ImportedFileType.SurveyedSurface
+                        ? surveyedUtc : null,
+          dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, fileDescriptor
+        );
 
-      var result = await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, importedFileType, dxfUnitsType, fileDescriptor, importedFileId.Value,
-          Guid.Parse(importedFileUid), (existing == null))
-        .ConfigureAwait(false);
+        var importedFile = await WithServiceExceptionTryExecuteAsync(() =>
+          RequestExecutorContainerFactory
+            .Build<UpsertImportedFileExecutor>(logger, configStore, serviceExceptionHandler,
+              customerUid, userId, userEmailAddress, customHeaders,
+              producer, kafkaTopicName,
+              null, raptorProxy, null,
+              projectRepo, null, fileRepo)
+            .ProcessAsync(importedFileUpsertEvent)
+        ) as ImportedFileDescriptorSingleResult;
 
-      if (creating)
-      {
-        createImportedFileEvent.MinZoomLevel = result.MinZoomLevel;
-        createImportedFileEvent.MaxZoomLevel = result.MaxZoomLevel;
-        existing = await projectRepo.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString())
-          .ConfigureAwait(false);
-      }
+      //  Flow has it attached. Trying to delete results in 'The process cannot access the file '...' because it is being used by another process'
+      // System.IO.File.Delete(file.path);
 
-      //Need to update zoom levels in Db for both create  and update
-      var updateImportedFileEvent = await UpdateImportedFileInDb(existing, JsonConvert.SerializeObject(fileDescriptor),
-          surveyedUtc, result.MinZoomLevel, result.MaxZoomLevel,
-          fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
-        .ConfigureAwait(false);
-
-      // if all succeeds, update Db (if not Create) and send create/update to kafka que
-      if (!creating) // update
-      {
-        var messagePayload = JsonConvert.SerializeObject(new { UpdateImportedFileEvent = updateImportedFileEvent });
-        producer.Send(kafkaTopicName,
-          new List<KeyValuePair<string, string>>
-          {
-            new KeyValuePair<string, string>(updateImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
-          });
-      }
-      else
-      {
-        var messagePayload = JsonConvert.SerializeObject(new { CreateImportedFileEvent = createImportedFileEvent });
-        producer.Send(kafkaTopicName,
-          new List<KeyValuePair<string, string>>
-          {
-            new KeyValuePair<string, string>(createImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
-          });
-      }
-
-      // Flow has it attached. Trying to delete results in 'The process cannot access the file '...' because it is being used by another process'
-      //System.IO.File.Delete(file.path);
-
-      var importedFile = new ImportedFileDescriptorSingleResult(
-        (await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false))
-        .ToImmutableList()
-        .FirstOrDefault(f => f.ImportedFileUid == importedFileUid)
-      );
       log.LogInformation(
         $"UpdateImportedFileV4. Completed succesfully. Response: {JsonConvert.SerializeObject(importedFile)}");
 
@@ -422,7 +370,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       await ValidateProjectId(projectUid.ToString());
 
-      var importedFiles = await GetImportedFiles(projectUid.ToString()).ConfigureAwait(false);
+      var importedFiles = await ImportedFileRequestHelper.GetImportedFiles(projectUid.ToString(), log, projectRepo).ConfigureAwait(false);
       ImportedFile importedFile = null;
       if (importedFiles.Count > 0)
         importedFile = importedFiles.FirstOrDefault(f => f.ImportedFileUid == importedFileUid.ToString());
@@ -432,7 +380,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
 
       // DB change must be made before raptorProxy.DeleteFile is called as it calls back here to get list of Active files
-      var deleteImportedFileEvent = await DeleteImportedFileInDb(projectUid, importedFileUid, false).ConfigureAwait(false);
+      var deleteImportedFileEvent = await ImportedFileRequestHelper.DeleteImportedFileInDb(projectUid, importedFileUid,serviceExceptionHandler, projectRepo, false).ConfigureAwait(false);
 
       await NotifyRaptorDeleteFile(projectUid, importedFile.ImportedFileType, Guid.Parse(importedFile.ImportedFileUid), importedFile.FileDescriptor, importedFile.ImportedFileId, importedFile.LegacyImportedFileId)
         .ConfigureAwait(false);

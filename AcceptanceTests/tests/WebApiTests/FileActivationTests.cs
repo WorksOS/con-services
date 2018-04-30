@@ -50,11 +50,11 @@ namespace WebApiTests
         $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment1} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        |",
         $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment2} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        |"};
 
-      var filesResult = importFile.SendImportedFilesToWebApi(ts, importFileArray, 1);
+      var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
       var expectedResult = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       expectedResult.IsActivated = true;
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult, true);
-      filesResult = importFile.SendImportedFilesToWebApi(ts, importFileArray, 2);
+      filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 2);
       expectedResult = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       expectedResult.IsActivated = true;
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult, true);
@@ -324,7 +324,7 @@ namespace WebApiTests
         "| EventType              | ProjectUid   | CustomerUid   | Name                       | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated |",
         $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {testFile} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        |"};
 
-      return importFile.SendImportedFilesToWebApi(testSupport, importFileArray, 1);
+      return importFile.SendImportedFilesToWebApiV4(testSupport, importFileArray, 1);
     }
   }
 }

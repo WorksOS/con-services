@@ -30,7 +30,7 @@ namespace WebApiTests
 
       var response = CreateProjectV2(ts, mysql, "project 1", ProjectType.ProjectMonitoring);
 
-      var createProjectV2Result = JsonConvert.DeserializeObject<CreateProjectV2Result>(response);
+      var createProjectV2Result = JsonConvert.DeserializeObject<ReturnLongV2Result>(response);
       
       Assert.AreEqual((int)HttpStatusCode.Created, createProjectV2Result.Code, "Not created ok.");
       Assert.AreNotEqual(-1, createProjectV2Result.id, "No Project was created.");

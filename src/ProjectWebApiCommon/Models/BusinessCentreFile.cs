@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
 {
@@ -23,6 +24,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// </summary>
     [JsonProperty(PropertyName = "Name", Required = Required.Default)]
     public string Name { get; set; }
+
+    public string BaseFileName()
+    {
+      return ImportedFileUtils.RemoveSurveyedUtcFromName(Name);
+    }
 
     /// <summary>
     /// Gets or sets the UTC date/time the file was created on TCC.

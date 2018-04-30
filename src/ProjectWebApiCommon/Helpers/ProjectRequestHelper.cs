@@ -137,36 +137,23 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     }
 
     /// <summary>
-    /// get CoordinateSystem file content from TCC
+    /// get file content from TCC
+    ///     note that is is intended to be used for small, DC files only.
+    ///     If/when it is needed for large files, 
+    ///           e.g. surfaces, you should use a smaller buffer and loop to read.
     /// </summary>
-    public static async Task<byte[]> GetCoordinateSystemContent(BusinessCenterFile businessCentreFile,
+    public static async Task<byte[]> GetFileContentFromTcc(BusinessCenterFile businessCentreFile,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IFileRepository fileRepo)
     {
-      // Read CoordSystem file from TCC as byte[]. 
-      //    Filename and content are used: 
-      //      validated via raptorproxy
-      //      created in Raptor via raptorProxy
-      //      stored in CreateKafkaEvent
-      //    Only Filename is stored in the VL database 
-
       Stream memStream = null;
-      var tccPath = $"{businessCentreFile.Path}/{businessCentreFile.Name}";
+      var tccPath = $"/{businessCentreFile.Path}/{businessCentreFile.Name}";
       byte[] coordSystemFileContent = null;
       int numBytesRead = 0;
 
       try
       {
-        // MockFileRepository.FolderExists and FileExists always returns false so can't check first
-        //// check for exists first to avoid an misleading exception in our logs.
-        //var folderExists = await fileRepo.FolderExists(businessCentreFile.FileSpaceId, tccPath).ConfigureAwait(false);
-        //if (!folderExists)
-        //{
-        //  serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 78,
-        //    $"{businessCentreFile.FileSpaceId} {tccPath}");
-        //}
-
         log.LogInformation(
-          $"GetCoordinateSystemContent: getBusinessCentreFile fielspaceID: {businessCentreFile.FileSpaceId} tccPath: {tccPath}");
+          $"GetFileContentFromTcc: getBusinessCentreFile fielspaceID: {businessCentreFile.FileSpaceId} tccPath: {tccPath}");
         memStream = await fileRepo.GetFile(businessCentreFile.FileSpaceId, tccPath).ConfigureAwait(false);
 
         if (memStream != null && memStream.CanRead && memStream.Length > 0)
@@ -178,7 +165,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         else
         {
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
-              80, $" isAbleToRead {memStream != null && memStream.CanRead} bytesReturned: {memStream?.Length ?? 0}");
+              80, $" isAbleToRead: {memStream != null && memStream.CanRead} bytesReturned: {memStream?.Length ?? 0}");
         }
       }
       catch (Exception e)
@@ -191,7 +178,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       }
 
       log.LogInformation(
-        $"GetCoordinateSystemContent: numBytesRead: {numBytesRead} coordSystemFileContent.Length {coordSystemFileContent?.Length ?? 0}");
+        $"GetFileContentFromTcc: numBytesRead: {numBytesRead} coordSystemFileContent.Length {coordSystemFileContent?.Length ?? 0}");
       return coordSystemFileContent;
     }
 

@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using TestUtility.Model;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace TestUtility
 {
@@ -68,7 +69,7 @@ namespace TestUtility
     /// <param name="row">Add a single row at a time</param>
     /// <param name="method">HTTP methodf</param>
     /// <returns></returns>
-    public ImportedFileDescriptorSingleResult SendImportedFilesToWebApi(TestSupport ts, string[] importFileArray, int row, string method = "POST")
+    public ImportedFileDescriptorSingleResult SendImportedFilesToWebApiV4(TestSupport ts, string[] importFileArray, int row, string method = "POST")
     {
       var uri = ts.GetBaseUri();
 
@@ -105,6 +106,44 @@ namespace TestUtility
         Assert.Fail(response);
         return null;
       }
+    }
+
+
+    /// <summary>
+    /// Add a string array of data 
+    /// </summary>
+    /// <param name="ts">Test support</param>
+    /// <param name="projectId"></param>
+    /// <param name="importFileArray">string array of data</param>
+    /// <param name="row">Add a single row at a time</param>
+    /// <returns></returns>
+    public string SendImportedFilesToWebApiV2(TestSupport ts, long projectId, string[] importFileArray, int row)
+    {
+      string method = "PUT";
+      var uri = ts.GetBaseUri();
+      uri = uri + $"api/v2/projects/{projectId}/importedfiles";
+      var ed = ts.ConvertImportFileArrayToObject(importFileArray, row);
+
+      var importedFileTbc = new ImportedFileTbc()
+      {
+        FileSpaceId = "u710e3466-1d47-45e3-87b8-81d1127ed4ed",
+        Path = Path.GetFullPath(ed.Name),
+        Name = Path.GetFileName(ed.Name),
+        ImportedFileTypeId = ed.ImportedFileType,
+        CreatedUtc = ed.FileCreatedUtc,
+        AlignmentFile = ed.ImportedFileType == VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.Alignment
+                        ? new AlignmentFile(){Offset = 1} : null,
+        SurfaceFile = ed.ImportedFileType == VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.SurveyedSurface
+          ? new SurfaceFile() {SurveyedUtc = new DateTime()} : null,
+        LineworkFile = ed.ImportedFileType == VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.Linework
+        ? new LineworkFile() { DxfUnitsTypeId = DxfUnitsType.Meters} : null
+      };
+      string requestJson = JsonConvert.SerializeObject(importedFileTbc, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+
+      var restClient = new RestClientUtil();
+      var response = restClient.DoHttpRequest(uri, method, requestJson, HttpStatusCode.OK, "application/json", ts.CustomerUid.ToString());
+
+      return response;
     }
 
     /// <summary>

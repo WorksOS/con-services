@@ -18,22 +18,22 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
     {
       string[] pointsArray = s. /*Remove(s.Length - 1).*/Split(pointSeparator);
 
-      for (int i = 0; i < pointsArray.Length; i++)
+      foreach (var t in pointsArray)
       {
         //gets x and y coordinates split by comma, trims whitespace at pos 0, converts to double array
-        var coordinates = pointsArray[i].Trim().Split(coordSeparator).Select(c => double.Parse(c)).ToArray();
+        var coordinates = t.Trim().Split(coordSeparator).Select(double.Parse).ToArray();
         yield return (new Point(coordinates[1], coordinates[0]));
       }
     }
 
-    private static IEnumerable<Point> ParseBoundaryDataPointLL(string s, char pointSeparator, char coordSeparator)
+    private static IEnumerable<Point> ParseBoundaryDataPoint(string s, char pointSeparator, char coordSeparator)
     {
-      string[] pointsArray = s. /*Remove(s.Length - 1).*/Split(pointSeparator);
+      string[] pointsArray = s.Split(pointSeparator);
 
-      for (int i = 0; i < pointsArray.Length; i++)
+      foreach (var t in pointsArray)
       {
         //gets x and y coordinates split by comma, trims whitespace at pos 0, converts to double array
-        var coordinates = pointsArray[i].Trim().Split(coordSeparator).Select(c => double.Parse(c)).ToArray();
+        var coordinates = t.Trim().Split(coordSeparator).Select(double.Parse).ToArray();
         yield return (new Point(coordinates[1], coordinates[0]));
       }
     }
@@ -112,7 +112,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       {
         s = s.Replace(to_replace, string.Empty);
       }
-      return ParseBoundaryDataPointLL(s, ',', ' ');
+      return ParseBoundaryDataPoint(s, ',', ' ');
     }
 
     public static string GetWicketFromPoints(List<Point> points)

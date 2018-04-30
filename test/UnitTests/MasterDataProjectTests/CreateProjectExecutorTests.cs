@@ -65,16 +65,17 @@ namespace VSS.MasterData.ProjectTests
     {
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
-      
+
       var fileRepo = new Mock<IFileRepository>();
       fileRepo.Setup(fr => fr.FolderExists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
-      byte[] buffer = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3 };
+      byte[] buffer = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3};
       fileRepo.Setup(fr => fr.GetFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new MemoryStream(buffer));
 
-      var coordinateSystemFileContent = await ProjectRequestHelper.GetCoordinateSystemContent(_businessCenterFile,
-        logger.CreateLogger<CreateProjectExecutorTests>(), serviceExceptionHandler, fileRepo.Object).ConfigureAwait(false);
+      var coordinateSystemFileContent = await ProjectRequestHelper.GetFileContentFromTcc(_businessCenterFile,
+          logger.CreateLogger<CreateProjectExecutorTests>(), serviceExceptionHandler, fileRepo.Object)
+        .ConfigureAwait(false);
       Assert.IsTrue(buffer.SequenceEqual(coordinateSystemFileContent), "CoordinateSystemFileContent not read from DC.");
-      }
+    }
 
     [TestMethod]
     public async Task CreateProjectV2Executor_HappyPath()
@@ -93,39 +94,49 @@ namespace VSS.MasterData.ProjectTests
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
       var producer = new Mock<IKafka>();
+      producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
+      producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
 
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<CreateProjectEvent>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectCustomer>())).ReturnsAsync(1);
-      projectRepo.Setup(pr => pr.GetProjectOnly(It.IsAny<string>())).ReturnsAsync(new Repositories.DBModels.Project() { LegacyProjectID = 999 });
-      projectRepo.Setup(pr => pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>())).ReturnsAsync(false);
+      projectRepo.Setup(pr => pr.GetProjectOnly(It.IsAny<string>()))
+        .ReturnsAsync(new Repositories.DBModels.Project() {LegacyProjectID = 999});
+      projectRepo.Setup(pr =>
+          pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+        .ReturnsAsync(false);
       var subscriptionRepo = new Mock<ISubscriptionRepository>();
       subscriptionRepo.Setup(sr =>
-        sr.GetFreeProjectSubscriptionsByCustomer(It.IsAny<string>(), It.IsAny<DateTime>()))
+          sr.GetFreeProjectSubscriptionsByCustomer(It.IsAny<string>(), It.IsAny<DateTime>()))
         .ReturnsAsync(new List<Subscription>()
-          { new Subscription()
-            { ServiceTypeID = (int) ServiceTypeEnum.ProjectMonitoring, SubscriptionUID = Guid.NewGuid().ToString()}});
-      var fileRepo = new Mock<IFileRepository>();
+        {
+          new Subscription()
+            {ServiceTypeID = (int) ServiceTypeEnum.ProjectMonitoring, SubscriptionUID = Guid.NewGuid().ToString()}
+        });
 
       var geofenceProxy = new Mock<IGeofenceProxy>();
-      geofenceProxy.Setup(gp => gp.CreateGeofence(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<Guid>(), It.IsAny<double>(), It.IsAny<Dictionary<string, string>>()))
+      geofenceProxy.Setup(gp => gp.CreateGeofence(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(),
+          It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<Guid>(),
+          It.IsAny<double>(), It.IsAny<Dictionary<string, string>>()))
         .ReturnsAsync(geofenceUid);
       var raptorProxy = new Mock<IRaptorProxy>();
-      raptorProxy.Setup(rp => rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
+      raptorProxy.Setup(rp =>
+          rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
         .ReturnsAsync(new CoordinateSystemSettingsResult());
-      raptorProxy.Setup(rp => rp.CoordinateSystemPost(It.IsAny<long>(), It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
+      raptorProxy.Setup(rp => rp.CoordinateSystemPost(It.IsAny<long>(), It.IsAny<byte[]>(), It.IsAny<string>(),
+          It.IsAny<Dictionary<string, string>>()))
         .ReturnsAsync(new CoordinateSystemSettingsResult());
       var subscriptionProxy = new Mock<ISubscriptionProxy>();
       subscriptionProxy.Setup(sp =>
           sp.AssociateProjectSubscription(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Dictionary<string, string>>()))
         .Returns(Task.FromResult(default(int)));
-      
+
       var executor = RequestExecutorContainerFactory.Build<CreateProjectExecutor>
-        (logger, configStore, serviceExceptionHandler,
+      (logger, configStore, serviceExceptionHandler,
         _customerUid, userId, null, customHeaders,
         producer.Object, kafkaTopicName,
         geofenceProxy.Object, raptorProxy.Object, subscriptionProxy.Object,
-        projectRepo.Object, subscriptionRepo.Object, null);
+        projectRepo.Object, subscriptionRepo.Object);
       await executor.ProcessAsync(createProjectEvent);
     }
   }

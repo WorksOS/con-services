@@ -1,6 +1,7 @@
 using System.Net;
 using Newtonsoft.Json;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
 {
@@ -28,6 +29,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// </summary>
     [JsonProperty(PropertyName = "fileName", Required = Required.Always)]
     public string fileName { get; private set; }
+
+    public string BaseFileName()
+    {
+      return ImportedFileUtils.RemoveSurveyedUtcFromName(fileName);
+    }
 
     /// <summary>
     /// Private constructor

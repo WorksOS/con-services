@@ -38,7 +38,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
 
     /// <summary>
-    /// 
+    /// Default constructor.
     /// </summary>
     /// <param name="producer"></param>
     /// <param name="projectRepo"></param>
@@ -74,6 +74,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///     Result: HttpStatusCode.Created
     ///            {"id":6964} 
     /// 
+    ///   This US only handles happy path. ServiceExceptions will be mapped in a future US.
+    /// 
     /// </summary>
     /// <param name="projectRequest">CreateProjectV2Request model</param>
     /// <remarks>Updates existing project</remarks>
@@ -98,13 +100,18 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 85);
       }
 
-      // get CoordinateSystem file content from TCC
       projectRequest.CoordinateSystem =
         ProjectDataValidator.ValidateBusinessCentreFile(projectRequest.CoordinateSystem);
 
+      // Read CoordSystem file from TCC as byte[]. 
+      //    Filename and content are used: 
+      //      validated via raptorproxy
+      //      created in Raptor via raptorProxy
+      //      stored in CreateKafkaEvent
+      //    Only Filename is stored in the VL database 
       createProjectEvent.CoordinateSystemFileContent = 
         await ProjectRequestHelper
-        .GetCoordinateSystemContent(projectRequest.CoordinateSystem,
+        .GetFileContentFromTcc(projectRequest.CoordinateSystem,
           log, serviceExceptionHandler, fileRepo).ConfigureAwait(false);
 
       await WithServiceExceptionTryExecuteAsync(() =>
@@ -118,7 +125,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       );
 
       log.LogDebug("CreateProjectV2. completed succesfully");
-      return CreateProjectV2Result.CreateAProjectV2Result(HttpStatusCode.Created, createProjectEvent.ProjectID);
+      return ReturnLongV2Result.CreateLongV2Result(HttpStatusCode.Created, createProjectEvent.ProjectID);
     }
 
     #endregion projects
@@ -137,7 +144,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///     Response: HttpStatusCode.OK
     ///                {"success":true}
     /// 
-    /// Happy path only to be handled at this point.
+    /// Happy path only to be handled in this US. ServiceExceptions will be mapped in a future US.
     /// However this is a faillure Response:
     ///     {"status":500,"message":"invalidUser001\r\n\r\n","errorcode":1000,"link":null}
     /// 
@@ -174,13 +181,5 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     #endregion TTCAuthorization
-
-
-    #region FileImport
-
-    //PUT /t/trimble.com/vss-projectmonitoring/1.0/api/v2/projects/6960/importedfiles HTTP/1.1
-    //Body: {"ImportedFileTypeID":1,"AlignmentFile":null,"SurfaceFile":{"SurveyedUTC":"2018-03-21T20:18:13.9631923Z"},"LineworkFile":null,"MassHaulPlanFile":null,"FileSpaceID":"u927f3be6-7987-4944-898f-42a088da94f2","Path":"/BC Data/Sites/Test  Create/Designs/TBC","Name":"Cell 9 inter 092717 switchback 112917.ttm","CreatedUTC":"2018-04-11T00:22:11.0266872Z"}
-
-    #endregion FileImport
   }
 }
