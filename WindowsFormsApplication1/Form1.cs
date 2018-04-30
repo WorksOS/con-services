@@ -53,6 +53,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         //        RaptorGenericApplicationServiceServer genericApplicationServiceServer = new RaptorGenericApplicationServiceServer();
         RaptorTileRenderingServer tileRenderServer;
         RaptorSimpleVolumesServer simpleVolumesServer;
+        RaptorMutableClientServer mutableClient;
 
         SiteModelAttributesChangedEventListener SiteModelAttrubutesChanged;
 
@@ -147,7 +148,8 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             displayMode.SelectedIndex = (int)DisplayMode.Height;
 
             tileRenderServer = RaptorTileRenderingServer.NewInstance(new[] { RaptorApplicationServiceServer.DEFAULT_ROLE_CLIENT, ServerRoles.TILE_RENDERING_NODE });
-            simpleVolumesServer = RaptorSimpleVolumesServer.NewInstance(new [] { RaptorSimpleVolumesServer.DEFAULT_ROLE_CLIENT });
+            simpleVolumesServer = RaptorSimpleVolumesServer.NewInstance(new [] { RaptorApplicationServiceServer.DEFAULT_ROLE_CLIENT });
+            mutableClient = new RaptorMutableClientServer("TestApplication");
 
             // Instantiate a site model changed listener to catch changes to site model attributes
             SiteModelAttrubutesChanged = new SiteModelAttributesChangedEventListener(RaptorGrids.RaptorImmutableGridName());

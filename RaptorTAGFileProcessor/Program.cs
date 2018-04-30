@@ -87,13 +87,12 @@ namespace VSS.VisionLink.Raptor.Client
             Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
 
             ProcessTAGFileRequest request = new ProcessTAGFileRequest();
-            ProcessTAGFileRequestArgument arg = new ProcessTAGFileRequestArgument()
+            ProcessTAGFileRequestArgument arg = new ProcessTAGFileRequestArgument
             {
                 ProjectID = projectID,
-                AssetID = machine.ID                
+                AssetID = machine.ID,
+                TAGFiles = new List<ProcessTAGFileRequestFileItem>()
             };
-
-            arg.TAGFiles = new List<ProcessTAGFileRequestFileItem>();
 
             foreach (string file in files)
             {
@@ -102,7 +101,7 @@ namespace VSS.VisionLink.Raptor.Client
                     byte[] bytes = new byte[fs.Length];
                     fs.Read(bytes, 0, bytes.Length);
 
-                    arg.TAGFiles.Add(new ProcessTAGFileRequestFileItem() { FileName = file, TagFileContent = bytes });     
+                    arg.TAGFiles.Add(new ProcessTAGFileRequestFileItem { FileName = Path.GetFileName(file), TagFileContent = bytes });     
                 }
             }
 
