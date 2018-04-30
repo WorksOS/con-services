@@ -330,6 +330,5 @@ namespace VSS.MasterData.ProjectTests
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
       Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(32)));
     }
-
   }
 }

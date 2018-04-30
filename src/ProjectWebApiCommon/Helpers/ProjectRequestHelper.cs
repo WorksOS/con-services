@@ -138,6 +138,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
     /// <summary>
     /// get file content from TCC
+    ///     note that is is intended to be used for small, DC files only.
+    ///     If/when it is needed for large files, 
+    ///           e.g. surfaces, you should use a smaller buffer and loop to read.
     /// </summary>
     public static async Task<byte[]> GetFileContentFromTcc(BusinessCenterFile businessCentreFile,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IFileRepository fileRepo)

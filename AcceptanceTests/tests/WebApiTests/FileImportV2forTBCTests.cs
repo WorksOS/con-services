@@ -17,7 +17,7 @@ namespace WebApiTests
     [TestMethod]
     public void TestImportV2ForTbcSvlFile()
     {
-      const string testName = "File Import 2 for TBC v2 endpoint";
+      const string testName = "File Import 13";
       msg.Title(testName, "Create standard project and customer then upload svl file via TBC V2 API");
       var ts = new TestSupport();
       var importFile = new ImportFile();

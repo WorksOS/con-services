@@ -323,7 +323,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           $"CopyFileWithinTccRepository: srcFileSpaceId: {sourceFile.FileSpaceId} destFileSpaceId {dstFileSpaceId} srcTccPathAndFile {srcTccPathAndFile} destTccPathAndFile {destTccPathAndFile}");
 
         // check for exists first to avoid an misleading exception in our logs.
-        var folderAlreadyExists = await fileRepo.FolderExists(dstFileSpaceId, destTccPathAndFile).ConfigureAwait(false);
+        var folderAlreadyExists = await fileRepo.FolderExists(dstFileSpaceId, destTccPath).ConfigureAwait(false);
         if (folderAlreadyExists == false)
           await fileRepo.MakeFolder(dstFileSpaceId, destTccPath).ConfigureAwait(false);
 

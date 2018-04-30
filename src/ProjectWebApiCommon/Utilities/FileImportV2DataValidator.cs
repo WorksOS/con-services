@@ -40,22 +40,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       if (!(importedFile.ImportedFileTypeId >= ImportedFileType.Linework && importedFile.ImportedFileTypeId <= ImportedFileType.Alignment))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.GetErrorNumberwithOffset(30),
+          new ContractExecutionResult(ContractExecutionStatesEnum.GetErrorNumberwithOffset(31),
             ContractExecutionStatesEnum.FirstNameWithOffset(31)));
       }
 
-      var fileExtension = Path.GetExtension(importedFile.Name).ToLower();
-      if (!(
-        (importedFile.ImportedFileTypeId == ImportedFileType.Linework && fileExtension == ".dxf") ||
-        (importedFile.ImportedFileTypeId == ImportedFileType.DesignSurface && fileExtension == ".ttm") ||
-        (importedFile.ImportedFileTypeId == ImportedFileType.SurveyedSurface && fileExtension == ".ttm") ||
-        (importedFile.ImportedFileTypeId == ImportedFileType.Alignment && fileExtension == ".svl")
-      ))
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.GetErrorNumberwithOffset(32),
-            ContractExecutionStatesEnum.FirstNameWithOffset(32)));
-      }
+      ProjectDataValidator.ValidateBusinessCentreFile(importedFile);
+
 
       if (importedFile.ImportedFileTypeId == ImportedFileType.Linework &&
            ( importedFile.LineworkFile == null ||
@@ -81,11 +71,23 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
           importedFile.AlignmentFile == null )
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.GetErrorNumberwithOffset(33),
+          new ContractExecutionResult(ContractExecutionStatesEnum.GetErrorNumberwithOffset(95),
             ContractExecutionStatesEnum.FirstNameWithOffset(95)));
       }
+      
+      var fileExtension = Path.GetExtension(importedFile.Name).ToLower();
+      if (!(
+        (importedFile.ImportedFileTypeId == ImportedFileType.Linework && fileExtension == ".dxf") ||
+        (importedFile.ImportedFileTypeId == ImportedFileType.DesignSurface && fileExtension == ".ttm") ||
+        (importedFile.ImportedFileTypeId == ImportedFileType.SurveyedSurface && fileExtension == ".ttm") ||
+        (importedFile.ImportedFileTypeId == ImportedFileType.Alignment && fileExtension == ".svl")
+      ))
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.GetErrorNumberwithOffset(32),
+            ContractExecutionStatesEnum.FirstNameWithOffset(32)));
+      }
 
-      ProjectDataValidator.ValidateBusinessCentreFile(importedFile as BusinessCenterFile);
       return importedFile;
     }
   }

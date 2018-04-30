@@ -118,6 +118,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
               new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(8),
                 contractExecutionStatesEnum.FirstNameWithOffset(8)));
           }
+          ProjectBoundaryValidator.ValidateWKT(createEvent.ProjectBoundary);
+
           if (string.IsNullOrEmpty(createEvent.ProjectTimezone))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,

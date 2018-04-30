@@ -76,26 +76,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     [Obsolete]
     [JsonProperty(PropertyName = "MassHaulPlanFile", Required = Required.Default)]
     public string MassHaulPlanFile { get; set; }
-
-   /*
-    public static ImportedFileTBC Linework_HelpSample
-    {
-      get
-      {
-        LineworkFile lineworkFile = new LineworkFile { DxfUnitsTypeId = 0 };
-        return new ImportedFileTBC()
-        {
-          FileSpaceId = "u710e3466-1d47-45e3-87b8-81d1127ed4ed",
-          Name = "MoundRoadlinework.dxf",
-          Path = "/BC Data/Sites/Chch Test Site/Designs/Mound Road",
-          ImportedFileTypeID = ImportedFileType.Linework,
-          CreatedUtc = DateTime.UtcNow,
-          LineworkFile = lineworkFile
-        };
-      }
-    }
-    */
-
+    
   }
 }
 
