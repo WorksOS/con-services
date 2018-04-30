@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Repositories.DBModels
 {
@@ -12,6 +13,7 @@ namespace VSS.MasterData.Repositories.DBModels
     public string UserId { get; set; }
     public string Name { get; set; }
     public string FilterJson { get; set; }
+    public FilterType FilterType { get; set; }
     public bool IsDeleted { get; set; } 
     public DateTime LastActionedUtc { get; set; }
 
@@ -25,6 +27,7 @@ namespace VSS.MasterData.Repositories.DBModels
              && otherFilter.UserId == UserId
              && otherFilter.Name == Name
              && otherFilter.FilterJson == FilterJson
+             && otherFilter.FilterType == FilterType
              && otherFilter.IsDeleted == IsDeleted
              && otherFilter.LastActionedUtc == LastActionedUtc
         ;

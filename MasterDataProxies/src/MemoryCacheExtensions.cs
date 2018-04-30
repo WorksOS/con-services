@@ -14,7 +14,8 @@ namespace VSS.MasterData.Proxies
     /// </summary>
     /// <param name="cacheLifeKey">The configuration key for the cache life</param>
     /// <returns>Memory cache options for the items</returns>
-    public static MemoryCacheEntryOptions GetCacheOptions(string cacheLifeKey, IConfigurationStore configurationStore, ILogger log)
+    public static MemoryCacheEntryOptions GetCacheOptions(this MemoryCacheEntryOptions opts, string cacheLifeKey, IConfigurationStore configurationStore,
+      ILogger log)
     {
       const string DEFAULT_TIMESPAN_MESSAGE = "Using default 15 mins.";
 
@@ -23,7 +24,8 @@ namespace VSS.MasterData.Proxies
 
       if (string.IsNullOrEmpty(cacheLife))
       {
-        log.LogWarning($"Your application is missing an environment variable {cacheLifeKey}. {DEFAULT_TIMESPAN_MESSAGE}");
+        log.LogWarning(
+          $"Your application is missing an environment variable {cacheLifeKey}. {DEFAULT_TIMESPAN_MESSAGE}");
         cacheLife = "00:15:00";
       }
 
@@ -34,10 +36,40 @@ namespace VSS.MasterData.Proxies
         result = new TimeSpan(0, 15, 0);
       }
 
-      return new MemoryCacheEntryOptions()
+      opts.SlidingExpiration = result;
+      return opts;
+    }
+
+    static object cacheLock = new object();
+    public static T GetOrAdd<T>(this IMemoryCache cache, string cacheKey, MemoryCacheEntryOptions opts, Func<T> factory)
+    {
+      if (cache.TryGetValue(cacheKey, out var promise))
+        return ((Lazy<T>)promise).Value;
+
+      Lazy<T> promiseToSet;
+
+      lock (cacheLock)
       {
-        SlidingExpiration = result
-      };
+        if (cache.TryGetValue(cacheKey, out var promiseBeforeSet))
+          return ((Lazy<T>)promiseBeforeSet).Value;
+        promiseToSet = new Lazy<T>(factory);
+        cache.Set(cacheKey, promiseToSet);
+      }
+
+      return promiseToSet.Value;
+    }
+
+    public static T Add<T>(this IMemoryCache cache, string cacheKey, MemoryCacheEntryOptions opts, Func<T> factory)
+    {
+      Lazy<T> promiseToSet;
+
+      lock (cacheLock)
+      {
+        promiseToSet = new Lazy<T>(factory);
+        cache.Set(cacheKey, promiseToSet);
+      }
+
+      return promiseToSet.Value;
     }
   }
 }

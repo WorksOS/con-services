@@ -23,7 +23,7 @@
     <PackageReference Include="System.Linq" Version="4.3.0" />
     <PackageReference Include="NodaTime" Version="2.0.3" />
     <PackageReference Include="Polly" Version="5.1.0" />
-    <PackageReference Include="VSS.Interfaces.netcore" Version="1.5.*" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
   </ItemGroup>
 

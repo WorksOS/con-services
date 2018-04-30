@@ -1,4 +1,4 @@
-﻿using VSS.Common.ResultsHandling;
+﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.MasterData.Models.ResultHandling
 {
@@ -69,6 +69,11 @@ namespace VSS.MasterData.Models.ResultHandling
       DynamicAddwithOffset("UpsertBoundary. Update not supported", 61);
       DynamicAddwithOffset("Duplicate boundary name", 62);
       DynamicAddwithOffset("Invalid boundary polygon WKT. Should not be null.", 63);
+      DynamicAddwithOffset("Invalid alignment filter. alignment File Uid is invalid.", 64);
+      DynamicAddwithOffset("Invalid alignment filter. Start or end station are invalid.", 65);
+      DynamicAddwithOffset("Invalid alignment filter. Left or right offset are invalid.", 66);
+      DynamicAddwithOffset("Invalid alignment filter. Parameters are incomplete.", 67);
+      DynamicAddwithOffset("Invalid Date Filter. Either EndUTC or DateRangeType must be provided for an as-at date filter.", 68);
     }
   }
 }

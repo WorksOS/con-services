@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
-using System.Text;
 using MockProjectWebApi.Utils;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
@@ -170,6 +169,7 @@ namespace MockProjectWebApi.Controllers
     /// <summary>
     /// Dummies the project projectSettings validation.
     /// </summary>
+    [Route("api/v2/validatesettings")]
     [Route("api/v2/compaction/validatesettings")]
     [HttpGet]
     public BaseDataResult DummyValidateProjectSettingsGet(
@@ -178,6 +178,20 @@ namespace MockProjectWebApi.Controllers
     {
       BaseDataResult res = new BaseDataResult();
       var message = $"DummyValidateProjectSettingsGet: res {res}. projectSettings {projectSettings}";
+      Console.WriteLine(message);
+      return res;
+    }
+
+    /// <summary>
+    /// Dummies the project projectSettings validation.
+    /// </summary>
+    [Route("api/v2/validatesettings")]
+    [Route("api/v2/compaction/validatesettings")]
+    [HttpPost]
+    public BaseDataResult DummyValidateProjectSettingsPost([FromBody] ProjectSettingsRequest request)
+    {
+      BaseDataResult res = new BaseDataResult();
+      var message = $"DummyValidateProjectSettingsGet: res {res}. projectSettings {request.Settings}";
       Console.WriteLine(message);
       return res;
     }

@@ -39,6 +39,7 @@ namespace KafkaTests
     {
       // setup Ilogger
       string loggerRepoName = "UnitTestLogTest";
+      Log4NetProvider.RepoName = loggerRepoName;
       var logPath = System.IO.Directory.GetCurrentDirectory();
       Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
 
@@ -592,6 +593,7 @@ namespace KafkaTests
         FilterUID = Guid.NewGuid(),
         Name = "Persistant filter Name",
         FilterJson = "{\"startUTC\":\"2012-11-05\",\"endUTC\":\"2012-11-06\"}",
+        FilterType = FilterType.Persistent,
         ActionUTC = actionUtc,
         ReceivedUTC = actionUtc
       };

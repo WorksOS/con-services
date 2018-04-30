@@ -6,7 +6,7 @@
     <Company>VSS</Company>
     <Product>VSS.MasterData.Repositories.netcore</Product>
     <Description>Shared lib to access Masterdata aspects in the DB</Description>
-    <VersionPrefix>2.7.3</VersionPrefix>
+    <VersionPrefix>2.8.3</VersionPrefix>
     <TargetFrameworks>netstandard1.6</TargetFrameworks>
     <AssemblyName>VSS.MasterData.Repositories</AssemblyName>
     <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
@@ -26,7 +26,7 @@
     <PackageReference Include="System.Linq" Version="4.3.0" />
     <PackageReference Include="NodaTime" Version="2.0.3" />
     <PackageReference Include="Polly" Version="5.1.0" />
-    <PackageReference Include="VSS.Interfaces.netcore" Version="1.5.*" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
   </ItemGroup>
 

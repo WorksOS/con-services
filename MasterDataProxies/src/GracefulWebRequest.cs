@@ -163,7 +163,8 @@ namespace VSS.MasterData.Proxies
             {
               request.ContentType = "application/json";
             }
-            log.LogDebug($"PrepareWebRequest() T : requestWithPayload {JsonConvert.SerializeObject(request).Truncate(logMaxChar)}");
+            //This fails to serialize the HttpWebRequest with a Json serialization exception for netcore 2.0
+            //log.LogDebug($"PrepareWebRequest() T : requestWithPayload {JsonConvert.SerializeObject(request).Truncate(logMaxChar)}");
 
 
             using (var writeStream = await request.GetRequestStreamAsync())
@@ -192,7 +193,7 @@ namespace VSS.MasterData.Proxies
 
       public async Task<Stream> ExecuteActualStreamRequest()
       {
-        var request = PrepareWebRequest(endpoint, method, customHeaders, payloadData).Result;
+        var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData);
 
         WebResponse response = null;
         try

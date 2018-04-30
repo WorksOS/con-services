@@ -8,6 +8,8 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Interfaces;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Utilities;
+using NodaTime;
+using NodaTime.Extensions;
 
 namespace VSS.MasterData.Models.Models
 {
@@ -21,14 +23,14 @@ namespace VSS.MasterData.Models.Models
     /// Optional. If not present then there is no start time bound.
     /// </summary>
     [JsonProperty(PropertyName = "startUtc", Required = Required.Default)]
-    public DateTime? StartUtc { get; private set; }
+    public DateTime? StartUtc { get; set; }
 
     /// <summary>
     /// The 'end' time for a time based filter. Data recorded after this time is not considered.
     /// Optional. If not present there is no end time bound.
     /// </summary>
     [JsonProperty(PropertyName = "endUtc", Required = Required.Default)]
-    public DateTime? EndUtc { get; private set; }
+    public DateTime? EndUtc { get; set; }
 
     /// <summary>
     /// Gets the date range type for this filter, e.g. day, week, project extents.
@@ -106,6 +108,44 @@ namespace VSS.MasterData.Models.Models
     [JsonProperty(PropertyName = "layerNumber", Required = Required.Default)]
     public int? LayerNumber { get; private set; }
 
+    /// <summary>
+    /// The alignmentFile unique identifier. Used as a spatial filter along with station and offset.
+    /// </summary>
+    [JsonProperty(PropertyName = "alignmentUid", Required = Required.Default)]
+    public string AlignmentUid { get; protected set; }
+
+    /// <summary>
+    /// The starting Station along the alignment.
+    /// </summary>
+    [JsonProperty(PropertyName = "startStation", Required = Required.Default)]
+    public double? StartStation { get; protected set; }
+
+    /// <summary>
+    /// The ending Station along the alignment.
+    /// </summary>
+    [JsonProperty(PropertyName = "endStation", Required = Required.Default)]
+    public double? EndStation { get; protected set; }
+
+    /// <summary>
+    /// The leftmost offset from the alignment.
+    /// </summary>
+    [JsonProperty(PropertyName = "leftOffset", Required = Required.Default)]
+    public double? LeftOffset { get; protected set; }
+
+    /// <summary>
+    /// The leftmost offset from the alignment.
+    /// </summary>
+    [JsonProperty(PropertyName = "rightOffset", Required = Required.Default)]
+    public double? RightOffset { get; protected set; }
+
+    /// <summary>
+    /// Used in conjunction with DateRangeType or EndUTC. If true then only the end of the date 
+    /// range applies and the start date is the date and time the  project started. Default is false.
+    /// </summary>
+    [JsonProperty(PropertyName = "asAtDate", Required = Required.Default)]
+    public bool? AsAtDate { get; protected set; }
+
+
     #region For JSON Serialization
     public bool ShouldSerializeStartUtc()
     {
@@ -163,6 +203,30 @@ namespace VSS.MasterData.Models.Models
     {
       return LayerNumber != null;
     }
+    public bool ShouldSerializeAlignmentUid()
+    {
+      return AlignmentUid != null;
+    }
+    public bool ShouldSerializeStartStation()
+    {
+      return StartStation != null;
+    }
+    public bool ShouldSerializeEndStation()
+    {
+      return EndStation != null;
+    }
+    public bool ShouldSerializeLeftOffset()
+    {
+      return LeftOffset != null;
+    }
+    public bool ShouldSerializeRightOffset()
+    {
+      return RightOffset != null;
+    }
+    public bool ShouldSerializeAsAtDate()
+    {
+      return AsAtDate != null;
+    }
     #endregion
 
     public bool HasData() =>
@@ -175,7 +239,13 @@ namespace VSS.MasterData.Models.Models
       LayerNumber.HasValue ||
       ForwardDirection.HasValue ||
       (ContributingMachines != null && ContributingMachines.Count > 0) ||
-      (PolygonLL != null && PolygonLL.Count > 0);
+      (PolygonLL != null && PolygonLL.Count > 0) ||
+      !string.IsNullOrEmpty(AlignmentUid) ||
+      StartStation.HasValue ||
+      EndStation.HasValue ||
+      LeftOffset.HasValue ||
+      RightOffset.HasValue ||
+      AsAtDate.HasValue;
 
     public void AddBoundary(string polygonUID, string polygonName, List<WGSPoint> polygonLL)
     {
@@ -200,7 +270,13 @@ namespace VSS.MasterData.Models.Models
         bool? forwardDirection,
         int? layerNumber,
         string polygonUid = null,
-        string polygonName = null
+        string polygonName = null,
+        string alignmentUid = null,
+        double? startStation = null,
+        double? endStation = null,
+        double? leftOffset = null,
+        double? rightOffset = null,
+        bool? asAtDate = null
       )
     {
       return new Filter
@@ -216,13 +292,21 @@ namespace VSS.MasterData.Models.Models
         ForwardDirection = forwardDirection,
         LayerNumber = layerNumber,
         PolygonUid = polygonUid,
-        PolygonName = polygonName
+        PolygonName = polygonName,
+        AlignmentUid = alignmentUid,
+        StartStation = startStation,
+        EndStation = endStation,
+        LeftOffset = leftOffset,
+        RightOffset = rightOffset,
+        AsAtDate = asAtDate
       };
     }
 
     public string ToJsonString()
     {
-      var filter = CreateFilter(StartUtc, EndUtc, DesignUid, ContributingMachines, OnMachineDesignId, ElevationType, VibeStateOn, PolygonLL, ForwardDirection, LayerNumber, PolygonUid, PolygonName);
+      var filter = CreateFilter(StartUtc, EndUtc, DesignUid, ContributingMachines, OnMachineDesignId, ElevationType, 
+        VibeStateOn, PolygonLL, ForwardDirection, LayerNumber, PolygonUid, PolygonName, 
+        AlignmentUid, StartStation, EndStation, LeftOffset, RightOffset, AsAtDate);
 
       return JsonConvert.SerializeObject(filter);
     }
@@ -241,7 +325,14 @@ namespace VSS.MasterData.Models.Models
         }
         else
         {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 30);
+          if (!AsAtDate.HasValue || AsAtDate.Value == false)
+          {
+            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 30);
+          }
+          else if (!EndUtc.HasValue)
+          {
+            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
+          }
         }
       }
 
@@ -264,6 +355,50 @@ namespace VSS.MasterData.Models.Models
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 35);
       }
+
+      // check alignment
+      if (AlignmentUid != null && Guid.TryParse(AlignmentUid, out Guid _) == false)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 64); 
+      }
+
+      // must have both or neither; must increase 
+      if (StartStation.HasValue != EndStation.HasValue)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 65);
+      }
+
+      if (EndStation.HasValue && StartStation.HasValue && StartStation.Value >= EndStation.Value)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 65);
+      }
+
+      // must have both or neither; 
+      // offsets if positive apply to their side of the centerline
+      // Negative offsets allow the user to indicate a slice on one side of the centreline
+      //   e.g. LeftOffset = -20 and RightOffset = 25
+      //      will result in the strip on the right side of the road between 20 and 25
+      if (LeftOffset.HasValue != RightOffset.HasValue)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 66);
+      }
+
+      // if any present then ALL must exist.
+      if ((StartStation.HasValue != LeftOffset.HasValue != string.IsNullOrEmpty(AlignmentUid))
+          && StartStation.HasValue)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 67);
+      }
+
+      if (AsAtDate.HasValue)
+      {
+        bool valid = EndUtc.HasValue || DateRangeType.HasValue &&
+                DateRangeType.Value != Internal.DateRangeType.Custom;//custom must have end UTC
+        if (!valid)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
+        }
+      }
     }
 
     public bool Equals(Filter other)
@@ -275,7 +410,9 @@ namespace VSS.MasterData.Models.Models
              OnMachineDesignId == other.OnMachineDesignId && ElevationType == other.ElevationType &&
              VibeStateOn == other.VibeStateOn && string.Equals(PolygonUid, other.PolygonUid) &&
              string.Equals(PolygonName, other.PolygonName) && PolygonLL.ScrambledEquals(other.PolygonLL) &&
-             ForwardDirection == other.ForwardDirection && LayerNumber == other.LayerNumber;
+             ForwardDirection == other.ForwardDirection && LayerNumber == other.LayerNumber && 
+             string.Equals(AlignmentUid, other.AlignmentUid) && string.Equals(StartStation, other.StartStation) && string.Equals(EndStation, other.EndStation) &&
+             string.Equals(LeftOffset, other.LeftOffset) && string.Equals(RightOffset, other.RightOffset);
     }
 
     public override bool Equals(object obj)
@@ -292,17 +429,23 @@ namespace VSS.MasterData.Models.Models
       {
         var hashCode = StartUtc.GetHashCode();
         hashCode = (hashCode * 397) ^ EndUtc.GetHashCode();
-        hashCode = (hashCode * 397) ^ DateRangeType.GetHashCode();
-        hashCode = (hashCode * 397) ^ (DesignUid != null ? DesignUid.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (ContributingMachines != null ? ContributingMachines.GetListHashCode() : 0);
-        hashCode = (hashCode * 397) ^ OnMachineDesignId.GetHashCode();
-        hashCode = (hashCode * 397) ^ ElevationType.GetHashCode();
-        hashCode = (hashCode * 397) ^ VibeStateOn.GetHashCode();
-        hashCode = (hashCode * 397) ^ (PolygonUid != null ? PolygonUid.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (PolygonName != null ? PolygonName.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (PolygonLL != null ? PolygonLL.GetListHashCode() : 0);
-        hashCode = (hashCode * 397) ^ ForwardDirection.GetHashCode();
-        hashCode = (hashCode * 397) ^ LayerNumber.GetHashCode();
+        hashCode = (hashCode * 397) ^ (DateRangeType != null ? DateRangeType.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (DesignUid != null ? DesignUid.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (ContributingMachines != null ? ContributingMachines.GetListHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (OnMachineDesignId != null ? OnMachineDesignId.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (ElevationType !=null ? ElevationType.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (VibeStateOn !=null ? VibeStateOn.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (PolygonUid != null ? PolygonUid.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (PolygonName != null ? PolygonName.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (PolygonLL != null ? PolygonLL.GetListHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (ForwardDirection !=null ? ForwardDirection.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (LayerNumber!=null ? LayerNumber.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (AlignmentUid != null ? AlignmentUid.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (StartStation != null ? StartStation.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (EndStation != null ? EndStation.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (LeftOffset != null ? LeftOffset.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (RightOffset != null ? RightOffset.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (AsAtDate != null ? AsAtDate.GetHashCode() : 397);
         return hashCode;
       }
     }
@@ -317,10 +460,36 @@ namespace VSS.MasterData.Models.Models
       return !Equals(left, right);
     }
 
-    public void SetDates(DateTime? startUtc, DateTime? endUtc)
+    /// <summary>
+    /// Apply the date range type to the start and end UTC.
+    /// </summary>
+    /// <param name="ianaTimeZoneName">The project time zone to use (IANA name)</param>
+    /// <param name="useEndOfCurrentDay">True if the current date range types should use the end of the day rather than now for the end of the period.
+    /// The filter service uses 'now' as the value is returned to the client and displayed in the UI. The 3dpm service uses the end of the day to pass 
+    /// to Raptor so that Raptor's cache works properly.</param>
+    public void ApplyDateRange(string ianaTimeZoneName, bool useEndOfCurrentDay=false)
     {
-      this.StartUtc = startUtc;
-      this.EndUtc = endUtc;
+      if (!string.IsNullOrEmpty(ianaTimeZoneName) &&
+          DateRangeType != null &&
+          DateRangeType != Internal.DateRangeType.Custom)
+      {
+        // Force date range filters to be null if ProjectExtents is specified.
+        if (DateRangeType == Internal.DateRangeType.ProjectExtents)
+        {
+          StartUtc = null;
+          EndUtc = null;
+        }
+        else
+        {
+          StartUtc = DateRangeType?.UtcForDateRangeType(ianaTimeZoneName, true, useEndOfCurrentDay);
+          EndUtc = DateRangeType?.UtcForDateRangeType(ianaTimeZoneName, false, useEndOfCurrentDay);
+        }
+      }
+      //For as-at dates only use EndUTC, so make sure StartUTC is null
+      if (AsAtDate == true)
+      {
+        StartUtc = null;
+      }
     }
   }
 }

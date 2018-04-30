@@ -7,6 +7,7 @@ namespace VSS.MasterData.Proxies.Interfaces
 {
   public interface IProjectSettingsProxy : ICacheProxy
   {
+    Task<JObject> GetProjectSettings(string projectUid, string userId, IDictionary<string, string> customHeaders);
     Task<JObject> GetProjectSettings(string projectUid, string userId, IDictionary<string, string> customHeaders, ProjectSettingsType settingsType);
   }
 }

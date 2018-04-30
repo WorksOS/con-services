@@ -1,11 +1,11 @@
-﻿using VSS.Common.ResultsHandling;
+﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.MasterData.Models.ResultHandling
 {
   /// <summary>
   /// Generic container for Export binary data.
   /// </summary>
-  /// <seealso cref="VSS.Common.ResultsHandling.ContractExecutionResult" />
+  /// <seealso cref="ContractExecutionResult" />
   public class ExportResult : ContractExecutionResult
   {
     /// <summary>

@@ -87,7 +87,15 @@ namespace VSS.MasterData.Proxies
     public async Task<BaseDataResult> DeleteFile(Guid projectUid, ImportedFileType fileType, Guid fileUid, string fileDescriptor, long fileId, long? legacyFileId, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.DeleteFile: projectUid: {projectUid} fileUid: {fileUid} fileDescriptor: {fileDescriptor} fileId: {fileId} legacyFileId: {legacyFileId}");
-      var queryParams = $"?projectUid={projectUid}&fileType={fileType}&fileUid={fileUid}&fileDescriptor={fileDescriptor}&fileId={fileId}&legacyFileId={legacyFileId}";
+      //var queryParams = $"?projectUid={projectUid}&fileType={fileType}&fileUid={fileUid}&fileDescriptor={fileDescriptor}&fileId={fileId}&legacyFileId={legacyFileId}";
+
+      Dictionary<string, string> parameters = new Dictionary<string, string>
+      {
+        { "projectUid", projectUid.ToString() }, {"fileType" , fileType.ToString() }, { "fileUid", fileUid.ToString() },
+        { "fileDescriptor", fileDescriptor}, {"fileId", fileId.ToString()}
+      };
+
+      var queryParams = $"?{new System.Net.Http.FormUrlEncodedContent(parameters).ReadAsStringAsync().Result}";
 
       return await NotifyFile<BaseDataResult>("/deletefile", queryParams, customHeaders);
     }
@@ -123,6 +131,21 @@ namespace VSS.MasterData.Proxies
       return await NotifyFile<BaseDataResult>("/importedfilechange", queryParams, customHeaders);
     }
 
+    /// <summary>
+    /// Validates the Settings for the project.
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <param name="projectSettings">The projectSettings in Json to be validated.</param>
+    /// <param name="customHeaders">The custom headers.</param>
+    public async Task<BaseDataResult> ValidateProjectSettings(Guid projectUid, string projectSettings, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"RaptorProxy.ProjectSettingsValidate: projectUid: {projectUid}");
+      var queryParams = $"?projectUid={projectUid}&projectSettings={projectSettings}";
+      BaseDataResult response = await GetMasterDataItem<BaseDataResult>("RAPTOR_PROJECT_SETTINGS_API_URL", customHeaders, queryParams, "/validatesettings");
+      log.LogDebug("RaptorProxy.ProjectSettingsValidate: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+
+      return response;
+    }
 
     /// <summary>
     /// Validates the Settings for the project.
@@ -135,7 +158,21 @@ namespace VSS.MasterData.Proxies
     {
       log.LogDebug($"RaptorProxy.ProjectSettingsValidate: projectUid: {projectUid}");
       var queryParams = $"?projectUid={projectUid}&projectSettings={projectSettings}&settingsType={settingsType}";
-      BaseDataResult response = await GetMasterDataItem<BaseDataResult>("PROJECTSETTINGS_API_URL", customHeaders, queryParams, "/validatesettings");
+      BaseDataResult response = await GetMasterDataItem<BaseDataResult>("RAPTOR_PROJECT_SETTINGS_API_URL", customHeaders, queryParams, "/validatesettings");
+      log.LogDebug("RaptorProxy.ProjectSettingsValidate: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+
+      return response;
+    }
+
+    /// <summary>
+    /// Validates the Settings for the project.
+    /// </summary>
+    /// <param name="request">Description of the Project Settings request.</param>
+    /// <param name="customHeaders">The custom headers.</param>
+    public async Task<BaseDataResult> ValidateProjectSettings(ProjectSettingsRequest request, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"RaptorProxy.ProjectSettingsValidate: projectUid: {request.projectUid}");
+      BaseDataResult response = await SendRequest<BaseDataResult>("RAPTOR_PROJECT_SETTINGS_API_URL", JsonConvert.SerializeObject(request), customHeaders, "/validatesettings", "POST", String.Empty);
       log.LogDebug("RaptorProxy.ProjectSettingsValidate: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
       return response;
@@ -143,34 +180,21 @@ namespace VSS.MasterData.Proxies
 
 
     /// <summary>
-    /// Gets the veta export data.
+    /// Get the statistics for a project.
     /// </summary>
-    /// <param name="projectUid">The project uid.</param>
-    /// <param name="fileName">Name of the file.</param>
-    /// <param name="machineNames">The machine names.</param>
-    /// <param name="filterUid">The filter uid.</param>
+    /// <param name="request">Description of the Project Settings request.</param>
+    /// <param name="projectUid">Project UID</param>
     /// <param name="customHeaders">The custom headers.</param>
-    /// <returns></returns>
-    public async Task<ExportResult> GetVetaExportData(Guid projectUid,
-      string fileName,
-      string machineNames,
-      Guid? filterUid,
-      IDictionary<string, string> customHeaders)
+    public async Task<ProjectStatisticsResult> GetProjectStatistics(Guid projectUid, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.GetVetaExportData: filterUid: {filterUid}, projectUid: {projectUid}, fileName: {fileName}, machineNames: {machineNames}");
-      var result = await GetMasterDataItem<ExportResult>("VETA_EXPORT_URL",
-        customHeaders,
-        $"?projectUid={projectUid}&fileName={fileName}&machineNames={machineNames}&filterUid={filterUid}");
-      if (result.ResultCode==0)
-      {
-        log.LogDebug("RaptorProxy.GetVetaExportData: Successful Export" );
-      }
-      else
-      {
-        log.LogDebug("Failed to execute Veta Export");
-      }
-      return result;
+      log.LogDebug($"RaptorProxy.GetProjectStatistics: {projectUid}");
+      ProjectStatisticsResult response = await SendRequest<ProjectStatisticsResult>("RAPTOR_PROJECT_SETTINGS_API_URL",
+        string.Empty, customHeaders, "/projectstatistics", "GET", $"projectUid={projectUid}");
+
+      return response;
     }
+
+
 
     /// <summary>
     /// Validates that filterUid has changed i.e. updated/deleted but not inserted
@@ -217,6 +241,88 @@ namespace VSS.MasterData.Proxies
       log.LogDebug("RaptorProxy.CoordSystemPost: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
       return response;
+    }
+
+
+    /// <summary>
+    /// Uploads the tag file.
+    /// </summary>
+    /// <param name="filename">The filename.</param>
+    /// <param name="data">The data.</param>
+    /// <param name="orgId">The org identifier.</param>
+    /// <param name="customHeaders">The custom headers.</param>
+    /// <returns></returns>
+    public async Task<BaseDataResult> UploadTagFile(string filename, byte[] data, string orgId = null, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"RaptorProxy.UploadTagFile: filename: {filename}, orgId: {orgId}");
+      var request = CompactionTagFileRequest.CreateCompactionTagFileRequest(filename, data, orgId);
+      var response = await SendRequest<BaseDataResult>("TAGFILEPOST_API_URL", JsonConvert.SerializeObject(request),
+        customHeaders, "", "POST", String.Empty);
+      log.LogDebug("RaptorProxy.UploadTagFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+      return response;
+    }
+
+  }
+
+  /// <summary>
+  /// TAG file domain object. Model represents TAG file submitted to Raptor.
+  /// </summary>
+  internal class CompactionTagFileRequest
+  {
+    /// <summary>
+    /// A project unique identifier.
+    /// </summary>
+    [JsonProperty(PropertyName = "projectUid", Required = Required.Default)]
+    public Guid? projectUid { get; private set; }
+
+    /// <summary>
+    /// The name of the TAG file.
+    /// </summary>
+    /// <value>Required. Shall contain only ASCII characters. Maximum length is 256 characters.</value>
+    [JsonProperty(PropertyName = "fileName", Required = Required.Always)]
+    public string fileName { get; private set; }
+
+    /// <summary>
+    /// The content of the TAG file as an array of bytes.
+    /// </summary>
+    [JsonProperty(PropertyName = "data", Required = Required.Always)]
+    public byte[] data { get; private set; }
+
+
+    /// <summary>
+    /// Defines Org ID (either from TCC or Connect) to support project-based subs
+    /// </summary>
+    [JsonProperty(PropertyName = "OrgID", Required = Required.Default)]
+    public string OrgID { get; private set; }
+
+
+    /// <summary>
+    /// Private constructor
+    /// </summary>
+    private CompactionTagFileRequest()
+    {
+    }
+
+    /// <summary>
+    /// Create instance of CompactionTagFileRequest
+    /// </summary>
+    /// <param name="fileName">file name</param>
+    /// <param name="data">metadata</param>
+    /// <param name="projectUid">project UID</param>
+    /// <returns></returns>
+    public static CompactionTagFileRequest CreateCompactionTagFileRequest(
+      string fileName,
+      byte[] data,
+      string orgId = null,
+      Guid? projectUid = null)
+    {
+      return new CompactionTagFileRequest
+      {
+        fileName = fileName,
+        data = data,
+        OrgID = orgId,
+        projectUid = projectUid
+      };
     }
   }
 }
