@@ -1,5 +1,9 @@
 & .\UpdateEnvFileIpAddress.ps1
 
+# Setting the COMPOSE_CONVERT_WINDOWS_PATHS environment variable before trying 
+# to bring up the containers seems to fix the docker-compose bug reported here: https://github.com/docker/for-win/issues/1829
+$Env:COMPOSE_CONVERT_WINDOWS_PATHS=1
+
 docker stop $(docker ps -a -q)
 docker rm $(docker ps -a -q)
 docker rmi $(docker images -q --filter "dangling=true")
@@ -14,7 +18,7 @@ $Args = 'ecr', 'get-login'
 $LoginID = &$Cmd $Args
 
 $LoginID = $LoginID -replace "-e none", " "
-Write $LoginID
+Write-Output $LoginID
 Invoke-Expression $LoginID
 
 & .\RunLocalTesting.bat
