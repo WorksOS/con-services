@@ -18,7 +18,6 @@ namespace VSS.TRex.Server.PSNode
             XmlConfigurator.Configure(logRepository);
 
             var server = new RaptorSubGridProcessingServer();
-//            Console.WriteLine($"Spatial Division {RaptorServerConfig.Instance().SpatialSubdivisionDescriptor}");
             Console.WriteLine("Press anykey to exit");
             Console.ReadLine();
         }

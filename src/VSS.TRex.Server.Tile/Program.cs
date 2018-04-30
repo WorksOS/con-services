@@ -45,7 +45,6 @@ namespace VSS.TRex.Server.Application
             CreateDependencyInjection();
 
             var server = new RaptorApplicationServiceServer();
-//            Console.WriteLine($"Spatial Division {RaptorServerConfig.Instance().SpatialSubdivisionDescriptor}");
             Console.WriteLine("Press anykey to exit");
             Console.ReadLine();
         }

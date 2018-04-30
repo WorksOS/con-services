@@ -19,7 +19,6 @@ namespace VSS.TRex.Server.MutableData
             XmlConfigurator.Configure(logRepository);
 
             var server = new RaptorTAGProcComputeServer();
-//            Console.WriteLine($"Spatial Division {RaptorServerConfig.Instance().SpatialSubdivisionDescriptor}");
             Console.WriteLine("Press anykey to exit");
             Console.ReadLine();
         }

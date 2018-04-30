@@ -38,7 +38,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
             if (QueueCache == null)
             {
-                Log.Info($"Failed to get or create Ignite cache {RaptorCaches.TAGFileBufferQueueCacheName()}");
+                Log.Info($"Failed to get Ignite cache {RaptorCaches.TAGFileBufferQueueCacheName()}");
                 throw new ArgumentException("Ignite cache not available");
             }
         }
@@ -49,33 +49,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         public TAGFileBufferQueue()
         {
             InstantiateCache();
-        }
-
-        /// <summary>
-        /// Executes business logic to select a set of TAG files from the cache and submit it for processing.
-        /// By default it will choose a set of TAG files in the cache where the project and asset IDs match
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem>> SelectBatch()
-        {
-            IEnumerable<ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem>> localItems = QueueCache.GetLocalEntries(CachePeekMode.Primary);
-
-            // ReSharper disable once PossibleMultipleEnumeration
-            ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem> first = localItems?.FirstOrDefault();
-
-            if (first == null) // There's no work to do!
-                return null;
-
-            // Get the list of all TAG files in the buffer matching the project and asset IDs of the first item
-            // in the list, limiting the result set to 100 TAG files.
-            // ReSharper disable once PossibleMultipleEnumeration
-                List<ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem>> candidates = localItems
-                    .Take(1000)
-                    .Where(x => x.Value.ProjectID == first.Value.ProjectID && x.Value.AssetID == first.Value.AssetID)
-                    .Take(100)
-                    .ToList();
-
-            return candidates;
         }
 
         /// <summary>

@@ -84,18 +84,36 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                         List<ProcessTAGFileRequestFileItem> fileItems = null;
                         try
                         {
-                            TAGQueueItems = package.Select(x => queueCache.Get(x)).ToList();
-                            fileItems = TAGQueueItems.Select(x =>
-                                new ProcessTAGFileRequestFileItem
+                            TAGQueueItems = package.Select(x =>
+                            {
+                                try
+                                {
+                                    return queueCache.Get(x);
+                                }
+                                catch (KeyNotFoundException e)
+                                {
+                                    // Odd, but let's be graceful and attempt to process the remainder in the package
+                                    Log.Error($"Error, exception {e} occurred while attempting to retrieve TAG file for key {x} from the TAG file buffer queue cache");
+                                    return null;
+                                }
+                                catch (Exception e)
+                                {
+                                    // More worrying, report and bail on this package
+                                    Log.Error($"Error, exception {e} occurred while attempting to retrieve TAG file for key {x} from the TAG file buffer queue cache - aborting processing this package");
+                                    throw;
+                                }
+                            }).ToList();
+                            fileItems = TAGQueueItems
+                                .Where(x => x != null)
+                                .Select(x => new ProcessTAGFileRequestFileItem
                                 {
                                     FileName = x.FileName,
                                     TagFileContent = x.Content,
                                 }).ToList();
                         }
-                        catch (Exception E)
+                        catch (Exception e)
                         {
-                            Log.Error(
-                                $"Error, exception {E} occurred while attempting to retrieve TAG files from the TAG file buffer queue cache");
+                            Log.Error($"Error, exception {e} occurred while attempting to retrieve TAG files from the TAG file buffer queue cache");
                         }
 
                         if (TAGQueueItems?.Count > 0)
@@ -116,9 +134,12 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                             {
                                 try
                                 {
+                                    // TODO: Determine what to do in this failure more:
+                                    // TODO: - Leave in place?
+                                    // TODO: - Copy to dead letter queue?
+                                    // TODO: - Place in S3 bucket pending downstream handling?
                                     if (!tagFileResponse.Success)
-                                        Log.Error(
-                                            $"TAG file failed to process, with exception {tagFileResponse.Exception}");
+                                        Log.Error($"TAG file failed to process, with exception {tagFileResponse.Exception}. WARNING: FILE REMOVED FROM QUEUE");
 
                                     queueCache.Remove(new TAGFileBufferQueueKey
                                     {
@@ -130,7 +151,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                                 {
                                     Log.Error(
                                         $"Exception {e} occurred while removing TAG file {tagFileResponse.FileName} in project {projectID} from the TAG file buffer queue");
-                                    throw;
                                 }
                             }
                         }

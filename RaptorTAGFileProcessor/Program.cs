@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
 using VSS.TRex.TAGFiles.GridFabric.Services;
@@ -197,9 +196,6 @@ namespace VSS.VisionLink.Raptor.Client
                 {
                     Log.Error($"Exception occurred deploying service: {e}");
                 }
-
-                // Obtain a TAG file buffer queue manager
-                TAGFileBufferQueueManager queueManager = new TAGFileBufferQueueManager(true);
 
                 ProcessTAGFilesInFolder(projectID, folderPath);
 

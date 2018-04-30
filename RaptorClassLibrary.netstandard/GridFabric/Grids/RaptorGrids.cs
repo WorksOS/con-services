@@ -8,11 +8,6 @@ namespace VSS.VisionLink.Raptor.GridFabric.Grids
     public static class RaptorGrids
     {
         /// <summary>
-        /// The name of the core grid within Raptor
-        /// </summary>
-//        public static string RaptorGridName() => "Raptor";
-
-        /// <summary>
         /// The name of the grid containing mutable data
         /// </summary>
         public static string RaptorMutableGridName() => "Raptor-Mutable";

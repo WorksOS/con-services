@@ -25,6 +25,10 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
             foreach (var evt in evts)
             {
+                // Only interested in newly added items to the cache. Updates and deletes are ignored.
+                if (evt.EventType != CacheEntryEventType.Created)
+                    continue;
+
                 count++;
                 try
                 {

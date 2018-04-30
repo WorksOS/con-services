@@ -1,7 +1,5 @@
 ﻿using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Servers;
-using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Responses;
 
 namespace VSS.VisionLink.Raptor.GridFabric.Requests
 {

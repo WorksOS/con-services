@@ -12,7 +12,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 {
     /// <summary>
     /// Responsible for management of querying the TAG file buffer queue for work to do.
-    /// Utilises Ignite continuous queries
+    /// Utilises Ignite continuous queries and needs to be instantiated in context, unlike the grid deployed service model
     /// </summary>
     public class TAGFileBufferQueueManager : IDisposable
     {

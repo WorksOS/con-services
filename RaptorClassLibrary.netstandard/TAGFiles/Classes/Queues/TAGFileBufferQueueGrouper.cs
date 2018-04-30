@@ -22,7 +22,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// GroupMap is a dictionary (keyed on project UID) of dictionaries (keyed on AssetUID) of
         /// TAG files to be processed for that projectUID/assetUID combination 
         /// </summary>
-//        private Dictionary<Guid, Dictionary<Guid, List<TAGFileBufferQueueKey>>> groupMap;
         private Dictionary<long, Dictionary<long, List<TAGFileBufferQueueKey>>> groupMap;
 
         /// <summary>
@@ -37,7 +36,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// </summary>
         public TAGFileBufferQueueGrouper()
         {
-            //groupMap = new Dictionary<Guid, Dictionary<Guid, List<TAGFileBufferQueueKey>>>();
             groupMap = new Dictionary<long, Dictionary<long, List<TAGFileBufferQueueKey>>>();
             fullBuckets = new List<TAGFileBufferQueueKey[]>();
         }
@@ -50,7 +48,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         {
             lock (this)
             {
-                //                if (groupMap.TryGetValue(key.ProjectID, out Dictionary<Guid, List<TAGFileBufferQueueKey>> assetsDict))
                 if (groupMap.TryGetValue(key.ProjectID, out Dictionary<long, List<TAGFileBufferQueueKey>> assetsDict))
                 {
                     if (!assetsDict.TryGetValue(key.AssetID, out List<TAGFileBufferQueueKey> keyList))
@@ -72,8 +69,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 }
                 else
                 {
-                    //Dictionary<Guid, List<TAGFileBufferQueueKey>> newDict =
-                    //new Dictionary<Guid, List<TAGFileBufferQueueKey>>
                     Dictionary<long, List<TAGFileBufferQueueKey>> newDict =
                         new Dictionary<long, List<TAGFileBufferQueueKey>>
                         {
@@ -93,7 +88,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// <param name="selectedProject"></param>
         /// <returns></returns>
         private bool SelectProject(List<long> avoidProjects, out long selectedProject)
-//        private bool SelectProject(List<Guid> avoidProjects, out Guid selectedProject)
         {
             // Preferentially selected a project from the full buckets list
             if (fullBuckets.Count > 0)

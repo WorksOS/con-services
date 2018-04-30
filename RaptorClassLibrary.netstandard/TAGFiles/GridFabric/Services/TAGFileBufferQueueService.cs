@@ -2,20 +2,15 @@
 using log4net;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Query;
 using Apache.Ignite.Core.Cache.Query.Continuous;
-using Apache.Ignite.Core.Resource;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
-using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Requests;
-using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Responses;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Services
 {
@@ -40,13 +35,6 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         private bool aborted;
 
         /// <summary>
-        /// The grouper responsible for grouping TAG files into Project/Asset groups ready for processing into a
-        /// project.
-        /// </summary>
-        [NonSerialized]
-        private TAGFileBufferQueueGrouper grouper;
-
-        /// <summary>
         /// The event wait handle used to mediate sleep periods between operation epochs of the service
         /// </summary>
         [NonSerialized]
@@ -66,10 +54,6 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         public void Init(IServiceContext context)
         {
             Log.Info($"TAGFileBufferQueueService {context.Name} initialising");
-
-            aborted = false;
-            grouper = new TAGFileBufferQueueGrouper();
-            waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
         }
 
         /// <summary>
@@ -80,6 +64,9 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         {
             Log.Info($"TAGFileBufferQueueService {context.Name} starting executing");
 
+            aborted = false;
+            waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
+
             List<long> ProjectsToAvoid = new List<long>();
 
             // Get the ignite grid and cache references
@@ -88,115 +75,33 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
 
             if (_ignite == null)
             {
-                Log.Info("Ignite reference in service is null");
+                Log.Error("Ignite reference in service is null - aborting service execution");
+                return;
             }
 
             ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> queueCache =
-                _ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(RaptorCaches.TAGFileBufferQueueCacheName());
+                _ignite?.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(RaptorCaches.TAGFileBufferQueueCacheName());
 
-            ProcessTAGFileRequest request = new ProcessTAGFileRequest();
+            TAGFileBufferQueueItemHandler handler = TAGFileBufferQueueItemHandler.Instance();
 
             // Construct the continuous query machinery
             // Set the initial query to return all elements in the cache
             // Instantiate the queryHandle and start the continous query on the remote nodes
             // Note: Only cache items held on this local node will be handled here
             using (IContinuousQueryHandle<ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem>> queryHandle = queueCache.QueryContinuous
-                (qry: new ContinuousQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(new LocalTAGFileListener())
-                {
-                    Local = true
-                },
-                initialQry: new ScanQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem>
-                {
-                    Local = true
-                }))
+                (qry: new ContinuousQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(new LocalTAGFileListener()) { Local = true },
+                 initialQry: new ScanQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem> { Local = true }))
             {
                 // Perform the initial query to grab all existing elements and add them to the grouper
                 foreach (var item in queryHandle.GetInitialQueryCursor())
                 {
-                    grouper.Add(item.Key /*, item.Value*/);
+                     handler.Add(item.Key);
                 }
 
                 // Cycle looking for new work to do as TAG files arrive until aborted...
                 do
                 {
-                    var hadWorkToDo = false;
-
-                    // Check to see if there is a work package to feed to the processing pipline
-                    // -> Ask the grouper for a package 
-                    var package = grouper.Extract(ProjectsToAvoid, out long projectID);
-
-                    if (package != null)
-                    {
-                        hadWorkToDo = true;
-
-                        // Add the project to the avoid list
-                        ProjectsToAvoid.Add(projectID);
-
-                        List<TAGFileBufferQueueItem> TAGQueueItems = null;
-                        List<ProcessTAGFileRequestFileItem> fileItems = null;
-                        try
-                        {
-                            TAGQueueItems = package.Select(x => queueCache.Get(x)).ToList();
-                            fileItems = TAGQueueItems.Select(x =>
-                                new ProcessTAGFileRequestFileItem
-                                {
-                                    FileName = x.FileName,
-                                    TagFileContent = x.Content,
-                                }).ToList();
-                        }
-                        catch (Exception E)
-                        {
-                            Log.Error($"Error, exception {E} occurred while attempting to retrieve TAG files from the TAG file buffer queue cache");
-                        }
-
-                        if (TAGQueueItems?.Count > 0)
-                        {
-                            // -> Supply the package to the processor
-                            ProcessTAGFileResponse response = request.Execute(new ProcessTAGFileRequestArgument
-                            {
-                                //AssetUID = TAGQueueItems[0].AssetUID,
-                                //ProjectUID = projectUID,
-                                AssetID = TAGQueueItems[0].AssetID,
-                                ProjectID = TAGQueueItems[0].ProjectID,
-                                TAGFiles = fileItems
-                            });
-
-                            // -> Remove the set of processed TAG files from the buffer queue cache (depending on processing status?...)
-                            foreach (var tagFileResponse in response.Results)
-                            {
-                                try
-                                {
-                                    if (!tagFileResponse.Success)
-                                        Log.Error($"TAG file failed to process, with exception {tagFileResponse.Exception}");
-
-                                    queueCache.Remove(new TAGFileBufferQueueKey
-                                    {
-                                        //ProjectUID = TAGQueueItems[0].ProjectUID,
-                                        //AssetUID = TAGQueueItems[0].AssetID,
-                                        ProjectID = TAGQueueItems[0].ProjectID,
-                                        AssetID = TAGQueueItems[0].AssetID,
-                                        FileName = tagFileResponse.FileName
-                                    });
-                                }
-                                catch (Exception e)
-                                {
-                                    Log.Error($"Exception {e} occurred while removing TAG file {tagFileResponse.FileName} in project {projectID} from the TAG file buffer queue");
-                                    throw;
-                                }
-                            }
-
-                            // Remove the project from the avoid list
-                            ProjectsToAvoid.Remove(projectID);
-                        }
-                    }
-
-                    // if there was no work to do in the last epoch, sleep for a bit until the next check epoch
-                    if (!hadWorkToDo)
-                    {
-                        Log.Info($"TAGFileBufferQueueService {context.Name} sleeping for {kTAGFileBufferQueueServiceCheckIntervalMS}ms");
-
-                        waitHandle.WaitOne(kTAGFileBufferQueueServiceCheckIntervalMS);
-                    }
+                    waitHandle.WaitOne(kTAGFileBufferQueueServiceCheckIntervalMS);
                 } while (!aborted);
             }
 
@@ -212,7 +117,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
             Log.Info($"TAGFileBufferQueueService {context.Name} cancelling");
 
             aborted = true;
-            waitHandle.Set();
+            waitHandle?.Set();
         }
     }
 }
