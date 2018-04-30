@@ -36,7 +36,7 @@ namespace VSS.MasterData.Models.Models
     /// Gets the date range type for this filter, e.g. day, week, project extents.
     /// </summary>
     [JsonProperty(PropertyName = "dateRangeType", Required = Required.Default)]
-    public DateRangeType? DateRangeType { get; private set; }
+    public DateRangeType? DateRangeType { get; set; }
 
     /// <summary>
     /// Gets the date range name for this filter, e.g. Today, Yesterday, ProjectExtents.
@@ -485,7 +485,8 @@ namespace VSS.MasterData.Models.Models
           EndUtc = DateRangeType?.UtcForDateRangeType(ianaTimeZoneName, false, useEndOfCurrentDay);
         }
       }
-      //For as-at dates only use EndUTC, so make sure StartUTC is null
+      //For as-at dates only use EndUTC, so make sure StartUTC is null -- 
+      //todo double check this, the filter web api will set this to project extents start to keep ui happy
       if (AsAtDate == true)
       {
         StartUtc = null;

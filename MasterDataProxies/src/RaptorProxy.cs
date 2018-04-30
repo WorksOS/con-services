@@ -189,7 +189,7 @@ namespace VSS.MasterData.Proxies
     {
       log.LogDebug($"RaptorProxy.GetProjectStatistics: {projectUid}");
       ProjectStatisticsResult response = await SendRequest<ProjectStatisticsResult>("RAPTOR_PROJECT_SETTINGS_API_URL",
-        string.Empty, customHeaders, "/projectstatistics", "GET", $"projectUid={projectUid}");
+        string.Empty, customHeaders, "/projectstatistics", "GET", $"?projectUid={projectUid}");
 
       return response;
     }
