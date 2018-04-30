@@ -111,9 +111,10 @@ namespace MockProjectWebApi.Controllers
       [FromQuery] DxfUnitsType dXfUnitsType)
     {
       var hasDxfTiles = fileType == ImportedFileType.Linework || fileType == ImportedFileType.Alignment ||
-                         fileType == ImportedFileType.DesignSurface;
-      var res = new AddFileResult{MinZoomLevel = hasDxfTiles ? 15 : 0, MaxZoomLevel = hasDxfTiles ? 19 : 0};
-      var message = $"DummyAddFileGet: res {res}. projectUid {projectUid} fileType {fileType} fileUid {fileUid} fileDescriptor {fileDescriptor} fileId {fileId} dXfUnitsType {dXfUnitsType}";
+                        fileType == ImportedFileType.DesignSurface;
+      var res = new AddFileResult { MinZoomLevel = hasDxfTiles ? 15 : 0, MaxZoomLevel = hasDxfTiles ? 19 : 0 };
+      var message =
+        $"DummyAddFileGet: res {res}. projectUid {projectUid} fileType {fileType} fileUid {fileUid} fileDescriptor {fileDescriptor} fileId {fileId} dXfUnitsType {dXfUnitsType}";
       Console.WriteLine(message);
       return res;
     }
@@ -131,7 +132,8 @@ namespace MockProjectWebApi.Controllers
       [FromQuery] long fileId)
     {
       var res = new BaseDataResult();
-      var message = $"DummyDeleteFileGet: res {res}. projectUid {projectUid} fileType {fileType} fileUid {fileUid} fileDescriptor {fileDescriptor} fileId {fileId}";
+      var message =
+        $"DummyDeleteFileGet: res {res}. projectUid {projectUid} fileType {fileType} fileUid {fileUid} fileDescriptor {fileDescriptor} fileId {fileId}";
       Console.WriteLine(message);
       return res;
     }
@@ -203,12 +205,36 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public BaseDataResult DummyNotifyFilterChangeGet(
       [FromQuery] Guid filterUid
-      )
+    )
     {
       var res = new BaseDataResult();
       var message = $"DummyNotifyFilterChangeGet: res {res}. filterUid {filterUid}";
       Console.WriteLine(message);
       return res;
+    }
+
+
+
+    /// <summary>
+    /// Returns some project stats.
+    /// If Project is Dimensions then the date extents will be static
+    /// otherwise they will be from now until 1 year ago
+    /// </summary>
+    [Route("api/v2/projectstatistics")]
+    [HttpGet]
+    public ProjectStatisticsResult GetProjectStatistics(
+      [FromQuery] Guid projectUid
+    )
+    {
+      bool isDimensions = projectUid.ToString() == ConstantsUtil.DIMENSIONS_PROJECT_UID;
+      var extents =
+        $"{{\"startTime\":\"{(isDimensions ? "2012-10-30T00:12:09.109" : DateTime.UtcNow.AddYears(-1).ToString("s"))}\"," +
+        $"\"endTime\":\"{(isDimensions ? "2012-11-08T01:00:08.756" : DateTime.UtcNow.ToString("s"))}\"," +
+        $"\"cellSize\":0.34,\"indexOriginOffset\":536870912,\"extents\":{{\"maxX\":2913.2900000000004,\"maxY\":1250.69,\"maxZ\":624.1365966796875,\"minX\":2306.05,\"minY\":1125.2300000000002,\"minZ\":591.953857421875}},\"Code\":0,\"Message\":\"success\"}}";
+
+      Console.WriteLine($"GetProjectStatistics: res: {extents} ProjectUID {projectUid}");
+      return JsonConvert.DeserializeObject<ProjectStatisticsResult>(extents);
+
     }
   }
 }
