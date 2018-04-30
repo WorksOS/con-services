@@ -562,6 +562,7 @@ namespace TestUtility
             FilterUID = new Guid(eventObject.FilterUID),
             Name = eventObject.Name,
             FilterJson = eventObject.FilterJson,
+            FilterType = (FilterType)Enum.Parse(typeof(FilterType), eventObject.FilterType),
           };
           jsonString = JsonConvert.SerializeObject(new { CreateFilterEvent = createFilterEvent }, jsonSettings);
           break;

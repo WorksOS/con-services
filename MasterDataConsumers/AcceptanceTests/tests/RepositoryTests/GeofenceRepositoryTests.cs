@@ -140,10 +140,10 @@ namespace RepositoryTests
 
     /// <summary>
     /// Update Geofence - happyPath
-    /// exists, just update whichever fields are allowed.
+    /// exists, just update whichever fields are provided.
     /// </summary>
     [TestMethod]
-    public void UpdateGeofence_HappyPath()
+    public void UpdateGeofence_HappyPath_FieldsChanged()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var customerUid = Guid.NewGuid();
@@ -166,14 +166,15 @@ namespace RepositoryTests
       var updateGeofenceEvent = new UpdateGeofenceEvent()
       {
         GeofenceUID = createGeofenceEvent.GeofenceUID,
-        GeofenceName = createGeofenceEvent.GeofenceName,
-        Description = createGeofenceEvent.Description,
-        GeofenceType = createGeofenceEvent.GeofenceType,
+        GeofenceName = "Test Geofence changed",
+        Description = "Testing 123 changed",
+        GeofenceType = GeofenceType.Stockpile.ToString(),
         FillColor = 56666,
         IsTransparent = false,
-        GeometryWKT = createGeofenceEvent.GeometryWKT,
-        AreaSqMeters = createGeofenceEvent.AreaSqMeters,
-        ActionUTC = actionUtc
+        GeometryWKT = "POLYGON((166 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
+        UserUID = Guid.NewGuid(),
+        AreaSqMeters = 5,
+        ActionUTC = actionUtc.AddMinutes(2)
       };
 
       geofenceContext.StoreEvent(createGeofenceEvent).Wait();
@@ -185,9 +186,68 @@ namespace RepositoryTests
       g.Wait();
       var projectGeofences = g.Result.ToList();
       Assert.AreEqual(1, projectGeofences.Count(), "Wrong number of geofences");
+      Assert.AreEqual(updateGeofenceEvent.GeofenceName, projectGeofences[0].Name, "Wrong Name returned");
+      Assert.AreEqual(updateGeofenceEvent.Description, projectGeofences[0].Description, "Wrong Description returned");
+      Assert.AreEqual(updateGeofenceEvent.GeofenceType, projectGeofences[0].GeofenceType.ToString(), "Wrong GeofenceType returned");
       Assert.AreEqual(updateGeofenceEvent.FillColor, projectGeofences[0].FillColor, "Wrong fillcolor returned");
       Assert.AreEqual(updateGeofenceEvent.IsTransparent, projectGeofences[0].IsTransparent, "Wrong IsTransparent returned");
+      Assert.AreEqual(updateGeofenceEvent.GeometryWKT, projectGeofences[0].GeometryWKT, "Wrong GeometryWKT returned");
+      Assert.AreEqual(updateGeofenceEvent.UserUID.ToString(), projectGeofences[0].UserUID, "Wrong UserUID returned");
+      Assert.AreEqual(updateGeofenceEvent.AreaSqMeters, projectGeofences[0].AreaSqMeters, "Wrong AreaSqMeters returned");
+      Assert.AreEqual(updateGeofenceEvent.ActionUTC, projectGeofences[0].LastActionedUTC, "Wrong ActionUTC returned");
+    }
+
+    /// <summary>
+    /// Update Geofence - happyPath
+    /// exists, nothing should be changed.
+    /// </summary>
+    [TestMethod]
+    public void UpdateGeofence_HappyPath_NoFieldsChanged()
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var customerUid = Guid.NewGuid();
+
+      var createGeofenceEvent = new CreateGeofenceEvent()
+      {
+        GeofenceUID = Guid.NewGuid(),
+        GeofenceName = "Test Geofence",
+        Description = "Testing 123",
+        GeofenceType = GeofenceType.Borrow.ToString(),
+        FillColor = 16744448,
+        IsTransparent = true,
+        GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
+        CustomerUID = customerUid,
+        UserUID = Guid.NewGuid(),
+        AreaSqMeters = 123.456,
+        ActionUTC = actionUtc
+      };
+
+      var updateGeofenceEvent = new UpdateGeofenceEvent()
+      {
+        GeofenceUID = createGeofenceEvent.GeofenceUID,
+        ActionUTC = actionUtc.AddMinutes(2)
+      };
+
+      geofenceContext.StoreEvent(createGeofenceEvent).Wait();
+      var s = geofenceContext.StoreEvent(updateGeofenceEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Unable to update geofence");
+
+      var g = geofenceContext.GetCustomerGeofences(customerUid.ToString());
+      g.Wait();
+      var projectGeofences = g.Result.ToList();
+      Assert.AreEqual(1, projectGeofences.Count(), "Wrong number of geofences");
+      Assert.AreEqual(createGeofenceEvent.GeofenceName, projectGeofences[0].Name, "Wrong Name returned");
+      Assert.AreEqual(createGeofenceEvent.Description, projectGeofences[0].Description, "Wrong Description returned");
+      Assert.AreEqual(createGeofenceEvent.GeofenceType, projectGeofences[0].GeofenceType.ToString(), "Wrong GeofenceType returned");
+      Assert.AreEqual(createGeofenceEvent.FillColor, projectGeofences[0].FillColor, "Wrong fillcolor returned");
+      Assert.AreEqual(createGeofenceEvent.IsTransparent, projectGeofences[0].IsTransparent, "Wrong IsTransparent returned");
+      Assert.AreEqual(createGeofenceEvent.GeometryWKT, projectGeofences[0].GeometryWKT, "Wrong GeometryWKT returned");
       Assert.AreEqual(createGeofenceEvent.UserUID.ToString(), projectGeofences[0].UserUID, "Wrong UserUID returned");
+
+      // Note that AreaSqMeters is stored as 0 dp in database
+      Assert.AreEqual(Math.Truncate(createGeofenceEvent.AreaSqMeters), projectGeofences[0].AreaSqMeters, "Wrong AreaSqMeters returned");
+      Assert.AreEqual(updateGeofenceEvent.ActionUTC, projectGeofences[0].LastActionedUTC, "Wrong ActionUTC returned");
     }
 
     /// <summary>

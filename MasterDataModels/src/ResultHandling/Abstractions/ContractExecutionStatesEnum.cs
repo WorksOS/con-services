@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.Common.ResultsHandling
+namespace VSS.MasterData.Models.ResultHandling.Abstractions
 {
   public interface IErrorCodesProvider
   {

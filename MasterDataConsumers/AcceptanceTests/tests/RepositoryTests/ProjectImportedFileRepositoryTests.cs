@@ -286,6 +286,65 @@ namespace RepositoryTests
       Assert.AreEqual(updateImportedFileEvent.ImportedBy, g.Result.ImportedFileHistory.ImportedFileHistoryItems[1].ImportedBy, "Newer history record ImportedBy incorrect.");
     }
 
+    /// <summary>
+    /// Update ImportedFile - Happy path i.e. 
+    ///   ImportedFile exists already.
+    /// </summary>
+    [TestMethod]
+    public void UpdateImportedFile_SameCreateUpdate()
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+
+      var createImportedFileEvent = new CreateImportedFileEvent()
+      {
+        ProjectUID = Guid.NewGuid(),
+        ImportedFileUID = Guid.NewGuid(),
+        ImportedFileID = new Random().Next(1, 1999999),
+        CustomerUID = Guid.NewGuid(),
+        ImportedFileType = ImportedFileType.SurveyedSurface,
+        Name = "Test SS type.ttm",
+        FileDescriptor = "fd",
+        FileCreatedUtc = actionUtc,
+        FileUpdatedUtc = actionUtc,
+        ImportedBy = "JoeSmoe",
+        SurveyedUTC = actionUtc.AddDays(-1),
+        MinZoomLevel = 18,
+        MaxZoomLevel = 20,
+        ActionUTC = actionUtc
+      };
+
+      _projectContext.StoreEvent(createImportedFileEvent).Wait();
+
+      var updateImportedFileEvent = new UpdateImportedFileEvent()
+      {
+        ProjectUID = createImportedFileEvent.ProjectUID,
+        ImportedFileUID = createImportedFileEvent.ImportedFileUID,
+        FileDescriptor = "fd",
+        MinZoomLevel = 16,
+        MaxZoomLevel = 19,
+        FileCreatedUtc = createImportedFileEvent.FileCreatedUtc,
+        FileUpdatedUtc = createImportedFileEvent.FileUpdatedUtc,
+        ImportedBy = "JoeSmoe3",
+        ActionUTC = actionUtc.AddHours(1)
+      };
+
+      _projectContext.StoreEvent(updateImportedFileEvent).Wait();
+
+      var g = _projectContext.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString());
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve ImportedFile from ProjectRepo");
+      Assert.AreEqual(updateImportedFileEvent.ActionUTC, g.Result.LastActionedUtc,
+        "ImportedFile actionUtc was not updated");
+      Assert.AreEqual(updateImportedFileEvent.FileDescriptor, g.Result.FileDescriptor,
+        "ImportedFile FileDescriptor was not updated");
+      Assert.AreEqual(updateImportedFileEvent.MinZoomLevel, g.Result.MinZoomLevel, "ImportedFile MinZoomLevel was not updated");
+      Assert.AreEqual(updateImportedFileEvent.MaxZoomLevel, g.Result.MaxZoomLevel, "ImportedFile MaxZoomLevel was not updated");
+      Assert.AreEqual(1, g.Result.ImportedFileHistory.ImportedFileHistoryItems.Count, "Should be 2 history records for this create+update.");
+      Assert.AreEqual(createImportedFileEvent.FileCreatedUtc, g.Result.ImportedFileHistory.ImportedFileHistoryItems[0].FileCreatedUtc, "Oldest history record FileCreatedUtc incorrect.");
+      Assert.AreEqual(createImportedFileEvent.FileUpdatedUtc, g.Result.ImportedFileHistory.ImportedFileHistoryItems[0].FileUpdatedUtc, "Oldest history record FileUpdateUtc incorrect.");
+      Assert.AreEqual(createImportedFileEvent.ImportedBy, g.Result.ImportedFileHistory.ImportedFileHistoryItems[0].ImportedBy, "Oldest history record ImportedBy incorrect.");
+    }
+
 
     /// <summary>
     /// Delete ImportedFile - Happy path i.e. 

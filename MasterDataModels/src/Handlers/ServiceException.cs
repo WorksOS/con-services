@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 using Newtonsoft.Json;
-using VSS.Common.ResultsHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Common.Exceptions
 {
@@ -18,14 +18,36 @@ namespace VSS.Common.Exceptions
     public ServiceException(HttpStatusCode code, ContractExecutionResult result)
     {
       GetResult = result;
-      GetContent = JsonConvert.SerializeObject(result);
       Code = code;
     }
 
     /// <summary>
+    ///   ServiceException class constructor.
+    /// </summary>
+    /// <param name="code"></param>
+    /// <param name="result"></param>
+    public ServiceException(HttpStatusCode code, ContractExecutionResult result, Exception innerException)
+    {
+      GetResult = result;
+      Code = code;
+      InnerException = innerException;
+    }
+
+    private string formatException(bool includeInner)
+    {
+      if (InnerException == null || !includeInner)
+        return JsonConvert.SerializeObject(GetResult);
+      return
+        $"{JsonConvert.SerializeObject(GetResult)} with inner exception {InnerException.Message} stack {InnerException.StackTrace} source {InnerException.Source}";
+    }
+
+    public new Exception InnerException { get; private set; } = null;
+
+    /// <summary>
     /// 
     /// </summary>
-    public string GetContent { get; }
+    public string GetContent => formatException(false);
+    public string GetFullContent => formatException(true);
 
     public HttpStatusCode Code { get; private set; }
 

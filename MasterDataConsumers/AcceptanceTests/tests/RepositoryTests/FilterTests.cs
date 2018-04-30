@@ -43,6 +43,7 @@ namespace RepositoryTests
         FilterUID = Guid.NewGuid(),
         Name = "",
         FilterJson = "blah1",
+        FilterType = FilterType.Transient,
         ActionUTC = firstCreatedUtc,
         ReceivedUTC = firstCreatedUtc
       };
@@ -52,8 +53,9 @@ namespace RepositoryTests
         ProjectUID = projUid,
         UserID = userId.ToString(),
         FilterUID = Guid.NewGuid(),
-        Name = "",
+        Name = "Some name",
         FilterJson = "blah2",
+        FilterType = FilterType.Report,
         ActionUTC = firstCreatedUtc,
         ReceivedUTC = firstCreatedUtc
       };
@@ -66,6 +68,7 @@ namespace RepositoryTests
         FilterUID = Guid.NewGuid(),
         Name = "HasAName1",
         FilterJson = "blah1",
+        FilterType = FilterType.Persistent,
         ActionUTC = firstCreatedUtc,
         ReceivedUTC = firstCreatedUtc
       };
@@ -78,6 +81,7 @@ namespace RepositoryTests
         FilterUID = Guid.NewGuid(),
         Name = "HasAName2",
         FilterJson = "blah2",
+        FilterType = FilterType.Persistent,
         ActionUTC = firstCreatedUtc,
         ReceivedUTC = firstCreatedUtc
       };
@@ -137,6 +141,7 @@ namespace RepositoryTests
         FilterUID = Guid.NewGuid(),
         Name = "",
         FilterJson = "blah",
+        FilterType = FilterType.Transient,
         ActionUTC = firstCreatedUtc,
         ReceivedUTC = firstCreatedUtc
       };
@@ -149,6 +154,7 @@ namespace RepositoryTests
         FilterUid = createFilterEvent.FilterUID.ToString(),
         Name = createFilterEvent.Name,
         FilterJson = createFilterEvent.FilterJson,
+        FilterType = createFilterEvent.FilterType,
         LastActionedUtc = createFilterEvent.ActionUTC
       };
 
@@ -188,6 +194,7 @@ namespace RepositoryTests
         FilterUID = Guid.NewGuid(),
         Name = "",
         FilterJson = "blah",
+        FilterType = FilterType.Transient,
         ActionUTC = firstCreatedUtc,
         ReceivedUTC = firstCreatedUtc
       };
@@ -200,6 +207,7 @@ namespace RepositoryTests
         FilterUID = createFilterEvent.FilterUID,
         Name = "",
         FilterJson = "blahDeBlah",
+        FilterType = FilterType.Transient,
         ActionUTC = firstCreatedUtc.AddMinutes(2),
         ReceivedUTC = firstCreatedUtc
       };
@@ -212,6 +220,7 @@ namespace RepositoryTests
         FilterUid = createFilterEvent.FilterUID.ToString(),
         Name = createFilterEvent.Name,
         FilterJson = createFilterEvent.FilterJson,
+        FilterType = createFilterEvent.FilterType,
         LastActionedUtc = createFilterEvent.ActionUTC
       };
 

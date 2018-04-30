@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace VSS.Common.ResultsHandling
+namespace VSS.MasterData.Models.ResultHandling.Abstractions
 {
   public abstract class GenericEnum<T, U> where T : GenericEnum<T, U>, new()
   {

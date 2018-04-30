@@ -1,5 +1,6 @@
 ﻿using System;
 using log4net;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Log4Net.Extensions.Extensions;
 
@@ -8,11 +9,14 @@ namespace VSS.Log4Net.Extensions
   public class Log4NetAdapter : ILogger
   {
     private readonly ILog _logger;
+    private readonly IHttpContextAccessor _accessor;
 
-    public Log4NetAdapter(string repoName, string loggerName)
+    public Log4NetAdapter(string repoName, string loggerName, IHttpContextAccessor accessor)
     {
       _logger = LogManager.GetLogger(repoName, loggerName);
+      _accessor = accessor;
     }
+
 
     public bool IsEnabled(LogLevel logLevel)
     {
@@ -55,6 +59,9 @@ namespace VSS.Log4Net.Extensions
       }
 
       var message = formatter(state, exception);
+      if (_accessor?.HttpContext?.Items != null)
+        if (_accessor.HttpContext.Items.ContainsKey("RequestID"))
+          message = "req:" + _accessor.HttpContext.Items["RequestID"] + " " + message;
 
       switch (logLevel)
       {

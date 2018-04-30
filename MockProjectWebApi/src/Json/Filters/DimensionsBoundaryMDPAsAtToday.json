@@ -1,0 +1,20 @@
+{
+  "dateRangeType": 0,
+  "asAtDate": true,
+  "polygonUID": "318f0103-a0c3-4b50-88d4-d4fa12370a63",
+  "polygonName": "Dimensions boundary mdp",
+  "polygonLL": [
+    {
+      "Lat": 36.207659,
+      "Lon": -115.018943
+    },
+    {
+      "Lat": 36.207265,
+      "Lon": -115.018926
+    },
+    {
+      "Lat": 36.207412,
+      "Lon": -115.018471
+    }
+  ]
+}

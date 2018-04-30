@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -39,6 +40,33 @@ namespace VSS.MasterData.Proxies
     public void ClearCacheItem(string projectUid, string userId)
     {
       ClearCacheItem<FileDataResult>(projectUid, userId);
+    }
+
+    /// <summary>
+    /// Get a file from the list of files for a project.
+    /// </summary>
+    private async Task<FileData> GetFileFromList(string projectUid, string userId, string importedFileUid,
+      IDictionary<string, string> customHeaders = null)
+    {
+      var list = await GetFiles(projectUid, userId, customHeaders);
+      return list.SingleOrDefault(f => string.Equals(f.ImportedFileUid, importedFileUid, StringComparison.OrdinalIgnoreCase));
+
+    }
+
+    /// <summary>
+    /// Gets an imported file for a project. The GetFiles method has an additional parameter to other 'get list' methods
+    /// therefore we cannot reuse the BaseProxy.GetItemWithRetry method.
+    /// </summary>
+    public async Task<FileData> GetFileForProject(string projectUid, string userId, string importedFileUid,
+      IDictionary<string, string> customHeaders = null)
+    {
+      var file = await GetFileFromList(projectUid, userId, importedFileUid, customHeaders);
+      if (file == null)
+      {
+        ClearCacheItem(projectUid, userId);
+        file = await GetFileFromList(projectUid, userId, importedFileUid, customHeaders);
+      }
+      return file;
     }
   }
 

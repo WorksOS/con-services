@@ -8,5 +8,8 @@ namespace VSS.MasterData.Proxies.Interfaces
   {
     Task<List<GeofenceData>> GetBoundaries(string projectUid, IDictionary<string, string> customHeaders = null);
 
+    Task<GeofenceData> GetBoundaryForProject(string projectUid, string geofenceUid,
+      IDictionary<string, string> customHeaders = null);
+
   }
 }

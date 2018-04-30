@@ -1,0 +1,31 @@
+{
+  "startUTC": "2017-06-20T05:00:00Z",
+  "endUTC": "2017-06-21T04:59:59Z",
+  "dateRangeType": 7,
+  "designUID": null,
+  "contributingMachines": null,
+  "onMachineDesignID": null,
+  "vibeStateOn": null,
+  "polygonUID": null,
+  "polygonName": null,
+  "polygonLL": [
+    {
+      "Lon": -115.0235567314591,
+      "Lat": 36.206627682520867
+    },
+    {
+      "Lon": -115.02356429221605,
+      "Lat": 36.206627682520867
+    },
+    {
+      "Lon": -115.02356429221605,
+      "Lat": 36.206612363570869
+    },
+    {
+      "Lon": -115.0235567314591,
+      "Lat": 36.206612363570869
+    }
+  ],
+  "forwardDirection": null,
+  "layerNumber": null
+}

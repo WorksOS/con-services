@@ -6,7 +6,7 @@
     <Company>VSS</Company>
     <Product>VSS.TCCFileAccess.netcore</Product>
     <Description>Shared library to access TCC</Description>
-    <VersionPrefix>2.6.13</VersionPrefix>
+    <VersionPrefix>2.8.1</VersionPrefix>
     <TargetFrameworks>netstandard1.6</TargetFrameworks>
     <AssemblyName>VSS.TCCFileAccess</AssemblyName>
     <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
@@ -28,8 +28,8 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="1.1.2" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.0.*" />
-    <PackageReference Include="VSS.Interfaces.netcore" Version="1.5.*" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.20.*" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.26.*" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

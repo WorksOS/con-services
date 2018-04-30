@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
@@ -14,7 +16,7 @@ using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-
+using ConfigurationBuilder = Microsoft.Extensions.Configuration.ConfigurationBuilder;
 #if NET_4_7
 using Topshelf;
 #endif
@@ -81,6 +83,9 @@ namespace VSS.Productivity3D.MasterDataConsumer
 
     public void Initialize()
     {
+      //Make sure logging name set first
+      Log4NetProvider.RepoName = "MasterDataConsumer";
+
       var serviceConverter = new Dictionary<string, Type>()
       {
         {"IAssetEvent", typeof(IKafkaConsumer<IAssetEvent>)},
@@ -94,10 +99,11 @@ namespace VSS.Productivity3D.MasterDataConsumer
 
 
       var serviceCollection = new ServiceCollection()
+        .AddSingleton<ILoggerProvider, Log4NetProvider>()
+        .AddSingleton<ILoggerFactory>(new LoggerFactory())
         .AddTransient<IKafka, RdKafkaDriver>()
         .AddTransient<IMessageTypeResolver, MessageResolver>()
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .AddLogging()
         .AddTransient<IRepositoryFactory, RepositoryFactory>()
 
         .AddTransient<IKafkaConsumer<IAssetEvent>, KafkaConsumer<IAssetEvent>>()
@@ -121,11 +127,15 @@ namespace VSS.Productivity3D.MasterDataConsumer
       var serviceProvider = serviceCollection
         .BuildServiceProvider();
 
-      var kafkaTopics = serviceProvider.GetService<IConfigurationStore>()
+      var configStore = serviceProvider.GetService<IConfigurationStore>();
+      var kafkaTopics = configStore
         .GetValueString("KAFKA_TOPICS")
         .Split(new[] { "," }, StringSplitOptions.None);
 
       string loggerRepoName = "MDC " + kafkaTopics[0].Split('.').Last();
+      //Now set actual logging name
+      Log4NetProvider.RepoName = loggerRepoName;
+
       string logPath;
 
       if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "log4net.xml")))
@@ -148,12 +158,11 @@ namespace VSS.Productivity3D.MasterDataConsumer
       Console.WriteLine("Log path:" + logPath);
       Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4net.xml", loggerRepoName);
 
-      ILoggerFactory loggerFactory = new LoggerFactory();
+      var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+      loggerFactory.AddConsole(configStore.GetLoggingConfig());
       loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-      serviceCollection.AddSingleton(loggerFactory);
-      serviceProvider = serviceCollection.BuildServiceProvider();
-      _log = loggerFactory.CreateLogger(loggerRepoName);
+
+     _log = loggerFactory.CreateLogger(loggerRepoName);
 
       _log.LogDebug("MasterDataConsumer is starting....");
 

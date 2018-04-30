@@ -27,6 +27,7 @@ namespace VSS.ConfigurationStore.UnitTests
       var serviceCollection = new ServiceCollection();
 
       string loggerRepoName = "UnitTestLogTest";
+      Log4NetProvider.RepoName = loggerRepoName;
       var logPath = Directory.GetCurrentDirectory();
       Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
 
@@ -51,7 +52,7 @@ namespace VSS.ConfigurationStore.UnitTests
     [TestMethod]
     public void CanGetConnectionString()
     {
-      var configuration = (ServiceProvider.GetRequiredService<IConfigurationStore>());
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       Assert.IsFalse(String.IsNullOrEmpty(configuration.GetConnectionString("VSPDB")));
     }
 
@@ -59,44 +60,63 @@ namespace VSS.ConfigurationStore.UnitTests
     [TestMethod]
     public void ThrowsWhenInvalidConnectionName()
     {
-      var configuration = (ServiceProvider.GetRequiredService<IConfigurationStore>());
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       Assert.ThrowsException<InvalidOperationException>(()=>configuration.GetConnectionString("VSPDB2"));
     }
 
     [TestMethod]
     public void CanGetString()
     {
-      var configuration = (ServiceProvider.GetRequiredService<IConfigurationStore>());
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       Assert.IsFalse(String.IsNullOrEmpty(configuration.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")));
     }
 
     [TestMethod]
     public void CanGetInt()
     {
-      var configuration = (ServiceProvider.GetRequiredService<IConfigurationStore>());
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       Assert.AreEqual(1,configuration.GetValueInt("KAFKA_STACKSIZE"));
     }
 
     [TestMethod]
     public void ReturnsNegativeWhenInvalidInteger()
     {
-      var configuration = (ServiceProvider.GetRequiredService<IConfigurationStore>());
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       Assert.AreEqual(-1,configuration.GetValueInt("KAFKA_PORT"));
     }
 
     [TestMethod]
     public void ReturnsNullWhenInvalidBool()
     {
-      var configuration = (ServiceProvider.GetRequiredService<IConfigurationStore>());
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       Assert.IsNull(configuration.GetValueBool("KAFKA_PORT"));
     }
 
     [TestMethod]
-    public void CenGetBool()
+    public void CanGetBool()
     {
-      var configuration = (ServiceProvider.GetRequiredService<IConfigurationStore>());
-      Assert.IsTrue(configuration.GetValueBool("KAFKA_AUTO_COMMIT").HasValue);
-      Assert.IsFalse(configuration.GetValueBool("KAFKA_AUTO_COMMIT").Value);
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var value = configuration.GetValueBool("KAFKA_AUTO_COMMIT");
+      Assert.IsTrue(value.HasValue);
+      Assert.IsFalse(value.Value);
+    }
+
+    [TestMethod]
+    public void CanGetTimeSpan()
+    {
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var value = configuration.GetValueTimeSpan("AWS_PRESIGNED_URL_EXPIRY");
+      Assert.IsTrue(value.HasValue);
+      Assert.AreEqual(TimeSpan.FromDays(7), value.Value);
+    }
+
+
+    [TestMethod]
+    public void CanGetLoggingConfig()
+    {
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var section = configuration.GetLoggingConfig();
+      Assert.IsNotNull(section);
     }
   }
 }

@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using VSS.Common.Exceptions;
 
 namespace VSS.MasterData.Models.Handlers
@@ -11,6 +12,6 @@ namespace VSS.MasterData.Models.Handlers
     /// <summary>
     /// Correctly throw ServiceException for controller types.
     /// </summary>
-    ServiceException ThrowServiceException(HttpStatusCode statusCode, int errorNumber, string resultCode = null, string errorMessage1 = null, string errorMessage2 = null);
+    ServiceException ThrowServiceException(HttpStatusCode statusCode, int errorNumber, string resultCode = null, string errorMessage1 = null, string errorMessage2 = null, Exception innerException = null);
   }
 }

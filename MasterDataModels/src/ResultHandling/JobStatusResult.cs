@@ -1,7 +1,7 @@
 ﻿namespace VSS.MasterData.Models.ResultHandling
 {
   /// <summary>
-  /// Result of a veta export job status query
+  /// Result of an export job status query
   /// </summary>
   public class JobStatusResult
   {
@@ -15,5 +15,11 @@
     /// The current status of the job
     /// </summary>
     public string status { get; set; }
+
+    /// <summary>
+    /// The redirect url for downloading on successful completion.
+    /// Only set when the status is 'succeeded'.
+    /// </summary>
+    public string downloadLink { get; set; }
   }
 }

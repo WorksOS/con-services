@@ -124,7 +124,7 @@ node ('Jenkins-Win2016-Raptor') {
              dir ("MasterDataConsumers") {
                  artifactFile = "MasterdataConsumerDb.zip"
                  stage 'Build'
-                 bat  "PowerShell.exe -ExecutionPolicy Bypass -Command .\\build47.ps1 -uploadArtifact"
+                 bat  "PowerShell.exe -ExecutionPolicy Bypass -Command .\\build471.ps1 -uploadArtifact"
                  archiveArtifacts artifacts: "${artifactFile}", fingerprint: true 
                  bat "aws s3 cp ${artifactFile} s3://vss-ci-builds/3dpm.msg.svc/${versionNumber}/ --profile vss-merino"
             }

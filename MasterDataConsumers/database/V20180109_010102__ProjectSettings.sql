@@ -8,8 +8,8 @@ SET @s = (SELECT IF(
     ) > 0,
     "SELECT 1",
     "ALTER TABLE `ProjectSettings` 
-			ADD COLUMN `UserID` VARCHAR(36) NULL AFTER `Settings`,
-            ADD COLUMN `fk_ProjectSettingsTypeID` INT(10) NULL DEFAULT 0 AFTER `fk_ProjectUID`"
+			ADD COLUMN `UserID` VARCHAR(36) NOT NULL AFTER `Settings`,
+            ADD COLUMN `fk_ProjectSettingsTypeID` INT(10) NOT NULL DEFAULT 0 AFTER `fk_ProjectUID`"
 ));  
 
 PREPARE stmt FROM @s;

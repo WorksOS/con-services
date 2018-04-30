@@ -4,10 +4,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.MasterData.Models.UnitTests
 {
@@ -25,6 +25,7 @@ namespace VSS.MasterData.Models.UnitTests
       var serviceCollection = new ServiceCollection();
 
       string loggerRepoName = "UnitTestLogTest";
+      Log4NetProvider.RepoName = loggerRepoName;
       var logPath = Directory.GetCurrentDirectory();
       Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
 

@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MockProjectWebApi.Utils;
-using System;
-using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using MockProjectWebApi.Json;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -28,19 +29,57 @@ namespace MockProjectWebApi.Controllers
     }
 
     /// <summary>
-    /// Gets the project settings used in the Raptor service acceptance tests.
+    /// Gets the project settings targets used in the Raptor service acceptance tests.
     /// The data is mocked.
     /// </summary>
     /// <returns>The mocked settings</returns>
     [Route("api/v4/mock/projectsettings/{projectUid}")]
     [HttpGet]
-    public ProjectSettingsDataResult GetMockProjectSettings(string projectUid)
+    public ProjectSettingsDataResult GetMockProjectSettingsTargets(string projectUid)
     {
-      Console.WriteLine("GetMockProjectSettings: projectUid={0}", projectUid);
+      Console.WriteLine($"GetMockProjectSettingsTargets: projectUid={projectUid}");
+
       JObject settings = null;
+
       if (projectUid == ConstantsUtil.CUSTOM_SETTINGS_DIMENSIONS_PROJECT_UID)
+        settings = JsonConvert.DeserializeObject<JObject>(projectSettingsTargets);
+      else if (projectUid == ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_2)
+        settings = JsonConvert.DeserializeObject<JObject>(projectSettingsTargetsEx);
+
+      return new ProjectSettingsDataResult { ProjectUid = projectUid, Settings = settings };
+    }
+
+    /// <summary>
+    /// Gets the project settings colours used in the Raptor service acceptance tests.
+    /// The data is mocked.
+    /// </summary>
+    /// <returns>The mocked settings</returns>
+    [Route("api/v4/mock/projectcolors/{projectUid}")]
+    [HttpGet]
+    public ProjectSettingsDataResult GetMockProjectSettingsColors(string projectUid)
+    {
+      Console.WriteLine($"GetMockProjectSettingsColors: projectUid={projectUid}");
+
+      JObject settings = null;
+
+      switch (projectUid)
       {
-        string projectSettings = @"{
+        case ConstantsUtil.CUSTOM_SETTINGS_DIMENSIONS_PROJECT_UID:
+          {
+            settings = JsonConvert.DeserializeObject<JObject>(projectSettingsColors);
+            break;
+          }
+        case ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1:
+          {
+            settings = JsonResourceHelper.GetColorSettings(ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1);
+            break;
+          }
+      }
+
+      return new ProjectSettingsDataResult { ProjectUid = projectUid, Settings = settings };
+    }
+
+    private readonly string projectSettingsTargets = @"{
             customBulkingPercent: 6,
             customCutFillTolerances: [0.22, 0.11, 0.055, 0, -0.055, -0.11, -0.22],
             customPassCountTargets: [1,2,3,4,5,10,20,30],
@@ -69,11 +108,74 @@ namespace MockProjectWebApi.Controllers
             useMachineTargetTemperature: false
           }";
 
-        settings = JsonConvert.DeserializeObject<JObject>(projectSettings);
-      }
-      return new ProjectSettingsDataResult { ProjectUid = projectUid, Settings = settings };
-    }
-
+    private readonly string projectSettingsTargetsEx = @"{
+            customBulkingPercent: 6,
+            customCutFillTolerances: [0.22, 0.11, 0.055, 0, -0.055, -0.11, -0.22],
+            customPassCountTargets: [1,2,3,4,5,10,20,30],
+            customShrinkagePercent: 3,
+            customTargetCmv: 10,
+            customTargetCmvPercentMaximum: 100,
+            customTargetCmvPercentMinimum: 75,
+            customTargetMdp: 145,
+            customTargetMdpPercentMaximum: 100,
+            customTargetMdpPercentMinimum: 90,
+            customTargetPassCountMaximum: 3,
+            customTargetPassCountMinimum: 2,
+            customTargetSpeedMaximum: 11,
+            customTargetSpeedMinimum: 7,
+            customTargetTemperatureMaximum: 130,
+            customTargetTemperatureMinimum: 75,
+            customCMVTargets: [0, 5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 145],
+            useDefaultCutFillTolerances: false,
+            useDefaultPassCountTargets: false,
+            useDefaultTargetRangeCmvPercent: false,
+            useDefaultTargetRangeMdpPercent: false,
+            useDefaultTargetRangeSpeed: false,
+            useDefaultVolumeShrinkageBulking: false,
+            useMachineTargetCmv: false,
+            useMachineTargetMdp: false,
+            useMachineTargetPassCount: false,
+            useMachineTargetTemperature: false,
+            useDefaultCMVTargets: false            
+          }";
+    private readonly string projectSettingsColors = @"{
+            useDefaultElevationColors: false,
+            elevationColors: [0xC80000, 0xFF0000, 0xFF3C00, 0xFF5A00, 0xFF8200, 0xFFAA00, 0xFFC800, 
+                                0xFFDC00, 0xFAE600, 0xDCE600, 0xD2E600, 0xC8E600, 0xB4E600, 0x96E600, 
+                                0x82E600, 0x64F000, 0x00FF00, 0x00F064, 0x00E682, 0x00E696, 0x00E6B4,
+                                0x00E6C8, 0x00E6D2, 0x00DCDC, 0x00E6E6, 0x00C8E6, 0x00B4F0, 0x0096F5,
+                                0x0078FA, 0x005AFF, 0x0000FF],
+            useDefaultCMVDetailsColors: false,
+            cmvDetailsColors: [0x01579B, 0x2473AE, 0x488FC1, 0x6BACD5, 0x8FC8E8, 0xB3E5FC, 0xDBECC8, 
+                                0x99CB65, 0x649E38, 0x2D681D, 0xFFCCD2, 0xF6A3A8, 0xEE7A7E, 0xE55154,
+                                0xDD282A, 0xD50000],
+            useDefaultCMVSummaryColors: false,
+            cmvOnTargetColor: 0x8BC34A,
+            cmvOverTargetColor: 0xD50000,
+            cmvUnderTargetColor: 0x1579B,
+            useDefaultCMVPercentColors: false,
+            cmvPercentColors: [0xD50000, 0xE57373, 0xFFCDD2, 0x8BC34A, 0xB3E5FC, 0x005AFF, 0x039BE5, 0x01579B],
+            useDefaultPassCountDetailsColors: false,
+            passCountDetailsColors: [0x2D5783, 0x439BDC, 0xBEDFF1, 0x9DCE67, 0x6BA03E, 0x3A6B25, 0xF6CED3, 0xD57A7C, 0xC13037],
+            useDefaultPassCountSummaryColors: false,
+            passCountOnTargetColor: 0x8BC34A,
+            passCountOverTargetColor: 0xD50000,
+            passCountUnderTargetColor: 0x1579B,
+            useDefaultCutFillColors: false,
+            cutFillColors: [0xD50000, 0xE57373, 0xFFCDD2, 0x8BC34A, 0xB3E5FC, 0x039BE5, 0x01579B],
+            useDefaultTemperatureSummaryColors: false,
+            temperatureOnTargetColor: 0x8BC34A,
+            temperatureOverTargetColor: 0xD50000,
+            temperatureUnderTargetColor: 0x1579B,
+            useDefaultSpeedSummaryColors: false,
+            speedOnTargetColor: 0x8BC34A,
+            speedOverTargetColor: 0xD50000,
+            speedUnderTargetColor: 0x1579B,
+            useDefaultMDPSummaryColors: false,
+            mdpOnTargetColor: 0x8BC34A,
+            mdpOverTargetColor: 0xD50000,
+            mdpUnderTargetColor: 0x1579B
+          }";
 
     private readonly List<ProjectData> projectList = new List<ProjectData>
     {
@@ -82,7 +184,7 @@ namespace MockProjectWebApi.Controllers
       new ProjectData {LegacyProjectId = 1000102, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1000450, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1000452, ProjectUid = Guid.NewGuid().ToString()},
-      new ProjectData {LegacyProjectId = 1000544, ProjectUid = Guid.NewGuid().ToString()},
+      new ProjectData {LegacyProjectId = 1000544, ProjectUid = "dc509939-88b5-49b6-8c2c-9e8131122e96"},
       new ProjectData {LegacyProjectId = 1000992, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1001151, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1001152, ProjectUid = Guid.NewGuid().ToString()},

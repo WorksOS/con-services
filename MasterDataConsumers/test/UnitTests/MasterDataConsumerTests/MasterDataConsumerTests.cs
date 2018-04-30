@@ -17,19 +17,17 @@ namespace MasterDataConsumerTests
   [TestClass]
   public class MasterDataConsumerTests
   {
-    IServiceProvider serviceProvider = null;
+    private IServiceProvider serviceProvider = null;
+    private string loggerRepoName = "UnitTestLogTest";
 
     [TestInitialize]
     public void InitTest()
     {
-      // setup Ilogger
-      string loggerRepoName = "UnitTestLogTest";
-      var logPath = System.IO.Directory.GetCurrentDirectory();
-      //var builder = new ConfigurationBuilder()
-      //          .SetBasePath(logPath)
-      //          .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-      //var Configuration = builder.Build();
+      Log4NetProvider.RepoName = loggerRepoName;
 
+      // setup Ilogger
+      var logPath = System.IO.Directory.GetCurrentDirectory();
+  
       Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
 
       ILoggerFactory loggerFactory = new LoggerFactory();
