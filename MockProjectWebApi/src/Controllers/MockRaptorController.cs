@@ -216,7 +216,9 @@ namespace MockProjectWebApi.Controllers
 
 
     /// <summary>
-    /// Returns some project stats, if project is 
+    /// Returns some project stats.
+    /// If Project is Dimensions then the date extents will be static
+    /// otherwise they will be from now until 1 year ago
     /// </summary>
     [Route("api/v2/projectstatistics")]
     [HttpGet]
