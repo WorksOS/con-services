@@ -229,8 +229,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
                                 uint CellY = (uint)(iterationState[LevelIdx].SubGrid.OriginY + iterationState[LevelIdx].YIdx * SubGridTree.SubGridTreeDimension);
 
                                 SubGrid = SubGridUtilities.LocateSubGridContaining
-                                           (//SpatialStorageProxy[SubGridCellAddress.ToSpatialDivisionDescriptor(CellX, CellY, RaptorConfig.numSpatialProcessingDivisions)],
-                                            iterationState[LevelIdx].SubGrid.Owner as ServerSubGridTree,
+                                           (iterationState[LevelIdx].SubGrid.Owner as ServerSubGridTree,
                                             //null, //FDataStoreCache,
                                             CellX, CellY,
                                             SubGridTree.SubGridTreeLevels,

@@ -74,7 +74,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
                         DiscoverySpi = new TcpDiscoverySpi()
                         {
                             LocalAddress = "127.0.0.1",
-                            LocalPort = 47500, // + (int)RaptorServerConfig.Instance().SpatialSubdivisionDescriptor
+                            LocalPort = 47500, 
 
                             IpFinder = new TcpDiscoveryStaticIpFinder()
                             {

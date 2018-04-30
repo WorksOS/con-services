@@ -43,7 +43,7 @@ namespace VSS.VisionLink.Raptor.Client
                     ProjectID = projectID,
                     AssetID = assetID,
                     TagFileContent = bytes,
-                    TAGFileName = fileName
+                    TAGFileName = Path.GetFileName(fileName)
                 };
             }
 
@@ -72,7 +72,7 @@ namespace VSS.VisionLink.Raptor.Client
                     {
                         new ProcessTAGFileRequestFileItem()
                         {
-                            FileName = fileName,
+                            FileName = Path.GetFileName(fileName),
                             TagFileContent = bytes
                         }
                     }
