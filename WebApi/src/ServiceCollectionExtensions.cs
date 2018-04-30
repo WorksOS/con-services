@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
+using VSS.MasterData.Models.FIlters;
 
 namespace VSS.WebApi.Common
 {
@@ -13,7 +14,7 @@ namespace VSS.WebApi.Common
   public static class ServiceCollectionExtensions
   {
     /// <summary>
-    /// Adds CORS, Swagger ... for Web API service
+    /// Adds CORS, MVC, Swagger ... for Web API service
     /// </summary>
     public static IServiceCollection AddCommon<T>(this IServiceCollection services, string serviceTitle, string version="v1")
     {
@@ -28,6 +29,13 @@ namespace VSS.WebApi.Common
           .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE")
           .SetPreflightMaxAge(TimeSpan.FromSeconds(2520)));
       });
+
+      services.AddMvc(
+        config =>
+        {
+          config.Filters.Add(new ValidationFilterAttribute());
+        }
+      );
 
       //Configure swagger
       services.AddSwaggerGen(c =>
