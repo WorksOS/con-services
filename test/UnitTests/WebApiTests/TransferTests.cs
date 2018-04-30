@@ -19,7 +19,6 @@ namespace VSS.Productivity3D.WebApiTests
   public class TransferTests
   {
     private static IServiceProvider serviceProvider;
-    private static ILoggerFactory logger;
 
     [ClassInitialize]
     public static void ClassInit(TestContext context)
@@ -37,8 +36,6 @@ namespace VSS.Productivity3D.WebApiTests
         .AddTransient<ITransferProxy, TransferProxy>();
 
       serviceProvider = serviceCollection.BuildServiceProvider();
-
-      logger = serviceProvider.GetRequiredService<ILoggerFactory>();
 
       var jobId = "Test_Job_1";
       s3Key = $"3dpm/{jobId}.zip";

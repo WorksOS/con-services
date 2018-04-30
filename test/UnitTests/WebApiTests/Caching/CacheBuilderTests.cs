@@ -4,14 +4,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Productivity3D.Common.Filters.Caching;
 
 namespace VSS.Productivity3D.WebApiTests.Caching
 {
   [TestClass]
   public class CacheBuilderTests
   {
-    public IServiceProvider serviceProvider;
+    public IServiceProvider ServiceProvider;
 
     [TestInitialize]
     public void InitTest()
@@ -24,8 +23,8 @@ namespace VSS.Productivity3D.WebApiTests.Caching
       serviceCollection.AddSingleton(loggerFactory);
       serviceCollection
         .AddTransient<IOptions<MemoryCacheOptions>, MemoryCacheOptions>();
-      
-      serviceProvider = serviceCollection.BuildServiceProvider();
+
+      ServiceProvider = serviceCollection.BuildServiceProvider();
     }
   }
 }

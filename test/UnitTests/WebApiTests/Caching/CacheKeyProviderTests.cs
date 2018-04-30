@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.ResponseCaching;
 using Microsoft.AspNetCore.ResponseCaching.Internal;
@@ -8,9 +11,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Caching;
@@ -40,13 +40,13 @@ namespace VSS.Productivity3D.WebApiTests.Caching
       serviceCollection.AddTransient<IOptions<ResponseCachingOptions>, FakeResponseCacheOptions>();
       serviceCollection.AddTransient<IFilterServiceProxy, FakeFilterProxy>();
       serviceCollection.TryAdd(ServiceDescriptor.Singleton<IResponseCachingKeyProvider, CustomResponseCachingKeyProvider>());
-      this.ServiceProvider = serviceCollection.BuildServiceProvider();
+      ServiceProvider = serviceCollection.BuildServiceProvider();
     }
 
     [TestMethod]
     public void CanCreateKeyProvider()
     {
-      Assert.IsNotNull(this.ServiceProvider.GetRequiredService<IResponseCachingKeyProvider>());
+      Assert.IsNotNull(ServiceProvider.GetRequiredService<IResponseCachingKeyProvider>());
     }
 
     [TestMethod]

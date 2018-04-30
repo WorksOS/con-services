@@ -174,9 +174,10 @@ namespace VSS.Productivity3D.WebApiTests.Common.Extensions
       // Populate the internal cache keys collection for the test projects.
 #pragma warning disable 4014
       Task.Run(() => PopulateResponseCache(responseCache, projectCacheKey1, cacheKeysSet1))
-          .ContinueWith(task => {
-              // Set the flag only when the largest of the response caches has finished populating.
-              cachePopulated = true;
+          .ContinueWith(task =>
+          {
+            // Set the flag only when the largest of the response caches has finished populating.
+            cachePopulated = true;
           });
 
       Task.Run(() => PopulateResponseCache(responseCache, projectCacheKey2, cacheKeysSet2));
