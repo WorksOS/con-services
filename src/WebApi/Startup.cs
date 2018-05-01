@@ -1,5 +1,5 @@
-﻿using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
+using System.Diagnostics;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,10 +15,10 @@ using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 #if NET_4_7
-  using VSS.Productivity3D.Common.Filters;
+  using VSS.Productivity3D.TagFileAuth.WebAPI.Filters;
 #endif
 
-namespace VSS.MasterData.Project.WebAPI
+namespace VSS.Productivity3D.TagFileAuth.WebAPI
 {
   /// <summary>
   /// Configures services and request pipelines.

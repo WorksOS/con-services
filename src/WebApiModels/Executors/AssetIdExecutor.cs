@@ -11,6 +11,7 @@ using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
+using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 {
@@ -113,7 +114,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
           GetAssetIdResult.CreateGetAssetIdResult(false, -1, 0, 
-            ResultHandling.ContractExecutionStatesEnum.InternalProcessingError, 15));
+            ContractExecutionStatesEnum.InternalProcessingError, 15));
       }
     }
 

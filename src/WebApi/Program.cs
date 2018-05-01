@@ -8,7 +8,7 @@ using System.Diagnostics;
 #endif
 
 
-namespace VSS.MasterData.Project.WebAPI
+namespace VSS.Productivity3D.TagFileAuth.WebAPI
 {
   /// <summary>
   /// Application entry point.

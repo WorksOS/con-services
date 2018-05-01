@@ -35,7 +35,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (request == null)
         throw new ServiceException(HttpStatusCode.BadRequest,
           TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ResultHandling.ContractExecutionStatesEnum.InternalProcessingError, 13));
+            ContractExecutionStatesEnum.InternalProcessingError, 13));
 
       var processedOk = false;
 
@@ -67,7 +67,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         {
           throw new ServiceException(HttpStatusCode.InternalServerError,
             TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-              ResultHandling.ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
+              ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
         }
       }
 
@@ -87,7 +87,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         {
           throw new ServiceException(HttpStatusCode.InternalServerError,
             TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-              ResultHandling.ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
+              ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
         }
       }
 
@@ -105,7 +105,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         {
           throw new ServiceException(HttpStatusCode.InternalServerError,
             TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-              ResultHandling.ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
+              ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
         }
       }
 

@@ -5,7 +5,7 @@ using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
-namespace VSS.MasterData.Project.WebAPI.Controllers
+namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
 {
   /// <summary>
   /// Common controller base.

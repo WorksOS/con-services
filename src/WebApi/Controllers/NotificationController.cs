@@ -12,7 +12,7 @@ using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
 
-namespace VSS.MasterData.Project.WebAPI.Controllers
+namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
 {
   /// <summary>
   /// Notification controller for tag file errors and misc alarms
@@ -92,6 +92,30 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       log.LogDebug("PostTagFileProcessingErrorV2: v1result:{0}", JsonConvert.SerializeObject(result));
       return result;
     }
+
+    /// the following is for AlertNotification. This will not be completed until after the June2018-all-hands-to-the-pump
+    /// Please LEAVE!
+    /// <summary>
+    /// Writes a Kafka event for the given tag file processing error. 
+    /// </summary>
+    /// <param name="request">Details of the error including the customerUid, the tag file and the type of error</param>
+    /// <returns>
+    /// True for success and false for failure.
+    /// </returns>
+    /// <executor>TagFileProcessingErrorV2Executor</executor>
+    //[Route("api/v2/notification/tagFileProcessingError")]
+    //[HttpPost]
+    //public async Task<TagFileProcessingErrorResult> PostTagFileProcessingError([FromBody] TagFileProcessingErrorV2Request request)
+    //{
+    //  log.LogDebug("PostTagFileProcessingErrorV2: request:{0}", JsonConvert.SerializeObject(request));
+    //  request.Validate();
+
+    //  var executor = RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository, producer, kafkaTopicName);
+    //  var result = await executor.ProcessAsync(request) as TagFileProcessingErrorResult;
+
+    //  log.LogDebug("PostTagFileProcessingErrorV2: result:{0}", JsonConvert.SerializeObject(result));
+    //  return result;
+    //}
 
     /// <summary>
     /// Posts the application alarm.

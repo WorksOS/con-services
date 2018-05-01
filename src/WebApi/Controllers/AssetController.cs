@@ -11,7 +11,7 @@ using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
-namespace VSS.MasterData.Project.WebAPI.Controllers
+namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
 {
   /// <summary>
   /// Asset controller.

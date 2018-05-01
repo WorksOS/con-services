@@ -61,21 +61,21 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
               JsonConvert.SerializeObject(subs));
           }
 
-          var projects =
-            await dataRepository.LoadProjects(asset.OwningCustomerUID, request.tagFileUTC.Date);
           if (subscriptions.Count > 0)
           {
             //Look for projects which are active at date time request.tagFileUTC
             //i.e. tagFileUTC is between project start and end dates
             //and which belong to the asset owner and get their boundary points
+            var projects =
+              await dataRepository.LoadProjects(asset.OwningCustomerUID, request.tagFileUTC.Date);
 
             log.LogDebug("ProjectBoundariesAtDateExecutor: Loaded Projects {0} for customer",
               JsonConvert.SerializeObject(projects));
 
             var enumerable = projects as IList<Project> ?? projects.ToList();
-            var list = new List<ProjectBoundaryPackage>();
             if (enumerable.Any())
             {
+              var list = new List<ProjectBoundaryPackage>();
               foreach (var p in enumerable)
               {
                 var boundaryFence =

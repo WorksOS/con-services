@@ -12,7 +12,7 @@
     <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">1.1.1</RuntimeFrameworkVersion>
-    <RootNamespace>VSS.MasterData.Project.WebAPI</RootNamespace>
+    <RootNamespace>VSS.Productivity3D.TagFileAuth.WebAPI</RootNamespace>
     <ApplicationIcon />
     <OutputTypeEx>exe</OutputTypeEx>
     <StartupObject />
@@ -63,7 +63,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WebApiModels\VSS.Productivity3D.TagFileAuth.WebAPI.Models.csproj" />
-  </ItemGroup>
+  </ItemGroup>  
 
   <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
     <ItemGroup>
