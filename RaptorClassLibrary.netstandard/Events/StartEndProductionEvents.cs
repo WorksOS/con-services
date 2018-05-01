@@ -104,7 +104,7 @@ namespace VSS.VisionLink.Raptor.Events
                 return;
 
             // First, deal with any nested events
-            // ie: Structures of the form <Start><Start><End><Start<End><End>
+            // ie: Structures of the form <Start><Start><End><Start><End><End>
             // in these instances, all events bracketed by the double <start><end> events should be removed
 
             int I = 0;
@@ -115,19 +115,21 @@ namespace VSS.VisionLink.Raptor.Events
 
                 if (Events[I].State == ProductionEventType.StartEvent)
                     NestingLevel++;
-                else
-                {
-                    if (Events[I].State == ProductionEventType.EndEvent)
+                else if (Events[I].State == ProductionEventType.EndEvent)
                         DecNestingLevel = true;
                     else
                         Debug.Assert(false, "Unknown event type in list");
 
-                    if (NestingLevel > 1)
-                        Events.RemoveAt(I);
+                if (NestingLevel > 1)
+                {
+                    Events.RemoveAt(I);
 
-                    if (DecNestingLevel)
-                        NestingLevel--;
+                    // Decrement location to take into account the removal of the event
+                    I--;
                 }
+
+                if (DecNestingLevel)
+                    NestingLevel--;
 
                 I++;
             }
@@ -150,7 +152,8 @@ namespace VSS.VisionLink.Raptor.Events
                     Events.RemoveAt(I); // this[I] = null;
                     Events.RemoveAt(I); // this[I + 1] = null;
 
-                    I++;
+                    // Decrement location to take into account the removal of the event
+                    I--;
                 }
 
                 I++;

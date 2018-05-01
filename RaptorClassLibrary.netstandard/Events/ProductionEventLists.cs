@@ -144,52 +144,52 @@ namespace VSS.VisionLink.Raptor.Events
             MachineStartupShutdownEvents = new StartEndProductionEvents(this, MachineID, SiteModel.ID,
                 ProductionEventType.MachineStartupShutdown,
                 (w, s) => w.Write((byte) s),
-                (r) => (ProductionEventType) r.ReadByte());
+                r => (ProductionEventType) r.ReadByte());
 
             StartEndRecordedDataEvents = new StartEndProductionEvents(this, MachineID, SiteModel.ID,
                 ProductionEventType.StartEndRecordedData,
                 (w, s) => w.Write((byte) s),
-                (r) => (ProductionEventType) r.ReadByte());
+                r => (ProductionEventType) r.ReadByte());
 
             VibrationStateEvents = new ProductionEvents<VibrationState>(this, MachineID, SiteModel.ID,
                 ProductionEventType.VibrationStateChange,
                 (w, s) => w.Write((byte) s),
-                (r) => (VibrationState) r.ReadByte());
+                r => (VibrationState) r.ReadByte());
 
             AutoVibrationStateEvents = new ProductionEvents<AutoVibrationState>(this, MachineID, SiteModel.ID,
                 ProductionEventType.AutoVibrationStateChange,
                 (w, s) => w.Write((byte) s),
-                (r) => (AutoVibrationState) r.ReadByte());
+                r => (AutoVibrationState) r.ReadByte());
 
             GPSModeStateEvents = new ProductionEvents<GPSMode>(this, MachineID, SiteModel.ID,
                 ProductionEventType.GPSModeChange,
                 (w, s) => w.Write((byte) s),
-                (r) => (GPSMode) r.ReadByte());
+                r => (GPSMode) r.ReadByte());
 
             PositioningTechStateEvents = new ProductionEvents<PositioningTech>(this, MachineID, SiteModel.ID,
                 ProductionEventType.PositioningTech,
                 (w, s) => w.Write((byte) s),
-                (r) => (PositioningTech) r.ReadByte());
+                r => (PositioningTech) r.ReadByte());
 
             DesignNameIDStateEvents = new ProductionEvents<int>(this, MachineID, SiteModel.ID,
                 ProductionEventType.DesignChange,
                 (w, s) => w.Write(s),
-                (r) => r.ReadInt32());
+                r => r.ReadInt32());
 
             MachineAutomaticsStateEvents = new ProductionEvents<MachineAutomaticsMode>(this, MachineID, SiteModel.ID,
                 ProductionEventType.MachineAutomaticsChange,
                 (w, s) => w.Write((byte) s),
-                (r) => (MachineAutomaticsMode) r.ReadByte());
+                r => (MachineAutomaticsMode) r.ReadByte());
 
             MachineGearStateEvents = new ProductionEvents<MachineGear>(this, MachineID, SiteModel.ID,
                 ProductionEventType.MachineGearChange,
                 (w, s) => w.Write((byte) s),
-                (r) => (MachineGear) r.ReadByte());
+                r => (MachineGear) r.ReadByte());
 
             MinElevMappingStateEvents = new ProductionEvents<bool>(this, MachineID, SiteModel.ID,
                 ProductionEventType.MinElevMappingStateChange,
                 (w, s) => w.Write(s),
-                (r) => r.ReadBoolean());
+                r => r.ReadBoolean());
 
             GPSAccuracyAndToleranceStateEvents = new ProductionEvents<GPSAccuracyAndTolerance>(this, MachineID,
                 SiteModel.ID, ProductionEventType.GPSAccuracyChange,
@@ -198,49 +198,49 @@ namespace VSS.VisionLink.Raptor.Events
                     w.Write(s.GPSTolerance);
                     w.Write((byte) s.GPSAccuracy);
                 },
-                (r) => new GPSAccuracyAndTolerance((GPSAccuracy) r.ReadByte(), r.ReadUInt16()));
+                r => new GPSAccuracyAndTolerance((GPSAccuracy) r.ReadByte(), r.ReadUInt16()));
 
             LayerIDStateEvents = new ProductionEvents<ushort>(this, MachineID, SiteModel.ID,
                 ProductionEventType.LayerID,
-                (w, s) => w.Write(s), (r) => r.ReadUInt16());
+                (w, s) => w.Write(s), r => r.ReadUInt16());
 
             //            DesignNameStateEvents = new ProductionEvents<string>(this, MachineID, SiteModel.ID, ProductionEventType.DesignChange);
 
             ICFlagsStateEvents = new ProductionEvents<byte>(this, MachineID, SiteModel.ID,
                 ProductionEventType.ICFlagsChange,
-                (w, s) => w.Write(s), (r) => r.ReadByte());
+                (w, s) => w.Write(s), r => r.ReadByte());
 
             TargetCCVStateEvents = new ProductionEvents<short>(this, MachineID, SiteModel.ID,
                 ProductionEventType.TargetCCV,
-                (w, s) => w.Write(s), (r) => r.ReadInt16());
+                (w, s) => w.Write(s), r => r.ReadInt16());
 
             TargetCCAStateEvents = new ProductionEvents<short>(this, MachineID, SiteModel.ID,
                 ProductionEventType.TargetCCA,
-                (w, s) => w.Write(s), (r) => r.ReadInt16());
+                (w, s) => w.Write(s), r => r.ReadInt16());
 
             TargetMDPStateEvents = new ProductionEvents<short>(this, MachineID, SiteModel.ID,
                 ProductionEventType.TargetMDP,
-                (w, s) => w.Write(s), (r) => r.ReadInt16());
+                (w, s) => w.Write(s), r => r.ReadInt16());
 
             TargetPassCountStateEvents = new ProductionEvents<ushort>(this, MachineID, SiteModel.ID,
                 ProductionEventType.TargetPassCount,
-                (w, s) => w.Write(s), (r) => r.ReadUInt16());
+                (w, s) => w.Write(s), r => r.ReadUInt16());
 
             TargetMinMaterialTemperature = new ProductionEvents<ushort>(this, MachineID, SiteModel.ID,
                 ProductionEventType.TempWarningLevelMinChange,
-                (w, s) => w.Write(s), (r) => r.ReadUInt16());
+                (w, s) => w.Write(s), r => r.ReadUInt16());
 
             TargetMaxMaterialTemperature = new ProductionEvents<ushort>(this, MachineID, SiteModel.ID,
                 ProductionEventType.TempWarningLevelMaxChange,
-                (w, s) => w.Write(s), (r) => r.ReadUInt16());
+                (w, s) => w.Write(s), r => r.ReadUInt16());
 
             TargetLiftThickness = new ProductionEvents<float>(this, MachineID, SiteModel.ID,
                 ProductionEventType.TargetLiftThickness,
-                (w, s) => w.Write(s), (r) => r.ReadSingle());
+                (w, s) => w.Write(s), r => r.ReadSingle());
 
             RMVJumpThresholdEvents = new ProductionEvents<short>(this, MachineID, SiteModel.ID,
                 ProductionEventType.MachineRMVJumpValueChange,
-                (w, s) => w.Write(s), (r) => r.ReadInt16());
+                (w, s) => w.Write(s), r => r.ReadInt16());
         }
 
         /// <summary>
