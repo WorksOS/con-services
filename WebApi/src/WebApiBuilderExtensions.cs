@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
-using VSS.MasterData.Models.FIlters;
 
 namespace VSS.WebApi.Common
 {
