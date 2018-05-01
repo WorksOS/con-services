@@ -394,7 +394,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             OriginY = reader.ReadUInt32();
         }
 
-        /// <summary>
+/*
         /// Write the contents of the Items array using the supplied writer
         /// </summary>
         /// <param name="formatter"></param>
@@ -413,6 +413,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         {
             throw new NotImplementedException();
         }
+*/
 
         /// <summary>
         /// Converts the subgrid origin cell location into a SubGridAddress identifying this subgrid

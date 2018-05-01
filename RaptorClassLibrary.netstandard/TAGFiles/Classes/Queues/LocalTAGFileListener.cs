@@ -12,7 +12,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
-        /// Evnet called whenever there are new items in the TAG file buffer queue discovered by the continuous query
+        /// Event called whenever there are new items in the TAG file buffer queue discovered by the continuous query
+        /// Events include creation, modification and deletion of cache entries
         /// </summary>
         /// <param name="evts"></param>
         public void OnEvent(IEnumerable<ICacheEntryEvent<TAGFileBufferQueueKey, TAGFileBufferQueueItem>> evts)
@@ -20,8 +21,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             // Add the keys for the given events into the Project/Asset mapping buckets ready for a processing context
             // to acquire them. 
 
-            Log.Info($"About to add TAG file items to the grouper");
-            int count = 0;
+            Log.Info("About to add TAG file items to the grouper");
+            int countOfCreatedEvents = 0;
 
             foreach (var evt in evts)
             {
@@ -29,7 +30,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 if (evt.EventType != CacheEntryEventType.Created)
                     continue;
 
-                count++;
+                countOfCreatedEvents++;
                 try
                 {
                     TAGFileBufferQueueItemHandler.Instance().Add(evt.Key /*, evt.Value*/);
@@ -42,7 +43,10 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 }
             }
 
-            Log.Info($"Added {count} TAG file items to the grouper");
+            if (countOfCreatedEvents > 0)
+            {
+                Log.Info($"Added {countOfCreatedEvents} TAG file items to the grouper");
+            }
         }
     }
 }

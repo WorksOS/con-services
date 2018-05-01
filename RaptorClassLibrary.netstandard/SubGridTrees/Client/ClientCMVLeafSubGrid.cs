@@ -99,6 +99,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
             */
         }
 
+/*
         /// <summary>
         /// Reads an elevation client leaf sub grid from a stream using a binary formatter
         /// </summary>
@@ -122,6 +123,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
 
             formatter.Serialize(stream, FirstPassMap);
         }
+*/
 
         /// <summary>
         /// Write the contents of the Items array using the supplied writer

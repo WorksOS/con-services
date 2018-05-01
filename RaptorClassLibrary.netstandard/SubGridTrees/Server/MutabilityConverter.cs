@@ -168,6 +168,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         {
             // Note: Some refactoring needs to be done with the read/write serialisation/deserialisation using BinaryFormatters
             // so that an events list can be read/written without prior knowledge of the type of the event list that is being read.
+
+            // TODO: Implement any conversionlogic here if necessary
             immutableStream = mutableStream;
 
             return true;

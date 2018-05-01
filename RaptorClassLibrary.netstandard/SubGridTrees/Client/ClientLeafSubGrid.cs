@@ -236,7 +236,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
             throw new NotImplementedException("TICSubGridTreeLeafSubGridBase.DumpToLog not implemented in " + GetType().Name);
         }
 
-
+/*
         /// <summary>
         /// Write the contents of leaf sub grid using the supplied formatter
         /// </summary>
@@ -283,6 +283,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
             ProdDataMap = (SubGridTreeBitmapSubGridBits)formatter.Deserialize(stream);
             FilterMap = (SubGridTreeBitmapSubGridBits)formatter.Deserialize(stream);
         }
+*/
+
         // procedure WriteToStream(const Stream: TStream); override;
         // procedure ReadFromStream(const Stream: TStream); override;
 

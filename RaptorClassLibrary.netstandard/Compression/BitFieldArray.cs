@@ -7,7 +7,7 @@ using System.IO;
 namespace VSS.VisionLink.Raptor.Compression
 {
     /// <summary>
-    /// Bit field arrays implement arrays variable bit fields to mor eefficiently use memory.
+    /// Bit field arrays implement arrays variable bit fields to more efficiently use memory.
     /// They are commonly used in conjunction with dynamic/entropic compression of vectors of values being
     /// stored by the arrays. Records may be implemented that represent sets of fields, where the fields for each record are
     /// contiguously stored in memory to improve access locality.

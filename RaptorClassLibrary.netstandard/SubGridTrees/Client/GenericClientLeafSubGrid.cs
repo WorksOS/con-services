@@ -78,6 +78,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
             Cells = new T[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
         }
 
+/*
         /// <summary>
         /// Write the contents of leaf sub grid using the supplied formatter
         /// </summary>
@@ -101,6 +102,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
 
             Cells = (T[,])formatter.Deserialize(stream);
         }
+*/
 
         /// <summary>
         /// Dumps the contents of this client leaf subgrid into the log in a human readable form

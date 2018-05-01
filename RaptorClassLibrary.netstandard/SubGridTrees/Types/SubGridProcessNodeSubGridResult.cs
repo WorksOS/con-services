@@ -11,7 +11,7 @@
     public enum SubGridProcessNodeSubGridResult
     {
         /// <summary>
-        /// Everythings fine :-)
+        /// Everything is fine :-)
         /// </summary>
         OK,
 

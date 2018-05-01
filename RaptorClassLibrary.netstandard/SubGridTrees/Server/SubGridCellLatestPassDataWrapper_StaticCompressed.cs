@@ -16,7 +16,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         // BF_CellPasses contains all the cell pass information for the segment (read in via
         // the transient CellPassesStorage reference and then encoded into the cache format)
-        BitFieldArray BF_CellPasses;
+        private BitFieldArray BF_CellPasses;
 
         /// <summary>
         /// The set of field descriptors for the attribute being stored in the bit field array compressed form
@@ -114,12 +114,14 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             }
         }
 
-        EncodedFieldDescriptorsStruct EncodedFieldDescriptors = new EncodedFieldDescriptorsStruct();
+        private EncodedFieldDescriptorsStruct EncodedFieldDescriptors; // = new EncodedFieldDescriptorsStruct();
 
-        int NumBitsPerCellPass;
+        private int NumBitsPerCellPass;
 
         public SubGridCellLatestPassDataWrapper_StaticCompressed()
         {
+            BF_CellPasses = new BitFieldArray();
+            
             EncodedFieldDescriptors.Init();
         }
 
@@ -140,7 +142,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 DateTime time = cellPasses[col, row].Time;
                 FirstRealCellPassTime = time != Cells.CellPass.NullTime && time < FirstRealCellPassTime ? time : FirstRealCellPassTime;
             });
-
 
             // For ease of management convert all the cell passes into a single list for the following operations
             CellPass[] allCellPassesArray = new CellPass[SubGridTree.SubGridTreeCellsPerSubgrid];
@@ -177,7 +178,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             {
                 new BitFieldArrayRecordsDescriptor()
                 {
-                    NumRecords = (int)SubGridTree.SubGridTreeCellsPerSubgrid,
+                    NumRecords = SubGridTree.SubGridTreeCellsPerSubgrid,
                     BitsPerRecord = NumBitsPerCellPass
                 }
             };

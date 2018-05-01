@@ -91,7 +91,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             // array in BitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear array into the local Bits array
             // Note: The copy is in terms of bytes, not elements. 
             // This is about as fast as a managed copy of array items can be.
-            Buffer.BlockCopy(SubgridBitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear, 0, Bits, 0, (int)SubgridBitsHelper.BytesInBitsArray);
+            Buffer.BlockCopy(SubgridBitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear, 0, Bits, 0, SubgridBitsHelper.BytesInBitsArray);
             //Array.Clear(Bits, 0, Bits.Length);
         }
 
@@ -104,7 +104,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             // array in BitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear array into the local Bits array
             // Note: The copy is in terms of bytes, not elements. 
             // This is about as fast as a managed copy of array items can be.
-            Buffer.BlockCopy(SubgridBitsHelper.SubGridTreeLeafBitmapSubGridBits_Fill, 0, Bits, 0, (int)SubgridBitsHelper.BytesInBitsArray);
+            Buffer.BlockCopy(SubgridBitsHelper.SubGridTreeLeafBitmapSubGridBits_Fill, 0, Bits, 0, SubgridBitsHelper.BytesInBitsArray);
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <param name="source"></param>
         public void Assign(SubGridTreeBitmapSubGridBits source)
         {
-            Buffer.BlockCopy(source.Bits, 0, Bits, 0, (int)SubgridBitsHelper.BytesInBitsArray);
+            Buffer.BlockCopy(source.Bits, 0, Bits, 0, SubgridBitsHelper.BytesInBitsArray);
         }
 
         /// <summary>

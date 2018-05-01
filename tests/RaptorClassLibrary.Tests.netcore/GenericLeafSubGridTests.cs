@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using VSS.VisionLink.Raptor.SubGridTrees;
-using VSS.VisionLink.Raptor;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using System.Text;
 using Xunit;
@@ -65,6 +63,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             }
         }
 
+        /*
         [Fact(Skip = "Not Implemented")]
         public void Test_GenericLeafSubGridTests_Read_BinaryFormatter()
         {
@@ -98,6 +97,6 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 
             Assert.True(areSame, "The two arrays are not the same");
         }
-
+        */
     }
 }

@@ -196,7 +196,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             return Result;
         }
 
-        public bool Write(BinaryWriter writer /*Stream stream*/)
+        public bool Write(BinaryWriter writer)
         {
             // Write the version to the stream
             SubGridStreamHeader Header = new SubGridStreamHeader()

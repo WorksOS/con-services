@@ -223,43 +223,32 @@ namespace VSS.VisionLink.Raptor.SiteModels
 
         public void Write(BinaryWriter writer)
         {
-//            BinaryFormatter formatter = new BinaryFormatter();
+            // Write the SiteModel attributes
+            writer.Write(kMajorVersion);
+            writer.Write(kMinorVersion);
+            // writer.Write(Name);
+            // writer.Write(Description);
+            writer.Write(ID);
 
-            try
-            {
-//                formatter.Serialize(writer.BaseStream, this);
+            // WriteBooleanToStream(Stream, FActive);
 
-                // Write the SiteModel attributes
-                writer.Write(kMajorVersion);
-                writer.Write(kMinorVersion);
-                // writer.Write(Name);
-                // writer.Write(Description);
-                writer.Write(ID);
+            //WriteDoubleToStream(Stream, FMaxInterEpochDist);
+            //WriteBooleanToStream(Stream, FIgnoreInvalidPositions);
 
-                // WriteBooleanToStream(Stream, FActive);
+            writer.Write(Grid.CellSize);
 
-                //WriteDoubleToStream(Stream, FMaxInterEpochDist);
-                //WriteBooleanToStream(Stream, FIgnoreInvalidPositions);
+            SiteModelExtent.Write(writer);
 
-                writer.Write(Grid.CellSize);
+            //FProofingRuns.WriteToStream(Stream);
+            //FSiteModelDesigns.WriteToStream(Stream);
 
-                SiteModelExtent.Write(writer);
+            // Write the design names list
+            //FSiteModelDesignNames.SaveToStream(Stream);
 
-                //FProofingRuns.WriteToStream(Stream);
-                //FSiteModelDesigns.WriteToStream(Stream);
+            // Write the machines list
+            //FMachines.WriteToStream(Stream);
 
-                // Write the design names list
-                //FSiteModelDesignNames.SaveToStream(Stream);
-
-                // Write the machines list
-                //FMachines.WriteToStream(Stream);
-
-                writer.Write(LastModifiedDate.ToBinary());
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            writer.Write(LastModifiedDate.ToBinary());
         }
 
         public bool Read(BinaryReader reader)
