@@ -41,7 +41,7 @@ namespace WebApiTests
       var url = $"{ts.tsCfg.vetaExportUrl}?projectUid={GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1}&fileName={SUCCESS_JOB_ID}&filterUid={FilterUid}";
       var request = new ScheduleJobRequest {Url = url};
       var requestJson = JsonConvert.SerializeObject(request);
-      var responseJson = ts.CallSchedulerWebApi("api/v1/export", "POST", requestJson);
+      var responseJson = ts.CallSchedulerWebApi("internal/v1/export", "POST", requestJson);
       var scheduleResult = JsonConvert.DeserializeObject<ScheduleJobResult>(responseJson,
         new JsonSerializerSettings {DateTimeZoneHandling = DateTimeZoneHandling.Unspecified});
       Assert.IsNotNull(scheduleResult, "Should get a schedule job response");
