@@ -105,6 +105,10 @@
     <PackageReference Include="Hangfire.Core" Version="1.6.17" />
   </ItemGroup>
   
+  <ItemGroup>
+    <Folder Include="Middleware\" />
+  </ItemGroup>
+  
   
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">
     <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7</DefineConstants>
