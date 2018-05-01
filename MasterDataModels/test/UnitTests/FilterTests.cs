@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
@@ -26,5 +27,33 @@ namespace VSS.MasterData.Models.UnitTests
 
       Assert.AreEqual(expectedResult, filter.DateRangeName);
     }
+
+
+    [TestMethod]
+    [DataRow(DateRangeType.ProjectExtents)]
+    public void ApplyDateRange_null_project_extents(DateRangeType dateRangeType)
+    {
+      var filter = JsonConvert.DeserializeObject<Filter>($"{{\"dateRangeType\":\"{dateRangeType}\"}}");
+      filter.ApplyDateRange("UTC");
+      if (dateRangeType == DateRangeType.ProjectExtents)
+      {
+        Assert.AreEqual(null, filter.StartUtc);
+        Assert.AreEqual(null, filter.EndUtc);
+      }
+    }
+
+
+    [TestMethod]
+    [DataRow(DateRangeType.Today)]
+    public void ApplyDateRange_null_project_start_when_asAtDate(DateRangeType dateRangeType)
+    {
+      var filter =
+        JsonConvert.DeserializeObject<Filter>($"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"true\"}}");
+      filter.ApplyDateRange("UTC");
+      Assert.AreEqual(null, filter.StartUtc);
+      Assert.AreEqual(DateTime.UtcNow.Date, filter.EndUtc.Value.Date);
+    }
+
+
   }
 }
