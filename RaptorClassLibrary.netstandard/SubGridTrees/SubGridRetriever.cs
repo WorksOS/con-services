@@ -43,21 +43,21 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         ISubGrid _SubGrid;
         IServerLeafSubGrid _SubGridAsLeaf;
 
-        FilteredValueAssignmentContext AssignmentContext;
-        SubGridSegmentIterator SegmentIterator;
-        SubGridSegmentCellPassIterator_NonStatic CellPassIterator;
+        private FilteredValueAssignmentContext AssignmentContext;
+        private SubGridSegmentIterator SegmentIterator;
+        private SubGridSegmentCellPassIterator_NonStatic CellPassIterator;
 
-        double _CellSize = Consts.NullDouble;
-        int NumRowsToScan, NumColsToScan;
-        double FirstScanPointNorth, FirstScanPointEast;
+        private double _CellSize = Consts.NullDouble;
+        private int NumRowsToScan, NumColsToScan;
+        private double FirstScanPointNorth, FirstScanPointEast;
 
-        double StepNorthX, StepNorthY, StepEastX, StepEastY;
-        double StepX, StepY;
-        double IntraGridOffsetX, IntraGridOffsetY;
+        private double StepNorthX, StepNorthY, StepEastX, StepEastY;
+        private double StepX, StepY;
+        private double IntraGridOffsetX, IntraGridOffsetY;
 
         // TFilteredValuePopulationControl PopulationControl = null;
         // TICServerProfiler Profiler = null;
-        object Profiler = null; // Null place holder...
+        private object Profiler = null; // Null place holder...
         // TICProfileCell CellProfile = null;
 
         // TICCellPassFastEventLookerUpper CellPassFastEventLookerUpper = null;
@@ -70,12 +70,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
         // long LastGetTargetValues_MachineID = -1;
         // bool MachineTargetValuesEventsLocked = false;
-        bool HaveFilteredPass;
-        FilteredPassData CurrentPass;
-        FilteredPassData TempPass;
+        private bool HaveFilteredPass;
+        private FilteredPassData CurrentPass;
+        private FilteredPassData TempPass;
 
-        ISubGridCellLatestPassDataWrapper _GlobalLatestCells;
-        bool UseLastPassGrid; // Assume we can't use last pass data
+        private ISubGridCellLatestPassDataWrapper _GlobalLatestCells;
+        private bool UseLastPassGrid; // Assume we can't use last pass data
 
         /// <summary>
         /// Constructor for the subgrid retriever helper
@@ -1022,7 +1022,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 */
 
             // Obtain a reference to the base class from the interfaces implementation to access the flags below
-            SubGridCellLatestPassDataWrapperBase baseGlobalLatestCells = _GlobalLatestCells as SubGridCellLatestPassDataWrapperBase;
+            SubGridCellLatestPassDataWrapperBase baseGlobalLatestCells = (SubGridCellLatestPassDataWrapperBase)_GlobalLatestCells;
 
             // Check the subgrid global attribute presence flags that are tracked for optional
             // attribute values to see if there is anything at all that needs to be done here
@@ -1179,13 +1179,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                                                  double SubgridMinX, double SubgridMinY, 
                                                  double SubgridMaxX, double SubgridMaxY)
         {
-            double CosOfRotation, SinOfRotation;
-
-            Fence RotatedSubgridBoundary;
-
             if (Rotation != 0)
             {
-                RotatedSubgridBoundary = new Fence();
+                Fence RotatedSubgridBoundary = new Fence();
 
                 // Create the rotated boundary by 'unrotating' the subgrid world extents into a context
                 // where the grid is itself not rotated
@@ -1211,8 +1207,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 // Perform a 'unit' rotation of the StepX and StepY quantities about the
                 // origin to define step quantities that orient the vector of probe position movement
                 // to the rotated probe grid
-                SinOfRotation = Math.Sin(Rotation);
-                CosOfRotation = Math.Cos(Rotation);
+                double SinOfRotation = Math.Sin(Rotation);
+                double CosOfRotation = Math.Cos(Rotation);
 
                 StepNorthY = CosOfRotation * StepY;
                 StepNorthX = SinOfRotation * StepX;

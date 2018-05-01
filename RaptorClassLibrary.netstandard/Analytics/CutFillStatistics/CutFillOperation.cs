@@ -7,7 +7,7 @@ namespace VSS.VisionLink.Analytics.Operations
     /// <summary>
     /// Provides a client onsumable operation for performing cut fill analytics that returns a client model space cut fill result.
     /// </summary>
-    public class CutFillOperation
+    public static class CutFillOperation
     {
         /// <summary>
         /// Execute the cut fill operation with the supplied argument

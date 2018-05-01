@@ -160,7 +160,7 @@ namespace VSS.VisionLink.Raptor.Analytics
                         PipeLine = PipeLine
                     };
 
-                    if (!ConfigurePipeline(out BoundingIntegerExtent2D CellExtents))
+                    if (!ConfigurePipeline(out BoundingIntegerExtent2D _ /*CellExtents*/))
                     {
                         // TODO: Set some kind of failure mode into result
                         return RequestErrorStatus.FailedToConfigureInternalPipeline;

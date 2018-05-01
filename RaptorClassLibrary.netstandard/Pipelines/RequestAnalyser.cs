@@ -152,7 +152,6 @@ namespace VSS.VisionLink.Raptor.Pipelines
             SubGridTreeLeafBitmapSubGrid ProdDataSubGrid = Owner.ProdDataExistenceMap.LocateSubGridContaining(SubGrid.OriginX, SubGrid.OriginY) as SubGridTreeLeafBitmapSubGrid;
 
             byte ScanMinXb, ScanMinYb, ScanMaxXb, ScanMaxYb;
-            bool SubgridSatisfiesFilter;
             bool Result = true; // Set to false if the scanning process needs to be aborted.
             double OTGCellSize = SubGrid.Owner.CellSize / SubGridTree.SubGridTreeDimension;
             SubGridTreeLeafBitmapSubGrid CastSubGrid = SubGrid as SubGridTreeLeafBitmapSubGrid;
@@ -211,7 +210,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
                         if (Owner.DesignSubgridOverlayMap != null)
                         {
-                            if (!Owner.DesignSubgridOverlayMap.GetCell((uint)(SubGrid.OriginX + I), (uint)(SubGrid.OriginY + J)))
+                            if (!Owner.DesignSubgridOverlayMap.GetCell(SubGrid.OriginX + I, SubGrid.OriginY + J))
                             {
                                 continue;
                             }
@@ -221,7 +220,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
                         // If there is a spatial filter in play then determine if the subgrid about to be requested intersects the spatial filter extent
 
-                        SubgridSatisfiesFilter = true;
+                        bool SubgridSatisfiesFilter = true;
                         foreach (CombinedFilter filter in Owner.FilterSet.Filters)
                         {
                             if (filter == null)
@@ -257,11 +256,11 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
                             // Add the leaf subgrid identitied by the address below, along with the production data and surveyed surface
                             // flags to the subgrid tree being used to aggregate all the subgrids that need to be queried for the request
-                            //                            SubGridCellAddress NewSubGridAddress =
-                            //                                 new SubGridCellAddress((CastSubGrid.OriginX + I) << SubGridTree.SubGridIndexBitsPerLevel,
-                            //                                                        (CastSubGrid.OriginY + J) << SubGridTree.SubGridIndexBitsPerLevel,
-                            //                                                        Owner.ProdDataExistenceMap.GetCell(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J),
-                            //                                                        Owner.IncludeSurveyedSurfaceInformation);
+                            // SubGridCellAddress NewSubGridAddress =
+                            //      new SubGridCellAddress((CastSubGrid.OriginX + I) << SubGridTree.SubGridIndexBitsPerLevel,
+                            //                             (CastSubGrid.OriginY + J) << SubGridTree.SubGridIndexBitsPerLevel,
+                            //                             Owner.ProdDataExistenceMap.GetCell(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J),
+                            //                             Owner.IncludeSurveyedSurfaceInformation);
 
                             // Set the ProdDataMask for the production data
                             if (ProdDataSubGrid != null && ProdDataSubGrid.Bits.BitSet(I, J))

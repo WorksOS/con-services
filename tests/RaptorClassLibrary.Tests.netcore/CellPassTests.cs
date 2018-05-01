@@ -19,7 +19,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
                 CCV = 3,
                 Frequency = 4,
                 gpsMode = GPSMode.AutonomousPosition,
-                halfPass = false,
+                HalfPass = false,
                 Height = 5,
                 MachineID = 6,
                 MachineSpeed = 7,
@@ -42,7 +42,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
                 CCV = 30,
                 Frequency = 40,
                 gpsMode = GPSMode.DGPS,
-                halfPass = true,
+                HalfPass = true,
                 Height = 50,
                 MachineID = 60,
                 MachineSpeed = 70,
@@ -71,7 +71,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
                 cp.CCV == CellPass.NullCCV &&
                 cp.Frequency == CellPass.NullFrequency &&
                 cp.gpsMode == CellPass.NullGPSMode &&
-                cp.halfPass == false &&
+                cp.HalfPass == false &&
                 cp.Height == CellPass.NullHeight &&
                 cp.MachineID == CellPass.NullMachineID &&
                 cp.MachineSpeed == CellPass.NullMachineSpeed &&

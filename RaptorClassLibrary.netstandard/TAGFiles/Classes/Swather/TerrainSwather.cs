@@ -192,7 +192,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
 
                                 ProcessedCellPass.gpsMode = Processor.GPSModes.GetGPSModeAtDateTime(_TheTime);
 
-                                ProcessedCellPass.halfPass = HalfPass;
+                                ProcessedCellPass.HalfPass = HalfPass;
                                 ProcessedCellPass.passType = passType;
 
                                 // We have now assembled the cell pass - add it to the model

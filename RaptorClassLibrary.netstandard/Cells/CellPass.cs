@@ -14,15 +14,12 @@ namespace VSS.VisionLink.Raptor.Cells
        In fact, the grid really only serves as a form of spatial index for the epoch
        internal data representing a compactors movements across the site.
 
-       <TICCell> Represents a spatially location square area of ground over which
+       <CellPass> Represents a spatially location square area of ground over which
        one or more compactor machines have passed over. Each pass is represented as
        an entry in the<Passes> property which is a list of all <TICEpochInterval>s
        whose extents overly the center of the cell.While the cell is spatially
        located, it does not in itself know where it is. Location is determined via
        context in the main IC grid.
-
-       <TICCellList> represents a list of <TICCell>s.These lists are the fundamental
-       data storage structure used in the gridded level of the main IC data grid.
     */
 
     /// <summary>
@@ -238,7 +235,7 @@ namespace VSS.VisionLink.Raptor.Cells
         /// <summary>
         /// Is the cell pass a 'half' pass made by a machine with two implements (eg: an asphalt roller)
         /// </summary>
-        public bool halfPass
+        public bool HalfPass
         {
             get { return (GPSModeStore & (1 << (int)GPSFlagBits.GPSSBitHalfPass)) != 0; }
             set { GPSModeStore = (byte)(value ? GPSModeStore | 1 << (int)GPSFlagBits.GPSSBitHalfPass : GPSModeStore & ~(1 << (int)GPSFlagBits.GPSSBitHalfPass)); }

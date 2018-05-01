@@ -1,11 +1,13 @@
-﻿using VSS.VisionLink.Raptor.Filters;
+﻿using System;
+using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.GridFabric.Arguments;
 
 namespace VSS.VisionLink.Raptor.Analytics.GridFabric.Arguments
 {
     /// <summary>
     /// Argument containing the parameters required for a Cut/Fill statistics request
-    /// </summary>
+    /// </summary>    
+    [Serializable]
     public class CutFillStatisticsArgument : BaseApplicationServiceRequestArgument
     {
         /// <summary>

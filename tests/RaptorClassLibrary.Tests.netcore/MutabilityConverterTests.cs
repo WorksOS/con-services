@@ -33,7 +33,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
                 CCV = 102,
                 Frequency = 103,
                 gpsMode = Raptor.Types.GPSMode.Fixed,
-                halfPass = false,
+                HalfPass = false,
                 Height = 104,
                 MachineID = 105,
                 GPSModeStore = 106,

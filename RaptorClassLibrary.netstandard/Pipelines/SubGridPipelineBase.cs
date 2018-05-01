@@ -25,6 +25,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
         where TSubGridRequestor : SubGridRequestsBase<TSubGridsRequestArgument, TSubGridRequestsResponse>, new() 
     {
+        // ReSharper disable once StaticMemberInGenericType
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
@@ -39,12 +40,12 @@ namespace VSS.VisionLink.Raptor.Pipelines
         /// </summary>
         private long SubgridsRemainingToProcess;
 
-        public int ID;
+//        public int ID;
         public PipelinedSubGridTask PipelineTask;
         public bool Aborted { get; set; }
 
         public uint TimeToLiveSeconds = 0;
-        DateTime TimeToLiveExpiryTime = DateTime.MaxValue;
+        private DateTime TimeToLiveExpiryTime = DateTime.MaxValue;
 
         // public FExternalDescriptor: TASNodeRequestDescriptor;
 
@@ -159,7 +160,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
         public SubGridPipelineBase(int AID, PipelinedSubGridTask task)
         {
             PipelineTask = task;
-            ID = AID;
+            //ID = AID;
 
             // FMaxNumberOfPassesToReturn:= VLPDSvcLocations.VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary;
 
@@ -221,7 +222,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
                 return false;
             }
 
-            Log.InfoFormat($"START: Request for {analyser.TotalNumberOfSubgridsAnalysed} subgrids");
+            Log.Info($"START: Request for {analyser.TotalNumberOfSubgridsAnalysed} subgrids");
 
             // Send the subgrid request mask to the grid fabric layer for processing
             TSubGridRequestor gridFabricRequest = new TSubGridRequestor()
@@ -240,7 +241,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
             ICollection<TSubGridRequestsResponse> Responses = gridFabricRequest.Execute();
 
-            Log.InfoFormat($"COMPLETED: Request for {analyser.TotalNumberOfSubgridsAnalysed } subgrids");
+            Log.Info($"COMPLETED: Request for {analyser.TotalNumberOfSubgridsAnalysed } subgrids");
 
             return Responses.All(x => x.ResponseCode == SubGridRequestsResponseResult.OK);
         }

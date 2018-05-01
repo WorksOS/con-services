@@ -88,14 +88,14 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
                 return;
 
             SubGridUtilities.SubGridDimensionalIterator((I, J) =>
-                            {
-                                float Value = SubGrid.Cells[I, J];
-                                if (Value != Consts.NullHeight) // is there a value to test
-                                {
-                                    SummaryCellsScanned++;
-                                    IncrementCountOfCutFillTransition(Value);
-                                }
-                            });
+            {
+                float Value = SubGrid.Cells[I, J];
+                if (Value != Consts.NullHeight) // is there a value to test
+                {
+                    SummaryCellsScanned++;
+                    IncrementCountOfCutFillTransition(Value);
+                }
+            });
         }
     }
 }
