@@ -12,8 +12,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
+using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.TCCFileAccess;
 using VSS.MasterData.Proxies.Interfaces;
@@ -96,6 +100,10 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddTransient<IExportJob, ExportJob>();
       services.AddTransient<IApiClient, ApiClient>();
       services.AddTransient<ITransferProxy, TransferProxy>();
+      services.AddTransient<ICustomerProxy, CustomerProxy>();
+      services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
+      services.AddScoped<IErrorCodesProvider, ErrorCodesProvider>();
+
       _serviceCollection = services;
     }
 
