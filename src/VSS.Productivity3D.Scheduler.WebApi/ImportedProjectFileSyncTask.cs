@@ -18,13 +18,25 @@ namespace VSS.Productivity3D.Scheduler.WebApi
   /// </summary>
   public abstract class ImportedProjectFileSyncTask
   {
+    /// <summary>
+    /// Configuration store for environment variables
+    /// </summary>
     protected readonly IConfigurationStore ConfigStore;
+    /// <summary>
+    /// Logger factory
+    /// </summary>
     private readonly ILoggerFactory _logger;
+    /// <summary>
+    /// Log
+    /// </summary>
     protected readonly ILogger Log;
     private readonly IRaptorProxy _raptorProxy;
     private readonly ITPaasProxy _tPaasProxy;
     private readonly IImportedFileProxy _impFileProxy;
     private readonly IFileRepository _fileRepo;
+    /// <summary>
+    /// Default task interval
+    /// </summary>
     protected static int DefaultTaskIntervalDefaultMinutes { get; } = 4;
 
     /// <summary>

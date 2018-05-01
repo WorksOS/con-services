@@ -28,6 +28,14 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       this.configurationStore = configurationStore;
     }
 
+    /// <summary>
+    /// Send an HTTP request to the requested URL
+    /// </summary>
+    /// <typeparam name="T">The type of data returned by the HTTP request</typeparam>
+    /// <param name="jobRequest">Details of the job request</param>
+    /// <param name="customHeaders">Custom HTTP headers for the HTTP request</param>
+    /// <param name="streamPayload">Optional payload for POST requests</param>
+    /// <returns>The result of the HTTP request as an istance of type T</returns>
     public async Task<T> SendRequest<T>(ScheduleJobRequest jobRequest, IDictionary<string, string> customHeaders, Stream streamPayload = null)
     {
       var method = jobRequest.Method ?? "GET";

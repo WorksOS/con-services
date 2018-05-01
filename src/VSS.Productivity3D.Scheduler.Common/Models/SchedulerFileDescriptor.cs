@@ -5,7 +5,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
   /// <summary>
   /// Description to identify a file by its location in TCC.
   /// </summary>
-  public class FileDescriptor
+  public class SchedulerFileDescriptor
   {
     /// <summary>
     /// The id of the filespace in TCC where the file is located.
@@ -28,21 +28,21 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
     /// <summary>
     /// Private constructor
     /// </summary>
-    private FileDescriptor()
+    private SchedulerFileDescriptor()
     {
     }
 
     /// <summary>
-    /// Create instance of FileDescriptor
+    /// Create instance of SchedulerFileDescriptor
     /// </summary>
-    public static FileDescriptor CreateFileDescriptor
+    public static SchedulerFileDescriptor CreateFileDescriptor
     (
       string filespaceId,
       string path,
       string fileName
     )
     {
-      return new FileDescriptor
+      return new SchedulerFileDescriptor
       {
         filespaceId = filespaceId,
         path = path,
@@ -51,9 +51,9 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
     }
 
     /// <summary>
-    /// Create instance of FileDescriptor
+    /// Create instance of SchedulerFileDescriptor
     /// </summary>
-    public static FileDescriptor CreateFileDescriptor
+    public static SchedulerFileDescriptor CreateFileDescriptor
     (
       string filespaceId,
       string customerUid,
@@ -61,7 +61,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       string fileName
     )
     {
-      return new FileDescriptor
+      return new SchedulerFileDescriptor
       {
         filespaceId = filespaceId,
         path = $"/{customerUid}/{projectUid}",
@@ -69,28 +69,12 @@ namespace VSS.Productivity3D.Scheduler.Common.Models
       };
     }
 
-    public static FileDescriptor EmptyFileDescriptor
+    public static SchedulerFileDescriptor EmptyFileDescriptor
     {
       get { return emptyDescriptor; }
     }
 
-    /// <summary>
-    /// Create example instance of FileDescriptor to display in Help documentation.
-    /// </summary>
-    public static FileDescriptor HelpSample
-    {
-      get
-      {
-        return new FileDescriptor()
-        {
-          filespaceId = "u72003136-d859-4be8-86de-c559c841bf10",
-          path = "/customerUIDLoc/ProjectUidLoc",
-          fileName = "Cycleway.ttm"
-        };
-      }
-    }
-
-    private static FileDescriptor emptyDescriptor = new FileDescriptor
+    private static SchedulerFileDescriptor emptyDescriptor = new SchedulerFileDescriptor
     {
       filespaceId = string.Empty,
       path = string.Empty,
