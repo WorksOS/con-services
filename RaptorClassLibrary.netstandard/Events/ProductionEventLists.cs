@@ -309,34 +309,32 @@ namespace VSS.VisionLink.Raptor.Events
 
         public bool LoadEventsForMachine(IStorageProxy storageProxy)
         {
-            MachineStartupShutdownEvents =
-                MachineStartupShutdownEvents.LoadFromStore(storageProxy) as StartEndProductionEvents;
-            StartEndRecordedDataEvents =
-                StartEndRecordedDataEvents.LoadFromStore(storageProxy) as StartEndProductionEvents;
-            VibrationStateEvents = VibrationStateEvents.LoadFromStore(storageProxy);
-            AutoVibrationStateEvents = AutoVibrationStateEvents.LoadFromStore(storageProxy);
-            GPSModeStateEvents = GPSModeStateEvents.LoadFromStore(storageProxy);
-            PositioningTechStateEvents = PositioningTechStateEvents.LoadFromStore(storageProxy);
-            DesignNameIDStateEvents = DesignNameIDStateEvents.LoadFromStore(storageProxy);
-            MachineAutomaticsStateEvents = MachineAutomaticsStateEvents.LoadFromStore(storageProxy);
-            MachineGearStateEvents = MachineGearStateEvents.LoadFromStore(storageProxy);
-            MinElevMappingStateEvents = MinElevMappingStateEvents.LoadFromStore(storageProxy);
-            GPSAccuracyAndToleranceStateEvents = GPSAccuracyAndToleranceStateEvents.LoadFromStore(storageProxy);
-            LayerIDStateEvents = LayerIDStateEvents.LoadFromStore(storageProxy);
+            MachineStartupShutdownEvents.LoadFromStore(storageProxy);
+            StartEndRecordedDataEvents.LoadFromStore(storageProxy);
+            VibrationStateEvents.LoadFromStore(storageProxy);
+            AutoVibrationStateEvents.LoadFromStore(storageProxy);
+            GPSModeStateEvents.LoadFromStore(storageProxy);
+            PositioningTechStateEvents.LoadFromStore(storageProxy);
+            DesignNameIDStateEvents.LoadFromStore(storageProxy);
+            MachineAutomaticsStateEvents.LoadFromStore(storageProxy);
+            MachineGearStateEvents.LoadFromStore(storageProxy);
+            MinElevMappingStateEvents.LoadFromStore(storageProxy);
+            GPSAccuracyAndToleranceStateEvents.LoadFromStore(storageProxy);
+            LayerIDStateEvents.LoadFromStore(storageProxy);
 
-            //            DesignNameStateEvents = DesignNameStateEvents.LoadFromStore(storageProxy);
+            // DesignNameStateEvents.LoadFromStore(storageProxy);
 
-            ICFlagsStateEvents = ICFlagsStateEvents.LoadFromStore(storageProxy);
+            ICFlagsStateEvents.LoadFromStore(storageProxy);
 
-            TargetCCVStateEvents = TargetCCVStateEvents.LoadFromStore(storageProxy);
-            TargetCCAStateEvents = TargetCCAStateEvents.LoadFromStore(storageProxy);
-            TargetMDPStateEvents = TargetMDPStateEvents.LoadFromStore(storageProxy);
-            TargetPassCountStateEvents = TargetPassCountStateEvents.LoadFromStore(storageProxy);
-            TargetMinMaterialTemperature = TargetMinMaterialTemperature.LoadFromStore(storageProxy);
-            TargetMaxMaterialTemperature = TargetMaxMaterialTemperature.LoadFromStore(storageProxy);
-            TargetLiftThickness = TargetLiftThickness.LoadFromStore(storageProxy);
+            TargetCCVStateEvents.LoadFromStore(storageProxy);
+            TargetCCAStateEvents.LoadFromStore(storageProxy);
+            TargetMDPStateEvents.LoadFromStore(storageProxy);
+            TargetPassCountStateEvents.LoadFromStore(storageProxy);
+            TargetMinMaterialTemperature.LoadFromStore(storageProxy);
+            TargetMaxMaterialTemperature.LoadFromStore(storageProxy);
+            TargetLiftThickness.LoadFromStore(storageProxy);
 
-            RMVJumpThresholdEvents = RMVJumpThresholdEvents.LoadFromStore(storageProxy);
+            RMVJumpThresholdEvents.LoadFromStore(storageProxy);
 
             // Wire the container (this object) into the list jsut read...
             GetEventLists().All(x =>

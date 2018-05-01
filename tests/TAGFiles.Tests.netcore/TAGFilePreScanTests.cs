@@ -1,12 +1,5 @@
-﻿using VSS.VisionLink.Raptor.Executors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.TAGFiles.Types;
+﻿using VSS.VisionLink.Raptor.TAGFiles.Types;
 using System.IO;
-using VSS.VisionLink.Raptor.TAGFiles.Tests;
 using VSS.VisionLink.Raptor.Cells;
 using VSSTests.TRex.Tests.Common;
 using Xunit;

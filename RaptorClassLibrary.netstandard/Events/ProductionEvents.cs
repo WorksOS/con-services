@@ -125,20 +125,6 @@ namespace VSS.VisionLink.Raptor.Events
         public ProductionEvents()
         {}
 
-        /*public ProductionEvents(IProductionEventLists container,
-            long machineID, long siteModelID,
-            ProductionEventType eventListType)
-        {
-            MachineID = machineID;
-            SiteModelID = siteModelID;
-            EventListType = eventListType;
-            Container = container;
-
-            // Machines created with the max machine ID are treated as transient and never
-            // stored in or loaded from the FS file. 
-            // LoadedFromPersistentStore = machineID == kICMachineIDMaxValue;
-        }*/
-
         public ProductionEvents(IProductionEventLists container,
             long machineID, long siteModelID,
             ProductionEventType eventListType,
@@ -149,6 +135,10 @@ namespace VSS.VisionLink.Raptor.Events
             SiteModelID = siteModelID;
             EventListType = eventListType;
             Container = container;
+
+            // Machines created with the max machine ID are treated as transient and never
+            // stored in or loaded from the FS file. 
+            // LoadedFromPersistentStore = machineID == kICMachineIDMaxValue;
 
             SerialiseStateIn = serialiseStateIn;
             SerialiseStateOut = serialiseStateOut;
@@ -394,6 +384,7 @@ namespace VSS.VisionLink.Raptor.Events
         // Procedure AcquireExclusiveWriteInterlock; Inline;
         // Procedure ReleaseExclusiveWriteInterlock; Inline;
 
+/*
         /// <summary>
         /// Writes a binary serialisation of the content of the list
         /// </summary>
@@ -425,6 +416,7 @@ namespace VSS.VisionLink.Raptor.Events
                 Write(writer);
             }
         }
+*/
 
         public string EventChangeListPersistantFileName() => $"{MachineID}-Events-{EventListType}-Summary.evt";
 
@@ -455,12 +447,14 @@ namespace VSS.VisionLink.Raptor.Events
                 }
             }
 
+            /*
             using (MemoryStream MS = new MemoryStream())
             {
                 SaveToStream(MS);
 
                 storageProxy.WriteStreamToPersistentStoreDirect(SiteModelID, EventChangeListPersistantFileName(), FileSystemStreamType.Events, MS);
             }
+            */
         }
 
         /// <summary>
@@ -469,20 +463,16 @@ namespace VSS.VisionLink.Raptor.Events
         /// </summary>
         /// <param name="storageProxy"></param>
         /// <returns></returns>
-        public ProductionEvents<V> LoadFromStore(IStorageProxy storageProxy)
+        public void LoadFromStore(IStorageProxy storageProxy)
         {
-            ProductionEvents<V> Result = null;
-
             storageProxy.ReadStreamFromPersistentStoreDirect(SiteModelID, EventChangeListPersistantFileName() + ".BinaryWriter",
-                FileSystemStreamType.Events, out MemoryStream MS1);
+                FileSystemStreamType.Events, out MemoryStream MS);
 
-            if (MS1 != null)
+            if (MS != null)
             {
-                ProductionEvents<V> Result1 = new ProductionEvents<V>();
-
                 // Practice the binary event reading...
-                MS1.Position = 0;
-                using (var reader = new BinaryReader(MS1, Encoding.UTF8, true))
+                MS.Position = 0;
+                using (var reader = new BinaryReader(MS, Encoding.UTF8, true))
                 {
                     int majorVer = reader.ReadInt32();
                     int minorVer = reader.ReadInt32();
@@ -491,9 +481,12 @@ namespace VSS.VisionLink.Raptor.Events
                         throw new ArgumentException($"Unknown major/minor version numbers: {majorVer}/{minorVer}");
 
                     int count = reader.ReadInt32();
+                    Events.Clear();
+                    Events.Capacity = count;
+
                     for (int i = 0; i < count; i++)
                     {
-                        Result1.Events.Add(new Event
+                        Events.Add(new Event
                         {
                             Date = DateTime.FromBinary(reader.ReadInt64()),
                             Flags = reader.ReadByte(),
@@ -503,6 +496,7 @@ namespace VSS.VisionLink.Raptor.Events
                 }
             }
 
+            /*
             storageProxy.ReadStreamFromPersistentStoreDirect(SiteModelID, EventChangeListPersistantFileName(),
                 FileSystemStreamType.Events, out MemoryStream MS);
 
@@ -514,8 +508,11 @@ namespace VSS.VisionLink.Raptor.Events
                     Result = Read(reader);
                 }
             }
+            */
 
-            if (Result != null)
+            /*
+             * if (Result != null)
+             
             {
                 // Copy the serialisation lambdas into the new instance as these are not serialised into the persistent store
                 Result.SerialiseStateOut = SerialiseStateOut;
@@ -523,6 +520,7 @@ namespace VSS.VisionLink.Raptor.Events
             }
 
             return Result ?? this;
+            */
         }
 
         /// <summary>
