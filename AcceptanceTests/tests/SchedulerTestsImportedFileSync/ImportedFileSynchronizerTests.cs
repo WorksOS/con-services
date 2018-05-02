@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Scheduler.Common.Controller;
 using VSS.Productivity3D.Scheduler.Common.Models;
 using VSS.Productivity3D.Scheduler.Common.Repository;
