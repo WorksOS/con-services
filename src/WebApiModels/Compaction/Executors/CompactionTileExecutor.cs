@@ -41,14 +41,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       try
       {
-        RaptorConverters.convertGridOrLLBoundingBox(request.boundBoxGrid, request.boundBoxLL, out TWGS84Point bl, out TWGS84Point tr,
+        RaptorConverters.convertGridOrLLBoundingBox(request.BoundBoxGrid, request.BoundBoxLatLon, out TWGS84Point bl, out TWGS84Point tr,
           out bool coordsAreGrid);
 
-        TICFilterSettings baseFilter = RaptorConverters.ConvertFilter(request.filterId1, request.filter1, request.projectId);
-        TICFilterSettings topFilter = RaptorConverters.ConvertFilter(request.filterId2, request.filter2, request.projectId);
-        var designDescriptor = RaptorConverters.DesignDescriptor(request.designDescriptor);
+        TICFilterSettings baseFilter = RaptorConverters.ConvertFilter(request.FilterId1, request.Filter1, request.projectId);
+        TICFilterSettings topFilter = RaptorConverters.ConvertFilter(request.FilterId2, request.Filter2, request.projectId);
+        var designDescriptor = RaptorConverters.DesignDescriptor(request.DesignDescriptor);
 
-        TComputeICVolumesType volType = RaptorConverters.ConvertVolumesType(request.computeVolType);
+        TComputeICVolumesType volType = RaptorConverters.ConvertVolumesType(request.ComputeVolumesType);
 
         if (volType == TComputeICVolumesType.ic_cvtBetween2Filters && request.IsSummaryVolumeCutFillRequest)
         {
@@ -65,21 +65,21 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
         TASNodeErrorStatus raptorResult = raptorClient.GetRenderedMapTileWithRepresentColor
         (request.projectId ?? -1,
-          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.callId ?? Guid.NewGuid(), 0,
+          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
             TASNodeCancellationDescriptorType.cdtWMSTile),
           RaptorConverters.convertDisplayMode(request.mode),
-          RaptorConverters.convertColorPalettes(request.palettes, request.mode),
+          RaptorConverters.convertColorPalettes(request.Palettes, request.mode),
           bl, tr,
           coordsAreGrid,
-          request.width,
+          request.Width,
           request.height,
           baseFilter,
           topFilter,
-          RaptorConverters.convertOptions(null, request.liftBuildSettings, request.computeVolNoChangeTolerance,
-            request.filterLayerMethod, request.mode, request.setSummaryDataLayersVisibility),
+          RaptorConverters.convertOptions(null, request.LiftBuildSettings, request.ComputeVolNoChangeTolerance,
+            request.FilterLayerMethod, request.mode, request.setSummaryDataLayersVisibility),
           designDescriptor,
           volType,
-          request.representationalDisplayColor,
+          request.RepresentationalDisplayColor,
           out MemoryStream tile);
 
         log.LogTrace($"Received {raptorResult} as a result of execution and tile is {tile == null}");

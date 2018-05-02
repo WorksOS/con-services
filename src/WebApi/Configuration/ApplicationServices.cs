@@ -14,6 +14,7 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Compaction.ActionServices;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
+using VSS.Productivity3D.WebApi.Models.Interfaces;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApi.Models.Notification.Helpers;
 using VSS.Productivity3D.WebApi.Models.Services;

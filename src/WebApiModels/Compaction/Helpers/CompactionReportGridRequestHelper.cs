@@ -4,7 +4,6 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 {
@@ -14,7 +13,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
   public class CompactionReportGridRequestHelper : DataRequestBase, ICompactionReportGridRequestHelper
   {
     /// <summary>
-    /// Parameterless constructor is required to support factory create function in <see cref="VSS.Productivity3D.WebApi"/> project.
+    /// Parameterless constructor is required to support factory create function in <see cref="WebApi"/> project.
     /// </summary>
     public CompactionReportGridRequestHelper()
     { }

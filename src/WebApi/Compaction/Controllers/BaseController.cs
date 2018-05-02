@@ -1,19 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
@@ -92,14 +91,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     protected BaseController(ILoggerFactory loggerFactory, ILogger log, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, IFilterServiceProxy filterServiceProxy, ICompactionSettingsManager settingsManager)
     {
-      this.LoggerFactory = loggerFactory;
-      this.Log = log;
-      this.ServiceExceptionHandler = serviceExceptionHandler;
-      this.ConfigStore = configStore;
-      this.FileListProxy = fileListProxy;
-      this.ProjectSettingsProxy = projectSettingsProxy;
-      this.FilterServiceProxy = filterServiceProxy;
-      this.SettingsManager = settingsManager;
+      LoggerFactory = loggerFactory;
+      Log = log;
+      ServiceExceptionHandler = serviceExceptionHandler;
+      ConfigStore = configStore;
+      FileListProxy = fileListProxy;
+      ProjectSettingsProxy = projectSettingsProxy;
+      FilterServiceProxy = filterServiceProxy;
+      SettingsManager = settingsManager;
     }
 
     /// <summary>
@@ -107,7 +106,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     protected async Task<long> GetLegacyProjectId(Guid projectUid)
     {
-      return await ((RaptorPrincipal)this.User).GetLegacyProjectId(projectUid);
+      return await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
     }
 
     /// <summary>
@@ -188,7 +187,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>The list of file ids for the surveyed surfaces to be excluded</returns>
     protected async Task<List<long>> GetExcludedSurveyedSurfaceIds(Guid projectUid)
     {
-      var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), GetUserId(), CustomHeaders);
+      var fileList = await FileListProxy.GetFiles(projectUid.ToString(), GetUserId(), CustomHeaders);
       if (fileList == null || fileList.Count == 0)
       {
         return null;
@@ -211,7 +210,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         return null;
       }
 
-      var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), GetUserId(), CustomHeaders);
+      var fileList = await FileListProxy.GetFiles(projectUid.ToString(), GetUserId(), CustomHeaders);
       if (fileList == null || fileList.Count == 0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
@@ -247,7 +246,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
                       Path.GetExtension(tccFileName);
       }
 
-      string fileSpaceId = FileDescriptorExtensions.GetFileSpaceId(this.ConfigStore, this.Log);
+      string fileSpaceId = FileDescriptorExtensions.GetFileSpaceId(ConfigStore, Log);
       FileDescriptor fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, file.Path, tccFileName);
 
       return DesignDescriptor.CreateDesignDescriptor(file.LegacyFileId, fileDescriptor, 0.0);
@@ -261,7 +260,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     protected async Task<CompactionProjectSettings> GetProjectSettingsTargets(Guid projectUid)
     {
       CompactionProjectSettings ps;
-      var jsonSettings = await this.ProjectSettingsProxy.GetProjectSettings(projectUid.ToString(), GetUserId(), CustomHeaders, ProjectSettingsType.Targets);
+      var jsonSettings = await ProjectSettingsProxy.GetProjectSettings(projectUid.ToString(), GetUserId(), CustomHeaders, ProjectSettingsType.Targets);
       if (jsonSettings != null)
       {
         try
@@ -292,7 +291,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     protected async Task<CompactionProjectSettingsColors> GetProjectSettingsColors(Guid projectUid)
     {
       CompactionProjectSettingsColors ps;
-      var jsonSettings = await this.ProjectSettingsProxy.GetProjectSettings(projectUid.ToString(), GetUserId(), CustomHeaders, ProjectSettingsType.Colors);
+      var jsonSettings = await ProjectSettingsProxy.GetProjectSettings(projectUid.ToString(), GetUserId(), CustomHeaders, ProjectSettingsType.Colors);
       if (jsonSettings != null)
       {
         try
@@ -324,7 +323,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       // Filter models are immutable except for their Name.
       // This service doesn't consider the Name in any of it's operations so we don't mind if our
       // cached object is out of date in this regard.
-      if (filterUid.HasValue && this.FilterCache.TryGetValue(filterUid, out FilterResult cachedFilter))
+      if (filterUid.HasValue && FilterCache.TryGetValue(filterUid, out FilterResult cachedFilter))
       {
         await ApplyDateRange(projectUid, cachedFilter);
 
@@ -404,7 +403,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </remarks>
     private async Task ApplyDateRange(Guid projectUid, Filter filter)
     {
-      var project = await (this.User as RaptorPrincipal)?.GetProject(projectUid);
+      var project = await (User as RaptorPrincipal)?.GetProject(projectUid);
       if (project == null)
       {
         throw new ServiceException(
@@ -417,7 +416,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
     private async Task ApplyDateRange(Guid projectUid, FilterResult filter)
     {
-      var project = await (this.User as RaptorPrincipal)?.GetProject(projectUid);
+      var project = await (User as RaptorPrincipal)?.GetProject(projectUid);
       if (project == null)
       {
         throw new ServiceException(
@@ -433,7 +432,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     public async Task<Filter> GetFilterDescriptor(Guid projectUid, Guid filterUid)
     {
-      var filterDescriptor = await this.FilterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), Request.Headers.GetCustomHeaders(true));
+      var filterDescriptor = await FilterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), Request.Headers.GetCustomHeaders(true));
 
       return filterDescriptor == null
         ? null

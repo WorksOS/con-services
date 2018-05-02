@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
@@ -257,7 +257,7 @@ namespace VSS.Productivity3D.Common.Models
 
     [JsonIgnore]
     public DateRangeType? DateRangeType { get; private set; }
-  
+
     [JsonIgnore]
     public bool? AsAtDate { get; protected set; }
 
@@ -460,32 +460,32 @@ namespace VSS.Productivity3D.Common.Models
     public void Validate()
     {
       //Validate individual properties first
-      if (this.PolygonLL != null)
+      if (PolygonLL != null)
       {
-        foreach (var ll in this.PolygonLL)
+        foreach (var ll in PolygonLL)
           ll.Validate();
       }
-      if (this.PolygonGrid != null)
+      if (PolygonGrid != null)
       {
-        foreach (var pt in this.PolygonGrid)
+        foreach (var pt in PolygonGrid)
           pt.Validate();
       }
-      this.AlignmentFile?.Validate();
-      this.LayerDesignOrAlignmentFile?.Validate();
-      this.DesignFile?.Validate();
+      AlignmentFile?.Validate();
+      LayerDesignOrAlignmentFile?.Validate();
+      DesignFile?.Validate();
 
-      if (this.ContributingMachines != null)
+      if (ContributingMachines != null)
       {
-        foreach (var machine in this.ContributingMachines)
+        foreach (var machine in ContributingMachines)
           machine.Validate();
       }
 
       //Check date range parts
-      if (this.StartUtc.HasValue || this.EndUtc.HasValue)
+      if (StartUtc.HasValue || EndUtc.HasValue)
       {
-        if (this.StartUtc.HasValue && this.EndUtc.HasValue)
+        if (StartUtc.HasValue && EndUtc.HasValue)
         {
-          if (this.StartUtc.Value > this.EndUtc.Value)
+          if (StartUtc.Value > EndUtc.Value)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
                 new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -500,7 +500,8 @@ namespace VSS.Productivity3D.Common.Models
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                 "If using a date range both dates must be provided"));
           }
-          else if (!EndUtc.HasValue)
+
+          if (!EndUtc.HasValue)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -521,55 +522,54 @@ namespace VSS.Productivity3D.Common.Models
       }
 
       //Check alignment filter parts
-      if (this.AlignmentFile != null || this.StartStation.HasValue || this.EndStation.HasValue ||
-          this.LeftOffset.HasValue || this.RightOffset.HasValue)
+      if (AlignmentFile != null || StartStation.HasValue || EndStation.HasValue ||
+          LeftOffset.HasValue || RightOffset.HasValue)
       {
-        if (this.AlignmentFile == null || !this.StartStation.HasValue || !this.EndStation.HasValue ||
-          !this.LeftOffset.HasValue || !this.RightOffset.HasValue)
+        if (AlignmentFile == null || !StartStation.HasValue || !EndStation.HasValue ||
+          !LeftOffset.HasValue || !RightOffset.HasValue)
 
           throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                   "If using an alignment filter, alignment file, start and end station, left and right offset  must be provided"));
 
-        this.AlignmentFile.Validate();
+        AlignmentFile.Validate();
       }
 
       //Check layer filter parts
-      if (this.LayerNumber.HasValue && !this.LayerType.HasValue)
+      if (LayerNumber.HasValue && !LayerType.HasValue)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                 "To use the layer number filter, layer type must be specified"));
       }
 
-      if (this.LayerType.HasValue)
+      if (LayerType.HasValue)
       {
-        switch (this.LayerType.Value)
+        switch (LayerType.Value)
         {
           case FilterLayerMethod.OffsetFromDesign:
           case FilterLayerMethod.OffsetFromBench:
           case FilterLayerMethod.OffsetFromProfile:
-            if (this.LayerType.Value == FilterLayerMethod.OffsetFromBench)
+            if (LayerType.Value == FilterLayerMethod.OffsetFromBench)
             {
-              if (!this.BenchElevation.HasValue)
+              if (!BenchElevation.HasValue)
               {
                 throw new ServiceException(HttpStatusCode.BadRequest,
                     new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                         "If using an offset from bench filter, bench elevation must be provided"));
               }
-
             }
             else
             {
-              if (this.LayerDesignOrAlignmentFile == null)
+              if (LayerDesignOrAlignmentFile == null)
               {
                 throw new ServiceException(HttpStatusCode.BadRequest,
                     new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                         "If using an offset from design or profile filter, design or alignment file must be provided"));
               }
-              this.LayerDesignOrAlignmentFile.Validate();
+              LayerDesignOrAlignmentFile.Validate();
             }
-            if (!this.LayerNumber.HasValue || !this.LayerThickness.HasValue)
+            if (!LayerNumber.HasValue || !LayerThickness.HasValue)
             {
               throw new ServiceException(HttpStatusCode.BadRequest,
                   new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -577,7 +577,7 @@ namespace VSS.Productivity3D.Common.Models
             }
             break;
           case FilterLayerMethod.TagfileLayerNumber:
-            if (!this.LayerNumber.HasValue)
+            if (!LayerNumber.HasValue)
             {
               throw new ServiceException(HttpStatusCode.BadRequest,
                   new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -589,21 +589,21 @@ namespace VSS.Productivity3D.Common.Models
 
       //Check boundary if provided
       //Raptor handles any weird boundary you give it and automatically closes it if not closed already therefore we just need to check we have at least 3 points
-      if (this.PolygonLL != null && this.PolygonLL.Count < 3)
+      if (PolygonLL != null && PolygonLL.Count < 3)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                 "Too few points for filter polygon"));
       }
 
-      if (this.PolygonGrid != null && this.PolygonGrid.Count < 3)
+      if (PolygonGrid != null && PolygonGrid.Count < 3)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                  "Too few points for filter polygon"));
       }
 
-      if (this.PolygonLL != null && this.PolygonLL.Count > 0 && this.PolygonGrid != null && this.PolygonGrid.Count > 0)
+      if (PolygonLL != null && PolygonLL.Count > 0 && PolygonGrid != null && PolygonGrid.Count > 0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
                  new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -658,7 +658,7 @@ namespace VSS.Productivity3D.Common.Models
     {
       if (ReferenceEquals(null, obj)) return false;
       if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
+      if (obj.GetType() != GetType()) return false;
 
       return Equals((FilterResult)obj);
     }
