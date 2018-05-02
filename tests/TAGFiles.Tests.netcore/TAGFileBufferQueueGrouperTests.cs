@@ -22,11 +22,10 @@ namespace TAGFiles.Tests.netcore
             TAGFileBufferQueueGrouper grouper = new TAGFileBufferQueueGrouper();
 
             const string tagFileName = "TestTAGFile - TAGFile - Read - Stream.tag";
-            //Guid projectUID = Guid.NewGuid();
-            //Guid assetUID = Guid.NewGuid();
-
             long projectID = -1;
-            long assetID = -1;
+            //Guid projectUID = Guid.NewGuid();
+            Guid assetID = Guid.NewGuid();
+
             TAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(tagFileName, projectID, assetID);
 
             grouper.Add(tagKey);
@@ -58,10 +57,9 @@ namespace TAGFiles.Tests.netcore
             TAGFileBufferQueueGrouper grouper = new TAGFileBufferQueueGrouper();
 
             const string tagFileName = "TestTAGFile - TAGFile - Read - Stream.tag";
-            //Guid projectUID = Guid.NewGuid();
-            //Guid assetUID = Guid.NewGuid();
             long projectID = -1;
-            long assetID = -1;
+            //Guid projectUID = Guid.NewGuid();
+            Guid assetID = Guid.NewGuid();
 
             // Add twice the limit of TAG files to the same project/asset combination to the grouper and ensure there are two full buckets returned
             for (int i = 0; i < 2 * TAGFileBufferQueueGrouper.kMaxNumberOfTAGFilesPerBucket; i++)

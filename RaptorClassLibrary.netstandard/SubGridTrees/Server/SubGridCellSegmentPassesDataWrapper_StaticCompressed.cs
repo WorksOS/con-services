@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using System.Linq;
+using VSS.TRex.SubGridTrees.Server;
 using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Compression;
+using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Utilities;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
@@ -128,13 +131,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// The time stamp of the earliest recorded cell pass stored in the segment. All time stamps for cell passes
         /// in the segment store times that are relative to this time stamp
         /// </summary>
-        DateTime FirstRealCellPassTime;
+        private DateTime FirstRealCellPassTime;
 
         /// <summary>
         /// BF_CellPasses contains all the cell pass information for the segment (read in via
         /// the transient CellPassesStorage reference and then encoded into the cache format)
         /// </summary>
-        BitFieldArray BF_CellPasses;
+        private BitFieldArray BF_CellPasses;
 
         // BF_PassCounts contains the pass count and first cell pass index information
         // for each cell in the segment. It is arranges in two parts:
@@ -144,38 +147,46 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         // 2. For each cell, the offset from the column value for the cell pass index
         //    of the first cell pass in that cell (so, the first cell passes index
         //    is always given as <FirstCellPassIndexOfColumn> + <FirstCellPassIndexForCellInColumn>
-        BitFieldArray BF_PassCounts;
+        private BitFieldArray BF_PassCounts;
 
         /// <summary>
         /// EncodedColPassCountsBits containes the number of bits required to store the per column counts in BF_PassCounts.
         /// </summary>
-        byte EncodedColPassCountsBits;
+        private byte EncodedColPassCountsBits;
 
         /// <summary>
         /// The offset from the start of the bit field array containing the cell pass information for the cells in the 
         /// segment after the column index information that is also stored in the bit field arrat
         /// </summary>
-        int FirstPerCellPassIndexOffset;
+        private int FirstPerCellPassIndexOffset;
 
         /// <summary>
         /// The set of encoded field descriptors that track ate attributes and parameters of each vector of values
         /// stored in the bit field array.
         /// </summary>
-        EncodedFieldDescriptorsStruct EncodedFieldDescriptors = new EncodedFieldDescriptorsStruct();
+        private EncodedFieldDescriptorsStruct EncodedFieldDescriptors; // = new EncodedFieldDescriptorsStruct();
 
-        // TODO Machines are not yet supported
-        // FMachineIDs : Array of TICSubgridCellSegmentMachineReference; //TICMachineID;
+        /// <summary>
+        /// Mapping of Machine/Asset Guids to the internal machine index within the site model
+        /// </summary>
+//        private SubgridCellSegmentMachineReference[] MachineIDs;
+
+        /// <summary>
+        /// A bit set representing the set of machines defined in ` in an efficient structure 
+        /// for use in filtering operations during requests
+        /// </summary>
+//        private BitArray MachineIDSet;
 
         /// <summary>
         /// The end coded field descriptor for the vector of pass counts of cell passes in the segment
         /// </summary>
-        EncodedBitFieldDescriptor PassCountEncodedFieldDescriptor;
+        private EncodedBitFieldDescriptor PassCountEncodedFieldDescriptor;
 
         /// <summary>
         /// The number of bits required to store all the fields from a cell pass within the bit field array
         /// representation of that record.
         /// </summary>
-        int NumBitsPerCellPass;
+        private int NumBitsPerCellPass;
 
         /// <summary>
         /// Default no-arg constructor that does not instantiate any state
@@ -309,14 +320,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
             int CellPassBitLocation = Index * NumBitsPerCellPass;
 
-            // TODO Machines are not yet supported
-            // int MachineIndex;
-            // Result.MachineIndex  = BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.MachineIDIndex]);
-            // with FMachineIDs[MachineIndex] do
-            //   begin
-            //     MachineID             := _MachineID;
-            //     SiteModelMachineIndex:= _SiteModelMachineIndex;
-            //   end;
+            Result.InternalSiteModelMachineIndex = (short)BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.MachineIDIndex);
 
             Result.Time = FirstRealCellPassTime.AddSeconds(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.Time));
 
@@ -371,11 +375,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public float PassHeight(uint passIndex)
         {
-            int BitLocation = (int)(passIndex * NumBitsPerCellPass) + (EncodedFieldDescriptors.Height.OffsetBits);
+            int BitLocation = (int)(passIndex * NumBitsPerCellPass) + EncodedFieldDescriptors.Height.OffsetBits;
 
             long IntegerHeight = BF_CellPasses.ReadBitField(ref BitLocation, EncodedFieldDescriptors.Height);
 
-            return (IntegerHeight == EncodedFieldDescriptors.Height.NativeNullValue) ? Consts.NullHeight : (float)(IntegerHeight / 1000.0);
+            return IntegerHeight == EncodedFieldDescriptors.Height.NativeNullValue ? Consts.NullHeight : (float)(IntegerHeight / 1000.0);
         }
 
         public float PassHeight(uint X, uint Y, uint passNumber)
@@ -386,7 +390,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public DateTime PassTime(uint passIndex)
         {
-            int BitLocation = (int)((passIndex * NumBitsPerCellPass) + EncodedFieldDescriptors.Time.OffsetBits);
+            int BitLocation = (int)(passIndex * NumBitsPerCellPass + EncodedFieldDescriptors.Time.OffsetBits);
             return FirstRealCellPassTime.AddSeconds(BF_CellPasses.ReadBitField(ref BitLocation, EncodedFieldDescriptors.Time));
         }
 
@@ -410,21 +414,46 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
             EncodedFieldDescriptors.Read(reader);
 
-            /* TODO: Machine are not yet supported
+            /*
             int Count = reader.ReadInt32();
-            SetLength(MachineIDs, Count);
-            for (int j = 0; j < Count; j++) do
-                {
-                    MachineIDs[j].Read(reader);
-                }
+            MachineIDs = new SubgridCellSegmentMachineReference[Count];
+
+            for (int i = 0; i < Count; i++)
+            {
+                MachineIDs[i].Read(reader);
+            }
             */
 
             NumBitsPerCellPass = reader.ReadInt32();
 
             PassCountEncodedFieldDescriptor.Read(reader);
 
-            // TODO: Machines are not supported yet
-            // InitialiseMachineIDsSet(SiteModelReference);
+           // TODO: This needs to be invoked from a context that is aware of Site Models and machine lists
+           // MachineIDSet = InitialiseMachineIDsSet(MachineIDs, SiteModelReference.Machines);
+        }
+
+        /// <summary>
+        /// Converts the machines present in this segment into a BitArray representing a set of bits where
+        /// the position os each bit is the InternalMachineID on the machines in the site model where the
+        /// internal ID is 0..NMachineInSiteModel - 1
+        /// </summary>
+        /// <param name="machineIDs"></param>
+        /// <param name="machines"></param>
+        /// <returns></returns>
+        private BitArray InitialiseMachineIDsSet(SubgridCellSegmentMachineReference[] machineIDs, MachinesList machines)
+        {
+            if (machines == null)
+                return null;
+
+            BitArray bits = new BitArray(machines.Count);
+            foreach (var machineID in machineIDs)
+            {
+                Machine machine = machines.Locate(machineID._MachineID);
+                if (machine != null)
+                   bits[machine.InternalSiteModelMachineIndex] = true;
+            }
+
+            return bits;
         }
 
         public void ReplacePass(uint X, uint Y, int position, CellPass pass)
@@ -445,10 +474,15 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
             EncodedFieldDescriptors.Write(writer);
 
-            // TODO: Machines not yet supported
-            //writer.Write((int)MachineIDs.Length);
-            //for (int j = 0; j < MachineIDs.Length; j++)
-            //  FMachineIDs[j].SaveToStream(Stream);
+            /*
+            int count = MachineIDs.Length;
+            writer.Write(count);
+            
+            for (int i = 0; i < count; i++)
+            {
+                MachineIDs[i].Write(writer);
+            }
+            */
 
             writer.Write(NumBitsPerCellPass);
 
@@ -462,7 +496,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// <param name="cellPasses"></param>
         private void PerformEncodingStaticCompressedCache(CellPass[,][] cellPasses)
         {
-            BitFieldArrayRecordsDescriptor[] recordDescriptors;
             int[] ColFirstCellPassIndexes = new int[SubGridTree.SubGridTreeDimension];
             int[,] PerCellColRelativeFirstCellPassIndexes = new int[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
             int cellPassIndex;
@@ -470,18 +503,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             bool observedANullValue;
             bool firstValue;
 
-            // TODO Machines not supported yet
-            //  bool foundMachineID;
-
             // Given the value range for each attribute, calculate the number of bits required to store the values.
             EncodedFieldDescriptors.Init();
 
             // Calculate the set of machine IDs present in the cell passes in the
             // segment. Calculate the cell pass time of the earliest cell pass in the segment
             // and the lowest elevation of all cell passes in the segment.
-
-            //TODO: Not handling machines yet...
-            //    SetLength(FMachineIDs, 0); 
 
             SegmentPassCount = 0;
             foreach (CellPass[] passes in cellPasses)
@@ -620,11 +647,14 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             // Convert time and elevation value to offset values in the appropriate units
             // from the lowest values of those attributes. 
 
-            /* TODO Machines not supported yet
+            /* Removed for now as this conversion from internal IDs to segmet specific internal IDs will likely save
+             no more than a couple of bits per cell pass once the number of machines of a project exceeds 16 machines 
+            // Convert the list of internal machine IDs referenced in the cell passes in this segment
+            bool foundMachineID;
             int modifiedIndex = -1;
-            int[] ModifiedMachineIDs = new int[segmentPassCount];
+            int[] ModifiedMachineIDs = new int[SegmentPassCount];
 
-            SubGridUtilities.SubGridDimensiontalIterator((col, row) =>
+            SubGridUtilities.SubGridDimensionalIterator((col, row) =>
             {
                 CellPass[] passes = cellPasses[col, row];
 
@@ -632,7 +662,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 {
                     modifiedIndex++;
 
-                    foundMachineID = false;
+                    bool foundMachineID = false;
                     for (int J = 0; J < MachineIDs.Length; J++)
                     {
                         if (MachineIDs[J]._MachineID == MachineID)
@@ -646,19 +676,15 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                     if (!foundMachineID)
                     {
                         SetLength(MachineIDs, MachineIDs.Length + 1);
-                        MachineIDs[MachineIDs.Length - 1]._MachineID := MachineID;
+                        MachineIDs[MachineIDs.Length - 1]._MachineID = MachineID;
 
                         // Determine the sitemodel relevant machine index (ie: the index in the list
                         // of machines held in the site model) for the machine. These indexes provide rapid
                         // location of the machine in the sitemodel machines list.
                         if (SiteModelReference != null)
-                        {
-                            MachineIDS[Length(FMachineIDs) - 1]._SiteModelMachineIndex = TICSiteModel(SiteModelReference).Machines.IndexOfID(MachineID);
-                        }
+                            MachineIDs[Length(FMachineIDs) - 1]._SiteModelMachineIndex = TICSiteModel(SiteModelReference).Machines.IndexOfID(MachineID);
                         else
-                        {
-                            MachineIDS[Length(FMachineIDs) - 1]._SiteModelMachineIndex = High(MachineIDS[MachineIDs.Length - 1]._SiteModelMachineIndex);
-                        }
+                            MachineIDs[Length(FMachineIDs) - 1]._SiteModelMachineIndex = High(MachineIDS[MachineIDs.Length - 1]._SiteModelMachineIndex);
 
                         ModifiedMachineIDs[modifiedIndex] = MachineIDs.Length - 1;
                     }
@@ -666,8 +692,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             });
             */
 
-            // TODO not handling machines yet
-            // InitialiseMachineIDsSet(SiteModelReference);
+            // TODO not handling machines yet - call this from a context that 
+            //InitialiseMachineIDsSet(SiteModelReference);
 
             // Work out the value ranges of all the attributes and given the value range
             // for each attribute, calculate the number of bits required to store the values.
@@ -675,8 +701,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             // Time - based on the longword, second accurate times overriding the TDateTime times
             // Height - based on the longword, millimeter accurate elevations overriding the IEEE double elevations
 
-            // TODO Machines are not supported yet
-            // AttributeValueRangeCalculator.CalculateAttributeValueRange(ModifiedMachines, 0xffffffff, 0, false, ref EncodedFieldDescriptors[EncodedFieldType.MachineIDIndex]);
+            //AttributeValueRangeCalculator.CalculateAttributeValueRange(ModifiedMachines, 0xffffffff, 0, false, ref EncodedFieldDescriptors.MachineIDIndex);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.InternalSiteModelMachineIndex).ToArray(), 0xffffffff, 0, false, ref EncodedFieldDescriptors.MachineIDIndex);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => AttributeValueModifiers.ModifiedTime(x.Time, FirstRealCellPassTime)).ToArray(), 0xffffffff, 0, false, ref EncodedFieldDescriptors.Time);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => AttributeValueModifiers.ModifiedHeight(x.Height)).ToArray(), 0xffffffff, 0x7fffffff, true, ref EncodedFieldDescriptors.Height);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.CCV).ToArray(), 0xffffffff, CellPass.NullCCV, true, ref EncodedFieldDescriptors.CCV);
@@ -694,7 +720,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             EncodedFieldDescriptors.CalculateTotalOffsetBits(out NumBitsPerCellPass);
 
             // Create the bit field arrays to contain the segment call pass index & count plus passes.
-            recordDescriptors = new [] 
+            BitFieldArrayRecordsDescriptor[] recordDescriptors = new [] 
             {
                 new BitFieldArrayRecordsDescriptor { NumRecords = SubGridTree.SubGridTreeDimension, BitsPerRecord = EncodedColPassCountsBits },
                 new BitFieldArrayRecordsDescriptor { NumRecords = SubGridTree.SubGridTreeCellsPerSubgrid, BitsPerRecord = PassCountEncodedFieldDescriptor.RequiredBits }

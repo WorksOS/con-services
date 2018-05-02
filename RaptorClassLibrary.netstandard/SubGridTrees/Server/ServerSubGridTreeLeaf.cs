@@ -349,7 +349,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             int LastPassIndex = (int)CellPasses.Length - 1;
 
             LatestData.Time = CellPasses[LastPassIndex].Time;
-            LatestData.MachineID = CellPasses[LastPassIndex].MachineID;
+            //LatestData.MachineID = CellPasses[LastPassIndex].MachineID;
+            LatestData.InternalSiteModelMachineIndex = CellPasses[LastPassIndex].InternalSiteModelMachineIndex;
 
             if (CellPasses[LastPassIndex].Height != Consts.NullHeight)
             {

@@ -22,7 +22,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Executors
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public static ProcessTAGFileResponse Execute(long ProjectID, long AssetID, IEnumerable<ProcessTAGFileRequestFileItem> TAGFiles)
+        public static ProcessTAGFileResponse Execute(long ProjectID, Guid AssetID, IEnumerable<ProcessTAGFileRequestFileItem> TAGFiles)
         {
             Log.Info($"Processing {TAGFiles.Count()} TAG files into project {ProjectID}, asset {AssetID}");
 
@@ -39,7 +39,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Executors
             // Create the site model and machine etc to aggregate the processed TAG file into
             // Note: This creates these elements within the project itself, not jsut class instances...
             SiteModel siteModel = SiteModels.SiteModels.Instance(StorageMutability.Mutable).GetSiteModel(ProjectID, true);
-            Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
+            Machine machine = new Machine(null, "TestName", "TestHardwareID",  0, 0, Guid.NewGuid(), 0, false);
 
             // Process each file into a task, and batch tasks into groups for integration to reduce the number of cache 
             // updates made for subgrid changes

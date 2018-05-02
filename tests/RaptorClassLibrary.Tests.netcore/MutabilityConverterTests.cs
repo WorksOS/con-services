@@ -35,7 +35,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
                 gpsMode = Raptor.Types.GPSMode.Fixed,
                 HalfPass = false,
                 Height = 104,
-                MachineID = 105,
+                //MachineID = 105,
+                InternalSiteModelMachineIndex = 105,
                 GPSModeStore = 106,
                 MachineSpeed = 106,
                 MaterialTemperature = 107,
@@ -43,7 +44,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
                 passType = Raptor.Types.PassType.Track,
                 RadioLatency = 109,
                 RMV = 110,
-                SiteModelMachineIndex = 111,
                 Time = new DateTime(2000, 1, 2, 3, 4, 5)
             };
         }
@@ -209,7 +209,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
                     // machine ID as the immutable representation does not include it in the Ignite POC
                     cellPass.Time = mutablePasses[x, y][i].Time;
                     cellPass.Height = mutablePasses[x, y][i].Height;
-                    cellPass.MachineID = mutablePasses[x, y][i].MachineID;
+                    //cellPass.MachineID = mutablePasses[x, y][i].MachineID;
+                    cellPass.InternalSiteModelMachineIndex = mutablePasses[x, y][i].InternalSiteModelMachineIndex;
 
                     CellPass mutableCellPass = mutablePasses[x, y][i];
                     Assert.True(mutableCellPass.Equals(cellPass), $"Cell passes not equal at Cell[{x}, {y}], cell pass index {i}");

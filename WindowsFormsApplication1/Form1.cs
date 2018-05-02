@@ -863,7 +863,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
       private void button7_Click(object sender, EventArgs e)
       {
 
-        Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
+        Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
 
         SubmitTAGFileRequest request = new SubmitTAGFileRequest();
         SubmitTAGFileRequestArgument arg = null;

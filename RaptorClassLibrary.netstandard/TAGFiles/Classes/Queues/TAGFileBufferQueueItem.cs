@@ -40,8 +40,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// <summary>
         /// UID identifier of the asset to process this TAG file into
         /// </summary>
-        //public Guid AssetUID;
+        public Guid AssetID;
 
-        public long AssetID;
+        //public long AssetID;
     }
 }

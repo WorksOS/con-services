@@ -236,7 +236,8 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 
             // Modify the cell pass in cell 2 to have a different machime ID, but same remaining state to determing if the modification count is set
 
-            c2.Passes[0].MachineID = 100000;
+            //c2.Passes[0].MachineID = 10000;
+            c2.Passes[0].InternalSiteModelMachineIndex = 10000;
 
             // Test integration of the identical cell passes resulting in a single cell pass, 0 added and 1 modified (as identical cell passes are not a modification)
             c1.Integrate(c2.Passes, 0, c2.PassCount - 1, out addedCount, out modifiedCount);

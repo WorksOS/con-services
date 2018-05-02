@@ -26,7 +26,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
                 gpsMode = Raptor.Types.GPSMode.Fixed,
                 HalfPass = false,
                 Height = 104,
-                MachineID = 105,
+                // MachineID = 105,
+                InternalSiteModelMachineIndex = 105,
                 GPSModeStore = 106,
                 MachineSpeed = 106,
                 MaterialTemperature = 107,
@@ -34,7 +35,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
                 passType = Raptor.Types.PassType.Track,
                 RadioLatency = 109,
                 RMV = 110,
-                SiteModelMachineIndex = 111,
                 Time = new DateTime(2000, 1, 2, 3, 4, 5)
             };
         }

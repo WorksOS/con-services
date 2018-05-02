@@ -50,10 +50,10 @@ namespace TAGFiles.Tests.netcore
             // Load a TAG file and add it to the queue. Verify the TAG file appears in the cache
 
             string tagFileName = "TestTAGFile - TAGFile - Read - Stream.tag";
-            //Guid projectUID = Guid.NewGuid();
-            //Guid assetUID = Guid.NewGuid();
+
             long projectID = -1;
-            long assetID = -1;
+            //Guid projectUID = Guid.NewGuid();
+            Guid assetID = Guid.NewGuid();
 
             byte[] tagContent;
             using (FileStream tagFileStream =

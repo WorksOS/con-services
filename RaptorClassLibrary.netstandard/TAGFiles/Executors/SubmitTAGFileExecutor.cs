@@ -42,7 +42,7 @@ namespace VSS.TRex.TAGFiles.Executors
         /// <param name="TCCOrgID">Used by TFA service to match VL customer to TCC org when looking for project if multiple projects and/or machine ID not in tag file</param>
         /// 
         /// <returns></returns>
-        public static SubmitTAGFileResponse Execute(long ProjectID, long AssetID, string TAGFileName,
+        public static SubmitTAGFileResponse Execute(long ProjectID, Guid AssetID, string TAGFileName,
             byte[] TAGFileContent, string TCCOrgID)
         {
             // Execute TFA based business logic along with override IDs to determine final project and asset

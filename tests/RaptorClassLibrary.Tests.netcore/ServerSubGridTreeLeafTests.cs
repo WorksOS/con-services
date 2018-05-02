@@ -23,14 +23,14 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
                 gpsMode = Raptor.Types.GPSMode.Fixed,
                 HalfPass = false,
                 Height = (float)123.0,
-                MachineID = 12345,
+                //MachineID = 12345,
+                InternalSiteModelMachineIndex = 12345,
                 MachineSpeed = 234,
                 MaterialTemperature = 700,
                 MDP = 800,
                 passType = Raptor.Types.PassType.Front,
                 RadioLatency = 10,
                 RMV = 900,
-                SiteModelMachineIndex = 42,
                 Time = new DateTime(2000, 1, 1, 1, 1, 1)
             };
         }

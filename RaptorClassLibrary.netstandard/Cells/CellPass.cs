@@ -38,9 +38,10 @@ namespace VSS.VisionLink.Raptor.Cells
         public const ushort MaxMaterialTempValue = 4095;
 
         /// <summary>
-        /// Null machine ID
+        /// Null machine ID. This is the null site model machine reference ID, not the null Guid for machines
         /// </summary>
-        public const long NullMachineID = 0;
+        //public const long NullMachineID = 0;
+        public const short NullInternalSiteModelMachineIndex = short.MinValue;
 
         public static DateTime NullTime => DateTime.MinValue;
 
@@ -254,13 +255,14 @@ namespace VSS.VisionLink.Raptor.Cells
         /// The external descriptor for a machine within a project. This is immutable and once a machine is created in the Raptor project the machine
         /// may always be referred to via this descriptor
         /// </summary>
-        public long MachineID { get; set; }
+        /// Note: This is removed in favour of CellPasses only ever containing the internal sitemodel machine index
+        // public long MachineID { get; set; }
 
         /// <summary>
         /// The internal descriptor for a machine within a project. This is volatile and is not guaranteed to be the same value between references by
         /// an 'external' consumer of the project
         /// </summary>
-        public short SiteModelMachineIndex { get; set; }
+        public short InternalSiteModelMachineIndex { get; set; }
 
         /// <summary>
         /// The measured height (actually grid elevation from NEE) fo the cell pass
@@ -327,8 +329,8 @@ namespace VSS.VisionLink.Raptor.Cells
             Time = NullTime;
 
             Height = NullHeight;
-            MachineID = NullMachineID;
-            SiteModelMachineIndex = short.MaxValue;
+            // MachineID = NullMachineID;
+            InternalSiteModelMachineIndex = NullInternalSiteModelMachineIndex;
             gpsMode = NullGPSMode;
             CCV                 = NullCCV;
             RadioLatency        = NullRadioLatency;
@@ -344,11 +346,12 @@ namespace VSS.VisionLink.Raptor.Cells
         /// <summary>
         /// Extract the machine ID and time from a cell pass in a single operation
         /// </summary>
-        /// <param name="machineID"></param>
+        /// <param name="internalSiteModelMachineIndex"></param>
         /// <param name="time"></param>
-        public void MachineIDAndTime(out long machineID, out DateTime time)
+        public void MachineIDAndTime(/*out long machineID, */ out short internalSiteModelMachineIndex, out DateTime time)
         {
-            machineID = MachineID;
+            //machineID = MachineID;
+            internalSiteModelMachineIndex = InternalSiteModelMachineIndex;
             time = Time;
         }
 
@@ -369,7 +372,8 @@ namespace VSS.VisionLink.Raptor.Cells
         /// <returns></returns>
         public override string ToString()
         {
-            return  $"Time:{Time} MachineID:{MachineID}, Height:{Height}, CCV:{CCV}, RadioLatency:{RadioLatency}, RMV:{RMV}, GPSMode:{gpsMode}, Freq:{Frequency}, Amp:{Amplitude}, Temperature:{MaterialTemperature}, Speed:{MachineSpeed}, MDP:{MDP}, CCA:{CCA}";
+            //return  $"Time:{Time} MachineID:{MachineID}, Height:{Height}, CCV:{CCV}, RadioLatency:{RadioLatency}, RMV:{RMV}, GPSMode:{gpsMode}, Freq:{Frequency}, Amp:{Amplitude}, Temperature:{MaterialTemperature}, Speed:{MachineSpeed}, MDP:{MDP}, CCA:{CCA}";
+            return $"Time:{Time} InternalMachineID:{InternalSiteModelMachineIndex}, Height:{Height}, CCV:{CCV}, RadioLatency:{RadioLatency}, RMV:{RMV}, GPSMode:{gpsMode}, Freq:{Frequency}, Amp:{Amplitude}, Temperature:{MaterialTemperature}, Speed:{MachineSpeed}, MDP:{MDP}, CCA:{CCA}";
         }
 
         /// <summary>
@@ -379,7 +383,8 @@ namespace VSS.VisionLink.Raptor.Cells
         public void Assign(CellPass Pass)
         {
             GPSModeStore = Pass.GPSModeStore;
-            MachineID = Pass.MachineID;
+            //MachineID = Pass.MachineID;
+            InternalSiteModelMachineIndex = Pass.InternalSiteModelMachineIndex;
             Height = Pass.Height;
             Time = Pass.Time;
             CCV = Pass.CCV;
@@ -401,7 +406,8 @@ namespace VSS.VisionLink.Raptor.Cells
         public bool Equals(CellPass Pass)
         {
             return (GPSModeStore == Pass.GPSModeStore) &&
-                   (MachineID == Pass.MachineID) &&
+                   //(MachineID == Pass.MachineID) &&
+                   (InternalSiteModelMachineIndex == Pass.InternalSiteModelMachineIndex) &&
                    (Height == Pass.Height) &&
                    (Time == Pass.Time) &&
                    (CCV == Pass.CCV) &&
@@ -422,7 +428,8 @@ namespace VSS.VisionLink.Raptor.Cells
         public void Write(BinaryWriter writer)
         {
             writer.Write(GPSModeStore);
-            writer.Write(MachineID);
+            //writer.Write(MachineID);
+            writer.Write(InternalSiteModelMachineIndex);
             writer.Write(Height);
             writer.Write(Time.ToBinary());
             writer.Write(CCV);
@@ -443,7 +450,8 @@ namespace VSS.VisionLink.Raptor.Cells
         public void Read(BinaryReader reader)
         {
             GPSModeStore = reader.ReadByte();
-            MachineID = reader.ReadInt64();
+            //MachineID = reader.ReadInt64();
+            InternalSiteModelMachineIndex = reader.ReadInt16();
             Height = reader.ReadSingle();
             Time = DateTime.FromBinary(reader.ReadInt64());
             CCV = reader.ReadInt16();

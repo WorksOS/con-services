@@ -21,14 +21,14 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
                 gpsMode = GPSMode.AutonomousPosition,
                 HalfPass = false,
                 Height = 5,
-                MachineID = 6,
+                //MachineID = 6,
+                InternalSiteModelMachineIndex = 6,
                 MachineSpeed = 7,
                 MaterialTemperature = 8,
                 MDP = 9,
                 passType = PassType.Front,
                 RadioLatency = 10,
                 RMV = 11,
-                SiteModelMachineIndex = 0,
                 Time = new DateTime(2017, 1, 1, 12, 30, 0)
             };
         }
@@ -44,14 +44,14 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
                 gpsMode = GPSMode.DGPS,
                 HalfPass = true,
                 Height = 50,
-                MachineID = 60,
+                //MachineID = 60,
+                InternalSiteModelMachineIndex = 60,
                 MachineSpeed = 70,
                 MaterialTemperature = 80,
                 MDP = 90,
                 passType = PassType.Rear,
                 RadioLatency = 100,
                 RMV = 110,
-                SiteModelMachineIndex = 0,
                 Time = new DateTime(2017, 1, 1, 12, 45, 0)
             };
         }
@@ -73,14 +73,14 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
                 cp.gpsMode == CellPass.NullGPSMode &&
                 cp.HalfPass == false &&
                 cp.Height == CellPass.NullHeight &&
-                cp.MachineID == CellPass.NullMachineID &&
+                //cp.MachineID == CellPass.NullMachineID &&
+                cp.InternalSiteModelMachineIndex == CellPass.NullInternalSiteModelMachineIndex &&
                 cp.MachineSpeed == CellPass.NullMachineSpeed &&
                 cp.MaterialTemperature == CellPass.NullMaterialTemp &&
                 cp.MDP == CellPass.NullMDP &&
                 cp.passType == PassType.Front &&
                 cp.RadioLatency == CellPass.NullRadioLatency &&
                 cp.RMV == CellPass.NullRMV &&
-                cp.SiteModelMachineIndex == short.MaxValue &&
                 cp.Time == CellPass.NullTime,
                 "Newly created/cleared CellPass does not contain all null values");
         }
@@ -94,14 +94,15 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             CellPass cp = ATestCellPass();
 
             DateTime testTime = DateTime.Now;
-            cp.MachineID = 100;
+            //cp.MachineID = 100;
+            cp.InternalSiteModelMachineIndex = 100;
             cp.Time = testTime;
 
-            long MachineID;
-            DateTime Time;
+            //cp.MachineIDAndTime(out long MachineID, out DateTime Time);
+            // Assert.True(MachineID == 100 && Time == testTime, "Machine ID and time are not the expected values");
 
-            cp.MachineIDAndTime(out MachineID, out Time);
-            Assert.True(MachineID == 100 && Time == testTime, "Machine ID and time are not the expected values");
+            cp.MachineIDAndTime(out short internalSiteModelMachineIndex, out DateTime Time);
+            Assert.True(internalSiteModelMachineIndex == 100 && Time == testTime, "Machine ID and time are not the expected values");
         }
 
         /// <summary>

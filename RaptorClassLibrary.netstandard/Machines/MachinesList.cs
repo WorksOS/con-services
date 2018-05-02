@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using VSS.VisionLink.Raptor.Machines.Interfaces;
 
 namespace VSS.VisionLink.Raptor.Machines
@@ -14,36 +15,38 @@ namespace VSS.VisionLink.Raptor.Machines
         /// Maps machine IDs (currently as 64 bit integers) to the instance containing all the event lists for all the machines
         /// that have contributed to the owner SiteModel
         /// </summary>
-        private Dictionary<long, Machine> MachineIDMap = new Dictionary<long, Machine>();
+        private Dictionary<Guid, Machine> MachineIDMap = new Dictionary<Guid, Machine>();
 
         /// <summary>
         /// The identifier of the site model owning this list of machines
         /// </summary>
-        public long DataModelID { get; set; } = -1;
+        public long DataModelID { get; set; }
 
-        public MachinesList(long datamodeID)
+        public MachinesList(long datamodelID)
         {
-            DataModelID = datamodeID;
+            DataModelID = datamodelID;
         }
 
         /// <summary>
         /// Determine the next unique JohnDoe machine ID to use for a new John Doe machine
         /// </summary>
         /// <returns></returns>
-        private long UniqueJohnDoeID()
+        private Guid UniqueJohnDoeID() => Guid.NewGuid();
+        /*
         {
             long Result = RaptorConfig.JohnDoeBaseNumber() + 1;
-
+            
             ForEach(x => { if (x.IsJohnDoeMachine && x.ID != Machine.kJohnDoeAssetID && x.ID >= Result) { Result++; } });
 
             return Result;
         }
+        */
 
         public Machine CreateNew(string name, string machineHardwareID,
-                               byte machineType,
-                               int deviceType,
-                               bool isJohnDoeMachine,
-                               long machineID)
+                                 byte machineType,
+                                 int deviceType,
+                                 bool isJohnDoeMachine,
+                                 Guid machineID)
         {
             Machine ExistingMachine = isJohnDoeMachine ? Locate(name, true) : Locate(machineID, false);
 
@@ -58,7 +61,12 @@ namespace VSS.VisionLink.Raptor.Machines
                 machineID = UniqueJohnDoeID();
             }
 
-            Machine Result = new Machine(this, name, machineHardwareID, machineType, deviceType, machineID, isJohnDoeMachine /* TODO, kICUnknownConnectedMachineLevel*/);
+            // Determine the internal ID for the new machine.
+            // Note: This assumes machinesa are never removed from a project
+
+            short internalMachineID = (short)Count;
+
+            Machine Result = new Machine(this, name, machineHardwareID, machineType, deviceType, machineID, internalMachineID, isJohnDoeMachine /* TODO, kICUnknownConnectedMachineLevel*/);
 
             // Add it to the list
             Add(Result);
@@ -93,7 +101,7 @@ namespace VSS.VisionLink.Raptor.Machines
         /// <param name="id"></param>
         /// <param name="isJohnDoeMachine"></param>
         /// <returns></returns>
-        public Machine Locate(long id, bool isJohnDoeMachine) => Find(x => x.IsJohnDoeMachine == isJohnDoeMachine && id == x.ID);
+        public Machine Locate(Guid id, bool isJohnDoeMachine) => Find(x => x.IsJohnDoeMachine == isJohnDoeMachine && id == x.ID);
 
         /// <summary>
         /// Locate finds a machine given the ID of a machine in the list.
@@ -101,7 +109,7 @@ namespace VSS.VisionLink.Raptor.Machines
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Machine Locate(long id) => MachineIDMap[id];
+        public Machine Locate(Guid id) => MachineIDMap[id];
 
         // LocateByMachineHardwareID locates the (first) machine in the machines
         // list that has a matching machine hardware ID to the <AID> parameter.

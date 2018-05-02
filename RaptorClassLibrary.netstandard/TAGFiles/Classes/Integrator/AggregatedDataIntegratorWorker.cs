@@ -274,16 +274,16 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                         if (AnyMachineEvents)
                         {
                             // If the machine target values can't be found then create them
-                            SiteModelMachineTargetValues = SiteModelFromDM.MachinesTargetValues[MachineFromDM.ID];
+                            SiteModelMachineTargetValues = SiteModelFromDM.MachinesTargetValues[MachineFromDM.InternalSiteModelMachineIndex]; // [MachineFromDM.ID];
 
                             if (SiteModelMachineTargetValues == null)
                             {
-                                SiteModelFromDM.MachinesTargetValues.Add(new ProductionEventLists /*EfficientProductionEventChanges*/(SiteModelFromDM, MachineFromDM.ID));
+                                SiteModelFromDM.MachinesTargetValues.Add(new ProductionEventLists /*EfficientProductionEventChanges*/(SiteModelFromDM, MachineFromDM.InternalSiteModelMachineIndex /*MachineFromDM.ID*/));
                                 //SiteModelFromDM.MachinesTargetValues.CreateNewMachineTargetValues(MachineFromDM, MachineFromDM.ID);
                             }
 
                             // Check to see the machine target values were created correctly
-                            SiteModelMachineTargetValues = SiteModelFromDM.MachinesTargetValues[MachineFromDM.ID];
+                            SiteModelMachineTargetValues = SiteModelFromDM.MachinesTargetValues[MachineFromDM.InternalSiteModelMachineIndex]; //[MachineFromDM.ID];
 
                             // The events for this machine have not yet been read from the persistent store
                             // TODO: There is no check to see if they have already been loaded...

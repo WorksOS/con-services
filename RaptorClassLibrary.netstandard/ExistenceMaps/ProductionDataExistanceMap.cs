@@ -1,4 +1,5 @@
-﻿using VSS.VisionLink.Raptor.SubGridTrees;
+﻿using System;
+using VSS.VisionLink.Raptor.SubGridTrees;
 
 namespace VSS.VisionLink.Raptor.ExistenceMaps
 {
@@ -7,11 +8,11 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps
     /// </summary>
     public class ProductionDataExistanceMap
     {
-        public long DataModelID { get; set; } = -1;
+        public Guid DataModelID { get; set; } 
 
         public SubGridTreeSubGridExistenceBitMask Map { get; set; }
 
-        public ProductionDataExistanceMap(long dataModelID, double cellSize)
+        public ProductionDataExistanceMap(Guid dataModelID, double cellSize)
         {
             DataModelID = dataModelID;
 

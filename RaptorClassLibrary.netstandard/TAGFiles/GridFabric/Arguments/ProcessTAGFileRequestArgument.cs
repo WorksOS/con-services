@@ -15,8 +15,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.GridFabric.Arguments
         /// <summary>
         /// ID of the asset to process the TAG files into
         /// </summary>
-        public long AssetID { get; set; } = -1;
-//        public Guid AssetUID { get; set; }
+        // public long AssetID { get; set; } = -1;
+        public Guid AssetID { get; set; }
     
         /// <summary>
         /// A dictionary mapping TAG file nams to the content of each file

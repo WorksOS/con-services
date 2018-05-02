@@ -32,7 +32,7 @@ namespace VSS.VisionLink.Raptor.Client
 
         private static int tAGFileCount = 0;
 
-        public static void SubmitSingleTAGFile(long projectID, long assetID, string fileName)
+        public static void SubmitSingleTAGFile(long projectID, Guid assetID, string fileName)
         {
             submitTAGFileRequest = submitTAGFileRequest ?? new SubmitTAGFileRequest();
             SubmitTAGFileRequestArgument arg;
@@ -58,7 +58,7 @@ namespace VSS.VisionLink.Raptor.Client
 
         public static void ProcessSingleTAGFile(long projectID, string fileName)
         {
-            Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
+            Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
 
             processTAGFileRequest = processTAGFileRequest ?? new ProcessTAGFileRequest();
             ProcessTAGFileRequestArgument arg;
@@ -88,7 +88,7 @@ namespace VSS.VisionLink.Raptor.Client
 
         public static void ProcessTAGFiles(long projectID, string[] files)
         {
-            Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
+            Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
 
             processTAGFileRequest = processTAGFileRequest ?? new ProcessTAGFileRequest();
             ProcessTAGFileRequestArgument arg = new ProcessTAGFileRequestArgument
@@ -114,7 +114,7 @@ namespace VSS.VisionLink.Raptor.Client
 
         public static void SubmitTAGFiles(long projectID, string[] files)
         {
-            Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
+            Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
 
             foreach (string file in files)
                 SubmitSingleTAGFile(projectID, machine.ID, file);

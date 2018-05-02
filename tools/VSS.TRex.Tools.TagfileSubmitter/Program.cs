@@ -19,7 +19,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
 
         public static void ProcessSingleTAGFile(long projectID, string fileName)
         {
-            Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
+            Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
 
             ProcessTAGFileRequest request = new ProcessTAGFileRequest();
             ProcessTAGFileRequestArgument arg = null;
@@ -49,16 +49,15 @@ namespace VSS.TRex.Tools.TagfileSubmitter
 
         public static void ProcessTAGFiles(long projectID, string[] files)
         {
-            Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
+            Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
 
             ProcessTAGFileRequest request = new ProcessTAGFileRequest();
-            ProcessTAGFileRequestArgument arg = new ProcessTAGFileRequestArgument()
+            ProcessTAGFileRequestArgument arg = new ProcessTAGFileRequestArgument
             {
                 ProjectID = projectID,
-                AssetID = machine.ID
+                AssetID = machine.ID,
+                TAGFiles = new List<ProcessTAGFileRequestFileItem>()
             };
-
-            arg.TAGFiles = new List<ProcessTAGFileRequestFileItem>();
 
             foreach (string file in files)
             {

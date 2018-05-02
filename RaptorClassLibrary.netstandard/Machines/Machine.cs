@@ -21,7 +21,9 @@ namespace VSS.VisionLink.Raptor.Machines
         [NonSerialized]
         public MachinesList Owner;
 
-        public long ID { get; set; }
+        public Guid ID { get; set; }
+
+        public short InternalSiteModelMachineIndex { get; set; }
 
         public string Name { get; set; } = "";
 
@@ -88,7 +90,8 @@ namespace VSS.VisionLink.Raptor.Machines
                        string machineHardwareID,
                        byte machineType,
                        int deviceType,
-                       long machineID,
+                       Guid machineID,
+                       short internalSiteModelMachineIndex,
                        bool isJohnDoeMachine
                        /* TODO: AConnectedMachineLevel : MachineLevelEnum*/) : this(owner)
         {
@@ -99,6 +102,7 @@ namespace VSS.VisionLink.Raptor.Machines
 
             IsJohnDoeMachine = isJohnDoeMachine;
             ID = machineID;
+            InternalSiteModelMachineIndex = internalSiteModelMachineIndex;
 
             // TODO FConnectedMachineLevel:= AConnectedMachineLevel;
         }

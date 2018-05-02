@@ -103,7 +103,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             long CellStacksOffsetOffset = writer.BaseStream.Position;
             writer.Write(CellStacksOffset);
 
-            Debug.Assert(HasAllPasses && HasLatestData && (PassesData != null) && (LatestPasses != null),
+            Debug.Assert(HasAllPasses && HasLatestData && PassesData != null && LatestPasses != null,
                    "Leaf subgrids being written to persistent store must be fully populated with pass stacks and latest pass grid");
 
             LatestPasses.Write(writer, new byte[10000]);

@@ -745,14 +745,16 @@ FAvoidZoneUndergroundServiceZones = false;
 
             if (HasCompactionMachinesOnlyFilter)
             {
-                Machine = siteModel.Machines.Locate(PassValue.MachineID);
+                //Machine = siteModel.Machines.Locate(PassValue.MachineID);
+                Machine = siteModel.Machines[PassValue.InternalSiteModelMachineIndex];
+                
                 if (Machine != null && !Machine.MachineIsConpactorType())
                     return false;
             }
 
             // Extract the list of events for the machine referred to in the cell pass. Use this
             // reference for all filter criteria that depend on machine events
-            ProductionEventLists machineTargetValues = AnyMachineEventFilterSelections ? siteModel.MachinesTargetValues[PassValue.MachineID] : null;
+            ProductionEventLists machineTargetValues = AnyMachineEventFilterSelections ? siteModel.MachinesTargetValues[PassValue.InternalSiteModelMachineIndex] : null;
 
             if (HasDesignFilter)
             {
@@ -920,7 +922,7 @@ FAvoidZoneUndergroundServiceZones = false;
 
             if (HasCompactionMachinesOnlyFilter)
             {
-                Machine = siteModel.Machines.Locate(PassValue.FilteredPass.MachineID);
+                Machine = siteModel.Machines[PassValue.FilteredPass.InternalSiteModelMachineIndex];
                 if (Machine != null && !Machine.MachineIsConpactorType())
                     return false;
             }
@@ -1201,7 +1203,9 @@ FAvoidZoneUndergroundServiceZones = false;
 
             if (HasCompactionMachinesOnlyFilter)
             {
-                Machine = siteModel.Machines.Locate(PassValue.MachineID);
+                //Machine = siteModel.Machines.Locate(PassValue.MachineID);
+                Machine = siteModel.Machines[PassValue.InternalSiteModelMachineIndex];
+
                 if (Machine != null && !Machine.MachineIsConpactorType())
                     return false;
             }

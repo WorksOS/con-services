@@ -25,9 +25,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
                               ProductionEventLists machineTargetValueChanges,
                               SiteModel siteModel,
                               ServerSubGridTree grid,
-                              long machineID,
+                              // long machineID,
+                              short internalSiteModelMachineIndex,
         //                         AMachineConnectionLevel : MachineLevelEnum;
-                              Fence interpolationFence) : base(processor, machineTargetValueChanges, siteModel, grid, machineID, interpolationFence)
+                              Fence interpolationFence) : base(processor, machineTargetValueChanges, siteModel, grid, internalSiteModelMachineIndex /*machineID*/, interpolationFence)
         {
         }
 
@@ -147,7 +148,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
                             if (BaseProductionDataSupportedByMachine)
                             {
                                 // Prepare a processed pass record to include in the cell
-                                ProcessedCellPass.MachineID = MachineID;
+                                //ProcessedCellPass.MachineID = MachineID;
+                                ProcessedCellPass.InternalSiteModelMachineIndex = InternalSiteModelMachineIndex;
                                 ProcessedCellPass.Time = _TheTime;
                                 ProcessedCellPass.Height = _TheHeight;
 

@@ -153,7 +153,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
                 MachineTargetValueChangesAggregator,
                 SiteModel,
                 SiteModelGridAggregator,
-                Machine.ID,
+                //Machine.ID,
+                Machine.InternalSiteModelMachineIndex,
                 //     FICMachine.ConnectedMachineLevel,
                 InterpolationFence)
             {

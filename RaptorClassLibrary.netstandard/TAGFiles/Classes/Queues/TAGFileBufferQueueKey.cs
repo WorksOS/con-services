@@ -21,8 +21,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         public long ProjectID;
         //public Guid ProjectUID;
 
-        public long AssetID;
-        //public Guid AssetUID;
+        //public long AssetID;
+        public Guid AssetID;
 
         /// <summary>
         /// TAG File Buffer Queue key constructor taking project, asset and filename
@@ -30,7 +30,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// <param name="fileName"></param>
         /// <param name="projectID"></param>
         /// <param name="assetID"></param>
-        public TAGFileBufferQueueKey(string fileName, long projectID, long assetID /*Guid projectUID, Guid assetUID*/)
+        public TAGFileBufferQueueKey(string fileName, long projectID, Guid assetID /*Guid projectUID */)
         {
             FileName = fileName;
             //ProjectUID = projectUID;

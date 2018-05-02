@@ -22,10 +22,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator.Tests
             AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
 
             SiteModel siteModel = new SiteModel("TestName", "TestDesc", 1, 1.0, null);
-            Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
+            Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
             ISubGridFactory factory = new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>();
             ServerSubGridTree tree = new ServerSubGridTree(siteModel);
-            ProductionEventLists events = new ProductionEventLists(siteModel, machine.ID);
+            ProductionEventLists events = new ProductionEventLists(siteModel, machine.InternalSiteModelMachineIndex /* machine.ID*/);
 
             integrator.AddTaskToProcessList(siteModel, machine, tree, 0, events);
 

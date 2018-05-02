@@ -25,7 +25,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
         // for purpose of processing the individual TAG file and is not the
         // persisted instance, or a reference to it.
         public Machine TargetMachine { get; set; }
-        public long TargetMachineID { get; set; }
+        public Guid TargetMachineID { get; set; }
 
         public ServerSubGridTree AggregatedCellPasses { get; set; }
         public ProductionEventLists AggregatedMachineEvents { get; set; }

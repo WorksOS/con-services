@@ -27,8 +27,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
         // to final insertion into the site model proper
         protected ServerSubGridTree Grid { get; set; }
 
-        // MachineID is a reference to the compaction machine that has collected the data being processed.
-        public long MachineID { get; set; }
+        // InternalSiteModelMachineIndex is a reference to the compaction machine that has collected the data being processed.
+        //public long MachineID { get; set; }
+        public short InternalSiteModelMachineIndex { get; set; }
 
         //      FMachineConnectionLevel : MachineLevelEnum;
 
@@ -109,7 +110,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
                            ProductionEventLists machineTargetValueChanges,
                            SiteModel siteModel,
                            ServerSubGridTree grid,
-                           long machineID,
+            //long machineID,
+            short internalSiteModelMachineIndex,
         //                         AMachineConnectionLevel : MachineLevelEnum;
                            Fence interpolationFence)
         {
@@ -118,7 +120,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
             SiteModel = siteModel;
             Grid = grid;
             InterpolationFence = interpolationFence;
-            MachineID = machineID;
+            //MachineID = machineID;
+            
         }
     }
 }
