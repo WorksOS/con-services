@@ -20,6 +20,7 @@ namespace RepositoryTests
       {
         "ID",
         "FilterUID",
+        "fk_FilterTypeID",
         "fk_CustomerUID",
         "fk_ProjectUID",
         "UserID",

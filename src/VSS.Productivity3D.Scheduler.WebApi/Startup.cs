@@ -9,12 +9,14 @@ using Hangfire.MySql;
 using Hangfire.Storage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
+using VSS.MasterData.Models.FIlters;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
@@ -30,7 +32,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
   /// </summary>
   public class Startup
   {
-    private const string LoggerRepoName = "Scheduler";
+    public const string LOGGER_REPO_NAME = "Scheduler";
     private MySqlStorage _storage;
     private IServiceProvider _serviceProvider;
     IServiceCollection _serviceCollection;
@@ -50,10 +52,11 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       var builder = new ConfigurationBuilder()
         .SetBasePath(env.ContentRootPath)
         .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-        .AddEnvironmentVariables();
+        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
-      env.ConfigureLog4Net("log4net.xml", LoggerRepoName);
+      env.ConfigureLog4Net("log4net.xml", LOGGER_REPO_NAME);
+
+      builder.AddEnvironmentVariables();
       Configuration = builder.Build();
 
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
@@ -92,11 +95,14 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddMvc();
+      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
       // hangfire has to be started up in ConfigureServices(),
       //    i.e. before DI can be setup in Configure()
       //    therefore create temp configStore to read environment variables (unfortunately this requires log stuff)
-      var configStore = new GenericConfiguration(GetLoggerFactory());
+      var serviceProvider = services.BuildServiceProvider();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      var configStore = new GenericConfiguration(logger);
 
       var hangfireConnectionString = configStore.GetConnectionString("VSPDB");
       int queuePollIntervalSeconds;
@@ -135,7 +141,9 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddTransient<ITPaasProxy, TPaasProxy>();
       services.AddTransient<IFileRepository, FileRepository>();
       services.AddTransient<IImportedFileProxy, ImportedFileProxy>();
-      services.AddTransient<IVetaExportJob, VetaExportJob>();
+      services.AddTransient<IExportJob, ExportJob>();
+      services.AddTransient<IApiClient, ApiClient>();
+      services.AddTransient<ITransferProxy, TransferProxy>();
       _serviceCollection = services;
     }
 
@@ -149,11 +157,15 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <param name="loggerFactory">The logger factory.</param>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
+      loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+      loggerFactory.AddDebug();
+
       _serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
       _serviceProvider = _serviceCollection.BuildServiceProvider();
 
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(LoggerRepoName);
+      app.UseFilterMiddleware<ExceptionsTrap>();
+
+      app.UseMvc();
 
       var configStore = _serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = _serviceProvider.GetRequiredService<ILoggerFactory>();
@@ -274,19 +286,6 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         log.LogError($"Scheduler.Configure: Incomplete list of recurring jobs {recurringJobsPost.Count}");
         throw new Exception("Scheduler.Configure: Incorrect # jobs");
       }
-    }
-
-    private ILoggerFactory GetLoggerFactory()
-    {
-      const string loggerRepoName = LoggerRepoName;
-      var logPath = Directory.GetCurrentDirectory();
-
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4net.xml", loggerRepoName);
-
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-      return loggerFactory;
     }
 
   }

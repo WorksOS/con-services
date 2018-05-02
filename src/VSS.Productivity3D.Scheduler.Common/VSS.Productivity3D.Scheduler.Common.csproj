@@ -1,10 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net47;netcoreapp1.1</TargetFrameworks>
-    <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
-    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
-    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">1.1.1</RuntimeFrameworkVersion>
+    <TargetFrameworks>net471;netcoreapp2.0</TargetFrameworks>
+    <RuntimeFrameworkVersion>2.0</RuntimeFrameworkVersion>
     <AssemblyName>VSS.Productivity3D.Scheduler.Common</AssemblyName>
     <PackageId>SchedulerWebApiCommon</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -14,29 +12,29 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Routing" Version="1.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="1.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Routing" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.0" />
     <PackageReference Include="AutoMapper" Version="6.1.1" />
-    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.0.*" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.1.*" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.0.*" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.14.*" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.22.*" />
-    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.7.*" />
-    <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.6.*" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.17.*" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.27.*" />
+    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.8.*" />
+    <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.7.*" />
 
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net471' ">
     <PackageReference Include="NewRelic.Agent.Api" Version="6.16.178" />
   </ItemGroup>
 
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net47' ">
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">
     <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7</DefineConstants>
   </PropertyGroup>
   
@@ -45,7 +43,7 @@
     <DebugSymbols>True</DebugSymbols>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp1.1|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp2.0|AnyCPU'">
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsAsErrors />
   </PropertyGroup>

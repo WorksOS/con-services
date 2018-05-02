@@ -1,6 +1,9 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using VSS.Log4Net.Extensions;
 #if NET_4_7
 using Topshelf;
 using System.Diagnostics;
@@ -54,6 +57,12 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       var host = new WebHostBuilder()
         .UseKestrel()
         .UseContentRoot(Directory.GetCurrentDirectory())
+        .ConfigureLogging(builder =>
+        {
+          Log4NetProvider.RepoName = Startup.LOGGER_REPO_NAME;
+          builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
+          builder.SetMinimumLevel(LogLevel.Trace);
+        })
         .UseIISIntegration()
         .UseStartup<Startup>()
         .Build();
@@ -82,6 +91,12 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         //TODO For some reason setting configuration for a topshelf service does not work
         .UseUrls(config["server.urls"])
         .UseContentRoot(pathToContentRoot)
+        .ConfigureLogging(builder =>
+        {
+          Log4NetProvider.RepoName = Startup.LOGGER_REPO_NAME;
+          builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
+          builder.SetMinimumLevel(LogLevel.Trace);
+        })
         .UseStartup<Startup>()
         .Build();
 
