@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using log4net;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
@@ -21,6 +23,9 @@ namespace VSS.VisionLink.Raptor.SiteModels
     [Serializable]
     public class SiteModel : ISiteModel
     {
+        [NonSerialized]
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public const string kSiteModelXMLFileName = "ProductionDataModel.XML";
         public const string kSubGridExistanceMapFileName = "SubGridExistanceMap";
 
@@ -246,23 +251,20 @@ namespace VSS.VisionLink.Raptor.SiteModels
             //FSiteModelDesignNames.SaveToStream(Stream);
 
             // Write the machines list
-            //FMachines.WriteToStream(Stream);
+            Machines.Write(writer);
 
             writer.Write(LastModifiedDate.ToBinary());
         }
 
         public bool Read(BinaryReader reader)
         {
-            long LocalID;
-
             // Write the SiteModel attributes
             int MajorVersion = reader.ReadInt32();
             int MinorVersion = reader.ReadInt32();
 
             if (!(MajorVersion == kMajorVersion && MinorVersion == kMinorVersion))
             {
-                // TODO readd when logging available
-                //SIGLogMessage.Publish(Self, 'Unknown version number in TICSiteModel.ReadFromStream', slmcError);
+                Log.Error($"Unknown version number {MajorVersion}:{MinorVersion} in Read()");
                 return false;
             }
 
@@ -272,7 +274,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
             // Read the ID of the data model from the stream.
             // If the site model already has an assigned ID then
             // use this ID in favour of the ID read from the data model.
-            LocalID = reader.ReadInt64();
+            long LocalID = reader.ReadInt64();
             if (ID == -1)
             {
                 ID = LocalID;
@@ -293,9 +295,8 @@ namespace VSS.VisionLink.Raptor.SiteModels
             double SiteModelGridCellSize = reader.ReadDouble();
             if (SiteModelGridCellSize < 0.001)
             {
-                // TODO Read when logging available
-                // SIGLogMessage.PublishNoODS(Self, Format('SiteModelGridCellSize is suspicious: %f for datamodel %d, setting to default', [SiteModelGridCellSize, FID]), slmcError);
-                SiteModelGridCellSize = 0.1; // TODO  VLPDSvcLocations.VLPD_DefaultSiteModelGridCellSize;
+                Log.Error($"'SiteModelGridCellSize is suspicious: {SiteModelGridCellSize} for datamodel {ID}, setting to default");
+                SiteModelGridCellSize = SubGridTree.DefaultCellSize; // VLPDSvcLocations.VLPD_DefaultSiteModelGridCellSize;
             }
             Grid.CellSize = SiteModelGridCellSize;
 
@@ -308,7 +309,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
             //FSiteModelDesignNames.LoadFromStream(Stream);
 
             // Read the machines list
-            //FMachines.ReadFromStream(Stream);
+            Machines.Read(reader);
 
             LastModifiedDate = DateTime.FromBinary(reader.ReadInt64());
 
@@ -327,8 +328,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
                     {
                         Write(writer);
 
-                        Result = StorageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, 
-                                                                           /* out uint _ , out uint , */ MS) == FileSystemErrorStatus.OK
+                        Result = StorageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, MS) == FileSystemErrorStatus.OK
                                  && SaveProductionDataExistanceMapToStorage() == FileSystemErrorStatus.OK;
                     }
                 }
@@ -346,8 +346,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
             }
             else
             {
-                // TODO add when logging available
-                //SIGLogMessage.Publish(Self, Format('Failed to save site model for project %d to persistent store', [FID]), slmcError);
+                Log.Error($"Failed to save site model for project {ID} to persistent store");
             }
 
             return Result;
@@ -376,8 +375,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
                             // is particularly useful for testing purposes where copying around projects
                             // is much quicker than reprocessing large sets of TAG files
 
-                            // TODO readd when logging available
-                            //SIGLogMessage.PublishNoODS(Self, Format('Site model ID read from FS file (%d) does not match expected ID (%d), setting to expected', [FID, SavedID]), slmcWarning);
+                            Log.Warn($"Site model ID read from FS file ({ID}) does not match expected ID ({SavedID}), setting to expected");
                             ID = SavedID;
                         }
 
@@ -415,17 +413,15 @@ namespace VSS.VisionLink.Raptor.SiteModels
                         }
                         */
 
-                        /* TODO readd when logging available
                         if (Result == FileSystemErrorStatus.OK)
                         {
-                            SIGLogMessage.PublishNoODS(Self, Format('Site model read from FS file (ID:%d) succeeded', [FID]), slmcDebug);
-                            SIGLogMessage.PublishNoODS(Self, Format('Data model extents: %s, CellSize: %.3f', [FSiteModelExtent.AsText, FGrid.CellSize]), slmcDebug);
+                            Log.Debug($"Site model read from FS file (ID:{ID}) succeeded");
+                            Log.Debug($"Data model extents: {SiteModelExtent}, CellSize: {Grid.CellSize}");
                         }
                         else
                         {
-                            SIGLogMessage.PublishNoODS(Self, Format('Site model ID read from FS file (%d) failed with error %d', [FID, Ord(Result)]), slmcWarning);
+                            Log.Warn($"Site model ID read from FS file ({ID}) failed with error {Result}");
                         }
-                        */
                     }
                     finally
                     {

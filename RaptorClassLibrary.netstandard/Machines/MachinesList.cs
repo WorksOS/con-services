@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using VSS.VisionLink.Raptor.Machines.Interfaces;
 
@@ -115,5 +116,38 @@ namespace VSS.VisionLink.Raptor.Machines
         // list that has a matching machine hardware ID to the <AID> parameter.
         public Machine LocateByMachineHardwareID(string hardwareID) => Find(x => x.MachineHardwareID.Equals(hardwareID));
 
+        /// <summary>
+        /// Serialise the list of machine using the given writer
+        /// </summary>
+        /// <param name="writer"></param>
+        public void Write(BinaryWriter writer)
+        {
+            writer.Write((int)1); //Version number
+
+            writer.Write((int)Count);
+            for (int i = 0; i < Count; i++)
+                this[i].Write(writer);
+        }
+
+        /// <summary>
+        /// Deserialises the list of machines using the given reader
+        /// </summary>
+        /// <param name="reader"></param>
+        public void Read(BinaryReader reader)
+        {
+            int version = reader.ReadInt32();
+            if (version != 1)
+                throw new Exception($"Invalid version number ({version}) reading machines list, expected version (1)");
+
+            int count = reader.ReadInt32();
+            this.Capacity = count;
+
+            for (int i = 0; i < count; i++)
+            {
+                Machine Machine = new Machine();
+                Machine.Read(reader);
+                Add(Machine);
+            }
+        }
     }
 }

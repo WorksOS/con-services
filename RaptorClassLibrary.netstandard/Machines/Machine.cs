@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Types;
@@ -16,7 +17,7 @@ namespace VSS.VisionLink.Raptor.Machines
         /// <summary>
         /// The telematics asset ID assigned to any John Doe machine
         /// </summary>
-        public const long kJohnDoeAssetID = 0x7fffffffffffffff;
+        //        public const long kJohnDoeAssetID = 0x7fffffffffffffff;
 
         [NonSerialized]
         public MachinesList Owner;
@@ -36,7 +37,9 @@ namespace VSS.VisionLink.Raptor.Machines
         public bool IsJohnDoeMachine { get; set; }
 
         public double LastKnownX { get; set; } = Consts.NullDouble;
+
         public double LastKnownY { get; set; } = Consts.NullDouble;
+
         public DateTime LastKnownPositionTimeStamp { get; set; } = DateTime.MinValue;
 
         public string LastKnownDesignName { get; set; } = string.Empty;
@@ -76,6 +79,9 @@ namespace VSS.VisionLink.Raptor.Machines
             return gear == MachineGear.Reverse || gear == MachineGear.Reverse2 || gear == MachineGear.Reverse3 || gear == MachineGear.Reverse4 || gear == MachineGear.Reverse5;
         }
 
+        /// <summary>
+        /// No args constructor for machine
+        /// </summary>
         public Machine()
         {
         }
@@ -100,9 +106,9 @@ namespace VSS.VisionLink.Raptor.Machines
             MachineType = machineType;
             DeviceType = deviceType;
 
-            IsJohnDoeMachine = isJohnDoeMachine;
             ID = machineID;
             InternalSiteModelMachineIndex = internalSiteModelMachineIndex;
+            IsJohnDoeMachine = isJohnDoeMachine;
 
             // TODO FConnectedMachineLevel:= AConnectedMachineLevel;
         }
@@ -127,6 +133,59 @@ namespace VSS.VisionLink.Raptor.Machines
             LastKnownPositionTimeStamp = source.LastKnownPositionTimeStamp;
 
             //            Dirty = True;
+        }
+
+        /// <summary>
+        /// Serialises machine using the given writer
+        /// </summary>
+        /// <param name="writer"></param>
+        public void Write(BinaryWriter writer)
+        {
+            writer.Write((int)1); //Version number
+
+            writer.Write(ID.ToByteArray());
+            writer.Write(InternalSiteModelMachineIndex);
+            writer.Write(Name);
+            writer.Write(MachineType);
+            writer.Write(DeviceType);
+            writer.Write(MachineHardwareID);
+            writer.Write(IsJohnDoeMachine);
+            writer.Write(LastKnownX);
+            writer.Write(LastKnownY);
+            writer.Write(LastKnownPositionTimeStamp.ToBinary());
+            writer.Write(LastKnownDesignName);
+            writer.Write(LastKnownLayerId);
+            writer.Write(CompactionDataReported);
+            writer.Write((int)CompactionSensorType);
+        }
+
+        /// <summary>
+        /// Deserialises the machine using the given reader
+        /// </summary>
+        /// <param name="reader"></param>
+        public void Read(BinaryReader reader)
+        {
+            int version = reader.ReadInt32();
+            if (version != 1)
+                throw new Exception($"Invalid version number ({version}) reading machine, expected version (1)");
+
+            byte[] bytes = new byte[16];
+            reader.Read(bytes, 0, 16);
+            ID = new Guid(bytes);
+
+            InternalSiteModelMachineIndex = reader.ReadInt16();
+            Name = reader.ReadString();
+            MachineType = reader.ReadByte();
+            DeviceType = reader.ReadInt32();
+            MachineHardwareID = reader.ReadString();
+            IsJohnDoeMachine = reader.ReadBoolean();
+            LastKnownX = reader.ReadDouble();
+            LastKnownY = reader.ReadDouble();
+            LastKnownPositionTimeStamp = new DateTime(reader.ReadInt64());
+            LastKnownDesignName = reader.ReadString();
+            LastKnownLayerId = reader.ReadUInt16();
+            CompactionDataReported = reader.ReadBoolean();
+            CompactionSensorType = (CompactionSensorType) reader.ReadInt32();
         }
     }
 }
