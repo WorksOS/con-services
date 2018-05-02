@@ -54,8 +54,8 @@ namespace WebApiTests
       var response = importFile.SendImportedFilesToWebApiV2(ts, project.LegacyProjectId, importFileArray, 1);
       var importFileV2Result = JsonConvert.DeserializeObject<ReturnLongV2Result>(response);
 
-      Assert.AreEqual((int)HttpStatusCode.OK, importFileV2Result.Code, "Not imported ok.");
-      Assert.AreNotEqual(-1, importFileV2Result.id, "No File was imported.");
+      Assert.AreEqual(HttpStatusCode.OK, importFileV2Result.Code, "Not imported ok.");
+      Assert.AreNotEqual(-1, importFileV2Result.Id, "No File was imported.");
     }
   }
 }

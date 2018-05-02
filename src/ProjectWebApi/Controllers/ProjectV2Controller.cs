@@ -83,7 +83,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <response code="400">Bad request</response>
     [Route("api/v2/projects")]
     [HttpPost]
-    public async Task<ContractExecutionResult> CreateProjectV2([FromBody] CreateProjectV2Request projectRequest)
+    public async Task<ReturnLongV2Result> CreateProjectV2([FromBody] CreateProjectV2Request projectRequest)
     {
       if (projectRequest == null)
       {
@@ -141,8 +141,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Footprint must remain the same as CGen: 
     ///     POST /t/trimble.com/vss-projectmonitoring/1.0/api/v2/preferences/tcc HTTP/1.1
     ///     Body: {"organization":"vssnz19"}     
-    ///     Response: HttpStatusCode.OK
-    ///                {"success":true}
+    ///     Response: {"success":true}
     /// 
     /// Happy path only to be handled in this US. ServiceExceptions will be mapped in a future US.
     /// However this is a faillure Response:
@@ -153,7 +152,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <response code="400">Bad request</response>
     [Route("api/v2/preferences/tcc")]
     [HttpPost]
-    public async Task<ContractExecutionResult> ValidateTccAuthorization(
+    public async Task<ReturnSuccessV2Result> ValidateTccAuthorization(
       [FromBody] ValidateTccAuthorizationRequest tccAuthorizationRequest)
     {
       if (tccAuthorizationRequest == null)
@@ -177,7 +176,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       );
 
       log.LogInformation("ValidateTccAuthorization. completed succesfully");
-      return new ContractExecutionResult((int)HttpStatusCode.OK, "\"success\":true");
+      return ReturnSuccessV2Result.CreateReturnSuccessV2Result(HttpStatusCode.OK, true);
     }
 
     #endregion TTCAuthorization

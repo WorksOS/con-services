@@ -103,6 +103,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       {
         s = s.Replace(to_replace, string.Empty);
       }
+
       return ParseBoundaryData(s, ',', ' ');
     }
 
@@ -112,6 +113,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       {
         s = s.Replace(to_replace, string.Empty);
       }
+
       return ParseBoundaryDataPoint(s, ',', ' ');
     }
 
@@ -125,6 +127,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       {
         polygonWkt.Append(String.Format("{0} {1},", point.x, point.y));
       }
+
       return polygonWkt.ToString().TrimEnd(',') + ("))");
     }
 
@@ -134,7 +137,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       if (!points[0].Equals(points[points.Count - 1]))
         points.Add(points[0]);
       points.Add(new Point(Double.MaxValue, Double.MaxValue));
-      for (int i = 0; i < points.Count -1; i++)
+      for (int i = 0; i < points.Count - 1; i++)
       {
         var firstPoint = points[i];
         var secondPoint = points[i + 1];
@@ -143,6 +146,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
           adjustedPoints.Add(firstPoint);
         }
       }
+
       return adjustedPoints;
     }
 
@@ -154,6 +158,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
           new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(23),
             contractExecutionStatesEnum.FirstNameWithOffset(23)));
       }
+
       try
       {
         var points = (oldFormat ? ParseBoundaryData(boundary, ';', ',') : ParseGeometryData(boundary)).ToList();
@@ -210,53 +215,30 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
         {
           az = Math.Atan2(cosLat * Math.Sin(lngRad), Math.Sin(latRad)) % (2 * Math.PI);
         }
+
         if (i == 0)
         {
           colat0 = colat;
           az0 = az;
         }
+
         if (i > 0 && i < points.Count)
         {
           double deltaaz = az - prevaz;
           double signum = deltaaz > 0 ? 1 : (deltaaz < 0 ? -1 : 0);
           deltaaz = Math.Abs(deltaaz);
-          sum = sum + (1 - Math.Cos(prevcolat + (colat - prevcolat) / 2)) * Math.PI * ((deltaaz / Math.PI) - 2 * Math.Ceiling(((deltaaz / Math.PI) - 1) / 2)) * signum;
+          sum = sum + (1 - Math.Cos(prevcolat + (colat - prevcolat) / 2)) * Math.PI *
+                ((deltaaz / Math.PI) - 2 * Math.Ceiling(((deltaaz / Math.PI) - 1) / 2)) * signum;
         }
+
         prevcolat = colat;
         prevaz = az;
       }
+
       sum = sum + (1 - Math.Cos(prevcolat + (colat0 - prevcolat) / 2)) * (az0 - prevaz);
       double tempSum = Math.Abs(sum) / 4 / Math.PI;
       double areaSquareMeters = EARTH_SURFACE_AREA * Math.Min(tempSum, 1 - tempSum);
       return areaSquareMeters;
-    }
-
-  }
-
-  public class Point : IEquatable<Point>
-  {
-    public double x;
-    public double y;
-
-    public Point(double latitude, double longitude)
-    {
-      this.x = longitude;
-      this.y = latitude;
-    }
-
-    public double Latitude
-    {
-      get { return y; }
-    }
-
-    public double Longitude
-    {
-      get { return x; }
-    }
-
-    public bool Equals(Point other)
-    {
-      return other != null ? (this.Latitude == other.Latitude && this.Longitude == other.Longitude) : false;
     }
   }
 }

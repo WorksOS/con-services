@@ -80,7 +80,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <response code="200">Ok</response>
     [Route("api/v2/projects/{projectId}/importedfiles")]
     [HttpPut]
-    public async Task<ContractExecutionResult> UpsertImportedFileV2(
+    public async Task<ReturnLongV2Result> UpsertImportedFileV2(
       [FromUri] long projectId,
       [FromBody] ImportedFileTbc importedFileTbc)
     {
@@ -122,11 +122,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       ) as ImportedFileDescriptorSingleResult;
 
       // Automapper maps src.ImportedFileId to LegacyFileId, so this IS the one sent to Raptor and used to ref via TCC
-      ReturnLongV2Result response;
-      if (importedFile != null && importedFile.ImportedFileDescriptor != null)
-        response = ReturnLongV2Result.CreateLongV2Result(HttpStatusCode.OK, importedFile.ImportedFileDescriptor.LegacyFileId);
-      else
-        response = ReturnLongV2Result.CreateLongV2Result(HttpStatusCode.InternalServerError, -1);
+      var response = importedFile?.ImportedFileDescriptor != null 
+        ? ReturnLongV2Result.CreateLongV2Result(HttpStatusCode.OK, importedFile.ImportedFileDescriptor.LegacyFileId) 
+        : ReturnLongV2Result.CreateLongV2Result(HttpStatusCode.InternalServerError, -1);
 
       log.LogInformation(
         $"UpsertImportedFileV2. Completed succesfully. Response: {response} importedFile: {JsonConvert.SerializeObject(importedFile)}");

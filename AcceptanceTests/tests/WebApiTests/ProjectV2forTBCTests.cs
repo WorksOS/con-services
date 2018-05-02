@@ -32,8 +32,8 @@ namespace WebApiTests
 
       var createProjectV2Result = JsonConvert.DeserializeObject<ReturnLongV2Result>(response);
       
-      Assert.AreEqual((int)HttpStatusCode.Created, createProjectV2Result.Code, "Not created ok.");
-      Assert.AreNotEqual(-1, createProjectV2Result.id, "No Project was created.");
+      Assert.AreEqual(HttpStatusCode.Created, createProjectV2Result.Code, "Not created ok.");
+      Assert.AreNotEqual(-1, createProjectV2Result.Id, "No Project was created.");
     }
 
     [TestMethod]
@@ -59,16 +59,15 @@ namespace WebApiTests
 
       var response = ValidateTbcOrgId(ts, mysql, "the sn");
      
-      Assert.AreEqual((int)HttpStatusCode.OK, response.Code, "Not validated ok.");
-      Assert.AreEqual("\"success\":true", response.Message, "Validation message not ok.");
+      Assert.AreEqual(HttpStatusCode.OK, response.Code, "Not validated ok.");
+      Assert.IsTrue( response.Success, "Validation not flagged as successful.");
     }
 
-    private ContractExecutionResult ValidateTbcOrgId(TestSupport ts, MySqlHelper mysql, string orgShortName)
+    private ReturnSuccessV2Result ValidateTbcOrgId(TestSupport ts, MySqlHelper mysql, string orgShortName)
     {
-      long projectId = -1;
       var response = ts.ValidateTbcOrgIdApiV2(orgShortName, HttpStatusCode.OK);
       Console.WriteLine(response);
-      var jsonResponse = JsonConvert.DeserializeObject<ContractExecutionResult>(response);
+      var jsonResponse = JsonConvert.DeserializeObject<ReturnSuccessV2Result>(response);
       return jsonResponse;
     }
 
@@ -76,7 +75,6 @@ namespace WebApiTests
 
     private string CreateProjectV2(TestSupport ts, MySqlHelper mysql, string projectName, ProjectType projectType)
     {
-      long projectId = -1;
       var response = ts.CreateProjectViaWebApiV2(projectName, ts.FirstEventDate, ts.LastEventDate, "New Zealand Standard Time", projectType, DateTime.UtcNow, PROJECT_BOUNDARY, HttpStatusCode.OK);
       Console.WriteLine(response);
 

@@ -3,9 +3,8 @@ using Newtonsoft.Json;
 
 namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
 {
-  public class ReturnLongV2Result
+  public class ReturnSuccessV2Result 
   {
-
     /// <value>
     ///   Result code.
     /// </value>
@@ -13,15 +12,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
     public HttpStatusCode Code { get; set; }
 
     /// <summary>
-    /// a legacyId (project or importedFile)
+    /// Succeeded or not
     /// </summary>
-    [JsonProperty(PropertyName = "id")]
-    public long Id { get;  set; }
+    [JsonProperty(PropertyName = "success")]
+    public bool Success { get;  set; }
     
     /// <summary>
     /// Private constructor
     /// </summary>
-    private ReturnLongV2Result()
+    private ReturnSuccessV2Result()
     { }
 
 
@@ -29,12 +28,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
     /// CreateLongV2Result create instance
     /// </summary>
     /// <returns></returns>
-    public static ReturnLongV2Result CreateLongV2Result(HttpStatusCode code, long id)
+    public static ReturnSuccessV2Result CreateReturnSuccessV2Result(HttpStatusCode code, bool success)
     {
-      return new ReturnLongV2Result
+      return new ReturnSuccessV2Result
       {
         Code = code,
-        Id = id
+        Success = success
       };
     }
     
