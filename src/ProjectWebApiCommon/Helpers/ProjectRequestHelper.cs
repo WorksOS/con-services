@@ -146,7 +146,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IFileRepository fileRepo)
     {
       Stream memStream = null;
-      var tccPath = $"/{businessCentreFile.Path}/{businessCentreFile.Name}";
+      var tccPath = $"{businessCentreFile.Path}/{businessCentreFile.Name}";
       byte[] coordSystemFileContent = null;
       int numBytesRead = 0;
 

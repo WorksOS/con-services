@@ -262,15 +262,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       string fileSpaceId,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IFileRepository fileRepo)
     {
-      var tccPathSource = $"/{sourceFile.Path}";
       DirResult fileEntry = null;
 
       try
       {
         log.LogInformation(
-          $"CopyFileWithinTccRepository: GetFileList filespaceID: {sourceFile.FileSpaceId} tccPathSource: {tccPathSource} sourceFile.Name: {sourceFile.Name}");
+          $"CopyFileWithinTccRepository: GetFileList filespaceID: {sourceFile.FileSpaceId} tccPathSource: {sourceFile.Path} sourceFile.Name: {sourceFile.Name}");
 
-        var dirResult = await fileRepo.GetFileList(sourceFile.FileSpaceId, tccPathSource, sourceFile.Name);
+        var dirResult = await fileRepo.GetFileList(sourceFile.FileSpaceId, sourceFile.Path, sourceFile.Name);
 
         log.LogInformation(
           $"CopyFileWithinTccRepository: GetFileList dirResult: {JsonConvert.SerializeObject(dirResult)}");
@@ -311,7 +310,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       string customerUid, string projectUid, string dstFileSpaceId,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IFileRepository fileRepo)
     {
-      var srcTccPathAndFile = $"/{sourceFile.Path}/{sourceFile.Name}";
+      var srcTccPathAndFile = $"{sourceFile.Path}/{sourceFile.Name}";
       var destTccPath = $"/{customerUid}/{projectUid}";
       var destTccPathAndFile = $"/{customerUid}/{projectUid}/{sourceFile.Name}";
       var tccCopyFileResult = false;
