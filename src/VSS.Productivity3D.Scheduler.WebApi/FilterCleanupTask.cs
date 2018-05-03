@@ -6,6 +6,7 @@ using Hangfire;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
 
 
@@ -18,18 +19,21 @@ namespace VSS.Productivity3D.Scheduler.WebApi
   {
     private readonly ILogger _log;
     private readonly IConfigurationStore _configStore = null;
+    private readonly IFilterRepository _filterRepository;
     private static int DefaultFilterAgeDefaultMinutes { get; } = 4;
     private static int DefaultTaskIntervalDefaultMinutes { get; } = 240; // 4 hours
-  
+
     /// <summary>
     /// Initializes the FilterCleanupTask 
     /// </summary>
     /// <param name="configStore"></param>
     /// <param name="loggerFactory"></param>
-    public FilterCleanupTask(IConfigurationStore configStore, ILoggerFactory loggerFactory)
+    /// <param name="filterRepository"></param>
+    public FilterCleanupTask(IConfigurationStore configStore, ILoggerFactory loggerFactory, IFilterRepository filterRepository)
     {
       _log = loggerFactory.CreateLogger<FilterCleanupTask>();
-      _configStore = configStore;  
+      _configStore = configStore;
+      _filterRepository = filterRepository;
     }
 
     /// <summary>
@@ -86,6 +90,13 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       Dictionary<string, object> newRelicAttributes;
 
       var cutoffActionUtcToDelete = startUtc.AddMinutes(-ageInMinutesToDelete).ToString("yyyy-MM-dd HH:mm:ss"); // mySql requires this format
+
+      _log.LogInformation("************** THE FOLLOWING FILTERS ARE GOING TO BE REMOVED ***************");
+      var filtersToBeDeleted = _filterRepository.GetTransientFiltersToBeCleaned(ageInMinutesToDelete).Result;
+      foreach (var filter in filtersToBeDeleted)
+      {
+        _log.LogInformation(filter.ToString());
+      }
 
       MySqlConnection dbConnection = new MySqlConnection(filterDbConnectionString);
       try

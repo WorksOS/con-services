@@ -19,6 +19,7 @@ using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.FIlters;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
 using VSS.Productivity3D.Scheduler.WebAPI;
 using VSS.TCCFileAccess;
@@ -144,6 +145,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddTransient<IExportJob, ExportJob>();
       services.AddTransient<IApiClient, ApiClient>();
       services.AddTransient<ITransferProxy, TransferProxy>();
+      services.AddTransient<IFilterRepository, FilterRepository>();
       _serviceCollection = services;
     }
 
@@ -174,6 +176,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       var tPaasProxy = _serviceProvider.GetRequiredService<ITPaasProxy>();
       var impFileProxy = _serviceProvider.GetRequiredService<IImportedFileProxy>();
       var fileRepo = _serviceProvider.GetRequiredService<IFileRepository>();
+      var filterRepo = _serviceProvider.GetRequiredService<IFilterRepository>();
 
       try
       {
@@ -239,7 +242,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       log.LogDebug($"Scheduler.Startup: filterCleanupTaskToRun {filterCleanupTaskToRun}");
       if (filterCleanupTaskToRun)
       {
-        var filterCleanupTask = new FilterCleanupTask(configStore, loggerFactory);
+        var filterCleanupTask = new FilterCleanupTask(configStore, loggerFactory, filterRepo);
         filterCleanupTask.AddTask();
         expectedJobCount += 1;
       }
