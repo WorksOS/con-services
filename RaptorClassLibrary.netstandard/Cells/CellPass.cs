@@ -248,7 +248,7 @@ namespace VSS.VisionLink.Raptor.Cells
         public PassType passType
         {
             get { return PassTypeHelper.GetPassType(GPSModeStore); }
-            set { PassTypeHelper.SetPassType(GPSModeStore, value); }
+            set { GPSModeStore = PassTypeHelper.SetPassType(GPSModeStore, value); }
         }
 
         /// <summary>
