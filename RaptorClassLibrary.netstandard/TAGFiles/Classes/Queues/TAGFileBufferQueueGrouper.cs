@@ -128,7 +128,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// and any appropriate failure mode handling while processing the bucket of TAG files returned.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<TAGFileBufferQueueKey> Extract(List<long> avoidProjects, out long projectID)
+        public IEnumerable<TAGFileBufferQueueKey> Extract(List<long> avoidProjects, bool addProjectToAvoidList, out long projectID)
         {
             lock (this)
             {
@@ -152,6 +152,12 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 // No full buckets - extract the first list of asset based TAG files from the grouper for the selected project
                 result = groupMap[projectID].Values.First();
                 groupMap[projectID].Remove(result.First().AssetID);
+
+                if (addProjectToAvoidList && result.Any())
+                {
+                    // Add the project to the avoid list
+                    avoidProjects.Add(projectID);
+                }
 
                 return result;
             }
