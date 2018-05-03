@@ -21,6 +21,7 @@ namespace VSS.WebApi.Common
       app.UseFilterMiddleware<RequestIDMiddleware>();
 
       app.UseSwagger();
+      //Swagger documentation can be viewed with http://localhost:5000/swagger/v1/swagger.json
       app.UseSwaggerUI(c =>
       {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", serviceTitle);

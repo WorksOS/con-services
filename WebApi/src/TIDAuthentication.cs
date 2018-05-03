@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -56,13 +57,13 @@ namespace VSS.WebApi.Common
     /// <returns></returns>
     public async Task Invoke(HttpContext context)
     {
-      if (!context.Request.Path.Value.Contains("/swagger/") && !InternalConnection())
+      if (!context.Request.Path.Value.Contains("/swagger/") && !InternalConnection(context))
       {
         bool isApplicationContext = false;
         string applicationName = string.Empty;
         string userUid = string.Empty;
         string userEmail = string.Empty;
-        bool requireCustomerUid = RequireCustomerUid();
+        bool requireCustomerUid = RequireCustomerUid(context);
         string customerUid = string.Empty;
         string customerName = string.Empty;
 
@@ -96,6 +97,7 @@ namespace VSS.WebApi.Common
           return;
         }
 
+        var customHeaders = context.Request.Headers.GetCustomHeaders();
         //If this is an application context do not validate user-customer
         if (isApplicationContext)
         {
@@ -109,7 +111,6 @@ namespace VSS.WebApi.Common
         {
           try
           {
-            var customHeaders = context.Request.Headers.GetCustomHeaders();
             var customer = await customerProxy.GetCustomerForUser(userUid, customerUid, customHeaders);
             if (customer == null)
             {
@@ -136,7 +137,7 @@ namespace VSS.WebApi.Common
         log.LogInformation("Authorization: for Customer: {0} userUid: {1} userEmail: {2} allowed", customerUid, userUid,
           userEmail);
         //Set calling context Principal
-        context.User = new TIDCustomPrincipal(new GenericIdentity(userUid), customerUid, customerName, userEmail, isApplicationContext);
+        context.User = CreatePrincipal(userUid, customerUid, customerName, userEmail, isApplicationContext, customHeaders);
       }
 
       await this._next.Invoke(context);
@@ -145,7 +146,7 @@ namespace VSS.WebApi.Common
     /// <summary>
     /// If true, bypasses authentication. Override in a service if required.
     /// </summary>
-    public virtual bool InternalConnection()
+    public virtual bool InternalConnection(HttpContext context)
     {
       return false;
     }
@@ -153,9 +154,18 @@ namespace VSS.WebApi.Common
     /// <summary>
     /// If true, the customer-user association is validated. Override in a service if required.
     /// </summary>
-    public virtual bool RequireCustomerUid()
+    public virtual bool RequireCustomerUid(HttpContext context)
     {
       return true;
+    }
+
+    /// <summary>
+    /// Creates a TID principal. Override in a service to create custom service principals.
+    /// </summary>
+    public virtual TIDCustomPrincipal CreatePrincipal(string userUid, string customerUid, string customerName, string userEmail, 
+      bool isApplicationContext, IDictionary<string, string> contextHeaders)
+    {
+      return new TIDCustomPrincipal(new GenericIdentity(userUid), customerUid, customerName, userEmail, isApplicationContext);
     }
 
     private async Task SetResult(string message, HttpContext context)
