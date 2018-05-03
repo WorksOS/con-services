@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -8,37 +7,25 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Common.Filters.Authentication.Models
 {
   /// <summary>
   /// Custom principal for Raptor with list of projects.
   /// </summary>
-  public class RaptorPrincipal : ClaimsPrincipal
+  public class RaptorPrincipal : TIDCustomPrincipal
   {
     private readonly IProjectListProxy projectProxy;
     private readonly IDictionary<string, string> authNContext;
 
     //We need to delegate Project retrieval downstream as project may not accessible to a user once it has been created
-    public RaptorPrincipal(ClaimsIdentity identity, string customerUid,
-      string username, string customername, IProjectListProxy projectProxy, IDictionary<string, string> contextHeaders, bool isApplication = false) : base(identity)
+    public RaptorPrincipal(ClaimsIdentity identity, string customerUid, string customerName, string userName, bool isApplication,
+      IProjectListProxy projectProxy, IDictionary<string, string> contextHeaders) 
+      : base(identity, customerUid, customerName, userName, isApplication)
     {
-      CustomerUid = customerUid;
-      IsApplication = isApplication;
-      UserEmail = username;
-      CustomerName = customername;
       this.projectProxy = projectProxy;
       authNContext = contextHeaders;
     }
-
-    public string CustomerUid { get; }
-
-    public string UserEmail { get; }
-
-    public string CustomerName { get; }
-
-    public bool IsApplication { get; }
 
     /// <summary>
     /// Get the project descriptor for the specified project id.
