@@ -34,6 +34,10 @@ namespace VSS.Productivity3D.Filter.WebApi
   /// </summary>
   public class Startup
   {
+    /// <summary>
+    /// The name of this service for swagger etc.
+    /// </summary>
+    private const string SERVICE_TITLE = "Filter Service API";
     public const string loggerRepoName = "WebApi";
     private IServiceCollection serviceCollection;
 
@@ -70,16 +74,7 @@ namespace VSS.Productivity3D.Filter.WebApi
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddLogging();
-
-      //Configure CORS
-      services.AddCors(options =>
-      {
-        options.AddPolicy("VSS", builder => builder.AllowAnyOrigin()
-          .WithHeaders("Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization",
-            "X-VisionLink-CustomerUID", "X-VisionLink-UserUid", "X-Jwt-Assertion", "X-VisionLink-ClearCache", "Cache-Control")
-          .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE")
-	        .SetPreflightMaxAge(TimeSpan.FromSeconds(2520)));
-      });
+      services.AddCommon<Startup>(SERVICE_TITLE);
 
       // Add framework services.
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
@@ -94,41 +89,8 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddTransient<IErrorCodesProvider, ErrorCodesProvider>();
       services.AddMemoryCache();
 
-      services.AddMvc(
-        config =>
-        {
-          config.Filters.Add(new ValidationFilterAttribute());
-        }
-      );
-
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-      //Configure swagger
-      services.AddSwaggerGen(c =>
-      {
-        c.SwaggerDoc("v1", new Info { Title = "Filter Service API", Version = "v1" });
-      });
-
-      services.ConfigureSwaggerGen(options =>
-      {
-        string pathToXml;
-
-        var moduleName = typeof(Startup).GetTypeInfo().Assembly.ManifestModule.Name;
-        var assemblyName = moduleName.Substring(0, moduleName.LastIndexOf('.'));
-
-        if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), assemblyName + ".xml")))
-          pathToXml = Directory.GetCurrentDirectory();
-        else if (File.Exists(Path.Combine(System.AppContext.BaseDirectory, assemblyName + ".xml")))
-          pathToXml = System.AppContext.BaseDirectory;
-        else
-        {
-          var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
-          pathToXml = Path.GetDirectoryName(pathToExe);
-        }
-        options.IncludeXmlComments(Path.Combine(pathToXml, assemblyName + ".xml"));
-        options.IgnoreObsoleteProperties();
-        options.DescribeAllEnumsAsStrings();
-      });
       serviceCollection = services;
     }
 
@@ -147,26 +109,14 @@ namespace VSS.Productivity3D.Filter.WebApi
 
       loggerFactory.AddDebug();
 
-      app.UseExceptionTrap();
 #if NET_4_7
       if (Configuration["newrelic"] == "true")
         app.UseMiddleware<NewRelicMiddleware>();
 #endif
-
-      app.UseFilterMiddleware<RequestIDMiddleware>();
-
       //Enable CORS before TID so OPTIONS works without authentication
-      app.UseCors("VSS");
-
-      app.UseSwagger();
-
-      app.UseSwaggerUI(c =>
-      {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Filter Service API V1");
-      });
-
+      app.UseCommon(SERVICE_TITLE);
       app.UseTIDAuthentication();
-      app.UseMvc();
+
     }
   }
 }
