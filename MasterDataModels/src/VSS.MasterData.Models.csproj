@@ -6,7 +6,7 @@
     <Company>VSS</Company>
     <Product>VSS.MasterData.Models.netcore</Product>
     <Description>Shared models for 3D Productivity</Description>
-    <VersionPrefix>2.19.0</VersionPrefix>
+    <VersionPrefix>2.19.1</VersionPrefix>
     <TargetFrameworks>netstandard1.6</TargetFrameworks>
     <AssemblyName>VSS.MasterData.Models</AssemblyName>
     <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
