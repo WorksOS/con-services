@@ -9,6 +9,7 @@ using VSS.Productivity3D.Scheduler.Common.Models;
 using VSS.Productivity3D.Scheduler.Common.Repository;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.MasterData.Models.Models;
 
 namespace SchedulerTestsImportedFileSync
 {
@@ -365,7 +366,7 @@ namespace SchedulerTestsImportedFileSync
 
       // files imported via CG must during the Lift&Shift point to the customer/project Id locations
       //   it is not till NG supports importing files (during Lift and Shift) that they will be generated at all under UIDs.
-      var fileDescriptor = JsonConvert.SerializeObject(SchedulerFileDescriptor.CreateFileDescriptor(FileSpaceId,
+      var fileDescriptor = JsonConvert.SerializeObject(FileDescriptor.CreateFileDescriptor(FileSpaceId,
         importFileResponse.LegacyCustomerId.ToString(), importFileResponse.LegacyProjectId.ToString(),
         importFileResponse.Name));
       Assert.AreEqual(fileDescriptor, importFileResponse.FileDescriptor,
