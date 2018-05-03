@@ -60,6 +60,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(
                     RaptorCaches.TAGFileBufferQueueCacheName());
 
+            TAGFileBufferQueueKey removalKey = new TAGFileBufferQueueKey();
+
             // Cycle looking for new work to do as TAG files arrive until aborted...
             do
             {
@@ -122,12 +124,14 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                             ProcessTAGFileRequest request = new ProcessTAGFileRequest();
                             ProcessTAGFileResponse response = request.Execute(new ProcessTAGFileRequestArgument
                             {
-                                //AssetUID = TAGQueueItems[0].AssetUID,
                                 //ProjectUID = TAGQueueItems[0].ProjectUID,
+                                ProjectID = projectID,
                                 AssetID = TAGQueueItems[0].AssetID,
-                                ProjectID = TAGQueueItems[0].ProjectID,
                                 TAGFiles = fileItems
                             });
+
+                            removalKey.ProjectID = projectID;
+                            removalKey.AssetID = TAGQueueItems[0].AssetID;
 
                             // -> Remove the set of processed TAG files from the buffer queue cache (depending on processing status?...)
                             foreach (var tagFileResponse in response.Results)
@@ -141,11 +145,12 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                                     if (!tagFileResponse.Success)
                                         Log.Error($"TAG file failed to process, with exception {tagFileResponse.Exception}. WARNING: FILE REMOVED FROM QUEUE");
 
-                                    queueCache.Remove(new TAGFileBufferQueueKey
+                                    removalKey.FileName = tagFileResponse.FileName;
+
+                                    if (!queueCache.Remove(removalKey))
                                     {
-                                        ProjectID = projectID,
-                                        FileName = tagFileResponse.FileName
-                                    });
+                                        Log.Error($"Failed to remove TAG file {removalKey}");
+                                    }
                                 }
                                 catch (Exception e)
                                 {
