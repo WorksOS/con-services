@@ -32,18 +32,22 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// <returns></returns>
         public ISubGridCellLatestPassDataWrapper NewWrapper(bool useMutableSpatialData, bool compressImmutableSpatialData)
         {
+            ISubGridCellLatestPassDataWrapper result;
             if (useMutableSpatialData)
             {
-                return new SubGridCellLatestPassDataWrapper_NonStatic();
-            }
-
-            if (compressImmutableSpatialData)
+                result = new SubGridCellLatestPassDataWrapper_NonStatic();
+            } else if (compressImmutableSpatialData)
             {
-                return new SubGridCellLatestPassDataWrapper_StaticCompressed();
+                result = new SubGridCellLatestPassDataWrapper_StaticCompressed();
+            }
+            else
+            {
+                // Note: Static and Static-Compressed are the same for the latest pass information
+                result = new SubGridCellLatestPassDataWrapper_StaticCompressed();
             }
 
-            // Note: Static and Static-Compressed are the same for the latest pass information
-            return new SubGridCellLatestPassDataWrapper_StaticCompressed();
+            result.ClearPasses();
+            return result;
         }
 
         /// <summary>

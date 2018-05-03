@@ -46,5 +46,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces
         ushort ReadTemperature(int Col, int Row);
 
         bool IsImmutable();
+
+        void ClearPasses();
     }
 }

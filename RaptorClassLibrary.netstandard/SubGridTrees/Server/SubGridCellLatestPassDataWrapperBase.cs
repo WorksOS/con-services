@@ -32,11 +32,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         public bool HasMDPData => true;
         public bool HasCCAData => true;
 
-
-
-    public SubGridCellLatestPassDataWrapperBase()
+        public SubGridCellLatestPassDataWrapperBase()
         {
-            ClearPasses();
         }
 
         /// <summary>
