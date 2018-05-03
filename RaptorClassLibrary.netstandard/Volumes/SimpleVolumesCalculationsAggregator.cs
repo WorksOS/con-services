@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Reflection;
 using System.Threading;
+using log4net;
 using VSS.Velociraptor.DesignProfiling;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Designs;
@@ -12,7 +14,6 @@ using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Types;
-using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 using VSS.VisionLink.Raptor.Utilities;
 
 namespace VSS.VisionLink.Raptor.Volumes
@@ -22,6 +23,8 @@ namespace VSS.VisionLink.Raptor.Volumes
     /// </summary>
     public class SimpleVolumesCalculationsAggregator : ISubGridRequestsAggregator, IAggregateWith<SimpleVolumesCalculationsAggregator>
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         /// <summary>
         /// Defines a subgrid full of null values to run through the volumes engine in cases when 
         /// one of the two subgrids is not available to allow for correctly tracking of statistics
@@ -151,15 +154,13 @@ namespace VSS.VisionLink.Raptor.Volumes
         protected void ProcessVolumeInformationForSubgrid(ClientHeightLeafSubGrid BaseScanSubGrid,
                                                           ClientHeightLeafSubGrid TopScanSubGrid)
         {
-            float BaseZ, TopZ;
-
             // DesignHeights represents all the valid spot elevations for the cells in the
             // subgrid being processed
             ClientHeightLeafSubGrid DesignHeights = null;
             DesignProfilerRequestResult ProfilerRequestResult = DesignProfilerRequestResult.UnknownError;
 
-            double BelowToleranceToCheck, AboveToleranceToCheck;
-            double ElevationDiff;
+//            double BelowToleranceToCheck, AboveToleranceToCheck;
+//            double ElevationDiff;
 
             // FCellArea is a handy place to store the cell area, rather than calculate it all the time (value wont change);
             double CellArea = CellSize * CellSize;
@@ -171,19 +172,18 @@ namespace VSS.VisionLink.Raptor.Volumes
             {
                 if (ProfilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
                 {
-                    // TODO readd when logging available
-                    //SIGLogMessage.PublishNoODS(Self, Format('Design profiler subgrid elevation request for %s failed with error %d', [BaseScanSubGrid.OriginAsCellAddress.AsText, Ord(ProfilerRequestResult)]), slmcError);
+                    Log.Error($"Design profiler subgrid elevation request for {BaseScanSubGrid.OriginAsCellAddress()} failed with error {ProfilerRequestResult}");
                     return;
                 }
             }
 
             SubGridTreeBitmapSubGridBits Bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-            // TODO: Liftbuildsettings not available in Ignite
-            bool StandardVolumeProcessing = true; // TODO: Should be -> (LiftBuildSettings.TargetLiftThickness == Consts.NullHeight || LiftBuildSettings.TargetLiftThickness <= 0)
+            //const bool StandardVolumeProcessing = true; // TODO: Should be -> (LiftBuildSettings.TargetLiftThickness == Consts.NullHeight || LiftBuildSettings.TargetLiftThickness <= 0)
 
             // If we are interested in standard volume processing use this cycle
-            if (StandardVolumeProcessing)
+            // Uncomment when StandardVolumeProcessing becomes... not constant
+            // if (StandardVolumeProcessing)
             {
                 CellsScanned += SubGridTree.SubGridTreeCellsPerSubgrid;
 
@@ -191,7 +191,8 @@ namespace VSS.VisionLink.Raptor.Volumes
                 {
                     for (int J = 0; J < SubGridTree.SubGridTreeDimension; J++)
                     {
-                        BaseZ = BaseScanSubGrid.Cells[I, J];
+                        float TopZ;
+                        float BaseZ = BaseScanSubGrid.Cells[I, J];
 
                         /* TODO - removed for Ignite POC until LiftBuildSettings is available
                         // If the user has configured a first pass thickness, then we need to subtract this height
@@ -299,23 +300,22 @@ namespace VSS.VisionLink.Raptor.Volumes
                                 break;
 
                             default:
-                                //SIGLogMessage.Publish(Self, Format('Unknown volume type %d in ProcessVolumeInformationForSubgrid()', [Ord(FVolumeType)]), slmcError);
+                                Log.Error($"Unknown volume type {VolumeType} in ProcessVolumeInformationForSubgrid()");
                                 break;
                         }
                     }
                 }
             }
 
-            // TODO: Liftbuildsettings not available in Ignite
-            bool TargetLiftThicknessCalculationsRequired = false; // TODO: Should be -> (LiftBuildSettings.TargetLiftThickness != Consts.NullHeight && LiftBuildSettings.TargetLiftThickness > 0)
+            // const bool TargetLiftThicknessCalculationsRequired = false; // TODO: Should be -> (LiftBuildSettings.TargetLiftThickness != Consts.NullHeight && LiftBuildSettings.TargetLiftThickness > 0)
 
             //If we are interested in thickness calculations do them
+            /* Uncomment when the constant above becomes... not constant
             if (TargetLiftThicknessCalculationsRequired)
             {
-                /* TODO: Commented out as lift build settings not in Ignite POC
                 BelowToleranceToCheck = LiftBuildSettings.TargetLiftThickness - LiftBuildSettings.BelowToleranceLiftThickness;
                 AboveToleranceToCheck = LiftBuildSettings.TargetLiftThickness + LiftBuildSettings.AboveToleranceLiftThickness;
-                */
+
                 BelowToleranceToCheck = 0; // Assign value for PCO to keep compiler happy
                 AboveToleranceToCheck = 0; // Assign value for PCO to keep compiler happy
 
@@ -346,6 +346,7 @@ namespace VSS.VisionLink.Raptor.Volumes
                         CellsDiscarded++;
                 });
             }
+            */
 
             // Record the bits for this subgrid in the coverage map by requesting the whole subgrid
             // of bits from the leaf level and setting it in one operation under an exclusive lock
@@ -360,7 +361,7 @@ namespace VSS.VisionLink.Raptor.Volumes
                     if (CoverageMapSubgrid != null)
                     {
                         Debug.Assert(CoverageMapSubgrid is SubGridTreeLeafBitmapSubGrid, "CoverageMapSubgrid in TICVolumesCalculationsAggregateState.ProcessVolumeInformationForSubgrid is not a TSubGridTreeLeafBitmapSubGrid");
-                        (CoverageMapSubgrid as SubGridTreeLeafBitmapSubGrid).Bits = Bits;
+                        ((SubGridTreeLeafBitmapSubGrid)CoverageMapSubgrid).Bits = Bits;
                     }
                     else
                         Debug.Assert(false, "Failed to request CoverageMapSubgrid from FCoverageMap in TICVolumesCalculationsAggregateState.ProcessVolumeInformationForSubgrid");
@@ -396,20 +397,13 @@ namespace VSS.VisionLink.Raptor.Volumes
 
                     if (BaseSubGrid == null)
                     {
-                        // TODO readd when logging available
-                        //SIGLogMessage.PublishNoODS(Self, Format('#W# TICVolumesCalculationsAggregateState.SummariseSubgridResult BaseSubGrid is nil', []), slmcWarning);
+                        Log.Warn("#W# .SummariseSubgridResult BaseSubGrid is null");
                         return;
                     }
 
                     if (subGrids.Length > 1)
                     {
                         TopSubGrid = subGridResult[1]; //.Subgrid as TICClientSubGridTreeLeaf_Height;
-                        if (BaseSubGrid == null)
-                        {
-                            // TODO readd when logging available
-                            // SIGLogMessage.PublishNoODS(Self, Format('#W# TICVolumesCalculationsAggregateState.SummariseSubgridResult TopSubGrid is nil', []), slmcWarning);
-                            return;
-                        };
                     }
                     else
                         TopSubGrid = NullHeightSubgrid;

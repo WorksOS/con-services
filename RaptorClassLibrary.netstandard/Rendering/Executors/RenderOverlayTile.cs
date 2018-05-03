@@ -3,6 +3,7 @@ using System;
 using System.Drawing;
 using System.Reflection;
 using VSS.TRex.Rendering.Abstractions;
+using VSS.TRex.RequestStatistics;
 using VSS.VisionLink.Raptor.Designs;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
@@ -30,15 +31,15 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
         /// <summary>
         /// The Raptor application service node performing the request
         /// </summary>
-        private string RequestingRaptorNodeID { get; set; } = string.Empty;
+        private string RequestingRaptorNodeID { get; set; }
 
-        private long DataModelID = -1;
+        private long DataModelID;
         // long MachineID = -1;
         // FExternalDescriptor :TASNodeRequestDescriptor;
 
-        private DisplayMode Mode = DisplayMode.Height;
+        private DisplayMode Mode;
 
-        private bool CoordsAreGrid = true;
+        private bool CoordsAreGrid;
 
         private XYZ BLPoint; // : TWGS84Point;
         private XYZ TRPoint; // : TWGS84Point;
@@ -58,13 +59,13 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
         /// <summary>
         /// The identifier for the design held in the designs list ofr the project to be used to calculate cut/fill values
         /// </summary>
-        public long CutFillDesignID { get; set; } = long.MinValue;
+        public long CutFillDesignID { get; set; }
 
             
         // ComputeICVolumesType ReferenceVolumeType = ComputeICVolumesType.None;
         // FColourPalettes: TColourPalettes;
         // ICOptions ICOptions = new ICOptions();
-        Color RepresentColor = Color.Black;
+        private Color RepresentColor;
 
         private PlanViewTileRenderer Renderer;
 
@@ -121,9 +122,9 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
 
         private SubGridTreeSubGridExistenceBitMask OverallExistenceMap;
 
-        private BoundingWorldExtent3D RotatedTileBoundingExtents;
+        private BoundingWorldExtent3D RotatedTileBoundingExtents = BoundingWorldExtent3D.Inverted();
 
-        bool SurveyedSurfacesExludedViaTimeFiltering = true;
+        private bool SurveyedSurfacesExludedViaTimeFiltering = true;
 
         /* TODO
          private TICDisplayPaletteBaseClass ColourPaletteClassType()
@@ -323,15 +324,11 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
         /// <returns></returns>
         public IBitmap Execute()
         {
-            BoundingWorldExtent3D SpatialExtents;
             // WorkingColourPalette  : TICDisplayPaletteBase;
             // CoordConversionResult : TCoordServiceErrorStatus;
-            long RequestDescriptor;
             // bool ScheduledWithGovernor = false;
             SubGridTreeSubGridExistenceBitMask DesignSubgridOverlayMap = null;
             long[] SurveyedSurfaceExclusionList = new long[0];
-
-            double dx, dy;
 
             /*
                if not Assigned(ASNodeImplInstance) or ASNodeImplInstance.ServiceStopped then
@@ -339,12 +336,13 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
                   SIGLogMessage.PublishNoODS(Self, Format('%s.Execute: Aborting request as service has been stopped', [Self.ClassName]), slmcWarning);
                   Exit;
                 end;
+            */
 
-            // TODO readd when logging available
-            //SIGLogMessage.PublishNoODS(Self, Format('Performing %s.Execute for DataModel:%d, Mode=%d', [Self.ClassName, FDataModelID, Integer(FMode)]), slmcMessage);
+            Log.Info($"Performing Execute for DataModel:{DataModelID}, Mode={Mode}");
 
-            // TODO InterlockedIncrement64(ASNodeRequestStats.NumMapTileRequests);
+            ApplicationServiceRequestStatistics.Instance.NumMapTileRequests.Increment();
 
+            /*
            if Assigned(ASNodeImplInstance.RequestCancellations) and
               ASNodeImplInstance.RequestCancellations.IsRequestCancelled(FExternalDescriptor) then
              begin
@@ -363,7 +361,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
               Exit;
             */
 
-            RequestDescriptor = Guid.NewGuid().GetHashCode(); // TODO ASNodeImplInstance.NextDescriptor;
+            long RequestDescriptor = Guid.NewGuid().GetHashCode(); // TODO ASNodeImplInstance.NextDescriptor;
 
             /* TODO Readd wen logging available
           if VLPDSvcLocations.Debug_EmitTileRenderRequestParametersToLog then
@@ -465,8 +463,8 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
             WorldTileHeight = MathUtilities.Hypot(NEECoords[0].X - NEECoords[2].X, NEECoords[0].Y - NEECoords[2].Y);
             WorldTileWidth = MathUtilities.Hypot(NEECoords[0].X - NEECoords[3].X, NEECoords[0].Y - NEECoords[3].Y);
 
-            dx = NEECoords[2].X - NEECoords[0].X;
-            dy = NEECoords[2].Y - NEECoords[0].Y;
+            double dx = NEECoords[2].X - NEECoords[0].X;
+            double dy = NEECoords[2].Y - NEECoords[0].Y;
             TileRotation = (Math.PI / 2) - Math.Atan2(dy, dx);
 
             RotatedTileBoundingExtents.SetInverted();
@@ -488,7 +486,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
                 throw new ArgumentException(string.Format("Unable to acquire site model instance for ID:{0}", DataModelID));
             }
 
-            SpatialExtents = SiteModel.GetAdjustedDataModelSpatialExtents(SurveyedSurfaceExclusionList);
+            BoundingWorldExtent3D SpatialExtents = SiteModel.GetAdjustedDataModelSpatialExtents(SurveyedSurfaceExclusionList);
 
             if (!SpatialExtents.IsValidPlanExtent)
             {
@@ -505,7 +503,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
                 return null;
             }
 
-            // Temporarily remove tile pruning on intersection test
+            // TODO [Put it back]: Temporarily remove tile pruning on intersection test
             // Intersect the site model extents with the extents requested by the caller
             /*if (!SpatialExtents.Intersect(RotatedTileBoundingExtents).IsValidPlanExtent)
             {
@@ -617,8 +615,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
             {
                 /*if (CutFillDesign.IsNull)
                 {
-                    // TODO readd when logging available
-                    //SIGLogMessage.PublishNoODS(Self, Format('No design provided to cut fill, summary volume or thickness overlay render request for datamodel %d', [FDataModelID]), slmcError);
+                    Log.Error($"No design provided to cut fill, summary volume or thickness overlay render request for datamodel {DataModelID}");
                     ResultStatus = RequestErrorStatus.NoDesignProvided;
                     return null;
                 }*/
@@ -701,8 +698,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
 
                 if (ResultStatus == RequestErrorStatus.OK)
                 {
-                    /*
-                    // Draw diagonal cross and top left corner indicators
+                    /*// Draw diagonal cross and top left corner indicators
                     Renderer.Displayer.MapView.DrawLine(BLPoint.X, BLPoint.Y, TRPoint.X, TRPoint.Y, Color.Red);
                     Renderer.Displayer.MapView.DrawLine(BLPoint.X, TRPoint.Y, TRPoint.X, BLPoint.Y, Color.Red);
 
@@ -712,15 +708,13 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
 
                     return Renderer.Displayer.MapView.BitmapCanvas;
 
-                    // PackageRenderedTileIntoPNG(Renderer.Displayer);
-
                     // TODO - report the final rendered result back
+                    // PackageRenderedTileIntoPNG(Renderer.Displayer);
                 }
             }
-            catch
+            catch (Exception e)
             {
-                // TODO add when logging available
-                // SIGLogMessage.PublishNoODS(Self, Format('%s.Execute: Exception "%s" occurred', [Self.ClassName, E.Message]), slmcException);
+                Log.Error($"Exception {e} occurred");
                 ResultStatus = RequestErrorStatus.Exception;
             }
 

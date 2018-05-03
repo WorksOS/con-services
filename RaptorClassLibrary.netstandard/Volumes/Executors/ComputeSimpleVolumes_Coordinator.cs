@@ -1,6 +1,8 @@
 ﻿using System;
+using VSS.TRex.RequestStatistics;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.GridFabric.Types;
 using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Utilities;
 using VSS.VisionLink.Raptor.Volumes.GridFabric.Responses;
@@ -195,7 +197,7 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
                           end;
                     */
 
-                    // InterlockedIncrement64(ASNodeRequestStats.NumVolumeRequests);
+                    ApplicationServiceRequestStatistics.Instance.NumVolumeRequests.Increment();
 
                     // Prepare filters for use in the request
                     RequestErrorStatus ResultStatus = FilterUtilities.PrepareFiltersForUse(new [] { BaseFilter, TopFilter, AdditionalSpatialFilter }, SiteModelID);
@@ -304,9 +306,9 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
                 }
                 finally
                 {
-                    //InterlockedIncrement64(ASNodeRequestStats.NumVolumeRequestsCompleted);
-                    //if ResultStatus <> asneOK then
-                    //  InterlockedIncrement64(ASNodeRequestStats.NumVolumeRequestsFailed);
+                    ApplicationServiceRequestStatistics.Instance.NumVolumeRequestsCompleted.Increment();
+                    if (VolumesResult.ResponseCode != SubGridRequestsResponseResult.OK)
+                        ApplicationServiceRequestStatistics.Instance.NumVolumeRequestsFailed.Increment();
                 }
             }
             catch //(Exception E)

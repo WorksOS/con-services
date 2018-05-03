@@ -48,8 +48,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Coordinators
                   end;
           */
 
-                // TODO - Readd when logging available
-                //SIGLogMessage.PublishNoODS(Self, Format('#In# Performing %s.Execute for DataModel:%d', [Self.ClassName, FDataModelID]), slmcMessage);
+                Log.Info($"#In# Performing Execute for DataModel:{arg.DataModelID}");
 
                 /* TODO...
                  *ScheduledWithGovernor := ASNodeImplInstance.Governor.Schedule(FExternalDescriptor, Self, gqVolumes, ASNodeResult);
@@ -101,11 +100,11 @@ namespace VSS.VisionLink.Raptor.Analytics.Coordinators
                     Aggregator = Aggregator,
                     Filter = arg.Filter,
                     IncludeSurveyedSurfaces = true,
-                    RequestedGridDataType = GridDataType.CutFill, // TODO: Change to CutFill when this is merged from Legacy source                    
+                    RequestedGridDataType = GridDataType.CutFill,
                     CutFillDesignID = arg.DesignID
                 };
 
-                // TODO Readd when logging available: 
+                // TODO
                 // Reporter.LiftBuildSettings.Assign(FLiftBuildSettings);
 
                 if (Computor.ComputeAnalytics())
