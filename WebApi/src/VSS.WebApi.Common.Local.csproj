@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\MasterDataModels\src\VSS.MasterData.Models.Local.csproj" />
+    <ProjectReference Include="..\..\MasterDataProxies\src\VSS.MasterData.Proxies.Local.csproj" />
   </ItemGroup>
 
 </Project>

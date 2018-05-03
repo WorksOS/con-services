@@ -14,9 +14,9 @@ namespace VSS.WebApi.Common
   public static class ServiceCollectionExtensions
   {
     /// <summary>
-    /// Adds CORS, MVC, Swagger ... for Web API service
+    /// Adds CORS, MVC, Swagger ... for Web API service. T is the Startup class for the service.
     /// </summary>
-    public static IServiceCollection AddCommon<T>(this IServiceCollection services, string serviceTitle, string version="v1")
+    public static IServiceCollection AddCommon<T>(this IServiceCollection services, string serviceTitle, string serviceDescription=null, string version="v1")
     {
       if (services == null)
         throw new ArgumentNullException("services");
@@ -40,7 +40,7 @@ namespace VSS.WebApi.Common
       //Configure swagger
       services.AddSwaggerGen(c =>
       {
-        c.SwaggerDoc(version, new Info { Title = serviceTitle, Version = version });
+        c.SwaggerDoc(version, new Info { Title = serviceTitle, Description = serviceDescription, Version = version });
       });
 
       services.ConfigureSwaggerGen(options =>

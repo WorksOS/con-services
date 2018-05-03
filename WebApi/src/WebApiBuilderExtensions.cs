@@ -17,12 +17,10 @@ namespace VSS.WebApi.Common
         throw new ArgumentNullException("app");
 
       app.UseExceptionTrap();
-
-
       app.UseCors("VSS");
+      app.UseFilterMiddleware<RequestIDMiddleware>();
 
       app.UseSwagger();
-
       app.UseSwaggerUI(c =>
       {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", serviceTitle);
