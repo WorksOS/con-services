@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Repositories;
+using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
 
 
