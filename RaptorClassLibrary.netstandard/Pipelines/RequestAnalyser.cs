@@ -152,9 +152,8 @@ namespace VSS.VisionLink.Raptor.Pipelines
             SubGridTreeLeafBitmapSubGrid ProdDataSubGrid = Owner.ProdDataExistenceMap.LocateSubGridContaining(SubGrid.OriginX, SubGrid.OriginY) as SubGridTreeLeafBitmapSubGrid;
 
             byte ScanMinXb, ScanMinYb, ScanMaxXb, ScanMaxYb;
-            bool Result = true; // Set to false if the scanning process needs to be aborted.
             double OTGCellSize = SubGrid.Owner.CellSize / SubGridTree.SubGridTreeDimension;
-            SubGridTreeLeafBitmapSubGrid CastSubGrid = SubGrid as SubGridTreeLeafBitmapSubGrid;
+            SubGridTreeLeafBitmapSubGrid CastSubGrid = (SubGridTreeLeafBitmapSubGrid)SubGrid;
 
             if (ScanningFullWorldExtent)
             {
@@ -278,7 +277,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
                 }
             }
 
-            return Result;
+            return true;
         }
     }
 } 

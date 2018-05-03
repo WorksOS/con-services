@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
+using log4net;
 using VSS.VisionLink.Raptor.Geometry;
 
 namespace VSS.VisionLink.Raptor.SiteModels
@@ -7,6 +9,9 @@ namespace VSS.VisionLink.Raptor.SiteModels
     [Serializable]
     public class SiteModelDesignList : List<SiteModelDesign>
     {
+        [NonSerialized]
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         /// <summary>
         /// Indexer supporting locating designs by the design name
         /// </summary>
@@ -29,8 +34,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
 
             if (index != -1)
             {
-                // TODO add when logging available
-                // SIGLogMessage.Publish(Self, Format('An identical design (%s) already exists in the designs for this site.', [Name]), slmcAssert);
+                Log.Error($"An identical design ({name}) already exists in the designs for this site.");
                 return this[index];
             }
 

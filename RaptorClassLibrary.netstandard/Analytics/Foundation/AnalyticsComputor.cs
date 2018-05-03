@@ -153,7 +153,7 @@ namespace VSS.VisionLink.Raptor.Analytics
                 {
                     // PipeLine is the subgrid pipeline used to drive the extraction of subgrid information
                     // for the purposes of computing volumes information
-                    PipeLine = new SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse>(0, PipelinedTask);
+                    PipeLine = new SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse>(/*0, */PipelinedTask);
 
                     PipelinedTask = new AggregatedPipelinedSubGridTask(Aggregator)
                     {

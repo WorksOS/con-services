@@ -79,7 +79,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
         public long CutFillDesignID { get; set; } = long.MinValue;
 
-        // public         FNoChangeVolumeTolerance : Single;
+        // public float FNoChangeVolumeTolerance;
 
         public AreaControlSet AreaControlSet;
 
@@ -155,9 +155,8 @@ namespace VSS.VisionLink.Raptor.Pipelines
         /// <summary>
         /// Constructor accepting an identifier for the pipeline and a task for the pipeline to operate with
         /// </summary>
-        /// <param name="AID"></param>
         /// <param name="task"></param>
-        public SubGridPipelineBase(int AID, PipelinedSubGridTask task)
+        public SubGridPipelineBase(/*int AID, */PipelinedSubGridTask task)
         {
             PipelineTask = task;
             //ID = AID;

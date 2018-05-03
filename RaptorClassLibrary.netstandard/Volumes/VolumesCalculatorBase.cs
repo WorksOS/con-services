@@ -254,7 +254,7 @@ namespace VSS.VisionLink.Raptor.Volumes
 
                     try
                     {
-                        PipeLine = new SubGridPipelineAggregative<SubGridsRequestArgument, SimpleVolumesResponse>(0, PipelinedTask);
+                        PipeLine = new SubGridPipelineAggregative<SubGridsRequestArgument, SimpleVolumesResponse>(/*0, */ PipelinedTask);
                         PipelinedTask.PipeLine = PipeLine;
 
                         ConfigurePipeline(PipeLine, out BoundingIntegerExtent2D CellExtents);

@@ -354,7 +354,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
 
         public FileSystemErrorStatus LoadFromPersistentStore()
         {
-            FileSystemErrorStatus Result = FileSystemErrorStatus.UnknownErrorReadingFromFS;
+            FileSystemErrorStatus Result; // = FileSystemErrorStatus.UnknownErrorReadingFromFS;
 
             try
             {

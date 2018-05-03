@@ -20,7 +20,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
         /// </summary>
         /// <param name="AID"></param>
         /// <param name="task"></param>
-        public SubGridPipelineProgressive(int AID, PipelinedSubGridTask task) : base(AID, task)
+        public SubGridPipelineProgressive(/*int AID, */PipelinedSubGridTask task) : base(/*AID,*/ task)
         {
         }
     }

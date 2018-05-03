@@ -254,7 +254,7 @@ namespace VSS.VisionLink.Raptor.Rendering
                 // ASNodeImplInstance.AsyncResponder.ASNodeResponseProcessor.ASTasks.Add(PipelinedTask);
                 try
                 {
-                    PipeLine = new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(0, PipelinedTask);
+                    PipeLine = new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(/*0, */ PipelinedTask);
                     // PipeLine = ASNodeImplInstance.SubgridPipelinePool.AcquirePipeline;
 
                     PipelinedTask.PipeLine = PipeLine;
