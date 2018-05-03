@@ -41,7 +41,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
     protected override CellDatumResponse ConvertCellDatumResult(TCellProductionData result)
     {
-      return CompactionCellDatumResult.CreateCompactionCellDatumResult(
+      return new CompactionCellDatumResult(
         RaptorConverters.convertDisplayMode((TICDisplayMode)result.DisplayMode),
         result.ReturnCode,
         result.ReturnCode == 0 ? result.Value : (double?)null,

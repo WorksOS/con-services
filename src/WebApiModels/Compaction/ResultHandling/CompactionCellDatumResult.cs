@@ -19,23 +19,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
     /// <summary>
     /// Create an instance of CompactionCellDatumResult class
     /// </summary>
-    public static CompactionCellDatumResult CreateCompactionCellDatumResult(
-      DisplayMode displayMode,
-      short returnCode,
-      double? value,
-      DateTime timestamp,
-      double northing,
-      double easting)
+    public CompactionCellDatumResult(DisplayMode displayMode, short returnCode, double? value, DateTime timestamp, double northing, double easting) : base(displayMode, returnCode, value, timestamp)
     {
-      return new CompactionCellDatumResult()
-      {
-        displayMode = displayMode,
-        returnCode = returnCode,
-        value = value,
-        timestamp = timestamp,
-        northing = northing,
-        easting = easting
-      };
+      this.northing = northing;
+      this.easting = easting;
     }
   }
 }

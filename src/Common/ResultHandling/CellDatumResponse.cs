@@ -32,19 +32,16 @@ namespace VSS.Productivity3D.Common.ResultHandling
     /// <summary>
     /// Create instance of CellDatumResponse
     /// </summary>
-    public static CellDatumResponse CreateCellDatumResponse(
+    public CellDatumResponse(
       DisplayMode displayMode,
       short returnCode,
       double? value,
       DateTime timestamp)
     {
-      return new CellDatumResponse
-      {
-        displayMode = displayMode,
-        returnCode = returnCode,
-        value = value,
-        timestamp = timestamp
-      };
+      this.displayMode = displayMode;
+      this.returnCode = returnCode;
+      this.value = displayMode == DisplayMode.CCV || displayMode == DisplayMode.MDP ? value / 10 : value;
+      this.timestamp = timestamp;
     }
   }
 }
