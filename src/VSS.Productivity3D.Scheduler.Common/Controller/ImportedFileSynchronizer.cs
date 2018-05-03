@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Scheduler.Common.Models;
@@ -289,7 +290,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       }
       projectEvent.ImportedFileUid = Guid.NewGuid().ToString();
       // for L&S if it has come from CG then use legacyIds
-      projectEvent.FileDescriptor = JsonConvert.SerializeObject(SchedulerFileDescriptor.CreateFileDescriptor(FileSpaceId,
+      projectEvent.FileDescriptor = JsonConvert.SerializeObject(FileDescriptor.CreateFileDescriptor(FileSpaceId,
         projectEvent.LegacyCustomerId.ToString(), projectEvent.LegacyProjectId.ToString(), projectEvent.Name));
       if (projectEvent.ImportedBy == null) projectEvent.ImportedBy = string.Empty;
       if (projectEvent.ImportedFileType == ImportedFileType.SurveyedSurface)
@@ -376,7 +377,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
                ifp.ImportedFileType == ImportedFileType.DesignSurface ||
                ifp.ImportedFileType == ImportedFileType.Alignment)
       {
-        var fileDescriptor = JsonConvert.DeserializeObject<SchedulerFileDescriptor>(ifp.FileDescriptor);
+        var fileDescriptor = JsonConvert.DeserializeObject<FileDescriptor>(ifp.FileDescriptor);
         await CallProjectWebApi(ifp, WebApiAction.Deleting, fileDescriptor);
       }
 

@@ -25,8 +25,6 @@ using VSS.WebApi.Common;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
 using VSS.Productivity3D.Scheduler.WebAPI;
 using VSS.Productivity3D.Scheduler.WebAPI.ExportJobs;
-using VSS.Peoductivity3D.Scheduler.WebApi.Middleware;
-
 
 namespace VSS.Productivity3D.Scheduler.WebApi
 {

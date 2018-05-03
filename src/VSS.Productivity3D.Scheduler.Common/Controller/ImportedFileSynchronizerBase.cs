@@ -291,7 +291,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
       Log.LogInformation($"ImportedFileSynchroniser: DownloadFileAndCallProjectWebApi");
       BaseDataResult result = null;
 
-      var fileDescriptor = JsonConvert.DeserializeObject<SchedulerFileDescriptor>(projectEvent.FileDescriptor);
+      var fileDescriptor = JsonConvert.DeserializeObject<FileDescriptor>(projectEvent.FileDescriptor);
       if (await DownloadFileAndSaveToTemp(fileDescriptor))
       {
         result = await CallProjectWebApi(projectEvent, action, fileDescriptor);
@@ -318,7 +318,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     /// <param name="action"></param>
     /// <param name="fileDescriptor"></param>
     /// <returns></returns>
-    protected async Task<BaseDataResult> CallProjectWebApi(ImportedFileProject projectEvent, WebApiAction action, SchedulerFileDescriptor fileDescriptor)
+    protected async Task<BaseDataResult> CallProjectWebApi(ImportedFileProject projectEvent, WebApiAction action, FileDescriptor fileDescriptor)
     {
       string errorMessage = null;
       BaseDataResult result = null;
@@ -379,7 +379,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     /// <summary>
     /// Tries to download a file from TCC and saves it to a temporary location
     /// </summary>
-    private async Task<bool> DownloadFileAndSaveToTemp(SchedulerFileDescriptor fileDescriptor)
+    private async Task<bool> DownloadFileAndSaveToTemp(FileDescriptor fileDescriptor)
     {
       var startUtc = DateTime.UtcNow;
       var result = false;
@@ -467,7 +467,7 @@ namespace VSS.Productivity3D.Scheduler.Common.Controller
     {
       return $"{TemporaryDownloadFolder}{filePath}";
     }
-    private string FullTemporaryFileName(SchedulerFileDescriptor fileDescriptor)
+    private string FullTemporaryFileName(FileDescriptor fileDescriptor)
     {
       return $"{FullTemporaryPath(fileDescriptor.path)}/{fileDescriptor.fileName}";
     }
