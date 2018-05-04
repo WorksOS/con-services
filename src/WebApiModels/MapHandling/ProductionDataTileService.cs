@@ -12,6 +12,7 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
+using VSS.Productivity3D.WebApi.Models.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
@@ -40,6 +41,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// Gets the requested tile from Raptor
     /// </summary>
     /// <param name="projectSettings">Project settings to use for Raptor</param>
+    /// <param name="projectSettingsColors"></param>
     /// <param name="filter">Filter to use for Raptor</param>
     /// <param name="projectId">Legacy project ID</param>
     /// <param name="mode">Display mode; type of data requested</param>
@@ -53,11 +55,9 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="volumeCalcType">Type of summary volumes calculation</param>
     /// <param name="customHeaders">Custom request headers</param>
     /// <returns>Tile result</returns>
-    public TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, CompactionProjectSettingsColors projectSettingsColors, FilterResult filter, long projectId, 
-      DisplayMode mode, ushort width, ushort height, BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, FilterResult baseFilter,
-                                            FilterResult topFilter, DesignDescriptor volumeDesign, VolumeCalcType? volumeCalcType, IDictionary<string, string> customHeaders)
+    public TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, CompactionProjectSettingsColors projectSettingsColors, FilterResult filter, long projectId, DisplayMode mode, ushort width, ushort height, BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, FilterResult baseFilter, FilterResult topFilter, DesignDescriptor volumeDesign, VolumeCalcType? volumeCalcType, IDictionary<string, string> customHeaders)
     {
-      bool getTile = true;
+      var getTile = true;
       ElevationStatisticsResult elevationExtents = null;
       TileRequest tileRequest = null;
 
@@ -149,12 +149,5 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       elevExtents?.SwapElevationsIfRequired();
       return elevExtents;
     }
-  }
-
-  public interface IProductionDataTileService
-  {
-    TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, CompactionProjectSettingsColors projectSettingsColors, FilterResult filter, long projectId, 
-      DisplayMode mode, ushort width, ushort height, BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign,
-                                     FilterResult baseFilter, FilterResult topFilter, DesignDescriptor volumeDesign, VolumeCalcType? volumeCalcType, IDictionary<string, string> customHeaders);
   }
 }

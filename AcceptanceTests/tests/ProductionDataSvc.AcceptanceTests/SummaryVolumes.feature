@@ -21,10 +21,10 @@ Scenario Outline: SummaryVolumes - Good Request
 	| CompositeToDesignNoSurveyedSurface   | CompositeToDesignNoSurveyedSurface   |
 	| DesignToCompositeWithSurveyedSurface | DesignToCompositeWithSurveyedSurface |
 	| DesignToCompositeNoSurveyedSurface   | DesignToCompositeNoSurveyedSurface   |
-	| SummationTestLotOneOfThree           | SummationTestLotOneOfThree           |
+#	| SummationTestLotOneOfThree           | SummationTestLotOneOfThree           |
 	| SummationTestLotTwoOfThree           | SummationTestLotTwoOfThree           |
 	| SummationTestLotThreeOfThree         | SummationTestLotThreeOfThree         |
-	| SummationTestTheWholeLot             | SummationTestTheWholeLot             |
+#	| SummationTestTheWholeLot             | SummationTestTheWholeLot             |
 	| FilterToDesignWithFillTolerances     | FilterToDesignWithFillTolerances     |
 	| FilterToDesignWithCutTolerances      | FilterToDesignWithCutTolerances      |
 	| FilterToFilterWithBothTolerances     | FilterToFilterWithBothTolerances     |

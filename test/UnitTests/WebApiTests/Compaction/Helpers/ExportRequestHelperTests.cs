@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 {
-
   [TestClass]
   public class ExportRequestHelperTests
   {
@@ -27,12 +21,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [TestMethod]
     public void ConvertPreferencesWithtimezoneButNoProjectTimeZone()
     {
-      var converted = ExportRequestHelper.ConvertUserPreferences(new UserPreferenceData
+      _ = ExportRequestHelper.ConvertUserPreferences(new UserPreferenceData
       {
         Timezone = "Aleutian Standard Time"
       },
       null);
     }
-
   }
 }

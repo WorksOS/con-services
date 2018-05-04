@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.WebApi.Models.Compaction.Models;
+using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 
-namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
+namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 {
   /// <summary>
   ///   Default settings for compaction end points. For consistency all compaction end points should use these settings.
@@ -13,11 +13,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
   /// </summary>
   public class CompactionSettingsManager : ICompactionSettingsManager
   {
-    private const int NO_CCV = SVOICDecls.__Global.kICNullCCVValue;
-
-    private const short MIN_CMV_MDP_VALUE = 0;
-    private const short MAX_CMV_MDP_VALUE = 2000;
-
     public LiftBuildSettings CompactionLiftBuildSettings(CompactionProjectSettings ps)
     {
       return AutoMapperUtility.Automapper.Map<LiftBuildSettings>(ps);
@@ -258,6 +253,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
           palette.Add(ColorPalette.CreateColorPalette(overColor, 2));
           break;
         case DisplayMode.CMVChange:
+          const int NO_CCV = SVOICDecls.__Global.kICNullCCVValue;
+
           var cmvPercentChangeSettings = CompactionCmvPercentChangeSettings(projectSettings);
           var cmvPercentChangeColors = projectSettingsColors.useDefaultCMVPercentColors.HasValue &&
                                        projectSettingsColors.useDefaultCMVPercentColors.Value
@@ -267,7 +264,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
           palette.Add(ColorPalette.CreateColorPalette(Colors.None, double.MinValue));
 
           for (var i = 0; i < cmvPercentChangeSettings.Length; i++)
+          {
             palette.Add(ColorPalette.CreateColorPalette(cmvPercentChangeColors[i], cmvPercentChangeSettings[i]));
+          }
 
           palette.Add(ColorPalette.CreateColorPalette(cmvPercentChangeColors[cmvPercentChangeColors.Count - 1],
             NO_CCV));

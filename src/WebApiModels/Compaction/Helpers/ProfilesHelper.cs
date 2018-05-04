@@ -2,7 +2,7 @@
 using VLPDDecls;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
-namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
+namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 {
   public class ProfilesHelper
   {

@@ -1,11 +1,8 @@
-﻿using System;
-using AutoMapper;
-using VSS.MasterData.Models.Models;
+﻿using AutoMapper;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
-using VSS.Productivity3D.WebApiModels.Report.Models;
 
-namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
+namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 {
   public class AutoMapperUtility
   {

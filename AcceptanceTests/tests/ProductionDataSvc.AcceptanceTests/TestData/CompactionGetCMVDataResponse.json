@@ -100,13 +100,7 @@
     "Message": "success"
   },
   "DesignOutside_Details": {
-    "percents": [
-      0,
-      0,
-      0,
-      0,
-      0
-    ],
+    "percents": null,
     "Code": 0,
     "Message": "success"
   },
@@ -290,24 +284,7 @@
     "Message": "success"
   },
   "Ext_DesignOutside_Details": {
-    "percents": [
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
-    ],
+    "percents": null,
     "Code": 0,
     "Message": "success"
   },

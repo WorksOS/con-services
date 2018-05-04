@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
+using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApi.Models.Factories.ProductionData
 {
@@ -51,7 +51,7 @@ namespace VSS.Productivity3D.WebApi.Models.Factories.ProductionData
       action(this);
 
       var obj = new T();
-      obj.Initialize(log, configStore, fileListProxy, settingsManager, this.projectId, this.projectSettings, this.projectSettingsColors, this.headers, this.filter, this.designDescriptor);
+      obj.Initialize(log, configStore, fileListProxy, settingsManager, projectId, projectSettings, projectSettingsColors, headers, filter, designDescriptor);
 
       return obj;
     }

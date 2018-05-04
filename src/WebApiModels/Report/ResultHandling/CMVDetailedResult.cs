@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using System.Linq;
+using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
@@ -14,6 +16,15 @@ namespace VSS.Productivity3D.WebApi.Models.Report.ResultHandling
     /// </summary>
     [JsonProperty(PropertyName = "percents")]
     public double[] Percents { get; private set; }
+
+    /// <summary>
+    /// Gets whether the CMV Details result object contains data.
+    /// </summary>
+    /// <remarks>
+    /// If the Percents array contains zero data then the result has no data.
+    /// </remarks>
+    /// <returns></returns>
+    public bool HasData() => Percents?.Any(d => Math.Abs(d) > 0.001) ?? false;
 
     /// <summary>
     /// Default private constructor.
