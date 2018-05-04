@@ -43,7 +43,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     }
 
     /// <summary>
-    /// Creates an instance of the TileRequest class and populate it with data needed for a tile.   
+    /// Creates an instance of the TileRequest class and populate it with data needed for a tile.
     /// </summary>
     /// <returns>An instance of the TileRequest class.</returns>
     public TileRequest CreateTileRequest(DisplayMode mode, ushort width, ushort height, BoundingBox2DLatLon bbox, ElevationStatisticsResult elevExtents)
@@ -52,35 +52,23 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       var palette = SettingsManager.CompactionPalette(mode, elevExtents, ProjectSettings, ProjectSettingsColors);
       var computeVolType = (int)(volCalcType ?? VolumeCalcType.None);
 
-      DesignDescriptor design = null;
-      FilterResult filter1 = null;
+      DesignDescriptor design = DesignDescriptor;
+      FilterResult filter1 = Filter;
       FilterResult filter2 = null;
 
       if (mode == DisplayMode.CutFill)
       {
-        design = volCalcType == VolumeCalcType.GroundToDesign ||
-                 volCalcType == VolumeCalcType.DesignToGround
-          ? volumeDesign
-          : DesignDescriptor;
-
-        // For LG-D or D-LG the filter is always passed to Raptor in the Filter1 slot, Filter2 is null. 
-        if (volCalcType == VolumeCalcType.DesignToGround || volCalcType == VolumeCalcType.GroundToDesign)
+        switch (volCalcType)
         {
-          filter1 = baseFilter ?? topFilter;
-          filter2 = null;
-        }
-        else
-        {
-          filter1 = volCalcType == VolumeCalcType.GroundToGround ||
-                    volCalcType == VolumeCalcType.GroundToDesign
-            ? baseFilter
-            : Filter;
-
-          // TODO (Aaron) Review, should the filter be in the Filter1 slot in this instance too, see LG-D & D-LG comment above.
-          filter2 = volCalcType == VolumeCalcType.GroundToGround ||
-                    volCalcType == VolumeCalcType.DesignToGround
-            ? topFilter
-            : null;
+          case VolumeCalcType.DesignToGround:
+          case VolumeCalcType.GroundToDesign:
+            design = volumeDesign;
+            filter1 = baseFilter ?? topFilter;
+            break;
+          case VolumeCalcType.GroundToGround:
+            filter1 = baseFilter;
+            filter2 = topFilter;
+            break;
         }
       }
 
