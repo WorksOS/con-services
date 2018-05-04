@@ -24,6 +24,10 @@ echo "Run Repository tests starting...."
 dotnet TestRun/TestRun.dll results=/testresults/RepositoryTestResults project=RepositoryTests messages=false
 echo "Repository tests finished"
 
+echo "Run WebApi tests starting...."
+dotnet TestRun/TestRun.dll results=/testresults/WebApiTestResults project=WebApiTests messages=false
+echo "WebApi tests finished"
+
 echo " "
 echo " "
 echo " All acceptance tests completed"

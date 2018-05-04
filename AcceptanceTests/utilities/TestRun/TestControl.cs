@@ -13,6 +13,7 @@ using System.Text.RegularExpressions;
 using System.ComponentModel;
 using System.Runtime.Loader;
 using System.Threading.Tasks;
+using TestUtility.Model.WebApi;
 
 namespace TestRun
 {
@@ -191,6 +192,7 @@ namespace TestRun
             WebRequest wr = WebRequest.Create("http://www.google.com");
             BooleanConverter bc = new BooleanConverter();
       //CustomerProject cs = new CustomerProject();
+      var res = new ContractExecutionResult();
     }
 
         /// <summary>
