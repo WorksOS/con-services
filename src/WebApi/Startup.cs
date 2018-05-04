@@ -6,10 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using VSS.Log4Net.Extensions;
-using VSS.MasterData.Models.FIlters;
 using VSS.Productivity3D.Common.Filters;
+using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
+using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.WebApi
 {
@@ -78,7 +79,7 @@ namespace VSS.Productivity3D.WebApi
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCommon(SERVICE_TITLE);
 
-      app.UseTIDAuthentication();
+      app.UseFilterMiddleware<RaptorAuthentication>();
 
       //Add stats
       if (Configuration["newrelic"] == "true")
@@ -86,9 +87,11 @@ namespace VSS.Productivity3D.WebApi
         app.UseFilterMiddleware<NewRelicMiddleware>();
       }
 
+      app.UseResponseCaching();
+
       app.UseResponseCompression();
 
-      app.UseResponseCaching();
+      app.UseMvc();
 
       ConfigureRaptor(serviceProvider);    
     }
