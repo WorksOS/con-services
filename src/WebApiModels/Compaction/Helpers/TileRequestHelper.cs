@@ -52,20 +52,37 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       var palette = SettingsManager.CompactionPalette(mode, elevExtents, ProjectSettings, ProjectSettingsColors);
       var computeVolType = (int)(volCalcType ?? VolumeCalcType.None);
 
-      var design = mode == DisplayMode.CutFill && (volCalcType == VolumeCalcType.GroundToDesign ||
-                                                   volCalcType == VolumeCalcType.DesignToGround)
-        ? volumeDesign
-        : DesignDescriptor;
+      DesignDescriptor design = null;
+      FilterResult filter1 = null;
+      FilterResult filter2 = null;
 
-      var filter1 = mode == DisplayMode.CutFill && (volCalcType == VolumeCalcType.GroundToGround ||
-                                                    volCalcType == VolumeCalcType.GroundToDesign)
-        ? baseFilter
-        : Filter;
+      if (mode == DisplayMode.CutFill)
+      {
+        design = volCalcType == VolumeCalcType.GroundToDesign ||
+                 volCalcType == VolumeCalcType.DesignToGround
+          ? volumeDesign
+          : DesignDescriptor;
 
-      var filter2 = mode == DisplayMode.CutFill && (volCalcType == VolumeCalcType.GroundToGround ||
-                                                    volCalcType == VolumeCalcType.DesignToGround)
-        ? topFilter
-        : null;
+        // For LG-D or D-LG the filter is always passed to Raptor in the Filter1 slot, Filter2 is null. 
+        if (volCalcType == VolumeCalcType.DesignToGround || volCalcType == VolumeCalcType.GroundToDesign)
+        {
+          filter1 = baseFilter ?? topFilter;
+          filter2 = null;
+        }
+        else
+        {
+          filter1 = volCalcType == VolumeCalcType.GroundToGround ||
+                    volCalcType == VolumeCalcType.GroundToDesign
+            ? baseFilter
+            : Filter;
+
+          // TODO (Aaron) Review, should the filter be in the Filter1 slot in this instance too, see LG-D & D-LG comment above.
+          filter2 = volCalcType == VolumeCalcType.GroundToGround ||
+                    volCalcType == VolumeCalcType.DesignToGround
+            ? topFilter
+            : null;
+        }
+      }
 
       var filterLayoutMethod = Filter == null || !Filter.LayerType.HasValue
         ? FilterLayerMethod.None
