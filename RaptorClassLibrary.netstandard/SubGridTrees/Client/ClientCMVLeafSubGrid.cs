@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;

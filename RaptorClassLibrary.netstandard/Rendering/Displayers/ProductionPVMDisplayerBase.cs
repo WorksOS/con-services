@@ -82,8 +82,6 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
         protected virtual bool DoRenderSubGrid(ISubGrid SubGrid)
         {
             bool DrawCellStrips;
-            double Temp;
-            bool Result = true; // Continue processing subgrids...
 
             // Draw the cells in the grid in stripes, starting from the southern most
             // row in the grid and progressing from the western end to the eastern end
@@ -99,7 +97,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
 
             // Skip-Iterate through the cells drawing them in strips
 
-            Temp = SubGridWorldOriginY / StepYIncrement;
+            double Temp = SubGridWorldOriginY / StepYIncrement;
             CurrentNorth = (Math.Truncate(Temp) * StepYIncrement) - StepYIncrementOverTwo;
             north_row = (int)Math.Floor((CurrentNorth - SubGridWorldOriginY) / _CellSize);
 
@@ -150,7 +148,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
                 north_row += StepY;
             }
 
-            return Result;
+            return true;
         }
 
         protected virtual void DoRenderCell()

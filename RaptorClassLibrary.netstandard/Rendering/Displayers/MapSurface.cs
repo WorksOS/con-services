@@ -13,7 +13,6 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
 //        private const double MaxViewDimensionFeet = 60000000;
         private const double MinViewDimensionMetres = 0.001;
 
-        //  private
         public bool SquareAspect = true;
         public double OriginX = Consts.NullDouble;
         public double OriginY = Consts.NullDouble;
@@ -21,8 +20,8 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
         public double LimitY = Consts.NullDouble;
         public double WidthX = Consts.NullDouble;
         public double WidthY = Consts.NullDouble;
-        double centerX = Consts.NullDouble;
-        double centerY = Consts.NullDouble;
+        private double centerX = Consts.NullDouble;
+        private double centerY = Consts.NullDouble;
 
         public int XAxesDirection = 1;
         public int YAxesDirection = 1;
@@ -31,8 +30,8 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
 
         //    FDisplayer : TMapDisplayBase;
 
-        int XAxisAdjust;
-        int YAxisAdjust;
+        private int XAxisAdjust;
+        private int YAxisAdjust;
 
         //    RePaintEntityCount : Integer;
         //    EntityDisplayCount : Integer;
@@ -42,11 +41,11 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
         // double WLastPtX; // World coordinate versions of lastptx/y 
         // double WLastPtY;
 
-        bool Rotating;
+        private bool Rotating;
         public double Rotation;
 
-        double CosOfRotation = 1.0;
-        double SinOfRotation; //= 0.0;
+        private double CosOfRotation = 1.0;
+        private double SinOfRotation; //= 0.0;
 
         public double XPixelSize = Consts.NullDouble;
         public double YPixelSize = Consts.NullDouble;
@@ -77,14 +76,14 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
         // origin is altered
         public bool HoldOriginOnResize = false;
 
-        int MinPenWidth = 1;
+        private int MinPenWidth = 1;
 
         //    FPrintingDisplay        :Boolean;
         //    FPrintTextReportSection :Boolean;
 
-        Color DrawCanvasPenColor = Color.Black; // Cached pen color for the DrawCanvas
-        IPen DrawCanvasPen;
-        IBrush DrawCanvasBrush;
+        private Color DrawCanvasPenColor = Color.Black; // Cached pen color for the DrawCanvas
+        private IPen DrawCanvasPen;
+        private IBrush DrawCanvasBrush;
 
         // Polypoints is an array of screen coordinate vertices used for calls to the
         // WIN32 DC API Polygon() and Polyline() calls. It is defined here in order to
@@ -100,7 +99,6 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
 
         //procedure CMColorChanged(var Message: TMessage); message CM_COLORCHANGED;
 
-        //protected
         protected double DQMScaleX = Consts.NullDouble; // Scale used in world to screen transform 
         protected double DQMScaleY = Consts.NullDouble; // Scale used in world to screen transform 
         protected int XOffset;
@@ -128,12 +126,12 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
         public void Clip_and_draw_line(double from_x, double from_y, double to_x, double to_y, Color PenColor)
         {
             bool inside;     // Reset if all the line segment is outside the window.
-            double x1, y1, x2, y2; // Original line coordinates
-
-            x1 = from_x;
-            y1 = from_y;
-            x2 = to_x;
-            y2 = to_y;
+            
+            // Original line coordinates
+            double x1 = from_x;
+            double y1 = from_y;
+            double x2 = to_x;
+            double y2 = to_y;
 
             inside = true;                  // Assume some part of the line segment is inside the window.
 
@@ -343,8 +341,8 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
             XPixelSize = WidthX / (ClipWidth + 1);
             YPixelSize = WidthY / (ClipHeight + 1);
 
-            //            FTextRotation:= 0;
-            //            FPenMode:= pmCopy;
+            // FTextRotation:= 0;
+            // FPenMode:= pmCopy;
 
             ScaleBarRHSIndent = 0;
 
@@ -371,9 +369,9 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
                 return;
             }
 
-            //            DotSymbolSize = Math.Round(GetDeviceCaps(DrawCanvas.Handle, LOGPIXELSX) / DotSymbolsPerInch) + 2;
-            //            HalfDotSymbolSize1 = DotSymbolSize / 2;
-            //            HalfDotSymbolSize2 = DotSymbolSize - DotSymbolSize / 2;
+            // DotSymbolSize = Math.Round(GetDeviceCaps(DrawCanvas.Handle, LOGPIXELSX) / DotSymbolsPerInch) + 2;
+            // HalfDotSymbolSize1 = DotSymbolSize / 2;
+            // HalfDotSymbolSize2 = DotSymbolSize - DotSymbolSize / 2;
 
             ClipWidth = BitmapCanvas.Width - 1;
             ClipHeight = BitmapCanvas.Height - 1;
@@ -470,7 +468,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
         }
 
         public void FitAndSetWorldBounds(double MinX, double MinY, double MaxX, double MaxY,
-double BorderSize)
+                                         double BorderSize)
         {
             FitBoundsToView(ref MinX, ref MinY, ref MaxX, ref MaxY);
             SetWorldBounds(MinX, MinY, MaxX, MaxY, BorderSize);
