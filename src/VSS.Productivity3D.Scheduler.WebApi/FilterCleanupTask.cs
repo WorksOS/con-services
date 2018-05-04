@@ -92,7 +92,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
       var cutoffActionUtcToDelete = startUtc.AddMinutes(-ageInMinutesToDelete).ToString("yyyy-MM-dd HH:mm:ss"); // mySql requires this format
 
-      _log.LogInformation("************** THE FOLLOWING FILTERS ARE GOING TO BE REMOVED ***************");
+      _log.LogInformation($"{Environment.NewLine}************** THE FOLLOWING FILTERS ARE GOING TO BE REMOVED ***************{Environment.NewLine}");
       var filtersToBeDeleted = _filterRepository.GetTransientFiltersToBeCleaned(ageInMinutesToDelete).Result;
       foreach (var filter in filtersToBeDeleted)
       {
