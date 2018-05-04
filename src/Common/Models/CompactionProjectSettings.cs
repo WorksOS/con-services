@@ -394,20 +394,21 @@ namespace VSS.Productivity3D.Common.Models
       customPassCountTargets != null && customPassCountTargets.Count > 0
       ? customPassCountTargets.ToArray()
       : DefaultSettings.customPassCountTargets.ToArray();
+
     /// <summary>
     /// Get the CMV details targets as a value for Raptor
     /// </summary>
-    public int[] CustomCMVs => OverrideDefaultCMVTargets &&
-      customCMVTargets != null && customCMVTargets.Count > 0
-      ? customCMVTargets.ToArray()
-      : DefaultSettings.customCMVTargets.ToArray();
+    public int[] CustomCMVs => (OverrideDefaultCMVTargets && OverrideDefaultCMVTargets && customCMVTargets != null && customCMVTargets.Count > 0
+                                ? customCMVTargets
+                                : DefaultSettings.customCMVTargets).Select(d => { d = d * 10; return d; }).ToArray();
+    
     /// <summary>
     /// Get the cut-fill details targets as a value for Raptor
     /// </summary>
     public double[] CustomCutFillTolerances => OverrideDefaultCutFillTolerances &&
-                                     customCutFillTolerances != null && customCutFillTolerances.Count > 0
-      ? customCutFillTolerances.ToArray()
-      : DefaultSettings.customCutFillTolerances.ToArray();
+                                       customCutFillTolerances != null && customCutFillTolerances.Count > 0
+        ? customCutFillTolerances.ToArray()
+        : DefaultSettings.customCutFillTolerances.ToArray();
     /// <summary>
     /// Get the minimum temperature warning level as a value for Raptor in 10ths of °C
     /// </summary>
