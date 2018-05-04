@@ -69,7 +69,7 @@ namespace VSS.WebApi.Common
 
         string authorization = context.Request.Headers["X-Jwt-Assertion"];
 
-        if (!requireCustomerUid)
+        if (requireCustomerUid)
         {
           customerUid = context.Request.Headers["X-VisionLink-CustomerUID"];
         }

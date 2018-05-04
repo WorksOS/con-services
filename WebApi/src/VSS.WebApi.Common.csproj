@@ -6,7 +6,7 @@
     <Company>VSS</Company>
     <Product>VSS.WebApi.Common.netcore</Product>
     <Description>Shared configuration for 3D Web APIs</Description>
-    <VersionPrefix>1.0.2</VersionPrefix>
+    <VersionPrefix>1.0.3</VersionPrefix>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>VSS.WebApi.Common</AssemblyName>
     <NetStandardImplicitPackageVersion>2.0</NetStandardImplicitPackageVersion>
