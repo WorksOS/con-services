@@ -16,6 +16,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
     [JsonProperty(PropertyName = "percents")]
     public double[] Percents { get; private set; }
 
+    public static CompactionCmvDetailedResult CreateEmptyResult() => new CompactionCmvDetailedResult();
+
     /// <summary>
     /// Default private constructor.
     /// </summary>
@@ -27,6 +29,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
     /// </summary>
     public static CompactionCmvDetailedResult CreateCmvDetailedResult(CMVDetailedResult result)
     {
+      if (result == null || !result.HasData())
+      {
+        return CreateEmptyResult();
+      }
+
       return new CompactionCmvDetailedResult
       {
         Percents = result.Percents
