@@ -122,6 +122,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
       app.UseCommon(SERVICE_TITLE);
       app.UseTIDAuthentication();
+      app.UseMvc();
 
       var log = loggerFactory.CreateLogger<Startup>();
  
