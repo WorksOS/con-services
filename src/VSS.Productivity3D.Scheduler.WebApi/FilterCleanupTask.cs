@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.Contracts;
 using Dapper;
 using Hangfire;
 using Microsoft.Extensions.Logging;
@@ -34,6 +35,13 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     {
       _log = loggerFactory.CreateLogger<FilterCleanupTask>();
       _configStore = configStore;
+      
+
+      if (filterRepository == null)
+      {
+        _log.LogError("filter repo is null!");
+        throw new ArgumentNullException("FilterRepository is null");
+      }
       _filterRepository = filterRepository;
     }
 
@@ -81,25 +89,43 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// </summary>
     /// <param name="filterDbConnectionString"></param>
     /// <param name="ageInMinutesToDelete"></param>
-    [AutomaticRetry(Attempts = 3, LogEvents = false, OnAttemptsExceeded = AttemptsExceededAction.Delete)]
+    [AutomaticRetry(Attempts = 3, LogEvents = true, OnAttemptsExceeded = AttemptsExceededAction.Delete)]
     [DisableConcurrentExecution(5)]
     public void FilterTableCleanupTask(string filterDbConnectionString, int ageInMinutesToDelete)
     {
       var startUtc = DateTime.UtcNow;
+      var empty = "\"";
       _log.LogDebug($"FilterTableCleanupTask() beginning. startUtc: {startUtc}");
 
       Dictionary<string, object> newRelicAttributes;
+      MySqlConnection dbConnection = new MySqlConnection(filterDbConnectionString);
 
-      var cutoffActionUtcToDelete = startUtc.AddMinutes(-ageInMinutesToDelete).ToString("yyyy-MM-dd HH:mm:ss"); // mySql requires this format
 
+      var cutoffActionUtcToDelete = startUtc.AddMinutes(-ageInMinutesToDelete).ToString("yyyy-MM-dd HH:mm:ss"); // mySql requires this format 
+
+      _log.LogDebug($"FilterTableCleanupTask() getting filters to remove. startUtc: {startUtc}");
+      //TODO: replace this with the filter repo once connection string config clash is sorted
+      //var filtersToBeDeleted = _filterRepository.GetTransientFiltersToBeCleaned(ageInMinutesToDelete);
+
+      //TODO: add exception handling
+
+      var filterstoBeDeletedQuery = $@"SELECT 
+                f.fk_CustomerUid AS CustomerUID, f.UserID, 
+                f.fk_ProjectUID AS ProjectUID, f.FilterUID,                   
+                f.Name, f.FilterJson, f.fk_FilterTypeID as FilterType,
+                f.IsDeleted, f.LastActionedUTC
+              FROM Filter f
+              WHERE f.fk_FilterTypeID = 1 
+                AND f.LastActionedUTC < {empty}{cutoffActionUtcToDelete}{empty}";
+
+      var filtersToBeDeleted = dbConnection.Query<Filter>(filterstoBeDeletedQuery).AsList();
       _log.LogInformation($"{Environment.NewLine}************** THE FOLLOWING FILTERS ARE GOING TO BE REMOVED ***************{Environment.NewLine}");
-      var filtersToBeDeleted = _filterRepository.GetTransientFiltersToBeCleaned(ageInMinutesToDelete).Result;
       foreach (var filter in filtersToBeDeleted)
       {
         _log.LogInformation(filter.ToString());
       }
+      _log.LogInformation($"{Environment.NewLine}************** {filtersToBeDeleted.Count} FILTERS TO BE REMOVED ***************{Environment.NewLine}");
 
-      MySqlConnection dbConnection = new MySqlConnection(filterDbConnectionString);
       try
       {
         dbConnection.Open();
@@ -117,7 +143,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         dbConnection.Close();
       }
 
-      var empty = "\"";
+ 
       string deleteCommand = $"DELETE FROM Filter WHERE fk_FilterTypeID = 1 AND LastActionedUTC < {empty}{cutoffActionUtcToDelete}{empty}";
       int deletedCount = 0;
       try
