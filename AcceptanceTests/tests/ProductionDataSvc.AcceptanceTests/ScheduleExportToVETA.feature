@@ -1,7 +1,6 @@
 ﻿Feature: ScheduleExportToVETA
 I should be able to request scheduling production data export to VETA.
 
-@ignore
 Scenario Outline: ScheduleExportToVETA - Good Request - Schedule Job
 Given the Export Report To VETA service URI "/api/v2/export/veta" for operation "schedulejob" and the result file "ScheduleExportToVETAResponse.json"
 And projectUid "<ProjectUID>"
