@@ -13,15 +13,15 @@ Scenario Outline: Tiles - Serialized
 	| CCV                                     | CCV                                     |
 	| CCVPercent                              | CCVPercent                              |
 	| PassCount                               | PassCount                               |
-	#| CutFill                                 | CutFill                                 |
-	#| CutFillCustomPalettes                   | CutFillCustomPalettes                   |
+	| CutFill                                 | CutFill                                 |
+	| CutFillCustomPalettes                   | CutFillCustomPalettes                   |
 	| TemperatureSummary                      | TemperatureSummary                      |
 	| CCVSummary                              | CCVSummary                              |
 	| CCVPercentSummary                       | CCVPercentSummary                       |
 	| PassCountSummaryConstTarget             | PassCountSummaryConstTarget             |
 	| PassCountSummaryRangeTarget             | PassCountSummaryRangeTarget             |
 	| CompactionCoverage                      | CompactionCoverage                      |
-#	| VolumeCoverage                          | VolumeCoverage                          |
+	| VolumeCoverage                          | VolumeCoverage                          |
 	| MDP                                     | MDP                                     |
 	| MDPSummary                              | MDPSummary                              |
 	| MDPPercent                              | MDPPercent                              |
@@ -55,15 +55,15 @@ Scenario Outline: Tiles - PNG
 	| CCV                                     | CCV                                     |
 	| CCVPercent                              | CCVPercent                              |
 	| PassCount                               | PassCount                               |
-	#| CutFill                                 | CutFill                                 |
-	#| CutFillCustomPalettes                   | CutFillCustomPalettes                   |
+	| CutFill                                 | CutFill                                 |
+	| CutFillCustomPalettes                   | CutFillCustomPalettes                   |
 	| TemperatureSummary                      | TemperatureSummary                      |
 	| CCVSummary                              | CCVSummary                              |
 	| CCVPercentSummary                       | CCVPercentSummary                       |
 	| PassCountSummaryConstTarget             | PassCountSummaryConstTarget             |
 	| PassCountSummaryRangeTarget             | PassCountSummaryRangeTarget             |
 	| CompactionCoverage                      | CompactionCoverage                      |
-#	| VolumeCoverage                          | VolumeCoverage                          |
+	| VolumeCoverage                          | VolumeCoverage                          |
 	| MDP                                     | MDP                                     |
 	| MDPSummary                              | MDPSummary                              |
 	| MDPPercent                              | MDPPercent                              |
@@ -99,15 +99,15 @@ Scenario Outline: Tiles - Raw PNG
 	| CCV                                     | CCV                                     | False     |
 	| CCVPercent                              | CCVPercent                              | False     |
 	| PassCount                               | PassCount                               | False     |
-	#| CutFill                                 | CutFill                                 | False     |
-	#| CutFillCustomPalettes                   | CutFillCustomPalettes                   | False     |
+	| CutFill                                 | CutFill                                 | False     |
+	| CutFillCustomPalettes                   | CutFillCustomPalettes                   | False     |
 	| TemperatureSummary                      | TemperatureSummary                      | False     |
 	| CCVSummary                              | CCVSummary                              | False     |
 	| CCVPercentSummary                       | CCVPercentSummary                       | False     |
 	| PassCountSummaryConstTarget             | PassCountSummaryConstTarget             | False     |
 	| PassCountSummaryRangeTarget             | PassCountSummaryRangeTarget             | False     |
 	| CompactionCoverage                      | CompactionCoverage                      | False     |
-#	| VolumeCoverage                          | VolumeCoverage                          | False     |
+	| VolumeCoverage                          | VolumeCoverage                          | False     |
 	| MDP                                     | MDP                                     | False     |
 	| MDPSummary                              | MDPSummary                              | False     |
 	| MDPPercent                              | MDPPercent                              | False     |
