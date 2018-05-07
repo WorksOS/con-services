@@ -1,10 +1,7 @@
-﻿using System;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 
-namespace VSS.MasterData.Models.FIlters
+namespace VSS.WebApi.Common
 {
-  //TODO: Remove when all services use WebApi package
-  [Obsolete]
   public static class ApplicationBuilderExtensions
   {
     public static IApplicationBuilder UseFilterMiddleware<T>(this IApplicationBuilder builder)
