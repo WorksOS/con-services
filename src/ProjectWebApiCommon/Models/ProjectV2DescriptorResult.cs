@@ -1,5 +1,5 @@
 using Newtonsoft.Json;
-using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models

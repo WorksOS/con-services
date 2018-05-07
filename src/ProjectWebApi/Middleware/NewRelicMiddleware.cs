@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using VSS.MasterData.Project.WebAPI.Filters;
+using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Middleware
 {
@@ -53,7 +53,7 @@ namespace VSS.MasterData.Project.WebAPI.Middleware
         {
           { "endpoint", context.Request.Path.ToString() },
           { "customerUid", principal.CustomerUid },
-          { "userName", principal.EmailAddress },
+          { "userName", principal.UserEmail },
           { "executionTime",(Single)watch.ElapsedMilliseconds },
           { "projectUid", projectUid },
           { "origin",origin },

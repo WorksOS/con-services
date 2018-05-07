@@ -5,15 +5,17 @@ using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Moq;
-using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.Common.Exceptions;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Repositories;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 
 namespace VSS.MasterData.ProjectTests
 {
   [TestClass]
   public class ProjectValidationTests
   {
-    protected ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
+    protected ProjectErrorCodesProvider projectErrorCodesProvider = new ProjectErrorCodesProvider();
     private static List<Point> _boundaryLL;
     private static BusinessCenterFile _businessCenterFile;
     private static string _checkBoundaryString;
@@ -79,7 +81,7 @@ namespace VSS.MasterData.ProjectTests
 
       var ex = Assert.ThrowsException<ServiceException>(
         () => ProjectDataValidator.Validate(createProjectEvent, projectRepo.Object));
-      Assert.AreNotEqual(-1, ex.Content.IndexOf("2025", StringComparison.Ordinal), "Expected error number 2025");
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2025", StringComparison.Ordinal), "Expected error number 2025");
     }
 
     [TestMethod]
@@ -96,22 +98,22 @@ namespace VSS.MasterData.ProjectTests
         _businessCenterFile.Name, _businessCenterFile.CreatedUtc);
       bcf.Path = "";
       var ex = Assert.ThrowsException < ServiceException >(() =>  ProjectDataValidator.ValidateBusinessCentreFile(bcf));
-      Assert.AreNotEqual(-1, ex.Content.IndexOf("2083", StringComparison.Ordinal));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2083", StringComparison.Ordinal));
 
       bcf = BusinessCenterFile.CreateBusinessCenterFile(_businessCenterFile.FileSpaceId, _businessCenterFile.Path,
         _businessCenterFile.Name, _businessCenterFile.CreatedUtc);
       bcf.Name = "";
       ex = Assert.ThrowsException<ServiceException>(() => ProjectDataValidator.ValidateBusinessCentreFile(bcf));
-      Assert.AreNotEqual(-1, ex.Content.IndexOf("2002", StringComparison.Ordinal));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2002", StringComparison.Ordinal));
 
       bcf = BusinessCenterFile.CreateBusinessCenterFile(_businessCenterFile.FileSpaceId, _businessCenterFile.Path,
         _businessCenterFile.Name, _businessCenterFile.CreatedUtc);
       bcf.FileSpaceId = null;
       ex = Assert.ThrowsException<ServiceException>(() => ProjectDataValidator.ValidateBusinessCentreFile(bcf));
-      Assert.AreNotEqual(-1, ex.Content.IndexOf("2084", StringComparison.Ordinal));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2084", StringComparison.Ordinal));
       
       ex = Assert.ThrowsException<ServiceException>(() => ProjectDataValidator.ValidateBusinessCentreFile(null));
-      Assert.AreNotEqual(-1, ex.Content.IndexOf("2082", StringComparison.Ordinal));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2082", StringComparison.Ordinal));
 
     }
   }

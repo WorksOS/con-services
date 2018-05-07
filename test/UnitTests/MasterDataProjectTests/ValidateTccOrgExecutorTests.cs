@@ -5,28 +5,24 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
 using Moq;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
-using VSS.KafkaConsumer.Kafka;
-using VSS.MasterData.Project.WebAPI.Common.Executors;
-using VSS.MasterData.Project.WebAPI.Common.Internal;
-using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.MasterData.Models.ResultHandling;
-using VSS.MasterData.Project.WebAPI.Common.Helpers;
-using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Proxies.Interfaces;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.TCCFileAccess;
 using VSS.TCCFileAccess.Models;
+using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.Executors;
 
 namespace VSS.MasterData.ProjectTests
 {
   [TestClass]
   public class ValidateTccOrgExecutorTests : ExecutorBaseTests
   {
-    protected ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
     private static string _customerUid;
 
     [ClassInitialize]
@@ -48,7 +44,7 @@ namespace VSS.MasterData.ProjectTests
       var request = ValidateTccAuthorizationRequest.CreateValidateTccAuthorizationRequest("");
       var ex = Assert.ThrowsException<ServiceException>(
         () => request.Validate());
-      Assert.AreNotEqual(-1, ex.Content.IndexOf("2086", StringComparison.Ordinal));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2086", StringComparison.Ordinal));
     }
 
     [TestMethod]

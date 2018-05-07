@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using VSS.Common.Exceptions;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 
@@ -12,7 +14,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
   {
     public const string POLYGON_WKT = "POLYGON((";
     private static List<string> _replacements = new List<string> {"POLYGON", "(", ")"};
-    protected static ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
+    protected static ProjectErrorCodesProvider projectErrorCodesProvider = new ProjectErrorCodesProvider();
 
     private static IEnumerable<Point> ParseBoundaryData(string s, char pointSeparator, char coordSeparator)
     {
@@ -155,8 +157,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       if (string.IsNullOrEmpty(boundary))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(23),
-            contractExecutionStatesEnum.FirstNameWithOffset(23)));
+          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(23),
+            projectErrorCodesProvider.FirstNameWithOffset(23)));
       }
 
       try
@@ -166,15 +168,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
         if (points.Count < 3)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(24),
-              contractExecutionStatesEnum.FirstNameWithOffset(24)));
+            new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(24),
+              projectErrorCodesProvider.FirstNameWithOffset(24)));
         }
       }
       catch
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(25),
-            contractExecutionStatesEnum.FirstNameWithOffset(25)));
+          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(25),
+            projectErrorCodesProvider.FirstNameWithOffset(25)));
       }
     }
 

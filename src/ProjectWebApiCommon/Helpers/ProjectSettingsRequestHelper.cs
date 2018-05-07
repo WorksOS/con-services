@@ -3,9 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Project.WebAPI.Common.Internal;
-using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 

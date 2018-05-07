@@ -2,6 +2,8 @@
 using System.IO;
 using System.Linq;
 using System.Net;
+using VSS.Common.Exceptions;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Repositories;
@@ -17,7 +19,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
   public class ProjectDataValidator
   {
     private const int MAX_FILE_NAME_LENGTH = 256;
-    protected static ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
+    protected static ProjectErrorCodesProvider projectErrorCodesProvider = new ProjectErrorCodesProvider();
 
     /// <summary>
     /// Validate the coordinateSystem filename
@@ -28,8 +30,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       if (fileName.Length > MAX_FILE_NAME_LENGTH || string.IsNullOrEmpty(fileName) ||
           fileName.IndexOfAny(Path.GetInvalidPathChars()) > 0 || String.IsNullOrEmpty(Path.GetFileName(fileName)))
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(2),
-            contractExecutionStatesEnum.FirstNameWithOffset(2)));
+          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(2),
+            projectErrorCodesProvider.FirstNameWithOffset(2)));
     }
 
     /// <summary>
@@ -40,16 +42,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       if (businessCenterFile == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(82),
-            contractExecutionStatesEnum.FirstNameWithOffset(82)));
+          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(82),
+            projectErrorCodesProvider.FirstNameWithOffset(82)));
       }
       ProjectDataValidator.ValidateFileName(businessCenterFile.Name);
 
       if (string.IsNullOrEmpty(businessCenterFile.Path) || businessCenterFile.Path.Length < 5)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(83),
-            contractExecutionStatesEnum.FirstNameWithOffset(83)));
+          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(83),
+            projectErrorCodesProvider.FirstNameWithOffset(83)));
       }
       // Validates the BCC file path. Checks if path contains / in the beginning and NOT at the and of the path. Otherwise add/remove it.
       if (businessCenterFile.Path[0] != '/')
@@ -60,8 +62,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       if (string.IsNullOrEmpty(businessCenterFile.FileSpaceId) || businessCenterFile.FileSpaceId.Length > 50)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(84),
-            contractExecutionStatesEnum.FirstNameWithOffset(84)));
+          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(84),
+            projectErrorCodesProvider.FirstNameWithOffset(84)));
       }
 
       return businessCenterFile;
@@ -79,20 +81,20 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       if (projectRepo == null)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(3),
-            contractExecutionStatesEnum.FirstNameWithOffset(3)));
+          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(3),
+            projectErrorCodesProvider.FirstNameWithOffset(3)));
       }
       if (evt.ActionUTC == DateTime.MinValue)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(4),
-            contractExecutionStatesEnum.FirstNameWithOffset(4)));
+          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(4),
+            projectErrorCodesProvider.FirstNameWithOffset(4)));
       }
       if (evt.ProjectUID == Guid.Empty)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(5),
-            contractExecutionStatesEnum.FirstNameWithOffset(5)));
+          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(5),
+            projectErrorCodesProvider.FirstNameWithOffset(5)));
       }
       //Note: don't check if project exists for associate events.
       //We don't know the workflow for NG so associate may come before project creation.
@@ -105,8 +107,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
         {
           var messageId = isCreate ? 6 : 7;
           throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(messageId),
-              contractExecutionStatesEnum.FirstNameWithOffset(messageId)));
+            new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(messageId),
+              projectErrorCodesProvider.FirstNameWithOffset(messageId)));
         }
         if (isCreate)
         {
@@ -115,58 +117,58 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
           if (string.IsNullOrEmpty(createEvent.ProjectBoundary))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(8),
-                contractExecutionStatesEnum.FirstNameWithOffset(8)));
+              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(8),
+                projectErrorCodesProvider.FirstNameWithOffset(8)));
           }
           ProjectBoundaryValidator.ValidateWKT(createEvent.ProjectBoundary);
 
           if (string.IsNullOrEmpty(createEvent.ProjectTimezone))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(9),
-                contractExecutionStatesEnum.FirstNameWithOffset(9)));
+              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(9),
+                projectErrorCodesProvider.FirstNameWithOffset(9)));
           }
           if (PreferencesTimeZones.WindowsTimeZoneNames().Contains(createEvent.ProjectTimezone) == false)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(10),
-                contractExecutionStatesEnum.FirstNameWithOffset(10)));
+              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(10),
+                projectErrorCodesProvider.FirstNameWithOffset(10)));
           }
           if (string.IsNullOrEmpty(createEvent.ProjectName))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(11),
-                contractExecutionStatesEnum.FirstNameWithOffset(11)));
+              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(11),
+                projectErrorCodesProvider.FirstNameWithOffset(11)));
           }
           if (createEvent.ProjectName.Length > 255)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(12),
-                contractExecutionStatesEnum.FirstNameWithOffset(12)));
+              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(12),
+                projectErrorCodesProvider.FirstNameWithOffset(12)));
           }
           if (!string.IsNullOrEmpty(createEvent.Description) && createEvent.Description.Length > 2000)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(13),
-                contractExecutionStatesEnum.FirstNameWithOffset(13)));
+              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(13),
+                projectErrorCodesProvider.FirstNameWithOffset(13)));
           }
           if (createEvent.ProjectStartDate == DateTime.MinValue)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(14),
-                contractExecutionStatesEnum.FirstNameWithOffset(14)));
+              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(14),
+                projectErrorCodesProvider.FirstNameWithOffset(14)));
           }
           if (createEvent.ProjectEndDate == DateTime.MinValue)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(15),
-                contractExecutionStatesEnum.FirstNameWithOffset(15)));
+              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(15),
+                projectErrorCodesProvider.FirstNameWithOffset(15)));
           }
           if (createEvent.ProjectStartDate > createEvent.ProjectEndDate)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(16),
-                contractExecutionStatesEnum.FirstNameWithOffset(16)));
+              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(16),
+                projectErrorCodesProvider.FirstNameWithOffset(16)));
           }
         }
         else if (evt is UpdateProjectEvent)
@@ -175,40 +177,40 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
           if (string.IsNullOrEmpty(updateEvent.ProjectName))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(11),
-                contractExecutionStatesEnum.FirstNameWithOffset(11)));
+              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(11),
+                projectErrorCodesProvider.FirstNameWithOffset(11)));
           }
           if (updateEvent.ProjectName.Length > 255)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(12),
-                contractExecutionStatesEnum.FirstNameWithOffset(12)));
+              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(12),
+                projectErrorCodesProvider.FirstNameWithOffset(12)));
           }
           if (!string.IsNullOrEmpty(updateEvent.Description) && updateEvent.Description.Length > 2000)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(13),
-                contractExecutionStatesEnum.FirstNameWithOffset(13)));
+              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(13),
+                projectErrorCodesProvider.FirstNameWithOffset(13)));
           }
           if (updateEvent.ProjectEndDate == DateTime.MinValue)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(15),
-                contractExecutionStatesEnum.FirstNameWithOffset(15)));
+              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(15),
+                projectErrorCodesProvider.FirstNameWithOffset(15)));
           }
           var project = projectRepo.GetProjectOnly(evt.ProjectUID.ToString()).Result;
           if (project.StartDate > updateEvent.ProjectEndDate)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(16),
-                contractExecutionStatesEnum.FirstNameWithOffset(16)));
+              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(16),
+                projectErrorCodesProvider.FirstNameWithOffset(16)));
           }
           if (!string.IsNullOrEmpty(updateEvent.ProjectTimezone) &&
               !project.ProjectTimeZone.Equals(updateEvent.ProjectTimezone))
           {
             throw new ServiceException(HttpStatusCode.Forbidden,
-              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(17),
-                contractExecutionStatesEnum.FirstNameWithOffset(17)));
+              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(17),
+                projectErrorCodesProvider.FirstNameWithOffset(17)));
           }
         }
         //Nothing else to check for DeleteProjectEvent
@@ -219,21 +221,21 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
         if (associateEvent.CustomerUID == Guid.Empty)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(19),
-              contractExecutionStatesEnum.FirstNameWithOffset(19)));
+            new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(19),
+              projectErrorCodesProvider.FirstNameWithOffset(19)));
         }
         if (projectRepo.CustomerProjectExists(evt.ProjectUID.ToString()).Result)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(20),
-              contractExecutionStatesEnum.FirstNameWithOffset(20)));
+            new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(20),
+              projectErrorCodesProvider.FirstNameWithOffset(20)));
         }
       }
       else if (evt is DissociateProjectCustomer)
       {
         throw new ServiceException(HttpStatusCode.NotImplemented,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(21),
-            contractExecutionStatesEnum.FirstNameWithOffset(21)));
+          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(21),
+            projectErrorCodesProvider.FirstNameWithOffset(21)));
       }
       else if (evt is AssociateProjectGeofence)
       {
@@ -241,8 +243,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
         if (associateEvent.GeofenceUID == Guid.Empty)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(22),
-              contractExecutionStatesEnum.FirstNameWithOffset(22)));
+            new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(22),
+              projectErrorCodesProvider.FirstNameWithOffset(22)));
         }
       }
     }

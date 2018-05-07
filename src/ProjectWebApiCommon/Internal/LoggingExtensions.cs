@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Internal
 {

@@ -1,5 +1,5 @@
 using System.Collections.Immutable;
-using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -9,7 +9,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
   /// <summary>
   /// Describes standard output for the project descriptors
   /// </summary>
-  /// <seealso cref="ProjectWebApi.ResultsHandling.ContractExecutionResult" />
+  /// <seealso cref="ContractExecutionResult" />
   public class ProjectDescriptorsListResult : ContractExecutionResult
   {
     /// <summary>
@@ -24,7 +24,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
   /// <summary>
   /// Describes standard container with subscription descriptor
   /// </summary>
-  /// <seealso cref="ProjectWebApi.ResultsHandling.ContractExecutionResult" />
+  /// <seealso cref="ContractExecutionResult" />
   public class SubscriptionsListResult : ContractExecutionResult
   {
     /// <summary>

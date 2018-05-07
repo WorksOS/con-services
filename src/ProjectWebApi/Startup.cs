@@ -9,11 +9,17 @@ using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Factories;
+using VSS.MasterData.Project.WebAPI.Middleware;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.TCCFileAccess;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.WebApi.Common;
+using VSS.MasterData.Project.WebAPI.Common.Helpers;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 
 namespace VSS.MasterData.Project.WebAPI
 {
@@ -82,6 +88,8 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
       services.AddScoped<ICustomerRepository, CustomerRepository>();
       services.AddTransient<IProjectSettingsRequestHelper, ProjectSettingsRequestHelper>();
+      services.AddScoped<IErrorCodesProvider, ProjectErrorCodesProvider>();
+
 
       services.AddMemoryCache();
 
@@ -119,8 +127,9 @@ namespace VSS.MasterData.Project.WebAPI
         app.UseMiddleware<NewRelicMiddleware>();
       }
 #endif
-     
-      app.UseTIDAuthentication();
+
+      app.UseFilterMiddleware<ProjectAuthentication>();
+      app.UseMvc();
     }
   }
 }

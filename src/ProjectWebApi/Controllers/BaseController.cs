@@ -8,16 +8,16 @@ using System.Net;
 using System.Reflection;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
-using VSS.MasterData.Project.WebAPI.Common.Internal;
-using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
-using VSS.MasterData.Project.WebAPI.Filters;
+using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.TCCFileAccess;
+using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -215,7 +215,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       if (User is TIDCustomPrincipal principal)
       {
-        return principal.EmailAddress;
+        return principal.UserEmail;
       }
 
       throw new ArgumentException("Incorrect user email address in request context principal.");

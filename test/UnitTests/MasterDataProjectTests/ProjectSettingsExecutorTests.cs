@@ -7,25 +7,24 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
-using VSS.MasterData.Project.WebAPI.Common.Executors;
-using VSS.MasterData.Project.WebAPI.Common.Internal;
-using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.MasterData.Project.WebAPI.Common.Executors;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 
 namespace VSS.MasterData.ProjectTests
 {
   [TestClass]
   public class ProjectSettingsExecutorTests : ExecutorBaseTests
   {
-    protected ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
-
     [TestMethod]
     [DataRow(ProjectSettingsType.Targets)]
     [DataRow(ProjectSettingsType.Colors)]
@@ -160,6 +159,7 @@ namespace VSS.MasterData.ProjectTests
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+      var projectErrorCodesProvider = serviceProvider.GetRequiredService<IErrorCodesProvider>();
 
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, string.Empty, ProjectSettingsType.Targets);
 
@@ -172,7 +172,7 @@ namespace VSS.MasterData.ProjectTests
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>( async () =>
         await executor.ProcessAsync(projectSettingsRequest));
 
-      Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(1)));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(1)));
     }
 
     [TestMethod]

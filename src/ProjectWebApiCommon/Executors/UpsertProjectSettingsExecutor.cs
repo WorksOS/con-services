@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -98,10 +97,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       throw new NotImplementedException();
-    }
-
-    protected override void ProcessErrorCodes()
-    {
     }
 
     private async Task RaptorValidateProjectSettings(ProjectSettingsRequest request)

@@ -1,5 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using VSS.Common.Exceptions;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
@@ -10,7 +12,7 @@ namespace VSS.MasterData.ProjectTests
   [TestClass]
   public class ImportFileV2Tests
   {
-    protected ContractExecutionStatesEnum ContractExecutionStatesEnum = new ContractExecutionStatesEnum();
+    protected ProjectErrorCodesProvider projectErrorCodesProvider = new ProjectErrorCodesProvider();
     private readonly long _projectId;
     private readonly string _fileSpaceId;
     private readonly string _path;
@@ -42,7 +44,7 @@ namespace VSS.MasterData.ProjectTests
 
       var ex = Assert.ThrowsException<ServiceException>(
         () => FileImportV2DataValidator.ValidateUpsertImportedFileRequest(0, importedFileTbc));
-      Assert.AreNotEqual(-1, ex.Content.IndexOf("2005", StringComparison.Ordinal), "Expected error number 2005");
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2005", StringComparison.Ordinal), "Expected error number 2005");
     }
 
     [TestMethod]
@@ -59,7 +61,7 @@ namespace VSS.MasterData.ProjectTests
 
       var ex = Assert.ThrowsException<ServiceException>(
         () => FileImportV2DataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc));
-      Assert.AreNotEqual(-1, ex.Content.IndexOf("2031", StringComparison.Ordinal), "Expected error number 2031");
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2031", StringComparison.Ordinal), "Expected error number 2031");
     }
 
     [TestMethod]
@@ -76,7 +78,7 @@ namespace VSS.MasterData.ProjectTests
 
       var ex = Assert.ThrowsException<ServiceException>(
         () => FileImportV2DataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc));
-      Assert.AreNotEqual(-1, ex.Content.IndexOf("2075", StringComparison.Ordinal), "Expected error number 2075");
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2075", StringComparison.Ordinal), "Expected error number 2075");
     }
 
     [TestMethod]
@@ -109,7 +111,7 @@ namespace VSS.MasterData.ProjectTests
 
       var ex = Assert.ThrowsException<ServiceException>(
         () => FileImportV2DataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc));
-      Assert.AreNotEqual(-1, ex.Content.IndexOf("2033", StringComparison.Ordinal), "Expected error number 2033");
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2033", StringComparison.Ordinal), "Expected error number 2033");
     }
 
     [TestMethod]
@@ -142,7 +144,7 @@ namespace VSS.MasterData.ProjectTests
 
       var ex = Assert.ThrowsException<ServiceException>(
         () => FileImportV2DataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc));
-      Assert.AreNotEqual(-1, ex.Content.IndexOf("2095", StringComparison.Ordinal), "Expected error number 2095");
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2095", StringComparison.Ordinal), "Expected error number 2095");
     }
 
     [TestMethod]
@@ -176,7 +178,7 @@ namespace VSS.MasterData.ProjectTests
 
       var ex = Assert.ThrowsException<ServiceException>(
         () => FileImportV2DataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc));
-      Assert.AreNotEqual(-1, ex.Content.IndexOf("2002", StringComparison.Ordinal), "Expected error number 2002");
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2002", StringComparison.Ordinal), "Expected error number 2002");
     }
 
     [TestMethod]
@@ -193,7 +195,7 @@ namespace VSS.MasterData.ProjectTests
 
       var ex = Assert.ThrowsException<ServiceException>(
         () => FileImportV2DataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc));
-      Assert.AreNotEqual(-1, ex.Content.IndexOf("2032", StringComparison.Ordinal), "Expected error number 2032");
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2032", StringComparison.Ordinal), "Expected error number 2032");
     }
 
     [TestMethod]

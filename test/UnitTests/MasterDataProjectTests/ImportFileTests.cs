@@ -1,6 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using VSS.Common.Exceptions;
 using VSS.FlowJSHandler;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
@@ -11,7 +13,7 @@ namespace VSS.MasterData.ProjectTests
   [TestClass]
   public class ImportFileTests
   {
-    protected ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
+    protected ProjectErrorCodesProvider projectErrorCodesProvider = new ProjectErrorCodesProvider();
 
     [TestMethod]
     public void ValidateImportFile_NoFlowFile()
@@ -28,7 +30,7 @@ namespace VSS.MasterData.ProjectTests
       var ex = Assert.ThrowsException<ServiceException>(
         () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
-      Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(27)));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(27)));
     }
 
     [TestMethod]
@@ -46,7 +48,7 @@ namespace VSS.MasterData.ProjectTests
       var ex = Assert.ThrowsException<ServiceException>(
         () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
-      Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(28)));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(28)));
     }
 
     [TestMethod]
@@ -64,7 +66,7 @@ namespace VSS.MasterData.ProjectTests
       var ex = Assert.ThrowsException<ServiceException>(
         () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
-      Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(29)));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(29)));
     }
 
     [TestMethod]
@@ -82,7 +84,7 @@ namespace VSS.MasterData.ProjectTests
       var ex = Assert.ThrowsException<ServiceException>(
         () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
-      Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(5)));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(5)));
     }
 
     [TestMethod]
@@ -100,7 +102,7 @@ namespace VSS.MasterData.ProjectTests
       var ex = Assert.ThrowsException<ServiceException>(
         () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
-      Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(31)));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(31)));
     }
 
     [TestMethod]
@@ -118,7 +120,7 @@ namespace VSS.MasterData.ProjectTests
       var ex = Assert.ThrowsException<ServiceException>(
         () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
-      Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(32)));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
     }
 
     [TestMethod]
@@ -136,7 +138,7 @@ namespace VSS.MasterData.ProjectTests
       var ex = Assert.ThrowsException<ServiceException>(
         () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
-      Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(33)));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(33)));
     }
 
     [TestMethod]
@@ -154,7 +156,7 @@ namespace VSS.MasterData.ProjectTests
       var ex = Assert.ThrowsException<ServiceException>(
         () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
-      Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(34)));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(34)));
     }
 
     [TestMethod]
@@ -172,7 +174,7 @@ namespace VSS.MasterData.ProjectTests
       var ex = Assert.ThrowsException<ServiceException>(
         () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
-      Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(35)));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(35)));
     }
 
     [TestMethod]
@@ -206,7 +208,7 @@ namespace VSS.MasterData.ProjectTests
       var ex = Assert.ThrowsException<ServiceException>(
         () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
-      Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(32)));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
     }
 
     [TestMethod]
@@ -240,7 +242,7 @@ namespace VSS.MasterData.ProjectTests
       var ex = Assert.ThrowsException<ServiceException>(
         () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
-      Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(32)));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
     }
 
 
@@ -275,7 +277,7 @@ namespace VSS.MasterData.ProjectTests
       var ex = Assert.ThrowsException<ServiceException>(
         () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
-      Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(32)));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
     }
 
     [TestMethod]
@@ -293,7 +295,7 @@ namespace VSS.MasterData.ProjectTests
       var ex = Assert.ThrowsException<ServiceException>(
         () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
-      Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(36)));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(36)));
     }
 
 
@@ -328,7 +330,7 @@ namespace VSS.MasterData.ProjectTests
       var ex = Assert.ThrowsException<ServiceException>(
         () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
-      Assert.AreNotEqual(-1, ex.Content.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(32)));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
     }
   }
 }

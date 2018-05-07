@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
-using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
-using VSS.MasterData.Repositories.DBModels;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models

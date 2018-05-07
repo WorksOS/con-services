@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
-using VSS.TCCFileAccess.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -58,8 +57,5 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       throw new NotImplementedException();
     }
 
-    protected override void ProcessErrorCodes()
-    {
-    }
   }
 }

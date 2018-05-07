@@ -6,8 +6,8 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
-using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -79,10 +79,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       throw new NotImplementedException();
-    }
-
-    protected override void ProcessErrorCodes()
-    {
     }
 
     /// <summary>

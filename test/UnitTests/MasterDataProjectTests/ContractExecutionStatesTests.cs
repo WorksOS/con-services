@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 
 namespace VSS.MasterData.ProjectTests
@@ -9,10 +10,10 @@ namespace VSS.MasterData.ProjectTests
     [TestMethod]
     public void DynamicAddwithOffsetTest()
     {
-      var contractExecutionStatesEnum = new ContractExecutionStatesEnum();
-      Assert.AreEqual(96, contractExecutionStatesEnum.DynamicCount);
-      Assert.AreEqual("Supplied CoordinateSystem filename is not valid. Exceeds the length limit of 256, is empty, or contains illegal characters.", contractExecutionStatesEnum.FirstNameWithOffset(2));
-      Assert.AreEqual("LegacyImportedFileId has not been generated.", contractExecutionStatesEnum.FirstNameWithOffset(50));
+      var projectErrorCodesProvider = new ProjectErrorCodesProvider();
+      Assert.AreEqual(96, projectErrorCodesProvider.DynamicCount);
+      Assert.AreEqual("Supplied CoordinateSystem filename is not valid. Exceeds the length limit of 256, is empty, or contains illegal characters.", projectErrorCodesProvider.FirstNameWithOffset(2));
+      Assert.AreEqual("LegacyImportedFileId has not been generated.", projectErrorCodesProvider.FirstNameWithOffset(50));
     }
   }
 }

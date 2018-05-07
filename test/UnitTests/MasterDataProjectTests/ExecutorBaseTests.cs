@@ -3,14 +3,16 @@ using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
-using VSS.MasterData.Project.WebAPI.Common.Internal;
+using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.MasterData.ProjectTests
 {
@@ -41,7 +43,9 @@ namespace VSS.MasterData.ProjectTests
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
         .AddTransient<IRaptorProxy, RaptorProxy>()
-        .AddSingleton<IKafka, RdKafkaDriver>();
+        .AddSingleton<IKafka, RdKafkaDriver>()
+        .AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>();
+
       serviceProvider = serviceCollection.BuildServiceProvider();
       kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
                        serviceProvider.GetRequiredService<IConfigurationStore>().GetValueString("KAFKA_TOPIC_NAME_SUFFIX");

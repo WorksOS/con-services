@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-using Microsoft.Extensions.Localization.Internal;
+using VSS.Common.Exceptions;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -13,7 +14,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
   /// </summary>
   public class FileImportV2DataValidator
   {
-    protected static ContractExecutionStatesEnum ContractExecutionStatesEnum = new ContractExecutionStatesEnum();
+    protected static ProjectErrorCodesProvider projectErrorCodesProvider = new ProjectErrorCodesProvider();
 
     /// <summary>
     /// Validate the Upsert request i.e. that the parameters are as expected.
@@ -26,22 +27,22 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       if (projectId <= 0 )
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.GetErrorNumberwithOffset(5),
-            ContractExecutionStatesEnum.FirstNameWithOffset(5)));
+          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(5),
+            projectErrorCodesProvider.FirstNameWithOffset(5)));
       }
 
       if (!Enum.IsDefined(typeof(ImportedFileType), importedFile.ImportedFileTypeId))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.GetErrorNumberwithOffset(30),
-            ContractExecutionStatesEnum.FirstNameWithOffset(30)));
+          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(30),
+            projectErrorCodesProvider.FirstNameWithOffset(30)));
       }
 
       if (!(importedFile.ImportedFileTypeId >= ImportedFileType.Linework && importedFile.ImportedFileTypeId <= ImportedFileType.Alignment))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.GetErrorNumberwithOffset(31),
-            ContractExecutionStatesEnum.FirstNameWithOffset(31)));
+          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(31),
+            projectErrorCodesProvider.FirstNameWithOffset(31)));
       }
 
       ProjectDataValidator.ValidateBusinessCentreFile(importedFile);
@@ -53,8 +54,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
          )
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.GetErrorNumberwithOffset(75),
-            ContractExecutionStatesEnum.FirstNameWithOffset(75)));
+          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(75),
+            projectErrorCodesProvider.FirstNameWithOffset(75)));
       }
 
       if (importedFile.ImportedFileTypeId == ImportedFileType.SurveyedSurface &&
@@ -63,16 +64,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
           )
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.GetErrorNumberwithOffset(33),
-            ContractExecutionStatesEnum.FirstNameWithOffset(33)));
+          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(33),
+            projectErrorCodesProvider.FirstNameWithOffset(33)));
       }
 
       if (importedFile.ImportedFileTypeId == ImportedFileType.Alignment &&
           importedFile.AlignmentFile == null )
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.GetErrorNumberwithOffset(95),
-            ContractExecutionStatesEnum.FirstNameWithOffset(95)));
+          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(95),
+            projectErrorCodesProvider.FirstNameWithOffset(95)));
       }
       
       var fileExtension = Path.GetExtension(importedFile.Name).ToLower();
@@ -84,8 +85,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       ))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.GetErrorNumberwithOffset(32),
-            ContractExecutionStatesEnum.FirstNameWithOffset(32)));
+          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(32),
+            projectErrorCodesProvider.FirstNameWithOffset(32)));
       }
 
       return importedFile;

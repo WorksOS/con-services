@@ -1,5 +1,7 @@
 ﻿using System.Net;
 using Newtonsoft.Json;
+using VSS.Common.Exceptions;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
@@ -10,7 +12,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
   /// </summary>
   public class ValidateTccAuthorizationRequest
   {
-    protected static ContractExecutionStatesEnum ContractExecutionStatesEnum = new ContractExecutionStatesEnum();
+    protected static ProjectErrorCodesProvider projectErrorCodesProvider = new ProjectErrorCodesProvider();
     
     /// <summary>
     /// this relates to tcc's filespace.orgShortName
@@ -42,8 +44,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
       if (string.IsNullOrEmpty(OrgShortName) )
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.GetErrorNumberwithOffset(86),
-            string.Format(ContractExecutionStatesEnum.FirstNameWithOffset(86), OrgShortName)));
+          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(86),
+            string.Format(projectErrorCodesProvider.FirstNameWithOffset(86), OrgShortName)));
       }
     }
 
