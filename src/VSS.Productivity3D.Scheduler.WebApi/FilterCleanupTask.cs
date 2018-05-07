@@ -8,7 +8,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
-
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Scheduler.WebApi
 {
@@ -103,7 +103,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
                 f.Name, f.FilterJson, f.fk_FilterTypeID as FilterType,
                 f.IsDeleted, f.LastActionedUTC
               FROM Filter f
-              WHERE f.fk_FilterTypeID = 1 
+              WHERE f.fk_FilterTypeID = {(int)FilterType.Transient} 
                 AND f.LastActionedUTC < {empty}{cutoffActionUtcToDelete}{empty}";
 
       try
@@ -124,7 +124,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       }
 
  
-      string deleteCommand = $"DELETE FROM Filter WHERE fk_FilterTypeID = 1 AND LastActionedUTC < {empty}{cutoffActionUtcToDelete}{empty}";
+      string deleteCommand = $"DELETE FROM Filter WHERE fk_FilterTypeID = {(int)FilterType.Transient} AND LastActionedUTC < {empty}{cutoffActionUtcToDelete}{empty}";
       int deletedCount = 0;
       try
       {
