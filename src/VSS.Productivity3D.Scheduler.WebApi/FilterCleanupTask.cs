@@ -35,13 +35,6 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     {
       _log = loggerFactory.CreateLogger<FilterCleanupTask>();
       _configStore = configStore;
-      
-
-      if (filterRepository == null)
-      {
-        _log.LogError("filter repo is null!");
-        throw new ArgumentNullException("FilterRepository is null");
-      }
       _filterRepository = filterRepository;
     }
 
@@ -103,11 +96,8 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
       var cutoffActionUtcToDelete = startUtc.AddMinutes(-ageInMinutesToDelete).ToString("yyyy-MM-dd HH:mm:ss"); // mySql requires this format 
 
-      _log.LogDebug($"FilterTableCleanupTask() getting filters to remove. startUtc: {startUtc}");
-      //TODO: replace this with the filter repo once connection string config clash is sorted
       //var filtersToBeDeleted = _filterRepository.GetTransientFiltersToBeCleaned(ageInMinutesToDelete);
-
-      //TODO: add exception handling
+      //TODO: replace this with the filter repo call above once connection string env config clash is sorted (MYSQL_DATABASE_NAME)
 
       var filterstoBeDeletedQuery = $@"SELECT 
                 f.fk_CustomerUid AS CustomerUID, f.UserID, 
@@ -117,14 +107,6 @@ namespace VSS.Productivity3D.Scheduler.WebApi
               FROM Filter f
               WHERE f.fk_FilterTypeID = 1 
                 AND f.LastActionedUTC < {empty}{cutoffActionUtcToDelete}{empty}";
-
-      var filtersToBeDeleted = dbConnection.Query<Filter>(filterstoBeDeletedQuery).AsList();
-      _log.LogInformation($"{Environment.NewLine}************** THE FOLLOWING FILTERS ARE GOING TO BE REMOVED ***************{Environment.NewLine}");
-      foreach (var filter in filtersToBeDeleted)
-      {
-        _log.LogInformation(filter.ToString());
-      }
-      _log.LogInformation($"{Environment.NewLine}************** {filtersToBeDeleted.Count} FILTERS TO BE REMOVED ***************{Environment.NewLine}");
 
       try
       {
@@ -148,6 +130,14 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       int deletedCount = 0;
       try
       {
+        //var filtersToBeDeleted = dbConnection.Query<Filter>(filterstoBeDeletedQuery).AsList();
+        _log.LogDebug($"{Environment.NewLine}************** THE FOLLOWING FILTERS ARE GOING TO BE REMOVED ***************{Environment.NewLine}");
+
+        dbConnection.Query<Filter>(filterstoBeDeletedQuery).AsList().ForEach(filter => _log.LogDebug(filter.ToString()));
+
+        _log.LogDebug($"{Environment.NewLine}************** END FILTERS TO BE REMOVED ***************{Environment.NewLine}");
+
+ 
         deletedCount = dbConnection.Execute(deleteCommand, cutoffActionUtcToDelete);
         _log.LogTrace($"FilterCleanupTask.FilterTableCleanupTask: connectionString {dbConnection.ConnectionString} deletedCount {deletedCount}");
       }
