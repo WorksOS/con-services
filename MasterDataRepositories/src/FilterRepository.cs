@@ -328,7 +328,7 @@ namespace VSS.MasterData.Repositories
                 f.Name, f.FilterJson, f.fk_FilterTypeID as FilterType,
                 f.IsDeleted, f.LastActionedUTC
               FROM Filter f
-              WHERE f.fk_FilterTypeID = 1 
+              WHERE f.fk_FilterTypeID = {(int)FilterType.Transient} 
                 AND f.LastActionedUTC < @cutoffActionUtcToDelete",
         new { cutoffActionUtcToDelete }));
       return filters;
