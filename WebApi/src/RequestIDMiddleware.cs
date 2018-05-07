@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace VSS.MasterData.Models.FIlters
+namespace VSS.WebApi.Common
 {
-  //TODO: Remove when all services use WebApi package
-  [Obsolete]
   public class RequestIDMiddleware
   {
     private readonly RequestDelegate NextRequestDelegate;
