@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
-using System.Net.Configuration;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -275,7 +271,7 @@ namespace VSS.Productivity3D.Common.Models
       uint? mdpUnderTargetColor = null
     )
     {
-      return new CompactionProjectSettingsColors()
+      return new CompactionProjectSettingsColors
       {
         useDefaultElevationColors = useDefaultElevationColors,
         elevationColors = elevationColors,
