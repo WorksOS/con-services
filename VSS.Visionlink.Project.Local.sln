@@ -31,6 +31,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore.Loca
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ITask.Local", "..\MerinoSandbox\ITask\src\VSS.ITask.Local.csproj", "{91C57554-614C-48FC-BBE6-81C07A5D4A00}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.WebApi.Common.Local", "..\MerinoSandbox\WebApi\src\VSS.WebApi.Common.Local.csproj", "{79B9DA28-E235-45A5-8999-E7DCDBF77D27}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,6 +87,10 @@ Global
 		{91C57554-614C-48FC-BBE6-81C07A5D4A00}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91C57554-614C-48FC-BBE6-81C07A5D4A00}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91C57554-614C-48FC-BBE6-81C07A5D4A00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79B9DA28-E235-45A5-8999-E7DCDBF77D27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79B9DA28-E235-45A5-8999-E7DCDBF77D27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79B9DA28-E235-45A5-8999-E7DCDBF77D27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79B9DA28-E235-45A5-8999-E7DCDBF77D27}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -92,5 +98,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{8468BBE9-B385-4CFE-8F63-0A47E0849518} = {160796E4-4ED9-480B-B3D7-044B334F28EE}
 		{4C0A1653-810A-4DC1-90D7-76BAD6F10058} = {8468BBE9-B385-4CFE-8F63-0A47E0849518}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {25C1559E-35F7-42CA-B265-A63D8D5E412C}
 	EndGlobalSection
 EndGlobal
