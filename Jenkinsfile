@@ -126,7 +126,7 @@ node ('Jenkins-Win2016-Raptor')
             }
 
             stage ('Build') {
-                bat "build47.bat"
+                bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\buil471.ps1"
             }
           
             archiveArtifacts artifacts: 'FileAccessWebApiNet47.zip', fingerprint: true
