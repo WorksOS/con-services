@@ -28,6 +28,16 @@ namespace VSS.MasterData.Models.UnitTests
     }
 
     [TestMethod]
+    public void CanValidateFileDescriptorWithCustomerAndProjectID()
+    {
+      var desc = FileDescriptor.CreateFileDescriptor("1", "132465", "55644", "FILE.FILE");
+      desc.Validate();
+      Assert.AreEqual("/132465/55644", desc.path);
+      Assert.AreEqual("FILE.FILE", desc.fileName);
+      Assert.AreEqual("1", desc.filespaceId);
+    }
+
+    [TestMethod]
     [ExpectedException(typeof(ServiceException))]
     public void CanValidateInvalidFileDescriptor()
     {

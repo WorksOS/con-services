@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -309,6 +310,27 @@ namespace VSS.MasterData.Repositories
                 AND f.IsDeleted = 0
                 AND f.fk_FilterTypeID = {(int)FilterType.Persistent}",
         new { projectUid }));
+      return filters;
+    }
+
+
+    /// <summary>
+    /// Returns filters which will be removed if cleanup is run.
+    /// </summary>
+    /// <param name="ageInMinutesToBeDeleted"></param>
+    /// <returns></returns>
+    public async Task<IEnumerable<Filter>> GetTransientFiltersToBeCleaned(int ageInMinutesToBeDeleted)
+    {
+      var cutoffActionUtcToDelete = DateTime.Now.AddMinutes(-ageInMinutesToBeDeleted).ToString("yyyy-MM-dd HH:mm:ss");
+      var filters = (await QueryWithAsyncPolicy<Filter>($@"SELECT 
+                f.fk_CustomerUid AS CustomerUID, f.UserID, 
+                f.fk_ProjectUID AS ProjectUID, f.FilterUID,                   
+                f.Name, f.FilterJson, f.fk_FilterTypeID as FilterType,
+                f.IsDeleted, f.LastActionedUTC
+              FROM Filter f
+              WHERE f.fk_FilterTypeID = {(int)FilterType.Transient} 
+                AND f.LastActionedUTC < @cutoffActionUtcToDelete",
+        new { cutoffActionUtcToDelete }));
       return filters;
     }
 
