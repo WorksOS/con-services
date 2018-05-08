@@ -53,8 +53,8 @@
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.0.*" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.1.*" />
     <PackageReference Include="Dapper" Version="1.50.4" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.19.*" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.28.*" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.20.*" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.30.*" />
     <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.0.*" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
   </ItemGroup>
