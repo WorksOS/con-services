@@ -8,7 +8,7 @@ namespace VSS.MasterData.Proxies
 {
   public interface ISchedulerProxy
   {
-    Task<JobStatusResult> GetExportJobStatus(string jobId, IDictionary<string, string> customHeaders);
+    Task<JobStatusResult> GetExportJobStatus(string jobId, string filename, IDictionary<string, string> customHeaders);
     Task<ScheduleJobResult> ScheduleExportJob(ScheduleJobRequest request, IDictionary<string, string> customHeaders);
   }
 }

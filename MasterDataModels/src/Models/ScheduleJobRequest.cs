@@ -24,5 +24,11 @@ namespace VSS.MasterData.Models.Models
     /// </summary>
     [JsonProperty(PropertyName = "payload", Required = Required.Default)]
     public string Payload { get; set; }
+
+    /// <summary>
+    /// File name to save export data to
+    /// </summary>
+    [JsonProperty(PropertyName = "filename", Required = Required.Always)]
+    public string Filename { get; set; }
   }
 }

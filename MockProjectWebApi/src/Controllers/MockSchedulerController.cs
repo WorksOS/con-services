@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Web.Http;
+using Microsoft.AspNetCore.Mvc;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 
@@ -20,7 +21,7 @@ namespace MockProjectWebApi.Controllers
 
     [Route("/api/v1/mock/export/{jobId}")]
     [HttpGet]
-    public JobStatusResult GetMockExportJobStatus(string jobId)
+    public JobStatusResult GetMockExportJobStatus(string jobId, [FromUri] string filename)
     {
       string status = IN_PROGRESS_STATUS;
       if (jobId == SUCCESS_JOB_ID)
@@ -28,7 +29,12 @@ namespace MockProjectWebApi.Controllers
       else if (jobId == FAILURE_JOB_ID)
         status = FAILURE_STATUS;
 
-      return new JobStatusResult { key = jobId, status = status };
+      return new JobStatusResult { key = GetS3Key(jobId, filename), status = status };
+    }
+
+    private string GetS3Key(string jobId, string filename)
+    {
+      return $"3dpm/{jobId}/{filename}.zip";
     }
 
     public static readonly string SUCCESS_JOB_ID = "Test_Job_1";
