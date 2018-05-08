@@ -86,25 +86,11 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     {
       var startUtc = DateTime.UtcNow;
       var empty = "\"";
+      var cutoffActionUtcToDelete = startUtc.AddMinutes(-ageInMinutesToDelete).ToString("yyyy-MM-dd HH:mm:ss"); // mySql requires this format 
       _log.LogDebug($"FilterTableCleanupTask() beginning. startUtc: {startUtc}");
 
       Dictionary<string, object> newRelicAttributes;
       MySqlConnection dbConnection = new MySqlConnection(filterDbConnectionString);
-
-
-      var cutoffActionUtcToDelete = startUtc.AddMinutes(-ageInMinutesToDelete).ToString("yyyy-MM-dd HH:mm:ss"); // mySql requires this format 
-
-      //var filtersToBeDeleted = _filterRepository.GetTransientFiltersToBeCleaned(ageInMinutesToDelete);
-      //TODO: replace this with the filter repo call above once connection string env config clash is sorted (MYSQL_DATABASE_NAME)
-
-      var filterstoBeDeletedQuery = $@"SELECT 
-                f.fk_CustomerUid AS CustomerUID, f.UserID, 
-                f.fk_ProjectUID AS ProjectUID, f.FilterUID,                   
-                f.Name, f.FilterJson, f.fk_FilterTypeID as FilterType,
-                f.IsDeleted, f.LastActionedUTC
-              FROM Filter f
-              WHERE f.fk_FilterTypeID = {(int)FilterType.Transient} 
-                AND f.LastActionedUTC < {empty}{cutoffActionUtcToDelete}{empty}";
 
       try
       {
@@ -122,20 +108,28 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       {
         dbConnection.Close();
       }
-
- 
+      
+      var filterstoBeDeletedQuery = $@"SELECT 
+                f.fk_CustomerUid AS CustomerUID, f.UserID, 
+                f.fk_ProjectUID AS ProjectUID, f.FilterUID,                   
+                f.Name, f.FilterJson, f.fk_FilterTypeID as FilterType,
+                f.IsDeleted, f.LastActionedUTC
+              FROM Filter f
+              WHERE f.fk_FilterTypeID = {(int)FilterType.Transient} 
+                AND f.LastActionedUTC < {empty}{cutoffActionUtcToDelete}{empty}";
       string deleteCommand = $"DELETE FROM Filter WHERE fk_FilterTypeID = {(int)FilterType.Transient} AND LastActionedUTC < {empty}{cutoffActionUtcToDelete}{empty}";
-      int deletedCount = 0;
+      
       try
-      {
-        //var filtersToBeDeleted = dbConnection.Query<Filter>(filterstoBeDeletedQuery).AsList();
+      {     
+        //var filtersToBeDeleted = _filterRepository.GetTransientFiltersToBeCleaned(ageInMinutesToDelete);
+        //TODO: replace this with the filter repo call above once connection string env config clash is sorted (MYSQL_DATABASE_NAME)
         _log.LogDebug($"{Environment.NewLine}************** THE FOLLOWING FILTERS ARE GOING TO BE REMOVED ***************{Environment.NewLine}");
 
         dbConnection.Query<Filter>(filterstoBeDeletedQuery).AsList().ForEach(filter => _log.LogDebug(filter.ToString()));
 
         _log.LogDebug($"{Environment.NewLine}************** END FILTERS TO BE REMOVED ***************{Environment.NewLine}");
-
- 
+        
+        int deletedCount = 0;
         deletedCount = dbConnection.Execute(deleteCommand, cutoffActionUtcToDelete);
         _log.LogTrace($"FilterCleanupTask.FilterTableCleanupTask: connectionString {dbConnection.ConnectionString} deletedCount {deletedCount}");
       }
