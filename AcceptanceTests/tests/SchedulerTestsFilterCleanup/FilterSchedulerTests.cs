@@ -114,7 +114,7 @@ namespace SchedulerTestsFilterCleanup
 
     [TestMethod]
     //TODO: when we switch to xunit the next two tests can be done with inline data
-    public void FilterSchedulerTask_DontRemoveSavedFilters()
+    public void FilterSchedulerTask_DontRemoveSavedFilters_When_Cleanup_Runs()
     {
       var theJob = GetJob(HangfireConnection(), FilterCleanupTask);
       Assert.IsNotNull(theJob, "Unable to communicate with Hangfire Scheduler");
@@ -179,7 +179,7 @@ namespace SchedulerTestsFilterCleanup
 
 
     [TestMethod]
-    public void FilterSchedulerTask_DontRemoveReportFilters()
+    public void FilterSchedulerTask_DontRemoveReportFilters_When_Cleanup_Runs()
     {
       var theJob = GetJob(HangfireConnection(), FilterCleanupTask);
       Assert.IsNotNull(theJob, "Unable to communicate with Hangfire Scheduler");

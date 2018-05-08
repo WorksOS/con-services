@@ -120,9 +120,8 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       string deleteCommand = $"DELETE FROM Filter WHERE fk_FilterTypeID = {(int)FilterType.Transient} AND LastActionedUTC < {empty}{cutoffActionUtcToDelete}{empty}";
       int deletedCount = 0;
       try
-      {     
-        //var filtersToBeDeleted = _filterRepository.GetTransientFiltersToBeCleaned(ageInMinutesToDelete);
-        //TODO: replace this with the filter repo call above once connection string env config clash is sorted (MYSQL_DATABASE_NAME)
+      {
+        //TODO: replace this with the filter repo call once connection string env config clash is sorted (MYSQL_DATABASE_NAME) US #69657
         _log.LogDebug($"{Environment.NewLine}************** THE FOLLOWING FILTERS ARE GOING TO BE REMOVED ***************{Environment.NewLine}");
 
         dbConnection.Query<Filter>(filterstoBeDeletedQuery).AsList().ForEach(filter => _log.LogDebug(filter.ToString()));

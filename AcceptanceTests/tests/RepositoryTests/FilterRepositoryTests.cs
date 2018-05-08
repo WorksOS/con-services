@@ -51,7 +51,7 @@ namespace RepositoryTests
       CheckSchema("_FILTER", tableName, columnNames);
     }
 
-    [Ignore] //This test will not work in the context as the filter repo expects MYSQL_DATABASE_NAME to point to filter not scheduler
+    [Ignore("This test will not work in the context as the filter repo expects MYSQL_DATABASE_NAME to point to filter not scheduler see US 69657")] 
     [TestMethod]
     public void FiltersToBeCleaned()
     {
