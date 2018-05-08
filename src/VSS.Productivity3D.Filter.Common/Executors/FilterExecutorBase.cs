@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
@@ -23,7 +23,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// <summary>
     /// This constructor allows us to mock raptorClient
     /// </summary>
-    public FilterExecutorBase(IConfigurationStore configStore, ILoggerFactory logger,
+    protected FilterExecutorBase(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
       IProjectListProxy projectListProxy, IRaptorProxy raptorProxy,
       RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository)
@@ -35,39 +35,43 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
-    public FilterExecutorBase()
+    protected FilterExecutorBase()
     { }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       throw new NotImplementedException();
     }
+
     /// <summary>
     /// Store the filter in the database and notify Raptor of a filter change
     /// </summary>
     /// <typeparam name="T">The type of event</typeparam>
     /// <param name="filterRequest">The filter data</param>
     /// <param name="errorCodes">Error codes to use for exceptions</param>
-    /// <returns></returns>
     protected async Task<T> StoreFilterAndNotifyRaptor<T>(FilterRequestFull filterRequest, int[] errorCodes) where T : IFilterEvent
     {
-      T filterEvent = default(T);
+      var filterEvent = default(T);
+
       try
       {
         filterEvent = AutoMapperUtility.Automapper.Map<T>(filterRequest);
         filterEvent.ActionUTC = DateTime.UtcNow;
 
-        int count = await ((IFilterRepository)Repository).StoreEvent(filterEvent).ConfigureAwait(false);
+        var count = await ((IFilterRepository)Repository).StoreEvent(filterEvent).ConfigureAwait(false);
         if (count == 0)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, errorCodes[0]);
         }
         else
-        {     // Do not do this for transient filters
-          if (filterRequest.FilterType != FilterType.Transient)
+        {
+          // It's not necessary to invalidate the Raptor services proxy filter cache when a filter is created, or if it's transient.
+          if (filterRequest.FilterType == FilterType.Transient || filterEvent is CreateFilterEvent)
           {
-            await NotifyRaptor(filterRequest);
+            return filterEvent;
           }
+
+          await NotifyRaptor(filterRequest);
         }
       }
       catch (Exception e)
@@ -79,10 +83,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     }
 
     /// <summary>
-    /// Notify 3dpm service that a filter has been added/updated/deleted
+    /// Notify 3dpm service that a filter has been added/updated/deleted.
     /// </summary>
-    /// <param name="filterRequest"></param>
-    /// <returns></returns>
     private async Task NotifyRaptor(FilterRequestFull filterRequest)
     {
       BaseDataResult notificationResult = null;
@@ -110,15 +112,14 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         $"FilterExecutorBase: NotifyFilterChange in RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
 
       if (notificationResult != null && notificationResult.Code != 0)
+      {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 29, notificationResult.Code.ToString(), notificationResult.Message);
+      }
     }
 
     /// <summary>
-    /// Send a filter message to kafka
+    /// Send a filter message to kafka.
     /// </summary>
-    /// <param name="filterUid"></param>
-    /// <param name="payload"></param>
-    /// <param name="errorCode"></param>
     protected void SendToKafka(string filterUid, string payload, int errorCode)
     {
       try
@@ -134,6 +135,5 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, errorCode, e.Message);
       }
     }
-
   }
 }
