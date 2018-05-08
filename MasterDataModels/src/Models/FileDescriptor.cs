@@ -69,6 +69,7 @@ namespace VSS.MasterData.Models.Models
 
     /// <summary>
     /// Create instance of FileDescriptor
+    /// Where the path is /{customerUid}/{projectUid}
     /// </summary>
     public static FileDescriptor CreateFileDescriptor
     (
