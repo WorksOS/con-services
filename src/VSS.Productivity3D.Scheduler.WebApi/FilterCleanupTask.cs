@@ -118,7 +118,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
               WHERE f.fk_FilterTypeID = {(int)FilterType.Transient} 
                 AND f.LastActionedUTC < {empty}{cutoffActionUtcToDelete}{empty}";
       string deleteCommand = $"DELETE FROM Filter WHERE fk_FilterTypeID = {(int)FilterType.Transient} AND LastActionedUTC < {empty}{cutoffActionUtcToDelete}{empty}";
-      
+      int deletedCount = 0;
       try
       {     
         //var filtersToBeDeleted = _filterRepository.GetTransientFiltersToBeCleaned(ageInMinutesToDelete);
@@ -129,7 +129,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
         _log.LogDebug($"{Environment.NewLine}************** END FILTERS TO BE REMOVED ***************{Environment.NewLine}");
         
-        int deletedCount = 0;
+        
         deletedCount = dbConnection.Execute(deleteCommand, cutoffActionUtcToDelete);
         _log.LogTrace($"FilterCleanupTask.FilterTableCleanupTask: connectionString {dbConnection.ConnectionString} deletedCount {deletedCount}");
       }

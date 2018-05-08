@@ -95,6 +95,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddTransient<IRaptorProxy, RaptorProxy>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
       services.AddTransient<IFileRepository, FileRepository>();
+      services.AddTransient<IFilterRepository, FilterRepository>();
       services.AddTransient<IImportedFileProxy, ImportedFileProxy>();
       services.AddTransient<IExportJob, ExportJob>();
       services.AddTransient<IApiClient, ApiClient>();
@@ -261,6 +262,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     private int ConfigureFilterCleanupTask(ILogger<Startup> log, int expectedJobCount)
     {
       var configStore = _serviceProvider.GetRequiredService<IConfigurationStore>();
+      var filterRepo = _serviceProvider.GetRequiredService<IFilterRepository>();
 
       var filterCleanupTaskToRun = false;
       if (!bool.TryParse(configStore.GetValueString("SCHEDULER_FILTER_CLEANUP_TASK_RUN"), out filterCleanupTaskToRun))
