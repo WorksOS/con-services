@@ -30,6 +30,7 @@ namespace TestUtility
     {
       Log.Info(resourceUri, Log.ContentType.ApiSend);
       var msg = new Msg();
+      msg.DisplayWebApi(httpMethod, resourceUri, string.Empty, payloadData);
       var request = InitHttpRequest(resourceUri, httpMethod, mediaType, customerUid);                   
       if (payloadData != null)
       {

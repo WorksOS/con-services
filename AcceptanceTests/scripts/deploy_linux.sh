@@ -20,6 +20,8 @@ dotnet publish SchedulerTestsFilterCleanup/SchedulerTestsFilterCleanup.csproj -o
 rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
 dotnet publish SchedulerTestsImportedFileSync/SchedulerTestsImportedFileSync.csproj -o ../../deploy/SchedulerTestsImportedFileSync -f netcoreapp2.0
 rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
+dotnet publish WebApiTests/WebApiTests.csproj -o ../../deploy/WebApiTests -f netcoreapp2.0
+rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
 
 cd ..
 cd utilities

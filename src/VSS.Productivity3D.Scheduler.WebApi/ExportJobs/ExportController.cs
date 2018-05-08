@@ -35,7 +35,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     /// </summary>
     /// <param name="request">Http request details of how to get the export data</param>
     /// <returns></returns>
-    [Route("api/v1/export")]
+    [Route("internal/v1/export")]//hide from TPaaS using different base url in route ('internal' instead of 'api')
     [HttpPost]
     public ScheduleJobResult StartExport([FromBody] ScheduleJobRequest request)
     {

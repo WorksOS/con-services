@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Text;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using TestUtility;
@@ -41,7 +42,7 @@ namespace WebApiTests
       var url = $"{ts.tsCfg.vetaExportUrl}?projectUid={GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1}&fileName={SUCCESS_JOB_ID}&filterUid={FilterUid}";
       var request = new ScheduleJobRequest {Url = url};
       var requestJson = JsonConvert.SerializeObject(request);
-      var responseJson = ts.CallSchedulerWebApi("api/v1/export", "POST", requestJson);
+      var responseJson = ts.CallSchedulerWebApi("internal/v1/export", "POST", requestJson);
       var scheduleResult = JsonConvert.DeserializeObject<ScheduleJobResult>(responseJson,
         new JsonSerializerSettings {DateTimeZoneHandling = DateTimeZoneHandling.Unspecified});
       Assert.IsNotNull(scheduleResult, "Should get a schedule job response");
@@ -50,7 +51,7 @@ namespace WebApiTests
       //Get the job status...
       JobStatusResult statusResult = new JobStatusResult{status = string.Empty};
       //Avoid infinite loop if something goes wrong
-      var timeout = DateTime.Now.AddSeconds(30);
+      var timeout = DateTime.Now.AddSeconds(60);
       while (!statusResult.status.Equals("SUCCEEDED", StringComparison.OrdinalIgnoreCase) && DateTime.Now < timeout)
       {
         responseJson = ts.CallSchedulerWebApi($"api/v1/export/{scheduleResult.jobId}", "GET");
@@ -59,6 +60,7 @@ namespace WebApiTests
 
         Assert.IsNotNull(statusResult, "Should get a job status response");
         Console.WriteLine($"Scheduled Job Status: {statusResult.status}");
+        Thread.Sleep(5000);
       }
       if (!statusResult.status.Equals("SUCCEEDED", StringComparison.OrdinalIgnoreCase))
         Assert.Fail("Test timed out");
