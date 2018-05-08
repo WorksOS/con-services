@@ -40,7 +40,7 @@ namespace WebApiTests
 
       //Schedule the export job...
       var url = $"{ts.tsCfg.vetaExportUrl}?projectUid={GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1}&fileName={SUCCESS_JOB_ID}&filterUid={FilterUid}";
-      var request = new ScheduleJobRequest {Url = url};
+      var request = new ScheduleJobRequest {Url = url, Filename = SUCCESS_JOB_ID};
       var requestJson = JsonConvert.SerializeObject(request);
       var responseJson = ts.CallSchedulerWebApi("internal/v1/export", "POST", requestJson);
       var scheduleResult = JsonConvert.DeserializeObject<ScheduleJobResult>(responseJson,
@@ -54,7 +54,7 @@ namespace WebApiTests
       var timeout = DateTime.Now.AddSeconds(60);
       while (!statusResult.status.Equals("SUCCEEDED", StringComparison.OrdinalIgnoreCase) && DateTime.Now < timeout)
       {
-        responseJson = ts.CallSchedulerWebApi($"api/v1/export/{scheduleResult.jobId}", "GET");
+        responseJson = ts.CallSchedulerWebApi($"api/v1/export/{scheduleResult.jobId}?filename={SUCCESS_JOB_ID}", "GET");
         statusResult = JsonConvert.DeserializeObject<JobStatusResult>(responseJson,
           new JsonSerializerSettings {DateTimeZoneHandling = DateTimeZoneHandling.Unspecified});
 
@@ -83,11 +83,24 @@ namespace WebApiTests
       Msg.Title("Scheduler web test 2", "Get Scheduled export job status for missing job");
 
       const string jobId = "999999";
-      var responseJson = ts.CallSchedulerWebApi($"api/v1/export/{jobId}", "GET", null, HttpStatusCode.BadRequest);
+      var responseJson = ts.CallSchedulerWebApi($"api/v1/export/{jobId}?filename={SUCCESS_JOB_ID}", "GET", null, HttpStatusCode.BadRequest);
       var result = JsonConvert.DeserializeObject<ContractExecutionResult>(responseJson,
         new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       Assert.IsNotNull(result, "Should be a error message");
       Assert.AreEqual($"Missing job details for {jobId}", result.Message, "Wrong error message");
+    }
+
+    [TestMethod]
+    public void CanGetExportJobStatusNoFileName()
+    {
+      Msg.Title("Scheduler web test 3", "Get Scheduled export job status without file name");
+
+      const string jobId = "999999";
+      var responseJson = ts.CallSchedulerWebApi($"api/v1/export/{jobId}", "GET", null, HttpStatusCode.BadRequest);
+      var result = JsonConvert.DeserializeObject<ContractExecutionResult>(responseJson,
+        new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      Assert.IsNotNull(result, "Should be a error message");
+      Assert.AreEqual($"Missing file name for {jobId}", result.Message, "Wrong error message");
     }
   }
 }
