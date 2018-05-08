@@ -100,7 +100,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddTransient<ITransferProxy, TransferProxy>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
-      services.AddScoped<IErrorCodesProvider, ErrorCodesProvider>();
+      services.AddScoped<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
 
       _serviceCollection = services;
     }

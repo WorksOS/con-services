@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
+using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
 using Hangfire;
 using Microsoft.Extensions.Logging;
@@ -50,12 +51,20 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     /// Get the status of an export
     /// </summary>
     /// <param name="jobId">The job id</param>
+    /// <param name="filename">The name of the file the export data is saved to</param>
     /// <returns>The AWS S3 key where the file has been saved and the current state of the job</returns>
     [Route("api/v1/export/{jobId}")]
     [HttpGet]
-    public JobStatusResult GetExportJobStatus(string jobId)
+    public JobStatusResult GetExportJobStatus(string jobId, [FromUri] string filename)
     {
-      log.LogInformation($"GetExportJobStatus: {jobId}");
+      log.LogInformation($"GetExportJobStatus: jobId={jobId}, filename={filename}");
+
+      if (string.IsNullOrEmpty(filename))
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            $"Missing file name for {jobId}"));
+      }
 
       var status = JobStorage.Current.GetConnection()?.GetJobData(jobId)?.State;
       if (string.IsNullOrEmpty(status))
@@ -64,15 +73,16 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             $"Missing job details for {jobId}"));
       }
+
       log.LogInformation($"GetExportJobStatus: {jobId} status={status}");
       string downloadLink = null;
       if (status.Equals("SUCCEEDED", StringComparison.OrdinalIgnoreCase))
       {
-        downloadLink = exportJob.GetDownloadLink(jobId);
+        downloadLink = exportJob.GetDownloadLink(jobId, filename);
         log.LogInformation($"GetExportJobStatus: {jobId} downloadLink={downloadLink}");
       }
 
-      return new JobStatusResult { key = jobId, status = status, downloadLink = downloadLink };//TODO: Update key if S3 key changes
+      return new JobStatusResult { key = ExportJob.GetS3Key(jobId, filename), status = status, downloadLink = downloadLink };
     }
   }
 }

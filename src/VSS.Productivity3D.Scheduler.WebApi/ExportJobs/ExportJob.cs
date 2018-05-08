@@ -39,25 +39,26 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       var data = await apiClient.SendRequest<ExportResult>(request, customHeaders);
       //TODO: Do we want something like applicationName/customerUid/userId/jobId for S3 path?
       //where app name and userId (appId or userUid) from JWT
-      transferProxy.Upload(new MemoryStream(data.ExportData), GetS3Key(context.BackgroundJob.Id));
+      transferProxy.Upload(new MemoryStream(data.ExportData), GetS3Key(context.BackgroundJob.Id, request.Filename));
     }
 
     /// <summary>
     /// Gets the download link for the completed job.
     /// </summary>
-    public string GetDownloadLink(string jobId)
+    public string GetDownloadLink(string jobId, string filename)
     {
-      return transferProxy.GeneratePreSignedUrl(GetS3Key(jobId));
+      return transferProxy.GeneratePreSignedUrl(GetS3Key(jobId, filename));
     }
 
     /// <summary>
     /// Gets the S3 key for a job
     /// </summary>
     /// <param name="jobId">The job id</param>
+    /// <param name="filename">The name of the file</param>
     /// <returns>The S3 key where the file is stored. This is the full path and file name in AWS.</returns>
-    public static string GetS3Key(string jobId)
+    public static string GetS3Key(string jobId, string filename)
     {
-      return $"3dpm/{jobId}.zip";
+      return $"3dpm/{jobId}/{filename}.zip";
     }
   }
 }

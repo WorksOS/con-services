@@ -20,6 +20,6 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     /// <summary>
     /// Gets the download link for the completed job
     /// </summary>
-    string GetDownloadLink(string jobId);
+    string GetDownloadLink(string jobId, string filename);
   }
 }

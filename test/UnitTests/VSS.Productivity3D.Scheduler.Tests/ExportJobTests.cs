@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Hangfire;
@@ -21,8 +22,9 @@ namespace VSS.Productivity3D.Scheduler.Tests
     public void CanGetS3KeyForExport()
     {
       var jobId = "Some id";
-      var key = ExportJob.GetS3Key(jobId);
-      var expectedKey = $"3dpm/{jobId}.zip";
+      var filename = "dummy";
+      var key = ExportJob.GetS3Key(jobId, filename);
+      var expectedKey = $"3dpm/{jobId}/{filename}.zip";
       Assert.AreEqual(expectedKey, key, "Wrong S3 key");
     }
 
@@ -30,13 +32,14 @@ namespace VSS.Productivity3D.Scheduler.Tests
     public void CanGetDownloadLink()
     {
       var jobId = "Some id";
+      var filename = "dummy";
       var presignedUrl = "some presigned url";
       Mock<ITransferProxy> transferProxy = new Mock<ITransferProxy>();
       Mock<IApiClient> apiClient = new Mock<IApiClient>();
       transferProxy.Setup(t => t.GeneratePreSignedUrl(It.IsAny<string>())).Returns(presignedUrl);
 
       var exportJob = new ExportJob(apiClient.Object, transferProxy.Object);
-      var actualLink = exportJob.GetDownloadLink(jobId);
+      var actualLink = exportJob.GetDownloadLink(jobId, filename);
       Assert.AreEqual(presignedUrl, actualLink);
     }
 
@@ -45,7 +48,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
     {
       var customHeaders = new Dictionary<string, string>();
 
-      var scheduleRequest = new ScheduleJobRequest { Url = "some url"};
+      var scheduleRequest = new ScheduleJobRequest { Url = "some url", Filename = "dummy"};
 
       //Unfortunately Hangfire doesn't have interfaces for everything so we need to
       //explicitly create some objects rather than letting Moq do it.
