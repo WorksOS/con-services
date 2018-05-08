@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 
-namespace VSS.Productivity3D.Common.Filters
+namespace VSS.Productivity3D.TagFileAuth.WebAPI.Filters
 {
   /// <summary>
   /// This middleware logs events into NewRelic. This must be added after TIDAuth middleware

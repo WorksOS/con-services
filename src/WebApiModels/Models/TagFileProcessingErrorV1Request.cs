@@ -59,7 +59,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
           TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ResultHandling.ContractExecutionStatesEnum.ValidationError, 9));
+            ContractExecutionStatesEnum.ValidationError, 9));
       }
 
       if (string.IsNullOrEmpty(tagFileName))

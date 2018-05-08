@@ -22,17 +22,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// <summary>
     /// Processes the get project boundaries request and finds active projects of the asset owner at the given date time.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
     /// <returns>a GetProjectBoundariesAtDateResult if successful</returns>      
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      GetProjectBoundariesAtDateRequest request = item as GetProjectBoundariesAtDateRequest;
+      var request = item as GetProjectBoundariesAtDateRequest;
       log.LogDebug("ProjectBoundariesAtDateExecutor: Going to process request {0}",
         JsonConvert.SerializeObject(request));
 
-      bool result = false;
-      ProjectBoundaryPackage[] boundaries = new ProjectBoundaryPackage[0];
+      var result = false;
+      var boundaries = new ProjectBoundaryPackage[0];
 
       var asset = await dataRepository.LoadAsset(request.assetId);
       log.LogDebug("ProjectBoundariesAtDateExecutor: Loaded Asset? {0}", JsonConvert.SerializeObject(asset));
@@ -40,7 +38,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (asset != null)
       {
         // loading customer checks that it is of the correct type
-        Customer assetOwningCustomer = await dataRepository.LoadCustomer(asset.OwningCustomerUID);
+        var assetOwningCustomer = await dataRepository.LoadCustomer(asset.OwningCustomerUID);
         log.LogDebug("ProjectBoundariesAtDateExecutor: Loaded theAssetsCustomer? {0}",
           JsonConvert.SerializeObject(assetOwningCustomer));
 
@@ -48,9 +46,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         {
           // See if the assets owner has a) a 3dPM sub on the asset or b) a Man3d sub       
           // i.e. will be 0 or 1 customer
-          IEnumerable<Subscriptions> subs = null;
           var superSubs = await dataRepository.LoadAssetSubs(asset.AssetUID, request.tagFileUTC.Date);
-          subs = superSubs.Where(x => x.customerUid == assetOwningCustomer.CustomerUID);
+          var subs = superSubs.Where(x => x.customerUid == assetOwningCustomer.CustomerUID);
           log.LogDebug("ProjectBoundariesAtDateExecutor: Loaded theAssetsSubs? {0}", JsonConvert.SerializeObject(subs));
 
           // we need only 1 sub.
@@ -69,19 +66,19 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
             //Look for projects which are active at date time request.tagFileUTC
             //i.e. tagFileUTC is between project start and end dates
             //and which belong to the asset owner and get their boundary points
-
-            IEnumerable<Project> projects =
+            var projects =
               await dataRepository.LoadProjects(asset.OwningCustomerUID, request.tagFileUTC.Date);
+
             log.LogDebug("ProjectBoundariesAtDateExecutor: Loaded Projects {0} for customer",
               JsonConvert.SerializeObject(projects));
 
             var enumerable = projects as IList<Project> ?? projects.ToList();
             if (enumerable.Any())
             {
-              List<ProjectBoundaryPackage> list = new List<ProjectBoundaryPackage>();
+              var list = new List<ProjectBoundaryPackage>();
               foreach (var p in enumerable)
               {
-                TWGS84FenceContainer boundaryFence =
+                var boundaryFence =
                   new TWGS84FenceContainer {FencePoints = dataRepository.ParseBoundaryData(p.GeometryWKT)};
                 if (boundaryFence.FencePoints.Length > 0)
                 {

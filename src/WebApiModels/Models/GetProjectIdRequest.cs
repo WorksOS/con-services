@@ -82,7 +82,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
           GetProjectIdResult.CreateGetProjectIdResult(false, -1, 
-            ResultHandling.ContractExecutionStatesEnum.ValidationError, 20));
+            ContractExecutionStatesEnum.ValidationError, 20));
       }
 
       if (latitude < -90 || latitude > 90)

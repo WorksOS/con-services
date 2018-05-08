@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
@@ -25,14 +24,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    /// <param name="logger">Service implementation of ILogger</param>
-    /// <param name="configStore"></param>
-    /// <param name="assetRepository"></param>
-    /// <param name="deviceRepository"></param>
-    /// <param name="customerRepository"></param>
-    /// <param name="projectRepository"></param>
-    /// <param name="subscriptionsRepository"></param>
-    /// <param name="producer"></param>
     public NotificationController(ILoggerFactory logger, IConfigurationStore configStore, 
       IRepository<IAssetEvent> assetRepository, IRepository<IDeviceEvent> deviceRepository,
       IRepository<ICustomerEvent> customerRepository, IRepository<IProjectEvent> projectRepository,
@@ -41,7 +32,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
         customerRepository, projectRepository,
         subscriptionsRepository, producer)
     {
-      this.log = logger.CreateLogger<NotificationController>();
+      log = logger.CreateLogger<NotificationController>();
     }
     
     /// <summary>
@@ -102,14 +93,16 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       return result;
     }
 
-    ///// <summary>
-    ///// Writes a Kafka event for the given tag file processing error. 
-    ///// </summary>
-    ///// <param name="request">Details of the error including the customerUid, the tag file and the type of error</param>
-    ///// <returns>
-    ///// True for success and false for failure.
-    ///// </returns>
-    ///// <executor>TagFileProcessingErrorV2Executor</executor>
+    /// the following is for AlertNotification. This will not be completed until after the June2018-all-hands-to-the-pump
+    /// Please LEAVE!
+    /// <summary>
+    /// Writes a Kafka event for the given tag file processing error. 
+    /// </summary>
+    /// <param name="request">Details of the error including the customerUid, the tag file and the type of error</param>
+    /// <returns>
+    /// True for success and false for failure.
+    /// </returns>
+    /// <executor>TagFileProcessingErrorV2Executor</executor>
     //[Route("api/v2/notification/tagFileProcessingError")]
     //[HttpPost]
     //public async Task<TagFileProcessingErrorResult> PostTagFileProcessingError([FromBody] TagFileProcessingErrorV2Request request)

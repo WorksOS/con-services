@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Swashbuckle.Swagger.Model;
+using Swashbuckle.AspNetCore.Swagger;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
@@ -15,16 +15,22 @@ using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 #if NET_4_7
-  using VSS.Productivity3D.Common.Filters;
+  using VSS.Productivity3D.TagFileAuth.WebAPI.Filters;
 #endif
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI
 {
+  /// <summary>
+  /// Configures services and request pipelines.
+  /// </summary>
   public class Startup
   {
-    private readonly string _loggerRepoName = "WebApi";
-    IServiceCollection _serviceCollection;
+    private const string LOGGER_REPO_NAME = "WebApi";
+    private IServiceCollection serviceCollection;
 
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
     public Startup(IHostingEnvironment env)
     {
       var builder = new ConfigurationBuilder()
@@ -32,12 +38,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
         .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
         .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
-      env.ConfigureLog4Net("log4net.xml", _loggerRepoName);
+      env.ConfigureLog4Net("log4net.xml", LOGGER_REPO_NAME);
 
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
     }
 
+    /// <summary>
+    /// Gets the root configuration object.
+    /// </summary>
     public IConfigurationRoot Configuration { get; }
 
     /// <summary>
@@ -72,17 +81,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
           // for jsonProperty validation
           config.Filters.Add(new ValidationFilterAttribute());
         });
-      services.AddSwaggerGen();
+
+      services.AddSwaggerGen(c =>
+      {
+        c.SwaggerDoc("v1", new Info { Title = "Tagfile authorization service API", Description = "API for Tagfile authorization service", Version = "v1" });
+      });
 
       services.ConfigureSwaggerGen(options =>
       {
-        options.SingleApiVersion(new Info
-        {
-          Version = "v1",
-          Title = "Tagfile authorization service API",
-          Description = "API for Tagfile authorization service",
-          TermsOfService = "None"
-        });
         string pathToXml;
 
         var moduleName = typeof(Startup).GetTypeInfo().Assembly.ManifestModule.Name;
@@ -101,7 +107,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
         options.IgnoreObsoleteProperties();
         options.DescribeAllEnumsAsStrings();
       });
-      _serviceCollection = services;
+      serviceCollection = services;
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -113,11 +119,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
     /// <param name="loggerFactory">The logger factory.</param>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
-      _serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
-      _serviceCollection.BuildServiceProvider();
+      serviceCollection.AddSingleton(loggerFactory);
+      serviceCollection.BuildServiceProvider();
 
       loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(_loggerRepoName);
+      loggerFactory.AddLog4Net(LOGGER_REPO_NAME);
 
       app.UseExceptionTrap();
 #if NET_4_7
@@ -126,10 +132,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
 #endif
       app.UseCors("VSS");
 
-      app.UseMvc();
-
       app.UseSwagger();
-      app.UseSwaggerUi();
+
+      //Swagger documentation can be viewed with http://localhost:5000/swagger/v1/swagger.json
+      app.UseSwaggerUI(c =>
+      {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tagfile authorization service API");
+      });
+
+      app.UseMvc();
     }
   }
 }

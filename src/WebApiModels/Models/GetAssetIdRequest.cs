@@ -70,11 +70,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       // if the number is not in enum then it returns the number
       var isDeviceTypeValid = (((DeviceTypeEnum) deviceType).ToString() != deviceType.ToString());
 
-      if (!string.IsNullOrEmpty(radioSerial) && (deviceType < 1 || !isDeviceTypeValid))
+      // rule changed to match cgen --> if a manualDeviceType, allow a radioSerial, EVEN  though the radioSerial is NEVER used
+      if (!string.IsNullOrEmpty(radioSerial) && (!isDeviceTypeValid))
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
           GetAssetIdResult.CreateGetAssetIdResult(false, -1, 0, 
-            ResultHandling.ContractExecutionStatesEnum.ValidationError, 25));
+            ContractExecutionStatesEnum.ValidationError, 25));
       }
 
       if (deviceType == 0 && projectId <= 0)

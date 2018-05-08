@@ -53,14 +53,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
           GetProjectBoundariesAtDateResult.CreateGetProjectBoundariesAtDateResult(false, new ProjectBoundaryPackage[0],
-            ResultHandling.ContractExecutionStatesEnum.ValidationError, 9));
+            ContractExecutionStatesEnum.ValidationError, 9));
       }
 
       if (!(tagFileUTC > DateTime.UtcNow.AddYears(-50) && tagFileUTC <= DateTime.UtcNow.AddDays(30)))
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
           GetProjectBoundariesAtDateResult.CreateGetProjectBoundariesAtDateResult(false, new ProjectBoundaryPackage[0],
-            ResultHandling.ContractExecutionStatesEnum.ValidationError, 17));
+            ContractExecutionStatesEnum.ValidationError, 17));
       }
     }
   }

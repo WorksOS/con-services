@@ -69,7 +69,7 @@ namespace ExecutorTests
 
     protected bool CreateAssetDeviceAssociation(Guid assetUid, long legacyAssetId, Guid? owningCustomerUid, Guid deviceUid, string deviceSerialNumber, string deviceType)
     {
-      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
 
       var createAssetEvent = new CreateAssetEvent
       {
@@ -107,7 +107,7 @@ namespace ExecutorTests
 
     protected bool CreateProject(Guid projectUid, int legacyProjectId, Guid customerUid, ProjectType projectType = ProjectType.LandFill, string projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))")
     {
-      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var projectTimeZone = "New Zealand Standard Time";
 
       //var createCustomerEvent = new CreateCustomerEvent()
@@ -137,7 +137,7 @@ namespace ExecutorTests
 
     protected bool DeleteProject(Guid projectUid)
     {
-      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
 
       var deleteProjectEvent = new DeleteProjectEvent()
       {
@@ -169,7 +169,7 @@ namespace ExecutorTests
 
     protected bool CreateProjectSub(Guid projectUid, Guid customerUid, string subToInsert)
     {
-      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
 
       var createProjectSubscriptionEvent = new CreateProjectSubscriptionEvent
       {
@@ -199,7 +199,7 @@ namespace ExecutorTests
 
     protected bool CreateAssetSub(Guid assetUid, Guid customerUid, string subToInsert)
     {
-      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
 
       var createAssetSubscriptionEvent = new CreateAssetSubscriptionEvent
       {
@@ -222,7 +222,7 @@ namespace ExecutorTests
 
     protected bool CreateCustomer(Guid customerUid, string tccOrgId, CustomerType customerType = CustomerType.Customer)
     {
-      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       bool areWrittenOk;
 
       var createCustomerEvent = new CreateCustomerEvent
@@ -257,7 +257,7 @@ namespace ExecutorTests
 
     protected bool CreateCustomerSub(Guid customerUid, string subToInsert)
     {
-      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
 
       var createCustomerSubscriptionEvent = new CreateCustomerSubscriptionEvent
       {

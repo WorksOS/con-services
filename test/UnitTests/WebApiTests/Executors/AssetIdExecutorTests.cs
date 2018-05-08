@@ -23,15 +23,15 @@ namespace WebApiTests.Executors
     [TestMethod]
     public void GetLogger()
     {
-      ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+      var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
       Assert.IsNotNull(loggerFactory, "Unable to retrieve loggerFactory from DI");
     }
 
     [TestMethod]
     public async Task CanCallAssetIDExecutorNoValidInput()
     {
-      GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "");
-      ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+      var assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "");
+      var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor = RequestExecutorContainer.Build<AssetIdExecutor>(loggerFactory.CreateLogger<AssetIdExecutorTests>(), configStore,
         assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
@@ -45,9 +45,9 @@ namespace WebApiTests.Executors
     [TestMethod]
     public async Task CanCallAssetIDExecutorWithRadioSerialWithManualDeviceType()
     {
-      GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "3k45LK");
+      var assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "3k45LK");
 
-      ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+      var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor = RequestExecutorContainer.Build<AssetIdExecutor>(loggerFactory.CreateLogger<AssetIdExecutorTests>(), configStore,
         assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);

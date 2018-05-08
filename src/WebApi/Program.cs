@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.CommandLine;
+
 #if NET_4_7
 using Microsoft.AspNetCore.Hosting.WindowsServices;
 using System.Diagnostics;
@@ -10,8 +10,14 @@ using System.Diagnostics;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI
 {
+  /// <summary>
+  /// Application entry point.
+  /// </summary>
   public class Program
   {
+    /// <summary>
+    /// Default constructory.
+    /// </summary>
     public static void Main(string[] args)
     {
       var config = new ConfigurationBuilder()

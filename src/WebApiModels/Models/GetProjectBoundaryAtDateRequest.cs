@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           GetProjectBoundaryAtDateResult.CreateGetProjectBoundaryAtDateResult(false, new TWGS84FenceContainer(),
-            ResultHandling.ContractExecutionStatesEnum.ValidationError, 18));
+            ContractExecutionStatesEnum.ValidationError, 18));
       }
 
       if (!(tagFileUTC > DateTime.UtcNow.AddYears(-50) && tagFileUTC <= DateTime.UtcNow.AddDays(30)))

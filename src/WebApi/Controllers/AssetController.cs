@@ -23,14 +23,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    /// <param name="logger">Service implementation of ILogger</param>
-    /// <param name="configStore"></param>
-    /// <param name="assetRepository"></param>
-    /// <param name="deviceRepository"></param>
-    /// <param name="customerRepository"></param>
-    /// <param name="projectRepository"></param>
-    /// <param name="subscriptionsRepository"></param>
-    /// <param name="producer"></param>
     public AssetController(ILoggerFactory logger, IConfigurationStore configStore,
       IRepository<IAssetEvent> assetRepository, IRepository<IDeviceEvent> deviceRepository,
       IRepository<ICustomerEvent> customerRepository, IRepository<IProjectEvent> projectRepository,
@@ -39,7 +31,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
         customerRepository, projectRepository,
         subscriptionsRepository, producer)
     {
-      this.log = logger.CreateLogger< AssetController>();
+      log = logger.CreateLogger< AssetController>();
     }
 
     /// <summary>
@@ -63,7 +55,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       var executor = RequestExecutorContainer.Build<AssetIdExecutor>(log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
       var result = await executor.ProcessAsync(request) as GetAssetIdResult;
 
-      log.LogResult(methodName: this.ToString(), request: request, result: result);
+      log.LogResult(methodName: ToString(), request: request, result: result);
       return result;
     }
   }

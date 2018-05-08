@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.Common.ResultsHandling;
-using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
@@ -25,14 +24,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// <returns>a GetProjectBoundaryAtDateResult if successful</returns>      
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      GetProjectBoundaryAtDateRequest request = item as GetProjectBoundaryAtDateRequest;
+      var request = item as GetProjectBoundaryAtDateRequest;
       log.LogDebug("ProjectBoundaryAtDateExecutor: Going to process request {0}", JsonConvert.SerializeObject(request));
 
-      bool result = false;
-      TWGS84FenceContainer projectBoundary = new TWGS84FenceContainer();
-      Project project = null;
+      var result = false;
+      var projectBoundary = new TWGS84FenceContainer();
 
-      project = await dataRepository.LoadProject(request.projectId);
+      var project = await dataRepository.LoadProject(request.projectId);
       log.LogDebug("ProjectBoundaryAtDateExecutor: Loaded project? {0}", JsonConvert.SerializeObject(project));
 
       if (project != null)
@@ -68,4 +66,3 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     }
   }
 }
-  

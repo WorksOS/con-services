@@ -7,54 +7,55 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
 {
+  /// <summary>
+  /// Common controller base.
+  /// </summary>
   public abstract class BaseController : Controller
   {
-    /// <summary>
-    /// Gets or sets the local log provider.
-    /// </summary>
-    private readonly ILogger log;
-
     /// <summary>
     /// Gets or sets the Configuration Store. 
     /// </summary>
     protected readonly IConfigurationStore configStore;
 
     /// <summary>
-    /// Gets or sets the Kafak consumer.
+    /// Gets the <see cref="AssetRepository"/> field. 
     /// </summary>
-    protected readonly IKafka producer;
+    protected AssetRepository assetRepository;
 
     /// <summary>
-    /// Gets or sets the Kafka topic.
+    /// Gets the <see cref="DeviceRepository"/> field. 
     /// </summary>
-    protected readonly string kafkaTopicName;
-
-    protected AssetRepository assetRepository;
     protected DeviceRepository deviceRepository;
+
+    /// <summary>
+    /// Gets the <see cref="CustomerRepository"/> field. 
+    /// </summary>
     protected CustomerRepository customerRepository;
+
+    /// <summary>
+    /// Gets the <see cref="ProjectRepository"/> field. 
+    /// </summary>
     protected ProjectRepository projectRepository;
+
+    /// <summary>
+    /// Gets the <see cref="SubscriptionRepository"/> field. 
+    /// </summary>
     protected SubscriptionRepository subscriptionsRepository;
 
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
     protected BaseController(ILoggerFactory logger, IConfigurationStore configStore, 
       IRepository<IAssetEvent> assetRepository, IRepository<IDeviceEvent> deviceRepository,
       IRepository<ICustomerEvent> customerRepository, IRepository<IProjectEvent> projectRepository,
       IRepository<ISubscriptionEvent> subscriptionsRepository, IKafka producer)
     {
-      this.log = logger.CreateLogger<BaseController>();
       this.configStore = configStore;
       this.assetRepository = assetRepository as AssetRepository;
       this.deviceRepository = deviceRepository as DeviceRepository;
       this.customerRepository = customerRepository as CustomerRepository;
       this.projectRepository = projectRepository as ProjectRepository;
       this.subscriptionsRepository = subscriptionsRepository as SubscriptionRepository;
-
-      //temp fix as TFProcessor was inadvertently changed to call Notification v2 endpoint
-      //this.producer = producer;
-      //if (!this.producer.IsInitializedProducer)
-      //  this.producer.InitProducer(configStore);
-
-      //kafkaTopicName = configStore.GetValueString("KAFKA_TOPIC_NAME_NOTIFICATIONS") +
-      //                 configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
     }
   }
 }
