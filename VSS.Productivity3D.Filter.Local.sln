@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ITask.Local", "..\Merin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.FlowJSHandler", "..\MerinoSandbox\FlowJSMVC\src\VSS.FlowJSHandler.csproj", "{4EA21157-A2ED-4F2E-B596-46453B897589}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.WebApi.Common.Local", "..\MerinoSandbox\WebApi\src\VSS.WebApi.Common.Local.csproj", "{9A89B619-3D03-4B1B-8040-95F741D54D74}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,10 @@ Global
 		{4EA21157-A2ED-4F2E-B596-46453B897589}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4EA21157-A2ED-4F2E-B596-46453B897589}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4EA21157-A2ED-4F2E-B596-46453B897589}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A89B619-3D03-4B1B-8040-95F741D54D74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A89B619-3D03-4B1B-8040-95F741D54D74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A89B619-3D03-4B1B-8040-95F741D54D74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A89B619-3D03-4B1B-8040-95F741D54D74}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

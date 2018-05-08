@@ -22,6 +22,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using System.Linq;
 using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.Filter.WebAPI.Controllers
 {
@@ -63,7 +64,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
           (User as TIDCustomPrincipal)?.CustomerUid,
           (User as TIDCustomPrincipal).IsApplication,
           ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
-          await (User as TIDCustomPrincipal)?.GetProject(projectUid));
+          await (User as FilterPrincipal)?.GetProject(projectUid));
 
       requestFull.Validate(ServiceExceptionHandler, true);
 
@@ -94,7 +95,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
           (User as TIDCustomPrincipal)?.CustomerUid,
           (User as TIDCustomPrincipal).IsApplication,
           ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
-          await (User as TIDCustomPrincipal)?.GetProject(projectUid),
+          await (User as FilterPrincipal)?.GetProject(projectUid),
           new FilterRequest { FilterUid = filterUid });
 
       requestFull.Validate(ServiceExceptionHandler, true);
@@ -184,7 +185,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
        (User as TIDCustomPrincipal)?.CustomerUid,
        (User as TIDCustomPrincipal).IsApplication,
        ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
-        await (User as TIDCustomPrincipal)?.GetProject(projectUid),
+        await (User as FilterPrincipal)?.GetProject(projectUid),
        filterRequest);
 
       requestFull.Validate(ServiceExceptionHandler);
@@ -211,7 +212,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         (User as TIDCustomPrincipal)?.CustomerUid,
         (User as TIDCustomPrincipal).IsApplication,
         ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
-        await (User as TIDCustomPrincipal)?.GetProject(projectUid),
+        await (User as FilterPrincipal)?.GetProject(projectUid),
         new FilterRequest { FilterUid = filterUid });
 
       requestFull.Validate(ServiceExceptionHandler, true);

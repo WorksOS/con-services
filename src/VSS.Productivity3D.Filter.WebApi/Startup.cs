@@ -13,7 +13,6 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
-using VSS.MasterData.Models.FIlters;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -21,8 +20,10 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
-using VSS.Productivity3D.Filter.WebAPI.Internal.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.WebApi.Common;
+using VSS.Productivity3D.Filter.Common.Filters.Authentication;
+using VSS.Productivity3D.Filter.Common.ResultHandling;
 #if NET_4_7
   using VSS.Productivity3D.Common.Filters;
 #endif
@@ -38,6 +39,9 @@ namespace VSS.Productivity3D.Filter.WebApi
     /// The name of this service for swagger etc.
     /// </summary>
     private const string SERVICE_TITLE = "Filter Service API";
+    /// <summary>
+    /// 
+    /// </summary>
     public const string loggerRepoName = "WebApi";
     private IServiceCollection serviceCollection;
 
@@ -86,7 +90,7 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddTransient<IRepository<IFilterEvent>, FilterRepository>();
       services.AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>();
       services.AddTransient<IRepository<IProjectEvent>, ProjectRepository>();
-      services.AddTransient<IErrorCodesProvider, ErrorCodesProvider>();
+      services.AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>();
       services.AddMemoryCache();
 
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -115,7 +119,8 @@ namespace VSS.Productivity3D.Filter.WebApi
 #endif
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCommon(SERVICE_TITLE);
-      app.UseTIDAuthentication();
+      app.UseFilterMiddleware<FilterAuthentication>();
+      app.UseMvc();
 
     }
   }

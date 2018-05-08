@@ -20,6 +20,7 @@ using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Validators;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.Productivity3D.Filter.Common.Filters.Authentication;
+using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.Filter.WebAPI.Controllers
 {
@@ -58,7 +59,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       var requestFull = BoundaryRequestFull.Create(
         (User as TIDCustomPrincipal)?.CustomerUid,
         (User as TIDCustomPrincipal).IsApplication,
-        await (User as TIDCustomPrincipal).GetProject(projectUid),
+        await (User as FilterPrincipal).GetProject(projectUid),
         ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
         request);
 
@@ -90,7 +91,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       var requestFull = BoundaryUidRequestFull.Create(
         (User as TIDCustomPrincipal)?.CustomerUid,
         (User as TIDCustomPrincipal).IsApplication,
-        await (User as TIDCustomPrincipal).GetProject(projectUid),
+        await (User as FilterPrincipal).GetProject(projectUid),
         ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
         boundaryUid);
 
@@ -118,7 +119,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       var requestFull = BaseRequestFull.Create(
         (User as TIDCustomPrincipal)?.CustomerUid,
         (User as TIDCustomPrincipal).IsApplication,
-        await (User as TIDCustomPrincipal).GetProject(projectUid),
+        await (User as FilterPrincipal).GetProject(projectUid),
         ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name);
 
       requestFull.Validate(ServiceExceptionHandler);
@@ -146,7 +147,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       var requestFull = BoundaryUidRequestFull.Create(
         (User as TIDCustomPrincipal)?.CustomerUid,
         (User as TIDCustomPrincipal).IsApplication,
-        await (User as TIDCustomPrincipal).GetProject(projectUid),
+        await (User as FilterPrincipal).GetProject(projectUid),
         ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
         boundaryUid);
 

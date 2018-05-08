@@ -12,6 +12,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.Productivity3D.Filter.Tests
@@ -47,7 +48,7 @@ namespace VSS.Productivity3D.Filter.Tests
         .AddTransient<ICustomerProxy, CustomerProxy>()
         .AddTransient<IProjectListProxy, ProjectListProxy>()
         .AddTransient<IRaptorProxy, RaptorProxy>()
-        .AddTransient<IErrorCodesProvider, ErrorCodesProvider>()
+        .AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>()
         .AddTransient<IRepository<IFilterEvent>, FilterRepository>();
 
       serviceProvider = serviceCollection.BuildServiceProvider();

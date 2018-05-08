@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using VSS.Productivity3D.Filter.Common.Filters.Authentication;
+using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.Common.Filters
 {
@@ -55,7 +55,7 @@ namespace VSS.Productivity3D.Common.Filters
           {"endpoint", context.Request.Path.ToString()},
           {"userUid", principal.Identity.Name.ToString()},
           {"customerUid", principal.CustomerUid.ToString()},
-          {"userName", principal.EmailAddress.ToString()},
+          {"userName", principal.UserEmail.ToString()},
           {"customerName", principal.CustomerName.ToString()},
           {"elapsedTime", (Single) watch.ElapsedMilliseconds},
           {"projectUid",projectUid.ToString() },
