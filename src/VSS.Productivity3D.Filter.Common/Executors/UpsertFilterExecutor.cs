@@ -129,7 +129,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
 
         // only Name can be updated, NOT FilterJson. Do this here as well as in AutoMapper, just to be sure!
         filterRequest.FilterJson = existingFilter.FilterJson;
-        UpdateFilterEvent updateFilterEvent = await StoreFilterAndNotifyRaptor<UpdateFilterEvent>(filterRequest, new int[] { 17, 18 });
+        var updateFilterEvent = await StoreFilterAndNotifyRaptor<UpdateFilterEvent>(filterRequest, new[] { 17, 18 });
 
         if (updateFilterEvent != null)
         {
@@ -140,20 +140,18 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         return RetrieveFilter(updateFilterEvent);
 
       }
-      else // create
-      {
-        if (filterRequest.FilterType == FilterType.Persistent)
-        {
-          var filterOfSameName = existingPersistentFilters
-            .FirstOrDefault(f => (string.Equals(f.Name, filterRequest.Name, StringComparison.OrdinalIgnoreCase)));
-          if (filterOfSameName != null)
-          {
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 39);
-          }
-        }
 
-        return await CreateFilter(filterRequest, false);
+      if (filterRequest.FilterType == FilterType.Persistent)
+      {
+        var filterOfSameName = existingPersistentFilters
+          .FirstOrDefault(f => (string.Equals(f.Name, filterRequest.Name, StringComparison.OrdinalIgnoreCase)));
+        if (filterOfSameName != null)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 39);
+        }
       }
+
+      return await CreateFilter(filterRequest, false);
     }
 
     /// <summary>
@@ -165,7 +163,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     private async Task<FilterDescriptorSingleResult> CreateFilter(FilterRequestFull filterRequest, bool transient)
     {
       filterRequest.FilterUid = Guid.NewGuid().ToString();
-      CreateFilterEvent createFilterEvent = await StoreFilterAndNotifyRaptor<CreateFilterEvent>(filterRequest, transient ? new int[] { 19, 20 } : new int[] { 24, 25 });
+      var createFilterEvent = await StoreFilterAndNotifyRaptor<CreateFilterEvent>(filterRequest, transient ? new[] { 19, 20 } : new[] { 24, 25 });
 
       //Only write to kafka for persistent filters
       if (!transient)
