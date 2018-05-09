@@ -165,6 +165,10 @@ namespace VSS.MasterData.Repositories
       else if (evt is UpdateAssetSubscriptionEvent)
       {
         var subscriptionEvent = (UpdateAssetSubscriptionEvent) evt;
+        if (!(await IsServiceTypeValidAsync(subscriptionEvent.SubscriptionType, "Asset")))
+        {
+          return 0;
+        }
         var subscription = new Subscription
         {
           SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString(),
@@ -285,7 +289,7 @@ namespace VSS.MasterData.Repositories
         }
       }
 
-      log.LogDebug("SubscriptionRepository/UpdateSubscription: can't update as none exists");
+      log.LogDebug("SubscriptionRepository/UpdateSubscription: can't update as none exists. This may be an unsupported subscription type.");
       return upsertedCount;
     }
 
