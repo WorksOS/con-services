@@ -4,6 +4,7 @@ using System.Net;
 using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
 using Hangfire;
+using Hangfire.Storage;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
@@ -48,25 +49,18 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     }
 
     /// <summary>
-    /// Get the status of an export
+    /// Get the status of an export. When status is succeeded then also returns a file download link.
     /// </summary>
     /// <param name="jobId">The job id</param>
-    /// <param name="filename">The name of the file the export data is saved to</param>
     /// <returns>The AWS S3 key where the file has been saved and the current state of the job</returns>
     [Route("api/v1/export/{jobId}")]
     [HttpGet]
-    public JobStatusResult GetExportJobStatus(string jobId, [FromUri] string filename)
+    public JobStatusResult GetExportJobStatus(string jobId)
     {
-      log.LogInformation($"GetExportJobStatus: jobId={jobId}, filename={filename}");
+      log.LogInformation($"GetExportJobStatus: jobId={jobId}");
 
-      if (string.IsNullOrEmpty(filename))
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            $"Missing file name for {jobId}"));
-      }
-
-      var status = JobStorage.Current.GetConnection()?.GetJobData(jobId)?.State;
+      var jobData = JobStorage.Current.GetConnection()?.GetJobData(jobId);
+      var status = jobData?.State;
       if (string.IsNullOrEmpty(status))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
@@ -76,6 +70,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
 
       log.LogInformation($"GetExportJobStatus: {jobId} status={status}");
       string downloadLink = null;
+      var filename = (jobData?.Job.Args[0] as ScheduleJobRequest).Filename ?? jobId;
       if (status.Equals("SUCCEEDED", StringComparison.OrdinalIgnoreCase))
       {
         downloadLink = exportJob.GetDownloadLink(jobId, filename);

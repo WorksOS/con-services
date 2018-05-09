@@ -54,7 +54,7 @@ namespace WebApiTests
       var timeout = DateTime.Now.AddSeconds(60);
       while (!statusResult.status.Equals("SUCCEEDED", StringComparison.OrdinalIgnoreCase) && DateTime.Now < timeout)
       {
-        responseJson = ts.CallSchedulerWebApi($"api/v1/export/{scheduleResult.jobId}?filename={SUCCESS_JOB_ID}", "GET");
+        responseJson = ts.CallSchedulerWebApi($"api/v1/export/{scheduleResult.jobId}", "GET");
         statusResult = JsonConvert.DeserializeObject<JobStatusResult>(responseJson,
           new JsonSerializerSettings {DateTimeZoneHandling = DateTimeZoneHandling.Unspecified});
 
@@ -83,24 +83,11 @@ namespace WebApiTests
       Msg.Title("Scheduler web test 2", "Get Scheduled export job status for missing job");
 
       const string jobId = "999999";
-      var responseJson = ts.CallSchedulerWebApi($"api/v1/export/{jobId}?filename={SUCCESS_JOB_ID}", "GET", null, HttpStatusCode.BadRequest);
-      var result = JsonConvert.DeserializeObject<ContractExecutionResult>(responseJson,
-        new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      Assert.IsNotNull(result, "Should be a error message");
-      Assert.AreEqual($"Missing job details for {jobId}", result.Message, "Wrong error message");
-    }
-
-    [TestMethod]
-    public void CanGetExportJobStatusNoFileName()
-    {
-      Msg.Title("Scheduler web test 3", "Get Scheduled export job status without file name");
-
-      const string jobId = "999999";
       var responseJson = ts.CallSchedulerWebApi($"api/v1/export/{jobId}", "GET", null, HttpStatusCode.BadRequest);
       var result = JsonConvert.DeserializeObject<ContractExecutionResult>(responseJson,
         new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       Assert.IsNotNull(result, "Should be a error message");
-      Assert.AreEqual($"Missing file name for {jobId}", result.Message, "Wrong error message");
+      Assert.AreEqual($"Missing job details for {jobId}", result.Message, "Wrong error message");
     }
   }
 }
