@@ -21,5 +21,6 @@ namespace VSS.TRex.Storage.Interfaces
         string Name { get; }
 
         void Commit();
+        void Clear();
     }
 }

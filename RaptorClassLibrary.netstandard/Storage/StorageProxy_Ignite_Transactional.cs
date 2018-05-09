@@ -26,6 +26,9 @@ namespace VSS.VisionLink.Raptor.Storage
             EstablishCaches();
         }
 
+        /// <summary>
+        /// Creates transactional storage proxies to be used by the consuming client
+        /// </summary>
         private void EstablishCaches()
         {
             spatialCache = new StorageProxyCacheTransacted<SubGridSpatialAffinityKey, byte[]>(
@@ -35,16 +38,57 @@ namespace VSS.VisionLink.Raptor.Storage
                     ignite.GetCache<string, byte[]>(RaptorCaches.NonSpatialCacheName(Mutability)));
         }
 
+        /// <summary>
+        /// Commits all unsaved changes in the spatial and non-spatial stores
+        /// </summary>
+        /// <returns></returns>
         public override bool Commit()
         {
             try
             {
                 spatialCache.Commit();
-                return true;
             }
             catch ( Exception e)
             {
-                Log.Error($"Exception {e} thrown committing changes to Ignite");
+                Log.Error($"Exception {e} thrown committing changes to Ignite for spatial cache");
+                throw;
+            }
+
+            try
+            {
+                nonSpatialCache.Commit();
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Exception {e} thrown committing changes to Ignite for non spatial cache");
+                throw;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Clears all changes in the spatial and non spatial stores
+        /// </summary>
+        public override void Clear()
+        {
+            try
+            {
+                spatialCache.Clear();
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Exception {e} thrown clearing changes for spatial cache");
+                throw;
+            }
+
+            try
+            {
+                nonSpatialCache.Clear();
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Exception {e} thrown clearing changes for non spatial cache");
                 throw;
             }
         }

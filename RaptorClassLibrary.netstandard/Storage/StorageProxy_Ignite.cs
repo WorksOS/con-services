@@ -257,10 +257,6 @@ namespace VSS.VisionLink.Raptor.Storage
                 {
                     Log.Info($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
 
-                    // IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorGridName());
-                    // ICache<string, byte[]> cache = ignite.GetCache<string, byte[]>(RaptorCaches.MutableNonSpatialCacheName());
-                    // cache.Put(cacheKey, compressedStream.ToArray());
-
                     nonSpatialCache.Put(cacheKey, compressedStream.ToArray());
                 }
 
@@ -338,12 +334,20 @@ namespace VSS.VisionLink.Raptor.Storage
         }
 
         /// <summary>
-        /// Commits unsaved changes inthe storage proxy.
+        /// Commits unsaved changes in the storage proxy.
         /// No implementation for non-transactional storage proxy
         /// </summary>
         public virtual bool Commit()
         {
             return true;
+        }
+
+        /// <summary>
+        /// Clears changes in the storage proxy.
+        /// No implementation for non-transactional storage proxy
+        /// </summary>
+        public virtual void Clear()
+        {            
         }
     }
 }

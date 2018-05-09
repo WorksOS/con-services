@@ -124,6 +124,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                             return true;
                         }
 
+                        storageProxy_Mutable.Clear();
+                        storageProxy_Immutable.Clear();
+
+
                         Task.StartProcessingTime = DateTime.Now;
 
                         ProcessedTasks.Add(Task); // Seed task is always a part of the processed tasks

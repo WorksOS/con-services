@@ -25,10 +25,7 @@ namespace VSS.TRex.Storage
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public new TV Get(TK key)
-        {
-            return PendingTransactedWrites.TryGetValue(key, out TV value) ? value : base.Get(key);
-        }
+        public new TV Get(TK key) => PendingTransactedWrites.TryGetValue(key, out TV value) ? value : base.Get(key);
 
         /// <summary>
         /// Removes the given key from the cache. If there has been a previou un-committed remove for the key
@@ -66,8 +63,7 @@ namespace VSS.TRex.Storage
         /// <param name="values"></param>
         public new void PutAll(IEnumerable<KeyValuePair<TK, TV>> values)
         {
-            foreach (var x in values)
-                base.Put(x.Key, x.Value);
+            foreach (var x in values) base.Put(x.Key, x.Value);
         }
 
         /// <summary>
@@ -75,11 +71,18 @@ namespace VSS.TRex.Storage
         /// </summary>
         public override void Commit()
         {
-            foreach (var x in PendingTransactedDeletes)
-                base.GetAndRemove(x);
-            PendingTransactedDeletes.Clear();
-
+            foreach (var x in PendingTransactedDeletes) base.GetAndRemove(x);
             base.PutAll(PendingTransactedWrites);
+
+            Clear();
+        }
+
+        /// <summary>
+        /// Clears all pending delete and write information collected during the transaction
+        /// </summary>
+        public void Clear()
+        {
+            PendingTransactedDeletes.Clear();
             PendingTransactedWrites.Clear();
         }
     }
