@@ -21,7 +21,7 @@ namespace MockProjectWebApi.Controllers
 
     [Route("/api/v1/mock/export/{jobId}")]
     [HttpGet]
-    public JobStatusResult GetMockExportJobStatus(string jobId, [FromUri] string filename)
+    public JobStatusResult GetMockExportJobStatus(string jobId)
     {
       string status = IN_PROGRESS_STATUS;
       if (jobId == SUCCESS_JOB_ID)
@@ -29,7 +29,7 @@ namespace MockProjectWebApi.Controllers
       else if (jobId == FAILURE_JOB_ID)
         status = FAILURE_STATUS;
 
-      return new JobStatusResult { key = GetS3Key(jobId, filename), status = status };
+      return new JobStatusResult { key = GetS3Key(jobId, "dummy file"), status = status };
     }
 
     private string GetS3Key(string jobId, string filename)

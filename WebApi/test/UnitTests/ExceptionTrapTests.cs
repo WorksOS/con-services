@@ -41,7 +41,7 @@ namespace VSS.WebApi.Common.UnitTests
       serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
       serviceCollection
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddTransient<IErrorCodesProvider, ErrorCodesProvider>();
+        .AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();
 
       ServiceProvider = serviceCollection.BuildServiceProvider();
     }

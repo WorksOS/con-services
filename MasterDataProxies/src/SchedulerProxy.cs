@@ -42,13 +42,12 @@ namespace VSS.MasterData.Proxies
     /// Retrieves the status of the requested job and the filename in S3 bucket where file is stored.
     /// </summary>
     /// <param name="jobId">The job identifier.</param>
-    /// <param name="filename">The file to save the export data to.</param>
     /// <param name="customHeaders">Custom request headers</param>
     /// <returns></returns>
-    public async Task<JobStatusResult> GetExportJobStatus(string jobId, string filename, IDictionary<string, string> customHeaders)
+    public async Task<JobStatusResult> GetExportJobStatus(string jobId, IDictionary<string, string> customHeaders)
     {
       var result = await GetMasterDataItem<JobStatusResult>("SCHEDULER_EXTERNAL_EXPORT_URL",
-        customHeaders, $"?filename={filename}", $"/{jobId}");
+        customHeaders, string.Empty, $"/{jobId}");
       if (result != null)
       {
         return result;

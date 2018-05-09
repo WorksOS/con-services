@@ -37,7 +37,7 @@ namespace VSS.MasterData.Models.UnitTests
       serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
       serviceCollection
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddTransient<IErrorCodesProvider, ErrorCodesProvider>();
+        .AddTransient<IErrorCodesProvider, FilterValidationErrorCodesProvider>();
 
       ServiceProvider = serviceCollection.BuildServiceProvider();
     }
