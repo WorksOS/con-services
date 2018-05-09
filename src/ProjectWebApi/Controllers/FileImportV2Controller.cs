@@ -67,6 +67,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///   2) creates/updates database 
     ///   3) possibly creates/updates file in TCC?
     ///   4) notify RaptorWebAPI.
+    ///   5) Note that MobileLinework imports are ignored, i.e. just return HttpStatusCode.OK 
     /// Footprint must remain the same as CGen:
     ///   PUT /t/trimble.com/vss-projectmonitoring/1.0/api/v2/projects/6960/importedfiles HTTP/1.1
     ///   Body: {"ImportedFileTypeID":1,"AlignmentFile":null,"SurfaceFile":{"SurveyedUTC":"2018-03-21T20:18:13.9631923Z"},"LineworkFile":null,"MassHaulPlanFile":null,"FileSpaceID":"u927f3be6-7987-4944-898f-42a088da94f2","Path":"/BC Data/Sites/Test  Create/Designs/TBC","Name":"Cell 9 inter 092717 switchback 112917.ttm","CreatedUTC":"2018-04-11T00:22:11.0266872Z"}
@@ -84,6 +85,17 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromUri] long projectId,
       [FromBody] ImportedFileTbc importedFileTbc)
     {
+      // MobileLinework .kml/.kmz files are sent along with linework files
+      //     we need to suppress any error and return as if all ok.
+      //     however we won't have a LegacyFileId to return - hmmm hope Business centre ignores this
+      if (importedFileTbc.ImportedFileTypeId == ImportedFileType.MobileLinework)
+      {
+        log.LogInformation(
+          $"UpsertImportedFileV2. Ignore MobileLinework from BusinessCentre. projectId {projectId} importedFile: {JsonConvert.SerializeObject(importedFileTbc)}");
+
+        return ReturnLongV2Result.CreateLongV2Result(HttpStatusCode.OK, -1);
+      }
+
       importedFileTbc = FileImportV2DataValidator.ValidateUpsertImportedFileRequest(projectId, importedFileTbc);
       log.LogInformation(
         $"UpsertImportedFileV2. projectId {projectId} importedFile: {JsonConvert.SerializeObject(importedFileTbc)}");
