@@ -49,6 +49,8 @@ namespace VSS.VisionLink.Raptor.Interfaces
 
         void SetImmutableStorageProxy(IStorageProxy immutableProxy);
 
+        bool Commit();
+
         /*
             function CopyDataModel(const DataModelID : Int64; const DestinationFileName: String): TICFSErrorStatus;
             function SwapDataModel(const DataModelID : Int64; const SourceFileName: String): TICFSErrorStatus;

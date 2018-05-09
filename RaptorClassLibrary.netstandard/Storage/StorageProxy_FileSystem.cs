@@ -55,5 +55,10 @@ namespace VSS.VisionLink.Raptor.Storage
         {
             throw new NotImplementedException();
         }
+
+        public bool Commit()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

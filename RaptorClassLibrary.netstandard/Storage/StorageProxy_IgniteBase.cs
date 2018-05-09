@@ -1,10 +1,13 @@
-﻿using Apache.Ignite.Core;
+﻿using System;
+using System.Collections.Generic;
+using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using log4net;
 using System.IO;
 using System.Reflection;
+using VSS.TRex.Storage;
+using VSS.TRex.Storage.Interfaces;
 using VSS.VisionLink.Raptor.GridFabric.Affinity;
-using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Storage.Utilities;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
@@ -12,17 +15,17 @@ using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.Storage
 {
-    public class StorageProxy_IgniteBase
+    public abstract class StorageProxy_IgniteBase
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         protected IIgnite ignite;
 
-        protected ICache<string, byte[]> nonSpatialCache;
-        public ICache<string, byte[]> NonSpatialCache => nonSpatialCache;
+        protected IStorageProxyCache<string, byte[]> nonSpatialCache;
+        public IStorageProxyCache<string, byte[]> NonSpatialCache => nonSpatialCache;
 
-        protected ICache<SubGridSpatialAffinityKey, byte[]> spatialCache;
-        public ICache<SubGridSpatialAffinityKey, byte[]> SpatialCache => spatialCache;
+        protected IStorageProxyCache<SubGridSpatialAffinityKey, byte[]> spatialCache;
+        public IStorageProxyCache<SubGridSpatialAffinityKey, byte[]> SpatialCache => spatialCache;
 
         /// <summary>
         /// Controls which grid (Mutable or Immutable) this storage proxy performs reads and writes against.
@@ -34,12 +37,6 @@ namespace VSS.VisionLink.Raptor.Storage
             Mutability = mutability;
 
             ignite = RaptorGridFactory.Grid(RaptorGrids.RaptorGridName(Mutability));
-        }
-
-        protected void EstablishCaches()
-        {
-           spatialCache = ignite.GetCache<SubGridSpatialAffinityKey, byte[]>(RaptorCaches.SpatialCacheName(Mutability));
-           nonSpatialCache = ignite.GetCache<string, byte[]>(RaptorCaches.NonSpatialCacheName(Mutability));
         }
 
         /// <summary>
@@ -74,8 +71,8 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="cacheKey"></param>
         /// <param name="streamType"></param>
         /// <returns></returns>
-        protected MemoryStream PerformNonSpatialImmutabilityConversion(ICache<string, byte[]> mutableCache,
-                                                                       ICache<string, byte[]> immutableCache,
+        protected MemoryStream PerformNonSpatialImmutabilityConversion(IStorageProxyCache<string, byte[]> mutableCache,
+                                                                       IStorageProxyCache<string, byte[]> immutableCache,
                                                                        string cacheKey,
                                                                        FileSystemStreamType streamType)
         {
@@ -110,7 +107,7 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="streamType"></param>
         /// <returns></returns>
         protected MemoryStream PerformNonSpatialImmutabilityConversion(MemoryStream mutableStream,
-                                                                       ICache<string, byte[]> immutableCache,
+                                                                       IStorageProxyCache<string, byte[]> immutableCache,
                                                                        string cacheKey,
                                                                        FileSystemStreamType streamType)
         {
@@ -154,8 +151,8 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="cacheKey"></param>
         /// <param name="streamType"></param>
         /// <returns></returns>
-        protected MemoryStream PerformSpatialImmutabilityConversion(ICache<SubGridSpatialAffinityKey, byte[]> mutableCache,
-                                                                    ICache<SubGridSpatialAffinityKey, byte[]> immutableCache,
+        protected MemoryStream PerformSpatialImmutabilityConversion(IStorageProxyCache<SubGridSpatialAffinityKey, byte[]> mutableCache,
+                                                                    IStorageProxyCache<SubGridSpatialAffinityKey, byte[]> immutableCache,
                                                                     SubGridSpatialAffinityKey cacheKey,
                                                                     FileSystemStreamType streamType)
         {
@@ -182,7 +179,7 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="streamType"></param>
         /// <returns></returns>
         protected MemoryStream PerformSpatialImmutabilityConversion(MemoryStream mutableStream,
-                                                                    ICache<SubGridSpatialAffinityKey, byte[]> immutableCache,
+                                                                    IStorageProxyCache<SubGridSpatialAffinityKey, byte[]> immutableCache,
                                                                     SubGridSpatialAffinityKey cacheKey,
                                                                     FileSystemStreamType streamType)
         {

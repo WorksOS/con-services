@@ -21,7 +21,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             // Add the keys for the given events into the Project/Asset mapping buckets ready for a processing context
             // to acquire them. 
 
-            Log.Info("About to add TAG file items to the grouper");
+            // Log.Info("About to add TAG file items to the grouper");
             int countOfCreatedEvents = 0;
 
             foreach (var evt in evts)

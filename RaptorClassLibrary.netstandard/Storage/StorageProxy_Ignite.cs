@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using VSS.TRex.Storage;
 using VSS.VisionLink.Raptor.GridFabric.Affinity;
+using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.Storage.Utilities;
 using VSS.VisionLink.Raptor.Types;
@@ -32,18 +34,27 @@ namespace VSS.VisionLink.Raptor.Storage
             EstablishCaches();
         }
 
+        private void EstablishCaches()
+        {
+            spatialCache = new StorageProxyCache<SubGridSpatialAffinityKey, byte[]>(
+                ignite.GetCache<SubGridSpatialAffinityKey, byte[]>(RaptorCaches.SpatialCacheName(Mutability)));
+            nonSpatialCache =
+                new StorageProxyCache<string, byte[]>(
+                    ignite.GetCache<string, byte[]>(RaptorCaches.NonSpatialCacheName(Mutability)));
+        }
+
         /// <summary>
-        /// Supports reading a stream of spatial data from the persistent store via the grid cache
-        /// </summary>
-        /// <param name="DataModelID"></param>
-        /// <param name="StreamName"></param>
-        /// <param name="SubgridX"></param>
-        /// <param name="SubgridY"></param>
-        /// <param name="SegmentIdentifier"></param>
-        /// <param name="StreamType"></param>
-        /// <param name="Stream"></param>
-        /// <returns></returns>
-        public FileSystemErrorStatus ReadSpatialStreamFromPersistentStore(long DataModelID,
+    /// Supports reading a stream of spatial data from the persistent store via the grid cache
+    /// </summary>
+    /// <param name="DataModelID"></param>
+    /// <param name="StreamName"></param>
+    /// <param name="SubgridX"></param>
+    /// <param name="SubgridY"></param>
+    /// <param name="SegmentIdentifier"></param>
+    /// <param name="StreamType"></param>
+    /// <param name="Stream"></param>
+    /// <returns></returns>
+    public FileSystemErrorStatus ReadSpatialStreamFromPersistentStore(long DataModelID,
                                                                           string StreamName,
                                                                           uint SubgridX, uint SubgridY,
                                                                           string SegmentIdentifier,
@@ -324,6 +335,15 @@ namespace VSS.VisionLink.Raptor.Storage
             }
 
             ImmutableProxy = immutableProxy;
+        }
+
+        /// <summary>
+        /// Commits unsaved changes inthe storage proxy.
+        /// No implementation for non-transactional storage proxy
+        /// </summary>
+        public virtual bool Commit()
+        {
+            return true;
         }
     }
 }

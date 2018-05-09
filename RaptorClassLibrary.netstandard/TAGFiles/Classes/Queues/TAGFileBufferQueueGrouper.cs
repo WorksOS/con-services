@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Threading;
+using log4net;
 using log4net.Core;
 
 namespace VSS.TRex.TAGFiles.Classes.Queues
@@ -12,6 +15,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     /// </summary>
     public class TAGFileBufferQueueGrouper
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         /// <summary>
         /// The maximum number of TAG files the grouper will permit in a bucket of TAG file before being committed to the 
         /// full buckets list.
@@ -145,17 +150,18 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 {
                     result = fullBuckets[resultIndex];
                     fullBuckets.RemoveAt(resultIndex);
-
-                    return result;
                 }
-
-                // No full buckets - extract the first list of asset based TAG files from the grouper for the selected project
-                result = groupMap[projectID].Values.First();
-                groupMap[projectID].Remove(result.First().AssetID);
+                else
+                {
+                    // No full buckets - extract the first list of asset based TAG files from the grouper for the selected project
+                    result = groupMap[projectID].Values.First();
+                    groupMap[projectID].Remove(result.First().AssetID);
+                }
 
                 if (addProjectToAvoidList && result.Any())
                 {
                     // Add the project to the avoid list
+                    Log.Info($"Thread {Thread.CurrentThread.ManagedThreadId}: About to add project {projectID} to [{(!avoidProjects.Any() ? "Empty" : avoidProjects.Select(x => $"{x}").Aggregate((a, b) => $"{a} + {b}"))}]");
                     avoidProjects.Add(projectID);
                 }
 

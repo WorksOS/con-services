@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using log4net;
 using VSS.VisionLink.Raptor.Events;
@@ -356,7 +355,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                     // Use the synchronous command to save the machine events to the persistent store into the deferred (asynchronous model)
                     SiteModelMachineTargetValues.SaveMachineEventsToPersistentStore(storageProxy_Mutable);
 
-                    // ====== STAGE 3: INTEGRATE THE AGGREGATED CELL PASSES INTO THE PRIMARY LIVE DATABASE
+                    // ====== STAGE 4: INTEGRATE THE AGGREGATED CELL PASSES INTO THE PRIMARY LIVE DATABASE
                     if (AnyCellPasses)
                     {
                         try
@@ -394,13 +393,19 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                         }
                         finally
                         {
-                            Task.AggregatedCellPasses = null; // FreeAndNil(Task.AggregatedCellPasses);
-                            WorkingModelUpdateMap = null; // FreeAndNil(FWorkingModelUpdateMap);
+                            Task.AggregatedCellPasses = null;
+                            WorkingModelUpdateMap = null;
                         }
                     }
 
                     // Use the synchonous command to save the site model information to the persistent store into the deferred (asynchronous model)
                     SiteModelFromDM.SaveToPersistentStore();
+
+                    // ====== Stage 5 : COmmit all prepared data to the transactional storage proxy
+                    // All operations within the transaction to integrate the changes into the live model have completed successfully.
+                    // Now commit those changes as a block.
+                    storageProxy_Mutable.Commit();
+                    storageProxy_Immutable.Commit();
                 }
                 finally
                 {

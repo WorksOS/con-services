@@ -16,7 +16,7 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <returns></returns>
         public static IStorageProxy MutableGridStorage()
         {
-            IStorageProxy proxy = new StorageProxy_Ignite(StorageMutability.Mutable);
+            IStorageProxy proxy = new StorageProxy_Ignite_Transactional(StorageMutability.Mutable);
 
             // Establish any available immutable storage proxy into the mutable storage proxy to allow transparnet
             // promotion of data changes in the mutable data store to the immutabvle data store.
@@ -33,7 +33,7 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <returns></returns>
         public static IStorageProxy ImmutableGridStorage()
         {
-            return new StorageProxy_Ignite(StorageMutability.Immutable);
+            return new StorageProxy_Ignite_Transactional(StorageMutability.Immutable);
         }
 
         /// <summary>

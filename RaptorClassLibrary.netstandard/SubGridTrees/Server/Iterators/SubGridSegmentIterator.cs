@@ -95,7 +95,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
                         continue;
                     }
 
-                    //* TODO There is no caching layer yet. This will function as if ReturnCachedItemsOnly was set to true for now 
+                    // TODO There is no caching layer yet. This will function as if ReturnCachedItemsOnly was set to true for now 
                     if (!Result.Dirty && !ReturnCachedItemsOnly && 
                         ((RetrieveAllPasses && !Result.HasAllPasses) || (RetrieveLatestData && !Result.HasLatestData)))
                       {
@@ -154,13 +154,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
             }
             finally
             {
-                // TODO: Currently no caching/storage layer...
+                // TODO: Currently no caching layer...
                 /*
                 if (MarkReturnedSegmentsAsTouched && (Result != null) && Result.Owner.PresentInCache)
                 {
                     if (IterationState.SubGrid != Result.Owner)
                     {
-                        // TODO add when loggin available
+                        // TODO add when logging available
                         //   SIGLogMessage.PublishNoODS(Self, Format('TSubGridSegmentIteratorBase.LocateNextSubgridSegmentInIteration: Owner of segment is not the same as the subgrid assigned to the iterator (%s vs %s)', [Result.Owner.Moniker, FIterationState.SubGrid]), slmcAssert);
                     }
                     if (Result.Owner.Locked)
@@ -174,7 +174,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
                     }
                     else
                     {
-                        // TODO Add when loggin available
+                        // TODO Add when logging available
                         //SIGLogMessage.PublishNoODS(Self, Format('Subgrid %s not locked as required in LocateNextSubgridSegmentInIteration', [Result.Owner.Moniker]), slmcAssert);
                     }
                 }
@@ -298,13 +298,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
         // in the cache segment MRU list
         public void MarkCacheStamp()
         {
-            // TODO not data store instance
-            //            MarkedCacheStamp = DataStoreInstance.GridDataCache.MostRecentCacheStamp;
+            // TODO no data store instance
+            // MarkedCacheStamp = DataStoreInstance.GridDataCache.MostRecentCacheStamp;
         }
 
         public void SetIteratorElevationRange(double minElevation, double maxElevation) => IterationState.SetIteratorElevationRange(minElevation, maxElevation);
 
-        // Machine restriction not implemented
+        // TODO Machine restriction not implemented
         //public void SetMachineRestriction(const AMachineIDSets : TMachineIDSets) => IterationState.SetMachineRestriction(AMachineIDSets);
     }
 }
