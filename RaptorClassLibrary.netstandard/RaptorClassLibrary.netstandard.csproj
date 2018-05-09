@@ -5,6 +5,10 @@
     <RootNamespace>VSS.TRex</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Apache.Ignite" Version="2.4.0" />
     <PackageReference Include="Apache.Ignite.Log4Net" Version="2.4.0" />
