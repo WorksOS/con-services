@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using Dapper;
 using Hangfire;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Repositories;
+using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
-
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Scheduler.WebApi
 {
@@ -18,18 +19,21 @@ namespace VSS.Productivity3D.Scheduler.WebApi
   {
     private readonly ILogger _log;
     private readonly IConfigurationStore _configStore = null;
+    private readonly IFilterRepository _filterRepository;
     private static int DefaultFilterAgeDefaultMinutes { get; } = 4;
     private static int DefaultTaskIntervalDefaultMinutes { get; } = 240; // 4 hours
-  
+
     /// <summary>
     /// Initializes the FilterCleanupTask 
     /// </summary>
     /// <param name="configStore"></param>
     /// <param name="loggerFactory"></param>
-    public FilterCleanupTask(IConfigurationStore configStore, ILoggerFactory loggerFactory)
+    /// <param name="filterRepository"></param>
+    public FilterCleanupTask(IConfigurationStore configStore, ILoggerFactory loggerFactory, IFilterRepository filterRepository)
     {
       _log = loggerFactory.CreateLogger<FilterCleanupTask>();
-      _configStore = configStore;  
+      _configStore = configStore;
+      _filterRepository = filterRepository;
     }
 
     /// <summary>
@@ -76,18 +80,18 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// </summary>
     /// <param name="filterDbConnectionString"></param>
     /// <param name="ageInMinutesToDelete"></param>
-    [AutomaticRetry(Attempts = 3, LogEvents = false, OnAttemptsExceeded = AttemptsExceededAction.Delete)]
+    [AutomaticRetry(Attempts = 3, LogEvents = true, OnAttemptsExceeded = AttemptsExceededAction.Delete)]
     [DisableConcurrentExecution(5)]
     public void FilterTableCleanupTask(string filterDbConnectionString, int ageInMinutesToDelete)
     {
       var startUtc = DateTime.UtcNow;
+      var empty = "\"";
+      var cutoffActionUtcToDelete = startUtc.AddMinutes(-ageInMinutesToDelete).ToString("yyyy-MM-dd HH:mm:ss"); // mySql requires this format 
       _log.LogDebug($"FilterTableCleanupTask() beginning. startUtc: {startUtc}");
 
       Dictionary<string, object> newRelicAttributes;
-
-      var cutoffActionUtcToDelete = startUtc.AddMinutes(-ageInMinutesToDelete).ToString("yyyy-MM-dd HH:mm:ss"); // mySql requires this format
-
       MySqlConnection dbConnection = new MySqlConnection(filterDbConnectionString);
+
       try
       {
         dbConnection.Open();
@@ -104,12 +108,27 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       {
         dbConnection.Close();
       }
-
-      var empty = "\"";
-      string deleteCommand = $"DELETE FROM Filter WHERE fk_FilterTypeID = 1 AND LastActionedUTC < {empty}{cutoffActionUtcToDelete}{empty}";
+      
+      var filterstoBeDeletedQuery = $@"SELECT 
+                f.fk_CustomerUid AS CustomerUID, f.UserID, 
+                f.fk_ProjectUID AS ProjectUID, f.FilterUID,                   
+                f.Name, f.FilterJson, f.fk_FilterTypeID as FilterType,
+                f.IsDeleted, f.LastActionedUTC
+              FROM Filter f
+              WHERE f.fk_FilterTypeID = {(int)FilterType.Transient} 
+                AND f.LastActionedUTC < {empty}{cutoffActionUtcToDelete}{empty}";
+      string deleteCommand = $"DELETE FROM Filter WHERE fk_FilterTypeID = {(int)FilterType.Transient} AND LastActionedUTC < {empty}{cutoffActionUtcToDelete}{empty}";
       int deletedCount = 0;
       try
       {
+        //TODO: replace this with the filter repo call once connection string env config clash is sorted (MYSQL_DATABASE_NAME) US #69657
+        _log.LogDebug($"{Environment.NewLine}************** THE FOLLOWING FILTERS ARE GOING TO BE REMOVED ***************{Environment.NewLine}");
+
+        dbConnection.Query<Filter>(filterstoBeDeletedQuery).AsList().ForEach(filter => _log.LogDebug(filter.ToString()));
+
+        _log.LogDebug($"{Environment.NewLine}************** END FILTERS TO BE REMOVED ***************{Environment.NewLine}");
+        
+        
         deletedCount = dbConnection.Execute(deleteCommand, cutoffActionUtcToDelete);
         _log.LogTrace($"FilterCleanupTask.FilterTableCleanupTask: connectionString {dbConnection.ConnectionString} deletedCount {deletedCount}");
       }

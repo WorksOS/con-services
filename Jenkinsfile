@@ -136,7 +136,7 @@ node ('Jenkins-Win2016-Raptor') {
             }
 
             stage ('Build') {
-                bat  "PowerShell.exe -ExecutionPolicy Bypass -Command .\\build471.ps1 -uploadArtifact"
+                bat  "PowerShell.exe -ExecutionPolicy Bypass -Command .\\build471.ps1 -uploadArtifact -versionNumber ${versionNumber}"
             }
 
             archiveArtifacts artifacts: 'VSS.Productivity3D.Scheduler.WebApiNet471.zip', fingerprint: true 

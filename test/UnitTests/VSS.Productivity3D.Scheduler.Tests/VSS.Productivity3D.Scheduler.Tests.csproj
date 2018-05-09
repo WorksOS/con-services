@@ -26,7 +26,7 @@
     <PackageReference Include="Moq" Version="4.7.63" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.1.*" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.0.*" />
-    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.8.*" />
+    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.9.*" />
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.*" />
   </ItemGroup>
 

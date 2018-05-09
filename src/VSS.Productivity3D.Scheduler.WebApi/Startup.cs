@@ -22,6 +22,7 @@ using VSS.MasterData.Proxies;
 using VSS.TCCFileAccess;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.WebApi.Common;
+using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
 using VSS.Productivity3D.Scheduler.WebAPI;
 using VSS.Productivity3D.Scheduler.WebAPI.ExportJobs;
@@ -94,6 +95,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddTransient<IRaptorProxy, RaptorProxy>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
       services.AddTransient<IFileRepository, FileRepository>();
+      services.AddTransient<IFilterRepository, FilterRepository>();
       services.AddTransient<IImportedFileProxy, ImportedFileProxy>();
       services.AddTransient<IExportJob, ExportJob>();
       services.AddTransient<IApiClient, ApiClient>();
@@ -125,8 +127,8 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       app.UseMvc();
 
       var log = loggerFactory.CreateLogger<Startup>();
- 
-      ConfigureHangfireUse(app, log);  
+
+      ConfigureHangfireUse(app, log);
       try
       {
         List<RecurringJobDto> recurringJobs = JobStorage.Current.GetConnection().GetRecurringJobs();
@@ -147,7 +149,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       expectedJobCount += ConfigureFilterCleanupTask(log, expectedJobCount);
       expectedJobCount += ConfigureSyncSurveyedSurfacesTask(log, expectedJobCount);
       expectedJobCount += ConfigureSyncOtherFilesTask(log, expectedJobCount);
-  
+
       var recurringJobsPost = JobStorage.Current.GetConnection().GetRecurringJobs();
       if (recurringJobsPost.Count < expectedJobCount)
       {
@@ -260,6 +262,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     private int ConfigureFilterCleanupTask(ILogger<Startup> log, int expectedJobCount)
     {
       var configStore = _serviceProvider.GetRequiredService<IConfigurationStore>();
+      var filterRepo = _serviceProvider.GetRequiredService<IFilterRepository>();
 
       var filterCleanupTaskToRun = false;
       if (!bool.TryParse(configStore.GetValueString("SCHEDULER_FILTER_CLEANUP_TASK_RUN"), out filterCleanupTaskToRun))
@@ -275,7 +278,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
         var loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
 
-        var filterCleanupTask = new FilterCleanupTask(configStore, loggerFactory);
+        var filterCleanupTask = new FilterCleanupTask(configStore, loggerFactory, filterRepo);
         filterCleanupTask.AddTask();
         return 1;
       }
@@ -323,7 +326,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     private int ConfigureSyncOtherFilesTask(ILogger<Startup> log, int expectedJobCount)
     {
       var configStore = _serviceProvider.GetRequiredService<IConfigurationStore>();
- 
+
       var projectFileSyncNonSSTaskToRun = false;
       if (!bool.TryParse(configStore.GetValueString("SCHEDULER_IMPORTEDPROJECTFILES_SYNC_NonSS_TASK_RUN"),
         out projectFileSyncNonSSTaskToRun))

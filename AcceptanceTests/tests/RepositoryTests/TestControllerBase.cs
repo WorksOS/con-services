@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySql.Data.MySqlClient;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
+using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
 
 namespace RepositoryTests
@@ -18,8 +19,13 @@ namespace RepositoryTests
     protected ILoggerFactory LoggerFactory;
     protected IConfigurationStore ConfigStore;
 
+    protected IFilterRepository _filterRepository;
+
     private IServiceProvider _serviceProvider;
     private ILogger _log;
+
+
+
 
     public void SetupDI()
     {
@@ -37,15 +43,18 @@ namespace RepositoryTests
       serviceCollection.AddLogging();
       serviceCollection
         .AddSingleton(loggerFactory)
-        .AddSingleton<IConfigurationStore, GenericConfiguration>();
+        .AddSingleton<IConfigurationStore, GenericConfiguration>()
+        .AddTransient<IFilterRepository, FilterRepository>();
 
       _serviceProvider = serviceCollection.BuildServiceProvider();
       ConfigStore = _serviceProvider.GetRequiredService<IConfigurationStore>();
       this.LoggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
       _log = loggerFactory.CreateLogger<TestControllerBase>();
+      _filterRepository = _serviceProvider.GetRequiredService<IFilterRepository>();
 
       Assert.IsNotNull(_serviceProvider.GetService<IConfigurationStore>());
       Assert.IsNotNull(_serviceProvider.GetService<ILoggerFactory>());
+      Assert.IsNotNull(_filterRepository);
     }
 
 
