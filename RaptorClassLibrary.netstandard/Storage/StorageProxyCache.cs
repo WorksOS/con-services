@@ -20,7 +20,7 @@ namespace VSS.TRex.Storage
             get => Cache.Name;
         }
 
-        public void Commit()
+        public virtual void Commit()
         {
             throw new System.NotImplementedException("Base StorageProxyCache does not support transactional behaviour");
         }

@@ -73,7 +73,7 @@ namespace VSS.TRex.Storage
         /// <summary>
         /// Commits all pending deletes and writes to the underlying cache
         /// </summary>
-        public void Commit()
+        public override void Commit()
         {
             foreach (var x in PendingTransactedDeletes)
                 base.GetAndRemove(x);
