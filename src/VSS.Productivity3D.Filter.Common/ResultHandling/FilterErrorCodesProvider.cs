@@ -2,7 +2,7 @@
 
 namespace VSS.Productivity3D.Filter.Common.ResultHandling
 {
-  public class FilterErrorCodesProvider : ContractExecutionStatesEnum
+  public class FilterErrorCodesProvider : FilterValidationErrorCodesProvider
   {
     public FilterErrorCodesProvider()
     {
@@ -34,13 +34,13 @@ namespace VSS.Productivity3D.Filter.Common.ResultHandling
       DynamicAddwithOffset("UpsertFilter failed. Unable to write to Kafka. Exception: {0}.", 26);
       DynamicAddwithOffset("Invalid customerUid.", 27);
       DynamicAddwithOffset("Invalid userUid.", 28);
-      DynamicAddwithOffset("Invalid Date Range. StartUTC must be earlier than EndUTC.", 29);
-      DynamicAddwithOffset("Invalid Date Range. If using a date range both dates must be provided.", 30);
-      DynamicAddwithOffset("Invalid designUid.", 31);
+      //29: FilterValidationErrorCodesProvider
+      //30: FilterValidationErrorCodesProvider
+      //31: FilterValidationErrorCodesProvider
       //DynamicAddwithOffset("Invalid layer type. The layer type should be one of the following types: None, TagFileNumber, MapReset.", 32);
       //DynamicAddwithOffset("Layer type error. If using a tag file layer filter, layer number must be provided", 33);
       //DynamicAddwithOffset("Layer number error. To use the layer number filter, layer type must be specified", 34);
-      DynamicAddwithOffset("Invalid spatial filter boundary. Too few points for filter polygon", 35);
+      //35: FilterValidationErrorCodesProvider
       DynamicAddwithOffset("GetFilter By filterUid. The requested filter does not exist, or does not belong to the requesting customer; project or user.", 36);
       DynamicAddwithOffset("DeleteFilter. Invalid parameters.", 37);
       DynamicAddwithOffset("UpsertFilter. Invalid parameters.", 38);
@@ -69,11 +69,11 @@ namespace VSS.Productivity3D.Filter.Common.ResultHandling
       DynamicAddwithOffset("UpsertBoundary. Update not supported", 61);
       DynamicAddwithOffset("Duplicate boundary name", 62);
       DynamicAddwithOffset("Invalid boundary polygon WKT. Should not be null.", 63);
-      DynamicAddwithOffset("Invalid alignment filter. alignment File Uid is invalid.", 64);
-      DynamicAddwithOffset("Invalid alignment filter. Start or end station are invalid.", 65);
-      DynamicAddwithOffset("Invalid alignment filter. Left or right offset are invalid.", 66);
-      DynamicAddwithOffset("Invalid alignment filter. Parameters are incomplete.", 67);
-      DynamicAddwithOffset("Invalid Date Filter. Either EndUTC or DateRangeType must be provided for an as-at date filter.", 68);
+      //64: FilterValidationErrorCodesProvider
+      //65: FilterValidationErrorCodesProvider
+      //66: FilterValidationErrorCodesProvider
+      //67: FilterValidationErrorCodesProvider
+      //68: FilterValidationErrorCodesProvider
     }
   }
 }
