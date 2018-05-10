@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using VSS.VisionLink.Raptor.Types;
+﻿using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.Analytics.GridFabric.Responses
 {
