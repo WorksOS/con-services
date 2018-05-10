@@ -45,7 +45,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       var jobId = BackgroundJob.Enqueue(() => exportJob.GetExportData(
         request, Request.Headers.GetCustomHeaders(true), null));
       //Hangfire will substitute a PerformContext automatically
-      return new ScheduleJobResult { jobId = jobId };
+      return new ScheduleJobResult { JobId = jobId };
     }
 
     /// <summary>
@@ -69,15 +69,26 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       }
 
       log.LogInformation($"GetExportJobStatus: {jobId} status={status}");
+      string key = null;
       string downloadLink = null;
-      var filename = (jobData?.Job.Args[0] as ScheduleJobRequest).Filename ?? jobId;
+      FailureDetails details = null;
       if (status.Equals("SUCCEEDED", StringComparison.OrdinalIgnoreCase))
       {
+        var filename = (jobData?.Job.Args[0] as ScheduleJobRequest).Filename ?? jobId;
+        key = ExportJob.GetS3Key(jobId, filename);
         downloadLink = exportJob.GetDownloadLink(jobId, filename);
-        log.LogInformation($"GetExportJobStatus: {jobId} downloadLink={downloadLink}");
       }
-
-      return new JobStatusResult { key = ExportJob.GetS3Key(jobId, filename), status = status, downloadLink = downloadLink };
+      else if (status.Equals("FAILED", StringComparison.OrdinalIgnoreCase))
+      {
+        var detailsJson = JobStorage.Current.GetConnection()?.GetStateData(jobId)?.Data[ExportFailedState.EXPORT_DETAILS_KEY];
+        if (!string.IsNullOrEmpty(detailsJson))
+        {
+          details = JsonConvert.DeserializeObject<FailureDetails>(detailsJson);
+        }
+      }
+      var result = new JobStatusResult { Key = key, Status = status, DownloadLink = downloadLink, FailureDetails = details };
+      log.LogInformation($"GetExportJobStatus: result={JsonConvert.SerializeObject(result)}");
+      return result;
     }
   }
 }
