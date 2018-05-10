@@ -6,7 +6,7 @@
     <Company>VSS</Company>
     <Product>VSS.MasterData.Repositories.netcore</Product>
     <Description>Shared lib to access Masterdata aspects in the DB</Description>
-    <VersionPrefix>2.9.0</VersionPrefix>
+    <VersionPrefix>2.9.1</VersionPrefix>
     <TargetFrameworks>netstandard1.6</TargetFrameworks>
     <AssemblyName>VSS.MasterData.Repositories</AssemblyName>
     <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>

@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
 namespace VSS.MasterData.Models.Models
 {
   /// <summary>
   /// A 3D spatial extents structure
-  /// TODO this is a copy from VSS.Productivity3D.Common.Models maybe we should only have one.....
   /// </summary>
   public class BoundingBox3DGrid
   {
@@ -86,4 +82,3 @@ namespace VSS.MasterData.Models.Models
     }
   }
 }
-
