@@ -1,6 +1,6 @@
 ﻿using System;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common.Contracts;
 
 namespace VSS.Productivity3D.Common.Models
 {
@@ -36,12 +36,10 @@ namespace VSS.Productivity3D.Common.Models
     public BoundingBox3DGrid extents;
 
     public ProjectStatisticsResult(int code, string message = "") : base(code, message)
-    {
-    }
+    { }
 
     protected ProjectStatisticsResult(string message) : base(message)
-    {
-    }
+    { }
 
     public ProjectStatisticsResult()
     { }

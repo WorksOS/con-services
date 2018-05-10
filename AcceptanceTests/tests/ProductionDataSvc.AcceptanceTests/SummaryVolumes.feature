@@ -21,10 +21,10 @@ Scenario Outline: SummaryVolumes - Good Request
 	| CompositeToDesignNoSurveyedSurface   | CompositeToDesignNoSurveyedSurface   |
 	| DesignToCompositeWithSurveyedSurface | DesignToCompositeWithSurveyedSurface |
 	| DesignToCompositeNoSurveyedSurface   | DesignToCompositeNoSurveyedSurface   |
-#	| SummationTestLotOneOfThree           | SummationTestLotOneOfThree           |
+	| SummationTestLotOneOfThree           | SummationTestLotOneOfThree           |
 	| SummationTestLotTwoOfThree           | SummationTestLotTwoOfThree           |
 	| SummationTestLotThreeOfThree         | SummationTestLotThreeOfThree         |
-#	| SummationTestTheWholeLot             | SummationTestTheWholeLot             |
+	| SummationTestTheWholeLot             | SummationTestTheWholeLot             |
 	| FilterToDesignWithFillTolerances     | FilterToDesignWithFillTolerances     |
 	| FilterToDesignWithCutTolerances      | FilterToDesignWithCutTolerances      |
 	| FilterToFilterWithBothTolerances     | FilterToFilterWithBothTolerances     |
@@ -34,10 +34,10 @@ Scenario Outline: SummaryVolumes - Good Request with Old SS
 	When I request Summary Volumes supplying "<ParameterName>" paramters from the repository
 	Then the response should match "<ResultName>" result from the repository
 	Examples: 
-	| ParameterName                        | ResultName                         |
-	| FilterToCompositeWithSurveyedSurface | FilterToCompositeNoSurveyedSurface |
-	| CompositeToDesignWithSurveyedSurface | CompositeToDesignNoSurveyedSurface |
-	| DesignToCompositeWithSurveyedSurface | DesignToCompositeNoSurveyedSurface |
+	| ParameterName                        | ResultName                            |
+	| FilterToCompositeWithSurveyedSurface | FilterToCompositeNoSurveyedSurfaceOld |
+	| CompositeToDesignWithSurveyedSurface | CompositeToDesignNoSurveyedSurfaceOld |
+	| DesignToCompositeWithSurveyedSurface | DesignToCompositeNoSurveyedSurfaceOld |
 
 Scenario Outline: SummaryVolumes - Bad Request
 	When I request Summary Volumes supplying "<ParameterName>" paramters from the repository expecting error http code <HttpCode>

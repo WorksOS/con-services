@@ -15,7 +15,6 @@ using VLPDDecls;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
 using __Global = ProductionServer_TLB.__Global;
-using BoundingBox3DGrid = VSS.Productivity3D.Common.Models.BoundingBox3DGrid;
 using Point = VSS.MasterData.Models.Models.Point;
 using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
 

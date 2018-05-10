@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -6,38 +8,28 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.WebApi.Models.Common;
+using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models;
-using VSS.Productivity3D.WebApiModels.TagfileProcessing.Contracts;
-using VSS.Productivity3D.WebApiModels.TagfileProcessing.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
 {
   /// <summary>
-  /// Controller for handling v1 and v2 Tag File submissions to Raptor.
+  /// For handling Tag file submissions from either TCC or machines equiped with direct submission capable units.
   /// </summary>
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-  public class TagFileController : Controller, ITagFileContract
+  public class TagFileController : Controller
   {
-    /// <summary>
-    /// Tag processor for use by executor
-    /// </summary>
     private readonly ITagProcessor tagProcessor;
-
-    /// <summary>
-    /// Raptor client for use by executor
-    /// </summary>
     private readonly IASNodeClient raptorClient;
-
-    /// <summary>
-    /// LoggerFactory for logging
-    /// </summary>
     private readonly ILogger log;
-
-    /// <summary>
-    /// LoggerFactory factory for use by executor
-    /// </summary>
     private readonly ILoggerFactory logger;
+
+    private async Task<long> GetLegacyProjectId(Guid? projectUid) => projectUid == null
+      ? VelociraptorConstants.NO_PROJECT_ID
+      : await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
 
     /// <summary>
     /// Default constructor.
@@ -47,46 +39,83 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       this.raptorClient = raptorClient;
       this.tagProcessor = tagProcessor;
       this.logger = logger;
-      this.log = logger.CreateLogger<TagFileController>();
+      log = logger.CreateLogger<TagFileController>();
     }
 
     /// <summary>
     /// Posts TAG file to Raptor. 
     /// </summary>
-    /// <param name="request">TAG file structure.</param>
     [PostRequestVerifier]
     [Route("api/v1/tagfiles")]
     [HttpPost]
-    public TAGFilePostResult Post([FromBody]TagFileRequest request)
+    public TagFilePostResult Post([FromBody]TagFileRequest request)
     {
       request.Validate();
 
       return RequestExecutorContainerFactory
              .Build<TagFileExecutor>(logger, raptorClient, tagProcessor)
-             .Process(request) as TAGFilePostResult;
+             .Process(request) as TagFilePostResult;
     }
 
     /// <summary>
-    /// Posts TAG file to Raptor. 
+    /// For accepting and loading manually or automatically submitted tag files.
     /// </summary>
-    /// <param name="request">TAG file structure.</param>
     [PostRequestVerifier]
     [Route("api/v2/tagfiles")]
     [HttpPost]
-    public async Task<ContractExecutionResult> PostTagFile([FromBody]CompactionTagFileRequest request)
+    public ContractExecutionResult PostTagFile([FromBody]CompactionTagFileRequest request)
     {
-      log.LogDebug("PostTagFile: " + JsonConvert.SerializeObject(request));
+      // Serialize the request ignoring the Data property so not to overwhelm the logs.
+      var serializedRequest = JsonConvert.SerializeObject(
+        request,
+        Formatting.None,
+        new JsonSerializerSettings { ContractResolver = new JsonContractPropertyResolver("Data") });
 
-      var projectId = request.ProjectUid != null
-        ? await (User as RaptorPrincipal).GetLegacyProjectId(request.ProjectUid)
-        : -1;
+      log.LogDebug("PostTagFile: " + serializedRequest);
 
-      var tfRequest = TagFileRequest.CreateTagFile(request.FileName, request.Data, projectId, null, -1, false, false, request.OrgId);
+      var projectId = GetLegacyProjectId(request.ProjectUid).Result;
+
+      var tfRequest = TagFileRequest.CreateTagFile(request.FileName, request.Data, projectId, null, VelociraptorConstants.NO_MACHINE_ID, false, false, request.OrgId);
       tfRequest.Validate();
 
       return RequestExecutorContainerFactory
              .Build<TagFileExecutor>(logger, raptorClient, tagProcessor)
              .Process(tfRequest);
+    }
+
+    /// <summary>
+    /// For the direct submission of tag files from GNSS capable machines.
+    /// </summary>
+    [PostRequestVerifier]
+    [Route("api/v3/tagfiles")]
+    [HttpPost]
+    public ObjectResult PostTagFileDirectSubmission([FromBody]CompactionTagFileRequest request)
+    {
+      // Serialize the request ignoring the Data property so not to overwhelm the logs.
+      var serializedRequest = JsonConvert.SerializeObject(
+        request,
+        Formatting.None,
+        new JsonSerializerSettings { ContractResolver = new JsonContractPropertyResolver("Data") });
+
+      log.LogDebug("PostTagFile (Direct): " + serializedRequest);
+
+      var projectId = GetLegacyProjectId(request.ProjectUid).Result;
+
+      var tfRequest = TagFileRequest.CreateTagFile(request.FileName, request.Data, projectId, null, VelociraptorConstants.NO_MACHINE_ID, false, false);
+      tfRequest.Validate();
+
+      var result = RequestExecutorContainerFactory
+             .Build<TagFileDirectSubmissionExecutor>(logger, raptorClient, tagProcessor)
+             .Process(tfRequest) as TagFileDirectSubmissionResult;
+
+      if (result.Code == 0)
+      {
+        log.LogDebug($"PostTagFile (Direct): Successfully imported TAG file '{request.FileName}'.");
+        return StatusCode((int)HttpStatusCode.OK, result);
+      }
+
+      log.LogDebug($"PostTagFile (Direct): Failed to import TAG file '{request.FileName}', {result.Message}");
+      return StatusCode((int)HttpStatusCode.BadRequest, result);
     }
   }
 }

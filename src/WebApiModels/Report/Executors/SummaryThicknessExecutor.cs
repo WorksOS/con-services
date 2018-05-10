@@ -1,19 +1,18 @@
-﻿using ASNode.ThicknessSummary.RPC;
+﻿using System;
+using System.Net;
+using ASNode.ThicknessSummary.RPC;
 using ASNodeDecls;
 using BoundingExtents;
 using SVOICOptionsDecls;
-using System;
-using System.Net;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Report.Models;
 
-namespace VSS.Productivity3D.WebApiModels.Report.Executors
+namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
   /// <summary>
   /// Builds Summary thickness report from Raptor
@@ -23,14 +22,12 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
     private BoundingBox3DGrid ConvertExtents(T3DBoundingWorldExtent extents)
     {
       return BoundingBox3DGrid.CreatBoundingBox3DGrid(
-
           extents.MinX,
           extents.MinY,
           extents.MinZ,
           extents.MaxX,
           extents.MaxY,
-          extents.MaxZ
-          );
+          extents.MaxZ);
     }
 
     private SummaryThicknessResult ConvertResult(TASNodeThicknessSummaryResult result)
@@ -39,10 +36,10 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
       return SummaryThicknessResult.Create
           (
               ConvertExtents(result.BoundingExtents),
-              Math.Round(result.AboveTargetArea,5) ,
-              Math.Round(result.BelowTargetArea,5) ,
-              Math.Round(result.MatchTargetArea,5) ,
-              Math.Round(result.NoCovegareArea, 5) 
+              Math.Round(result.AboveTargetArea, 5),
+              Math.Round(result.BelowTargetArea, 5),
+              Math.Round(result.MatchTargetArea, 5),
+              Math.Round(result.NoCovegareArea, 5)
           );
     }
 
@@ -52,7 +49,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
       TASNodeThicknessSummaryResult result = new TASNodeThicknessSummaryResult();
 
       bool success = raptorClient.GetSummaryThickness(request.projectId ?? -1,
-        ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid) (request.CallId ?? Guid.NewGuid()), 0,
+        ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.CallId ?? Guid.NewGuid()), 0,
           TASNodeCancellationDescriptorType.cdtVolumeSummary),
         RaptorConverters.ConvertFilter(request.BaseFilterId, request.BaseFilter, request.projectId, null, null),
         RaptorConverters.ConvertFilter(request.TopFilterId, request.TopFilter, request.projectId, null, null),

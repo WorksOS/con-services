@@ -7,7 +7,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -19,7 +18,6 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
   public class CompactionProfileResultHelperTests
   {
     private static IServiceProvider serviceProvider;
-    private static ILoggerFactory logger;
 
     [ClassInitialize]
     public static void ClassInit(TestContext context)
@@ -36,8 +34,6 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         .AddTransient<IErrorCodesProvider, RaptorResult>();
 
       serviceProvider = serviceCollection.BuildServiceProvider();
-
-      logger = serviceProvider.GetRequiredService<ILoggerFactory>();
     }
 
     #region FindCutFillElevations tests

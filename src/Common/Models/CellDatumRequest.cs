@@ -1,15 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Models;
-using VSS.Productivity3D.Common.Interfaces;
 
 namespace VSS.Productivity3D.Common.Models
 {
-    /// <summary>
-    /// The request to identify the cell, display information and other configuration information to determine a datum value for the cell.
-    /// One of llPoint or gridPoint must be defined.
-    /// </summary>
-    public class CellDatumRequest : ProjectID, IValidatable
+  /// <summary>
+  /// The request to identify the cell, display information and other configuration information to determine a datum value for the cell.
+  /// One of llPoint or gridPoint must be defined.
+  /// </summary>
+  public class CellDatumRequest : ProjectID
     {
       /// <summary>
       /// The datum type to return (eg: height, CMV, Temperature etc). 
