@@ -1,5 +1,4 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.SubGridTrees;
 
 namespace VSS.VisionLink.Raptor.GridFabric.Affinity
 {
@@ -7,7 +6,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
     /// The affinity function used by Raptor to spread spatial data amongst processing servers
     /// </summary>
     [Serializable]
-    public class ImmutableSpatialAffinityFunction : AffinityFunctionBase
+    public class MutableNonSpatialAffinityFunction : AffinityFunctionBase
     {
         /// <summary>
         /// Given a cache key, determine which partition the cache item should reside
@@ -19,16 +18,16 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
             // Pull the subgrid origin location for the subgrid or segment represented in the cache key and calculate the 
             // spatial processing division descriptor to use as the partition affinity key
 
-            if (!(key is SubGridSpatialAffinityKey))
+            if (!(key is NonSpatialAffinityKey))
             {
                 Log.Info($"Unknown key type to compute spatial affinity partition key for: {key}");
                 throw new ArgumentException($"Unknown key type to compute spatial affinity partition key for: {key}");
             }
 
-            SubGridSpatialAffinityKey value = (SubGridSpatialAffinityKey)key;
+            NonSpatialAffinityKey value = (NonSpatialAffinityKey)key;
 
-            // Compute partition number against the subgrid location in the spatial affinity key
-            return (int)SubGridCellAddress.ToSpatialPartitionDescriptor(value.SubGridX, value.SubGridY);
+            // Compute partition number as the modulo NumPartitions result against the project iD in the spatial affinity key
+            return (int) value.ProjectID % NumPartitions;
         }
     }
 }

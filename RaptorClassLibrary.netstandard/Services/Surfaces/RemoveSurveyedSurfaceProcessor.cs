@@ -1,5 +1,6 @@
 ﻿using Apache.Ignite.Core.Cache;
 using System;
+using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.Surfaces;
 using VSS.VisionLink.Raptor.Utilities.ExtensionMethods;
 
@@ -9,9 +10,9 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
     /// Service processor to handle removing a surveyed surface from the list for a sitemodel
     /// </summary>
     [Serializable]
-    public class RemoveSurveyedSurfaceProcessor : ICacheEntryProcessor<string, byte[], long, bool>
+    public class RemoveSurveyedSurfaceProcessor : ICacheEntryProcessor<NonSpatialAffinityKey, byte[], long, bool>
     {
-        public bool Process(IMutableCacheEntry<string, byte[]> entry, long arg)
+        public bool Process(IMutableCacheEntry<NonSpatialAffinityKey, byte[]> entry, long arg)
         {
             try
             {

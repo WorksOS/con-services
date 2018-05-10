@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.SubGridTrees;
 
 namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
@@ -24,11 +25,11 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
         /// </summary>
         /// <param name="keys"></param>
         /// <returns></returns>
-        public static SubGridTreeSubGridExistenceBitMask Execute(string[] keys)
+        public static SubGridTreeSubGridExistenceBitMask Execute(NonSpatialAffinityKey[] keys)
         {
             SubGridTreeSubGridExistenceBitMask combinedMask = null;
 
-            foreach (string key in keys)
+            foreach (NonSpatialAffinityKey key in keys)
             {
                 SubGridTreeSubGridExistenceBitMask Mask = GetSingleExistenceMapRequest.Execute(key);
 

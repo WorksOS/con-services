@@ -10,8 +10,9 @@ namespace VSS.VisionLink.Raptor.SiteModels
     /// It may receive messages from the Ignite layer regarding invalidation of cache items...
     /// </summary>
     public class SiteModels : Dictionary<long, SiteModel>
-    {
-        private static IStorageProxy StorageProxy;
+    {      
+        public static IStorageProxy StorageProxy { get; set; }
+
         private static SiteModels[] instance = {null, null};
 
         private SiteModels(IStorageProxy storageProxy)
@@ -35,9 +36,9 @@ namespace VSS.VisionLink.Raptor.SiteModels
             {
                 if (!TryGetValue(ID, out result))
                 {
-                    result = new SiteModel(ID, StorageProxy);
+                    result = new SiteModel(ID);
 
-                    if (result.LoadFromPersistentStore() == FileSystemErrorStatus.OK)
+                    if (result.LoadFromPersistentStore(StorageProxy) == FileSystemErrorStatus.OK)
                     {
                         Add(ID, result);
                     }
@@ -66,7 +67,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
         /// <param name="SiteModelID"></param>
         public void SiteModelAttributesHaveChanged(long SiteModelID)
         {
-            GetSiteModel(SiteModelID, false)?.LoadFromPersistentStore();
+            GetSiteModel(SiteModelID, false)?.LoadFromPersistentStore(StorageProxy);
         }
     }
 }

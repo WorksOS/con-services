@@ -9,46 +9,34 @@ using System.Reflection;
 namespace VSS.VisionLink.Raptor.GridFabric.Affinity
 {
     /// <summary>
-    /// The affinity function used by Raptor to spread spatial data amongst processing servers
+    /// The affinity function used by TRex to spread data amongst processing servers
     /// </summary>
     [Serializable]
-    public class SpatialAffinityFunctionBase : IAffinityFunction
+    public class AffinityFunctionBase : IAffinityFunction
     {
         protected static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         // Set NumPartitions to the default number of partitions
-        protected int NumPartitions = (int)RaptorConfig.NumPartitionsPerSpatialDataCache;
+        protected int NumPartitions = (int)RaptorConfig.NumPartitionsPerDataCache;
 
         /// <summary>
-        /// Return the number of partitions to use for affinity. For this affinity function, the number of partitions
-        /// is governed by the configured number of Raptor spatial processing divisions
+        /// Return the number of partitions to use for affinity. 
         /// </summary>
         public int Partitions => NumPartitions; 
 
         /// <summary>
-        /// Determine how the nodes in the grid are to be assigned into the spatial divisions configured in the system
+        /// Determine how the nodes in the grid are to be assigned into the partitions configured in the cache
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
         public IEnumerable<IEnumerable<IClusterNode>> AssignPartitions(AffinityFunctionContext context)
         {
-            if (NumPartitions == 0 || NumPartitions > 1024)
-            {
-                throw new ArgumentException($"{NumPartitions} is an invalid number of partitions for an affinity partition map");
-            }
-
             // Create the (empty) list of node mappings for the affinity partition assignment
             List<List<IClusterNode>> result = Enumerable.Range(0, NumPartitions).Select(x => new List<IClusterNode>()).ToList();
 
             try
             {
-                // Given the set of nodes in the cluster, determine that there is (at least) <n> nodes marked with
-                // the configured role. If not, then throw an exception. If there are exactly that many nodes, then assign
-                // one node to to each partition (where a partition is a Raptor spatial processing subdivision), based
-                // on the order the cluster nodes occur in the provided topology. If there are more than n nodes, then
-                // assign them in turn to the partitions as backup nodes.
-
-                Log.Info("RaptorSpatialAffinityFunction: Assigning partitions");
+                Log.Info("Assigning partitions");
 
                 /* Debug code to dumo the attributes assigned to nodes being looked at
                 foreach (var node in context.CurrentTopologySnapshot)
@@ -68,18 +56,18 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
                         Log.Info($"Attribute: {a.ToString()}");
                     */
 
-                    Log.Info("Assigning Raptor spatial partitions");
+                    Log.Info("Assigning partitions to nodes");
                     for (int partitionIndex = 0; partitionIndex < NumPartitions; partitionIndex++)
                     {
                         result[partitionIndex].Add(Nodes[NumPartitions % Nodes.Count]);
 
-                        Log.Debug($"--> Assigned node:{Nodes[NumPartitions % Nodes.Count].ConsistentId} nodes to spatial partition {partitionIndex}");
+                        Log.Debug($"--> Assigned node:{Nodes[NumPartitions % Nodes.Count].ConsistentId} nodes to partition {partitionIndex}");
                     }
                 }
             }
             catch (Exception e)
             {
-                Log.ErrorFormat("RaptorSpatialAffinityFunction: Exception: {0}", e);
+                Log.Error($"Exception: {e}");
                 return new List<List<IClusterNode>>();
             }
 
@@ -99,7 +87,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
 
         /// <summary>
         /// Remove a node from the topology. There is no special logic required here; the AssignPartitions method should be called again
-        /// to reassign the remaining nodes into the spatial partitions
+        /// to reassign the remaining nodes into the partitions
         /// </summary>
         /// <param name="nodeId"></param>
         public void RemoveNode(Guid nodeId)

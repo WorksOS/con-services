@@ -34,11 +34,6 @@ namespace VSS.VisionLink.Raptor.SiteModels
 
         public long ID = -1;
 
-        /// <summary>
-        /// THe storage proxy this sitemodel instance will use to read/write information related to the SiteModel
-        /// </summary>
-        public IStorageProxy StorageProxy;
-
         DateTime LastModifiedDate { get; set; } = DateTime.MinValue;
 
         /// <summary>
@@ -128,10 +123,9 @@ namespace VSS.VisionLink.Raptor.SiteModels
             // FTransient = false
         }
 
-        public SiteModel(long id, IStorageProxy storageProxy) : this()
+        public SiteModel(long id) : this()
         {
             ID = id;
-            StorageProxy = storageProxy;
 
             // FCreationDate:= Now;
             // FMarkedForRemoval:= False;
@@ -181,8 +175,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
                          string name,
                          string description,
                          long id,
-                         double cellSize,
-                         IStorageProxy storageProxy) : this(id, storageProxy)
+                         double cellSize) : this(id)
         {
             //        FName := AName;
             //  FDescription := ADescription;
@@ -316,7 +309,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
             return true;
         }
 
-        public bool SaveToPersistentStore()
+        public bool SaveToPersistentStore(IStorageProxy StorageProxy)
         {
             bool Result = false;
 
@@ -329,7 +322,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
                         Write(writer);
 
                         Result = StorageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, MS) == FileSystemErrorStatus.OK
-                                 && SaveProductionDataExistanceMapToStorage() == FileSystemErrorStatus.OK;
+                                 && SaveProductionDataExistanceMapToStorage(StorageProxy) == FileSystemErrorStatus.OK;
                     }
                 }
             }
@@ -352,7 +345,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
             return Result;
         }
 
-        public FileSystemErrorStatus LoadFromPersistentStore()
+        public FileSystemErrorStatus LoadFromPersistentStore(IStorageProxy StorageProxy)
         {
             FileSystemErrorStatus Result; // = FileSystemErrorStatus.UnknownErrorReadingFromFS;
 
@@ -395,7 +388,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
                                 Read(reader);
 
                                 // Now read in the existance map
-                                Result = LoadProductionDataExistanceMapFromStorage();
+                                Result = LoadProductionDataExistanceMapFromStorage(StorageProxy);
                             }
                         }
 
@@ -442,11 +435,11 @@ namespace VSS.VisionLink.Raptor.SiteModels
         /// load it from storage/cache
         /// </summary>
         /// <returns></returns>
-        public SubGridTreeSubGridExistenceBitMask GetProductionDataExistanceMap()
+        public SubGridTreeSubGridExistenceBitMask GetProductionDataExistanceMap(IStorageProxy StorageProxy)
         {
             if (existanceMap == null)
             {
-                return LoadProductionDataExistanceMapFromStorage() == FileSystemErrorStatus.OK ? existanceMap : null;
+                return LoadProductionDataExistanceMapFromStorage(StorageProxy) == FileSystemErrorStatus.OK ? existanceMap : null;
             }
 
             return existanceMap;
@@ -456,7 +449,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
         /// Saves the content of the existence map to storage
         /// </summary>
         /// <returns></returns>
-        protected FileSystemErrorStatus SaveProductionDataExistanceMapToStorage()
+        protected FileSystemErrorStatus SaveProductionDataExistanceMapToStorage(IStorageProxy StorageProxy)
         {
             try
             {
@@ -485,7 +478,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
         /// Retrieves the content of the existance map from storage
         /// </summary>
         /// <returns></returns>
-        protected FileSystemErrorStatus LoadProductionDataExistanceMapFromStorage()
+        protected FileSystemErrorStatus LoadProductionDataExistanceMapFromStorage(IStorageProxy StorageProxy)
         {
             try
             {

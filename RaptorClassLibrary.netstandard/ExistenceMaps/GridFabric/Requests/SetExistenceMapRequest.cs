@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using VSS.VisionLink.Raptor.ExistenceMaps.Servers;
+using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 
@@ -23,7 +24,7 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
         /// <param name="key"></param>
         /// <param name="mask"></param>
         /// <returns></returns>
-        public static void Execute(string key, SubGridTreeSubGridExistenceBitMask mask)
+        public static void Execute(NonSpatialAffinityKey key, SubGridTreeSubGridExistenceBitMask mask)
         {
             using (MemoryStream ms = new MemoryStream())
             {

@@ -1,4 +1,6 @@
-﻿namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
+﻿using VSS.VisionLink.Raptor.GridFabric.Affinity;
+
+namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
 {
     /// <summary>
     /// Base class for existence maps requests. Defines existnace map type descriptors and related base functionality sucj as cachey key calculation
@@ -12,6 +14,6 @@
         /// <param name="typeDescriptor"></param>
         /// <param name="ID"></param>
         /// <returns></returns>
-        public static string CacheKey(long siteModelID, long typeDescriptor, long ID) => $"Model:{siteModelID}-Descriptor:{typeDescriptor}-ID:{ID}";
+        public static NonSpatialAffinityKey CacheKey(long siteModelID, long typeDescriptor, long ID) => new NonSpatialAffinityKey(siteModelID, $"Descriptor:{typeDescriptor}-ID:{ID}");
     }
 }

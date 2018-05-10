@@ -106,7 +106,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
                         if (!Result.Dirty && ((RetrieveAllPasses && !Result.HasAllPasses) || (RetrieveLatestData && !Result.HasLatestData)))
                         {
                             if ((IterationState.SubGrid.Owner as IServerSubGridTree).LoadLeafSubGridSegment
-                                (new SubGridCellAddress(IterationState.SubGrid.OriginX, IterationState.SubGrid.OriginY),
+                                (SiteModels.SiteModels.StorageProxy,
+                                 new SubGridCellAddress(IterationState.SubGrid.OriginX, IterationState.SubGrid.OriginY),
                                  RetrieveLatestData, RetrieveAllPasses, // StorageClasses,
                                  IterationState.SubGrid,
                                  Result /*,

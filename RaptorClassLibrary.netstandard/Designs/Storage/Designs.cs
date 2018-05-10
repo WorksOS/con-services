@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.Utilities.Interfaces;
 
 namespace VSS.VisionLink.Raptor.Designs.Storage
@@ -148,9 +149,6 @@ namespace VSS.VisionLink.Raptor.Designs.Storage
         /// </summary>
         /// <param name="SiteModelID"></param>
         /// <returns></returns>
-        public static string CacheKey(long SiteModelID)
-        {
-            return $"{SiteModelID}-Designs";
-        }
+        public static NonSpatialAffinityKey CacheKey(long SiteModelID) => new NonSpatialAffinityKey(SiteModelID, "Designs");
     }
 }

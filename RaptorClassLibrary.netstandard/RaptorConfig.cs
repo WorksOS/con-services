@@ -36,6 +36,6 @@
         /// <summary>
         /// The number of paritions configured for caches that store spatial subgrid data
         /// </summary>
-        public static uint NumPartitionsPerSpatialDataCache = 1024;
+        public static uint NumPartitionsPerDataCache = 1024;
     }
 }

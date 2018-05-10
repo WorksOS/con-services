@@ -106,9 +106,9 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.Backups = 0;
         }
 
-        public override ICache<string, byte[]> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg)
+        public override ICache<NonSpatialAffinityKey, byte[]> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg)
         {
-            return immutableRaptorGrid.GetOrCreateCache<string, byte[]>(CacheCfg);
+            return immutableRaptorGrid.GetOrCreateCache<NonSpatialAffinityKey, byte[]>(CacheCfg);
         }
 
         public override void ConfigureImmutableSpatialCache(CacheConfiguration cfg)

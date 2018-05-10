@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using VSS.VisionLink.Raptor.Designs;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.Utilities.Interfaces;
 
 namespace VSS.VisionLink.Raptor.Surfaces
@@ -314,10 +315,7 @@ namespace VSS.VisionLink.Raptor.Surfaces
         /// </summary>
         /// <param name="SiteModelID"></param>
         /// <returns></returns>
-        public static string CacheKey(long SiteModelID)
-        {
-            return $"{SiteModelID}-SurveyedSurfaces";
-        }
+        public static NonSpatialAffinityKey CacheKey(long SiteModelID) => new NonSpatialAffinityKey(SiteModelID, "SurveyedSurfaces");
 
         public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
     }

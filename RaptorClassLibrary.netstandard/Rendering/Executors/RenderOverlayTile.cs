@@ -495,7 +495,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
             }
 
             // Get the current production data existance map from the sitemodel
-            var ProdDataExistenceMap = SiteModel.GetProductionDataExistanceMap();
+            var ProdDataExistenceMap = SiteModel.GetProductionDataExistanceMap(SiteModels.SiteModels.StorageProxy);
 
             if (ProdDataExistenceMap == null)
             {

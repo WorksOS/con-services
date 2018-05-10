@@ -134,9 +134,9 @@ namespace VSS.VisionLink.Raptor.Servers.Client
             }
         }
 
-        public override ICache<string, byte[]> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg)
+        public override ICache<NonSpatialAffinityKey, byte[]> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg)
         {
-            return immutableRaptorGrid.GetCache<string, byte[]>(CacheCfg.Name);
+            return immutableRaptorGrid.GetCache<NonSpatialAffinityKey, byte[]>(CacheCfg.Name);
         }
 
         public override ICache<SubGridSpatialAffinityKey, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)

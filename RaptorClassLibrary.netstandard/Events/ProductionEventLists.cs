@@ -298,7 +298,7 @@ namespace VSS.VisionLink.Raptor.Events
         /// <param name="storageProxy"></param>
         public void SaveMachineEventsToPersistentStore(IStorageProxy storageProxy)
         {
-            foreach (IProductionEvents list in GetEventLists())
+            foreach (IProductionEvents list in GetEventLists().Where(x => x.EventsChanged))
             {
                 Log.Debug(
                     $"Saving {list.EventListType} with {list.Count()} events for machine {MachineID} in project {SiteModel.ID}");

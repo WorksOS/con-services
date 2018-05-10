@@ -9,15 +9,12 @@ namespace VSS.VisionLink.Raptor.Storage
     /// </summary>
     public static class StorageProxy
     {
-        private static IStorageProxy raptorInstance_Mutable;
-        private static IStorageProxy raptorInstance_Immutable;
-
         public static IStorageProxy RaptorInstance(StorageMutability mutability)
         {
             switch (mutability)
             {
-                case StorageMutability.Mutable: return raptorInstance_Mutable ?? (raptorInstance_Mutable = StorageProxyFactory.Storage(StorageMutability.Mutable));
-                case StorageMutability.Immutable: return raptorInstance_Immutable ?? (raptorInstance_Immutable = StorageProxyFactory.Storage(StorageMutability.Immutable));
+                case StorageMutability.Mutable: return StorageProxyFactory.Storage(StorageMutability.Mutable);
+                case StorageMutability.Immutable: return StorageProxyFactory.Storage(StorageMutability.Immutable);
                 default:
                     throw new ArgumentException($"{mutability} is an unknown mutability type");
             }

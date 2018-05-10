@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using VSS.VisionLink.Raptor.ExistenceMaps.Servers;
+using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 
@@ -24,7 +25,7 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static SubGridTreeSubGridExistenceBitMask Execute(string key)
+        public static SubGridTreeSubGridExistenceBitMask Execute(NonSpatialAffinityKey key)
         {
             byte[] bytes = ExistenceMapServer.Instance().GetExistenceMap(key);
 

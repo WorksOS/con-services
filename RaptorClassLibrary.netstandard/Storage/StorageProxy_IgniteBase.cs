@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Apache.Ignite.Core;
-using Apache.Ignite.Core.Cache;
+﻿using Apache.Ignite.Core;
 using log4net;
 using System.IO;
 using System.Reflection;
-using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
@@ -21,8 +17,8 @@ namespace VSS.VisionLink.Raptor.Storage
 
         protected IIgnite ignite;
 
-        protected IStorageProxyCache<string, byte[]> nonSpatialCache;
-        public IStorageProxyCache<string, byte[]> NonSpatialCache => nonSpatialCache;
+        protected IStorageProxyCache<NonSpatialAffinityKey, byte[]> nonSpatialCache;
+        public IStorageProxyCache<NonSpatialAffinityKey, byte[]> NonSpatialCache => nonSpatialCache;
 
         protected IStorageProxyCache<SubGridSpatialAffinityKey, byte[]> spatialCache;
         public IStorageProxyCache<SubGridSpatialAffinityKey, byte[]> SpatialCache => spatialCache;
@@ -30,7 +26,7 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <summary>
         /// Controls which grid (Mutable or Immutable) this storage proxy performs reads and writes against.
         /// </summary>
-        public StorageMutability Mutability { get; set; } = StorageMutability.Immutable;
+        public StorageMutability Mutability { get; set; }
 
         public StorageProxy_IgniteBase(StorageMutability mutability)
         {
@@ -45,10 +41,7 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="DataModelID"></param>
         /// <param name="Name"></param>
         /// <returns></returns>
-        protected static string ComputeNamedStreamCacheKey(long DataModelID, string Name)
-        {
-            return string.Format("{0}-{1}", DataModelID, Name);
-        }
+        protected static NonSpatialAffinityKey ComputeNamedStreamCacheKey(long DataModelID, string Name) => new NonSpatialAffinityKey(DataModelID, Name);
 
         /// <summary>
         /// Computes the cache key name for the given data model and a given spatial data stream within that datamodel
@@ -71,9 +64,9 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="cacheKey"></param>
         /// <param name="streamType"></param>
         /// <returns></returns>
-        protected MemoryStream PerformNonSpatialImmutabilityConversion(IStorageProxyCache<string, byte[]> mutableCache,
-                                                                       IStorageProxyCache<string, byte[]> immutableCache,
-                                                                       string cacheKey,
+        protected MemoryStream PerformNonSpatialImmutabilityConversion(IStorageProxyCache<NonSpatialAffinityKey, byte[]> mutableCache,
+                                                                       IStorageProxyCache<NonSpatialAffinityKey, byte[]> immutableCache,
+                                                                       NonSpatialAffinityKey cacheKey,
                                                                        FileSystemStreamType streamType)
         {
             if (mutableCache == null || immutableCache == null)
@@ -107,8 +100,8 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="streamType"></param>
         /// <returns></returns>
         protected MemoryStream PerformNonSpatialImmutabilityConversion(MemoryStream mutableStream,
-                                                                       IStorageProxyCache<string, byte[]> immutableCache,
-                                                                       string cacheKey,
+                                                                       IStorageProxyCache<NonSpatialAffinityKey, byte[]> immutableCache,
+                                                                       NonSpatialAffinityKey cacheKey,
                                                                        FileSystemStreamType streamType)
         {
             if (mutableStream == null || immutableCache == null)

@@ -33,16 +33,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
         private IStorageProxy storageProxy_Mutable;
 
         /// <summary>
-        /// The immutable grid storage proxy
-        /// </summary>
-        private IStorageProxy storageProxy_Immutable;
-
-        /// <summary>
         /// Worker constructor that obtains the necessary storage proxies
         /// </summary>
         public AggregatedDataIntegratorWorker()
         {
-            storageProxy_Immutable = StorageProxy.RaptorInstance(StorageMutability.Immutable);
             storageProxy_Mutable = StorageProxy.RaptorInstance(StorageMutability.Mutable);
         }
 
@@ -125,8 +119,6 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                         }
 
                         storageProxy_Mutable.Clear();
-                        storageProxy_Immutable.Clear();
-
 
                         Task.StartProcessingTime = DateTime.Now;
 
@@ -403,13 +395,12 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                     }
 
                     // Use the synchonous command to save the site model information to the persistent store into the deferred (asynchronous model)
-                    SiteModelFromDM.SaveToPersistentStore();
+                    SiteModelFromDM.SaveToPersistentStore(storageProxy_Mutable);
 
-                    // ====== Stage 5 : COmmit all prepared data to the transactional storage proxy
+                    // ====== Stage 5 : Commit all prepared data to the transactional storage proxy
                     // All operations within the transaction to integrate the changes into the live model have completed successfully.
                     // Now commit those changes as a block.
                     storageProxy_Mutable.Commit();
-                    storageProxy_Immutable.Commit();
                 }
                 finally
                 {

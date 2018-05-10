@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using log4net;
@@ -35,7 +36,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// <summary>
         /// The event wait handle used to mediate sleep periods between operation epochs of the service
         /// </summary>
-        private EventWaitHandle waitHandle;
+//        private EventWaitHandle waitHandle;
 
         /// <summary>
         /// The grouper responsible for grouping TAG files into Project/Asset groups ready for processing into a
@@ -46,7 +47,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// <summary>
         /// The thread providing independent lifecycle activity
         /// </summary>
-        private Thread thread;
+        private Thread thread1;
+        private Thread thread2;
 
         private IIgnite ignite;
         private ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> queueCache;
@@ -67,11 +69,12 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 // Check to see if there is a work package to feed to the processing pipline
                 // -> Ask the grouper for a package 
                 var package = grouper.Extract(ProjectsToAvoid, true, out long projectID)?.ToList();
+                int packageCount = package?.Count ?? 0;
 
-                Log.Info($"Extracted package from grouper, ProjectID:{projectID}, with {package?.Count} items");
-
-                if (package?.Count > 0)
+                if (packageCount > 0)
                 {
+                    Log.Info($"Extracted package from grouper, ProjectID:{projectID}, with {packageCount} items");
+
                     hadWorkToDo = true;
 
                     // Add the project to the avoid list
@@ -160,6 +163,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                     finally
                     {
                         // Remove the project from the avoid list
+                        Log.Info($"Thread {Thread.CurrentThread.ManagedThreadId}: About to remove project {projectID} from [{(!ProjectsToAvoid.Any() ? "Empty" : ProjectsToAvoid.Select(x => $"{x}").Aggregate((a, b) => $"{a} + {b}"))}]");
                         ProjectsToAvoid.Remove(projectID);
                     }
                 }
@@ -167,9 +171,10 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 // if there was no work to do in the last epoch, sleep for a bit until the next check epoch
                 if (!hadWorkToDo)
                 {
-                    Log.Info($"ProcessTAGFilesFromGrouper sleeping for {kTAGFileBufferQueueServiceCheckIntervalMS}ms");
+                    //Log.Info($"ProcessTAGFilesFromGrouper sleeping for {kTAGFileBufferQueueServiceCheckIntervalMS}ms");
 
-                    waitHandle.WaitOne(kTAGFileBufferQueueServiceCheckIntervalMS);
+                    Thread.Sleep(kTAGFileBufferQueueServiceCheckIntervalMS);
+                    //waitHandle.WaitOne(kTAGFileBufferQueueServiceCheckIntervalMS);
                 }
             } while (!aborted);
 
@@ -276,43 +281,62 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// </summary>
         private void ProcessTAGFilesFromGrouper2()
         {
-            Log.Info("ProcessTAGFilesFromGrouper2 starting executing");
-
-            // Cycle looking for new work to do as TAG files arrive until aborted...
-            do
+            try
             {
-                var hadWorkToDo = false;
+                Log.Info("ProcessTAGFilesFromGrouper2 starting executing");
 
-                // Check to see if there is a work package to feed to the processing pipline
-                // -> Ask the grouper for a package 
-                var package = grouper.Extract(ProjectsToAvoid, true, out long projectID)?.ToList();
-
-                Log.Info($"Extracted package from grouper, ProjectID:{projectID}, with {package?.Count} items");
-
-                if (package?.Count > 0)
+                // Cycle looking for new work to do as TAG files arrive until aborted...
+                do
                 {
-                    hadWorkToDo = true;
-                    try
+                    var hadWorkToDo = false;
+
+                    // Check to see if there is a work package to feed to the processing pipline
+                    // -> Ask the grouper for a package 
+                    var package = grouper.Extract(ProjectsToAvoid, true, out long projectID)?.ToList();
+                    int packageCount = package?.Count ?? 0;
+
+                    if (packageCount > 0)
                     {
-                        ProcessTAGFileBucketFromGrouper2(package);
+                        Log.Info(
+                            $"Extracted package from grouper, ProjectID:{projectID}, with {packageCount} items in thread {Thread.CurrentThread.ManagedThreadId}");
+
+                        hadWorkToDo = true;
+                        try
+                        {
+                            //Task task = Task.Factory.StartNew(() => ProcessTAGFileBucketFromGrouper2(package));
+                            //task.Wait();
+
+                            Log.Info(
+                                $"Start processing {packageCount} TAG files from package in thread {Thread.CurrentThread.ManagedThreadId}");
+                            ProcessTAGFileBucketFromGrouper2(package);
+                            Log.Info(
+                                $"Completed processing {packageCount} TAG files from package in thread {Thread.CurrentThread.ManagedThreadId}");
+                        }
+                        finally
+                        {
+                            // Remove the project from the avoid list
+                            Log.Info(
+                                $"Thread {Thread.CurrentThread.ManagedThreadId}: About to remove project {projectID} from [{(!ProjectsToAvoid.Any() ? "Empty" : ProjectsToAvoid.Select(x => $"{x}").Aggregate((a, b) => $"{a} + {b}"))}]");
+                            ProjectsToAvoid.Remove(projectID);
+                        }
                     }
-                    finally
+
+                    // if there was no work to do in the last epoch, sleep for a bit until the next check epoch
+                    if (!hadWorkToDo)
                     {
-                        // Remove the project from the avoid list
-                        ProjectsToAvoid.Remove(projectID);
+                        //Log.Info($"ProcessTAGFilesFromGrouper2 sleeping for {kTAGFileBufferQueueServiceCheckIntervalMS}ms");
+
+                        Thread.Sleep(kTAGFileBufferQueueServiceCheckIntervalMS);
+                        //waitHandle.WaitOne(kTAGFileBufferQueueServiceCheckIntervalMS);
                     }
-                }
+                } while (!aborted);
 
-                // if there was no work to do in the last epoch, sleep for a bit until the next check epoch
-                if (!hadWorkToDo)
-                {
-                    Log.Info($"ProcessTAGFilesFromGrouper2 sleeping for {kTAGFileBufferQueueServiceCheckIntervalMS}ms");
-
-                    waitHandle.WaitOne(kTAGFileBufferQueueServiceCheckIntervalMS);
-                }
-            } while (!aborted);
-
-            Log.Info("ProcessTAGFilesFromGrouper2 completed executing");
+                Log.Info("ProcessTAGFilesFromGrouper2 completed executing");
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Exception {e} thrown in ProcessTAGFilesFromGrouper2");
+            }
         }
 
         /// <summary>
@@ -326,9 +350,17 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
             // Create the grouper responsible for grouping TAG files into projecft/asset combinations
             grouper = new TAGFileBufferQueueGrouper();
-            waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
-            thread = new Thread(ProcessTAGFilesFromGrouper2);
-            thread.Start();
+            // waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
+
+            Task task1 = Task.Factory.StartNew(ProcessTAGFilesFromGrouper2, TaskCreationOptions.LongRunning);
+            Task task2 = Task.Factory.StartNew(ProcessTAGFilesFromGrouper2, TaskCreationOptions.LongRunning);
+            Task task3 = Task.Factory.StartNew(ProcessTAGFilesFromGrouper2, TaskCreationOptions.LongRunning);
+            Task task4 = Task.Factory.StartNew(ProcessTAGFilesFromGrouper2, TaskCreationOptions.LongRunning);
+
+            //thread1 = new Thread(ProcessTAGFilesFromGrouper2);
+            //thread1.Start();
+            //thread2 = new Thread(ProcessTAGFilesFromGrouper2);
+            //thread2.Start();
         }
 
         /// <summary>
@@ -343,10 +375,11 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         public void Dispose()
         {
             aborted = true;
-            waitHandle?.Set();
-            waitHandle?.Dispose();
-            waitHandle = null;
-            thread.Abort();
+            //waitHandle?.Set();
+            //waitHandle?.Dispose();
+            //waitHandle = null;
+            thread1?.Abort();
+            thread2?.Abort();
         }
     }
 }

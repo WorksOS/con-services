@@ -39,8 +39,8 @@ namespace VSS.VisionLink.Raptor.Storage
             spatialCache = new StorageProxyCache<SubGridSpatialAffinityKey, byte[]>(
                 ignite.GetCache<SubGridSpatialAffinityKey, byte[]>(RaptorCaches.SpatialCacheName(Mutability)));
             nonSpatialCache =
-                new StorageProxyCache<string, byte[]>(
-                    ignite.GetCache<string, byte[]>(RaptorCaches.NonSpatialCacheName(Mutability)));
+                new StorageProxyCache<NonSpatialAffinityKey, byte[]>(
+                    ignite.GetCache<NonSpatialAffinityKey, byte[]>(RaptorCaches.NonSpatialCacheName(Mutability)));
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace VSS.VisionLink.Raptor.Storage
 
             try
             {
-                string cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
+                NonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
                 // Log.Info(String.Format("Getting key:{0}", cacheKey));
 
@@ -166,7 +166,7 @@ namespace VSS.VisionLink.Raptor.Storage
         {
             try
             {
-                string cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
+                NonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
                 Log.Info(string.Format("Removing key:{0}", cacheKey));
 
@@ -251,7 +251,7 @@ namespace VSS.VisionLink.Raptor.Storage
         {
             try
             {
-                string cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
+                NonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
@@ -286,7 +286,7 @@ namespace VSS.VisionLink.Raptor.Storage
         {
             try
             {
-                string cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
+                NonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {

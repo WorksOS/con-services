@@ -5,6 +5,7 @@ using log4net;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Storage;
@@ -31,7 +32,7 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.Servers
         /// Each existence map is stored in it's serialised byte stream from. It does not define the grid per se, but does
         /// define a cache that is used within the grid to stored existence maps
         /// </summary>
-        protected ICache<string, byte[]> DesignTopologyExistanceMapsCache;
+        protected ICache<NonSpatialAffinityKey, byte[]> DesignTopologyExistanceMapsCache;
 
         /// <summary>
         /// Internal static instance variable for the server
@@ -59,11 +60,11 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.Servers
 
             try
             {
-                DesignTopologyExistanceMapsCache = ignite.GetCache<string, byte[]>(RaptorCaches.DesignTopologyExistenceMapsCacheName());
+                DesignTopologyExistanceMapsCache = ignite.GetCache<NonSpatialAffinityKey, byte[]>(RaptorCaches.DesignTopologyExistenceMapsCacheName());
             }
             catch // Exception is thrown if the cache does not exist
             {
-                DesignTopologyExistanceMapsCache = ignite.GetOrCreateCache<string, byte[]>(ConfigureDesignTopologyExistanceMapsCache());
+                DesignTopologyExistanceMapsCache = ignite.GetOrCreateCache<NonSpatialAffinityKey, byte[]>(ConfigureDesignTopologyExistanceMapsCache());
             }
 
             if (DesignTopologyExistanceMapsCache == null)
@@ -100,7 +101,7 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.Servers
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public byte [] GetExistenceMap(string key)
+        public byte [] GetExistenceMap(NonSpatialAffinityKey key)
         {
             try
             {
@@ -118,7 +119,7 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.Servers
         /// </summary>
         /// <param name="key"></param>
         /// <param name="map"></param>
-        public void SetExistenceMap(string key, byte [] map)
+        public void SetExistenceMap(NonSpatialAffinityKey key, byte [] map)
         {
             DesignTopologyExistanceMapsCache.Put(key, map);
         }

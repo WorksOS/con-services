@@ -6,7 +6,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
     /// The affinity function used by Raptor to spread spatial data amongst processing servers
     /// </summary>
     [Serializable]
-    public class MutableSpatialAffinityFunction : SpatialAffinityFunctionBase
+    public class MutableSpatialAffinityFunction : AffinityFunctionBase
     {
         /// <summary>
         /// Given a cache key, determine which partition the cache item should reside

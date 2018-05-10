@@ -377,7 +377,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             writer.WriteLine($"Number of items in cache: {metrics.Size}");
         }
 
-        private void writeKeys(string title, StreamWriter writer, ICache<string, byte[]> cache)
+        private void writeKeys(string title, StreamWriter writer, ICache<NonSpatialAffinityKey, byte[]> cache)
         {
             int count = 0;
 
@@ -392,11 +392,11 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
             //            writeCacheMetrics(writer, cache.GetMetrics());
 
-            var scanQuery = new ScanQuery<string, byte[]>();
-            IQueryCursor<ICacheEntry<string, byte[]>> queryCursor = cache.Query(scanQuery);
+            var scanQuery = new ScanQuery<NonSpatialAffinityKey, byte[]>();
+            IQueryCursor<ICacheEntry<NonSpatialAffinityKey, byte[]>> queryCursor = cache.Query(scanQuery);
             scanQuery.PageSize = 1; // Restrict the number of keys requested in each page to reduce memory consumption
 
-            foreach (ICacheEntry<string, byte[]> cacheEntry in queryCursor)
+            foreach (ICacheEntry<NonSpatialAffinityKey, byte[]> cacheEntry in queryCursor)
             {
                 writer.WriteLine($"{count++}:{cacheEntry.Key}, size = {cacheEntry.Value.Length}");
                 //                writeCacheMetrics(writer, cache.GetMetrics());
@@ -507,7 +507,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                         {
                             try
                             {
-                                writeKeys(RaptorCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<string, byte[]>(RaptorCaches.ImmutableNonSpatialCacheName()));
+                                writeKeys(RaptorCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<NonSpatialAffinityKey, byte[]>(RaptorCaches.ImmutableNonSpatialCacheName()));
                             }
                             catch (Exception E)
                             {
@@ -515,7 +515,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                             }
                             try
                             {
-                                writeKeys(RaptorCaches.DesignTopologyExistenceMapsCacheName(), writer, ignite.GetCache<string, byte[]>(RaptorCaches.DesignTopologyExistenceMapsCacheName()));
+                                writeKeys(RaptorCaches.DesignTopologyExistenceMapsCacheName(), writer, ignite.GetCache<NonSpatialAffinityKey, byte[]>(RaptorCaches.DesignTopologyExistenceMapsCacheName()));
                             }
                             catch (Exception E)
                             {
@@ -534,7 +534,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                         {
                             try
                             {
-                                writeKeys(RaptorCaches.MutableNonSpatialCacheName(), writer, ignite.GetCache<string, byte[]>(RaptorCaches.MutableNonSpatialCacheName()));
+                                writeKeys(RaptorCaches.MutableNonSpatialCacheName(), writer, ignite.GetCache<NonSpatialAffinityKey, byte[]>(RaptorCaches.MutableNonSpatialCacheName()));
                             }
                             catch (Exception E)
                             {
@@ -778,11 +778,11 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
             IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
 
-            ICache<string, byte[]> cache = ignite.GetCache<string, byte[]>(RaptorCaches.MutableNonSpatialCacheName());
+            ICache<NonSpatialAffinityKey, byte[]> cache = ignite.GetCache<NonSpatialAffinityKey, byte[]>(RaptorCaches.MutableNonSpatialCacheName());
 
             byte[] bytes = new byte[100];
 
-            string cacheKey = "50-ProductionDataModel.XML";
+            NonSpatialAffinityKey cacheKey = new NonSpatialAffinityKey(50, "ProductionDataModel.XML");
 
             try
             {

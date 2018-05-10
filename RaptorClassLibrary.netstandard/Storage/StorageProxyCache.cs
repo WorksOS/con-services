@@ -35,22 +35,22 @@ namespace VSS.TRex.Storage
             Cache = cache;
         }
 
-        public TV Get(TK key)
+        public virtual TV Get(TK key)
         {
             return Cache.Get(key);
         }
 
-        public CacheResult<TV> GetAndRemove(TK key)
+        public virtual CacheResult<TV> GetAndRemove(TK key)
         {
             return Cache.GetAndRemove(key);
         }
 
-        public void Put(TK key, TV value)
+        public virtual void Put(TK key, TV value)
         {
             Cache.Put(key, value);
         }
 
-        public void PutAll(IEnumerable<KeyValuePair<TK, TV>> values)
+        public virtual void PutAll(IEnumerable<KeyValuePair<TK, TV>> values)
         {
             Cache.PutAll(values);
         }

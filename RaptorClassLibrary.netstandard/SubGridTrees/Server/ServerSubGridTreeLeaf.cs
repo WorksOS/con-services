@@ -585,7 +585,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
                 if (SeedSegmentInfo.Segment != null)
                 {
-                    if (((ServerSubGridTree)Owner).LoadLeafSubGridSegment(new SubGridCellAddress(OriginX, OriginY), true, false,
+                    if (((ServerSubGridTree)Owner).LoadLeafSubGridSegment(SiteModels.SiteModels.StorageProxy, new SubGridCellAddress(OriginX, OriginY), true, false,
                                                                           this, SeedSegmentInfo.Segment /*, null*/))
                     {
                         LastSegment = SeedSegmentInfo.Segment;

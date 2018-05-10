@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using VSS.VisionLink.Raptor.Designs;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Storage;
@@ -28,7 +29,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <summary>
         /// Cache storing sitemodel instances
         /// </summary>
-        private ICache<string, byte[]> mutableNonSpatialCache;
+        private ICache<NonSpatialAffinityKey, byte[]> mutableNonSpatialCache;
 
         /// <summary>
         /// Service name.
@@ -76,7 +77,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         {
             // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
 
-            string cacheKey = SurveyedSurfaces.CacheKey(SiteModelID);
+            NonSpatialAffinityKey cacheKey = SurveyedSurfaces.CacheKey(SiteModelID);
             SuveyedSurfaceID = Guid.NewGuid().GetHashCode();
 
             // Get the surveyed surfaces, creating it if it does not exist
@@ -134,7 +135,6 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="context"></param>
         public void Cancel(IServiceContext context)
         {
-            mutableNonSpatialCache.Remove(_svcName);
         }
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
                 _svcName = context.Name;
             }
 
-            mutableNonSpatialCache = _Ignite.GetCache<string, byte[]>(CacheName);
+            mutableNonSpatialCache = _Ignite.GetCache<NonSpatialAffinityKey, byte[]>(CacheName);
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
 
             try
             {
-                string cacheKey = SurveyedSurfaces.CacheKey(SiteModelID);
+                NonSpatialAffinityKey cacheKey = SurveyedSurfaces.CacheKey(SiteModelID);
 
                 // Get the surveyed surfaces, creating it if it does not exist
                 SurveyedSurfaces ssList = new SurveyedSurfaces();
