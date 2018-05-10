@@ -1,5 +1,5 @@
-﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common.Models;
+﻿using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 {
@@ -8,29 +8,26 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
   /// </summary>
   public class ProjectExtentsResult : ContractExecutionResult
   {
-      /// <summary>
-      /// BoundingBox3DGrid
-      /// </summary>
-      public BoundingBox3DGrid ProjectExtents { get; private set; }
+    /// <summary>
+    /// BoundingBox3DGrid
+    /// </summary>
+    public BoundingBox3DGrid ProjectExtents { get; private set; }
 
-        /// <summary>
-        /// Private constructor
-        /// </summary>
-      private ProjectExtentsResult()
-        {}
-
-
-      /// <summary>
-      /// ProjectExtentsResult create instance
-      /// </summary>
-      /// <param name="convertedExtents"></param>
-      /// <returns></returns>
-      public static ProjectExtentsResult CreateProjectExtentsResult(BoundingBox3DGrid convertedExtents)
+    /// <summary>
+    /// Private constructor
+    /// </summary>
+    private ProjectExtentsResult()
+    { }
+    
+    /// <summary>
+    /// ProjectExtentsResult create instance
+    /// </summary>
+    public static ProjectExtentsResult CreateProjectExtentsResult(BoundingBox3DGrid convertedExtents)
+    {
+      return new ProjectExtentsResult
       {
-        return new ProjectExtentsResult
-        {
-          ProjectExtents = convertedExtents
-        };
-      }
+        ProjectExtents = convertedExtents
+      };
+    }
   }
 }

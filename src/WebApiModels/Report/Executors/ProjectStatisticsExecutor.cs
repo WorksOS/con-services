@@ -2,6 +2,7 @@
 using BoundingExtents;
 using SVOICStatistics;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -22,7 +23,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         extents.MaxZ);
     }
 
-    private ProjectStatisticsResult convertProjectStatistics(TICDataModelStatistics statistics)
+    private static ProjectStatisticsResult ConvertProjectStatistics(TICDataModelStatistics statistics)
     {
       return new ProjectStatisticsResult
       {
@@ -45,7 +46,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
       if (success)
       {
-        return convertProjectStatistics(statistics);
+        return ConvertProjectStatistics(statistics);
       }
 
       throw new ServiceException(HttpStatusCode.BadRequest,

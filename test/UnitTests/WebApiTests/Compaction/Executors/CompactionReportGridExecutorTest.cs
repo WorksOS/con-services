@@ -37,7 +37,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton(loggerFactory);
       serviceCollection.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddTransient<IErrorCodesProvider, ErrorCodesProvider>();
+        .AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();
 
       serviceProvider = serviceCollection.BuildServiceProvider();
 

@@ -16,12 +16,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
   /// <remarks>
   /// See https://www.newtonsoft.com/json/help/html/CustomContractResolver.htm for more information.
   /// </remarks>
-  public class DynamicContractResolver : DefaultContractResolver
+  public class JsonContractPropertyResolver : DefaultContractResolver
   {
     private readonly string[] props;
 
     /// <inheritdoc />
-    public DynamicContractResolver(params string[] prop)
+    public JsonContractPropertyResolver(params string[] prop)
     {
       props = prop;
     }

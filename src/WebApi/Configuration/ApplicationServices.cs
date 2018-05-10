@@ -18,7 +18,6 @@ using VSS.Productivity3D.WebApi.Models.Interfaces;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApi.Models.Notification.Helpers;
 using VSS.Productivity3D.WebApi.Models.Services;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
 using VSS.TCCFileAccess;
