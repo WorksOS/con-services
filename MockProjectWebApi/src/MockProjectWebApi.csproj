@@ -17,6 +17,25 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Routing" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.WebApiCompatShim" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.0" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.18.1" />
+    <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="Json\ColorSettings\7925f179-013d-4aaf-aff4-7b9833bb06d6.json" />
     <Content Remove="Json\Filters\DimensionsAlignmentFilter0to200.json" />
     <Content Remove="Json\Filters\DimensionsAlignmentFilter100to200.json" />
@@ -95,25 +114,6 @@
     <EmbeddedResource Include="Json\Filters\SummaryVolumesBaseFilter.json" />
     <EmbeddedResource Include="Json\Filters\SummaryVolumesTopFilter.json" />
     <EmbeddedResource Include="Json\UserPreferences\DummyUserPreferences.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Routing" Version="2.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="2.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.WebApiCompatShim" Version="2.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.0" />
-    <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.17.*" />
-    <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.0.*" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net471' ">

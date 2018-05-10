@@ -31,6 +31,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore.Unit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models.UnitTests", "MasterDataModels\test\UnitTests\VSS.MasterData.Models.UnitTests.csproj", "{1248C5C4-C138-4215-825F-18D61639027D}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.WebApi.Common", "WebApi\src\VSS.WebApi.Common.csproj", "{281F3104-7976-4BAE-9D4A-2CFAEED2F61C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.WebApi.Common.UnitTests", "WebApi\test\UnitTests\VSS.WebApi.Common.UnitTests.csproj", "{06D98B45-F0E0-4DA0-B692-ECB95B920D60}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -89,6 +93,14 @@ Global
 		{1248C5C4-C138-4215-825F-18D61639027D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1248C5C4-C138-4215-825F-18D61639027D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1248C5C4-C138-4215-825F-18D61639027D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{281F3104-7976-4BAE-9D4A-2CFAEED2F61C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{281F3104-7976-4BAE-9D4A-2CFAEED2F61C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{281F3104-7976-4BAE-9D4A-2CFAEED2F61C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{281F3104-7976-4BAE-9D4A-2CFAEED2F61C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06D98B45-F0E0-4DA0-B692-ECB95B920D60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06D98B45-F0E0-4DA0-B692-ECB95B920D60}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06D98B45-F0E0-4DA0-B692-ECB95B920D60}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06D98B45-F0E0-4DA0-B692-ECB95B920D60}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -98,5 +110,9 @@ Global
 		{5A61E1F6-E2D6-436F-A1E2-BDC8630BDD18} = {C69D8EB6-8A39-427B-B7B6-4294826F0D39}
 		{2244E500-82FC-4B52-8E3F-2C1DDF302366} = {C69D8EB6-8A39-427B-B7B6-4294826F0D39}
 		{1248C5C4-C138-4215-825F-18D61639027D} = {C69D8EB6-8A39-427B-B7B6-4294826F0D39}
+		{06D98B45-F0E0-4DA0-B692-ECB95B920D60} = {C69D8EB6-8A39-427B-B7B6-4294826F0D39}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D4448957-1BC7-4A47-9606-36038E69956B}
 	EndGlobalSection
 EndGlobal

@@ -6,7 +6,7 @@ namespace MockProjectWebApi.Controllers
 {
   public class MockSchedulerController : Controller
   {
-    [Route("/api/v1/mock/export")]
+    [Route("/internal/v1/mock/export")]
     [HttpPost]
     public ScheduleJobResult StartMockExport([FromBody] ScheduleJobRequest request)
     {

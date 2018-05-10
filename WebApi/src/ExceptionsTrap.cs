@@ -8,10 +8,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 
-namespace VSS.MasterData.Models.FIlters
+namespace VSS.WebApi.Common
 {
-  //TODO: Remove when all services use WebApi package
-  [Obsolete]
   public class ExceptionsTrap
   {
     private readonly ILogger log;

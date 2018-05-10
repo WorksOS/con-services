@@ -37,5 +37,12 @@ namespace VSS.MasterData.Repositories.DBModels
     {
       return 0;
     }
+
+    public override string ToString()
+    {
+      return
+        $"Filter Uid: {FilterUid}  CustomerUid: {CustomerUid} ProjectUid: {ProjectUid} UserId: {UserId} Name: {Name} " +
+        $"FilterType: {FilterType} IsDeleted: {IsDeleted} LastActionedUtc: {LastActionedUtc} FilterJson {FilterJson}";
+    }
   }
 }

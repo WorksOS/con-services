@@ -26,7 +26,7 @@ namespace VSS.MasterData.Proxies
     public async Task<ScheduleJobResult> ScheduleExportJob(ScheduleJobRequest request, IDictionary<string, string> customHeaders)
     {
       var payload = JsonConvert.SerializeObject(request);
-      var result = await SendRequest<ScheduleJobResult>("SCHEDULER_EXPORT_URL", payload, customHeaders, null, "POST", string.Empty);
+      var result = await SendRequest<ScheduleJobResult>("SCHEDULER_INTERNAL_EXPORT_URL", payload, customHeaders, null, "POST", string.Empty);
       if (result != null)
       {
         return result;
@@ -46,7 +46,7 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<JobStatusResult> GetExportJobStatus(string jobId, IDictionary<string, string> customHeaders)
     {
-      var result = await GetMasterDataItem<JobStatusResult>("SCHEDULER_EXPORT_URL",
+      var result = await GetMasterDataItem<JobStatusResult>("SCHEDULER_EXTERNAL_EXPORT_URL",
         customHeaders, null, $"/{jobId}");
       if (result != null)
       {
