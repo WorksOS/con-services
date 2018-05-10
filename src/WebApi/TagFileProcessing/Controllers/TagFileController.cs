@@ -65,7 +65,13 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     [HttpPost]
     public ContractExecutionResult PostTagFile([FromBody]CompactionTagFileRequest request)
     {
-      log.LogDebug("PostTagFile: " + JsonConvert.SerializeObject(request));
+      // Serialize the request ignoring the Data property so not to overwhelm the logs.
+      var serializedRequest = JsonConvert.SerializeObject(
+        request,
+        Formatting.None,
+        new JsonSerializerSettings { ContractResolver = new DynamicContractResolver("Data") });
+
+      log.LogDebug("PostTagFile: " + serializedRequest);
 
       var projectId = GetLegacyProjectId(request.ProjectUid).Result;
 

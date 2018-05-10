@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
