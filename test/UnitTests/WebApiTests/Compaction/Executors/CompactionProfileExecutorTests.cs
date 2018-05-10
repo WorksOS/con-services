@@ -85,7 +85,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       serviceCollection
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>()
+        .AddTransient<IErrorCodesProvider, RaptorResult>()
         .AddTransient<ICompactionProfileResultHelper, CompactionProfileResultHelper>();
  
       serviceProvider = serviceCollection.BuildServiceProvider();

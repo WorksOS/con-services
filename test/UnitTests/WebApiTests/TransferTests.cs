@@ -12,6 +12,7 @@ using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Common.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiTests
 {
@@ -32,7 +33,7 @@ namespace VSS.Productivity3D.WebApiTests
       serviceCollection
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>()
+        .AddTransient<IErrorCodesProvider, RaptorResult>()
         .AddTransient<ITransferProxy, TransferProxy>();
 
       serviceProvider = serviceCollection.BuildServiceProvider();
