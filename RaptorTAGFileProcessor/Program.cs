@@ -54,6 +54,14 @@ namespace VSS.VisionLink.Raptor.Client
             Log.Info($"Submitting TAG file #{++tAGFileCount}: {fileName}");
 
             submitTAGFileRequest.Execute(arg);
+
+            // Submit the same TAG fils to different projects to simulate more load (a total of four copies of the tag file)
+//            arg.ProjectID += 1000000;
+//            submitTAGFileRequest.Execute(arg);
+//            arg.ProjectID += 1000000;
+//            submitTAGFileRequest.Execute(arg);
+//            arg.ProjectID += 1000000;
+//            submitTAGFileRequest.Execute(arg);
         }
 
         public static void ProcessSingleTAGFile(long projectID, string fileName)
