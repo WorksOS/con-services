@@ -1,18 +1,17 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using SVOICProfileCell;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using SVOICSummaryVolumesProfileCell;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -20,9 +19,8 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
-using VSS.Productivity3D.WebApiModels.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
+using VSS.Productivity3D.WebApiModels.Compaction.Executors;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 {
@@ -87,7 +85,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       serviceCollection
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddTransient<IErrorCodesProvider, ErrorCodesProvider>()
+        .AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>()
         .AddTransient<ICompactionProfileResultHelper, CompactionProfileResultHelper>();
  
       serviceProvider = serviceCollection.BuildServiceProvider();

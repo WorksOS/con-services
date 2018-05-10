@@ -3,9 +3,7 @@ using System.Drawing;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Common.Extensions;
-using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
@@ -15,13 +13,11 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
   public class AlignmentTileService : IAlignmentTileService
   {
     private readonly ILogger log;
-    private readonly ILoggerFactory logger;
     private readonly IBoundingBoxService boundingBoxService;
 
     public AlignmentTileService(ILoggerFactory logger, IBoundingBoxService boundingBoxService)
     {
       log = logger.CreateLogger<AlignmentTileService>();
-      this.logger = logger;
       this.boundingBoxService = boundingBoxService;
     }
 

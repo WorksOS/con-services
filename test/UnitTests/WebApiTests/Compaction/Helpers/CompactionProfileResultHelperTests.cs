@@ -33,7 +33,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       serviceCollection
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddTransient<IErrorCodesProvider, ErrorCodesProvider>();
+        .AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();
 
       serviceProvider = serviceCollection.BuildServiceProvider();
 

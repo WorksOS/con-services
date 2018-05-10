@@ -1,26 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ASNode.Temperature.RPC;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using SVOICDecls;
 using SVOICFilterSettings;
 using SVOICLiftBuildSettings;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
-using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 {
@@ -40,7 +32,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton(loggerFactory);
       serviceCollection.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddTransient<IErrorCodesProvider, ErrorCodesProvider>();
+        .AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();
 
       serviceProvider = serviceCollection.BuildServiceProvider();
 

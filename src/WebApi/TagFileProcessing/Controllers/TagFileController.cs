@@ -89,7 +89,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       var serializedRequest = JsonConvert.SerializeObject(
         request,
         Formatting.None,
-        new JsonSerializerSettings { ContractResolver = new DynamicContractResolver("Data") });
+        new JsonSerializerSettings { ContractResolver = new JsonContractPropertyResolver("Data") });
 
       log.LogDebug("PostTagFile (Direct): " + serializedRequest);
 
