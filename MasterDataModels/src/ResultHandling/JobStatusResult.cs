@@ -11,7 +11,7 @@ namespace VSS.MasterData.Models.ResultHandling
     /// The S3 key where the file is stored. 
     /// This is the full path and filename of the zipped file.
     /// </summary>
-    [JsonProperty(PropertyName = "key", Required = Required.Always)]
+    [JsonProperty(PropertyName = "key", Required = Required.Default)]
     public string Key { get; set; }
 
     /// <summary>
@@ -24,14 +24,14 @@ namespace VSS.MasterData.Models.ResultHandling
     /// The redirect url for downloading on successful completion.
     /// Only set when the status is 'succeeded'.
     /// </summary>
-    [JsonProperty(PropertyName = "downloadLink", Required = Required.Always)]
+    [JsonProperty(PropertyName = "downloadLink", Required = Required.Default)]
     public string DownloadLink { get; set; }
 
     /// <summary>
     /// The details of why the job failed
     /// Only set when the status is 'failed'.
     /// </summary>
-    [JsonProperty(PropertyName = "failureDetails", Required = Required.Always)]
+    [JsonProperty(PropertyName = "failureDetails", Required = Required.Default)]
     public FailureDetails FailureDetails { get; set; }
   }
 }
