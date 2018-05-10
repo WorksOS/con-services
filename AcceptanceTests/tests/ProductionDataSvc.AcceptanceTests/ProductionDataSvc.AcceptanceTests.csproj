@@ -799,6 +799,9 @@
     <None Include="TestData\CompactionReportTileResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="TestData\CompactionTagFileDirectSubmissionRequest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="TestData\CompactionTagFileRequest.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

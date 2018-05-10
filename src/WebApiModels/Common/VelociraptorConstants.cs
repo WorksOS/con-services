@@ -2,6 +2,8 @@
 {
   public class VelociraptorConstants
   {
+    public const int NO_PROJECT_ID = -1;
+    public const int NO_MACHINE_ID = -1;
     public const double NO_HEIGHT = 1E9;
     public const int NO_CCV = SVOICDecls.__Global.kICNullCCVValue;
     public const int NO_MDP = SVOICDecls.__Global.kICNullMDPValue;

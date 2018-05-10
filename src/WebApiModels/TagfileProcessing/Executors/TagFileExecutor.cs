@@ -8,12 +8,12 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models;
-using VSS.Productivity3D.WebApiModels.TagfileProcessing.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
 {
   /// <summary>
-  /// TagFileExecutor for submitting tag files to Raptor
+  /// For submitting TAG files to Raptor.
   /// </summary>
   public class TagFileExecutor : RequestExecutorContainer
   {
@@ -34,23 +34,27 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
     {
       try
       {
-        TagFileRequest request = item as TagFileRequest;
+        var request = item as TagFileRequest;
 
-        TTAGProcServerProcessResult returnResult = tagProcessor.ProjectDataServerTAGProcessorClient()
+        var returnResult = tagProcessor.ProjectDataServerTAGProcessorClient()
           .SubmitTAGFileToTAGFileProcessor
           (request.FileName,
             new MemoryStream(request.Data),
             request.ProjectId ?? -1, 0, 0, request.MachineId ?? -1,
             request.Boundary != null
               ? RaptorConverters.convertWGS84Fence(request.Boundary)
-              : TWGS84FenceContainer.Null(),request.TccOrgId);
+              : TWGS84FenceContainer.Null(), request.TccOrgId);
 
         if (returnResult == TTAGProcServerProcessResult.tpsprOK)
-          return TAGFilePostResult.CreateTAGFilePostResult();
+        {
+          return TagFilePostResult.Create();
+        }
         else
+        {
           throw new ServiceException(HttpStatusCode.BadRequest,
-                  new ContractExecutionResult(ContractExecutionStates.GetErrorNumberwithOffset((int)returnResult),
-                    $"Failed to process tagfile with error: {ContractExecutionStates.FirstNameWithOffset((int)returnResult)}"));
+            new ContractExecutionResult(ContractExecutionStates.GetErrorNumberwithOffset((int)returnResult),
+              $"Failed to process tagfile with error: {ContractExecutionStates.FirstNameWithOffset((int)returnResult)}"));
+        }
       }
       finally
       {

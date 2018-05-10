@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.FIlters;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common.Filters.Validation;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 
@@ -22,41 +21,38 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models
     /// <summary>
     /// Dummy project ID field to keep things in order until we straighten the TAG files submission endpoint out.
     /// </summary>
-    [JsonProperty(PropertyName = "projectId", Required = Required.Default)]
+    [JsonProperty]
     public long? ProjectId { get; private set; }
 
     /// <summary>
     /// The name of the TAG file.
     /// </summary>
     /// <value>Required. Shall contain only ASCII characters. Maximum length is 256 characters.</value>
-    [JsonProperty(PropertyName = "fileName", Required = Required.Always)]
-    [Required]
+    [JsonProperty(Required = Required.Always)]
     [ValidFilename(256)]
-    [MaxLength(256)]
     public string FileName { get; private set; }
 
     /// <summary>
     /// The content of the TAG file as an array of bytes.
     /// </summary>
-    [JsonProperty(PropertyName = "data", Required = Required.Always)]
-    [Required]
+    [JsonProperty(Required = Required.Always)]
     public byte[] Data { get; private set; }
 
     /// <summary>
     /// The boundary of the project to process the TAG file into. If the location of the data in the TAG file is outside of this boundary it will not be processed into the project.
     /// May be null.
     /// </summary>
-    [JsonProperty(PropertyName = "boundary", Required = Required.Default)]
+    [JsonProperty]
     public WGS84Fence Boundary { get; private set; }
 
     /// <summary>
     /// The machine (asset) ID to process the TAG file as. When not provided the TagProc service will use the project listener to determine the machine/asset ID. When provided it acts as an override value.
     /// May be null.
     /// </summary>
-    [JsonProperty(PropertyName = "machineId", Required = Required.Default)]
+    [JsonProperty]
     public long? MachineId { get; private set; }
 
-    [JsonProperty(PropertyName = "tccOrgId", Required = Required.Default)]
+    [JsonProperty]
     public string TccOrgId { get; private set; }
 
     /// <summary>
@@ -90,10 +86,10 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models
 
     /// <summary>
     /// Validates all properties
-    /// </summary>\
+    /// </summary>
     public void Validate()
     {
-      if (this.Data == null || !this.Data.Any())
+      if (Data == null || !Data.Any())
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

@@ -1,24 +1,24 @@
 ﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.ResultHandling
+namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling
 {
   /// <summary>
   /// REpresents response from the service after TAG file POST request
   /// </summary>
-  public class TAGFilePostResult : ContractExecutionResult
+  public class TagFilePostResult : ContractExecutionResult
   {
     /// <summary>
     /// Private constructor
     /// </summary>
-    private TAGFilePostResult()
+    private TagFilePostResult()
     { }
 
     /// <summary>
-    /// Create instance of TAGFilePostResult
+    /// Static constructor.
     /// </summary>
-    public static TAGFilePostResult CreateTAGFilePostResult()
+    public static TagFilePostResult Create()
     {
-      return new TAGFilePostResult();
+      return new TagFilePostResult();
     }
   }
 }
