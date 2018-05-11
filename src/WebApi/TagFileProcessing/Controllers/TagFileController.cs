@@ -87,7 +87,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     /// For the direct submission of tag files from GNSS capable machines.
     /// </summary>
     [PostRequestVerifier]
-    [Route("api/v3/tagfiles")]
+    [Route("api/v2/tagfiles/direct")]
     [HttpPost]
     public ObjectResult PostTagFileDirectSubmission([FromBody]CompactionTagFileRequest request)
     {
