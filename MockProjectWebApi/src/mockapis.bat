@@ -10,3 +10,6 @@ dotnet publish MockProjectWebApi.csproj  -o ./Artifacts/MockProjectWebApi -f net
 copy appsettings.json Artifacts\MockProjectWebApi\
 copy Dockerfile Artifacts\MockProjectWebApi\
 
+set BUILD_STATUS=%ERRORLEVEL%
+if not %BUILD_STATUS%==0  echo Build failed
+if not %BUILD_STATUS%==0  exit /b 1
