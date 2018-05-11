@@ -33,7 +33,6 @@ node('Ubuntu_Slave') {
     stage ('Build MockApis') {
        sh "bash ./mockapis.sh"
        }
-     }
 
     
     currentBuild.result = 'SUCCESS'
