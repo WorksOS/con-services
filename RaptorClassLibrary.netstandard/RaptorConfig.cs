@@ -37,5 +37,11 @@
         /// The number of paritions configured for caches that store spatial subgrid data
         /// </summary>
         public static uint NumPartitionsPerDataCache = 1024;
+
+
+        public static bool EnableTFAService = true;
+        public static string TFAServiceURL = "http://10.97.96.103:8001/";
+        public static string TFAServiceGetProjectID = "api/v1/project/getId";
+        public static int MinTAGFileLength = 100;
     }
 }

@@ -880,7 +880,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
           arg = new SubmitTAGFileRequestArgument()
                 {
                     ProjectID = ID(),
-                    AssetID = machine.ID,
+                    AssetID = Guid.Parse("1414327a-2b91-41ef-9390-6c1f3ccc73c9"), // machine.ID,
                     TAGFileName = "0201J004SV--TAYLORS COMP--110504215856.tag",
                     TagFileContent = bytes,
                     TCCOrgID = tccOrgID
