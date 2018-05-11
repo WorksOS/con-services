@@ -27,7 +27,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
             SubGridSpatialAffinityKey value = (SubGridSpatialAffinityKey)key;
 
             // Compute partition number as the modulo NumPartitions result against the project iD in the spatial affinity key
-            return value.ProjectID.GetHashCode() % NumPartitions;
+            return Math.Abs(value.ProjectID.GetHashCode()) % NumPartitions;
         }
     }
 }
