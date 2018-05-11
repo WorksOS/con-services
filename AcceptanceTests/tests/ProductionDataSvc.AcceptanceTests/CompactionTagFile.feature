@@ -22,7 +22,7 @@ Scenario Outline: TagFile - Bad Request
   | NullProjectUid  | 2008 |
 
 Scenario Outline: TagFile Direct Submission - Bad Tag File
-  Given the Tag file service URI "/api/v3/tagfiles" and request repo "CompactionTagFileDirectSubmissionRequest.json"
+  Given the Tag file service URI "/api/v2/tagfiles/direct" and request repo "CompactionTagFileDirectSubmissionRequest.json"
   When I POST a tag file with Code <Code> from the repository expecting bad request return
   Then the Tag Process Service response should contain Code <Code> and Message <Message>
   Examples: 
@@ -31,7 +31,7 @@ Scenario Outline: TagFile Direct Submission - Bad Tag File
   | 8    | "OnChooseMachine. Machine Subscriptions Invalid."                    |
 
 Scenario Outline: TagFile Direct Submission - Bad Request
-  Given the Tag file service URI "/api/v3/tagfiles" and request repo "CompactionTagFileDirectSubmissionRequest.json"
+  Given the Tag file service URI "/api/v2/tagfiles/direct" and request repo "CompactionTagFileDirectSubmissionRequest.json"
   When I POST a Tag file with name "<paramName>" from the repository expecting bad request return
   Then the Tag Process Service response should contain Error Code <code>
   Examples: 

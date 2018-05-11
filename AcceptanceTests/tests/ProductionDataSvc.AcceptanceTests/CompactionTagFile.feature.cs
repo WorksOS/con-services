@@ -177,8 +177,8 @@ this.ScenarioSetup(scenarioInfo);
 #line 24
 this.ScenarioSetup(scenarioInfo);
 #line 25
-  testRunner.Given("the Tag file service URI \"/api/v3/tagfiles\" and request repo \"CompactionTagFileDi" +
-                    "rectSubmissionRequest.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+  testRunner.Given("the Tag file service URI \"/api/v2/tagfiles/direct\" and request repo \"CompactionTa" +
+                    "gFileDirectSubmissionRequest.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 26
   testRunner.When(string.Format("I POST a tag file with Code {0} from the repository expecting bad request return", code), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 27
@@ -215,8 +215,8 @@ this.ScenarioSetup(scenarioInfo);
 #line 33
 this.ScenarioSetup(scenarioInfo);
 #line 34
-  testRunner.Given("the Tag file service URI \"/api/v3/tagfiles\" and request repo \"CompactionTagFileDi" +
-                    "rectSubmissionRequest.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+  testRunner.Given("the Tag file service URI \"/api/v2/tagfiles/direct\" and request repo \"CompactionTa" +
+                    "gFileDirectSubmissionRequest.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 35
   testRunner.When(string.Format("I POST a Tag file with name \"{0}\" from the repository expecting bad request retur" +
                         "n", paramName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
