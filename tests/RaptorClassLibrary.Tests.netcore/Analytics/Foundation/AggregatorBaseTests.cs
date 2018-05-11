@@ -20,7 +20,7 @@ namespace VSS.VisionLink.Raptor.Tests.Analytics.Foundation
                    Aggregator.IsTargetValueConstant == true &&
                    Aggregator.MissingTargetValue == false &&
                    Aggregator.RequiresSerialisation == false &&
-                   Aggregator.SiteModelID == 0 &&
+                   Aggregator.SiteModelID == Guid.Empty &&
                    Aggregator.SummaryCellsScanned == 0 &&
                    Math.Abs(Aggregator.SummaryProcessedArea) < Epsilon &&
                    Math.Abs(Aggregator.ValueAtTargetPercent) < Epsilon &&

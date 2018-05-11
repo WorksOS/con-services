@@ -22,7 +22,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Executors
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public static ProcessTAGFileResponse Execute(long ProjectID, Guid AssetID, IEnumerable<ProcessTAGFileRequestFileItem> TAGFiles)
+        public static ProcessTAGFileResponse Execute(Guid ProjectID, Guid AssetID, IEnumerable<ProcessTAGFileRequestFileItem> TAGFiles)
         {
             Log.Info($"Processing {TAGFiles.Count()} TAG files into project {ProjectID}, asset {AssetID}");
 

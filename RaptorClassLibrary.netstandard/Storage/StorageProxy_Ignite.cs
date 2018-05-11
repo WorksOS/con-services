@@ -54,7 +54,7 @@ namespace VSS.VisionLink.Raptor.Storage
     /// <param name="StreamType"></param>
     /// <param name="Stream"></param>
     /// <returns></returns>
-    public FileSystemErrorStatus ReadSpatialStreamFromPersistentStore(long DataModelID,
+    public FileSystemErrorStatus ReadSpatialStreamFromPersistentStore(Guid DataModelID,
                                                                           string StreamName,
                                                                           uint SubgridX, uint SubgridY,
                                                                           string SegmentIdentifier,
@@ -105,7 +105,7 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="StreamType"></param>
         /// <param name="Stream"></param>
         /// <returns></returns>
-        public FileSystemErrorStatus ReadStreamFromPersistentStore(long DataModelID, string StreamName, FileSystemStreamType StreamType, out MemoryStream Stream)
+        public FileSystemErrorStatus ReadStreamFromPersistentStore(Guid DataModelID, string StreamName, FileSystemStreamType StreamType, out MemoryStream Stream)
         {
             Stream = null;
 
@@ -151,7 +151,7 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="StreamType"></param>
         /// <param name="Stream"></param>
         /// <returns></returns>
-        public FileSystemErrorStatus ReadStreamFromPersistentStoreDirect(long DataModelID, string StreamName, FileSystemStreamType StreamType, out MemoryStream Stream)
+        public FileSystemErrorStatus ReadStreamFromPersistentStoreDirect(Guid DataModelID, string StreamName, FileSystemStreamType StreamType, out MemoryStream Stream)
         {
             return ReadStreamFromPersistentStore(DataModelID, StreamName, StreamType, out Stream);
         }
@@ -162,7 +162,7 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="DataModelID"></param>
         /// <param name="StreamName"></param>
         /// <returns></returns>
-        public FileSystemErrorStatus RemoveStreamFromPersistentStore(long DataModelID, string StreamName)
+        public FileSystemErrorStatus RemoveStreamFromPersistentStore(Guid DataModelID, string StreamName)
         {
             try
             {
@@ -173,7 +173,7 @@ namespace VSS.VisionLink.Raptor.Storage
                 // Remove item from both immutable and mutable caches
                 try
                 {
-                    nonSpatialCache.GetAndRemove(cacheKey);
+                    nonSpatialCache.Remove(cacheKey);
                 }
                 catch
                 {
@@ -201,7 +201,7 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="StreamType"></param>
         /// <param name="Stream"></param>
         /// <returns></returns>
-        public FileSystemErrorStatus WriteSpatialStreamToPersistentStore(long DataModelID, string StreamName, 
+        public FileSystemErrorStatus WriteSpatialStreamToPersistentStore(Guid DataModelID, string StreamName, 
                                                                          uint SubgridX, uint SubgridY,
                                                                          string SegmentIdentifier,
                                                                          FileSystemStreamType StreamType, 
@@ -247,7 +247,7 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="StreamType"></param>
         /// <param name="Stream"></param>
         /// <returns></returns>
-        public FileSystemErrorStatus WriteStreamToPersistentStore(long DataModelID, string StreamName, FileSystemStreamType StreamType, MemoryStream Stream)
+        public FileSystemErrorStatus WriteStreamToPersistentStore(Guid DataModelID, string StreamName, FileSystemStreamType StreamType, MemoryStream Stream)
         {
             try
             {
@@ -282,7 +282,7 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="StreamType"></param>
         /// <param name="Stream"></param>
         /// <returns></returns>
-        public FileSystemErrorStatus WriteStreamToPersistentStoreDirect(long DataModelID, string StreamName, FileSystemStreamType StreamType, MemoryStream Stream)
+        public FileSystemErrorStatus WriteStreamToPersistentStoreDirect(Guid DataModelID, string StreamName, FileSystemStreamType StreamType, MemoryStream Stream)
         {
             try
             {

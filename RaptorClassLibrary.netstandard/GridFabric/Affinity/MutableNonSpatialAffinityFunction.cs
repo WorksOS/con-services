@@ -24,10 +24,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
                 throw new ArgumentException($"Unknown key type to compute spatial affinity partition key for: {key}");
             }
 
-            NonSpatialAffinityKey value = (NonSpatialAffinityKey)key;
-
             // Compute partition number as the modulo NumPartitions result against the project iD in the spatial affinity key
-            return (int) value.ProjectID % NumPartitions;
+            return Math.Abs(((NonSpatialAffinityKey)key).ProjectID.GetHashCode()) % Partitions;
         }
     }
 }

@@ -39,7 +39,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         /// <summary>
         /// The ID of the SiteModel to execute the request against
         /// </summary>
-        public long SiteModelID { get; set; } = -1;
+        public Guid SiteModelID { get; set; } = Guid.Empty;
 
         /// <summary>
         /// The request ID assigned to the activity requiring these subgrids to be requested. This ID is used to funnel 
@@ -104,8 +104,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         /// <param name="surveyedSurfaceOnlyMask"></param>
         /// <param name="filters"></param>
         /// <param name="cutFillDesignID"></param>
-        public SubGridRequestsBase(ITask task, 
-                                   long siteModelID, 
+        public SubGridRequestsBase(ITask task,
+                                   Guid siteModelID, 
                                    long requestID, 
                                    string raptorNodeID, 
                                    GridDataType requestedGridDataType, 

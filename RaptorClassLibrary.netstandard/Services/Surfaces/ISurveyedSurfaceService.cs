@@ -17,14 +17,14 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="designDescriptor"></param>
         /// <param name="AsAtDate"></param>
         /// <param name="extents"></param>
-        void Add(long SiteModelID, DesignDescriptor designDescriptor, DateTime AsAtDate, BoundingWorldExtent3D extents);
+        void Add(Guid SiteModelID, DesignDescriptor designDescriptor, DateTime AsAtDate, BoundingWorldExtent3D extents);
 
         /// <summary>
         /// Request the list of surveyed surfaces from a site model
         /// </summary>
         /// <param name="SiteModelID"></param>
         /// <returns></returns>
-        SurveyedSurfaces List(long SiteModelID);
+        SurveyedSurfaces List(Guid SiteModelID);
 
         /// <summary>
         /// Removes a surveyed surfaces from a site model
@@ -32,6 +32,6 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="SiteModelID"></param>
         /// <param name="SurveySurfaceID"></param>
         /// <returns></returns>
-        bool Remove(long SiteModelID, long SurveySurfaceID);
+        bool Remove(Guid SiteModelID, long SurveySurfaceID);
     }
 }

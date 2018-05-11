@@ -1,4 +1,5 @@
-﻿using VSS.VisionLink.Raptor.Filters;
+﻿using System;
+using VSS.VisionLink.Raptor.Filters;
 
 namespace VSS.VisionLink.Raptor.Analytics.Coordinators
 {
@@ -10,7 +11,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Coordinators
         /// <summary>
         /// The ID of the site model the volume is being calculated for 
         /// </summary>
-        public long SiteModelID { get; set; } = -1;
+        public Guid SiteModelID { get; set; } = default;
 
         /// <summary>
         /// The filter to be used for the operation

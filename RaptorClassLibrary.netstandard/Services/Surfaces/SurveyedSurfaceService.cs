@@ -58,11 +58,11 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="designDescriptor"></param>
         /// <param name="asAtDate"></param>
         /// <param name="extents"></param>
-        public void Add(long SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents )
+        public void Add(Guid SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents )
         {
             mutableNonSpatialCache.Invoke(SurveyedSurfaces.CacheKey(SiteModelID), 
                                           new AddSurveyedSurfaceProcessor(), 
-                                          new SurveyedSurface(SiteModelID, designDescriptor, asAtDate, extents));
+                                          new SurveyedSurface(designDescriptor.DesignID, designDescriptor, asAtDate, extents));
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="asAtDate"></param>
         /// <param name="extents"></param>
         /// <param name="SuveyedSurfaceID"></param>
-        public void AddDirect(long SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents, out long SuveyedSurfaceID)
+        public void AddDirect(Guid SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents, out long SuveyedSurfaceID)
         {
             // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
 
@@ -106,7 +106,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <summary>
         /// List the surveyed surfaces for a site model
         /// </summary>
-        public SurveyedSurfaces List(long SiteModelID)
+        public SurveyedSurfaces List(Guid SiteModelID)
         {
             Log.InfoFormat($"Listing surveyed surfaces from {SurveyedSurfaces.CacheKey(SiteModelID)}");
 
@@ -127,7 +127,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// </summary>
         /// <param name="SiteModelID"></param>
         /// <returns></returns>
-        public SurveyedSurfaces ListDirect(long SiteModelID) => List(SiteModelID);
+        public SurveyedSurfaces ListDirect(Guid SiteModelID) => List(SiteModelID);
 
         /// <summary>
         /// Defines the actions to take if the service is cancelled
@@ -166,7 +166,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="SiteModelID"></param>
         /// <param name="SurveySurfaceID"></param>
         /// <returns></returns>
-        public bool Remove(long SiteModelID, long SurveySurfaceID)
+        public bool Remove(Guid SiteModelID, long SurveySurfaceID)
         {
             try
             {
@@ -186,7 +186,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="SiteModelID"></param>
         /// <param name="SurveySurfaceID"></param>
         /// <returns></returns>
-        public bool RemoveDirect(long SiteModelID, long SurveySurfaceID)
+        public bool RemoveDirect(Guid SiteModelID, long SurveySurfaceID)
         {
             // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
 

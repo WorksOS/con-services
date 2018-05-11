@@ -1,4 +1,5 @@
-﻿using VSS.VisionLink.Raptor.Filters;
+﻿using System;
+using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.SubGridTrees;
 
 namespace VSS.VisionLink.Raptor.Pipelines.Interfaces
@@ -26,7 +27,7 @@ namespace VSS.VisionLink.Raptor.Pipelines.Interfaces
         /// <summary>
         /// Date model the pipeline is operating on
         /// </summary>
-        long DataModelID { get; set; }
+        Guid DataModelID { get; set; }
 
         /// <summary>
         /// Advise the client of the pipeline that a single subgrid has been processed

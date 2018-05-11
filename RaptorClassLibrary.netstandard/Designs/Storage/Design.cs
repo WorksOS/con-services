@@ -136,7 +136,7 @@ namespace VSS.VisionLink.Raptor.Designs.Storage
         /// <param name="designHeights"></param>
         /// <param name="errorCode"></param>
         /// <returns></returns>
-        public bool GetDesignHeights(long siteModelID,
+        public bool GetDesignHeights(Guid siteModelID,
                                      SubGridCellAddress originCellAddress,
                                      double cellSize,
                                      out ClientHeightLeafSubGrid designHeights,

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using VSS.VisionLink.Raptor.Designs;
 
@@ -94,7 +95,7 @@ namespace VSS.Velociraptor.DesignProfiling
         /// <param name="LoadResult"></param>
         /// <returns></returns>
         public DesignBase Lock(DesignDescriptor designDescriptor,
-                               long DataModelID, double ACellSize, out DesignLoadResult LoadResult)
+                               Guid DataModelID, double ACellSize, out DesignLoadResult LoadResult)
         {
             DesignBase design;
 

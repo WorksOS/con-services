@@ -1,4 +1,5 @@
-﻿using VSS.VisionLink.Raptor.GridFabric.Affinity;
+﻿using System;
+using VSS.VisionLink.Raptor.GridFabric.Affinity;
 
 namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
 {
@@ -14,6 +15,6 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
         /// <param name="typeDescriptor"></param>
         /// <param name="ID"></param>
         /// <returns></returns>
-        public static NonSpatialAffinityKey CacheKey(long siteModelID, long typeDescriptor, long ID) => new NonSpatialAffinityKey(siteModelID, $"Descriptor:{typeDescriptor}-ID:{ID}");
+        public static NonSpatialAffinityKey CacheKey(Guid siteModelID, long typeDescriptor, long ID) => new NonSpatialAffinityKey(siteModelID, $"Descriptor:{typeDescriptor}-ID:{ID}");
     }
 }

@@ -61,15 +61,15 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         /// Convert the Project ID in the text box into a number. It if is invalid return project ID 2 as a default
         /// </summary>
         /// <returns></returns>
-        private long ID()
+        private Guid ID()
         {
             try
             {
-                return Convert.ToInt64(editProjectID.Text);
+                return Guid.Parse(editProjectID.Text);
             }
             catch
             {
-                return -1;
+                return Guid.Empty;
             }
         }
 
@@ -316,7 +316,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         private void editProjectID_TextChanged(object sender, EventArgs e)
         {
             // Pull the sitemodel extents using the ProjectExtents executor which will use the Ignite instance created by the generic application service server above
-            if (ID() != -1)
+            if (ID() != Guid.Empty)
             {
                 extents = GetZoomAllExtents();
                 DoUpdateLabels();
@@ -774,7 +774,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
         private void button4_Click(object sender, EventArgs e)
         {
-            // Test adding a stream for "5-ProductionDataModel.XML" to the mutable non-spatial cache 
+            // Test adding a stream for "<NewID>-ProductionDataModel.XML" to the mutable non-spatial cache 
 
             IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
 
@@ -782,7 +782,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
             byte[] bytes = new byte[100];
 
-            NonSpatialAffinityKey cacheKey = new NonSpatialAffinityKey(50, "ProductionDataModel.XML");
+            NonSpatialAffinityKey cacheKey = new NonSpatialAffinityKey(Guid.NewGuid(), "ProductionDataModel.XML");
 
             try
             {

@@ -21,9 +21,9 @@ namespace VSS.VisionLink.Raptor.Machines
         /// <summary>
         /// The identifier of the site model owning this list of machines
         /// </summary>
-        public long DataModelID { get; set; }
+        public Guid DataModelID { get; set; }
 
-        public MachinesList(long datamodelID)
+        public MachinesList(Guid datamodelID)
         {
             DataModelID = datamodelID;
         }

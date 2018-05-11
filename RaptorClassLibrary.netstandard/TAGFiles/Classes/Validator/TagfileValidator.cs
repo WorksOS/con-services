@@ -62,11 +62,11 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
             if (tagDetail.tagFileContent.Length <= RaptorConfig.MinTAGFileLength)
                 return ValidationResult.Invalid;
 
-            if (!(tagDetail.projectId > 0 || tagDetail.projectId == -1)) // todo will be guid soon so probably remove check. Guid.Empty will be like -1
+            if (tagDetail.projectId != Guid.Empty) 
                 return ValidationResult.BadRequest;
 
             // Now open tagfile and validate
-            var siteModel = new SiteModel(-1);
+            var siteModel = new SiteModel(Guid.Empty);
             var machine = new Machine()
             {
                 TargetValueChanges = new ProductionEventLists(siteModel, 0)

@@ -33,7 +33,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
         /// </summary>
         private string RequestingRaptorNodeID { get; set; }
 
-        private long DataModelID;
+        private Guid DataModelID;
         // long MachineID = -1;
         // FExternalDescriptor :TASNodeRequestDescriptor;
 
@@ -84,7 +84,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
         /// <param name="ACutFillDesignID"></param>
         /// <param name="ARepresentColor"></param>
         /// <param name="requestingRaptorNodeID"></param>
-        public RenderOverlayTile(long ADataModelID,
+        public RenderOverlayTile(Guid ADataModelID,
                                  //AExternalDescriptor :TASNodeRequestDescriptor;
                                  DisplayMode AMode,
                                  XYZ ABLPoint, // : TWGS84Point;

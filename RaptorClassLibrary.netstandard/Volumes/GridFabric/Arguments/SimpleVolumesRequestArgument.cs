@@ -1,4 +1,5 @@
-﻿using VSS.VisionLink.Raptor.Filters;
+﻿using System;
+using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.GridFabric.Arguments;
 
 namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Arguments
@@ -8,7 +9,7 @@ namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Arguments
     /// </summary>
     public class SimpleVolumesRequestArgument : BaseApplicationServiceRequestArgument
     {
-        public long SiteModelID = -1;
+        public Guid SiteModelID = Guid.Empty;
 
         //ExternalDescriptor : TASNodeRequestDescriptor;
 

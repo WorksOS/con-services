@@ -279,7 +279,7 @@ function CheckFileIsProcessible(const SubmittedMachineID : TICMachineID;
             }
 
             // Now open tagfile and validate
-            var siteModel = new SiteModel(-1);
+            var siteModel = new SiteModel(Guid.Empty);
             var machine = new Machine()
                       {
                               TargetValueChanges = new ProductionEventLists(siteModel, 0)

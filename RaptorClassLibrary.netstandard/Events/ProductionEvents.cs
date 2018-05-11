@@ -73,7 +73,7 @@ namespace VSS.VisionLink.Raptor.Events
         /// <summary>
         /// The Site Model to which these events relate
         /// </summary>
-        public long SiteModelID { get; set; }
+        public Guid SiteModelID { get; set; }
 
         /// <summary>
         /// The machine to which these events relate
@@ -128,7 +128,7 @@ namespace VSS.VisionLink.Raptor.Events
         {}
 
         public ProductionEvents(IProductionEventLists container,
-            long machineID, long siteModelID,
+            long machineID, Guid siteModelID,
             ProductionEventType eventListType,
             Action<BinaryWriter, V> serialiseStateOut,
             Func<BinaryReader, V> serialiseStateIn)

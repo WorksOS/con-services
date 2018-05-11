@@ -64,7 +64,7 @@ namespace TAGFiles.Tests.netcore
 
             SubmitTAGFileResponse response = submission.Execute(new SubmitTAGFileRequestArgument()
             {
-                ProjectID = 0, //projectUID,
+                ProjectID = Guid.NewGuid(),
                 AssetID = assetID,
                 TagFileContent = tagContent,
                 TAGFileName = tagFileName,

@@ -38,15 +38,20 @@ namespace VSS.TRex.TAGFiles.Executors
         /// Receive a TAG file to be processed, validate TAG File Authorisation for the file, and add it to the 
         /// queue to be processed.
         /// </summary>
-        /// <param name="projectId">Project ID to be used as an override to any project ID that may be determined via TAG file authorization</param>
-        /// <param name="assetId">Asset ID to be used as an override to any Asset ID that may be determined via TAG file authorization</param>
-        /// <param name="tagFileName">Name of the physical tagfile for archiving and logging</param>
-        /// <param name="tagFileContent">The content of the TAG file to be processed, expressed as a byte array</param>
-        /// <param name="tccOrgID">Used by TFA service to match VL customer to TCC org when looking for project if multiple projects and/or machine ID not in tag file</param>
+        /// <param name="ProjectID">Project ID to be used as an override to any project ID that may be determined via TAG file authorization</param>
+        /// <param name="AssetID">Asset ID to be used as an override to any Asset ID that may be determined via TAG file authorization</param>
+        /// <param name="TAGFileName">Name of the physical tagfile for archiving and logging</param>
+        /// <param name="TAGFileContent">The content of the TAG file to be processed, expressed as a byte array</param>
+        /// <param name="TCCOrgID">Used by TFA service to match VL customer to TCC org when looking for project if multiple projects and/or machine ID not in tag file</param>
         /// 
         /// <returns></returns>
-        public static SubmitTAGFileResponse Execute(Guid projectId, Guid assetId, string tagFileName,
+<<<<<<< Updated upstream
+        public static SubmitTAGFileResponse Execute(long projectId, Guid assetId, string tagFileName,
             byte[] tagFileContent, string tccOrgId)
+=======
+        public static SubmitTAGFileResponse Execute(Guid ProjectID, Guid AssetID, string TAGFileName,
+            byte[] TAGFileContent, string TCCOrgID)
+>>>>>>> Stashed changes
         {
             // Execute TFA based business logic along with override IDs to determine final project and asset
             // identities to be used for processing the TAG file

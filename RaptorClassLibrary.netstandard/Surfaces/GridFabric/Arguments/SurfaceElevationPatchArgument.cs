@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using VSS.VisionLink.Raptor.SubGridTrees;
 
 namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.Arguments
@@ -8,7 +9,7 @@ namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.Arguments
         /// <summary>
         /// The ID of the SiteModel to execute the request against
         /// </summary>
-        public long SiteModelID { get; set; } = -1;
+        public Guid SiteModelID { get; set; } = Guid.Empty;
 
         /// <summary>
         /// The bottom left on-the-ground cell origin X location for the patch of elevations to be computed from
@@ -59,7 +60,7 @@ namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.Arguments
         /// <param name="earliestSurface"></param>
         /// <param name="processingMap"></param>
         /// <param name="includedSurveyedSurfaces"></param>
-        public SurfaceElevationPatchArgument(long siteModelID,
+        public SurfaceElevationPatchArgument(Guid siteModelID,
                                              uint oTGCellBottomLeftX,
                                              uint oTGCellBottomLeftY,
                                              double cellSize,

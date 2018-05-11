@@ -13,7 +13,7 @@ namespace VSS.VisionLink.Raptor.Surfaces
     public class SurveyedSurface : IEquatable<SurveyedSurface>, IBinaryReaderWriter
     {
         /// <summary>
-        /// Unique identified for the surveyd surfaced
+        /// Unique identifier for the surveyed surface
         /// </summary>
         long FID = long.MinValue;
 
@@ -113,7 +113,7 @@ namespace VSS.VisionLink.Raptor.Surfaces
         /// <summary>
         /// Constructor accepting full surveyed surface state
         /// </summary>
-        /// <param name="AID"></param>
+        /// <param name="AID">The unque identifier for the surveted surface in this site model</param>
         /// <param name="ADesignDescriptor"></param>
         /// <param name="AAsAtDate"></param>
         /// <param name="AExtents"></param>

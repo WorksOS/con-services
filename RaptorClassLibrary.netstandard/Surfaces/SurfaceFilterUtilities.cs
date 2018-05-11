@@ -24,7 +24,7 @@ namespace VSS.VisionLink.Raptor.Surfaces
         /// <param name="FilteredSurveyedSurfaces"></param>
         /// <param name="OverallExistenceMap"></param>
         /// <returns></returns>
-        public static bool ProcessSurveyedSurfacesForFilter(long siteModelID,
+        public static bool ProcessSurveyedSurfacesForFilter(Guid siteModelID,
                                                             SurveyedSurfaces SurveyedSurfaces,
                                                             CombinedFilter Filter,
                                                             SurveyedSurfaces ComparisonList,

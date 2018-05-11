@@ -12,7 +12,7 @@ namespace VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments
         /// <summary>
         /// The ID of the SiteModel to execute the request against
         /// </summary>
-        public long SiteModelID { get; set; } = -1;
+        public Guid SiteModelID { get; set; } = Guid.Empty;
 
         public DisplayMode Mode { get; set; } = DisplayMode.Height;
 
@@ -32,7 +32,7 @@ namespace VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments
         public long CutFillDesignID { get; set; } = long.MinValue;
         //public DesignDescriptor CutFillDesign { get; set; }
 
-        public TileRenderRequestArgument(long siteModelID,
+        public TileRenderRequestArgument(Guid siteModelID,
                                          DisplayMode mode,
                                          BoundingWorldExtent3D extents,
                                          bool coordsAreGrid,

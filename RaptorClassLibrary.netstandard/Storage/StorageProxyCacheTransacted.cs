@@ -33,12 +33,12 @@ namespace VSS.TRex.Storage
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public override CacheResult<TV> GetAndRemove(TK key)
+        public override bool Remove(TK key)
         {
             if (!PendingTransactedDeletes.Add(key))
                 throw new ArgumentException($"Key {key} is already present in the set of transacted deletes for the cache");
 
-            return base.GetAndRemove(key);
+            return base.Remove(key);
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace VSS.TRex.Storage
         /// </summary>
         public override void Commit()
         {
-            foreach (var x in PendingTransactedDeletes) base.GetAndRemove(x);
+            foreach (var x in PendingTransactedDeletes) base.Remove(x);
             base.PutAll(PendingTransactedWrites);
 
             Clear();

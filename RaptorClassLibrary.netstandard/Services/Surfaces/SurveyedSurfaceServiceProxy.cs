@@ -65,12 +65,12 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="designDescriptor"></param>
         /// <param name="asAtDate"></param>
         /// <param name="extents"></param>
-        public void Invoke_Add(long SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents)
+        public void Invoke_Add(Guid SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents)
         {
             proxy.Add(SiteModelID, designDescriptor, asAtDate.Date, extents);
         }
 
-        public bool Invoke_Remove(long SiteModelID, long SurveyedSurfaceID)
+        public bool Invoke_Remove(Guid SiteModelID, long SurveyedSurfaceID)
         {
             return proxy.Remove(SiteModelID, SurveyedSurfaceID);
         }
@@ -79,7 +79,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// Invoke proxy for calling the list surveyed surface service
         /// </summary>
         /// <param name="SiteModelID"></param>
-        public SurveyedSurfaces Invoke_List(long SiteModelID)
+        public SurveyedSurfaces Invoke_List(Guid SiteModelID)
         {
             return proxy.List(SiteModelID);
         }

@@ -32,7 +32,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
         private const int kMajorVersion = 1;
         private const int kMinorVersion = 0;
 
-        public long ID = -1;
+        public Guid ID = Guid.Empty;
 
         DateTime LastModifiedDate { get; set; } = DateTime.MinValue;
 
@@ -123,7 +123,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
             // FTransient = false
         }
 
-        public SiteModel(long id) : this()
+        public SiteModel(Guid id) : this()
         {
             ID = id;
 
@@ -174,7 +174,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
         public SiteModel(//AOwner: TICSiteModels;
                          string name,
                          string description,
-                         long id,
+                         Guid id,
                          double cellSize) : this(id)
         {
             //        FName := AName;
@@ -226,7 +226,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
             writer.Write(kMinorVersion);
             // writer.Write(Name);
             // writer.Write(Description);
-            writer.Write(ID);
+            writer.Write(ID.ToByteArray());
 
             // WriteBooleanToStream(Stream, FActive);
 
@@ -267,8 +267,11 @@ namespace VSS.VisionLink.Raptor.SiteModels
             // Read the ID of the data model from the stream.
             // If the site model already has an assigned ID then
             // use this ID in favour of the ID read from the data model.
-            long LocalID = reader.ReadInt64();
-            if (ID == -1)
+            byte [] bytes = new byte[16];
+            reader.Read(bytes, 0, 16);
+            Guid LocalID = new Guid(bytes);
+
+            if (ID == Guid.Empty)
             {
                 ID = LocalID;
             }
@@ -351,7 +354,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
 
             try
             {
-                long SavedID = ID;
+                Guid SavedID = ID;
 
                 Result = StorageProxy.ReadStreamFromPersistentStoreDirect(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
 

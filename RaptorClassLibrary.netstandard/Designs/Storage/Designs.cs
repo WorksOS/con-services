@@ -149,6 +149,6 @@ namespace VSS.VisionLink.Raptor.Designs.Storage
         /// </summary>
         /// <param name="SiteModelID"></param>
         /// <returns></returns>
-        public static NonSpatialAffinityKey CacheKey(long SiteModelID) => new NonSpatialAffinityKey(SiteModelID, "Designs");
+        public static NonSpatialAffinityKey CacheKey(Guid SiteModelID) => new NonSpatialAffinityKey(SiteModelID, "Designs");
     }
 }

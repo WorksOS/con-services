@@ -33,7 +33,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator.Tests
                 "Converter execute returned false");
 
             // Create the site model and machine etc to aggregate the processed TAG file into
-            SiteModel siteModel = new SiteModel("TestName", "TestDesc", 1, 1.0);
+            SiteModel siteModel = new SiteModel("TestName", "TestDesc", Guid.NewGuid(), 1.0);
             Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
             // ISubGridFactory factory = new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>();
             // ServerSubGridTree tree = new ServerSubGridTree(siteModel);

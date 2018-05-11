@@ -53,7 +53,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         private IIgnite ignite;
         private ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> queueCache;
 
-        private List<long> ProjectsToAvoid = new List<long>();
+        private List<Guid> ProjectsToAvoid = new List<Guid>();
 
         private void ProcessTAGFilesFromGrouper()
         {
@@ -68,7 +68,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
                 // Check to see if there is a work package to feed to the processing pipline
                 // -> Ask the grouper for a package 
-                var package = grouper.Extract(ProjectsToAvoid, true, out long projectID)?.ToList();
+                var package = grouper.Extract(ProjectsToAvoid, true, out Guid projectID)?.ToList();
                 int packageCount = package?.Count ?? 0;
 
                 if (packageCount > 0)
@@ -188,7 +188,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// <param name="package"></param>
         private void ProcessTAGFileBucketFromGrouper2(IReadOnlyList<TAGFileBufferQueueKey> package)
         {
-            long projectID = package[0].ProjectID;
+            Guid projectID = package[0].ProjectID;
 
             List<TAGFileBufferQueueItem> TAGQueueItems = null;
             List<ProcessTAGFileRequestFileItem> fileItems = null;
@@ -292,7 +292,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
                     // Check to see if there is a work package to feed to the processing pipline
                     // -> Ask the grouper for a package 
-                    var package = grouper.Extract(ProjectsToAvoid, true, out long projectID)?.ToList();
+                    var package = grouper.Extract(ProjectsToAvoid, true, out Guid projectID)?.ToList();
                     int packageCount = package?.Count ?? 0;
 
                     if (packageCount > 0)

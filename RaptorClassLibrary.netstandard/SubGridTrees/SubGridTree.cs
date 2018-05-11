@@ -133,7 +133,7 @@ namespace VSS.VisionLink.Raptor
         /// Internal numeric identifier for the sub grid tree. All internal operations will refer to the sub grid
         /// tree using this identitifer. 
         /// </summary>
-        public long ID { get; set; }
+        public Guid ID { get; set; }
 
         /// <summary>
         /// External identifier (GUID) for the subgrid tree. The instance may be tagged with this ID as an 

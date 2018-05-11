@@ -51,8 +51,7 @@ namespace TAGFiles.Tests.netcore
 
             string tagFileName = "TestTAGFile - TAGFile - Read - Stream.tag";
 
-            long projectID = -1;
-            //Guid projectUID = Guid.NewGuid();
+            Guid projectID = Guid.NewGuid();
             Guid assetID = Guid.NewGuid();
 
             byte[] tagContent;

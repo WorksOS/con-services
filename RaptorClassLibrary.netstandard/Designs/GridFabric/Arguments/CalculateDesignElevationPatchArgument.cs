@@ -10,7 +10,7 @@ namespace VSS.Velociraptor.DesignProfiling.GridFabric.Arguments
         /// <summary>
         /// The ID of the SiteModel to execute the request against
         /// </summary>
-        public long SiteModelID { get; set; } = -1;
+        public Guid SiteModelID { get; set; } = Guid.Empty;
 
         /// <summary>
         /// The X origin location for the patch of elevations to be computed from
@@ -53,7 +53,7 @@ namespace VSS.Velociraptor.DesignProfiling.GridFabric.Arguments
         /// <param name="cellSize"></param>
         /// <param name="designDescriptor"></param>
         // /// <param name="processingMap"></param>
-        public CalculateDesignElevationPatchArgument(long siteModelID,
+        public CalculateDesignElevationPatchArgument(Guid siteModelID,
                                          uint originX,
                                          uint originY,
                                          double cellSize,

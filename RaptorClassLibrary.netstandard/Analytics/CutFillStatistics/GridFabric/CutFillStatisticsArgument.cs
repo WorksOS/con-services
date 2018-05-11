@@ -13,7 +13,7 @@ namespace VSS.VisionLink.Raptor.Analytics.GridFabric.Arguments
         /// <summary>
         /// The project the request is relevant to
         /// </summary>
-        public long DataModelID { get; set; }
+        public Guid DataModelID { get; set; }
 
         // TODO If desired: ExternalDescriptor :TASNodeRequestDescriptor;
 

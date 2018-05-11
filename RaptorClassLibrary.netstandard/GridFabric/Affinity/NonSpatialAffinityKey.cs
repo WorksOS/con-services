@@ -1,6 +1,5 @@
 ﻿using System;
 using Apache.Ignite.Core.Cache.Affinity;
-using VSS.VisionLink.Raptor.SubGridTrees;
 
 namespace VSS.VisionLink.Raptor.GridFabric.Affinity
 {
@@ -14,23 +13,23 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
         /// <summary>
         /// A numeric ID for the project the subgrid data belongs to.
         /// </summary>
-        public long ProjectID { get; set; }
+        public Guid ProjectID { get; set; }
 
         /// <summary>
         /// Name of the object in the cache, encoded as a string
         /// </summary>
-        public string Key { get; set; }
+        public string KeyName { get; set; }
 
         /// <summary>
         /// A constructor for the affinity key that acccepts the project and subgrid origin location
         /// and returns an instance of the spatial affinity key
         /// </summary>
         /// <param name="projectID"></param>
-        /// <param name="key"></param>
-        public NonSpatialAffinityKey(long projectID, string key)
+        /// <param name="keyName"></param>
+        public NonSpatialAffinityKey(Guid projectID, string keyName)
         {
             ProjectID = projectID;
-            Key = key;
+            KeyName = keyName;
         }
 
         /// <summary>
@@ -38,6 +37,6 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
         /// identifying this data element in the cache.
         /// </summary>
         /// <returns></returns>
-        public override string ToString() => $"{ProjectID}-{Key}";
+        public override string ToString() => $"{ProjectID}-{KeyName}";
     }
 }

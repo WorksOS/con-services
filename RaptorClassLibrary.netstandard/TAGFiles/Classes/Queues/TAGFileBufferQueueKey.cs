@@ -18,10 +18,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// This field also provides the affinity key mapping to the nodes in the mutable data grid
         /// </summary>
         [AffinityKeyMapped]
-        public long ProjectID;
-        //public Guid ProjectUID;
+        public Guid ProjectID;
 
-        //public long AssetID;
         public Guid AssetID;
 
         /// <summary>
@@ -30,11 +28,9 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// <param name="fileName"></param>
         /// <param name="projectID"></param>
         /// <param name="assetID"></param>
-        public TAGFileBufferQueueKey(string fileName, long projectID, Guid assetID /*Guid projectUID */)
+        public TAGFileBufferQueueKey(string fileName, Guid projectID, Guid assetID)
         {
             FileName = fileName;
-            //ProjectUID = projectUID;
-            //AssetUID = assetUID;
             ProjectID = projectID;
             AssetID = assetID;
         }

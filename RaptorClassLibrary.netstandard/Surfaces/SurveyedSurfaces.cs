@@ -315,7 +315,7 @@ namespace VSS.VisionLink.Raptor.Surfaces
         /// </summary>
         /// <param name="SiteModelID"></param>
         /// <returns></returns>
-        public static NonSpatialAffinityKey CacheKey(long SiteModelID) => new NonSpatialAffinityKey(SiteModelID, "SurveyedSurfaces");
+        public static NonSpatialAffinityKey CacheKey(Guid SiteModelID) => new NonSpatialAffinityKey(SiteModelID, "SurveyedSurfaces");
 
         public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
     }

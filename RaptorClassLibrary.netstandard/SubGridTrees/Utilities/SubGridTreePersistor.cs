@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
@@ -19,7 +20,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
         {
             long SubgridCount = tree.CountLeafSubgridsInMemory();
 
-            writer.Write(tree.ID);
+            writer.Write(tree.ID.ToByteArray());
             writer.Write(SubgridCount);
 
             byte[] buffer = new byte[10000];
@@ -85,7 +86,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
         {
             try
             {
-                tree.ID = reader.ReadInt64();
+                byte[] bytes = new byte[16];
+                reader.Read(bytes, 0, 16);
+                tree.ID = new Guid(bytes);
 
                 // Read in the number of subgrids
                 long SubGridCount = reader.ReadInt64();

@@ -28,7 +28,7 @@ namespace VSS.VisionLink.Raptor.Rendering
         public long RequestDescriptor;
         // FExternalDescriptor : TASNodeRequestDescriptor;
 
-        public long DataModelID;
+        public Guid DataModelID;
 
         public DisplayMode Mode;
 

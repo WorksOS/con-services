@@ -40,9 +40,9 @@ namespace VSS.TRex.Storage
             return Cache.Get(key);
         }
 
-        public virtual CacheResult<TV> GetAndRemove(TK key)
+        public virtual bool Remove(TK key)
         {
-            return Cache.GetAndRemove(key);
+            return Cache.Remove(key);
         }
 
         public virtual void Put(TK key, TV value)

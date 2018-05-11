@@ -1,4 +1,5 @@
-﻿using Apache.Ignite.Core;
+﻿using System;
+using Apache.Ignite.Core;
 using log4net;
 using System.IO;
 using System.Reflection;
@@ -41,7 +42,7 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="DataModelID"></param>
         /// <param name="Name"></param>
         /// <returns></returns>
-        protected static NonSpatialAffinityKey ComputeNamedStreamCacheKey(long DataModelID, string Name) => new NonSpatialAffinityKey(DataModelID, Name);
+        protected static NonSpatialAffinityKey ComputeNamedStreamCacheKey(Guid DataModelID, string Name) => new NonSpatialAffinityKey(DataModelID, Name);
 
         /// <summary>
         /// Computes the cache key name for the given data model and a given spatial data stream within that datamodel

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.Types;
@@ -9,7 +10,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
     /// SiteModels contains a map of site model/data model identifiers (long) and SiteModel instances. 
     /// It may receive messages from the Ignite layer regarding invalidation of cache items...
     /// </summary>
-    public class SiteModels : Dictionary<long, SiteModel>
+    public class SiteModels : Dictionary<Guid, SiteModel>
     {      
         public static IStorageProxy StorageProxy { get; set; }
 
@@ -26,9 +27,9 @@ namespace VSS.VisionLink.Raptor.SiteModels
                    (instance[(int) mutability] = new SiteModels(StorageProxyFactory.Storage(mutability)));
         }
 
-        public SiteModel GetSiteModel(long ID) => GetSiteModel(ID, false);
+        public SiteModel GetSiteModel(Guid ID) => GetSiteModel(ID, false);
 
-        public SiteModel GetSiteModel(long ID, bool CreateIfNotExist)
+        public SiteModel GetSiteModel(Guid ID, bool CreateIfNotExist)
         {
             SiteModel result;
 
@@ -65,7 +66,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
         /// requiring the sitemodel to be reloaded
         /// </summary>
         /// <param name="SiteModelID"></param>
-        public void SiteModelAttributesHaveChanged(long SiteModelID)
+        public void SiteModelAttributesHaveChanged(Guid SiteModelID)
         {
             GetSiteModel(SiteModelID, false)?.LoadFromPersistentStore(StorageProxy);
         }

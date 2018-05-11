@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.Types;
 
@@ -8,17 +9,17 @@ namespace VSS.VisionLink.Raptor.Interfaces
     {
         StorageMutability Mutability { get; set; }
 
-        FileSystemErrorStatus WriteStreamToPersistentStore(long DataModelID,
+        FileSystemErrorStatus WriteStreamToPersistentStore(Guid DataModelID,
                                               string StreamName,
                                               FileSystemStreamType StreamType,
                                               MemoryStream Stream);
 
-        FileSystemErrorStatus WriteStreamToPersistentStoreDirect(long DataModelID,
+        FileSystemErrorStatus WriteStreamToPersistentStoreDirect(Guid DataModelID,
                                               string StreamName,
                                               FileSystemStreamType StreamType,
                                               MemoryStream Stream);
 
-        FileSystemErrorStatus WriteSpatialStreamToPersistentStore(long DataModelID,
+        FileSystemErrorStatus WriteSpatialStreamToPersistentStore(Guid DataModelID,
                                               string StreamName,
                                               uint SubgridX, uint SubgridY,
                                               string SegmentIdentifier,
@@ -27,24 +28,24 @@ namespace VSS.VisionLink.Raptor.Interfaces
                                               FileSystemStreamType StreamType,
                                               MemoryStream Stream);
 
-        FileSystemErrorStatus ReadStreamFromPersistentStore(long DataModelID,
+        FileSystemErrorStatus ReadStreamFromPersistentStore(Guid DataModelID,
                                                   string StreamName,
                                                   FileSystemStreamType StreamType,
                                                   out MemoryStream Stream);
 
-        FileSystemErrorStatus ReadStreamFromPersistentStoreDirect(long DataModelID,
+        FileSystemErrorStatus ReadStreamFromPersistentStoreDirect(Guid DataModelID,
                                                   string StreamName,
                                                   FileSystemStreamType StreamType,
                                                   out MemoryStream Stream);
 
-        FileSystemErrorStatus ReadSpatialStreamFromPersistentStore(long DataModelID,
+        FileSystemErrorStatus ReadSpatialStreamFromPersistentStore(Guid DataModelID,
                                                   string StreamName,
                                                   uint SubgridX, uint SubgridY,
                                                   string SegmentIdentifier,
                                                   FileSystemStreamType StreamType,
                                                   out MemoryStream Stream);
 
-        FileSystemErrorStatus RemoveStreamFromPersistentStore(long DataModelID,
+        FileSystemErrorStatus RemoveStreamFromPersistentStore(Guid DataModelID,
                                                               string StreamName);
 
         void SetImmutableStorageProxy(IStorageProxy immutableProxy);

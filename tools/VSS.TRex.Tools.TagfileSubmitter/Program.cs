@@ -17,7 +17,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
         private static ILog Log = null;
         //        private static int tAGFileCount = 0;
 
-        public static void ProcessSingleTAGFile(long projectID, string fileName)
+        public static void ProcessSingleTAGFile(Guid projectID, string fileName)
         {
             Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
 
@@ -47,7 +47,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
             request.Execute(arg);
         }
 
-        public static void ProcessTAGFiles(long projectID, string[] files)
+        public static void ProcessTAGFiles(Guid projectID, string[] files)
         {
             Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
 
@@ -75,7 +75,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
             request.Execute(arg);
         }
 
-        public static void ProcessTAGFilesInFolder(long projectID, string folder)
+        public static void ProcessTAGFilesInFolder(Guid projectID, string folder)
         {
             // If it is a single file, just process it
             if (File.Exists(folder))
@@ -94,12 +94,12 @@ namespace VSS.TRex.Tools.TagfileSubmitter
             }
         }
 
-        public static void ProcessMachine333TAGFiles(long projectID)
+        public static void ProcessMachine333TAGFiles(Guid projectID)
         {
             ProcessTAGFilesInFolder(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Machine333");
         }
 
-        public static void ProcessMachine10101TAGFiles(long projectID)
+        public static void ProcessMachine10101TAGFiles(Guid projectID)
         {
             ProcessTAGFilesInFolder(projectID, TAGTestConsts.TestDataFilePath() + "TAGFiles\\Machine10101");
         }
@@ -125,11 +125,11 @@ namespace VSS.TRex.Tools.TagfileSubmitter
                     return;
                 }
 
-                long projectID = -1;
+                Guid projectID = Guid.Empty;
                 string folderPath = "";
                 try
                 {
-                    projectID = Convert.ToInt64(args[0]);
+                    projectID = Guid.Parse(args[0]);
                     folderPath = args[1];
                 }
                 catch
@@ -138,7 +138,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
                     return;
                 }
 
-                if (projectID == -1)
+                if (projectID == Guid.Empty)
                 {
                     return;
                 }

@@ -1,4 +1,5 @@
-﻿using VSS.Velociraptor.DesignProfiling;
+﻿using System;
+using VSS.Velociraptor.DesignProfiling;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Designs.Storage;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
@@ -22,8 +23,8 @@ namespace VSS.VisionLink.Raptor.Utilities
         /// <param name="ProfilerRequestResult"></param>
         /// <returns></returns>
         public static bool ComputeCutFillSubgrid(IClientLeafSubGrid SubGrid, 
-                                                 Design design,                                                
-                                                 long DataModelID,
+                                                 Design design,
+                                                 Guid DataModelID,
                                                  out DesignProfilerRequestResult ProfilerRequestResult)
         {
             ProfilerRequestResult = DesignProfilerRequestResult.UnknownError;

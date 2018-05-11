@@ -55,6 +55,6 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
         /// <param name="siteModelID"></param>
         /// <param name="IDs"></param>
         /// <returns></returns>
-        public static SubGridTreeSubGridExistenceBitMask Execute(long siteModelID, Tuple<long, long>[] IDs) => Execute(IDs.Select(x => CacheKey(siteModelID, x.Item1, x.Item2)).ToArray());
+        public static SubGridTreeSubGridExistenceBitMask Execute(Guid siteModelID, Tuple<long, long>[] IDs) => Execute(IDs.Select(x => CacheKey(siteModelID, x.Item1, x.Item2)).ToArray());
     }
 }
