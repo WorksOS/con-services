@@ -29,19 +29,13 @@ node('Ubuntu_Slave') {
     }
 
   dir('./MockProjectWebApi/src') {
-    try
-    {
+
     stage ('Build MockApis') {
        sh "bash ./mockapis.sh"
        }
      }
-     catch (error) {
-       echo "An error occurred during execution of packaging - ${error.getMessage()}."
-       throw error
-       }
-    }
 
-  
+    
     currentBuild.result = 'SUCCESS'
  
     echo "Build result is ${currentBuild.result}"
@@ -97,7 +91,7 @@ node('Jenkins-Win2016-Raptor') {
         stage ('Build MockApis') {
           bat "./mockapis.bat"
         }
-        currentBuild.result = 'SUCCESS'
+        //currentBuild.result = 'SUCCESS'
   
         echo "Build result is ${currentBuild.result}"
         if (currentBuild.result=='SUCCESS') {
