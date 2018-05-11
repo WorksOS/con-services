@@ -34,6 +34,7 @@
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.20.*" />
     <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.0.*" />
     <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.0.2" />
+    <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
