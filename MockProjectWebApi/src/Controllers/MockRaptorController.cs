@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
+using System.Net;
 using MockProjectWebApi.Utils;
+using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace MockProjectWebApi.Controllers
@@ -36,6 +39,9 @@ namespace MockProjectWebApi.Controllers
               string.IsNullOrEmpty(machineNames) &&
               filterUid.ToString() == "1cf81668-1739-42d5-b068-ea025588796a")
         {
+          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(2002,
+            "Failed to get requested export data with error: No data for export"));
+          /*
           var result = @"{
           ""exportData"": null,
           ""resultCode"": 0,
@@ -43,6 +49,7 @@ namespace MockProjectWebApi.Controllers
           ""Message"": ""Failed to get requested export data with error: No data for export""
           }";
           return JsonConvert.DeserializeObject<ExportResult>(result);
+          */
         }
       }
 
