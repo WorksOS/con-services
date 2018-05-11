@@ -12,7 +12,7 @@ namespace VSS.MasterData.Models.ResultHandling
     /// <summary>
     /// Failure code
     /// </summary>
-    [JsonProperty(PropertyName = "code", Required = Required.Always)]
+    [JsonProperty(PropertyName = "httpStatus", Required = Required.Always)]
     public HttpStatusCode Code { get; set; }
     /// <summary>
     /// Failure result
