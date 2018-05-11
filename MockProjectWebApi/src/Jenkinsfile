@@ -24,23 +24,23 @@ node('Ubuntu_Slave') {
   def workspacePath =""
   currentBuild.displayName = versionNumber + suffix
 
-  try
-  {
   stage ('Checkout') {
     checkout scm
-  }
+    }
 
   dir('./MockProjectWebApi/src') {
-  stage ('Build MockApis') {
-     sh "bash ./mockapis.sh"
+    try
+    {
+    stage ('Build MockApis') {
+       sh "bash ./mockapis.sh"
+       }
+     }
+     catch (error) {
+       echo "An error occurred during execution of packaging - ${error.getMessage()}."
+       throw error
+       }
     }
-  }
-  }
-  catch (error)
-  {
-  		echo "An error occurred during execution of packaging - ${error.getMessage()}."
-		throw error
-	}
+
   
     currentBuild.result = 'SUCCESS'
  
