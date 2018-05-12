@@ -6,8 +6,13 @@ namespace VSS.Velociraptor.Designs.TTM
     /// <summary>
     /// Implements a vertex at the corner of triangles in the TTM mesh
     /// </summary>
-    public class TriVertex : TriStoreObject
+    public class TriVertex
     {
+        /// <summary>
+        /// A 'tag' used for various purposes in TTM processing
+        /// </summary>
+        public int Tag { get; set; }
+
         /// <summary>
         /// Gets the X, Y, Z location of the vertex as a XYZ instance
         /// </summary>
@@ -36,6 +41,8 @@ namespace VSS.Velociraptor.Designs.TTM
         /// <param name="aZ"></param>
         public TriVertex(double aX, double aY, double aZ)
         {
+            Tag = 0;
+
             X = aX;
             Y = aY;
             Z = aZ;
