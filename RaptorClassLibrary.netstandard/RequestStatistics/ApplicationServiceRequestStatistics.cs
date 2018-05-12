@@ -12,10 +12,17 @@
 
         public struct StatisticsElement
         {
+            /// <summary>
+            /// Value of the statistics elements being tracked
+            /// </summary>
             private long value;
+
             // ReSharper disable once ConvertToAutoPropertyWhenPossible
             public long Value { get => value; }
 
+            /// <summary>
+            /// Thread safe incrementor for the satistics element
+            /// </summary>
             public void Increment() => System.Threading.Interlocked.Increment(ref value);
         }
 

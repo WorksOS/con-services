@@ -39,7 +39,6 @@ namespace RaptorClassLibrary.Tests.netcore.Affinity
     public struct NonSpatialAffinityKey
     {
         public Guid ProjectID { get; set; }
-        //public long ProjectID { get; set; }
 
         public string KeyName { get; set; }
 
@@ -70,7 +69,7 @@ namespace RaptorClassLibrary.Tests.netcore.Affinity
             ignite = Ignition.Start(cfg);
         }
 
-        [Fact]
+        [Fact(Skip = "Requires live Ignite node")]
         public void Test_NonSpatialAffintyKey_MutableGrid_IgniteException()
         {
             EnsureServer();

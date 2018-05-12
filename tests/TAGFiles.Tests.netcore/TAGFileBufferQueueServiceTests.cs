@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Apache.Ignite.Core;
-using VSS.TRex.TAGFiles.Classes.Queues;
+﻿using Apache.Ignite.Core;
 using VSS.TRex.TAGFiles.GridFabric.Services;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Servers;
@@ -33,7 +29,7 @@ namespace TAGFiles.Tests.netcore
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Requires live Ignite node")]
         public void Test_TAGFileBufferQueueServiceTests_Creation()
         {
             EnsureServer();
@@ -43,7 +39,7 @@ namespace TAGFiles.Tests.netcore
             Assert.True(serviceProxy != null);
         }
 
-        [Fact]
+        [Fact(Skip = "Requires live Ignite node")]
         public void Test_TAGFileBufferQueueServiceTests_Deployinh()
         {
             EnsureServer();
@@ -53,6 +49,5 @@ namespace TAGFiles.Tests.netcore
 
             Assert.True(true);
         }
-
     }
 }

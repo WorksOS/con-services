@@ -30,7 +30,7 @@ namespace TAGFiles.Tests.netcore
             }
         }
 
-        [Fact()]
+        [Fact(Skip = "Requires live Ignite node")]
         public void Test_TAGFileBufferQueue_Creation()
         {
             EnsureServer();
@@ -39,7 +39,7 @@ namespace TAGFiles.Tests.netcore
             Assert.NotNull(queue);
         }
 
-        [Fact()]
+        [Fact(Skip = "Requires live Ignite node")]
         public void Test_TAGFileBufferQueue_AddingTAGFile()
         {
             EnsureServer();

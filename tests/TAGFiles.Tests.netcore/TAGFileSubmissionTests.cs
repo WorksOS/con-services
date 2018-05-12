@@ -30,7 +30,7 @@ namespace TAGFiles.Tests.netcore
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Requires live Ignite node")]
         public void Test_TAGFileSubmission_Creation()
         {
             EnsureServer();
@@ -40,7 +40,7 @@ namespace TAGFiles.Tests.netcore
             Assert.True(null != submission, "Failed to create SubmitTAGFileRequest instance");
         }
 
-        [Fact]
+        [Fact(Skip = "Requires live Ignite node")]
         public void Test_TAGFileSubmission_SubmitTAGFile()
         {
             EnsureServer();
