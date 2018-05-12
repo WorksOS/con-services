@@ -213,7 +213,7 @@ namespace VSS.VisionLink.Raptor.Storage
 
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
-                    Log.Info($"Putting key:{cacheKey} in {spatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
+                    // Log.Info($"Putting key:{cacheKey} in {spatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
 
                     spatialCache.Put(cacheKey, compressedStream.ToArray());
                 }
@@ -255,7 +255,7 @@ namespace VSS.VisionLink.Raptor.Storage
 
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
-                    Log.Info($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
+                    // Log.Info($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
 
                     nonSpatialCache.Put(cacheKey, compressedStream.ToArray());
                 }
@@ -290,7 +290,7 @@ namespace VSS.VisionLink.Raptor.Storage
 
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
-                    Log.Info($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
+                    // Log.Info($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
 
                     nonSpatialCache.Put(cacheKey, compressedStream.ToArray());
                 }

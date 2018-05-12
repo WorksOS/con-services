@@ -115,7 +115,7 @@ namespace VSS.VisionLink.Raptor.Storage
             {
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(immutableStream))
                 {
-                    Log.Info(string.Format($"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}"));
+                    // Log.Info($"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}");
                     
                     // Place the converted immutable item into the immutable cache
                     immutableCache.Put(cacheKey, compressedStream.ToArray());
@@ -187,7 +187,7 @@ namespace VSS.VisionLink.Raptor.Storage
             {
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(immutableStream))
                 {
-                    Log.Info(string.Format($"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}"));
+                    // Log.Info($"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}");
 
                     // Place the converted immutable item into the immutable cache
                     immutableCache.Put(cacheKey, compressedStream.ToArray());

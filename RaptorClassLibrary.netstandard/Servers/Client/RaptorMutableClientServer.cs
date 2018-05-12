@@ -57,13 +57,13 @@ namespace VSS.VisionLink.Raptor.Servers.Client
 
                     IgniteConfiguration cfg = new IgniteConfiguration()
                     {
-                        //                        SpringConfigUrl = @".\RaptorIgniteConfig.xml",
+                        // SpringConfigUrl = @".\RaptorIgniteConfig.xml",
 
                         IgniteInstanceName = RaptorGrids.RaptorMutableGridName(),
                         ClientMode = true,
 
                         JvmInitialMemoryMb = 512, // Set to minimum advised memory for Ignite grid JVM of 512Mb
-                        JvmMaxMemoryMb = 1 * 1024, // Set max to 2Gb
+                        JvmMaxMemoryMb = 1 * 1024, // Set max to 1Gb
 
                         UserAttributes = new Dictionary<string, object>()
                         {
@@ -89,7 +89,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
                         },
 
                         Logger = new IgniteLog4NetLogger(Log),
-
+                        
                         // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
                         DataStorageConfiguration = new DataStorageConfiguration()
                         {
@@ -99,7 +99,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
                             {
                                 Name = DataRegions.DEFAULT_MUTABLE_DATA_REGION_NAME,
                                 InitialSize = 128 * 1024 * 1024,  // 128 MB
-                                MaxSize = 1L * 1024 * 1024 * 1024,  // 1 GB    
+                                MaxSize = 256 * 1024 * 1024,  // 128 MB
                                 PersistenceEnabled = false
                             },
 
@@ -110,7 +110,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
                                 {
                                     Name = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION,
                                     InitialSize = 128 * 1024 * 1024,  // 128 MB
-                                    MaxSize = 128 * 1024 * 1024,  // 128 MB
+                                    MaxSize = 256 * 1024 * 1024,  // 128 MB
 
                                     PersistenceEnabled = false
                                 }

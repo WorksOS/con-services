@@ -71,7 +71,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
                     {
                         Name = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION,
                         InitialSize = 128 * 1024 * 1024,  // 128 MB
-                        MaxSize = 128 * 1024 * 1024,  // 128 MB
+                        MaxSize = 256 * 1024 * 1024,  // 128 MB
 
                         PersistenceEnabled = true
                     }
