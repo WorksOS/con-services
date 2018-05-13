@@ -162,13 +162,15 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             // Replicate the maps across nodes
             cfg.CacheMode = CacheMode.Partitioned;
 
+            cfg.AffinityFunction = new MutableNonSpatialAffinityFunction();
+
             // No backups for now
             cfg.Backups = 0;
 
             cfg.DataRegionName = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION;
         }
 
-        public /*ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>*/ void InstantiateTAGFileBufferQueueCacheReference(CacheConfiguration CacheCfg)
+        public void InstantiateTAGFileBufferQueueCacheReference(CacheConfiguration CacheCfg)
         {
             mutableRaptorGrid.GetOrCreateCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> (CacheCfg);
         }
