@@ -46,59 +46,75 @@ namespace VSS.TRex.TAGFiles.Executors
             // ...
 
             Log.Info($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into project {projectId}, asset {assetId}");
-
             SubmitTAGFileResponse response = new SubmitTAGFileResponse
+                                             {
+                                                     FileName = tagFileName,
+                                                     Success = false,
+                                                     Exception = "Unknown"
+                                             };
+            try
             {
-                FileName = tagFileName,
-                Success = false,
-                Exception = "Unknown"
-            };
-
-            TagfileDetail td = new TagfileDetail()
-                                        {
-                                            assetId = assetId,
-                                            projectId = projectId,
-                                            tagFileName = tagFileName,
-                                            tagFileContent = tagFileContent,
-                                            tccOrgId = tccOrgId
-                                        };
-
-            // Validate tagfile submission
-            // todo: Replace hard wire 'Valid' with result of ValidSubmission call when implemented
-            var result = ValidationResult.Valid; //TagfileValidator.ValidSubmission(td);
-            if (result == ValidationResult.Valid) // If OK add to process queue
-            {
-                // Archive the tagfile
-                Log.Info($"Archiving tagfile {tagFileName} for project {projectId}");
-                TagfileReposity.ArchiveTagfile(td); // todo implement
-
-                Log.Info($"Pushing tagfile to TagfileBufferQueue");
-                TAGFileBufferQueueKey tagKey =
-                    new TAGFileBufferQueueKey(tagFileName, projectId, assetId);
-
-                TAGFileBufferQueueItem tagItem = new TAGFileBufferQueueItem
+                try
                 {
-                    InsertUTC = DateTime.Now,
-                    ProjectID = projectId,
-                    AssetID = assetId,
-                    FileName = tagFileName,
-                    Content = tagFileContent
-                };
 
-                if (queue.Add(tagKey, tagItem))
-                {
-                    response.Success = true;
-                    response.Exception = "";
+
+                    // wrap up details into obj
+                    TagfileDetail td = new TagfileDetail()
+                                       {
+                                               assetId = assetId,
+                                               projectId = projectId,
+                                               tagFileName = tagFileName,
+                                               tagFileContent = tagFileContent,
+                                               tccOrgId = tccOrgId
+                                       };
+
+                    // Validate tagfile submission
+                    var result = TagfileValidator.ValidSubmission(td);
+
+                    if (result == ValidationResult.Valid) // If OK add to process queue
+                    {
+                        // First archive the tagfile
+                        Log.Info($"Archiving tagfile {tagFileName} for project {projectId}");
+                        TagfileReposity.ArchiveTagfile(td); // todo implement
+
+                        Log.Info($"Pushing tagfile to TagfileBufferQueue");
+                        TAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(tagFileName, projectId, assetId);
+                        TAGFileBufferQueueItem tagItem = new TAGFileBufferQueueItem
+                                                         {
+                                                                 InsertUTC = DateTime.Now,
+                                                                 ProjectID = projectId,
+                                                                 AssetID = assetId,
+                                                                 FileName = tagFileName,
+                                                                 Content = tagFileContent
+                                                         };
+
+                        if (queue.Add(tagKey, tagItem))
+                        {
+                            response.Success = true;
+                            response.Exception = "";
+                        }
+                        else
+                        {
+                            response.Success = false;
+                            response.Exception = "Failed to submit tagfile to processing queue";
+                        }
+                    }
+                    else
+                    {
+                        // Todo At some point a notification needs to be implemented e.g. 'api/v2/notification/tagfileprocessingerror';
+                        response.Success = false;
+                        response.Exception = Enum.GetName(typeof(ValidationResult),result); // return reason for failure
+                    }
                 }
-                else
+                catch (Exception e) // catch all exceptions here
                 {
-                    response.Success = false;
-                    response.Exception = "Failed to submit tagfile to processing queue";
+                    Log.Error($"#Exception# SubmitTAGFileResponse. Exception occured processing {tagFileName} Exception: {e}");
                 }
             }
-
-            Log.Info($"#Out# SubmitTAGFileResponse. Processed {tagFileName} Result: {response.Success}, Exception:{response.Exception}");
-
+            finally
+            {
+                Log.Info($"#Out# SubmitTAGFileResponse. Processed {tagFileName} Result: {response.Success}, Exception:{response.Exception}");
+            }
             return response;
         }
     }
