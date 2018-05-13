@@ -1,19 +1,19 @@
-﻿using ASNode.ElevationStatistics.RPC;
+﻿using System;
+using System.Net;
+using ASNode.ElevationStatistics.RPC;
 using ASNodeDecls;
 using BoundingExtents;
 using SVOICFilterSettings;
 using SVOICOptionsDecls;
-using System;
-using System.Net;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 
-namespace VSS.Productivity3D.WebApiModels.Report.Executors
+namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
   public class ElevationStatisticsExecutor : RequestExecutorContainer
   {

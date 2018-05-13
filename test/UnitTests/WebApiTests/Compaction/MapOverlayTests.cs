@@ -6,8 +6,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction
@@ -29,7 +29,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction
       serviceCollection
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddTransient<IErrorCodesProvider, ErrorCodesProvider>()
+        .AddTransient<IErrorCodesProvider, RaptorResult>()
         .AddTransient<IMemoryCache,MemoryCache>()
         .AddTransient<IMapTileService, MapTileService>();
 

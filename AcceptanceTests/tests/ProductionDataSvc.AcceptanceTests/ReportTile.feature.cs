@@ -469,28 +469,198 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
             this.ReportTiles("CMVOverlay", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "ProductionData,BaseMap,ProjectBoundary", "SATELLITE", "1", "10", "", ((string[])(null)));
         }
         
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Report Tiles")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReportTile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "ElevationOverlayAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "ElevationOverlayAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUID", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:overlayType", "AllOverlays")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mapType", "HYBRID")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mode", "0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "3")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:language", "")]
+        public virtual void ReportTiles_ElevationOverlayAll()
+        {
+            this.ReportTiles("ElevationOverlayAll", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "AllOverlays", "HYBRID", "0", "3", "", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Report Tiles")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReportTile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "CMVchangeOverlayAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "CMVchangeOverlayAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUID", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:overlayType", "AllOverlays")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mapType", "HYBRID")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mode", "27")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "3")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:language", "")]
+        public virtual void ReportTiles_CMVchangeOverlayAll()
+        {
+            this.ReportTiles("CMVchangeOverlayAll", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "AllOverlays", "HYBRID", "27", "3", "", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Report Tiles")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReportTile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "CMVsummaryOverlayAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "CMVsummaryOverlayAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUID", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:overlayType", "AllOverlays")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mapType", "HYBRID")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mode", "13")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "3")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:language", "")]
+        public virtual void ReportTiles_CMVsummaryOverlayAll()
+        {
+            this.ReportTiles("CMVsummaryOverlayAll", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "AllOverlays", "HYBRID", "13", "3", "", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Report Tiles")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReportTile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "SpeedOverlayAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "SpeedOverlayAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUID", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:overlayType", "AllOverlays")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mapType", "HYBRID")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mode", "26")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "8")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:language", "")]
+        public virtual void ReportTiles_SpeedOverlayAll()
+        {
+            this.ReportTiles("SpeedOverlayAll", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "AllOverlays", "HYBRID", "26", "8", "", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Report Tiles")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReportTile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "TemperatureOverlayAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "TemperatureOverlayAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUID", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:overlayType", "AllOverlays")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mapType", "HYBRID")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mode", "10")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "3")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:language", "")]
+        public virtual void ReportTiles_TemperatureOverlayAll()
+        {
+            this.ReportTiles("TemperatureOverlayAll", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "AllOverlays", "HYBRID", "10", "3", "", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Report Tiles")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReportTile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "MDPOverlayAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "MDPOverlayAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUID", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:overlayType", "AllOverlays")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mapType", "HYBRID")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mode", "20")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "3")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:language", "")]
+        public virtual void ReportTiles_MDPOverlayAll()
+        {
+            this.ReportTiles("MDPOverlayAll", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "AllOverlays", "HYBRID", "20", "3", "", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Report Tiles")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReportTile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "CMVOverlayAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "CMVOverlayAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUID", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:overlayType", "AllOverlays")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mapType", "HYBRID")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mode", "1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "3")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:language", "")]
+        public virtual void ReportTiles_CMVOverlayAll()
+        {
+            this.ReportTiles("CMVOverlayAll", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "AllOverlays", "HYBRID", "1", "3", "", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Report Tiles")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReportTile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "PCWithAlignOverlayAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "PCWithAlignOverlayAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUID", "2811c7c3-d270-4d63-97e2-fc3340bf6c6b")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:overlayType", "AllOverlays")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mapType", "HYBRID")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mode", "4")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "10")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:language", "")]
+        public virtual void ReportTiles_PCWithAlignOverlayAll()
+        {
+            this.ReportTiles("PCWithAlignOverlayAll", "ff91dd40-1569-4765-a2bc-014321f76ace", "2811c7c3-d270-4d63-97e2-fc3340bf6c6b", "AllOverlays", "HYBRID", "4", "10", "", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Report Tiles")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReportTile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "ElevWithAlignOverlayAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "ElevWithAlignOverlayAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUID", "2811c7c3-d270-4d63-97e2-fc3340bf6c6b")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:overlayType", "AllOverlays")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mapType", "HYBRID")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mode", "0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "3")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:language", "")]
+        public virtual void ReportTiles_ElevWithAlignOverlayAll()
+        {
+            this.ReportTiles("ElevWithAlignOverlayAll", "ff91dd40-1569-4765-a2bc-014321f76ace", "2811c7c3-d270-4d63-97e2-fc3340bf6c6b", "AllOverlays", "HYBRID", "0", "3", "", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Report Tiles")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReportTile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "TempWithAlignOverlayAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "TempWithAlignOverlayAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUID", "2811c7c3-d270-4d63-97e2-fc3340bf6c6b")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:overlayType", "AllOverlays")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mapType", "HYBRID")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mode", "10")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "3")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:language", "")]
+        public virtual void ReportTiles_TempWithAlignOverlayAll()
+        {
+            this.ReportTiles("TempWithAlignOverlayAll", "ff91dd40-1569-4765-a2bc-014321f76ace", "2811c7c3-d270-4d63-97e2-fc3340bf6c6b", "AllOverlays", "HYBRID", "10", "3", "", ((string[])(null)));
+        }
+        
         public virtual void LargeReportTiles(string resultName, string projectUID, string filterUID, string overlayType, string mapType, string mode, string difference, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Large Report Tiles", exampleTags);
-#line 51
+#line 50
 this.ScenarioSetup(scenarioInfo);
-#line 52
+#line 51
 testRunner.Given("the Report Tile service URI \"/api/v2/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 53
+#line 52
 testRunner.And("a width \"1024\" and a height \"1024\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 54
+#line 53
 testRunner.And(string.Format("a projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 55
+#line 54
 testRunner.And(string.Format("a filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 56
+#line 55
 testRunner.And(string.Format("an overlayType \"{0}\"", overlayType), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 57
+#line 56
 testRunner.And(string.Format("a mapType \"{0}\"", mapType), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 58
+#line 57
 testRunner.And(string.Format("a mode \"{0}\"", mode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 59
+#line 58
 testRunner.When("I request a Report Tile and the result file \"CompactionReportTileResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 60
+#line 59
 testRunner.Then(string.Format("the result tile should match the \"{0}\" from the repository within \"{1}\" percent", resultName, difference), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -515,33 +685,33 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
         public virtual void ReportCutfillAndVolumeTiles(string resultName, string projectUID, string cutFillDesignUid, string volumeCalcType, string volumeTopUid, string volumeBaseUid, string overlayType, string mapType, string mode, string difference, string filterUID, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report cutfill and volume tiles", exampleTags);
-#line 65
+#line 64
 this.ScenarioSetup(scenarioInfo);
-#line 66
+#line 65
 testRunner.Given("the Report Tile service URI \"/api/v2/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 67
+#line 66
 testRunner.And(string.Format("a projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 68
+#line 67
 testRunner.And(string.Format("an overlayType \"{0}\"", overlayType), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 69
+#line 68
 testRunner.And(string.Format("a mapType \"{0}\"", mapType), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 70
+#line 69
 testRunner.And(string.Format("a mode \"{0}\"", mode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 71
+#line 70
 testRunner.And(string.Format("a cutFillDesignUid \"{0}\"", cutFillDesignUid), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 72
+#line 71
 testRunner.And(string.Format("a volumeCalcType \"{0}\"", volumeCalcType), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 73
+#line 72
 testRunner.And(string.Format("a volumeTopUid \"{0}\"", volumeTopUid), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 74
+#line 73
 testRunner.And(string.Format("a volumeBaseUid \"{0}\"", volumeBaseUid), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 75
+#line 74
 testRunner.And("a width \"1024\" and a height \"1024\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 76
+#line 75
 testRunner.And(string.Format("a filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 77
+#line 76
 testRunner.When("I request a Report Tile and the result file \"CompactionReportTileResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 78
+#line 77
 testRunner.Then(string.Format("the result tile should match the \"{0}\" from the repository within \"{1}\" percent", resultName, difference), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -610,21 +780,41 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Report cutfill and volume tiles")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReportTile")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "GroundToGround")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "GroundToGround")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "CutFillOverlayAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "CutFillOverlayAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:cutFillDesignUid", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:volumeCalcType", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:volumeTopUid", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:volumeBaseUid", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:overlayType", "AllOverlays")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mapType", "HYBRID")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mode", "8")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "5")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUID", "")]
+        public virtual void ReportCutfillAndVolumeTiles_CutFillOverlayAll()
+        {
+            this.ReportCutfillAndVolumeTiles("CutFillOverlayAll", "ff91dd40-1569-4765-a2bc-014321f76ace", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "", "", "", "AllOverlays", "HYBRID", "8", "5", "", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Report cutfill and volume tiles")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReportTile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "D2GOverlayAll")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "D2GOverlayAll")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:cutFillDesignUid", "")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:volumeCalcType", "GroundToGround")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:volumeTopUid", "A40814AA-9CDB-4981-9A21-96EA30FFECDD")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:volumeBaseUid", "F07ED071-F8A1-42C3-804A-1BDE7A78BE5B")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:overlayType", "ProductionData")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mapType", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:volumeCalcType", "DesignToGround")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:volumeTopUid", "a54e5945-1aaa-4921-9cc1-c9d8c0a343d3")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:volumeBaseUid", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:overlayType", "AllOverlays")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mapType", "HYBRID")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mode", "8")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "5")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUID", "")]
-        public virtual void ReportCutfillAndVolumeTiles_GroundToGround()
+        public virtual void ReportCutfillAndVolumeTiles_D2GOverlayAll()
         {
-            this.ReportCutfillAndVolumeTiles("GroundToGround", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "GroundToGround", "A40814AA-9CDB-4981-9A21-96EA30FFECDD", "F07ED071-F8A1-42C3-804A-1BDE7A78BE5B", "ProductionData", "", "8", "1", "", ((string[])(null)));
+            this.ReportCutfillAndVolumeTiles("D2GOverlayAll", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "DesignToGround", "a54e5945-1aaa-4921-9cc1-c9d8c0a343d3", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "AllOverlays", "HYBRID", "8", "5", "", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -650,6 +840,26 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Report cutfill and volume tiles")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReportTile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "GroundToGround")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "GroundToGround")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:cutFillDesignUid", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:volumeCalcType", "GroundToGround")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:volumeTopUid", "A40814AA-9CDB-4981-9A21-96EA30FFECDD")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:volumeBaseUid", "F07ED071-F8A1-42C3-804A-1BDE7A78BE5B")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:overlayType", "ProductionData")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mapType", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mode", "8")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUID", "")]
+        public virtual void ReportCutfillAndVolumeTiles_GroundToGround()
+        {
+            this.ReportCutfillAndVolumeTiles("GroundToGround", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "GroundToGround", "A40814AA-9CDB-4981-9A21-96EA30FFECDD", "F07ED071-F8A1-42C3-804A-1BDE7A78BE5B", "ProductionData", "", "8", "1", "", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Report cutfill and volume tiles")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReportTile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "GroundToDesign")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "GroundToDesign")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
@@ -665,26 +875,6 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
         public virtual void ReportCutfillAndVolumeTiles_GroundToDesign()
         {
             this.ReportCutfillAndVolumeTiles("GroundToDesign", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "GroundToDesign", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "9c27697f-ea6d-478a-a168-ed20d6cd9a22", "ProductionData", "", "8", "5", "", ((string[])(null)));
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Report cutfill and volume tiles")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReportTile")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "D2GOverlayAll")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "D2GOverlayAll")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:cutFillDesignUid", "")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:volumeCalcType", "DesignToGround")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:volumeTopUid", "a54e5945-1aaa-4921-9cc1-c9d8c0a343d3")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:volumeBaseUid", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:overlayType", "AllOverlays")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mapType", "HYBRID")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:mode", "8")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "5")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filterUID", "")]
-        public virtual void ReportCutfillAndVolumeTiles_D2GOverlayAll()
-        {
-            this.ReportCutfillAndVolumeTiles("D2GOverlayAll", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "DesignToGround", "a54e5945-1aaa-4921-9cc1-c9d8c0a343d3", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "AllOverlays", "HYBRID", "8", "5", "", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -733,17 +923,17 @@ testRunner.Then(string.Format("the result tile should match the \"{0}\" from the
         public virtual void ReportTile_MissingMode()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - Missing Mode", ((string[])(null)));
-#line 92
+#line 91
 this.ScenarioSetup(scenarioInfo);
-#line 93
+#line 92
 testRunner.Given("the Report Tile service URI \"/api/v2/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 94
+#line 93
 testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 95
+#line 94
 testRunner.And("an overlayType \"ProductionData\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 96
+#line 95
 testRunner.When("I request a Report Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 97
+#line 96
 testRunner.Then("I should get error code -1 and message \"Missing display mode parameter for produc" +
                     "tion data overlay\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -756,17 +946,17 @@ testRunner.Then("I should get error code -1 and message \"Missing display mode p
         public virtual void ReportTile_MissingMapType()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - Missing Map Type", ((string[])(null)));
-#line 99
+#line 98
 this.ScenarioSetup(scenarioInfo);
-#line 100
+#line 99
 testRunner.Given("the Report Tile service URI \"/api/v2/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 101
+#line 100
 testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 102
+#line 101
 testRunner.And("an overlayType \"BaseMap\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 103
+#line 102
 testRunner.When("I request a Report Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 104
+#line 103
 testRunner.Then("I should get error code -1 and message \"Missing map type parameter for base map o" +
                     "verlay\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -779,15 +969,15 @@ testRunner.Then("I should get error code -1 and message \"Missing map type param
         public virtual void ReportTile_MissingOverlays()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - Missing Overlays", ((string[])(null)));
-#line 106
+#line 105
 this.ScenarioSetup(scenarioInfo);
-#line 107
+#line 106
 testRunner.Given("the Report Tile service URI \"/api/v2/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 108
+#line 107
 testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 109
+#line 108
 testRunner.When("I request a Report Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 110
+#line 109
 testRunner.Then("I should get error code -1 and message \"At least one type of map tile overlay mus" +
                     "t be specified\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -800,19 +990,19 @@ testRunner.Then("I should get error code -1 and message \"At least one type of m
         public virtual void ReportTile_InvalidSize()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - Invalid Size", ((string[])(null)));
-#line 112
+#line 111
 this.ScenarioSetup(scenarioInfo);
-#line 113
+#line 112
 testRunner.Given("the Report Tile service URI \"/api/v2/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 114
+#line 113
 testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 115
+#line 114
 testRunner.And("an overlayType \"BaseMap\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 116
+#line 115
 testRunner.And("a width \"16\" and a height \"16\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 117
+#line 116
 testRunner.When("I request a Report Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 118
+#line 117
 testRunner.Then("I should get error code -1 and message \"Tile size must be between 64 and 2048 wit" +
                     "h a base map or 64 and 4096 otherwise\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -825,19 +1015,19 @@ testRunner.Then("I should get error code -1 and message \"Tile size must be betw
         public virtual void ReportTile_MissingCutFillDesign()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - Missing CutFill Design", ((string[])(null)));
-#line 120
+#line 119
 this.ScenarioSetup(scenarioInfo);
-#line 121
+#line 120
 testRunner.Given("the Report Tile service URI \"/api/v2/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 122
+#line 121
 testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 123
+#line 122
 testRunner.And("an overlayType \"ProductionData\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 124
+#line 123
 testRunner.And("a mode \"8\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 125
+#line 124
 testRunner.When("I request a Report Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 126
+#line 125
 testRunner.Then("I should get error code -1 and message \"Missing design for cut-fill production da" +
                     "ta overlay\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -850,21 +1040,21 @@ testRunner.Then("I should get error code -1 and message \"Missing design for cut
         public virtual void ReportTile_MissingVolumeDesign()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - Missing Volume Design", ((string[])(null)));
-#line 128
+#line 127
 this.ScenarioSetup(scenarioInfo);
-#line 129
+#line 128
 testRunner.Given("the Report Tile service URI \"/api/v2/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 130
+#line 129
 testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 131
+#line 130
 testRunner.And("an overlayType \"ProductionData\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 132
+#line 131
 testRunner.And("a mode \"8\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 133
+#line 132
 testRunner.And("a volumeCalcType \"DesignToGround\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 134
+#line 133
 testRunner.When("I request a Report Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 135
+#line 134
 testRunner.Then("I should get error code -1 and message \"Missing design for summary volumes produc" +
                     "tion data overlay\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -877,23 +1067,23 @@ testRunner.Then("I should get error code -1 and message \"Missing design for sum
         public virtual void ReportTile_MissingBaseFilter()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - Missing Base Filter", ((string[])(null)));
-#line 137
+#line 136
 this.ScenarioSetup(scenarioInfo);
-#line 138
+#line 137
 testRunner.Given("the Report Tile service URI \"/api/v2/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 139
+#line 138
 testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 140
+#line 139
 testRunner.And("an overlayType \"ProductionData\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 141
+#line 140
 testRunner.And("a mode \"8\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 142
+#line 141
 testRunner.And("a volumeCalcType \"GroundToDesign\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 143
+#line 142
 testRunner.And("a volumeTopUid \"dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 144
+#line 143
 testRunner.When("I request a Report Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 145
+#line 144
 testRunner.Then("I should get error code -1 and message \"Missing base filter for summary volumes p" +
                     "roduction data overlay\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -906,23 +1096,23 @@ testRunner.Then("I should get error code -1 and message \"Missing base filter fo
         public virtual void ReportTile_MissingTopFilter()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Report Tile - Missing Top Filter", ((string[])(null)));
-#line 147
+#line 146
 this.ScenarioSetup(scenarioInfo);
-#line 148
+#line 147
 testRunner.Given("the Report Tile service URI \"/api/v2/reporttiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 149
+#line 148
 testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 150
+#line 149
 testRunner.And("an overlayType \"ProductionData\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 151
+#line 150
 testRunner.And("a mode \"8\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 152
+#line 151
 testRunner.And("a volumeCalcType \"DesignToGround\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 153
+#line 152
 testRunner.And("a volumeBaseUid \"dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 154
+#line 153
 testRunner.When("I request a Report Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 155
+#line 154
 testRunner.Then("I should get error code -1 and message \"Missing top filter for summary volumes pr" +
                     "oduction data overlay\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden

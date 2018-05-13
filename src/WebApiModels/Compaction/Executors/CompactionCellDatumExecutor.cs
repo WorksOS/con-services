@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net;
 using SVOICDecls;
 using VLPDDecls;
 using VSS.Common.Exceptions;
@@ -41,7 +36,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
     protected override CellDatumResponse ConvertCellDatumResult(TCellProductionData result)
     {
-      return CompactionCellDatumResult.CreateCompactionCellDatumResult(
+      return new CompactionCellDatumResult(
         RaptorConverters.convertDisplayMode((TICDisplayMode)result.DisplayMode),
         result.ReturnCode,
         result.ReturnCode == 0 ? result.Value : (double?)null,

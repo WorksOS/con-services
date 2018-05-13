@@ -70,21 +70,27 @@ namespace ProductionDataSvc.AcceptanceTests
         
         public virtual void ScheduleExportToVETA_GoodRequest_ScheduleJob(string requestName, string projectUID, string filterUID, string fileName, string resultName, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ScheduleExportToVETA - Good Request - Schedule Job", exampleTags);
-#line 4
-this.ScenarioSetup(scenarioInfo);
+            string[] @__tags = new string[] {
+                    "Ignore"};
+            if ((exampleTags != null))
+            {
+                @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
+            }
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ScheduleExportToVETA - Good Request - Schedule Job", @__tags);
 #line 5
+this.ScenarioSetup(scenarioInfo);
+#line 6
 testRunner.Given("the Export Report To VETA service URI \"/api/v2/export/veta\" for operation \"schedu" +
                     "lejob\" and the result file \"ScheduleExportToVETAResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 6
-testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 7
-testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 8
-testRunner.And(string.Format("fileName \"{0}\"", fileName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 9
-testRunner.When("I request a Schedule Export To VETA", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+testRunner.And(string.Format("fileName \"{0}\"", fileName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 10
+testRunner.When("I request a Schedule Export To VETA", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 11
 testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -93,6 +99,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ScheduleExportToVETA - Good Request - Schedule Job")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ScheduleExportToVETA")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUID", "d15e65e0-3cb1-476f-8fc6-08507a14a269")]

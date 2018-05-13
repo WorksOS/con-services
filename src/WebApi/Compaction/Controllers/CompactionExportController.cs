@@ -81,18 +81,20 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? filterUid,
       [FromServices] ISchedulerProxy scheduler)
     {
+      //TODO: Do we need to validate the parameters here as well as when the export url is called?
+
       //The URL to get the export data is here in this controller, construct it based on this request
-      var exportDataUrl = $"{HttpContext.Request.Scheme}//{HttpContext.Request.Host}/export/veta?projectUid={projectUid}&fileName={fileName}&machineNames={machineNames}";
+      var exportDataUrl = $"{HttpContext.Request.Scheme}//{HttpContext.Request.Host}/api/v2/export/veta?projectUid={projectUid}&fileName={fileName}&machineNames={machineNames}";
       if (filterUid.HasValue)
       {
         exportDataUrl = $"{exportDataUrl}&filterUid={filterUid}";
       }
-      var request = new ScheduleJobRequest {Url = exportDataUrl};
+      var request = new ScheduleJobRequest {Url = exportDataUrl, Filename = fileName};
       return
         WithServiceExceptionTryExecute(() => new ScheduleResult
         {
           JobId =
-            scheduler.ScheduleExportJob(request, Request.Headers.GetCustomHeaders(true)).Result?.jobId
+            scheduler.ScheduleExportJob(request, Request.Headers.GetCustomHeaders(true)).Result?.JobId
         });
     }
     #endregion

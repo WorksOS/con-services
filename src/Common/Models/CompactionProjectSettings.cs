@@ -180,18 +180,16 @@ namespace VSS.Productivity3D.Common.Models
 
     #region Construction
     /// <summary>
-    /// Private constructor
+    /// Default private constructor
     /// </summary>
     private CompactionProjectSettings()
-    {
-    }
+    { }
 
     /// <summary>
-    /// Create instance of CompactionProjectSettings
+    /// Static constructor.
     /// </summary>
-    public static CompactionProjectSettings CreateProjectSettings
-      (
-      bool? useMachineTargetPassCount=null,
+    public static CompactionProjectSettings CreateProjectSettings(
+      bool? useMachineTargetPassCount = null,
       int? customTargetPassCountMinimum = null,
       int? customTargetPassCountMaximum = null,
       bool? useMachineTargetTemperature = null,
@@ -218,9 +216,7 @@ namespace VSS.Productivity3D.Common.Models
       bool? useDefaultPassCountTargets = null,
       List<int> customPassCountTargets = null,
       bool? useDefaultCMVTargets = null,
-      List<int> customCMVTargets = null
-      )
-
+      List<int> customCMVTargets = null)
     {
       return new CompactionProjectSettings
       {
@@ -278,7 +274,7 @@ namespace VSS.Productivity3D.Common.Models
           customTargetSpeedMinimum = 5.0,
           customTargetSpeedMaximum = 10.0,
           useDefaultCutFillTolerances = true,
-          customCutFillTolerances = new List<double> {0.2, 0.1, 0.05, 0, -0.05, -0.1, -0.2},
+          customCutFillTolerances = new List<double> { 0.2, 0.1, 0.05, 0, -0.05, -0.1, -0.2 },
           useDefaultVolumeShrinkageBulking = true,
           customShrinkagePercent = 0.0,
           customBulkingPercent = 0.0,
@@ -362,8 +358,8 @@ namespace VSS.Productivity3D.Common.Models
     /// Get MDP target as a nullable value for Raptor (10ths) for lift buildsettings
     /// </summary>
     public short? NullableCustomTargetMdp => OverrideMachineTargetMdp && customTargetMdp.HasValue
-      ? (short) (customTargetMdp.Value * 10)
-      : (short?) null;
+      ? (short)(customTargetMdp.Value * 10)
+      : (short?)null;
     /// <summary>
     /// Get the minimum MDP % target as a value for Raptor
     /// </summary>
@@ -380,45 +376,39 @@ namespace VSS.Productivity3D.Common.Models
     /// Get the maximum temperature target as a value for Raptor in °C
     /// </summary>
     public double CustomTargetTemperatureMaximum => customTargetTemperatureMaximum ?? (double)DefaultSettings.customTargetTemperatureMaximum;
-    /// <summary>
-    /// Get the minimum pass count target as a value for Raptor
-    /// </summary>
-    public int CustomTargetPassCountMinimum => customTargetPassCountMinimum ?? (int) DefaultSettings.customTargetPassCountMinimum;
-    /// <summary>
-    /// Get the maximum pass count target as a value for Raptor
-    /// </summary>
-    public int CustomTargetPassCountMaximum => customTargetPassCountMaximum ?? (int)DefaultSettings.customTargetPassCountMaximum;
+
     /// <summary>
     /// Get the minimum speed target as a value for Raptor in cm/s
     /// </summary>
-    public ushort CustomTargetSpeedMinimum => (ushort)Math.Round((OverrideDefaultTargetRangeSpeed && customTargetSpeedMinimum.HasValue ? 
+    public ushort CustomTargetSpeedMinimum => (ushort)Math.Round((OverrideDefaultTargetRangeSpeed && customTargetSpeedMinimum.HasValue ?
       customTargetSpeedMinimum.Value : (double)DefaultSettings.customTargetSpeedMinimum) * ConversionConstants.KM_HR_TO_CM_SEC);
     /// <summary>
     /// Get the maximum speed target as a value for Raptor in cm/s
     /// </summary>
-    public ushort CustomTargetSpeedMaximum => (ushort)Math.Round((OverrideDefaultTargetRangeSpeed && customTargetSpeedMaximum.HasValue ? 
+    public ushort CustomTargetSpeedMaximum => (ushort)Math.Round((OverrideDefaultTargetRangeSpeed && customTargetSpeedMaximum.HasValue ?
       customTargetSpeedMaximum.Value : (double)DefaultSettings.customTargetSpeedMaximum) * ConversionConstants.KM_HR_TO_CM_SEC);
     /// <summary>
     /// Get the pass count details targets as a value for Raptor
     /// </summary>
-    public int[] CustomPassCounts => OverrideDefaultPassCountTargets && 
+    public int[] CustomPassCounts => OverrideDefaultPassCountTargets &&
       customPassCountTargets != null && customPassCountTargets.Count > 0
       ? customPassCountTargets.ToArray()
       : DefaultSettings.customPassCountTargets.ToArray();
+
     /// <summary>
     /// Get the CMV details targets as a value for Raptor
     /// </summary>
-    public int[] CustomCMVs => OverrideDefaultCMVTargets &&
-      customCMVTargets != null && customCMVTargets.Count > 0
-      ? customCMVTargets.ToArray()
-      : DefaultSettings.customCMVTargets.ToArray();
+    public int[] CustomCMVs => (OverrideDefaultCMVTargets && OverrideDefaultCMVTargets && customCMVTargets != null && customCMVTargets.Count > 0
+                                ? customCMVTargets
+                                : DefaultSettings.customCMVTargets).Select(d => { d = d * 10; return d; }).ToArray();
+    
     /// <summary>
     /// Get the cut-fill details targets as a value for Raptor
     /// </summary>
     public double[] CustomCutFillTolerances => OverrideDefaultCutFillTolerances &&
-                                     customCutFillTolerances != null && customCutFillTolerances.Count > 0
-      ? customCutFillTolerances.ToArray()
-      : DefaultSettings.customCutFillTolerances.ToArray();
+                                       customCutFillTolerances != null && customCutFillTolerances.Count > 0
+        ? customCutFillTolerances.ToArray()
+        : DefaultSettings.customCutFillTolerances.ToArray();
     /// <summary>
     /// Get the minimum temperature warning level as a value for Raptor in 10ths of °C
     /// </summary>
@@ -431,7 +421,7 @@ namespace VSS.Productivity3D.Common.Models
     /// <summary>
     /// The CMV % change settings (no custom ones for now)
     /// </summary>
-    public double[] CmvPercentChange => new double[] {-50.0, -20.0, -10.0, 0.0, 10.0, 20.0, 50.0};
+    public double[] CmvPercentChange => new double[] { -50.0, -20.0, -10.0, 0.0, 10.0, 20.0, 50.0 };
     /// <summary>
     /// Minimum CMV for Raptor (10ths)
     /// </summary>
@@ -501,7 +491,7 @@ namespace VSS.Productivity3D.Common.Models
         }
 
         for (int i = 0; i < CUT_FILL_TOTAL; i++)
-        {   
+        {
           if (customCutFillTolerances[i] < MIN_CUT_FILL || customCutFillTolerances[i] > MAX_CUT_FILL)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
@@ -520,8 +510,8 @@ namespace VSS.Productivity3D.Common.Models
           }
         }
 
-        if (customCutFillTolerances[CUT_FILL_TOTAL/2] != 0)
-        {        
+        if (customCutFillTolerances[CUT_FILL_TOTAL / 2] != 0)
+        {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
               "On grade cut-fill tolerance must be 0"));
@@ -529,7 +519,7 @@ namespace VSS.Productivity3D.Common.Models
       }
     }
 
-  
+
     private void ValidatePassCounts()
     {
       if (useDefaultPassCountTargets.HasValue && !useDefaultPassCountTargets.Value)

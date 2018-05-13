@@ -48,7 +48,7 @@ namespace VSS.Productivity3D.Common.Executors
 
     protected virtual CellDatumResponse ConvertCellDatumResult(TCellProductionData result)
     {
-      return CellDatumResponse.CreateCellDatumResponse(
+      return new CellDatumResponse(
           RaptorConverters.convertDisplayMode((TICDisplayMode) result.DisplayMode),
               result.ReturnCode,
               result.ReturnCode == 0 ? result.Value : (double?)null,

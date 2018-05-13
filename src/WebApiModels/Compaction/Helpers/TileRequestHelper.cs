@@ -56,7 +56,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     }
 
     /// <summary>
-    /// Creates an instance of the TileRequest class and populate it with data needed for a tile.   
+    /// Creates an instance of the TileRequest class and populate it with data needed for a tile.
     /// </summary>
     /// <returns>An instance of the TileRequest class.</returns>
     public TileRequest CreateTileRequest(DisplayMode mode, ushort width, ushort height,
@@ -65,22 +65,30 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
       Filter?.Validate();//Why is this here? Should be done where filter set up???
       var palette = SettingsManager.CompactionPalette(mode, elevExtents, ProjectSettings, ProjectSettingsColors);
-      var computeVolType = (int) (volCalcType ?? VolumeCalcType.None);
-      DesignDescriptor design = mode == DisplayMode.CutFill && (volCalcType == VolumeCalcType.GroundToDesign ||
-                                                                volCalcType == VolumeCalcType.DesignToGround)
-        ? volumeDesign
-        : DesignDescriptor;
-      FilterResult filter1 = mode == DisplayMode.CutFill && (volCalcType == VolumeCalcType.GroundToGround ||
-                                                       volCalcType == VolumeCalcType.GroundToDesign)
-        ? baseFilter
-        : Filter;
-      FilterResult filter2 = mode == DisplayMode.CutFill && (volCalcType == VolumeCalcType.GroundToGround ||
-                                                       volCalcType == VolumeCalcType.DesignToGround)
-        ? topFilter
-        : null;
- 
+      var computeVolType = (int)(volCalcType ?? VolumeCalcType.None);
+
+      DesignDescriptor design = DesignDescriptor;
+      FilterResult filter1 = Filter;
+      FilterResult filter2 = null;
+
+      if (mode == DisplayMode.CutFill)
+      {
+        switch (volCalcType)
+        {
+          case VolumeCalcType.DesignToGround:
+          case VolumeCalcType.GroundToDesign:
+            design = volumeDesign;
+            filter1 = baseFilter ?? topFilter;
+            break;
+          case VolumeCalcType.GroundToGround:
+            filter1 = baseFilter;
+            filter2 = topFilter;
+            break;
+        }
+      }
+
       TileRequest tileRequest = TileRequest.CreateTileRequest(
-        ProjectId, null, mode, palette, liftSettings, (RaptorConverters.VolumesType) computeVolType,
+        ProjectId, null, mode, palette, liftSettings, (RaptorConverters.VolumesType)computeVolType,
         0, design, filter1, 0, filter2, 0,
         Filter == null || !Filter.LayerType.HasValue ? FilterLayerMethod.None : Filter.LayerType.Value,
         bbox, null, width, height, 0, CMV_DETAILS_NUMBER_OF_COLORS, CMV_PERCENT_CHANGE_NUMBER_OF_COLORS, false);

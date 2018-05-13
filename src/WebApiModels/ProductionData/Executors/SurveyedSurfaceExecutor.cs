@@ -9,10 +9,8 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
-using BoundingBox3DGrid = VSS.Productivity3D.Common.Models.BoundingBox3DGrid;
 
-
-namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 {
   /// <summary>
   /// Executes POST, PUT,GET and DELETE methods on Surveyed Surfaces resource.
@@ -68,16 +66,14 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
     /// 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result = null;
+      ContractExecutionResult result;
 
-      if ((object)item != null)
+      if (item != null)
       {
         try
         {
-          TSurveyedSurfaceDetails[] surveyedSurfaces;
-
-          if (SendRequestToPdsClient(item, out surveyedSurfaces))
-            result = ExecutionResult(surveyedSurfaces != null ? convertToSurveyedSurfaceDetails(surveyedSurfaces).ToArray() : null);
+          if (SendRequestToPdsClient(item, out var surveyedSurfaces))
+            result = ExecutionResult(surveyedSurfaces != null ? ConvertToSurveyedSurfaceDetails(surveyedSurfaces).ToArray() : null);
           else
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
@@ -100,21 +96,21 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
       return result;
     }
 
-    private IEnumerable<SurveyedSurfaceDetails> convertToSurveyedSurfaceDetails(IEnumerable<TSurveyedSurfaceDetails> surveyedSurfaces)
+    private IEnumerable<SurveyedSurfaceDetails> ConvertToSurveyedSurfaceDetails(IEnumerable<TSurveyedSurfaceDetails> surveyedSurfaces)
     {
       return surveyedSurfaces.Select(surveyedSurface => SurveyedSurfaceDetails.CreateSurveyedSurfaceDetails(
-        id              :surveyedSurface.ID,
-        surveyedSurface : DesignDescriptor.CreateDesignDescriptor(
+        id: surveyedSurface.ID,
+        surveyedSurface: DesignDescriptor.CreateDesignDescriptor(
           surveyedSurface.DesignDescriptor.DesignID,
           FileDescriptor.CreateFileDescriptor(
             surveyedSurface.DesignDescriptor.FileSpaceID,
             surveyedSurface.DesignDescriptor.Folder,
             surveyedSurface.DesignDescriptor.FileName),
           surveyedSurface.DesignDescriptor.Offset),
-        asAtDate        : surveyedSurface.AsAtDate,
+        asAtDate: surveyedSurface.AsAtDate,
         extents: BoundingBox3DGrid.CreatBoundingBox3DGrid(
-          surveyedSurface.Extents.MinX, 
-          surveyedSurface.Extents.MinY, 
+          surveyedSurface.Extents.MinX,
+          surveyedSurface.Extents.MinY,
           surveyedSurface.Extents.MinZ,
           surveyedSurface.Extents.MaxX,
           surveyedSurface.Extents.MaxY,

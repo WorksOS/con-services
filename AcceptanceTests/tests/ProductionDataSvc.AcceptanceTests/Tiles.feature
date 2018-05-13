@@ -13,8 +13,8 @@ Scenario Outline: Tiles - Serialized
 	| CCV                                     | CCV                                     |
 	| CCVPercent                              | CCVPercent                              |
 	| PassCount                               | PassCount                               |
-	#| CutFill                                 | CutFill                                 |
-	#| CutFillCustomPalettes                   | CutFillCustomPalettes                   |
+	| CutFill                                 | CutFill                                 |
+	| CutFillCustomPalettes                   | CutFillCustomPalettes                   |
 	| TemperatureSummary                      | TemperatureSummary                      |
 	| CCVSummary                              | CCVSummary                              |
 	| CCVPercentSummary                       | CCVPercentSummary                       |
@@ -55,8 +55,8 @@ Scenario Outline: Tiles - PNG
 	| CCV                                     | CCV                                     |
 	| CCVPercent                              | CCVPercent                              |
 	| PassCount                               | PassCount                               |
-	#| CutFill                                 | CutFill                                 |
-	#| CutFillCustomPalettes                   | CutFillCustomPalettes                   |
+	| CutFill                                 | CutFill                                 |
+	| CutFillCustomPalettes                   | CutFillCustomPalettes                   |
 	| TemperatureSummary                      | TemperatureSummary                      |
 	| CCVSummary                              | CCVSummary                              |
 	| CCVPercentSummary                       | CCVPercentSummary                       |
@@ -99,8 +99,8 @@ Scenario Outline: Tiles - Raw PNG
 	| CCV                                     | CCV                                     | False     |
 	| CCVPercent                              | CCVPercent                              | False     |
 	| PassCount                               | PassCount                               | False     |
-	#| CutFill                                 | CutFill                                 | False     |
-	#| CutFillCustomPalettes                   | CutFillCustomPalettes                   | False     |
+	| CutFill                                 | CutFill                                 | False     |
+	| CutFillCustomPalettes                   | CutFillCustomPalettes                   | False     |
 	| TemperatureSummary                      | TemperatureSummary                      | False     |
 	| CCVSummary                              | CCVSummary                              | False     |
 	| CCVPercentSummary                       | CCVPercentSummary                       | False     |

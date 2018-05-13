@@ -1,16 +1,17 @@
-﻿using ASNodeDecls;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ASNodeDecls;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Interfaces;
 using VSS.Productivity3D.WebApiModels.MapHandling;
 
 
@@ -20,7 +21,6 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
   public class MapTileGenerator : IMapTileGenerator
   {
     private readonly ILogger log;
-    private readonly ILoggerFactory logger;
 
     private readonly IMapTileService mapTileService;
     private readonly IProjectTileService projectTileService;
@@ -35,7 +35,6 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       IAlignmentTileService alignmentTileService, IDxfTileService dxfTileService, IProductionDataTileService productionDataTileService)
     {
       log = logger.CreateLogger<MapTileGenerator>();
-      this.logger = logger;
       this.mapTileService = mapTileService;
       this.projectTileService = projectTileService;
       this.geofenceTileService = geofenceTileService;
@@ -76,7 +75,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       parameters.pixelTopLeft = TileServiceUtils.LatLngToPixel(bbox.maxLat, bbox.minLng, parameters.numTiles);
       log.LogDebug("MapParameters: " + JsonConvert.SerializeObject(parameters));
 
-      Dictionary<TileOverlayType,byte[]> tileList = new Dictionary<TileOverlayType, byte[]>();
+      Dictionary<TileOverlayType, byte[]> tileList = new Dictionary<TileOverlayType, byte[]>();
       object lockObject = new object();
 
       var overlayTasks = request.overlays.Select(async overlay =>
@@ -130,7 +129,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         {
           lock (lockObject)
           {
-            tileList.Add(overlay,bitmap);
+            tileList.Add(overlay, bitmap);
           }
         }
       });
@@ -153,7 +152,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="overlayTile">The tile to scale</param>
     /// <returns>The scaled tile</returns>
     private byte[] ScaleTile(TileGenerationRequest request, byte[] overlayTile)
-    { 
+    {
       using (Bitmap dstImage = new Bitmap(request.width, request.height))
       using (Graphics g = Graphics.FromImage(dstImage))
       using (var tileStream = new MemoryStream(overlayTile))
@@ -176,7 +175,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     }
   }
 
- 
+
 
   public interface IMapTileGenerator
   {

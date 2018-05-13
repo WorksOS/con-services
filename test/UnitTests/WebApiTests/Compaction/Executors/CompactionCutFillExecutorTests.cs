@@ -1,17 +1,17 @@
-﻿using ASNodeRPC;
+﻿using System;
+using ASNodeRPC;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using SVOICFilterSettings;
 using SVOICLiftBuildSettings;
-using System;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
@@ -35,7 +35,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       serviceCollection.AddSingleton(loggerFactory);
       serviceCollection
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddTransient<IErrorCodesProvider, ErrorCodesProvider>();
+        .AddTransient<IErrorCodesProvider, RaptorResult>();
 
       serviceProvider = serviceCollection.BuildServiceProvider();
 

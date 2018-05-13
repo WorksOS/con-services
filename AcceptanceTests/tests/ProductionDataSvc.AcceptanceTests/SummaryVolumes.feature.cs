@@ -341,10 +341,10 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireOldSurveyedSurface")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "FilterToCompositeWithSurveyedSurface")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "FilterToCompositeWithSurveyedSurface")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "FilterToCompositeNoSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "FilterToCompositeNoSurveyedSurfaceOld")]
         public virtual void SummaryVolumes_GoodRequestWithOldSS_FilterToCompositeWithSurveyedSurface()
         {
-            this.SummaryVolumes_GoodRequestWithOldSS("FilterToCompositeWithSurveyedSurface", "FilterToCompositeNoSurveyedSurface", ((string[])(null)));
+            this.SummaryVolumes_GoodRequestWithOldSS("FilterToCompositeWithSurveyedSurface", "FilterToCompositeNoSurveyedSurfaceOld", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -353,10 +353,10 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireOldSurveyedSurface")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "CompositeToDesignWithSurveyedSurface")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "CompositeToDesignWithSurveyedSurface")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "CompositeToDesignNoSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "CompositeToDesignNoSurveyedSurfaceOld")]
         public virtual void SummaryVolumes_GoodRequestWithOldSS_CompositeToDesignWithSurveyedSurface()
         {
-            this.SummaryVolumes_GoodRequestWithOldSS("CompositeToDesignWithSurveyedSurface", "CompositeToDesignNoSurveyedSurface", ((string[])(null)));
+            this.SummaryVolumes_GoodRequestWithOldSS("CompositeToDesignWithSurveyedSurface", "CompositeToDesignNoSurveyedSurfaceOld", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -365,10 +365,10 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireOldSurveyedSurface")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "DesignToCompositeWithSurveyedSurface")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "DesignToCompositeWithSurveyedSurface")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "DesignToCompositeNoSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "DesignToCompositeNoSurveyedSurfaceOld")]
         public virtual void SummaryVolumes_GoodRequestWithOldSS_DesignToCompositeWithSurveyedSurface()
         {
-            this.SummaryVolumes_GoodRequestWithOldSS("DesignToCompositeWithSurveyedSurface", "DesignToCompositeNoSurveyedSurface", ((string[])(null)));
+            this.SummaryVolumes_GoodRequestWithOldSS("DesignToCompositeWithSurveyedSurface", "DesignToCompositeNoSurveyedSurfaceOld", ((string[])(null)));
         }
         
         public virtual void SummaryVolumes_BadRequest(string parameterName, string httpCode, string errorCode, string[] exampleTags)
