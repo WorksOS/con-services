@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using Hangfire;
 using Hangfire.Server;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
@@ -19,12 +22,14 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
   {
     private readonly IApiClient apiClient;
     private readonly ITransferProxy transferProxy;
+    private readonly ILogger log;
 
     /// <summary>
     /// Constructor with dependency injection
     /// </summary>
-    public ExportJob(IApiClient apiClient, ITransferProxy transferProxy)
+    public ExportJob(IApiClient apiClient, ITransferProxy transferProxy, ILoggerFactory logger)
     {
+      log = logger.CreateLogger<ExportJob>();
       this.apiClient = apiClient;
       this.transferProxy = transferProxy;
     }
@@ -36,10 +41,10 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     /// <param name="customHeaders">Custom request headers</param>
     /// <param name="context">Hangfire context</param>
     [ExportFailureFilter]
+    [AutomaticRetry(Attempts = 0)]
     public async Task GetExportData(ScheduleJobRequest request, IDictionary<string, string> customHeaders,
       PerformContext context)
     {
-
       //TODO: Do we want the type returned to be generic? i.e. ExportResult passed here as T.
       //But then how do we know how to save the file to S3?
       var data = await apiClient.SendRequest<ExportResult>(request, customHeaders);
@@ -51,9 +56,9 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       }
       else
       {
-        //Make sure the job state is set to failed
-        throw new ServiceException(HttpStatusCode.InternalServerError, data);
-      }   
+        //Make sure the job state is set to failed - match exception format from GracefulWebRequest
+        throw new Exception($"{HttpStatusCode.InternalServerError} {JsonConvert.SerializeObject(data)}");
+      }
     }
 
     /// <summary>

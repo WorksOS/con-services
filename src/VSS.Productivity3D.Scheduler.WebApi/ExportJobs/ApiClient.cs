@@ -23,7 +23,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     /// </summary>
     public ApiClient(IConfigurationStore configurationStore, ILoggerFactory logger)
     {
-      log = logger.CreateLogger<BaseProxy>();
+      log = logger.CreateLogger<ApiClient>();
       this.logger = logger;
       this.configurationStore = configurationStore;
     }

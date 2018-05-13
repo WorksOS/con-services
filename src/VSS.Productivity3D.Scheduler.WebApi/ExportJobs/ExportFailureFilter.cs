@@ -1,8 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Net;
 using Hangfire.Common;
 using Hangfire.States;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.ResultHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
 {
@@ -26,18 +30,28 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       if (failed == null)
         return;
 
-      //here you have the failed.Exception and you can do anything with it
-      //and also the job name context.Job.Type.Name
+      //GracefulWebRequest gets a HttpWebResponse containing the ServiceException and formats it as the message of a System.Exception
+      //e.g. "BadRequest {"Code":2002,"Message":"Failed to get requested export data with error: No data for export"}"
 
-      //Check for 400 and 500 errors which come through as an inner exception
-      var ex = failed.Exception.InnerException ?? failed.Exception;
-
-      string additionalData = string.Empty;
-      if (ex is ServiceException)
+      var message = failed.Exception.Message;
+      var httpStatusCode = HttpStatusCode.InternalServerError;
+      ContractExecutionResult result = null;
+      try
       {
-        additionalData = JsonConvert.SerializeObject(failed.Exception as ServiceException);
+        //Extract the HttpStatusCode
+        httpStatusCode = (HttpStatusCode)Enum.Parse(typeof(HttpStatusCode), message.Split(' ')[0]);
+        message = message.Substring(httpStatusCode.ToString().Length + 1);
+        //See if it's a service exception
+        result = JsonConvert.DeserializeObject<ContractExecutionResult>(message);
+      }
+      catch (Exception)
+      {
+        //Not a service exception therefore just use original exception message
+        result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, message);
       }
 
+      var failedDetails = new FailureDetails { Code = httpStatusCode, Result = result };
+      var additionalData = JsonConvert.SerializeObject(failedDetails);
       context.CandidateState = new ExportFailedState(failed.Exception, additionalData);
     }
   }

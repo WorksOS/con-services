@@ -81,6 +81,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       else if (status.Equals("FAILED", StringComparison.OrdinalIgnoreCase))
       {
         var detailsJson = JobStorage.Current.GetConnection()?.GetStateData(jobId)?.Data[ExportFailedState.EXPORT_DETAILS_KEY];
+        log.LogDebug($"GetExportJobStatus: detailsJson={detailsJson}");
         if (!string.IsNullOrEmpty(detailsJson))
         {
           details = JsonConvert.DeserializeObject<FailureDetails>(detailsJson);

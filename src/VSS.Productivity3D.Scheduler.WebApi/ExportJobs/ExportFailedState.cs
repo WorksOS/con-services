@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Hangfire.States;
-using Newtonsoft.Json;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
 {
@@ -11,16 +9,19 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
   /// </summary>
   public class ExportFailedState : FailedState, IState
   {
+    /// <summary>
+    /// Key for extracting custom failure details from failed state
+    /// </summary>
     public const string EXPORT_DETAILS_KEY = "AdditionalData";
 
-    private string additionalData;
+    private readonly string additionalData;
 
     /// <summary>
     /// 
     /// </summary>
-    public ExportFailedState(Exception exception, string additonalData) : base(exception)
+    public ExportFailedState(Exception exception, string additionalData) : base(exception)
     {
-      this.additionalData = additonalData;
+      this.additionalData = additionalData;
     }
 
     /// <summary>
