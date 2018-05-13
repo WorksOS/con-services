@@ -73,8 +73,8 @@ namespace VSS.VisionLink.Raptor.Filters
 
         public MachineDirection MachineDirection { get; set; } = MachineDirection.Unknown;
 
-        // TODO Add then set of pass types is implemented
-        // PassTypeSet: TPassTypeSet;
+        public PassTypeSet PassTypeSet { get; set; }
+
         public bool MinElevationMapping { get; set; } //MinElevationMapping : TICMinElevMappingState;
         public PositioningTech PositioningTech { get; set; } = PositioningTech.Unknown;
 
@@ -308,18 +308,15 @@ namespace VSS.VisionLink.Raptor.Filters
                 return Result;
 
             // Pass Type filter
-            // TODO Add then set of pass types is implemented
-            /*
-                         Result = FlagCheck2(HasPassTypeFilter, AFilter.HasPassTypeFilter);
-                        if (Result != 0)
-                        return Result;
+            Result = FlagCheck2(HasPassTypeFilter, AFilter.HasPassTypeFilter);
+            if (Result != 0)
+            return Result;
 
-                        if (Result == -1)  // Check the contents of the passtype filter
-                            if (PassTypeSet == AFilter.PassTypeSet)
-                                Result = 0;
-                            else
-                                Result = -1;
-            */
+            if (Result == -1)  // Check the contents of the passtype filter
+                if (PassTypeSet == AFilter.PassTypeSet)
+                    Result = 0;
+                else
+                    Result = -1;
 
             if (Result != 0)
                 return Result;
@@ -565,8 +562,7 @@ namespace VSS.VisionLink.Raptor.Filters
 
             MachineDirection = Source.MachineDirection;
 
-            // TODO Add then set of pass types is implemented
-            //  FPassTypeSet = Source.FPassTypeSet;
+            PassTypeSet = Source.PassTypeSet;
             MinElevationMapping = Source.MinElevationMapping;
 
             PositioningTech = Source.PositioningTech;
@@ -657,8 +653,7 @@ FAvoidZoneUndergroundServiceZones = false;
         {
             HasPassTypeFilter = false;
 
-            // TODO Add then set of pass types is implemented
-            //FPassTypeSet = [];
+            PassTypeSet = PassTypeSet.None;
         }
 
         public void ClearPositioningTech()
@@ -867,9 +862,8 @@ FAvoidZoneUndergroundServiceZones = false;
             // Filter on PassType
             if (HasPassTypeFilter)
             {
-                // TODO Add when set of pass types is implemented
-                //if not(PassValue.PassType in FPassTypeSet)  // maybe if noting set you may want ptFront as a default pass
-                //     Exit;
+                if (!CellPass.PassTypeHelper.PassTypeSetContains(PassTypeSet, PassValue.PassType))
+                    return false;
             }
 
             return true;
@@ -1007,14 +1001,11 @@ FAvoidZoneUndergroundServiceZones = false;
             }
 
             // Filter on PassType
-            // TODO Add then set of pass types is implemented
-            /*
-             *    if (icfsPassType in FilterSelections) 
-                {
-                  if not(PassValue.FilteredPass.PassType in FPassTypeSet)  // maybe if noting set you may want ptFront as a default pass
-                   Exit;
+            if (HasPassTypeFilter)
+            {
+                if (!CellPass.PassTypeHelper.PassTypeSetContains(PassTypeSet, PassValue.FilteredPass.PassType)) // maybe if noting set you may want ptFront as a default pass
+                    return false;
             }
-            */
 
             return true;
         }
@@ -1158,14 +1149,11 @@ FAvoidZoneUndergroundServiceZones = false;
             }
 
             // Filter on PassType
-            // TODO Add then set of pass types is implemented
-            /*
-             *    if (icfsPassType in FilterSelections) 
-                  {
-                    if not(PassValue.FilteredPass.PassType in FPassTypeSet)  // maybe if noting set you may want ptFront as a default pass
-                     Exit;
+            if (HasPassTypeFilter)
+            {
+                if (!CellPass.PassTypeHelper.PassTypeSetContains(PassTypeSet, PassValue.FilteredPass.PassType)) // maybe if noting set you may want ptFront as a default pass
+                    return false;
             }
-            */
 
             return true;
         }

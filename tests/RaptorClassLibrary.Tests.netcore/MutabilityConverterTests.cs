@@ -41,7 +41,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
                 MachineSpeed = 106,
                 MaterialTemperature = 107,
                 MDP = 108,
-                passType = Raptor.Types.PassType.Track,
+                PassType = Raptor.Types.PassType.Track,
                 RadioLatency = 109,
                 RMV = 110,
                 Time = new DateTime(2000, 1, 2, 3, 4, 5)

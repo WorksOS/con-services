@@ -26,7 +26,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
                 MachineSpeed = 7,
                 MaterialTemperature = 8,
                 MDP = 9,
-                passType = PassType.Front,
+                PassType = PassType.Front,
                 RadioLatency = 10,
                 RMV = 11,
                 Time = new DateTime(2017, 1, 1, 12, 30, 0)
@@ -49,7 +49,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
                 MachineSpeed = 70,
                 MaterialTemperature = 80,
                 MDP = 90,
-                passType = PassType.Rear,
+                PassType = PassType.Rear,
                 RadioLatency = 100,
                 RMV = 110,
                 Time = new DateTime(2017, 1, 1, 12, 45, 0)
@@ -78,7 +78,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
                 cp.MachineSpeed == CellPass.NullMachineSpeed &&
                 cp.MaterialTemperature == CellPass.NullMaterialTemp &&
                 cp.MDP == CellPass.NullMDP &&
-                cp.passType == PassType.Front &&
+                cp.PassType == PassType.Front &&
                 cp.RadioLatency == CellPass.NullRadioLatency &&
                 cp.RMV == CellPass.NullRMV &&
                 cp.Time == CellPass.NullTime,

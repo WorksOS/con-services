@@ -1330,19 +1330,18 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             {
                 try
                 {
-                    /* TODO Readd when Pass Types are implemented
+                   // /* TODO Readd when Pass Types are implemented
                     // Ensure passtype filter is set correctly
                     if (Filter.AttributeFilter.HasPassTypeFilter)
                     {
-                        if (TICPassType.ptFront in PassFilter.PassTypeSet)
+                        if ((Filter.AttributeFilter.PassTypeSet | PassTypeSet.Front) != 0)
                         {
-                            if (!(TICPassType.ptRear in PassFilter.PassTypeSet)) // VL interface doesnt mention Rear
+                            if ((Filter.AttributeFilter.PassTypeSet | PassTypeSet.Rear) == 0) // VL interface doesnt mention Rear
                             {
-                                PassFilter.PassTypeSet = PassFilter.PassTypeSet + [TICPassType.ptRear]; // these two types go together as half passes
+                                Filter.AttributeFilter.PassTypeSet |= PassTypeSet.Rear; // these two types go together as half passes
                             }
                         }
                     }
-                    */
 
                     // ... unless we if we can use the last pass grid to satisfy the query
                     if (CanUseGlobalLatestCells &&

@@ -28,7 +28,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
                 MachineSpeed = 234,
                 MaterialTemperature = 700,
                 MDP = 800,
-                passType = Raptor.Types.PassType.Front,
+                PassType = Raptor.Types.PassType.Front,
                 RadioLatency = 10,
                 RMV = 900,
                 Time = new DateTime(2000, 1, 1, 1, 1, 1)

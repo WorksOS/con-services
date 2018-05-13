@@ -287,7 +287,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                         {
                             // Also grab flags for halfpass and rearaxle
                             LatestData.HalfPass = CellPasses[I].HalfPass;
-                            LatestData.passType = CellPasses[I].passType;
+                            LatestData.PassType = CellPasses[I].PassType;
 
                             if (CellPasses[I].gpsMode != CellPass.NullGPSMode)
                             {

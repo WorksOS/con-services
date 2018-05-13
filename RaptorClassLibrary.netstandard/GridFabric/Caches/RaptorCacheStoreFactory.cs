@@ -27,7 +27,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Caches
         public ICacheStore CreateInstance()
         {
             return IsSpatial ?
-                new RaptorSpatialCacheStore(IsMutable ? "(Mutable)" : "(Immutable)") as ICacheStore :
+                new RaptorSpatialCacheStore(IsMutable ? "(Mutable)" : "(Immutable)")  :
                 new RaptorNonSpatialCacheStore(IsMutable ? "(Mutable)" : "(Immutable)") as ICacheStore; 
         }
     }

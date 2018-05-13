@@ -1,5 +1,4 @@
 ﻿using System;
-using Apache.Ignite.Core.Cache.Affinity;
 
 namespace VSS.VisionLink.Raptor.GridFabric.Affinity
 {
