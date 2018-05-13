@@ -1,8 +1,10 @@
 ﻿using System;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.SiteModels;
+using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
 using VSS.VisionLink.Raptor.TAGFiles.Types;
@@ -72,12 +74,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather.Tests
             // Did it produce the expected set of swathed cells?
             Assert.Equal(1, grid.Root.CountChildren());
 
-            // Focr computation of the latest pass information which aids locating cells with non-null values
+            // Computation of the latest pass information which aids locating cells with non-null values
             try
             {
+                IStorageProxy storageProxy = StorageProxyFactory.Storage(StorageMutability.Mutable);
                 grid.Root.ScanSubGrids(grid.FullCellExtent(), x =>
                 {
-                    ((IServerLeafSubGrid)x).ComputeLatestPassInformation(true);
+                    ((IServerLeafSubGrid)x).ComputeLatestPassInformation(true, storageProxy);
                     return true;
                 });
             }
@@ -86,10 +89,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather.Tests
                 Assert.False(true, $"Exception {E} occured computing latest cell information");
             }
 
-            uint cellX, cellY;
-            grid.CalculateIndexOfCellContainingPosition(grid.CellSize / 2, grid.CellSize / 2, out cellX, out cellY);
-
-            IServerLeafSubGrid subgrid = (IServerLeafSubGrid)grid.LocateSubGridContaining(cellX, cellY);
+            grid.CalculateIndexOfCellContainingPosition(grid.CellSize / 2, grid.CellSize / 2, out uint _, out uint _);
 
             int nonNullCellCount = 0;
             try
@@ -100,9 +100,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather.Tests
                     return true;
                 });
             }
-            catch (Exception E)
+            catch (Exception e)
             {
-                Assert.False(true,"Exception {0} occured counting non-null cells");
+                Assert.False(true, $"Exception {e} occured counting non-null cells");
             }
 
             Assert.Equal(174, nonNullCellCount);

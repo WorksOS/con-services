@@ -1,11 +1,12 @@
 ﻿using log4net;
 using System;
-using System.Linq;
 using System.Reflection;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.SiteModels;
+using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.Surfaces;
@@ -24,25 +25,28 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         private SubGridRetriever retriever;
 
         [NonSerialized]
-        SiteModel SiteModel;
+        private SiteModel SiteModel;
 
         [NonSerialized]
-        CombinedFilter Filter;
+        private IStorageProxy StorageProxy;
 
         [NonSerialized]
-        SurfaceElevationPatchRequest surfaceElevationPatchRequest;
+        private CombinedFilter Filter;
 
         [NonSerialized]
-        byte TreeLevel = SubGridTree.SubGridTreeLevels;
+        private SurfaceElevationPatchRequest surfaceElevationPatchRequest;
 
         [NonSerialized]
-        bool HasOverrideSpatialCellRestriction;
+        private byte TreeLevel = SubGridTree.SubGridTreeLevels;
 
         [NonSerialized]
-        BoundingIntegerExtent2D OverrideSpatialCellRestriction;
+        private bool HasOverrideSpatialCellRestriction;
 
         [NonSerialized]
-        int MaxNumberOfPassesToReturn = int.MaxValue;
+        private BoundingIntegerExtent2D OverrideSpatialCellRestriction;
+
+        [NonSerialized]
+        private int MaxNumberOfPassesToReturn = int.MaxValue;
 
         [NonSerialized]
         private SubGridCellAddress SubGridAddress;
@@ -86,6 +90,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// and initialises the requestor state ready to start processing indivudla subgrid requests.
         /// </summary>
         public SubGridRequestor(SiteModel sitemodel,
+                                IStorageProxy storageProxy,
                                 CombinedFilter filter,
                                 bool hasOverrideSpatialCellRestriction,
                                 BoundingIntegerExtent2D overrideSpatialCellRestriction,
@@ -94,6 +99,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                                 AreaControlSet areaControlSet)
         {
             SiteModel = sitemodel;
+            StorageProxy = storageProxy;
             Filter = filter;
             TreeLevel = treeLevel;
             HasOverrideSpatialCellRestriction = hasOverrideSpatialCellRestriction;
@@ -101,6 +107,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             MaxNumberOfPassesToReturn = maxNumberOfPassesToReturn;
 
             retriever = new SubGridRetriever(sitemodel,
+                                             StorageProxy,
                                              filter,
                                              hasOverrideSpatialCellRestriction,
                                              overrideSpatialCellRestriction,

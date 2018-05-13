@@ -367,9 +367,9 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// Adds a new TAG file item from the buffer queue via the remote filter supplied tot he continous query
         /// </summary>
         /// <param name="key"></param>
-        public void Add(TAGFileBufferQueueKey key /*, TAGFileBufferQueueItem value*/)
+        public void Add(TAGFileBufferQueueKey key)
         {
-            grouper.Add(key /*, value*/);
+            grouper.Add(key);
         }
 
         public void Dispose()

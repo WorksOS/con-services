@@ -16,6 +16,7 @@ namespace VSS.Velociraptor.DesignProfiling.GridFabric.ComputeFuncs
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        // TODO: Ignite 2.4 has a fix for the two dimensional arrya serialisation buf that requires this result to be a byte array - this can be changed back...
         public byte[] /*ClientHeightLeafSubGrid */Invoke(CalculateDesignElevationPatchArgument arg)
         {
             try
@@ -29,7 +30,7 @@ namespace VSS.Velociraptor.DesignProfiling.GridFabric.ComputeFuncs
             catch (Exception E)
             {
                 Log.Error($"Exception: {E}");
-                return null; // Todo .....
+                return null; 
             }
         }
     }

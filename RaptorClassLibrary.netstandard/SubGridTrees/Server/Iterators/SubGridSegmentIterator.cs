@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
 
@@ -18,6 +19,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
         // IterationState records the progress of the iteration by recording the path through
         // the subgrid tree which marks the progress of the iteration
         public IteratorStateIndex IterationState { get; set; } = new IteratorStateIndex();
+
+        public IStorageProxy StorageProxy { get; set; }
 
         public bool RetrieveLatestData { get; set; } = false;
         public bool RetrieveAllPasses { get; set; } = true;
@@ -106,7 +109,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
                         if (!Result.Dirty && ((RetrieveAllPasses && !Result.HasAllPasses) || (RetrieveLatestData && !Result.HasLatestData)))
                         {
                             if ((IterationState.SubGrid.Owner as IServerSubGridTree).LoadLeafSubGridSegment
-                                (SiteModels.SiteModels.StorageProxy,
+                                (StorageProxy,
                                  new SubGridCellAddress(IterationState.SubGrid.OriginX, IterationState.SubGrid.OriginY),
                                  RetrieveLatestData, RetrieveAllPasses, // StorageClasses,
                                  IterationState.SubGrid,
@@ -236,14 +239,15 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
 
         public int NumberOfSegmentsScanned { get; set; }
 
-        public SubGridSegmentIterator(IServerLeafSubGrid subgrid)
+        public SubGridSegmentIterator(IServerLeafSubGrid subgrid, IStorageProxy storageProxy)
         {
             MarkReturnedSegmentsAsTouched = true;
             SubGrid = subgrid;
             Directory = subgrid == null ? null : SubGrid.Directory;
+            StorageProxy = storageProxy;
         }
 
-        public SubGridSegmentIterator(IServerLeafSubGrid subgrid, SubGridDirectory directory) : this(subgrid)
+        public SubGridSegmentIterator(IServerLeafSubGrid subgrid, SubGridDirectory directory, IStorageProxy storageProxy) : this(subgrid, storageProxy)
         {
             Directory = directory;
         }

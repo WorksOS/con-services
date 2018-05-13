@@ -11,7 +11,10 @@ namespace VSS.VisionLink.Raptor.SiteModels
     /// It may receive messages from the Ignite layer regarding invalidation of cache items...
     /// </summary>
     public class SiteModels : Dictionary<Guid, SiteModel>
-    {      
+    {  
+        /// <summary>
+        /// The default storage proxy for the mutable/immutable envronment this SiteModels instance is running in 
+        /// </summary>
         public static IStorageProxy StorageProxy { get; set; }
 
         private static SiteModels[] instance = {null, null};

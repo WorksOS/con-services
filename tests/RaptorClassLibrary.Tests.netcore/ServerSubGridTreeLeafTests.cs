@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Cells;
+using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using Xunit;
 
@@ -49,7 +50,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
 
             CellPass pass = CreateTestCellPass();
             leaf.AddPass(0, 0, pass);
-            leaf.ComputeLatestPassInformation(true);
+            leaf.ComputeLatestPassInformation(true, StorageProxyFactory.Storage(StorageMutability.Mutable));
 
             leaf.Clear();
 
@@ -200,7 +201,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
             CellPass pass = CreateTestCellPass();
             leaf.AddPass(0, 0, pass);
 
-            leaf.ComputeLatestPassInformation(true);
+            leaf.ComputeLatestPassInformation(true, StorageProxyFactory.Storage(StorageMutability.Mutable));
 
             Assert.True(leaf.CellHasValue(0, 0), "Cell does not have value");
         }
@@ -232,7 +233,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
             pass.Time.AddMinutes(1);
             leaf.AddPass(0, 0, pass);
 
-            leaf.ComputeLatestPassInformation(true);
+            leaf.ComputeLatestPassInformation(true, StorageProxyFactory.Storage(StorageMutability.Mutable));
 
             Assert.True(leaf.CellHasValue(0, 0), "Cell does not have value");
 

@@ -46,7 +46,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Interfaces
 
         void AddPass(uint cellX, uint cellY, CellPass Pass);
 
-        void ComputeLatestPassInformation(bool fullRecompute);
+        void ComputeLatestPassInformation(bool fullRecompute, IStorageProxy storageProxy);
 
         bool LoadDirectoryFromStream(Stream stream);
         bool SaveDirectoryToStream(Stream stream);

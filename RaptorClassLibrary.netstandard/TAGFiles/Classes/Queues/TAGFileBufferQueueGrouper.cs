@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using log4net;
-using log4net.Core;
 
 namespace VSS.TRex.TAGFiles.Classes.Queues
 {
@@ -49,7 +48,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// Adds another TAG file buffer queue key into the tracked groups for processing
         /// </summary>
         /// <param name="key"></param>
-        public void Add(TAGFileBufferQueueKey key /*, TAGFileBufferQueueItem _value*/)
+        public void Add(TAGFileBufferQueueKey key)
         {
             lock (this)
             {
@@ -96,6 +95,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         {
             // Preferentially selected a project from the full buckets list
             if (fullBuckets.Count > 0)
+            {
                 foreach (var bucket in fullBuckets)
                     if (bucket.Any())
                     {
@@ -105,6 +105,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                         selectedProject = bucket[0].ProjectID;
                         return true;
                     }
+            }
 
             foreach (Guid projectID in groupMap.Keys)
             {
