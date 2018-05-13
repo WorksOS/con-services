@@ -42,7 +42,7 @@ namespace VSS.Productivity3D.WebApi
       var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
       var pathToContentRoot = Path.GetDirectoryName(pathToExe);
 
-      bool libuvConfigured = Int32.TryParse(Environment.GetEnvironmentVariable(MAX_WORKER_THREADS), out int libuvThreads);
+      bool libuvConfigured = Int32.TryParse(Environment.GetEnvironmentVariable(LIBUV_THREAD_COUNT), out int libuvThreads);
       var host = new WebHostBuilder()
         .UseConfiguration(config)
         .UseKestrel()
@@ -72,7 +72,7 @@ namespace VSS.Productivity3D.WebApi
 
 
       if (Int32.TryParse(Environment.GetEnvironmentVariable(MAX_WORKER_THREADS), out int maxWorkers) &&
-          Int32.TryParse(Environment.GetEnvironmentVariable(MAX_WORKER_THREADS), out int maxIo))
+          Int32.TryParse(Environment.GetEnvironmentVariable(MAX_IO_THREADS), out int maxIo))
       {
         ThreadPool.SetMaxThreads(maxWorkers, maxIo);
         log.LogInformation($"Max Worker Threads = {maxWorkers}");
@@ -85,7 +85,7 @@ namespace VSS.Productivity3D.WebApi
       }
 
       if (Int32.TryParse(Environment.GetEnvironmentVariable(MIN_WORKER_THREADS), out int minWorkers) &&
-          Int32.TryParse(Environment.GetEnvironmentVariable(MIN_WORKER_THREADS), out int minIo))
+          Int32.TryParse(Environment.GetEnvironmentVariable(MIN_IO_THREADS), out int minIo))
       {
         ThreadPool.SetMinThreads(minWorkers, minIo);
         log.LogInformation($"Min Worker Threads = {minWorkers}");
