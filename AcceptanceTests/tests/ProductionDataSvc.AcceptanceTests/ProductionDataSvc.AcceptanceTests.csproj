@@ -805,6 +805,9 @@
     <None Include="TestData\CompactionTagFileRequest.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="TestData\Profiles\ProfileSummaryResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="TestData\ProjectSettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
