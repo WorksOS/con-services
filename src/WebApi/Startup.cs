@@ -10,12 +10,11 @@ using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Swagger;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
-using VSS.Productivity3D.Common.Filters;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
 
 #if NET_4_7
-using VSS.Productivity3D.Common.Filters;
+using VSS.Productivity3D.FileAccess.Service.WebAPI.Filters;
 #endif
 
 namespace VSS.Productivity3D.FileAccess.Service.WebAPI

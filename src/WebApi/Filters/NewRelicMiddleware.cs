@@ -1,12 +1,9 @@
 ﻿#if NET_4_7
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace VSS.Productivity3D.Common.Filters
+namespace VSS.Productivity3D.FileAccess.Service.WebAPI.Filters
 {
   //This middleware logs events into NewRelic. This must be added after TIDAuth middleware
   public class NewRelicMiddleware
@@ -32,7 +29,7 @@ namespace VSS.Productivity3D.Common.Filters
         _eventAttributes = new Dictionary<string, object>()
         {
           {"endpoint", context.Request.Path},
-          {"elapsedTime", (Single) watch.ElapsedMilliseconds},
+          {"elapsedTime", (float) watch.ElapsedMilliseconds},
           {"result", context.Response.StatusCode.ToString() }
         };
 
