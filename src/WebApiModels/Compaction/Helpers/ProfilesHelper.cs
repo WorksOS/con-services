@@ -8,6 +8,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
   {
     public const int PROFILE_TYPE_NOT_REQUIRED = -1;
     public const int PROFILE_TYPE_HEIGHT = 2;
+    public const double ONE_MM = 0.001;
 
     public static bool CellGapExists(Velociraptor.PDSInterface.ProfileCell prevCell, Velociraptor.PDSInterface.ProfileCell currCell, out double prevStationIntercept)
     {
@@ -24,7 +25,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       bool hasPrev = prevStation.HasValue && prevInterceptLength.HasValue;
       prevStationIntercept = hasPrev ? prevStation.Value + prevInterceptLength.Value : 0.0;
      
-      return hasPrev && Math.Abs(currStation - prevStationIntercept) > 0.001;
+      return hasPrev && Math.Abs(currStation - prevStationIntercept) > ONE_MM;
     }
 
     public static void ConvertProfileEndPositions(ProfileGridPoints gridPoints, ProfileLLPoints lLPoints,

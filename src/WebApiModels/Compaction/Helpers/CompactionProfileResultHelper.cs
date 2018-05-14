@@ -178,8 +178,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             {
               result.data.Insert(0, new CompactionProfileVertex { cellType = ProfileCellType.Gap, station = 0, elevation = float.NaN });
             }
-            const double ONE_MM = 0.001;
-            if (Math.Abs(result.data[result.data.Count - 1].station - profile.gridDistanceBetweenProfilePoints) > ONE_MM)
+            if (Math.Abs(result.data[result.data.Count - 1].station - profile.gridDistanceBetweenProfilePoints) > ProfilesHelper.ONE_MM)
             {
               //The start of the gap between the last point and the slicer end point is the end of the actual data.
               result.data[result.data.Count - 1].cellType = ProfileCellType.Gap;
