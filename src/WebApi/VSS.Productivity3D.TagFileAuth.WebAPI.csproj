@@ -50,6 +50,7 @@
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.2.0" />
     <PackageReference Include="log4net.netcore" Version="3.0.0" />
+    <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.0.3" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net471' ">

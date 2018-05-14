@@ -14,9 +14,10 @@ using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.FIlters;
 using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.WebApi.Common;
 
 #if NET_4_7
-  using VSS.Productivity3D.TagFileAuth.WebAPI.Filters;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Filters;
 #endif
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI
@@ -26,7 +27,21 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
   /// </summary>
   public class Startup
   {
+    /// <summary>
+    /// The name of this service for swagger etc.
+    /// </summary>
+    private const string SERVICE_TITLE = "3dpm Service API";
+
+    /// <summary>
+    /// Log4net repository logger name.
+    /// </summary>
     public const string LOGGER_REPO_NAME = "WebApi";
+
+    /// <summary>
+    /// Gets the root configuration object.
+    /// </summary>
+    public IConfigurationRoot Configuration { get; }
+
     private IServiceCollection serviceCollection;
 
     /// <summary>
@@ -46,16 +61,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
     }
 
     /// <summary>
-    /// Gets the root configuration object.
-    /// </summary>
-    public IConfigurationRoot Configuration { get; }
-
-    /// <summary>
     /// This method gets called by the runtime. Use this method to add services to the container
     /// </summary>
     /// <param name="services"></param>
     public void ConfigureServices(IServiceCollection services)
     {
+      services.AddCommon<Startup>(SERVICE_TITLE, "API for 3D File Access");
       services.AddLogging();
 
       //Configure CORS
@@ -127,20 +138,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(LOGGER_REPO_NAME);
 
-      app.UseExceptionTrap();
+      //Enable CORS before TID so OPTIONS works without authentication
+      app.UseCommon("VSS");
+
 #if NET_4_7
       if (Configuration["newrelic"] == "true")
-        app.UseMiddleware<NewRelicMiddleware>();
-#endif
-      app.UseCors("VSS");
-
-      app.UseSwagger();
-
-      //Swagger documentation can be viewed with http://localhost:5000/swagger/v1/swagger.json
-      app.UseSwaggerUI(c =>
       {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tagfile authorization service API");
-      });
+        app.UseMiddleware<NewRelicMiddleware>();
+      }
+#endif
 
       app.UseMvc();
     }
