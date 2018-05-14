@@ -73,6 +73,12 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
           end;
         */
 
+        /// <summary>
+        /// Processes all available tasks in the TasksToProcess list up to the maximum number the worker will accept 
+        /// for any single epoch of processing TAG files.
+        /// </summary>
+        /// <param name="ProcessedTasks"></param>
+        /// <returns></returns>
         public bool ProcessTask(List<AggregatedDataIntegratorTask> ProcessedTasks)
         {
             ProductionEventLists /*EfficientProductionEventChanges*/ SiteModelMachineTargetValues = null;
@@ -119,7 +125,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                     // Note: This request for the SiteModel specifically asks for the mutable grid Sitemodel,
                     // and also explicitly provides the transactional storage proxy being used for processig the
                     // data from TAG files into the model
-                    SiteModel SiteModelFromDM = SiteModels.SiteModels.Instance(StorageMutability.Mutable).GetSiteModel(storageProxy_Mutable, Task.TargetSiteModelID);
+                    SiteModel SiteModelFromDM = SiteModels.SiteModels.Instance(StorageMutability.Mutable).GetSiteModel(storageProxy_Mutable, Task.TargetSiteModelID, true);
 
                     if (SiteModelFromDM == null)
                     {

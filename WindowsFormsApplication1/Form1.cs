@@ -671,7 +671,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         /// Perform a simple volumes calc based on earliest to latest filters of the viewable screen area.
         /// </summary>
         /// <returns></returns>
-        private SimpleVolumesResponse PerformVolume()
+        private SimpleVolumesResponse PerformVolume(bool useScreenExtents)
         {
             // Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
             // SiteModel siteModel = RaptorGenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
@@ -690,7 +690,9 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                         SurveyedSurfaceExclusionList = GetSurveyedSurfaceExclusionList(siteModel),
                     },
 
-                    SpatialFilter = new CellSpatialFilter()
+                    SpatialFilter = !useScreenExtents 
+                    ? new CellSpatialFilter()
+                    : new CellSpatialFilter
                     {
                         CoordsAreGrid = true,
                         IsSpatial = true,
@@ -736,9 +738,9 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
         private void btnCalculateVolumes_Click(object sender, EventArgs e)
         {
-      // Calculate a simple volume based on a filter to filter, earliest to latest context
+      // Calculate a simple volume based on a filter to filter, earliest to latest context, for the visible extents on the screen
             Cursor.Current = Cursors.WaitCursor;
-            SimpleVolumesResponse volume = PerformVolume();
+            SimpleVolumesResponse volume = PerformVolume(true);
 
             if (volume == null)
             {
@@ -747,7 +749,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             }
           Cursor.Current = Cursors.Default;
 
-          MessageBox.Show($"Simple Volume Response:\n{volume}");
+          MessageBox.Show($"Simple Volume Response [Screen Extents]:\n{volume}");
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
@@ -889,5 +891,21 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         }
         request.Execute(arg);
       }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            // Calculate a simple volume based on a filter to filter, earliest to latest context for the entire model
+            Cursor.Current = Cursors.WaitCursor;
+            SimpleVolumesResponse volume = PerformVolume(false);
+
+            if (volume == null)
+            {
+                MessageBox.Show("Volume retuned no response");
+                return;
+            }
+            Cursor.Current = Cursors.Default;
+
+            MessageBox.Show($"Simple Volume Response [Model Extents]:\n{volume}");
+        }
     }
 }
