@@ -1,5 +1,3 @@
-properties([disableConcurrentBuilds(), pipelineTriggers([])])
-
 def result = ''
 def branch = env.BRANCH_NAME
 def buildNumber = env.BUILD_NUMBER
@@ -25,18 +23,13 @@ if (branch.contains("release")) {
 def versionNumber = versionPrefix + buildNumber
 def fullVersion = versionNumber + suffix
 
-node('Ubuntu_Slave') {
-    def workspacePath =""
-    currentBuild.displayName = versionNumber + suffix
 
-	stage ('Checkout') {
-		checkout scm
-	}
-	stage ('Restore packages') {        
-		sh "bash ./CollectCoverage.sh"
-	}
+node ('Core21') {
+    checkout scm
+    docker.build("vss.trex:${fullVersion}")
+    
 
-     publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './coverage-html', reportFiles: '*', reportName: 'Coverage report'])
 }
+
 
 
