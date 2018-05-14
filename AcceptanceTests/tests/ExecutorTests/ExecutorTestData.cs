@@ -1,7 +1,8 @@
-﻿using System;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.IO;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
@@ -14,6 +15,7 @@ namespace ExecutorTests
   public class ExecutorTestData
   {
     protected IServiceProvider serviceProvider;
+    protected ILoggerFactory LoggerFactory;
     protected ILogger logger;
     protected IConfigurationStore configStore;
 
@@ -29,9 +31,9 @@ namespace ExecutorTests
     [TestInitialize]
     public virtual void InitTest()
     {
-      var serviceCollection = new ServiceCollection();
       const string loggerRepoName = "UnitTestLogTest";
-      var logPath = System.IO.Directory.GetCurrentDirectory();
+      Log4NetProvider.RepoName = loggerRepoName;
+      var logPath = Directory.GetCurrentDirectory();
 
       Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
 
@@ -39,8 +41,11 @@ namespace ExecutorTests
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
 
+      var serviceCollection = new ServiceCollection();
+
       serviceCollection.AddLogging();
-      serviceCollection.AddSingleton(loggerFactory)
+      serviceCollection
+        .AddSingleton(loggerFactory)
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IRepository<IAssetEvent>, AssetRepository>()
         .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
@@ -51,20 +56,16 @@ namespace ExecutorTests
 
       serviceProvider = serviceCollection.BuildServiceProvider();
 
-      logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<AssetIdExecutorTests>();
-      configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
+      this.LoggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+      logger = loggerFactory.CreateLogger<AssetIdExecutorTests>();
+
+      //logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<AssetIdExecutorTests>();
       assetRepo = serviceProvider.GetRequiredService<IRepository<IAssetEvent>>() as AssetRepository;
+      configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       deviceRepo = serviceProvider.GetRequiredService<IRepository<IDeviceEvent>>() as DeviceRepository;
       customerRepo = serviceProvider.GetRequiredService<IRepository<ICustomerEvent>>() as CustomerRepository;
       projectRepo = serviceProvider.GetRequiredService<IRepository<IProjectEvent>>() as ProjectRepository;
       subscriptionRepo = serviceProvider.GetRequiredService<IRepository<ISubscriptionEvent>>() as SubscriptionRepository;
-
-
-      //producer = serviceProvider.GetRequiredService<IKafka>();
-      //if (!producer.IsInitializedProducer)
-      //  producer.InitProducer(configStore);
-      //kafkaTopicName = configStore.GetValueString("KAFKA_TOPIC_NAME_NOTIFICATIONS") +
-      //                 configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
     }
 
     protected bool CreateAssetDeviceAssociation(Guid assetUid, long legacyAssetId, Guid? owningCustomerUid, Guid deviceUid, string deviceSerialNumber, string deviceType)
