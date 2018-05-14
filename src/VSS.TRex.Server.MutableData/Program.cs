@@ -1,26 +1,26 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
 using log4net;
 using log4net.Config;
-using System.Net.Mime;
-using VSS.VisionLink.Raptor;
 using VSS.VisionLink.Raptor.Servers.Compute;
 
 namespace VSS.TRex.Server.MutableData
 {
-    class Program
+  class Program
+  {
+    private static ILog Log;
+    static void Main(string[] args)
     {
-        static void Main(string[] args)
-        {
-            // Initialise the Log4Net logging system
-            string logFileName = System.Diagnostics.Process.GetCurrentProcess().ProcessName + ".log";
-            log4net.GlobalContext.Properties["LogName"] = logFileName;
-            var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
-            XmlConfigurator.Configure(logRepository);
+      // Initialise the Log4Net logging system
+      var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
+      string s = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "log4net.xml");
+      XmlConfigurator.Configure(logRepository, new FileInfo(s));
+      Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-            var server = new TagProcComputeServer();
-            Console.WriteLine("Press anykey to exit");
-            Console.ReadLine();
-        }
+      var server = new TagProcComputeServer();
+      Console.WriteLine("Press anykey to exit");
+      Console.ReadLine();
     }
+  }
 }
