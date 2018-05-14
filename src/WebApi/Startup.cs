@@ -30,7 +30,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
     /// <summary>
     /// The name of this service for swagger etc.
     /// </summary>
-    private const string SERVICE_TITLE = "3dpm Service API";
+    private const string SERVICE_TITLE = "3dpm Tag File Auth API";
 
     /// <summary>
     /// Log4net repository logger name.
@@ -66,7 +66,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
     /// <param name="services"></param>
     public void ConfigureServices(IServiceCollection services)
     {
-      services.AddCommon<Startup>(SERVICE_TITLE, "API for 3D File Access");
+      services.AddCommon<Startup>(SERVICE_TITLE, "API for 3D Tag File Auth");
       services.AddLogging();
 
       //Configure CORS
@@ -95,31 +95,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
           config.Filters.Add(new ValidationFilterAttribute());
         });
 
-      services.AddSwaggerGen(c =>
-      {
-        c.SwaggerDoc("v1", new Info { Title = "Tagfile authorization service API", Description = "API for Tagfile authorization service", Version = "v1" });
-      });
-
-      services.ConfigureSwaggerGen(options =>
-      {
-        string pathToXml;
-
-        var moduleName = typeof(Startup).GetTypeInfo().Assembly.ManifestModule.Name;
-        var assemblyName = moduleName.Substring(0, moduleName.LastIndexOf('.'));
-
-        if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), assemblyName + ".xml")))
-          pathToXml = Directory.GetCurrentDirectory();
-        else if (File.Exists(Path.Combine(System.AppContext.BaseDirectory, assemblyName + ".xml")))
-          pathToXml = System.AppContext.BaseDirectory;
-        else
-        {
-          var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
-          pathToXml = Path.GetDirectoryName(pathToExe);
-        }
-        options.IncludeXmlComments(Path.Combine(pathToXml, assemblyName + ".xml"));
-        options.IgnoreObsoleteProperties();
-        options.DescribeAllEnumsAsStrings();
-      });
       serviceCollection = services;
     }
 
@@ -127,9 +102,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
     /// <summary>
     /// Configures the specified application.
     /// </summary>
-    /// <param name="app">The application.</param>
-    /// <param name="env">The env.</param>
-    /// <param name="loggerFactory">The logger factory.</param>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
       serviceCollection.AddSingleton(loggerFactory);
@@ -138,8 +110,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(LOGGER_REPO_NAME);
 
-      //Enable CORS before TID so OPTIONS works without authentication
-      app.UseCommon("VSS");
+      app.UseCommon(SERVICE_TITLE);
 
 #if NET_4_7
       if (Configuration["newrelic"] == "true")
