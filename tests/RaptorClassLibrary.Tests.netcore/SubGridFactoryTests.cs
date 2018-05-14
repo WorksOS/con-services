@@ -117,11 +117,11 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 
             IClientLeafSubGrid HeightLeaf2 = factory.GetSubGrid(Types.GridDataType.Height);
             Assert.NotNull(HeightLeaf2);
-            Assert.Equal(HeightLeaf2.GridDataType, Types.GridDataType.Height);
+            Assert.Equal(Types.GridDataType.Height, HeightLeaf2.GridDataType);
 
             IClientLeafSubGrid HeightAndTimeLeaf2 = factory.GetSubGrid(Types.GridDataType.HeightAndTime);
             Assert.NotNull(HeightAndTimeLeaf2);
-            Assert.Equal(HeightAndTimeLeaf2.GridDataType, Types.GridDataType.HeightAndTime);
+            Assert.Equal(Types.GridDataType.HeightAndTime, HeightAndTimeLeaf2.GridDataType);
         }
     }
 }

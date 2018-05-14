@@ -36,7 +36,7 @@ namespace VSS.VisionLink.Raptor.Geometry.Tests
         {
             XYZ p = new XYZ(1, 2, 3);
 
-            Assert.Equal(p.ToString(), "X:1.000, Y:2.000, Z:3.000");
+            Assert.Equal("X:1.000, Y:2.000, Z:3.000", p.ToString());
         }
 
         [Fact()]
@@ -101,7 +101,7 @@ namespace VSS.VisionLink.Raptor.Geometry.Tests
             XYZ a = new XYZ(1, 0, 0);
             XYZ b = new XYZ(11, 0, 0);
 
-            Assert.Equal(XYZ.Get2DLength(a, b), 10.0);
+            Assert.Equal(10.0, XYZ.Get2DLength(a, b));
         }
 
         [Fact()]
@@ -165,8 +165,8 @@ namespace VSS.VisionLink.Raptor.Geometry.Tests
             XYZ right1 = new XYZ(0, 5, 0);
             XYZ right2 = new XYZ(5, 5, 0);
 
-            Assert.Equal(XYZ.GetPointOffset(bottom, top, right1), 0.0);
-            Assert.Equal(XYZ.GetPointOffset(bottom, top, right2), 5.0);
+            Assert.Equal(0.0, XYZ.GetPointOffset(bottom, top, right1));
+            Assert.Equal(5.0, XYZ.GetPointOffset(bottom, top, right2));
             Assert.Equal(XYZ.GetPointOffset(bottom, top, left), -5.0);
         }
 
@@ -198,7 +198,7 @@ namespace VSS.VisionLink.Raptor.Geometry.Tests
             XYZ top = new XYZ(0, 10, 0);
             XYZ right = new XYZ(10, 10, 0);
 
-            Assert.Equal(XYZ.GetTriArea(bottom, top, right), 50.0);
+            Assert.Equal(50.0, XYZ.GetTriArea(bottom, top, right));
         }
 
         [Fact()]
@@ -208,13 +208,13 @@ namespace VSS.VisionLink.Raptor.Geometry.Tests
             XYZ top = new XYZ(0, 10, 0);
             XYZ right = new XYZ(10, 10, 0);
 
-            Assert.Equal(XYZ.GetTriangleHeight(bottom, top, right, 1.0, 9.0), 0.0);
+            Assert.Equal(0.0, XYZ.GetTriangleHeight(bottom, top, right, 1.0, 9.0));
 
             bottom.Z = 10;
             top.Z = 10;
             right.Z = 10;
 
-            Assert.Equal(XYZ.GetTriangleHeight(bottom, top, right, 1.0, 9.0), 10.0);
+            Assert.Equal(10.0, XYZ.GetTriangleHeight(bottom, top, right, 1.0, 9.0));
         }
 
         [Fact()]
@@ -247,7 +247,7 @@ namespace VSS.VisionLink.Raptor.Geometry.Tests
         {
             // Test simple vector
             XYZ a = new XYZ(1, 1, 1);
-            Assert.Equal(XYZ.VectorLength(XYZ.UnitVector(a)), 1.0);
+            Assert.Equal(1.0, XYZ.VectorLength(XYZ.UnitVector(a)));
 
             // Text two similar vectors produce the same result
             XYZ b = new XYZ(10, 10, 10);

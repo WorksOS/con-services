@@ -78,15 +78,15 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Tests
             TAGProcessorStateBase state = new TAGProcessorStateBase();
 
             // Note: Machine direction cannot be set after a gear value is selected
-            Assert.Equal(state.MachineDirection, MachineDirection.Unknown);
+            Assert.Equal(MachineDirection.Unknown, state.MachineDirection);
 
             state.SetMachineDirection(MachineDirection.Forward);
-            Assert.Equal(state.MachineDirection, MachineDirection.Forward);
+            Assert.Equal(MachineDirection.Forward, state.MachineDirection);
 
             state.ICGear = MachineGear.Forward;
 
             state.SetMachineDirection(MachineDirection.Reverse);
-            Assert.NotEqual(state.MachineDirection, MachineDirection.Reverse);
+            Assert.NotEqual(MachineDirection.Reverse, state.MachineDirection);
         }
 
         [Fact()]
@@ -306,9 +306,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Tests
         {
             TAGProcessorStateBase state = new TAGProcessorStateBase();
 
-            Assert.Equal(state.PositioningTech, PositioningTech.Unknown);
+            Assert.Equal(PositioningTech.Unknown, state.PositioningTech);
             state.SetPositioningTechState(PositioningTech.UTS);
-            Assert.Equal(state.PositioningTech, PositioningTech.UTS);
+            Assert.Equal(PositioningTech.UTS, state.PositioningTech);
         }
 
         [Fact()]
@@ -316,7 +316,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Tests
         {
             TAGProcessorStateBase state = new TAGProcessorStateBase();
 
-            Assert.Equal(state.GPSAccuracy, GPSAccuracy.Unknown);
+            Assert.Equal(GPSAccuracy.Unknown, state.GPSAccuracy);
             state.SetGPSAccuracyState(GPSAccuracy.Fine, 1000);
             Assert.True(state.GPSAccuracy == GPSAccuracy.Fine && state.GPSAccuracyErrorLimit == 1000, "Initial value incorrect");
         }

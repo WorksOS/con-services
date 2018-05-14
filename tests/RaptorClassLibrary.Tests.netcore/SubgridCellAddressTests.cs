@@ -44,7 +44,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         {
             SubGridCellAddress ca = new SubGridCellAddress(1, 1);
 
-            Assert.Equal(ca.ToString(), "1:1");
+            Assert.Equal("1:1", ca.ToString());
         }
 
         [Fact]

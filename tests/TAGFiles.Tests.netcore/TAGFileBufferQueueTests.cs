@@ -23,7 +23,7 @@ namespace TAGFiles.Tests.netcore
             {
                 ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 TAGClientServer = TAGClientServer ?? new RaptorMutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT);
                 ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());

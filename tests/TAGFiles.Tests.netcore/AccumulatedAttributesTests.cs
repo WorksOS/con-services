@@ -96,9 +96,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Tests
             attrs.Add(new DateTime(2000, 1, 1, 1, 1, 1), GPSMode.Fixed);
             attrs.Add(new DateTime(2000, 1, 1, 1, 1, 10), GPSMode.Float);
 
-            Assert.Equal(attrs.GetGPSModeAtDateTime(new DateTime(2000, 1, 1, 1, 1, 5)), GPSMode.Fixed);
+            Assert.Equal(GPSMode.Fixed, attrs.GetGPSModeAtDateTime(new DateTime(2000, 1, 1, 1, 1, 5)));
 
-            Assert.Equal(attrs.GetGPSModeAtDateTime(new DateTime(2000, 1, 1, 1, 1, 15)), GPSMode.Float);
+            Assert.Equal(GPSMode.Float, attrs.GetGPSModeAtDateTime(new DateTime(2000, 1, 1, 1, 1, 15)));
         }
 
         [Fact()]
@@ -174,9 +174,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Tests
             attrs.Add(new DateTime(2000, 1, 1, 1, 1, 1), OnGroundState.No);
             attrs.Add(new DateTime(2000, 1, 1, 1, 1, 10), OnGroundState.YesLegacy);
 
-            Assert.Equal(attrs.GetOnGroundAtDateTime(new DateTime(2000, 1, 1, 1, 1, 5)), OnGroundState.No);
+            Assert.Equal(OnGroundState.No, attrs.GetOnGroundAtDateTime(new DateTime(2000, 1, 1, 1, 1, 5)));
 
-            Assert.Equal(attrs.GetOnGroundAtDateTime(new DateTime(2000, 1, 1, 1, 1, 15)), OnGroundState.YesLegacy);
+            Assert.Equal(OnGroundState.YesLegacy, attrs.GetOnGroundAtDateTime(new DateTime(2000, 1, 1, 1, 1, 15)));
         }
 
         [Fact()]
@@ -213,9 +213,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Tests
             attrs.Add(new DateTime(2000, 1, 1, 1, 1, 1), (double)1.0);
             attrs.Add(new DateTime(2000, 1, 1, 1, 1, 10), (double)2.0);
 
-            Assert.Equal(attrs.GetMachineSpeedValueAtDateTime(new DateTime(2000, 1, 1, 1, 1, 5)), 1.0);
+            Assert.Equal(1.0, attrs.GetMachineSpeedValueAtDateTime(new DateTime(2000, 1, 1, 1, 1, 5)));
 
-            Assert.Equal(attrs.GetMachineSpeedValueAtDateTime(new DateTime(2000, 1, 1, 1, 1, 15)), 2.0);
+            Assert.Equal(2.0, attrs.GetMachineSpeedValueAtDateTime(new DateTime(2000, 1, 1, 1, 1, 15)));
         }
 
         [Fact()]

@@ -127,10 +127,6 @@ namespace VSS.VisionLink.Raptor.Storage
                 {
                     return FileSystemErrorStatus.GranuleDoesNotExist;
                 }
-                catch (Exception e)
-                {
-                    throw;
-                }
 
                 return FileSystemErrorStatus.OK;
             }

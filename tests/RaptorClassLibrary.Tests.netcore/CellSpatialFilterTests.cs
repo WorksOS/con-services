@@ -30,7 +30,7 @@ namespace VSS.VisionLink.Raptor.Filters.Tests
         {
             CellSpatialFilter filter = new CellSpatialFilter();
 
-            Assert.Equal(filter.ActiveFiltersString(), "Spatial:False, Positional:False, DesignMask:False, AlignmentMask:False");
+            Assert.Equal("Spatial:False, Positional:False, DesignMask:False, AlignmentMask:False", filter.ActiveFiltersString());
         }
 
         [Fact()]

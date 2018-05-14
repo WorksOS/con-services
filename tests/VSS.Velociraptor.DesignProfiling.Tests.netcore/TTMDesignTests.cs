@@ -46,7 +46,7 @@ namespace VSS.Velociraptor.DesignProfiling.Tests
 
                 Assert.NotNull(design);
             }
-            catch (Exception E)
+            catch (Exception)
             {
                 Assert.False(true);
             }

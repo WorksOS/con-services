@@ -35,7 +35,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 
             Assert.Equal((uint)0, leafSubgrid.OriginX);
             Assert.Equal((uint)0, leafSubgrid.OriginY);
-            Assert.Equal(leafSubgrid.Moniker(), "0:0");
+            Assert.Equal("0:0", leafSubgrid.Moniker());
 
             // Does the dirty flag change?
             leafSubgrid.Dirty = true;

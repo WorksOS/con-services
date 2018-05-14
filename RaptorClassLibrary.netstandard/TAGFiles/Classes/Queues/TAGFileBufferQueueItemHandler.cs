@@ -47,8 +47,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// <summary>
         /// The thread providing independent lifecycle activity
         /// </summary>
-        private Thread thread1;
-        private Thread thread2;
+//        private Thread thread1;
+//        private Thread thread2;
 
         private IIgnite ignite;
         private ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> queueCache;
@@ -373,8 +373,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             //waitHandle?.Set();
             //waitHandle?.Dispose();
             //waitHandle = null;
-            thread1?.Abort();
-            thread2?.Abort();
+            //thread1?.Abort();
+            //thread2?.Abort();
         }
     }
 }
