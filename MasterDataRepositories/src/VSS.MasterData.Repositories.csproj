@@ -6,28 +6,26 @@
     <Company>VSS</Company>
     <Product>VSS.MasterData.Repositories.netcore</Product>
     <Description>Shared lib to access Masterdata aspects in the DB</Description>
-    <VersionPrefix>2.9.1</VersionPrefix>
-    <TargetFrameworks>netstandard1.6</TargetFrameworks>
+    <VersionPrefix>2.10.0</VersionPrefix>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>VSS.MasterData.Repositories</AssemblyName>
-    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
-    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.0.*" />
-    <PackageReference Include="Nito.AsyncEx.Coordination" Version="1.0.2" />
-    <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="7.0.7-m61" />
     <PackageReference Include="Dapper" Version="1.50.2" />
-    <PackageReference Include="VSS.ITask.netcore" Version="2.0.*" />
+    <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="7.0.7-m61" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="System.Linq" Version="4.3.0" />
+    <PackageReference Include="Nito.AsyncEx.Coordination" Version="1.0.2" />
     <PackageReference Include="NodaTime" Version="2.0.3" />
     <PackageReference Include="Polly" Version="5.1.0" />
-    <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
+    <PackageReference Include="System.Linq" Version="4.3.0" />
+    <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.0" />
+    <PackageReference Include="VSS.ITask.netcore" Version="2.0.*" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
