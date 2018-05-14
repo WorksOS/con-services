@@ -48,17 +48,14 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       //TODO: Do we want the type returned to be generic? i.e. ExportResult passed here as T.
       //But then how do we know how to save the file to S3?
       var data = await apiClient.SendRequest<ExportResult>(request, customHeaders);
-      if (data.Code == ContractExecutionStatesEnum.ExecutedSuccessfully)
-      {
-        //TODO: Do we want something like applicationName/customerUid/userId/jobId for S3 path?
-        //where app name and userId (appId or userUid) from JWT
-        transferProxy.Upload(new MemoryStream(data.ExportData), GetS3Key(context.BackgroundJob.Id, request.Filename));
-      }
-      else
+      if (data.Code != ContractExecutionStatesEnum.ExecutedSuccessfully)
       {
         //Make sure the job state is set to failed - match exception format from GracefulWebRequest
         throw new Exception($"{HttpStatusCode.InternalServerError} {JsonConvert.SerializeObject(data)}");
       }
+      //TODO: Do we want something like applicationName/customerUid/userId/jobId for S3 path?
+      //where app name and userId (appId or userUid) from JWT
+      transferProxy.Upload(new MemoryStream(data.ExportData), GetS3Key(context.BackgroundJob.Id, request.Filename));  
     }
 
     /// <summary>
