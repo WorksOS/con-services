@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
 using log4net;
 using log4net.Config;
@@ -18,17 +19,17 @@ namespace TRex.Service.Deployer
         static void Main(string[] args)
         {
             // Initialise the Log4Net logging system
-            string logFileName = System.Diagnostics.Process.GetCurrentProcess().ProcessName + ".log";
-            log4net.GlobalContext.Properties["LogName"] = logFileName;
-            var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
-            XmlConfigurator.Configure(logRepository);
 
+            var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
+            string s = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "log4net.xml");
+            XmlConfigurator.Configure(logRepository, new FileInfo(s));
             Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-            
+
             // Active local client Ignite node
             RaptorMutableClientServer deployServer = new RaptorMutableClientServer("ServiceDeployer");
 
             Log.Info($"Obtaining proxy for TAG file buffer queue service");
+
             // Ensure the continuous query service is installed that supports TAG file processing
             TAGFileBufferQueueServiceProxy proxy = new TAGFileBufferQueueServiceProxy();
             try
@@ -40,6 +41,7 @@ namespace TRex.Service.Deployer
             {
                 Log.Error($"Exception occurred deploying service: {e}");
             }
+
             Log.Info($"Complected service deployment for TAG file buffer queue service");
         }
     }
