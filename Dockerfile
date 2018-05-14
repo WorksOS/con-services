@@ -12,9 +12,6 @@ ENV LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/amd64/server
 COPY . /build/
 RUN dotnet build /build/TRex.Framework.netstandard.sln --output /trex
 
-#copy log4net to build manually for the moment
-RUN cp /build/log4net.xml /trex
-
 #Remove build folder from image
 RUN rm -r /build
 
