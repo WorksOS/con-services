@@ -3,15 +3,13 @@
   <PropertyGroup>
     <Authors>Merino</Authors>
     <Company>VSS</Company>
-    <TargetFrameworks>netcoreapp1.1</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.0</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <AssemblyName>VSS.Productivity3D.TagFileAuth.WebAPI</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>WebApi</PackageId>
-    <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
-    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
-    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">1.1.1</RuntimeFrameworkVersion>
+    <RuntimeFrameworkVersion>2.0</RuntimeFrameworkVersion>
     <RootNamespace>VSS.MasterData.Project.WebAPI</RootNamespace>
     <ApplicationIcon />
     <OutputTypeEx>exe</OutputTypeEx>
@@ -51,7 +49,7 @@
   </Target>
 
   
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net471' ">
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="1.1.2" />
@@ -67,13 +65,13 @@
     <ProjectReference Include="..\WebApiModels\VSS.Productivity3D.TagFileAuth.WebAPI.Models.Local.csproj" />
   </ItemGroup>
 
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net47' ">
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">
     <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp1.1|AnyCPU'">
-    <OutputPath>bin\Local\Debug\netcoreapp1.1\</OutputPath>
-    <DocumentationFile>obj\Local\Debug\netcoreapp1.1\VSS.Productivity3D.TagFileAuth.WebAPI.xml</DocumentationFile>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp2.0|AnyCPU'">
+    <OutputPath>bin\Local\Debug\netcoreapp2.0\</OutputPath>
+    <DocumentationFile>obj\Local\Debug\netcoreapp2.0\VSS.Productivity3D.TagFileAuth.WebAPI.xml</DocumentationFile>
   </PropertyGroup>
 
 

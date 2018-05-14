@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -25,7 +26,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
   /// </summary>
   public class Startup
   {
-    private const string LOGGER_REPO_NAME = "WebApi";
+    public const string LOGGER_REPO_NAME = "WebApi";
     private IServiceCollection serviceCollection;
 
     /// <summary>
@@ -68,6 +69,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
 
       // Add framework services.
       services
+        .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
         .AddTransient<IRepository<IAssetEvent>, AssetRepository>()
         .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
         .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()

@@ -1,6 +1,9 @@
-﻿using System.IO;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System.IO;
+using VSS.Log4Net.Extensions;
 
 #if NET_4_7
 using Microsoft.AspNetCore.Hosting.WindowsServices;
@@ -34,6 +37,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
         .UseConfiguration(config)
         .UseKestrel()
         .UseContentRoot(pathToContentRoot)
+        .ConfigureLogging(builder =>
+        {
+          Log4NetProvider.RepoName = Startup.LOGGER_REPO_NAME;
+          builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
+          builder.SetMinimumLevel(LogLevel.Trace);
+        })
         .UseIISIntegration()
         .UseStartup<Startup>();
       host.Build().RunAsService();
@@ -43,6 +52,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
         .UseConfiguration(config)
         .UseKestrel()
         .UseContentRoot(Directory.GetCurrentDirectory())
+        .ConfigureLogging(builder =>
+        {
+          Log4NetProvider.RepoName = Startup.LOGGER_REPO_NAME;
+          builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
+          builder.SetMinimumLevel(LogLevel.Trace);
+        })
         .UseIISIntegration()
         .UseStartup<Startup>();
       host.Build().Run();

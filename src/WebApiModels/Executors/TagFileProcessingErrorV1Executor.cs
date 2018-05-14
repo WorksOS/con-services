@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;

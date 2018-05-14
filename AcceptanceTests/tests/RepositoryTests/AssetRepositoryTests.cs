@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.IO;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Repositories;
@@ -21,15 +22,17 @@ namespace RepositoryTests
     [TestInitialize]
     public virtual void InitTest()
     {
-      var serviceCollection = new ServiceCollection();
+      const string loggerRepoName = "UnitTestLogTest";
+      Log4NetProvider.RepoName = loggerRepoName;
+      var logPath = Directory.GetCurrentDirectory();
 
-      string loggerRepoName = "UnitTestLogTest";
-      var logPath = System.IO.Directory.GetCurrentDirectory();
       Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
 
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
+
+      var serviceCollection = new ServiceCollection();
 
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory)

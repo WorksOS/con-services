@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;

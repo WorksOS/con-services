@@ -1,5 +1,4 @@
-﻿using VSS.Common.ResultsHandling;
-using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
+﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
 {
