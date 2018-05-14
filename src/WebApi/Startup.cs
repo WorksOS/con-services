@@ -14,9 +14,10 @@ using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.FIlters;
 using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.WebApi.Common;
 
 #if NET_4_7
-  using VSS.Productivity3D.TagFileAuth.WebAPI.Filters;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Filters;
 #endif
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI
@@ -26,7 +27,21 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
   /// </summary>
   public class Startup
   {
+    /// <summary>
+    /// The name of this service for swagger etc.
+    /// </summary>
+    private const string SERVICE_TITLE = "3dpm Tag File Auth API";
+
+    /// <summary>
+    /// Log4net repository logger name.
+    /// </summary>
     public const string LOGGER_REPO_NAME = "WebApi";
+
+    /// <summary>
+    /// Gets the root configuration object.
+    /// </summary>
+    public IConfigurationRoot Configuration { get; }
+
     private IServiceCollection serviceCollection;
 
     /// <summary>
@@ -46,16 +61,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
     }
 
     /// <summary>
-    /// Gets the root configuration object.
-    /// </summary>
-    public IConfigurationRoot Configuration { get; }
-
-    /// <summary>
     /// This method gets called by the runtime. Use this method to add services to the container
     /// </summary>
     /// <param name="services"></param>
     public void ConfigureServices(IServiceCollection services)
     {
+      services.AddCommon<Startup>(SERVICE_TITLE, "API for 3D Tag File Auth");
       services.AddLogging();
 
       //Configure CORS
@@ -84,31 +95,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
           config.Filters.Add(new ValidationFilterAttribute());
         });
 
-      services.AddSwaggerGen(c =>
-      {
-        c.SwaggerDoc("v1", new Info { Title = "Tagfile authorization service API", Description = "API for Tagfile authorization service", Version = "v1" });
-      });
-
-      services.ConfigureSwaggerGen(options =>
-      {
-        string pathToXml;
-
-        var moduleName = typeof(Startup).GetTypeInfo().Assembly.ManifestModule.Name;
-        var assemblyName = moduleName.Substring(0, moduleName.LastIndexOf('.'));
-
-        if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), assemblyName + ".xml")))
-          pathToXml = Directory.GetCurrentDirectory();
-        else if (File.Exists(Path.Combine(System.AppContext.BaseDirectory, assemblyName + ".xml")))
-          pathToXml = System.AppContext.BaseDirectory;
-        else
-        {
-          var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
-          pathToXml = Path.GetDirectoryName(pathToExe);
-        }
-        options.IncludeXmlComments(Path.Combine(pathToXml, assemblyName + ".xml"));
-        options.IgnoreObsoleteProperties();
-        options.DescribeAllEnumsAsStrings();
-      });
       serviceCollection = services;
     }
 
@@ -116,9 +102,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
     /// <summary>
     /// Configures the specified application.
     /// </summary>
-    /// <param name="app">The application.</param>
-    /// <param name="env">The env.</param>
-    /// <param name="loggerFactory">The logger factory.</param>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
       serviceCollection.AddSingleton(loggerFactory);
@@ -127,20 +110,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(LOGGER_REPO_NAME);
 
-      app.UseExceptionTrap();
+      app.UseCommon(SERVICE_TITLE);
+
 #if NET_4_7
       if (Configuration["newrelic"] == "true")
-        app.UseMiddleware<NewRelicMiddleware>();
-#endif
-      app.UseCors("VSS");
-
-      app.UseSwagger();
-
-      //Swagger documentation can be viewed with http://localhost:5000/swagger/v1/swagger.json
-      app.UseSwaggerUI(c =>
       {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tagfile authorization service API");
-      });
+        app.UseMiddleware<NewRelicMiddleware>();
+      }
+#endif
 
       app.UseMvc();
     }
