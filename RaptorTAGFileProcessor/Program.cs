@@ -5,7 +5,6 @@ using System.IO;
 using System.Reflection;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
-using VSS.TRex.TAGFiles.GridFabric.Services;
 using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Requests;
@@ -32,6 +31,8 @@ namespace VSS.VisionLink.Raptor.Client
 
         private static int tAGFileCount = 0;
 
+        private static Guid[] ExtraProjectGuids = new[] {Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid()};
+
         public static void SubmitSingleTAGFile(Guid projectID, Guid assetID, string fileName)
         {
             submitTAGFileRequest = submitTAGFileRequest ?? new SubmitTAGFileRequest();
@@ -54,14 +55,6 @@ namespace VSS.VisionLink.Raptor.Client
             Log.Info($"Submitting TAG file #{++tAGFileCount}: {fileName}");
 
             submitTAGFileRequest.Execute(arg);
-
-            // Submit the same TAG fils to different projects to simulate more load (a total of four copies of the tag file)
-//            arg.ProjectID += 1000000;
-//            submitTAGFileRequest.Execute(arg);
-//            arg.ProjectID += 1000000;
-//            submitTAGFileRequest.Execute(arg);
-//            arg.ProjectID += 1000000;
-//            submitTAGFileRequest.Execute(arg);
         }
 
         public static void ProcessSingleTAGFile(Guid projectID, string fileName)
@@ -194,21 +187,10 @@ namespace VSS.VisionLink.Raptor.Client
                 if (projectID == Guid.Empty)
                 {
                     return;
-               }
+                }
 
                 // Obtain a TAGFileProcessing client server
                 TAGFileProcessingClientServer TAGServer = new TAGFileProcessingClientServer();
-
-                // Ensure the continuous query service is installed
-                TAGFileBufferQueueServiceProxy proxy = new TAGFileBufferQueueServiceProxy();
-                try
-                {
-                    proxy.Deploy();
-                }
-                catch (Exception e)
-                {
-                    Log.Error($"Exception occurred deploying service: {e}");
-                }
 
                 ProcessTAGFilesInFolder(projectID, folderPath);
 

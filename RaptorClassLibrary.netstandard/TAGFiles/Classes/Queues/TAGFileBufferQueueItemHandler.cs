@@ -68,7 +68,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
                 // Check to see if there is a work package to feed to the processing pipline
                 // -> Ask the grouper for a package 
-                var package = grouper.Extract(ProjectsToAvoid, true, out Guid projectID)?.ToList();
+                var package = grouper.Extract(ProjectsToAvoid, out Guid projectID)?.ToList();
                 int packageCount = package?.Count ?? 0;
 
                 if (packageCount > 0)
@@ -76,9 +76,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                     Log.Info($"Extracted package from grouper, ProjectID:{projectID}, with {packageCount} items");
 
                     hadWorkToDo = true;
-
-                    // Add the project to the avoid list
-                    ProjectsToAvoid.Add(projectID);
 
                     try
                     {
@@ -164,7 +161,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                     {
                         // Remove the project from the avoid list
                         Log.Info($"Thread {Thread.CurrentThread.ManagedThreadId}: About to remove project {projectID} from [{(!ProjectsToAvoid.Any() ? "Empty" : ProjectsToAvoid.Select(x => $"{x}").Aggregate((a, b) => $"{a} + {b}"))}]");
-                        ProjectsToAvoid.Remove(projectID);
+                        grouper.RemoveProjectFromAvoidList(ProjectsToAvoid, projectID);
                     }
                 }
 
@@ -292,7 +289,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
                     // Check to see if there is a work package to feed to the processing pipline
                     // -> Ask the grouper for a package 
-                    var package = grouper.Extract(ProjectsToAvoid, true, out Guid projectID)?.ToList();
+                    var package = grouper.Extract(ProjectsToAvoid, out Guid projectID)?.ToList();
                     int packageCount = package?.Count ?? 0;
 
                     if (packageCount > 0)
@@ -317,7 +314,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                             // Remove the project from the avoid list
                             Log.Info(
                                 $"Thread {Thread.CurrentThread.ManagedThreadId}: About to remove project {projectID} from [{(!ProjectsToAvoid.Any() ? "Empty" : ProjectsToAvoid.Select(x => $"{x}").Aggregate((a, b) => $"{a} + {b}"))}]");
-                            ProjectsToAvoid.Remove(projectID);
+                            grouper.RemoveProjectFromAvoidList(ProjectsToAvoid, projectID);
                         }
                     }
 
@@ -352,10 +349,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             grouper = new TAGFileBufferQueueGrouper();
             // waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
-            Task task1 = Task.Factory.StartNew(ProcessTAGFilesFromGrouper2, TaskCreationOptions.LongRunning);
-            Task task2 = Task.Factory.StartNew(ProcessTAGFilesFromGrouper2, TaskCreationOptions.LongRunning);
-            Task task3 = Task.Factory.StartNew(ProcessTAGFilesFromGrouper2, TaskCreationOptions.LongRunning);
-            Task task4 = Task.Factory.StartNew(ProcessTAGFilesFromGrouper2, TaskCreationOptions.LongRunning);
+            const int NumTasks = 1;
+            Task[] tasks = Enumerable.Range(0, NumTasks).Select(x => Task.Factory.StartNew(ProcessTAGFilesFromGrouper2, TaskCreationOptions.LongRunning)).ToArray();
 
             //thread1 = new Thread(ProcessTAGFilesFromGrouper2);
             //thread1.Start();

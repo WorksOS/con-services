@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using VSS.VisionLink.Raptor.Machines.Interfaces;
 
 namespace VSS.VisionLink.Raptor.Machines

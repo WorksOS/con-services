@@ -56,30 +56,23 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 {
                     if (!assetsDict.TryGetValue(key.AssetID, out List<TAGFileBufferQueueKey> keyList))
                     {
-                        keyList = new List<TAGFileBufferQueueKey> {key};
-                        assetsDict.Add(key.AssetID, keyList);
+                        assetsDict.Add(key.AssetID, new List<TAGFileBufferQueueKey> { key });
                     }
                     else
                     {
                         keyList.Add(key);
-                    }
 
-                    // Check if this bucket is full
-                    if (keyList.Count >= kMaxNumberOfTAGFilesPerBucket)
-                    {
-                        fullBuckets.Add(keyList.ToArray());
-                        assetsDict.Remove(key.AssetID);
+                        // Check if this bucket is full
+                        if (keyList.Count >= kMaxNumberOfTAGFilesPerBucket)
+                        {
+                            fullBuckets.Add(keyList.ToArray());
+                            assetsDict.Remove(key.AssetID);
+                        }
                     }
                 }
                 else
                 {
-                    Dictionary<Guid, List<TAGFileBufferQueueKey>> newDict =
-                        new Dictionary<Guid, List<TAGFileBufferQueueKey>>
-                        {
-                            { key.AssetID, new List<TAGFileBufferQueueKey> {key} }
-                        };
-
-                    groupMap.Add(key.ProjectID, newDict);
+                    groupMap.Add(key.ProjectID, new Dictionary<Guid, List<TAGFileBufferQueueKey>> { { key.AssetID, new List<TAGFileBufferQueueKey> {key} } });
                 }
             }
         }
@@ -134,7 +127,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// and any appropriate failure mode handling while processing the bucket of TAG files returned.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<TAGFileBufferQueueKey> Extract(List<Guid> avoidProjects, bool addProjectToAvoidList, out Guid projectID)
+        public IEnumerable<TAGFileBufferQueueKey> Extract(List<Guid> avoidProjects, out Guid projectID)
         {
             lock (this)
             {
@@ -159,7 +152,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                     groupMap[projectID].Remove(result.First().AssetID);
                 }
 
-                if (addProjectToAvoidList && result.Any())
+                if (result.Any())
                 {
                     // Add the project to the avoid list
                     Log.Info($"Thread {Thread.CurrentThread.ManagedThreadId}: About to add project {projectID} to [{(!avoidProjects.Any() ? "Empty" : avoidProjects.Select(x => $"{x}").Aggregate((a, b) => $"{a} + {b}"))}]");
@@ -167,6 +160,19 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 }
 
                 return result;
+            }
+        }
+
+        /// <summary>
+        /// Performs an interlock removal of the project from the project to avoid list
+        /// </summary>
+        /// <param name="avoidProjects"></param>
+        /// <param name="projectID"></param>
+        public void RemoveProjectFromAvoidList(List<Guid> avoidProjects, Guid projectID)
+        {
+            lock (this)
+            {
+                avoidProjects.Remove(projectID);
             }
         }
     }

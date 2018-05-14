@@ -47,7 +47,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Executors
             {
                 try
                 {
-                    Log.Info($"Processing TAG file {item.FileName}");
+                    Log.Info($"Processing TAG file {item.FileName} into project {ProjectID}");
 
                     TAGFileConverter converter = new TAGFileConverter();
 
@@ -69,11 +69,11 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Executors
                         batchCount = 0;
                     }
 
-                    response.Results.Add(new ProcessTAGFileResponseItem() { FileName = item.FileName, Success = true });
+                    response.Results.Add(new ProcessTAGFileResponseItem { FileName = item.FileName, Success = true });
                 }
                 catch (Exception E)
                 {
-                    response.Results.Add(new ProcessTAGFileResponseItem() { FileName = item.FileName, Success = false, Exception = E.Message });
+                    response.Results.Add(new ProcessTAGFileResponseItem { FileName = item.FileName, Success = false, Exception = E.Message });
                 }
             }
 

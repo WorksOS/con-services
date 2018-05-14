@@ -30,14 +30,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
         /// <summary>
         /// The mutable grid storage proxy
         /// </summary>
-        private IStorageProxy storageProxy_Mutable;
+        private IStorageProxy storageProxy_Mutable = StorageProxy.RaptorInstance(StorageMutability.Mutable);
 
         /// <summary>
         /// Worker constructor that obtains the necessary storage proxies
         /// </summary>
         public AggregatedDataIntegratorWorker()
         {
-            storageProxy_Mutable = StorageProxy.RaptorInstance(StorageMutability.Mutable);
         }
 
         /// <summary>
@@ -84,7 +83,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
             EventIntegrator eventIntegrator = new EventIntegrator();
 
             /* The task contains a set of machine events and cell passes that need to be integrated into the
-              machine and sitemodel references in the task respectively.Machine events need to be integrated
+              machine and sitemodel references in the task respectively. Machine events need to be integrated
               before the cell passes that reference them are integrated.
 
               All other tasks in the task list that contain aggregated machine events and cell passes
@@ -104,67 +103,75 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                 AggregatedDataIntegratorTask Task = null;
                 try
                 {
-                    lock (TasksToProcess)
+                    if (!TasksToProcess.TryDequeue(out Task))
                     {
-                        // ====== STAGE 0: DETERMINE THE SITEMODEL AND MACHINE TO PROCESS TAG FILES FOR FROM THE BASE TASK
-                        if (!TasksToProcess.TryDequeue(out Task))
+                        return true;
+                    }
+
+                    if (Task == null)
+                    {
+                        // There is nothing in the queue to work on so just return true
+                        return true;
+                    }
+
+                    storageProxy_Mutable.Clear();
+
+                    // Note: This request for the SiteModel specifically asks for the mutable grid Sitemodel,
+                    // and also explicitly provides the transactional storage proxy being used for processig the
+                    // data from TAG files into the model
+                    SiteModel SiteModelFromDM = SiteModels.SiteModels.Instance(StorageMutability.Mutable).GetSiteModel(storageProxy_Mutable, Task.TargetSiteModelID);
+
+                    if (SiteModelFromDM == null)
+                    {
+                        Log.Error($"Unable to lock SiteModel {Task.TargetSiteModelID} from the data model file");
+                        return false;
+                    }
+
+                    Task.StartProcessingTime = DateTime.Now;
+
+                    ProcessedTasks.Add(Task); // Seed task is always a part of the processed tasks
+
+                    // First check to see if this task has been catered to by previous task processing
+                    AnyMachineEvents = Task.AggregatedMachineEvents != null;
+                    AnyCellPasses = Task.AggregatedCellPasses != null;
+
+                    if (!(AnyMachineEvents || AnyCellPasses))
+                    {
+                        Log.Info("No machine event or cell passes in base task"); // Nothing to do
+                        return true;
+                    }
+
+                    Log.Info("Aggregation Task Process --> Filter tasks to aggregate");
+
+                    // ====== STAGE 1: ASSEMBLE LIST OF TAG FILES TO AGGREGATE IN ONE OPERATION
+
+                    // Populate the tasks to process list with the aggregations that will be
+                    // processed at this time. These tasks are also removed from the main task
+                    // list to allow the TAG file processors to prepare additional TAG files
+                    // while this set is being integrated into the model.                    
+
+                    if (TasksToProcess.Count > 0)
+                    {
+                        for (int I = 0; I < Math.Min(TasksToProcess.Count - 1, TasksToProcess.Count /*Removed for POC VLPDSvcLocations.VLPDTagProc_MaxMappedTAGFilesToProcessPerAggregationEpoch*/); I++)
                         {
-                            return true;
-                        }
-
-                        if (Task == null)
-                        {
-                            // There is nothing in the queue to work on so just return true
-                            return true;
-                        }
-
-                        storageProxy_Mutable.Clear();
-
-                        Task.StartProcessingTime = DateTime.Now;
-
-                        ProcessedTasks.Add(Task); // Seed task is always a part of the processed tasks
-
-                        // First check to see if this task has been catered to by previous task processing
-                        AnyMachineEvents = Task.AggregatedMachineEvents != null;
-                        AnyCellPasses = Task.AggregatedCellPasses != null;
-
-                        if (!(AnyMachineEvents || AnyCellPasses))
-                        {
-                            // TODO add when logging available
-                            Log.Info("No machine event or cell passes in base task"); // Nothing to do
-                            return true;
-                        }
-
-                        Log.Info("Aggregation Task Process --> Filter tasks to aggregate");
-
-                        // ====== STAGE 1: ASSEMBLE LIST OF TAG FILES TO AGGREGATE IN ONE OPERATION
-
-                        // Populate the tasks to process list with the aggregations that will be
-                        // processed at this time. These tasks are also removed from the main task
-                        // list to allow the TAG file processors to prepare additional TAG files
-                        // while this set is being integrated into the model.
-
-
-                        if (TasksToProcess.Count > 0)
-                        {
-                            for (int I = 0; I < Math.Min(TasksToProcess.Count - 1, TasksToProcess.Count /*Removed for POC VLPDSvcLocations.VLPDTagProc_MaxMappedTAGFilesToProcessPerAggregationEpoch*/); I++)
+                            if (TasksToProcess.TryDequeue(out AggregatedDataIntegratorTask TestTask))
                             {
-                                if (TasksToProcess.TryPeek(out AggregatedDataIntegratorTask TestTask))
+                                if (AnyCellPasses == (TestTask.AggregatedCellPasses != null) &&
+                                    AnyMachineEvents == (TestTask.AggregatedMachineEvents != null))
                                 {
-                                    if (TestTask.TargetSiteModelID == Task.TargetSiteModelID && TestTask.TargetMachineID == Task.TargetMachineID &&
-                                      AnyCellPasses == (TestTask.AggregatedCellPasses != null) && AnyMachineEvents == (TestTask.AggregatedMachineEvents != null))
+                                    //Todo Removed for Ignite POC
+                                    //if (ProcessedTasks.Count < VLPDSvcLocations.VLPDTagProc_MaxMappedTAGFilesToProcessPerAggregationEpoch)
+                                    //{
+                                    if (TasksToProcess.TryDequeue(out TestTask))
                                     {
-                                        //Todo Removed for Ignite POC
-                                        //if (ProcessedTasks.Count < VLPDSvcLocations.VLPDTagProc_MaxMappedTAGFilesToProcessPerAggregationEpoch)
-                                        //{
-                                            TasksToProcess.TryDequeue(out TestTask);
-                                            ProcessedTasks.Add(TestTask);
-                                        //}
-                                        //else
-                                        //{
-                                        //    break;
-                                        //}
+                                        ProcessedTasks.Add(TestTask);
                                     }
+
+                                    //}
+                                    //else
+                                    //{
+                                    //    break;
+                                    //}
                                 }
                             }
                         }
@@ -223,13 +230,6 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                     // Integrate the items present in the 'TargetSiteModel' into the real sitemodel
                     // read from the datamodel file itself, then synchronously write it to the DataModel
                     // avoiding the use of the deferred persistor.
-                    SiteModel SiteModelFromDM = SiteModels.SiteModels.Instance(StorageMutability.Mutable).GetSiteModel(Task.TargetSiteModelID);
-
-                    if (SiteModelFromDM == null)
-                    {
-                        Log.Error($"Unable to lock SiteModel {Task.TargetSiteModelID} from the data model file");
-                        return false;
-                    }
 
                     Machine MachineFromDM;
 
@@ -243,7 +243,6 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 
                         if (MachineFromDM == null)
                         {
-                            //   with Task.TargetMachine do
                             MachineFromDM = SiteModelFromDM.Machines.CreateNew(Task.TargetMachine.Name,
                                 Task.TargetMachine.MachineHardwareID,
                                 Task.TargetMachine.MachineType,
@@ -253,13 +252,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                             MachineFromDM.Assign(Task.TargetMachine);
                         }
 
-                        // Bug 23038: Update the internal name of the machine with the machine name from the TAG file
+                        // Update the internal name of the machine with the machine name from the TAG file
                         if (Task.TargetMachine.Name != "" && MachineFromDM.Name != Task.TargetMachine.Name)
                         {
                             MachineFromDM.Name = Task.TargetMachine.Name;
                         }
 
-                        // Bug 23039: Update the internal type of the machine with the machine type from the TAG file
+                        // Update the internal type of the machine with the machine type from the TAG file
                         // if the existing internal machine type is zero then
                         if (Task.TargetMachine.MachineType != 0 && MachineFromDM.MachineType == 0)
                         {
@@ -371,12 +370,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                             // Integrate the cell pass data into the main sitemodel and commit each subgrid as it is updated
                             SubGridIntegrator subGridIntegrator = new SubGridIntegrator(Task.AggregatedCellPasses, SiteModelFromDM, SiteModelFromDM.Grid, storageProxy_Mutable);
 
-                            if (!subGridIntegrator.IntegrateSubGridTree(//Task.AggregatedCellPasses,
-                                                                        //SiteModelFromDM,
-                                                                        //SiteModelFromDM.Grid,
-                                                                        SubGridTreeIntegrationMode.SaveToPersistentStore,
-                                                                        // DataPersistorInstance,
-                                                                        SubgridHasChanged))
+                            if (!subGridIntegrator.IntegrateSubGridTree(SubGridTreeIntegrationMode.SaveToPersistentStore, SubgridHasChanged))
                             {
                                 return false;
                             }
