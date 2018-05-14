@@ -24,13 +24,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.UserAttributes.Add($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{ServerRoles.PSNODE}", "True");
         }
 
-        /// <summary>
-        /// Default constructor
-        /// </summary>
-        public RaptorSubGridProcessingServer()
-        {
-        }
-
+ 
         /// <summary>
         /// Sets up the loocal server configuration to reflect the requirements of subgrid processing
         /// </summary>
