@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
 using TechTalk.SpecFlow;
@@ -9,20 +10,20 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
   public class CompactionProfileSteps
   {
     private Getter<CompactionProfileResult<CompactionProfileDataResult>> profileRequester;
-
+    private string resultFileName = string.Empty;
     private string url;
     private string projectUid;
     private string queryParameters = string.Empty;
 
     [Given(@"the Compaction Profile service URI ""(.*)""")]
-    public void GivenTheCompactionProfileServiceURI(string url)
+    public void GivenTheCompactionProfileServiceUri(string uri)
     {
-      this.url = RaptorClientConfig.CompactionSvcBaseUri + url;
+      url = RaptorClientConfig.CompactionSvcBaseUri + uri;
     }
     [Given(@"a projectUid ""(.*)""")]
-    public void GivenAProjectUid(string projectUid)
+    public void GivenAProjectUid(string projectId)
     {
-      this.projectUid = projectUid;
+      projectUid = projectId;
     }
 
     [Given(@"a startLatDegrees ""(.*)"" and a startLonDegrees ""(.*)"" and an endLatDegrees ""(.*)"" And an endLonDegrees ""(.*)""")]
@@ -48,18 +49,22 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [When(@"I request a Compaction Profile")]
     public void WhenIRequestACompactionProfile()
     {
-      profileRequester = Getter<CompactionProfileResult<CompactionProfileDataResult>>.GetIt<CompactionProfileResult<CompactionProfileDataResult>>(this.url, this.projectUid, this.queryParameters);
+      profileRequester = Getter<CompactionProfileResult<CompactionProfileDataResult>>.GetIt<CompactionProfileResult<CompactionProfileDataResult>>(url, projectUid, queryParameters);
     }
 
-    [Then(@"the Compaction Profile should be")]
-    public void ThenTheCompactionProfileShouldBe(string multilineText)
+
+    [Given(@"the result file ""(.*)""")]
+    public void GivenTheResultFile(string expectedResultFile)
     {
-      profileRequester.CompareIt<CompactionProfileResult<CompactionProfileDataResult>>(multilineText);
+      resultFileName = expectedResultFile;
     }
 
-
-
-
-
+    [Then(@"the Compaction Profile result should be match expected ""(.*)""")]
+    public void ThenTheCompactionProfileResultShouldBeMatchExpected(string resultSelector)
+    {
+      var expectedData = new Getter<CompactionProfileResultTest>(url, resultFileName).ResponseRepo[resultSelector];
+      var actualData = profileRequester.CurrentResponse;
+      Assert.AreEqual(expectedData, actualData, "Expected does not match actual for profile line");      
+    }
   }
 }
