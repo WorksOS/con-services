@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2-runtime-jessies
+FROM microsoft/dotnet:2-runtime-jessie
 COPY . /app
 WORKDIR /app
 
