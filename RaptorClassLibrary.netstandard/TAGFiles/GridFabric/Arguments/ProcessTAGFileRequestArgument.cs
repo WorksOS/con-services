@@ -9,8 +9,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.GridFabric.Arguments
         /// <summary>
         /// ID of the project to process the TAG files into
         /// </summary>
-        public long ProjectID { get; set; } = -1;
-//        public Guid ProjectUID { get; set; }
+        public Guid ProjectID { get; set; } = Guid.Empty;
 
         /// <summary>
         /// ID of the asset to process the TAG files into

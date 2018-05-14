@@ -16,6 +16,7 @@ namespace VSS.VisionLink.Raptor.Analytics.GridFabric.ComputeFuncs
         where TCoordinator : BaseAnalyticsCoordinator<TArgument, TResponse>, new()
     {
         [NonSerialized]
+        // ReSharper disable once StaticMemberInGenericType
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public AnalyticsComputeFunc_ClusterCompute(string gridName, string role) : base(gridName, role)

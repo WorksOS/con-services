@@ -14,7 +14,7 @@ namespace VSS.VisionLink.Raptor.Utilities
         /// <param name="Filter"></param>
         /// <param name="DataModelID"></param>
         /// <returns></returns>
-        public static RequestErrorStatus PrepareFilterForUse(CombinedFilter Filter, long DataModelID)
+        public static RequestErrorStatus PrepareFilterForUse(CombinedFilter Filter, Guid DataModelID)
         {
             // XYZ[] NEECoords = null;
             XYZ[] LLHCoords; //: TCSConversionCoordinates;
@@ -133,7 +133,7 @@ namespace VSS.VisionLink.Raptor.Utilities
         /// <param name="Filters"></param>
         /// <param name="DataModelID"></param>
         /// <returns></returns>
-        public static RequestErrorStatus PrepareFiltersForUse(CombinedFilter [] Filters, long DataModelID)
+        public static RequestErrorStatus PrepareFiltersForUse(CombinedFilter [] Filters, Guid DataModelID)
         {
             foreach (CombinedFilter filter in Filters)
             {
@@ -160,7 +160,7 @@ namespace VSS.VisionLink.Raptor.Utilities
         /// <param name="Filter2"></param>
         /// <param name="DataModelID"></param>
         /// <returns></returns>
-        public static RequestErrorStatus PrepareFilterForUse(CombinedFilter Filter1, CombinedFilter Filter2, long DataModelID)
+        public static RequestErrorStatus PrepareFilterForUse(CombinedFilter Filter1, CombinedFilter Filter2, Guid DataModelID)
         {
             RequestErrorStatus Result = RequestErrorStatus.OK;
 

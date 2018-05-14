@@ -401,6 +401,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
             // Construct the set of requestors to be used for the filters present in the request
             Requestors = localArg.Filters.Filters.Select
                 (x => new SubGridRequestor(siteModel,
+                                           SiteModels.SiteModels.StorageProxy,
                                            x,
                                            false, // Override cell restriction
                                            BoundingIntegerExtent2D.Inverted(),

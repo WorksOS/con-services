@@ -10,7 +10,7 @@ namespace VSS.VisionLink.Raptor.Storage.Tests
 {
         public class StorageProxy_IgniteTests
     {
-        [Fact()]
+        [Fact(Skip = "Requires live Ignite node")]
         public void Test_StorageProxy_Ignite_Creation()
         {
             var proxy = new StorageProxy_Ignite(StorageMutability.Immutable);

@@ -48,7 +48,7 @@ namespace VSS.VisionLink.Raptor.Volumes
 
         // public LiftBuildSettings        : TICLiftBuildSettings; = null;
 
-        public long SiteModelID { get; set; } = -1;
+        public Guid SiteModelID { get; set; } = Guid.Empty;
 
         public bool RequiresSerialisation { get; set; } = true;
 

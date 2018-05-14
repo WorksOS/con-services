@@ -18,5 +18,7 @@ namespace VSS.VisionLink.Raptor.Events.Interfaces
         ProductionEventType EventListType { get; }
 
         void CopyEventsFrom(IProductionEvents eventsList);
-    }
+
+        bool EventsChanged { get; set; }
+    }    
 }

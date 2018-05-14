@@ -20,7 +20,7 @@ namespace VSS.VisionLink.Raptor.Events
         {}
 
         public StartEndProductionEvents(IProductionEventLists container,
-            long machineID, long siteModelID,
+            long machineID, Guid siteModelID,
             ProductionEventType eventListType,
             Action<BinaryWriter, ProductionEventType> serialiseStateOut,
             Func<BinaryReader, ProductionEventType> serialiseStateIn) : base(container, machineID, siteModelID,

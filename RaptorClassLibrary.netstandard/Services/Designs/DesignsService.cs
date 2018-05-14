@@ -8,6 +8,7 @@ using VSS.VisionLink.Raptor.Utilities.ExtensionMethods;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.Designs;
+using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.Storage;
 
 namespace VSS.VisionLink.Raptor.Services.Designs
@@ -38,7 +39,7 @@ namespace VSS.VisionLink.Raptor.Services.Designs
         /// <summary>
         /// Cache storing sitemodel instances
         /// </summary>
-        private ICache<string, byte[]> mutableNonSpatialCache;
+        private ICache<NonSpatialAffinityKey, byte[]> mutableNonSpatialCache;
 
         /// <summary>
         /// Service name.
@@ -63,10 +64,10 @@ namespace VSS.VisionLink.Raptor.Services.Designs
         public void Init()
         {
             // Delegate to the service Init() method if this becomes an Ignite service
-            mutableNonSpatialCache = _Ignite.GetCache<string, byte[]>(CacheName);
+            mutableNonSpatialCache = _Ignite.GetCache<NonSpatialAffinityKey, byte[]>(CacheName);
         }
 
-        public void Add(long SiteModelID, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents)
+        public void Add(Guid SiteModelID, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents)
         {
             throw new NotImplementedException();
         }
@@ -92,11 +93,11 @@ namespace VSS.VisionLink.Raptor.Services.Designs
         /// <param name="designDescriptor"></param>
         /// <param name="extents"></param>
         /// <param name="DesignID"></param>
-        public void AddDirect(long SiteModelID, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents, out long DesignID)
+        public void AddDirect(Guid SiteModelID, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents, out long DesignID)
         {
             // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
 
-            string cacheKey = Raptor.Designs.Storage.Designs.CacheKey(SiteModelID);
+            NonSpatialAffinityKey cacheKey = Raptor.Designs.Storage.Designs.CacheKey(SiteModelID);
             DesignID = Guid.NewGuid().GetHashCode();
 
             // Get the designs, creating it if it does not exist
@@ -117,7 +118,7 @@ namespace VSS.VisionLink.Raptor.Services.Designs
             mutableNonSpatialCache.Put(cacheKey, designList.ToBytes());
         }
 
-        public Raptor.Designs.Storage.Designs List(long SiteModelID)
+        public Raptor.Designs.Storage.Designs List(Guid SiteModelID)
         {
             Log.InfoFormat($"Listing designs from {Raptor.Designs.Storage.Designs.CacheKey(SiteModelID)}");
 
@@ -134,7 +135,7 @@ namespace VSS.VisionLink.Raptor.Services.Designs
             }
         }
 
-        public Raptor.Designs.Storage.Designs ListDirect(long SiteModelID) => List(SiteModelID);
+        public Raptor.Designs.Storage.Designs ListDirect(Guid SiteModelID) => List(SiteModelID);
 
         /*
             /// <summary>
@@ -166,10 +167,10 @@ namespace VSS.VisionLink.Raptor.Services.Designs
                     _svcName = context.Name;
                 }
 
-                mutableNonSpatialCache = _ignite.GetCache<string, Byte[]>(CacheName /*RaptorCaches.MutableNonSpatialCacheName());
+                mutableNonSpatialCache = _ignite.GetCache<NonSpatialAffinityKey, Byte[]>(CacheName /*RaptorCaches.MutableNonSpatialCacheName());
     */
 
-        public bool Remove(long SiteModelID, long DesignID) => RemoveDirect(SiteModelID, DesignID);
+        public bool Remove(Guid SiteModelID, long DesignID) => RemoveDirect(SiteModelID, DesignID);
         
         /*
        /// <summary>
@@ -199,12 +200,12 @@ namespace VSS.VisionLink.Raptor.Services.Designs
         /// <param name="SiteModelID"></param>
         /// <param name="DesignID"></param>
         /// <returns></returns>
-        public bool RemoveDirect(long SiteModelID, long DesignID)
+        public bool RemoveDirect(Guid SiteModelID, long DesignID)
         {
             // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
             try
             {
-                string cacheKey = Raptor.Designs.Storage.Designs.CacheKey(SiteModelID);
+                NonSpatialAffinityKey cacheKey = Raptor.Designs.Storage.Designs.CacheKey(SiteModelID);
 
                 // Get the designs, creating it if it does not exist
                 Raptor.Designs.Storage.Designs designList = new Raptor.Designs.Storage.Designs();
@@ -233,7 +234,7 @@ namespace VSS.VisionLink.Raptor.Services.Designs
         /// <param name="SiteModelID"></param>
         /// <param name="DesignID"></param>
         /// <returns></returns>
-        public Raptor.Designs.Storage.Design Find(long SiteModelID, long DesignID) => FindDirect(SiteModelID, DesignID);
+        public Raptor.Designs.Storage.Design Find(Guid SiteModelID, long DesignID) => FindDirect(SiteModelID, DesignID);
 
         /// <summary>
         /// Finds a given design in a site model
@@ -241,11 +242,11 @@ namespace VSS.VisionLink.Raptor.Services.Designs
         /// <param name="SiteModelID"></param>
         /// <param name="DesignID"></param>
         /// <returns></returns>
-        public Raptor.Designs.Storage.Design FindDirect(long SiteModelID, long DesignID)
+        public Raptor.Designs.Storage.Design FindDirect(Guid SiteModelID, long DesignID)
         {
             try
             {
-                string cacheKey = Raptor.Designs.Storage.Designs.CacheKey(SiteModelID);
+                NonSpatialAffinityKey cacheKey = Raptor.Designs.Storage.Designs.CacheKey(SiteModelID);
 
                 // Get the designs, creating it if it does not exist
                 Raptor.Designs.Storage.Designs designList = new Raptor.Designs.Storage.Designs();

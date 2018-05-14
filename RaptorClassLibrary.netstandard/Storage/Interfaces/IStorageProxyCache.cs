@@ -12,7 +12,7 @@ namespace VSS.TRex.Storage.Interfaces
     {
         TV Get(TK key);
 
-        CacheResult<TV> GetAndRemove(TK key);
+        bool Remove(TK key);
 
         void Put(TK key, TV value);
 

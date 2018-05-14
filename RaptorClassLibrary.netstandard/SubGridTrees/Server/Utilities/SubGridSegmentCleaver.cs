@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Reflection;
 using log4net;
+using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators;
 
@@ -19,13 +20,14 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Utilities
         /// <summary>
         /// Cleaves all dirty segments requiring cleaving within the given subgrid
         /// </summary>
+        /// <param name="storageProxy"></param>
         /// <param name="subGrid"></param>
-        public static void PerformSegmentCleaving(IServerLeafSubGrid subGrid)
+        public static void PerformSegmentCleaving(IStorageProxy storageProxy, IServerLeafSubGrid subGrid)
         {
             // TODO Need to determine locking semantics governing this
             // Debug.Assert(subGrid.Locked, "May not calculate latest pass information if the subgrid is not locked");
 
-            SubGridSegmentIterator Iterator = new SubGridSegmentIterator(subGrid)
+            SubGridSegmentIterator Iterator = new SubGridSegmentIterator(subGrid, storageProxy)
             {
                 IterationDirection = IterationDirection.Forwards,
                 ReturnDirtyOnly = true,

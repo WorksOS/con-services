@@ -33,7 +33,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
         /// </summary>
         private string RequestingRaptorNodeID { get; set; }
 
-        private long DataModelID;
+        private Guid DataModelID;
         // long MachineID = -1;
         // FExternalDescriptor :TASNodeRequestDescriptor;
 
@@ -84,7 +84,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
         /// <param name="ACutFillDesignID"></param>
         /// <param name="ARepresentColor"></param>
         /// <param name="requestingRaptorNodeID"></param>
-        public RenderOverlayTile(long ADataModelID,
+        public RenderOverlayTile(Guid ADataModelID,
                                  //AExternalDescriptor :TASNodeRequestDescriptor;
                                  DisplayMode AMode,
                                  XYZ ABLPoint, // : TWGS84Point;
@@ -495,7 +495,7 @@ namespace VSS.VisionLink.Raptor.Rendering.Executors
             }
 
             // Get the current production data existance map from the sitemodel
-            var ProdDataExistenceMap = SiteModel.GetProductionDataExistanceMap();
+            var ProdDataExistenceMap = SiteModel.GetProductionDataExistanceMap(SiteModels.SiteModels.StorageProxy);
 
             if (ProdDataExistenceMap == null)
             {

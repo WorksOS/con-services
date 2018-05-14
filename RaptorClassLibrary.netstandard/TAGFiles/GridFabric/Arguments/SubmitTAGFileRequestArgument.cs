@@ -10,8 +10,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
         /// <summary>
         /// Overridden ID of the project to process the TAG files into
         /// </summary>
-        public long ProjectID { get; set; } = -1;
-//        public Guid ProjectUID { get; set; }
+        public Guid ProjectID { get; set; } = Guid.Empty;
 
         /// <summary>
         /// Overridden ID of the asset to process the TAG files into

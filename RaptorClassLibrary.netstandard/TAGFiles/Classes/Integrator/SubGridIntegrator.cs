@@ -148,9 +148,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
 
             SubGridCellAddress SubGridOriginAddress = new SubGridCellAddress(TargetSubGrid.OriginX, TargetSubGrid.OriginY);
 
-            SubGridSegmentCleaver.PerformSegmentCleaving(TargetSubGrid);
+            SubGridSegmentCleaver.PerformSegmentCleaving(SegmentIterator.StorageProxy, TargetSubGrid);
 
-            TargetSubGrid.ComputeLatestPassInformation(true);
+            TargetSubGrid.ComputeLatestPassInformation(true, StorageProxy);
 
             foreach (var s in TargetSubGrid.Directory.SegmentDirectory)
             {
@@ -244,7 +244,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                 Grid = Source
             };
 
-            SubGridSegmentIterator SegmentIterator = new SubGridSegmentIterator(null)
+            SubGridSegmentIterator SegmentIterator = new SubGridSegmentIterator(null, StorageProxy)
             {
                 IterationDirection = IterationDirection.Forwards
             };
@@ -299,6 +299,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                                                                int LockToken)
         {
             IServerLeafSubGrid Result = SubGridUtilities.LocateSubGridContaining(
+                                    StorageProxy,
                                     Grid,
                                     // DataStoreInstance.GridDataCache,
                                     CellX, CellY,

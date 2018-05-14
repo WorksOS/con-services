@@ -1,4 +1,5 @@
-﻿using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
+﻿using System;
+using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
@@ -13,7 +14,7 @@ namespace VSS.VisionLink.Raptor.Analytics.Aggregators
         /// <summary>
         /// The project the aggregation is operating on
         /// </summary>
-        public long SiteModelID { get; set; }
+        public Guid SiteModelID { get; set; }
 
         /// <summary>
         /// The cell size of the site model the aggregation is being performed over

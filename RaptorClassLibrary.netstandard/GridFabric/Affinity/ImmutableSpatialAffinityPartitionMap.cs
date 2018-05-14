@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Apache.Ignite.Core;
+﻿using Apache.Ignite.Core;
 using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
@@ -11,7 +8,7 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <summary>
     /// Defines a spatial cache parition map for the subgrid data maintained in the immutable data grid
     /// </summary>
-    public class ImmutableSpatialAffinityPartitionMap : SpatialAffinityPartitionMap<SubGridSpatialAffinityKey, byte[]>
+    public class ImmutableSpatialAffinityPartitionMap : AffinityPartitionMap<SubGridSpatialAffinityKey, byte[]>
     {
         /// <summary>
         /// Local static instance variable to hold the partition map singleton

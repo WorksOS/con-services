@@ -61,15 +61,15 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         /// Convert the Project ID in the text box into a number. It if is invalid return project ID 2 as a default
         /// </summary>
         /// <returns></returns>
-        private long ID()
+        private Guid ID()
         {
             try
             {
-                return Convert.ToInt64(editProjectID.Text);
+                return Guid.Parse(editProjectID.Text);
             }
             catch
             {
-                return -1;
+                return Guid.Empty;
             }
         }
 
@@ -316,7 +316,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         private void editProjectID_TextChanged(object sender, EventArgs e)
         {
             // Pull the sitemodel extents using the ProjectExtents executor which will use the Ignite instance created by the generic application service server above
-            if (ID() != -1)
+            if (ID() != Guid.Empty)
             {
                 extents = GetZoomAllExtents();
                 DoUpdateLabels();
@@ -377,7 +377,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             writer.WriteLine($"Number of items in cache: {metrics.Size}");
         }
 
-        private void writeKeys(string title, StreamWriter writer, ICache<string, byte[]> cache)
+        private void writeKeys(string title, StreamWriter writer, ICache<NonSpatialAffinityKey, byte[]> cache)
         {
             int count = 0;
 
@@ -392,11 +392,11 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
             //            writeCacheMetrics(writer, cache.GetMetrics());
 
-            var scanQuery = new ScanQuery<string, byte[]>();
-            IQueryCursor<ICacheEntry<string, byte[]>> queryCursor = cache.Query(scanQuery);
+            var scanQuery = new ScanQuery<NonSpatialAffinityKey, byte[]>();
+            IQueryCursor<ICacheEntry<NonSpatialAffinityKey, byte[]>> queryCursor = cache.Query(scanQuery);
             scanQuery.PageSize = 1; // Restrict the number of keys requested in each page to reduce memory consumption
 
-            foreach (ICacheEntry<string, byte[]> cacheEntry in queryCursor)
+            foreach (ICacheEntry<NonSpatialAffinityKey, byte[]> cacheEntry in queryCursor)
             {
                 writer.WriteLine($"{count++}:{cacheEntry.Key}, size = {cacheEntry.Value.Length}");
                 //                writeCacheMetrics(writer, cache.GetMetrics());
@@ -507,7 +507,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                         {
                             try
                             {
-                                writeKeys(RaptorCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<string, byte[]>(RaptorCaches.ImmutableNonSpatialCacheName()));
+                                writeKeys(RaptorCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<NonSpatialAffinityKey, byte[]>(RaptorCaches.ImmutableNonSpatialCacheName()));
                             }
                             catch (Exception E)
                             {
@@ -515,7 +515,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                             }
                             try
                             {
-                                writeKeys(RaptorCaches.DesignTopologyExistenceMapsCacheName(), writer, ignite.GetCache<string, byte[]>(RaptorCaches.DesignTopologyExistenceMapsCacheName()));
+                                writeKeys(RaptorCaches.DesignTopologyExistenceMapsCacheName(), writer, ignite.GetCache<NonSpatialAffinityKey, byte[]>(RaptorCaches.DesignTopologyExistenceMapsCacheName()));
                             }
                             catch (Exception E)
                             {
@@ -534,7 +534,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                         {
                             try
                             {
-                                writeKeys(RaptorCaches.MutableNonSpatialCacheName(), writer, ignite.GetCache<string, byte[]>(RaptorCaches.MutableNonSpatialCacheName()));
+                                writeKeys(RaptorCaches.MutableNonSpatialCacheName(), writer, ignite.GetCache<NonSpatialAffinityKey, byte[]>(RaptorCaches.MutableNonSpatialCacheName()));
                             }
                             catch (Exception E)
                             {
@@ -671,7 +671,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         /// Perform a simple volumes calc based on earliest to latest filters of the viewable screen area.
         /// </summary>
         /// <returns></returns>
-        private SimpleVolumesResponse PerformVolume()
+        private SimpleVolumesResponse PerformVolume(bool useScreenExtents)
         {
             // Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
             // SiteModel siteModel = RaptorGenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
@@ -690,7 +690,9 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                         SurveyedSurfaceExclusionList = GetSurveyedSurfaceExclusionList(siteModel),
                     },
 
-                    SpatialFilter = new CellSpatialFilter()
+                    SpatialFilter = !useScreenExtents 
+                    ? new CellSpatialFilter()
+                    : new CellSpatialFilter
                     {
                         CoordsAreGrid = true,
                         IsSpatial = true,
@@ -736,9 +738,9 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
         private void btnCalculateVolumes_Click(object sender, EventArgs e)
         {
-      // Calculate a simple volume based on a filter to filter, earliest to latest context
+      // Calculate a simple volume based on a filter to filter, earliest to latest context, for the visible extents on the screen
             Cursor.Current = Cursors.WaitCursor;
-            SimpleVolumesResponse volume = PerformVolume();
+            SimpleVolumesResponse volume = PerformVolume(true);
 
             if (volume == null)
             {
@@ -747,7 +749,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             }
           Cursor.Current = Cursors.Default;
 
-          MessageBox.Show($"Simple Volume Response:\n{volume}");
+          MessageBox.Show($"Simple Volume Response [Screen Extents]:\n{volume}");
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
@@ -774,15 +776,15 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
         private void button4_Click(object sender, EventArgs e)
         {
-            // Test adding a stream for "5-ProductionDataModel.XML" to the mutable non-spatial cache 
+            // Test adding a stream for "<NewID>-ProductionDataModel.XML" to the mutable non-spatial cache 
 
             IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
 
-            ICache<string, byte[]> cache = ignite.GetCache<string, byte[]>(RaptorCaches.MutableNonSpatialCacheName());
+            ICache<NonSpatialAffinityKey, byte[]> cache = ignite.GetCache<NonSpatialAffinityKey, byte[]>(RaptorCaches.MutableNonSpatialCacheName());
 
             byte[] bytes = new byte[100];
 
-            string cacheKey = "50-ProductionDataModel.XML";
+            NonSpatialAffinityKey cacheKey = new NonSpatialAffinityKey(Guid.NewGuid(), "ProductionDataModel.XML");
 
             try
             {
@@ -880,7 +882,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
           arg = new SubmitTAGFileRequestArgument()
                 {
                     ProjectID = ID(),
-                    AssetID = machine.ID,
+                    AssetID = Guid.Parse("1414327a-2b91-41ef-9390-6c1f3ccc73c9"), // machine.ID,
                     TAGFileName = "0201J004SV--TAYLORS COMP--110504215856.tag",
                     TagFileContent = bytes,
                     TCCOrgID = tccOrgID
@@ -889,5 +891,21 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         }
         request.Execute(arg);
       }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            // Calculate a simple volume based on a filter to filter, earliest to latest context for the entire model
+            Cursor.Current = Cursors.WaitCursor;
+            SimpleVolumesResponse volume = PerformVolume(false);
+
+            if (volume == null)
+            {
+                MessageBox.Show("Volume retuned no response");
+                return;
+            }
+            Cursor.Current = Cursors.Default;
+
+            MessageBox.Show($"Simple Volume Response [Model Extents]:\n{volume}");
+        }
     }
 }

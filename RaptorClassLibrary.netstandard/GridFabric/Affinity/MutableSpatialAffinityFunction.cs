@@ -6,7 +6,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
     /// The affinity function used by Raptor to spread spatial data amongst processing servers
     /// </summary>
     [Serializable]
-    public class MutableSpatialAffinityFunction : SpatialAffinityFunctionBase
+    public class MutableSpatialAffinityFunction : AffinityFunctionBase
     {
         /// <summary>
         /// Given a cache key, determine which partition the cache item should reside
@@ -27,7 +27,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
             SubGridSpatialAffinityKey value = (SubGridSpatialAffinityKey)key;
 
             // Compute partition number as the modulo NumPartitions result against the project iD in the spatial affinity key
-            return (int) value.ProjectID % NumPartitions;
+            return Math.Abs(value.ProjectID.GetHashCode()) % NumPartitions;
         }
     }
 }

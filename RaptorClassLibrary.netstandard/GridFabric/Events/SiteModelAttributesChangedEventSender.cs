@@ -19,7 +19,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Events
         /// </summary>
         /// <param name="ignite"></param>
         /// <param name="siteModelID"></param>
-        public static void ModelAttributesChanged(IIgnite ignite, long siteModelID)
+        public static void ModelAttributesChanged(IIgnite ignite, Guid siteModelID)
         {
             ignite?.GetMessaging().Send(new SiteModelAttributesChangedEvent
             {

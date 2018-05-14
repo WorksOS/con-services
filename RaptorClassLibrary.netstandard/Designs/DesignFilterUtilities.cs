@@ -1,4 +1,5 @@
-﻿using VSS.VisionLink.Raptor.Filters;
+﻿using System;
+using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.SubGridTrees;
 
 namespace VSS.VisionLink.Raptor.Designs
@@ -16,7 +17,7 @@ namespace VSS.VisionLink.Raptor.Designs
         /// <param name="filter"></param>
         /// <param name="overallExistenceMap"></param>
         /// <returns></returns>
-        public static bool ProcessDesignElevationsForFilter(long siteModelID,
+        public static bool ProcessDesignElevationsForFilter(Guid siteModelID,
                                                             CombinedFilter filter,
                                                             SubGridTreeSubGridExistenceBitMask overallExistenceMap)
         {

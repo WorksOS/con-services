@@ -1,4 +1,5 @@
-﻿using VSS.VisionLink.Raptor.Geometry;
+﻿using System;
+using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.Servers.Client;
 using VSS.VisionLink.Raptor.SiteModels;
 
@@ -14,7 +15,7 @@ namespace VSS.VisionLink.Raptor.Executors
         /// </summary>
         /// <param name="ID"></param>
         /// <returns></returns>
-        public static BoundingWorldExtent3D ProductionDataOnly(long ID)
+        public static BoundingWorldExtent3D ProductionDataOnly(Guid ID)
         {
             SiteModel SiteModel = RaptorGenericApplicationServiceServer.PerformAction(() => SiteModels.SiteModels.Instance().GetSiteModel(ID, false));
 
@@ -26,7 +27,7 @@ namespace VSS.VisionLink.Raptor.Executors
         /// </summary>
         /// <param name="ID"></param>
         /// <returns></returns>
-        public static BoundingWorldExtent3D ProductionDataAndSurveyedSurfaces(long ID)
+        public static BoundingWorldExtent3D ProductionDataAndSurveyedSurfaces(Guid ID)
         {
             SiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID, false);
 
@@ -40,7 +41,7 @@ namespace VSS.VisionLink.Raptor.Executors
         /// <param name="ID"></param>
         /// <param name="SurveydSurfaceExclusionList"></param>
         /// <returns></returns>
-        public static BoundingWorldExtent3D ProductionDataAndSurveyedSurfaces(long ID, long[] SurveydSurfaceExclusionList)
+        public static BoundingWorldExtent3D ProductionDataAndSurveyedSurfaces(Guid ID, long[] SurveydSurfaceExclusionList)
         {
             SiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID, false);
 

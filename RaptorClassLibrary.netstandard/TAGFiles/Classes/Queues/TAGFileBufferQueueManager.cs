@@ -66,7 +66,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             foreach (var item in queryHandle.GetInitialQueryCursor())
             {
                 Log.Error(
-                    $"A cache entry ({item.Key}) from the TAG file buffer queue was passed back to the local scan query rather than intercepted by the remote filter fiulre");
+                    $"A cache entry ({item.Key}) from the TAG file buffer queue was passed back to the local scan query rather than intercepted by the remote filter");
             }
 
             Log.Info("Completed TAG file buffer queue manager initialisation");

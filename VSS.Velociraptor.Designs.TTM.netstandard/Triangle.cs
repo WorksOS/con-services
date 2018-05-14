@@ -7,8 +7,13 @@ namespace VSS.Velociraptor.Designs.TTM
     /// <summary>
     /// Describes a triangle in the TIN mesh
     /// </summary>
-    public class Triangle : TriStoreObject
+    public class Triangle
     {
+        /// <summary>
+        /// A 'tag' used for various purposes in TTM processing
+        /// </summary>
+        public int Tag { get; set; }
+
         public TriVertex[] Vertices = new TriVertex[3];
         public Triangle[] Neighbours = new Triangle[3];
 
@@ -18,17 +23,11 @@ namespace VSS.Velociraptor.Designs.TTM
         /// </summary>
         public ushort Flags { get; set; }
 
-  //protected
-    protected bool GetFlag(int Index) => (Flags & (1 << Index)) != 0;
+        protected bool GetFlag(int Index) => (Flags & (1 << Index)) != 0;
 
         protected void SetFlag(int Index, bool Value)
         {
             Flags = (ushort)(Value ? Flags | (1 << Index) : Flags & ~(1 << Index));
-        }
-
-        protected override void Initialise()
-        {
-            base.Initialise();
         }
 
         public Triangle()

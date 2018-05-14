@@ -32,7 +32,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Tests
             //Read the TAG file
             TAGReadResult result = file.Read(reader, sink);
 
-            Assert.Equal(result, TAGReadResult.NoError);
+            Assert.Equal(TAGReadResult.NoError, result);
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Tests
             //Read the TAG file
             TAGReadResult result = file.Read(TAGTestConsts.TestDataFilePath() + "TAGFiles\\TestTAGFile-TAGFile-Read-File.tag", sink);
 
-            Assert.Equal(result, TAGReadResult.NoError);
+            Assert.Equal(TAGReadResult.NoError, result);
         }
     }
 }

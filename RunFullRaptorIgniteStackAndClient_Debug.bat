@@ -16,5 +16,6 @@ timeout 7
 start C:\Dev\VSS.TRex\WindowsFormsApplication1\bin\debug\RaptorIgniteTest.exe
 timeout 7
 start C:\Dev\VSS.TRex\RaptorGridActivator\bin\debug\RaptorGridActivator.exe
+dotnet C:\Dev\VSS.TRex\VSS.TRex.Service.Deployer\bin\Debug\netcoreapp2.0\VSS.TRex.Service.Deployer.dll
 
  

@@ -51,7 +51,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
         // FMaximumOutstandingSubgridRequests : Integer;
 
-        public long DataModelID { get; set; } = -1;
+        public Guid DataModelID { get; set; } = Guid.Empty;
 
         /// <summary>
         /// OverallExistenceMap is the map which describes the combination of Prod Data and Surveyed Surfaces

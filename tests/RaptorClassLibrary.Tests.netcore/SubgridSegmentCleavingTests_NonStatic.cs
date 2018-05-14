@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.VisionLink.Raptor.Cells;
+using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
@@ -75,7 +76,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         {
             IServerLeafSubGrid subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
 
-            SubGridSegmentIterator Iterator = new SubGridSegmentIterator(subGrid)
+            SubGridSegmentIterator Iterator = new SubGridSegmentIterator(subGrid, StorageProxyFactory.Storage(StorageMutability.Mutable))
             {
                 IterationDirection = IterationDirection.Forwards,
                 ReturnDirtyOnly = true,
@@ -84,7 +85,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 
             Assert.True(!Iterator.MoveToFirstSubGridSegment(), "Was able to move to first segment (forwards) when requesting only dirty segments");
 
-            Iterator = new SubGridSegmentIterator(subGrid)
+            Iterator = new SubGridSegmentIterator(subGrid, StorageProxyFactory.Storage(StorageMutability.Mutable))
             {
                 IterationDirection = IterationDirection.Backwards,
                 ReturnDirtyOnly = true,
@@ -93,7 +94,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 
             Assert.True(!Iterator.MoveToFirstSubGridSegment(), "Was able to move to first segment (backwards) when requesting only dirty segments");
 
-            Iterator = new SubGridSegmentIterator(subGrid)
+            Iterator = new SubGridSegmentIterator(subGrid, StorageProxyFactory.Storage(StorageMutability.Mutable))
             {
                 IterationDirection = IterationDirection.Forwards,
                 ReturnDirtyOnly = false,
@@ -102,7 +103,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 
             Assert.True(Iterator.MoveToFirstSubGridSegment(), "Was not able to move to first segment (forwards) when requesting all segments");
 
-            Iterator = new SubGridSegmentIterator(subGrid)
+            Iterator = new SubGridSegmentIterator(subGrid, StorageProxyFactory.Storage(StorageMutability.Mutable))
             {
                 IterationDirection = IterationDirection.Backwards,
                 ReturnDirtyOnly = false,
@@ -268,13 +269,13 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
                 // Set the segment to not dirty - it shoudl be ignored
                 subGrid.Cells.PassesData[0].Dirty = false;
 
-                SubGridSegmentCleaver.PerformSegmentCleaving(subGrid);
+                SubGridSegmentCleaver.PerformSegmentCleaving(StorageProxyFactory.Storage(StorageMutability.Mutable), subGrid);
 
                 Assert.True(1 == subGrid.Cells.PassesData.Count, $"After cleaving with no dirty segments there are {subGrid.Cells.PassesData.Count} segments instead of the expected one segments");
 
                 // Set the segment to not dirty - it shoudl be ignored
                 subGrid.Cells.PassesData[0].Dirty = true;
-                SubGridSegmentCleaver.PerformSegmentCleaving(subGrid);
+                SubGridSegmentCleaver.PerformSegmentCleaving(StorageProxyFactory.Storage(StorageMutability.Mutable), subGrid);
 
                 //Check there are now two segments in total
                 Assert.True(2 == subGrid.Cells.PassesData.Count, $"After cleaving there are {subGrid.Cells.PassesData.Count} segments instead of the expected two segments");

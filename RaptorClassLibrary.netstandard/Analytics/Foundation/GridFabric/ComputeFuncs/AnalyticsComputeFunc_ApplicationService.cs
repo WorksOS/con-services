@@ -18,6 +18,7 @@ namespace VSS.VisionLink.Raptor.Analytics.GridFabric.ComputeFuncs
         where TRequest : BaseRaptorRequest<TArgument, TResponse>, new()
     {
         [NonSerialized]
+        // ReSharper disable once StaticMemberInGenericType
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public TResponse Invoke(TArgument arg)

@@ -105,9 +105,7 @@ namespace VSS.VisionLink.Raptor.Analytics
                 }
                 else
                 {
-                    // TODO Readd when logging available...
-                    // SIGLogMessage.PublishNoODS(Self, Format('Failed to request subgrid overlay index for design %s in datamodel %d (error %s)',
-                    //                            [FAggregateState.CutFillSettings.DesignDescriptor.ToString, SiteModel.ID, DesignProfilerErrorStatusName(DesignProfilerResult)]), slmcError);
+                    Log.Error($"Failed to request subgrid overlay index for design {CutFillDesignID} in datamodel {SiteModel.ID}");
                     return false;
                 }
             }

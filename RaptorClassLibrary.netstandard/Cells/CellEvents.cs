@@ -14,11 +14,6 @@ namespace VSS.VisionLink.Raptor.Cells
         public const int NoDesignNameID = 0;
 
         /// <summary>
-        /// Null value for GPS Tolerance measurements
-        /// </summary>
-        public const short NullGPSTolerance = short.MaxValue;
-
-        /// <summary>
         /// Null value for ID of Layer selected by the machine control system operator
         /// </summary>
         public const ushort NullLayerID = ushort.MaxValue;
@@ -76,7 +71,7 @@ namespace VSS.VisionLink.Raptor.Cells
         /// <summary>
         /// GPS error tolerance metric published by machine control system
         /// </summary>
-        public short GPSTolerance { get; set; }
+        public ushort GPSTolerance { get; set; }
 
         /// <summary>
         /// GPS accuracy band (find/medium/coarse) for positioning reported by the machine control system
@@ -119,7 +114,7 @@ namespace VSS.VisionLink.Raptor.Cells
             MapReset_DesignNameID = NoDesignNameID;
 
             GPSAccuracy = GPSAccuracy.Unknown;
-            GPSTolerance = NullGPSTolerance;
+            GPSTolerance = CellPass.NullGPSTolerance;
             PositioningTechnology = PositioningTech.Unknown;
             EventOnGroundState = OnGroundState.Unknown;
 

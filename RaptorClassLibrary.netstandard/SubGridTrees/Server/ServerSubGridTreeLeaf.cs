@@ -287,7 +287,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                         {
                             // Also grab flags for halfpass and rearaxle
                             LatestData.HalfPass = CellPasses[I].HalfPass;
-                            LatestData.passType = CellPasses[I].passType;
+                            LatestData.PassType = CellPasses[I].PassType;
 
                             if (CellPasses[I].gpsMode != CellPass.NullGPSMode)
                             {
@@ -517,7 +517,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             Segment.LatestPasses.PassDataExistanceMap.ForEachSetBit((x, y) => ((SubGridCellLatestPassDataWrapper_NonStatic)_GlobalLatestCells).PassData[x, y] = ((SubGridCellLatestPassDataWrapper_NonStatic)_LatestPasses).PassData[x, y]);
         }
 
-        public void ComputeLatestPassInformation(bool fullRecompute)
+        public void ComputeLatestPassInformation(bool fullRecompute, IStorageProxy storageProxy)
         {
             //            SubGridCellPassesDataSegment Segment;
 
@@ -536,7 +536,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 return;
             }
 
-            SubGridSegmentIterator Iterator = new SubGridSegmentIterator(this, Directory)
+            SubGridSegmentIterator Iterator = new SubGridSegmentIterator(this, Directory, storageProxy)
             {
                 IterationDirection = IterationDirection.Forwards,
                 ReturnDirtyOnly = !fullRecompute
@@ -585,7 +585,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
                 if (SeedSegmentInfo.Segment != null)
                 {
-                    if (((ServerSubGridTree)Owner).LoadLeafSubGridSegment(new SubGridCellAddress(OriginX, OriginY), true, false,
+                    if (((ServerSubGridTree)Owner).LoadLeafSubGridSegment(storageProxy, new SubGridCellAddress(OriginX, OriginY), true, false,
                                                                           this, SeedSegmentInfo.Segment /*, null*/))
                     {
                         LastSegment = SeedSegmentInfo.Segment;

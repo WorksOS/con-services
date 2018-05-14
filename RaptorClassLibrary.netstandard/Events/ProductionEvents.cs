@@ -27,6 +27,8 @@ namespace VSS.VisionLink.Raptor.Events
         private const int MajorVersion = 1;
         private const int MinorVersion = 0;
 
+        public bool EventsChanged { get; set; } = false;
+
         /// <summary>
         /// The structure that contains all information about this type of event.
         /// All events occur at a point in time, have some optional flags and contain a state 
@@ -71,7 +73,7 @@ namespace VSS.VisionLink.Raptor.Events
         /// <summary>
         /// The Site Model to which these events relate
         /// </summary>
-        public long SiteModelID { get; set; }
+        public Guid SiteModelID { get; set; }
 
         /// <summary>
         /// The machine to which these events relate
@@ -126,7 +128,7 @@ namespace VSS.VisionLink.Raptor.Events
         {}
 
         public ProductionEvents(IProductionEventLists container,
-            long machineID, long siteModelID,
+            long machineID, Guid siteModelID,
             ProductionEventType eventListType,
             Action<BinaryWriter, V> serialiseStateOut,
             Func<BinaryReader, V> serialiseStateIn)
@@ -263,6 +265,8 @@ namespace VSS.VisionLink.Raptor.Events
 
             Events.Insert(EventIndex, Event);
 
+            EventsChanged = true;
+
             // return Event;
         }
 
@@ -318,6 +322,7 @@ namespace VSS.VisionLink.Raptor.Events
                    Range.InRange(Events[FirstIdx].Date, StartEvent.Date, EndEvent.Date) &&
                    Range.InRange(Events[SecondIdx].Date, StartEvent.Date, EndEvent.Date))
                 {
+                    EventsChanged = true;
                     Events.RemoveAt(SecondIdx);
                 }
                 else
@@ -447,6 +452,8 @@ namespace VSS.VisionLink.Raptor.Events
                 }
             }
 
+            EventsChanged = false;
+
             /*
             using (MemoryStream MS = new MemoryStream())
             {
@@ -561,7 +568,7 @@ namespace VSS.VisionLink.Raptor.Events
         protected virtual int Compare(Event a, Event b) => a.Date.CompareTo(b.Date);
 
         /// <summary>
-        /// Sorts the events in the list according to the semenatics of plain event lists, or start/end event lists.
+        /// Sorts the events in the list according to the semantics of plain event lists, or start/end event lists.
         /// </summary>
         public void Sort() => Events.Sort(Compare);
 

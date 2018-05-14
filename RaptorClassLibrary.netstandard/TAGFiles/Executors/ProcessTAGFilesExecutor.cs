@@ -22,7 +22,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Executors
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public static ProcessTAGFileResponse Execute(long ProjectID, Guid AssetID, IEnumerable<ProcessTAGFileRequestFileItem> TAGFiles)
+        public static ProcessTAGFileResponse Execute(Guid ProjectID, Guid AssetID, IEnumerable<ProcessTAGFileRequestFileItem> TAGFiles)
         {
             Log.Info($"Processing {TAGFiles.Count()} TAG files into project {ProjectID}, asset {AssetID}");
 
@@ -38,8 +38,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Executors
 
             // Create the site model and machine etc to aggregate the processed TAG file into
             // Note: This creates these elements within the project itself, not jsut class instances...
-            SiteModel siteModel = SiteModels.SiteModels.Instance(StorageMutability.Mutable).GetSiteModel(ProjectID, true);
-            Machine machine = new Machine(null, "TestName", "TestHardwareID",  0, 0, Guid.NewGuid(), 0, false);
+            // SiteModel siteModel = SiteModels.SiteModels.Instance(StorageMutability.Mutable).GetSiteModel(ProjectID, true);
+            // Machine machine = new Machine(null, "TestName", "TestHardwareID",  0, 0, Guid.NewGuid(), 0, false);
 
             // Process each file into a task, and batch tasks into groups for integration to reduce the number of cache 
             // updates made for subgrid changes
@@ -47,7 +47,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Executors
             {
                 try
                 {
-                    Log.Info($"Processing TAG file {item.FileName}");
+                    Log.Info($"Processing TAG file {item.FileName} into project {ProjectID}");
 
                     TAGFileConverter converter = new TAGFileConverter();
 
@@ -69,11 +69,11 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Executors
                         batchCount = 0;
                     }
 
-                    response.Results.Add(new ProcessTAGFileResponseItem() { FileName = item.FileName, Success = true });
+                    response.Results.Add(new ProcessTAGFileResponseItem { FileName = item.FileName, Success = true });
                 }
                 catch (Exception E)
                 {
-                    response.Results.Add(new ProcessTAGFileResponseItem() { FileName = item.FileName, Success = false, Exception = E.Message });
+                    response.Results.Add(new ProcessTAGFileResponseItem { FileName = item.FileName, Success = false, Exception = E.Message });
                 }
             }
 

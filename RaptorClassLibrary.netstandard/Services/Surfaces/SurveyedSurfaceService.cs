@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using VSS.VisionLink.Raptor.Designs;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Storage;
@@ -28,7 +29,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <summary>
         /// Cache storing sitemodel instances
         /// </summary>
-        private ICache<string, byte[]> mutableNonSpatialCache;
+        private ICache<NonSpatialAffinityKey, byte[]> mutableNonSpatialCache;
 
         /// <summary>
         /// Service name.
@@ -57,11 +58,11 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="designDescriptor"></param>
         /// <param name="asAtDate"></param>
         /// <param name="extents"></param>
-        public void Add(long SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents )
+        public void Add(Guid SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents )
         {
             mutableNonSpatialCache.Invoke(SurveyedSurfaces.CacheKey(SiteModelID), 
                                           new AddSurveyedSurfaceProcessor(), 
-                                          new SurveyedSurface(SiteModelID, designDescriptor, asAtDate, extents));
+                                          new SurveyedSurface(designDescriptor.DesignID, designDescriptor, asAtDate, extents));
         }
 
         /// <summary>
@@ -72,11 +73,11 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="asAtDate"></param>
         /// <param name="extents"></param>
         /// <param name="SuveyedSurfaceID"></param>
-        public void AddDirect(long SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents, out long SuveyedSurfaceID)
+        public void AddDirect(Guid SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents, out long SuveyedSurfaceID)
         {
             // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
 
-            string cacheKey = SurveyedSurfaces.CacheKey(SiteModelID);
+            NonSpatialAffinityKey cacheKey = SurveyedSurfaces.CacheKey(SiteModelID);
             SuveyedSurfaceID = Guid.NewGuid().GetHashCode();
 
             // Get the surveyed surfaces, creating it if it does not exist
@@ -105,7 +106,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <summary>
         /// List the surveyed surfaces for a site model
         /// </summary>
-        public SurveyedSurfaces List(long SiteModelID)
+        public SurveyedSurfaces List(Guid SiteModelID)
         {
             Log.InfoFormat($"Listing surveyed surfaces from {SurveyedSurfaces.CacheKey(SiteModelID)}");
 
@@ -126,7 +127,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// </summary>
         /// <param name="SiteModelID"></param>
         /// <returns></returns>
-        public SurveyedSurfaces ListDirect(long SiteModelID) => List(SiteModelID);
+        public SurveyedSurfaces ListDirect(Guid SiteModelID) => List(SiteModelID);
 
         /// <summary>
         /// Defines the actions to take if the service is cancelled
@@ -134,7 +135,6 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="context"></param>
         public void Cancel(IServiceContext context)
         {
-            mutableNonSpatialCache.Remove(_svcName);
         }
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
                 _svcName = context.Name;
             }
 
-            mutableNonSpatialCache = _Ignite.GetCache<string, byte[]>(CacheName);
+            mutableNonSpatialCache = _Ignite.GetCache<NonSpatialAffinityKey, byte[]>(CacheName);
         }
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="SiteModelID"></param>
         /// <param name="SurveySurfaceID"></param>
         /// <returns></returns>
-        public bool Remove(long SiteModelID, long SurveySurfaceID)
+        public bool Remove(Guid SiteModelID, long SurveySurfaceID)
         {
             try
             {
@@ -186,13 +186,13 @@ namespace VSS.VisionLink.Raptor.Services.Surfaces
         /// <param name="SiteModelID"></param>
         /// <param name="SurveySurfaceID"></param>
         /// <returns></returns>
-        public bool RemoveDirect(long SiteModelID, long SurveySurfaceID)
+        public bool RemoveDirect(Guid SiteModelID, long SurveySurfaceID)
         {
             // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
 
             try
             {
-                string cacheKey = SurveyedSurfaces.CacheKey(SiteModelID);
+                NonSpatialAffinityKey cacheKey = SurveyedSurfaces.CacheKey(SiteModelID);
 
                 // Get the surveyed surfaces, creating it if it does not exist
                 SurveyedSurfaces ssList = new SurveyedSurfaces();

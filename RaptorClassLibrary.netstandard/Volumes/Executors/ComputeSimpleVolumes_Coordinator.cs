@@ -18,7 +18,7 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
         /// <summary>
         /// The ID of the site model the volume is being calculated for 
         /// </summary>
-        public long SiteModelID = -1;
+        public Guid SiteModelID = Guid.Empty;
 
         //ExternalDescriptor : TASNodeRequestDescriptor;
 
@@ -129,7 +129,7 @@ namespace VSS.VisionLink.Raptor.Volumes.Executors
         /// <param name="additionalSpatialFilter"></param>
         /// <param name="cutTolerance"></param>
         /// <param name="fillTolerance"></param>
-        public ComputeSimpleVolumes_Coordinator(long siteModelID,
+        public ComputeSimpleVolumes_Coordinator(Guid siteModelID,
                                     //ExternalDescriptor : TASNodeRequestDescriptor;
                                     //LiftBuildSettings : TICLiftBuildSettings;
                                     VolumeComputationType volumeType,

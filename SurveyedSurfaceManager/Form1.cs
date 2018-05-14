@@ -45,7 +45,7 @@ namespace SurveyedSurfaceManager
             }
 
             // Get the site model ID
-            if (!long.TryParse(txtSiteModelID.Text, out long ID))
+            if (!Guid.TryParse(txtSiteModelID.Text, out Guid ID))
             {
                 MessageBox.Show("Invalid Site Model ID");
                 return;
@@ -132,7 +132,7 @@ namespace SurveyedSurfaceManager
             try
             {
                 // Get the site model ID
-                if (!long.TryParse(txtSiteModelID.Text, out long ID))
+                if (!Guid.TryParse(txtSiteModelID.Text, out Guid ID))
                 {
                     MessageBox.Show("Invalid Site Model ID");
                     return;
@@ -170,7 +170,7 @@ namespace SurveyedSurfaceManager
             }
 
             // Get the site model ID
-            if (!long.TryParse(txtSiteModelID.Text, out long SiteModelID))
+            if (!Guid.TryParse(txtSiteModelID.Text, out Guid SiteModelID))
             {
                 MessageBox.Show("Invalid Site Model ID");
                 return;
@@ -213,7 +213,7 @@ namespace SurveyedSurfaceManager
             }
 
             // Get the site model ID
-            if (!long.TryParse(txtSiteModelID.Text, out long SiteModelID))
+            if (!Guid.TryParse(txtSiteModelID.Text, out Guid SiteModelID))
             {
                 MessageBox.Show("Invalid Site Model ID");
                 return;
@@ -249,7 +249,7 @@ namespace SurveyedSurfaceManager
             try
             {
                 // Get the site model ID
-                if (!long.TryParse(txtSiteModelID.Text, out long ID))
+                if (!Guid.TryParse(txtSiteModelID.Text, out Guid ID))
                 {
                     MessageBox.Show("Invalid Site Model ID");
                     return;
@@ -276,7 +276,7 @@ namespace SurveyedSurfaceManager
             }
 
             // Get the site model ID
-            if (!long.TryParse(txtSiteModelID.Text, out long ID))
+            if (!Guid.TryParse(txtSiteModelID.Text, out Guid ID))
             {
                 MessageBox.Show("Invalid Site Model ID");
                 return;

@@ -39,8 +39,8 @@ namespace VSS.VisionLink.Raptor.Storage
             spatialCache = new StorageProxyCache<SubGridSpatialAffinityKey, byte[]>(
                 ignite.GetCache<SubGridSpatialAffinityKey, byte[]>(RaptorCaches.SpatialCacheName(Mutability)));
             nonSpatialCache =
-                new StorageProxyCache<string, byte[]>(
-                    ignite.GetCache<string, byte[]>(RaptorCaches.NonSpatialCacheName(Mutability)));
+                new StorageProxyCache<NonSpatialAffinityKey, byte[]>(
+                    ignite.GetCache<NonSpatialAffinityKey, byte[]>(RaptorCaches.NonSpatialCacheName(Mutability)));
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace VSS.VisionLink.Raptor.Storage
     /// <param name="StreamType"></param>
     /// <param name="Stream"></param>
     /// <returns></returns>
-    public FileSystemErrorStatus ReadSpatialStreamFromPersistentStore(long DataModelID,
+    public FileSystemErrorStatus ReadSpatialStreamFromPersistentStore(Guid DataModelID,
                                                                           string StreamName,
                                                                           uint SubgridX, uint SubgridY,
                                                                           string SegmentIdentifier,
@@ -105,13 +105,13 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="StreamType"></param>
         /// <param name="Stream"></param>
         /// <returns></returns>
-        public FileSystemErrorStatus ReadStreamFromPersistentStore(long DataModelID, string StreamName, FileSystemStreamType StreamType, out MemoryStream Stream)
+        public FileSystemErrorStatus ReadStreamFromPersistentStore(Guid DataModelID, string StreamName, FileSystemStreamType StreamType, out MemoryStream Stream)
         {
             Stream = null;
 
             try
             {
-                string cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
+                NonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
                 // Log.Info(String.Format("Getting key:{0}", cacheKey));
 
@@ -126,10 +126,6 @@ namespace VSS.VisionLink.Raptor.Storage
                 catch (KeyNotFoundException)
                 {
                     return FileSystemErrorStatus.GranuleDoesNotExist;
-                }
-                catch (Exception e)
-                {
-                    throw;
                 }
 
                 return FileSystemErrorStatus.OK;
@@ -151,7 +147,7 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="StreamType"></param>
         /// <param name="Stream"></param>
         /// <returns></returns>
-        public FileSystemErrorStatus ReadStreamFromPersistentStoreDirect(long DataModelID, string StreamName, FileSystemStreamType StreamType, out MemoryStream Stream)
+        public FileSystemErrorStatus ReadStreamFromPersistentStoreDirect(Guid DataModelID, string StreamName, FileSystemStreamType StreamType, out MemoryStream Stream)
         {
             return ReadStreamFromPersistentStore(DataModelID, StreamName, StreamType, out Stream);
         }
@@ -162,18 +158,18 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="DataModelID"></param>
         /// <param name="StreamName"></param>
         /// <returns></returns>
-        public FileSystemErrorStatus RemoveStreamFromPersistentStore(long DataModelID, string StreamName)
+        public FileSystemErrorStatus RemoveStreamFromPersistentStore(Guid DataModelID, string StreamName)
         {
             try
             {
-                string cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
+                NonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
                 Log.Info(string.Format("Removing key:{0}", cacheKey));
 
                 // Remove item from both immutable and mutable caches
                 try
                 {
-                    nonSpatialCache.GetAndRemove(cacheKey);
+                    nonSpatialCache.Remove(cacheKey);
                 }
                 catch
                 {
@@ -201,7 +197,7 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="StreamType"></param>
         /// <param name="Stream"></param>
         /// <returns></returns>
-        public FileSystemErrorStatus WriteSpatialStreamToPersistentStore(long DataModelID, string StreamName, 
+        public FileSystemErrorStatus WriteSpatialStreamToPersistentStore(Guid DataModelID, string StreamName, 
                                                                          uint SubgridX, uint SubgridY,
                                                                          string SegmentIdentifier,
                                                                          FileSystemStreamType StreamType, 
@@ -213,7 +209,7 @@ namespace VSS.VisionLink.Raptor.Storage
 
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
-                    Log.Info($"Putting key:{cacheKey} in {spatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
+                    // Log.Info($"Putting key:{cacheKey} in {spatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
 
                     spatialCache.Put(cacheKey, compressedStream.ToArray());
                 }
@@ -247,15 +243,15 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="StreamType"></param>
         /// <param name="Stream"></param>
         /// <returns></returns>
-        public FileSystemErrorStatus WriteStreamToPersistentStore(long DataModelID, string StreamName, FileSystemStreamType StreamType, MemoryStream Stream)
+        public FileSystemErrorStatus WriteStreamToPersistentStore(Guid DataModelID, string StreamName, FileSystemStreamType StreamType, MemoryStream Stream)
         {
             try
             {
-                string cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
+                NonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
-                    Log.Info($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
+                    // Log.Info($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
 
                     nonSpatialCache.Put(cacheKey, compressedStream.ToArray());
                 }
@@ -282,15 +278,15 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="StreamType"></param>
         /// <param name="Stream"></param>
         /// <returns></returns>
-        public FileSystemErrorStatus WriteStreamToPersistentStoreDirect(long DataModelID, string StreamName, FileSystemStreamType StreamType, MemoryStream Stream)
+        public FileSystemErrorStatus WriteStreamToPersistentStoreDirect(Guid DataModelID, string StreamName, FileSystemStreamType StreamType, MemoryStream Stream)
         {
             try
             {
-                string cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
+                NonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
-                    Log.Info($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
+                    // Log.Info($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
 
                     nonSpatialCache.Put(cacheKey, compressedStream.ToArray());
                 }

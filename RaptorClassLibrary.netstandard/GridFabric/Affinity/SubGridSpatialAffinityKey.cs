@@ -1,5 +1,4 @@
 ﻿using System;
-using Apache.Ignite.Core.Cache.Affinity;
 using VSS.VisionLink.Raptor.SubGridTrees;
 
 namespace VSS.VisionLink.Raptor.GridFabric.Affinity
@@ -14,7 +13,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
         /// <summary>
         /// A numeric ID for the project the subgrid data belongs to.
         /// </summary>
-        public long ProjectID { get; set; }
+        public Guid ProjectID { get; set; }
 
         /// <summary>
         /// The X ordinate cell address of the origin cell for the subgrid
@@ -41,7 +40,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
         /// <param name="subGridX"></param>
         /// <param name="subGridY"></param>
         /// <param name="segmentIdentifier"></param>
-        public SubGridSpatialAffinityKey(long projectID, uint subGridX, uint subGridY, string segmentIdentifier)
+        public SubGridSpatialAffinityKey(Guid projectID, uint subGridX, uint subGridY, string segmentIdentifier)
         {
             ProjectID = projectID;
             SubGridX = subGridX;
@@ -56,7 +55,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
         /// <param name="projectID"></param>
         /// <param name="address"></param>
         /// <param name="segmentIdentifier"></param>
-        public SubGridSpatialAffinityKey(long projectID, SubGridCellAddress address, string segmentIdentifier)
+        public SubGridSpatialAffinityKey(Guid projectID, SubGridCellAddress address, string segmentIdentifier)
         {
             ProjectID = projectID;
             SubGridX = address.X;
@@ -71,7 +70,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
         /// <param name="projectID"></param>
         /// <param name="subGridX"></param>
         /// <param name="subGridY"></param>
-        public SubGridSpatialAffinityKey(long projectID, uint subGridX, uint subGridY) : this(projectID, subGridX, subGridY, "")
+        public SubGridSpatialAffinityKey(Guid projectID, uint subGridX, uint subGridY) : this(projectID, subGridX, subGridY, "")
         {
         }
 
@@ -81,7 +80,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
         /// </summary>
         /// <param name="projectID"></param>
         /// <param name="address"></param>
-        public SubGridSpatialAffinityKey(long projectID, SubGridCellAddress address) : this(projectID, address.X, address.Y, "")
+        public SubGridSpatialAffinityKey(Guid projectID, SubGridCellAddress address) : this(projectID, address.X, address.Y, "")
         {
         }
 

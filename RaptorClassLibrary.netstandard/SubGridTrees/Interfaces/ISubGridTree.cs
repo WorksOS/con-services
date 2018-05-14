@@ -10,7 +10,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Interfaces
         /// Internal numeric identifier for the sub grid tree. All internal operations will refer to the sub grid
         /// tree using this identitifer. 
         /// </summary>
-        long ID { get; set; }
+        Guid ID { get; set; }
 
         /// <summary>
         /// External identifier (GUID) for the subgrid tree. The instance may be tagged with this ID as an 

@@ -24,48 +24,6 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.UserAttributes.Add($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{ServerRoles.PSNODE}", "True");
         }
 
-        public override void ConfigureNonSpatialMutableCache(CacheConfiguration cfg)
-        {
-            base.ConfigureNonSpatialMutableCache(cfg);
-        }
-
-        public override void ConfigureNonSpatialImmutableCache(CacheConfiguration cfg)
-        {
-            base.ConfigureNonSpatialImmutableCache(cfg);
-        }
-
-        public override void ConfigureMutableSpatialCache(CacheConfiguration cfg)
-        {
-            base.ConfigureMutableSpatialCache(cfg);
-        }
-
-        public override void ConfigureImmutableSpatialCache(CacheConfiguration cfg)
-        {
-            base.ConfigureImmutableSpatialCache(cfg);
-        }
-
-        /// <summary>
-        /// Overridden spatial cache instantiation method. This method never creates a new cache but will only get an already existing spatial data cache
-        /// </summary>
-        /// <param name="CacheCfg"></param>
-        /// <returns></returns>
-        public override ICache<SubGridSpatialAffinityKey, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
-        {
-            return base.InstantiateSpatialCacheReference(CacheCfg);
-            // return raptorGrid.GetCache<String, byte[]>(CacheCfg.Name);
-        }
-
-        /// <summary>
-        /// Overridden raptor cache instantiation method. This method never creates a new cache but will only get an already existing spatial data cache
-        /// </summary>
-        /// <param name="CacheCfg"></param>
-        /// <returns></returns>
-        public override ICache<string, byte[]> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg)
-        {
-            return base.InstantiateRaptorCacheReference(CacheCfg);
-            // return raptorGrid.GetCache<String, MemoryStream>(CacheCfg.Name);
-        }
-
         /// <summary>
         /// Default constructor
         /// </summary>

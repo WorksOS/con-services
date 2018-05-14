@@ -215,6 +215,18 @@ namespace VSS.VisionLink.Raptor.Cells
 
                 return (PassType)testByte;
             }
+
+            /// <summary>
+            /// Determines if a PassType encoded in the PassType enum is a member of the 
+            /// PassTypeSet flag enum
+            /// </summary>
+            /// <param name="PassTypeSet"></param>
+            /// <param name="PassType"></param>
+            /// <returns></returns>
+            public static bool PassTypeSetContains(PassTypeSet PassTypeSet, PassType PassType)
+            {
+                return ((int)PassTypeSet & (1 << (int) PassType)) != 0;
+            }
         }
 
 
@@ -245,7 +257,7 @@ namespace VSS.VisionLink.Raptor.Cells
         /// <summary>
         /// The type of the pass (front, rear, track or wheel)
         /// </summary>
-        public PassType passType
+        public PassType PassType
         {
             get { return PassTypeHelper.GetPassType(GPSModeStore); }
             set { GPSModeStore = PassTypeHelper.SetPassType(GPSModeStore, value); }

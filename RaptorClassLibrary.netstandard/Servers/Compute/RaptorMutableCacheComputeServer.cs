@@ -39,7 +39,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.IgniteInstanceName = RaptorGrids.RaptorMutableGridName();
 
             cfg.JvmInitialMemoryMb = 512; // Set to minimum advised memory for Ignite grid JVM of 512Mb
-            cfg.JvmMaxMemoryMb = 1 * 1024; // Set max to 1Gb
+            cfg.JvmMaxMemoryMb = 2 * 1024; // Set max to 2Gb
             cfg.UserAttributes = new Dictionary<string, object>
             {
                 { "Owner", RaptorGrids.RaptorMutableGridName() }
@@ -59,7 +59,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
                 {
                     Name = DataRegions.DEFAULT_MUTABLE_DATA_REGION_NAME,
                     InitialSize = 128 * 1024 * 1024,  // 128 MB
-                    MaxSize = 1L * 1024 * 1024 * 1024,  // 1 GB                               
+                    MaxSize = 2L * 1024 * 1024 * 1024,  // 2 GB                               
 
                     PersistenceEnabled = true                    
                 },
@@ -71,7 +71,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
                     {
                         Name = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION,
                         InitialSize = 128 * 1024 * 1024,  // 128 MB
-                        MaxSize = 128 * 1024 * 1024,  // 128 MB
+                        MaxSize = 256 * 1024 * 1024,  // 128 MB
 
                         PersistenceEnabled = true
                     }
@@ -116,13 +116,19 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.KeepBinaryInStore = false;
 
             // Non-spatial (event) data is replicated to all nodes for local access
-            cfg.CacheMode = CacheMode.Replicated;
+            cfg.CacheMode = CacheMode.Partitioned;
+
+            // Note: The AffinityFunction is longer supplied as the ProjectID (Guid) member of the 
+            // NonSpatialAffinityKey struct is marked with the [AffinityKeyMapped] attribute. For Partitioned caches
+            // this means the values are spread amongst the servers per the default 
+            cfg.AffinityFunction = new MutableNonSpatialAffinityFunction();
+
             cfg.Backups = 0;
         }
 
-        public override ICache<string, byte[]> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg)
+        public override ICache<NonSpatialAffinityKey, byte[]> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg)
         {
-            return mutableRaptorGrid.GetOrCreateCache<string, byte[]>(CacheCfg);
+            return mutableRaptorGrid.GetOrCreateCache<NonSpatialAffinityKey, byte[]>(CacheCfg);
         }
 
         public override void ConfigureMutableSpatialCache(CacheConfiguration cfg)
@@ -156,13 +162,15 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             // Replicate the maps across nodes
             cfg.CacheMode = CacheMode.Partitioned;
 
+            cfg.AffinityFunction = new MutableNonSpatialAffinityFunction();
+
             // No backups for now
             cfg.Backups = 0;
 
             cfg.DataRegionName = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION;
         }
 
-        public /*ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>*/ void InstantiateTAGFileBufferQueueCacheReference(CacheConfiguration CacheCfg)
+        public void InstantiateTAGFileBufferQueueCacheReference(CacheConfiguration CacheCfg)
         {
             mutableRaptorGrid.GetOrCreateCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> (CacheCfg);
         }

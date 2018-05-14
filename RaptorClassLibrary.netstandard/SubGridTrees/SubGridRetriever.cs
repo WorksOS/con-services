@@ -6,6 +6,7 @@ using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
@@ -25,6 +26,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         // Local state populated by the retriever constructor
         private CombinedFilter Filter;
         private SiteModel SiteModel;
+        private IStorageProxy StorageProxy;
         private bool CanUseGlobalLatestCells;
         private bool HasOverrideSpatialCellRestriction;
         private BoundingIntegerExtent2D OverrideSpatialCellRestriction;
@@ -89,6 +91,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
         /// <param name="maxNumberOfPassesToReturn"></param>
         /// <param name="areaControlSet"></param>
         public SubGridRetriever(SiteModel sitemodel,
+                                IStorageProxy storageProxy,
                                 CombinedFilter filter,
                                 bool hasOverrideSpatialCellRestriction,
                                 BoundingIntegerExtent2D overrideSpatialCellRestriction,
@@ -98,6 +101,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                                 AreaControlSet areaControlSet)
         {
             SiteModel = sitemodel;
+            StorageProxy = storageProxy;
             SegmentIterator = null;
             CellPassIterator = null;
             _CellSize = SiteModel.Grid.CellSize;
@@ -1056,7 +1060,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
             // Create and configure the segment iterator to be used
 
-            SegmentIterator = new SubGridSegmentIterator(_SubGridAsLeaf, _SubGridAsLeaf.Directory);
+            SegmentIterator = new SubGridSegmentIterator(_SubGridAsLeaf, _SubGridAsLeaf.Directory, StorageProxy);
 
             if (Filter.AttributeFilter.ReturnEarliestFilteredCellPass ||
                 (Filter.AttributeFilter.HasElevationTypeFilter && (Filter.AttributeFilter.ElevationType == ElevationType.First)))
@@ -1330,19 +1334,18 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             {
                 try
                 {
-                    /* TODO Readd when Pass Types are implemented
+                   // /* TODO Readd when Pass Types are implemented
                     // Ensure passtype filter is set correctly
                     if (Filter.AttributeFilter.HasPassTypeFilter)
                     {
-                        if (TICPassType.ptFront in PassFilter.PassTypeSet)
+                        if ((Filter.AttributeFilter.PassTypeSet | PassTypeSet.Front) != 0)
                         {
-                            if (!(TICPassType.ptRear in PassFilter.PassTypeSet)) // VL interface doesnt mention Rear
+                            if ((Filter.AttributeFilter.PassTypeSet | PassTypeSet.Rear) == 0) // VL interface doesnt mention Rear
                             {
-                                PassFilter.PassTypeSet = PassFilter.PassTypeSet + [TICPassType.ptRear]; // these two types go together as half passes
+                                Filter.AttributeFilter.PassTypeSet |= PassTypeSet.Rear; // these two types go together as half passes
                             }
                         }
                     }
-                    */
 
                     // ... unless we if we can use the last pass grid to satisfy the query
                     if (CanUseGlobalLatestCells &&
@@ -1362,7 +1365,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                     // SIGLogMessage.PublishNoODS(Nil, Format('Begin LocateSubGridContaining at %dx%d', [CellX, CellY]), slmcDebug); {SKIP}
 
                     // _SubGrid = SiteModel.Grid.LocateSubGridContaining(CellX, CellY, Level);
-                    _SubGrid = SubGridUtilities.LocateSubGridContaining(/*storageProxy, */SiteModel.Grid, CellX, CellY, Level, 0, false, false); 
+                    _SubGrid = SubGridUtilities.LocateSubGridContaining(StorageProxy, SiteModel.Grid, CellX, CellY, Level, 0, false, false); 
 
                     /* TODO ???:
                     if (_SubGrid != null && _SubGrid.LockToken != ASubGridLockToken)

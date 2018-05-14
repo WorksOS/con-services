@@ -1,4 +1,6 @@
 ﻿//using System;
+
+using System;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Volumes.GridFabric.Requests;
 using VSS.VisionLink.Raptor.Volumes.GridFabric.Responses;
@@ -38,7 +40,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests.Volumes
             SimpleVolumesRequest_ApplicationService request = new SimpleVolumesRequest_ApplicationService();
             SimpleVolumesRequestArgument arg = new SimpleVolumesRequestArgument()
             {
-                SiteModelID = 6,
+                SiteModelID = Guid.NewGuid(), // = 6; This needs to change to refer to an actual project
                 VolumeType = VolumeComputationType.Between2Filters,
                 BaseFilter = new CombinedFilter()
                 {
@@ -76,7 +78,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests.Volumes
             SimpleVolumesRequest_ClusterCompute request = new SimpleVolumesRequest_ClusterCompute();
             SimpleVolumesRequestArgument arg = new SimpleVolumesRequestArgument()
             {
-                SiteModelID = 6,
+                SiteModelID = Guid.NewGuid(), // = 6; This needs to change to refer to an actual project
                 VolumeType = VolumeComputationType.Between2Filters,
                 BaseFilter = new CombinedFilter()
                 {

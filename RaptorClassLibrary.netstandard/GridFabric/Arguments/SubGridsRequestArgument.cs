@@ -13,7 +13,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Arguments
         /// <summary>
         /// The ID of the SiteModel to execute the request against
         /// </summary>
-        public long SiteModelID = -1;
+        public Guid SiteModelID = Guid.Empty;
 
         /// <summary>
         /// The request ID for the subgrid request

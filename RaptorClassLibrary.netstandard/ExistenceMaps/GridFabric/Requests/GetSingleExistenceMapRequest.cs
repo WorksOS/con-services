@@ -1,5 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using VSS.VisionLink.Raptor.ExistenceMaps.Servers;
+using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 
@@ -24,7 +26,7 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static SubGridTreeSubGridExistenceBitMask Execute(string key)
+        public static SubGridTreeSubGridExistenceBitMask Execute(NonSpatialAffinityKey key)
         {
             byte[] bytes = ExistenceMapServer.Instance().GetExistenceMap(key);
 
@@ -54,7 +56,7 @@ namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
         /// <param name="descriptor"></param>
         /// <param name="ID"></param>
         /// <returns></returns>
-        public static SubGridTreeSubGridExistenceBitMask Execute(long siteModeID, long descriptor, long ID) => Execute(CacheKey(siteModeID, descriptor, ID));
+        public static SubGridTreeSubGridExistenceBitMask Execute(Guid siteModeID, long descriptor, long ID) => Execute(CacheKey(siteModeID, descriptor, ID));
         
     }
 }

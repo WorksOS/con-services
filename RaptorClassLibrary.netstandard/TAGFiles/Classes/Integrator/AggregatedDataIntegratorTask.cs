@@ -17,7 +17,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
         // for purpose of processing the individual TAG file and is not the
         // persisted instance, or a reference to it.
         public SiteModel TargetSiteModel { get; set; }
-        public long TargetSiteModelID { get; set; }
+        public Guid TargetSiteModelID { get; set; }
 
         // TargetMachine is the IC machine that has produced the compaction data
         // that is being used to populate the IC server grid database.

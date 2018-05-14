@@ -34,8 +34,8 @@ namespace VSS.VisionLink.Raptor.Storage
             spatialCache = new StorageProxyCacheTransacted<SubGridSpatialAffinityKey, byte[]>(
                 ignite.GetCache<SubGridSpatialAffinityKey, byte[]>(RaptorCaches.SpatialCacheName(Mutability)));
             nonSpatialCache =
-                new StorageProxyCacheTransacted<string, byte[]>(
-                    ignite.GetCache<string, byte[]>(RaptorCaches.NonSpatialCacheName(Mutability)));
+                new StorageProxyCacheTransacted<NonSpatialAffinityKey, byte[]>(
+                    ignite.GetCache<NonSpatialAffinityKey, byte[]>(RaptorCaches.NonSpatialCacheName(Mutability)));
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace VSS.VisionLink.Raptor.Storage
                 throw;
             }
 
-            return true;
+            return ImmutableProxy?.Commit() ?? true;
         }
 
         /// <summary>
@@ -91,6 +91,8 @@ namespace VSS.VisionLink.Raptor.Storage
                 Log.Error($"Exception {e} thrown clearing changes for non spatial cache");
                 throw;
             }
+
+            ImmutableProxy?.Clear();
         }
     }
 }

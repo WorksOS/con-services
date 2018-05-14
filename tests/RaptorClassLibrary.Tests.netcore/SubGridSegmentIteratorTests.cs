@@ -1,9 +1,5 @@
-﻿using VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using Xunit;
 
@@ -17,7 +13,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators.Tests
             ServerSubGridTree tree = new ServerSubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
             IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
 
-            SubGridSegmentIterator iterator = new SubGridSegmentIterator(leaf, leaf.Directory);
+            SubGridSegmentIterator iterator = new SubGridSegmentIterator(leaf, leaf.Directory, StorageProxyFactory.Storage(StorageMutability.Mutable));
 
             Assert.True(iterator.Directory == leaf.Directory &&
                 iterator.SubGrid == leaf, "SubGrid segment iterator not correctly initialised");
@@ -29,7 +25,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators.Tests
             ServerSubGridTree tree = new ServerSubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
             IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
 
-            SubGridSegmentIterator iterator = new SubGridSegmentIterator(leaf, leaf.Directory);
+            SubGridSegmentIterator iterator = new SubGridSegmentIterator(leaf, leaf.Directory, StorageProxyFactory.Storage(StorageMutability.Mutable));
 
             DateTime start = new DateTime(2000, 1, 1, 1, 1, 1);
             DateTime end = new DateTime(2000, 1, 2, 1, 1, 1);
@@ -69,16 +65,19 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators.Tests
             ServerSubGridTree tree = new ServerSubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
             IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
 
-            SubGridSegmentIterator iterator = new SubGridSegmentIterator(leaf, leaf.Directory);
+            SubGridSegmentIterator iterator = new SubGridSegmentIterator(leaf, leaf.Directory,
+                StorageProxyFactory.Storage(StorageMutability.Mutable))
+            {
+                IterationDirection = IterationDirection.Forwards
+            };
 
-            iterator.IterationDirection = IterationDirection.Forwards;
             iterator.InitialiseIterator();
             Assert.Equal(-1, iterator.IterationState.Idx);
 
             iterator.IterationDirection = IterationDirection.Backwards;
             iterator.InitialiseIterator();
 
-            Assert.Equal(iterator.IterationState.Idx, leaf.Directory.SegmentDirectory.Count());
+            Assert.Equal(iterator.IterationState.Idx, leaf.Directory.SegmentDirectory.Count);
         }
 
         [Fact(Skip = "Not Implemented")]
@@ -99,10 +98,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators.Tests
             ServerSubGridTree tree = new ServerSubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
             IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
 
-            SubGridSegmentIterator iterator = new SubGridSegmentIterator(leaf, leaf.Directory);
+            SubGridSegmentIterator iterator = new SubGridSegmentIterator(leaf, leaf.Directory, StorageProxyFactory.Storage(StorageMutability.Mutable));
 
-            double lowerElevation = 9.0;
-            double upperElevation = 19.0;
+            const double lowerElevation = 9.0;
+            const double upperElevation = 19.0;
 
             iterator.SetIteratorElevationRange(lowerElevation, upperElevation);
 

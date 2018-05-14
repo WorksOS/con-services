@@ -23,14 +23,14 @@ namespace TAGFiles.Tests.netcore
             {
                 ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 TAGClientServer = TAGClientServer ?? new RaptorMutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT);
                 ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
             }
         }
 
-        [Fact()]
+        [Fact(Skip = "Requires live Ignite node")]
         public void Test_TAGFileBufferQueue_Creation()
         {
             EnsureServer();
@@ -39,7 +39,7 @@ namespace TAGFiles.Tests.netcore
             Assert.NotNull(queue);
         }
 
-        [Fact()]
+        [Fact(Skip = "Requires live Ignite node")]
         public void Test_TAGFileBufferQueue_AddingTAGFile()
         {
             EnsureServer();
@@ -51,8 +51,7 @@ namespace TAGFiles.Tests.netcore
 
             string tagFileName = "TestTAGFile - TAGFile - Read - Stream.tag";
 
-            long projectID = -1;
-            //Guid projectUID = Guid.NewGuid();
+            Guid projectID = Guid.NewGuid();
             Guid assetID = Guid.NewGuid();
 
             byte[] tagContent;

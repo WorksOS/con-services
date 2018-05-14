@@ -12,7 +12,7 @@ namespace VSS.TRex.GridFabric.Affinity
     /// Provides capabilities for determining partition maps to nodes for Ignite caches. It is templated on 
     /// the ket (TK) and value (TV) types of the cache being referenced.
     /// </summary>
-    public class SpatialAffinityPartitionMap<TK, TV> : IEventListener<CacheRebalancingEvent>
+    public class AffinityPartitionMap<TK, TV> : IEventListener<CacheRebalancingEvent>
     {
         /// <summary>
         /// Backing variable for PrimaryPartitions
@@ -52,7 +52,7 @@ namespace VSS.TRex.GridFabric.Affinity
         /// Constructor accepting a cache reference to obtain the parition map information for
         /// </summary>
         /// <param name="cache"></param>
-        public SpatialAffinityPartitionMap(ICache<TK, TV> cache)
+        public AffinityPartitionMap(ICache<TK, TV> cache)
         {
             Cache = cache ?? throw new ArgumentException("Supplied cache cannot be null", "cache");
 
@@ -66,7 +66,7 @@ namespace VSS.TRex.GridFabric.Affinity
         /// <returns></returns>
         private bool[] GetPrimaryPartitions()
         {
-            bool[] result = new bool[RaptorConfig.NumPartitionsPerSpatialDataCache];
+            bool[] result = new bool[RaptorConfig.NumPartitionsPerDataCache];
 
             foreach (int partition in Affinity.GetPrimaryPartitions(LocalNode))
                 result[partition] = true;

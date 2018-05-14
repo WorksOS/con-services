@@ -11,7 +11,7 @@ namespace RaptorClassLibrary.Tests.netcore.Events
         [Fact]
         public void Test_StartEndRecordedDataEvents_Creation()
         {
-            StartEndProductionEvents events = new StartEndProductionEvents(null, -1, -1,
+            StartEndProductionEvents events = new StartEndProductionEvents(null, -1, Guid.Empty,
                 ProductionEventType.StartEndRecordedData,
                 (w, s) => w.Write((byte)s),
                 r => (ProductionEventType)r.ReadByte());
@@ -20,7 +20,7 @@ namespace RaptorClassLibrary.Tests.netcore.Events
             Assert.True(ProductionEventType.StartEndRecordedData == events.EventListType, "Incorrect event list type");
             Assert.True(0 == events.Events.Count, "New list is not empty");
             Assert.True(-1 == events.MachineID, "Machine ID not -1");
-            Assert.True(-1 == events.SiteModelID, "Site model ID is not -1");
+            Assert.True(Guid.Empty == events.SiteModelID, "Site model ID is not null");
             Assert.True(null == events.Container, "Container is not null");
             Assert.True(null != events.SerialiseStateIn, "SerialiseStateIn is null");
             Assert.True(null != events.SerialiseStateOut, "SerialiseStateOut is null");
@@ -30,7 +30,7 @@ namespace RaptorClassLibrary.Tests.netcore.Events
         public void Test_StartEndRecordedDataEvents_SimpleStartEndAndCollation()
         {
             StartEndProductionEvents events =
-                new StartEndProductionEvents(null, -1, -1, ProductionEventType.StartEndRecordedData, null, null);
+                new StartEndProductionEvents(null, -1, Guid.Empty, ProductionEventType.StartEndRecordedData, null, null);
 
             var firstEventDate = new DateTime(2000, 1, 1, 0, 0, 0);
             var secondEventDate = new DateTime(2000, 1, 1, 1, 0, 0);
@@ -83,7 +83,7 @@ namespace RaptorClassLibrary.Tests.netcore.Events
             DateTime innerSecondEventDate, DateTime outerSecondEventDate)
         {
             StartEndProductionEvents events =
-                new StartEndProductionEvents(null, -1, -1, ProductionEventType.StartEndRecordedData, null, null);
+                new StartEndProductionEvents(null, -1, Guid.Empty, ProductionEventType.StartEndRecordedData, null, null);
 
             void CheckEventsBefore(int count)
             {

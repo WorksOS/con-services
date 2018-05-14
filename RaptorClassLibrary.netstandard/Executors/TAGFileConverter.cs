@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.SiteModels;
@@ -78,7 +79,7 @@ namespace VSS.VisionLink.Raptor.Executors
             // Note: Intermediary TAG file processing contexts don't store their data to any persistence context
             // so the SiteModel constructed to contain the data processed from a TAG file does not need a 
             // storage proxy assigned to it
-            SiteModel = new SiteModel(-1, null /*StorageProxy.RaptorInstance(StorageMutability.Mutable)*/);
+            SiteModel = new SiteModel(Guid.Empty);
             Events = new ProductionEventLists(SiteModel, 0 /*TODO: Machine.ID*/);
 
             Machine = new Machine()
