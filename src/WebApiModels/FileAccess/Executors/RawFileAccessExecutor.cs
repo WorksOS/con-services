@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.IO;
 using System.Net;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.FileAccess.Service.Common.Interfaces;
 using VSS.Productivity3D.FileAccess.Service.Common.Models;
 using VSS.Productivity3D.FileAccess.Service.WebAPI.Models.FileAccess.ResultHandling;

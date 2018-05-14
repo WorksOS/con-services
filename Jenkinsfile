@@ -129,7 +129,7 @@ node ('Jenkins-Win2016-Raptor')
                 bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\buil471.ps1"
             }
           
-            archiveArtifacts artifacts: 'FileAccessWebApiNet47.zip', fingerprint: true
+            archiveArtifacts artifacts: 'FileAccessWebApiNet471.zip', fingerprint: true
 
 	    stage ('Tag repository') {
                 bat 'git rev-parse HEAD > GIT_COMMIT'

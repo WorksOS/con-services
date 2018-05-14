@@ -3,35 +3,33 @@
   <PropertyGroup>
     <Authors>Merino</Authors>
     <Company>VSS</Company>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>VSS.Productivity3D.FileAccess.Service.Common</AssemblyName>
     <PackageId>VSS.Productivity3D.FileAccess.Service.Common</PackageId>
-    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <RootNamespace>VSS.Productivity3D.FileAccess.Service.Common</RootNamespace>
-    <DependsOnNETStandard>netstandard1.6</DependsOnNETStandard>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.DataAnnotations" Version="1.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.ResponseCaching" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
-    <PackageReference Include="System.ValueTuple" Version="4.3.1" />
-    <PackageReference Include="VSS.Authentication.JWT" Version="1.2.*" />
-    <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.0.*" />
-    <PackageReference Include="VSS.Interfaces.netcore" Version="1.2.*" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.8.*" />
-    <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.1.*" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.DataAnnotations" Version="2.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.ResponseCaching" Version="2.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
+    <PackageReference Include="VSS.Authentication.JWT" Version="1.2.1" />
+    <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.0" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.0" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.30.1" />
+    <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.8.1" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net462' ">
