@@ -10,8 +10,9 @@ using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Swagger;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
-using VSS.MasterData.Models.FIlters;
+using VSS.Productivity3D.Common.Filters;
 using VSS.TCCFileAccess;
+using VSS.WebApi.Common;
 
 #if NET_4_7
 using VSS.Productivity3D.Common.Filters;
@@ -21,9 +22,23 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
 {
   public class Startup
   {
+    /// <summary>
+    /// The name of this service for swagger etc.
+    /// </summary>
+    private const string SERVICE_TITLE = "3dpm Service API";
+
+    /// <summary>
+    /// Log4net repository logger name.
+    /// </summary>
     public const string LOGGER_REPO_NAME = "WebApi";
+
+    public IConfigurationRoot Configuration { get; }
     private IServiceCollection serviceCollection;
 
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
+    /// <param name="env"></param>
     public Startup(IHostingEnvironment env)
     {
       var builder = new ConfigurationBuilder()
@@ -37,11 +52,13 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
       Configuration = builder.Build();
     }
 
-    public IConfigurationRoot Configuration { get; }
-
-    // This method gets called by the runtime. Use this method to add services to the container
+    /// <summary>
+    /// Called by the runtime to instanatiate application services.
+    /// </summary>
     public void ConfigureServices(IServiceCollection services)
     {
+      services.AddCommon<Startup>(SERVICE_TITLE, "API for 3D File Access");
+
       services.AddLogging();
 
       //Configure CORS
@@ -57,7 +74,6 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
       {
         c.SwaggerDoc("v1", new Info { Title = "File Access API", Description = "API for File Access", Version = "v1" });
       });
-
 
       services.ConfigureSwaggerGen(options =>
       {
@@ -93,30 +109,25 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
       serviceCollection = services;
     }
 
-    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
+    /// <summary>
+    /// Called by the runtime to configure the HTTP request pipeline.
+    /// </summary>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
       loggerFactory.AddConsole(Configuration.GetSection("Logging"));
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(LOGGER_REPO_NAME);
 
-      app.UseExceptionTrap();
+      //Enable CORS before TID so OPTIONS works without authentication
+      app.UseCommon("VSS");
+
 #if NET_4_7
       if (Configuration["newrelic"] == "true")
-        app.UseMiddleware<NewRelicMiddleware>();
-#endif
-      //Enable CORS before TID so OPTIONS works without authentication
-      app.UseCors("VSS");
-
-      //app.UseResponseCaching();//Disable for now
-
-      app.UseSwagger();
-
-      //Swagger documentation can be viewed with http://localhost:5000/swagger/v1/swagger.json
-      app.UseSwaggerUI(c =>
       {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "File Access API");
-      });
+        app.UseMiddleware<NewRelicMiddleware>();
+      }
+#endif
+
       app.UseMvc();
     }
   }
