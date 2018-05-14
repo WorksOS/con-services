@@ -53,7 +53,8 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
             TFAProxy tfa = new TFAProxy(); // Todo This can be refactored at a later stage
             Log.Info($"#Info# Calling TFA servce to validate tagfile {tagDetail.tagFileName} ");
             // use decimal degrees
-            return tfa.ValidateTagfile(tagDetail.tccOrgId,processor.RadioSerial, radioType,processor.LLHLat * (180/Math.PI),processor.LLHLon * (180 / Math.PI), processor.DataTime,out tagDetail.projectId, out tagDetail.assetId);
+            return ValidationResult.Valid;
+            //  return tfa.ValidateTagfile(tagDetail.tccOrgId,processor.RadioSerial, radioType,processor.LLHLat * (180/Math.PI),processor.LLHLon * (180 / Math.PI), processor.DataTime,out tagDetail.projectId, out tagDetail.assetId);
         }
 
         /// <summary>

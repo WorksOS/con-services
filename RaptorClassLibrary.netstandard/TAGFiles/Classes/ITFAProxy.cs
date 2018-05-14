@@ -18,9 +18,21 @@ namespace VSS.TRex.TAGFiles.Classes
          RequestResult GetProjectBoundariesAtDate(long assetId, DateTime tagFileUtc, out ProjectBoundaryPackage projectBoundaries);
          RequestResult GetProjectBoundaryAtDate(long projectId, DateTime tagFileUtc, out TWGS84FenceContainer boundary);
          */
+/// <summary>
+/// 
+/// </summary>
+/// <param name="submittedProjectId"></param>
+/// <param name="tccOrgId"></param>
+/// <param name="radioSerial"></param>
+/// <param name="radioType"></param>
+/// <param name="lat"></param>
+/// <param name="lon"></param>
+/// <param name="timeOfPosition"></param>
+/// <param name="projectId"></param>
+/// <param name="assetId"></param>
+/// <returns></returns>
+        ValidationResult ValidateTagfile(Guid submittedProjectId, Guid tccOrgId, string radioSerial, int radioType,
+                double lat, double lon, DateTime timeOfPosition, out Guid projectId, out Guid assetId);
 
-
-        ValidationResult ValidateTagfile(string tccOrgId, string radioSerial, string radioType, double lat,
-                double lon, DateTime timeOfPosition, out Guid projectId, out Guid assetId);
     }
 }
