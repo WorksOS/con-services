@@ -66,13 +66,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             // return raptorGrid.GetCache<String, MemoryStream>(CacheCfg.Name);
         }
 
-        /// <summary>
-        /// Default constructor
-        /// </summary>
-        public RaptorSubGridProcessingServer()
-        {
-        }
-
+ 
         /// <summary>
         /// Sets up the loocal server configuration to reflect the requirements of subgrid processing
         /// </summary>
