@@ -314,7 +314,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
 
         public bool SaveToPersistentStore(IStorageProxy StorageProxy)
         {
-            bool Result = false;
+            bool Result;
 
             using (MemoryStream MS = new MemoryStream())
             {

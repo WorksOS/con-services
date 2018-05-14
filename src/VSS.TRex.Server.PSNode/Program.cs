@@ -17,7 +17,7 @@ namespace VSS.TRex.Server.PSNode
             var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
             XmlConfigurator.Configure(logRepository);
 
-            var server = new RaptorSubGridProcessingServer();
+            var server = new SubGridProcessingServer();
             Console.WriteLine("Press anykey to exit");
             Console.ReadLine();
         }

@@ -16,7 +16,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests.Volumes
     public class SimpleVolumesRequestTests
     {
         // [Fact(Skip = "Not running tests requiring Ignite nodes")]
-        // RaptorSimpleVolumesServer Server = RaptorSimpleVolumesServer.NewInstance();
+        // SimpleVolumesServer Server = SimpleVolumesServer.NewInstance();
 
         [Fact]
         public void Test_SimpleVolumesRequest_Creation1()

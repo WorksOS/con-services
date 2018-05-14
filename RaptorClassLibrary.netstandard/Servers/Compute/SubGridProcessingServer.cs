@@ -13,7 +13,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
     /// Note: These servers typically access the immutable representations of the spatial data for performance reasons, as configured
     /// in the server constructor.
     /// </summary>
-    public class RaptorSubGridProcessingServer : RaptorImmutableCacheComputeServer
+    public class SubGridProcessingServer : ImmutableCacheComputeServer
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -27,7 +27,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
         /// <summary>
         /// Default constructor
         /// </summary>
-        public RaptorSubGridProcessingServer()
+        public SubGridProcessingServer()
         {
         }
 

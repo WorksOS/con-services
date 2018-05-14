@@ -9,7 +9,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests.Servers.Server
         [Fact]
         public void Test_RaptorCacheComputeServer_Creation()
         {
-//            RaptorTAGProcComputeServer server = new RaptorTAGProcComputeServer();
+//            TagProcComputeServer server = new TagProcComputeServer();
 
 //            Assert.IsTrue(server != null, "Server instance not instantiated");
         }

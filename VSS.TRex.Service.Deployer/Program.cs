@@ -26,7 +26,7 @@ namespace TRex.Service.Deployer
             Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
             // Active local client Ignite node
-            RaptorMutableClientServer deployServer = new RaptorMutableClientServer("ServiceDeployer");
+            MutableClientServer deployServer = new MutableClientServer("ServiceDeployer");
 
             Log.Info($"Obtaining proxy for TAG file buffer queue service");
 

@@ -23,7 +23,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
     /// Defines a representation of a client able to request Raptor related compute operations using
     /// the Ignite In Memory Data Grid. All client type server classes should descend from this class.
     /// </summary>
-    public class RaptorImmutableClientServer : RaptorIgniteServer
+    public class ImmutableClientServer : IgniteServer
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -31,7 +31,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
         /// Constructor that creates a new server instance with a single role
         /// </summary>
         /// <param name="role"></param>
-        public RaptorImmutableClientServer(string role) : this(new [] { role })
+        public ImmutableClientServer(string role) : this(new [] { role })
         {
         }
 
@@ -39,7 +39,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
         /// Constructor that creates a new server instance with a set of roles
         /// </summary>
         /// <param name="roles"></param>
-        public RaptorImmutableClientServer(string [] roles)
+        public ImmutableClientServer(string [] roles)
         {
             if (immutableRaptorGrid == null)
             {

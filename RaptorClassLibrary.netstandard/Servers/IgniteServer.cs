@@ -10,7 +10,7 @@ namespace VSS.VisionLink.Raptor.Servers
     /// <summary>
     /// A base class for deriving server and client instances that interact with the Ignite In Memory Data Grid
     /// </summary>
-    public abstract class RaptorIgniteServer : IDisposable
+    public abstract class IgniteServer : IDisposable
     {
         /// <summary>
         /// The mutable Ignite grid reference maintained by this server instance
@@ -43,7 +43,7 @@ namespace VSS.VisionLink.Raptor.Servers
         /// Default constructor for the Raptor Ignite Server. This must be called in the base() constructor chain to ensure
         /// the server operating environment is correctly configured before instantiation of the server inner workings
         /// </summary>
-        public RaptorIgniteServer()
+        public IgniteServer()
         {
             SetupServerSpecificConfiguration();
         }
@@ -125,7 +125,7 @@ namespace VSS.VisionLink.Raptor.Servers
         }
 
         // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-        // ~RaptorIgniteServer() {
+        // ~IgniteServer() {
         //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
         //   Dispose(false);
         // }

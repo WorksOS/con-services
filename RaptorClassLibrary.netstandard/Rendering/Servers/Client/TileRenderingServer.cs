@@ -9,16 +9,16 @@ namespace VSS.VisionLink.Raptor.Rendering.Servers.Client
     /// <summary>
     /// The server used to house tile rendering services
     /// </summary>
-    public class RaptorTileRenderingServer : RaptorApplicationServiceServer
+    public class TileRenderingServer : ApplicationServiceServer
     {
         /// <summary>
         /// Default no-arg constructor that creates a server with the default Application Service role and the specialise tile rendering role.
         /// </summary>
-        public RaptorTileRenderingServer() : base(new [] { RaptorApplicationServiceServer.DEFAULT_ROLE, ServerRoles.TILE_RENDERING_NODE })
+        public TileRenderingServer() : base(new [] { ApplicationServiceServer.DEFAULT_ROLE, ServerRoles.TILE_RENDERING_NODE })
         {
         }
 
-        public RaptorTileRenderingServer(string [] roles) : base(roles)
+        public TileRenderingServer(string [] roles) : base(roles)
         {
         }
 
@@ -26,9 +26,9 @@ namespace VSS.VisionLink.Raptor.Rendering.Servers.Client
         /// Creates a new instance of a tile rendering server. 
         /// </summary>
         /// <returns></returns>
-        public static RaptorTileRenderingServer NewInstance(string [] roles)
+        public static TileRenderingServer NewInstance(string [] roles)
         {
-            return new RaptorTileRenderingServer(roles);
+            return new TileRenderingServer(roles);
         }
 
         /// <summary>

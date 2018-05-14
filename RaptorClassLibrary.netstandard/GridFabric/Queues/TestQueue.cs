@@ -38,7 +38,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Queues
 
         public TestQueueHolder()
         {
-          //  RaptorMutableClientServer Server = new RaptorMutableClientServer(new [] { "TestQueue2" });
+          //  MutableClientServer Server = new MutableClientServer(new [] { "TestQueue2" });
             IIgnite Ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
             QueueCache = Ignite.GetOrCreateCache<long, TestQueueItem>(
                 new CacheConfiguration

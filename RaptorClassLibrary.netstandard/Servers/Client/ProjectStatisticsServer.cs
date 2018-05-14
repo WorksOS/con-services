@@ -3,9 +3,9 @@
     /// <summary>
     /// A server type supporting requests relating to project statistics
     /// </summary>
-    public class RaptorProjectStatisticsServer : RaptorMutableClientServer
+    public class ProjectStatisticsServer : MutableClientServer
     {
-        public RaptorProjectStatisticsServer() : base(ServerRoles.ASNODE)
+        public ProjectStatisticsServer() : base(ServerRoles.ASNODE)
         {
 
         }

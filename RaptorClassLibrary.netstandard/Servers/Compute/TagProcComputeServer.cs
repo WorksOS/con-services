@@ -10,7 +10,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
     /// Defines a representation of a server responsible for performing Raptor related compute operations using
     /// the Ignite In Memory Data Grid
     /// </summary>
-    public class RaptorTAGProcComputeServer : RaptorMutableCacheComputeServer
+    public class TagProcComputeServer : MutableCacheComputeServer
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -18,7 +18,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
         /// A client reference to the immutable data grid for the TAG file processing logic to write immutable versions
         /// of the data being processed from TAG files into.
         /// </summary>
-        private RaptorImmutableClientServer ImmutableClientServer;
+        private ImmutableClientServer ImmutableClientServer;
 
         public override void ConfigureRaptorGrid(IgniteConfiguration cfg)
         {
@@ -41,9 +41,9 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
         /// Constructor for the Raptor cache compute server node. Responsible for starting all Ignite services and creating the grid
         /// and cache instance in preparation for client access by business logic running on the node.
         /// </summary>
-        public RaptorTAGProcComputeServer()
+        public TagProcComputeServer()
         {
-            ImmutableClientServer = new RaptorImmutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT);
+            ImmutableClientServer = new ImmutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT);
         }
     }
 }

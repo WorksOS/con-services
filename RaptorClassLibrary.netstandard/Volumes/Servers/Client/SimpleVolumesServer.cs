@@ -8,19 +8,19 @@ namespace VSS.VisionLink.Raptor.Rendering.Servers.Client
     /// <summary>
     /// The server used to house simpole volumes services
     /// </summary>
-    public class RaptorSimpleVolumesServer : RaptorApplicationServiceServer
+    public class SimpleVolumesServer : ApplicationServiceServer
     {
         /// <summary>
         /// Default no-arg constructor
         /// </summary>
-        public RaptorSimpleVolumesServer()
+        public SimpleVolumesServer()
         {
         }
 
         /// <summary>
         /// Default no-arg constructor
         /// </summary>
-        public RaptorSimpleVolumesServer(string [] roles) : base(roles)
+        public SimpleVolumesServer(string [] roles) : base(roles)
         {
         }
 
@@ -28,9 +28,9 @@ namespace VSS.VisionLink.Raptor.Rendering.Servers.Client
         /// Creates a new instance of a simple volumes server. 
         /// </summary>
         /// <returns></returns>
-        public static RaptorSimpleVolumesServer NewInstance(string [] roles)
+        public static SimpleVolumesServer NewInstance(string [] roles)
         {
-            return new RaptorSimpleVolumesServer(roles);
+            return new SimpleVolumesServer(roles);
         }
 
         /// <summary>

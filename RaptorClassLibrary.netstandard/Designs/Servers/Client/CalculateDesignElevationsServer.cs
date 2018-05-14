@@ -5,7 +5,7 @@ using VSS.VisionLink.Raptor.SubGridTrees.Client;
 
 namespace VSS.Velociraptor.DesignProfiling.Servers.Client
 {
-    public class CalculateDesignElevationsServer : RaptorImmutableClientServer
+    public class CalculateDesignElevationsServer : ImmutableClientServer
     {
         public CalculateDesignElevationsServer() : base("DesignProfiler")
         {

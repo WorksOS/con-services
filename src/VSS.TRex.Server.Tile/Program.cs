@@ -44,7 +44,7 @@ namespace VSS.TRex.Server.Application
 
             CreateDependencyInjection();
 
-            var server = new RaptorApplicationServiceServer();
+            var server = new ApplicationServiceServer();
             Console.WriteLine("Press anykey to exit");
             Console.ReadLine();
         }

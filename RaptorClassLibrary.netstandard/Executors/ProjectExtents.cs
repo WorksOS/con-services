@@ -17,7 +17,7 @@ namespace VSS.VisionLink.Raptor.Executors
         /// <returns></returns>
         public static BoundingWorldExtent3D ProductionDataOnly(Guid ID)
         {
-            SiteModel SiteModel = RaptorGenericApplicationServiceServer.PerformAction(() => SiteModels.SiteModels.Instance().GetSiteModel(ID, false));
+            SiteModel SiteModel = GenericApplicationServiceServer.PerformAction(() => SiteModels.SiteModels.Instance().GetSiteModel(ID, false));
 
             return SiteModel?.SiteModelExtent ?? BoundingWorldExtent3D.Inverted();
         }

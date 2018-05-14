@@ -14,7 +14,7 @@ namespace TAGFiles.Tests.netcore
 {
     public class TAGFileBufferQueueTests
     {
-        private static RaptorMutableClientServer TAGClientServer = null;
+        private static MutableClientServer TAGClientServer = null;
         private static IIgnite ignite;
 
         private static void EnsureServer()
@@ -25,7 +25,7 @@ namespace TAGFiles.Tests.netcore
             }
             catch (Exception)
             {
-                TAGClientServer = TAGClientServer ?? new RaptorMutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT);
+                TAGClientServer = TAGClientServer ?? new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT);
                 ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
             }
         }

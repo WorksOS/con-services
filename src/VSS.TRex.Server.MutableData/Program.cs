@@ -18,7 +18,7 @@ namespace VSS.TRex.Server.MutableData
             var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
             XmlConfigurator.Configure(logRepository);
 
-            var server = new RaptorTAGProcComputeServer();
+            var server = new TagProcComputeServer();
             Console.WriteLine("Press anykey to exit");
             Console.ReadLine();
         }

@@ -14,15 +14,15 @@ namespace VSS.VisionLink.Raptor.Servers.Client
         /// <param name="gridName"></param>
         /// <param name="role"></param>
         /// <returns></returns>
-        public static RaptorIgniteServer NewClientNode(string gridName, string role)
+        public static IgniteServer NewClientNode(string gridName, string role)
         {
             if (gridName.Equals(RaptorGrids.RaptorMutableGridName()))
             {
-                return new RaptorMutableClientServer(role);
+                return new MutableClientServer(role);
             }
             if (gridName.Equals(RaptorGrids.RaptorImmutableGridName()))
             {
-                return new RaptorImmutableClientServer(role);
+                return new ImmutableClientServer(role);
             }
 
             throw new ArgumentException($"{gridName} is an unknown grid to create a client node within.");
