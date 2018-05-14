@@ -1,4 +1,4 @@
-﻿using VSS.Common.ResultsHandling;
+﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.FileAccess.Service.WebAPI.Models.FileAccess.ResultHandling
 {
@@ -25,10 +25,5 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI.Models.FileAccess.ResultH
         fileContents = fileContents
       };
     }
-
-    /// <summary>
-    /// Example for Help
-    /// </summary>
-    public static RawFileAccessResult HelpSample => new RawFileAccessResult();
   }
 }

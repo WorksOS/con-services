@@ -1,5 +1,5 @@
-$artifactsDir = "$PSScriptRoot/artifacts/FileAccessWebApiNet47/"
-$artfifactZip = "FileAccessWebApiNet47.zip"
+$artifactsDir = "$PSScriptRoot/artifacts/FileAccessWebApiNet471/"
+$artfifactZip = "FileAccessWebApiNet471.zip"
 
 # Tidy up old artifacts.
 Write-Host "Removing existing build artifacts..." -ForegroundColor "darkgray"
@@ -17,7 +17,7 @@ Write-Host "Restoring .NET packages..." -ForegroundColor "darkgray"
 Invoke-Expression "dotnet restore --no-cache"
 
 Write-Host "Publishing WebApi project..." -ForegroundColor "darkgray"
-Invoke-Expression "dotnet publish ./src/WebApi -o ../../artifacts/FileAccessWebApiNet47 -f net47"
+Invoke-Expression "dotnet publish ./src/WebApi -o ../../artifacts/FileAccessWebApiNet471 -f net471"
 if ($LastExitCode -ne 0) {
     throw "Publish of web api project **** Failed ****"
 }

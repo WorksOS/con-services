@@ -3,6 +3,7 @@ using System.IO;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -20,9 +21,8 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
 {
   public class Startup
   {
-    private const string LoggerRepoName = "WebApi";
-    private readonly bool _isDevEnv;
-    private IServiceCollection _serviceCollection;
+    public const string LOGGER_REPO_NAME = "WebApi";
+    private IServiceCollection serviceCollection;
 
     public Startup(IHostingEnvironment env)
     {
@@ -31,9 +31,7 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
           .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
           .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
-      env.ConfigureLog4Net("log4net.xml", LoggerRepoName);
-
-      _isDevEnv = env.IsEnvironment("Development");
+      env.ConfigureLog4Net("log4net.xml", LOGGER_REPO_NAME);
 
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
@@ -85,11 +83,14 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
       });
 
       //Configure application services
-      services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      services.AddSingleton<IFileRepository, FileRepository>();
+      services
+        .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
+        .AddSingleton<IConfigurationStore, GenericConfiguration>()
+        .AddSingleton<IFileRepository, FileRepository>();
+
       services.AddMvc();
 
-      _serviceCollection = services;
+      serviceCollection = services;
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -97,7 +98,7 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
     {
       loggerFactory.AddConsole(Configuration.GetSection("Logging"));
       loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(LoggerRepoName);
+      loggerFactory.AddLog4Net(LOGGER_REPO_NAME);
 
       app.UseExceptionTrap();
 #if NET_4_7
