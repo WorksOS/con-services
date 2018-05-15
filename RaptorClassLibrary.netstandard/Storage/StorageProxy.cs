@@ -9,7 +9,7 @@ namespace VSS.TRex.Storage
     /// </summary>
     public static class StorageProxy
     {
-        public static IStorageProxy RaptorInstance(StorageMutability mutability)
+        public static IStorageProxy Instance(StorageMutability mutability)
         {
             switch (mutability)
             {

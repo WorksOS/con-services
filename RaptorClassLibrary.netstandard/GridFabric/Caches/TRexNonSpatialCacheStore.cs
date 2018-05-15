@@ -4,11 +4,11 @@ using System.IO;
 
 namespace VSS.TRex.GridFabric.Caches
 {
-    public class RaptorNonSpatialCacheStore : CacheStoreAdapter<string, MemoryStream>
+    public class TRexNonSpatialCacheStore : CacheStoreAdapter<string, MemoryStream>
     {
         private TRexCacheStoreUtilities Utilities;
 
-        public RaptorNonSpatialCacheStore(string mutabilitySuffix)
+        public TRexNonSpatialCacheStore(string mutabilitySuffix)
         {
             Utilities = new TRexCacheStoreUtilities(mutabilitySuffix);
         }

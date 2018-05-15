@@ -1,7 +1,7 @@
 ﻿namespace VSS.TRex
 {
     /// <summary>
-    /// A class to contain a collection of Raptor configuration controls.
+    /// A class to contain a collection of TRex configuration controls.
     /// Shoulb be refactored or modified so the standard c# configuration system is used or underpins it.
     /// </summary>
     public static class TRexConfig

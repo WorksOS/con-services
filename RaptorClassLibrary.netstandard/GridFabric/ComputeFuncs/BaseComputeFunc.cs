@@ -3,7 +3,7 @@
     /// <summary>
     /// The base class for compute funcs. This provides common aspects such as the injected Ignite instance
     /// </summary>
-    public class BaseComputeFunc : BaseRaptorIgniteClass
+    public class BaseComputeFunc : BaseIgniteClass
     {
         public BaseComputeFunc()
         {

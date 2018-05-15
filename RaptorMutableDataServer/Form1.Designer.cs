@@ -1,4 +1,4 @@
-﻿namespace RaptorMutableDataServer
+﻿namespace TRexMutableDataServer
 {
     partial class Form1
     {

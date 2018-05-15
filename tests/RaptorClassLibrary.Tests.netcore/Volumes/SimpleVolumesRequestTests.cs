@@ -1,14 +1,10 @@
-﻿//using System;
-
-using System;
+﻿using System;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Volumes;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Volumes.GridFabric.Requests;
 using VSS.TRex.Volumes.GridFabric.Responses;
-//using VSS.VisionLink.Raptor.Rendering.Servers.Client;
-//using VSS.VisionLink.Raptor.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.Volumes

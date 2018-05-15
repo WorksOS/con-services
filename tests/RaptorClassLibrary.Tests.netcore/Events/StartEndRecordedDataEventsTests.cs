@@ -4,7 +4,7 @@ using System.Linq;
 using VSS.TRex.Events;
 using Xunit;
 
-namespace RaptorClassLibrary.Tests.netcore.Events
+namespace VSS.TRex.Tests.netcore.Events
 {
     public class StartEndRecordedDataEventsTests
     {

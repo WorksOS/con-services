@@ -29,9 +29,9 @@ namespace VSS.TRex.Rendering.Executors
         public RequestErrorStatus ResultStatus = RequestErrorStatus.Unknown;
 
         /// <summary>
-        /// The Raptor application service node performing the request
+        /// The TRex application service node performing the request
         /// </summary>
-        private string RequestingRaptorNodeID { get; set; }
+        private string RequestingTRexNodeID { get; set; }
 
         private Guid DataModelID;
         // long MachineID = -1;
@@ -83,7 +83,7 @@ namespace VSS.TRex.Rendering.Executors
         /// <param name="AFilter2"></param>
         /// <param name="ACutFillDesignID"></param>
         /// <param name="ARepresentColor"></param>
-        /// <param name="requestingRaptorNodeID"></param>
+        /// <param name="requestingTRexNodeId"></param>
         public RenderOverlayTile(Guid ADataModelID,
                                  //AExternalDescriptor :TASNodeRequestDescriptor;
                                  DisplayMode AMode,
@@ -99,7 +99,7 @@ namespace VSS.TRex.Rendering.Executors
                                  //AColourPalettes: TColourPalettes;
                                  //AICOptions: TSVOICOptions;
                                  Color ARepresentColor,
-                                 string requestingRaptorNodeID
+                                 string requestingTRexNodeId
                                  )
         {
             DataModelID = ADataModelID;
@@ -117,7 +117,7 @@ namespace VSS.TRex.Rendering.Executors
             //ColourPalettes = AColourPalettes;
             //ICOptions = AICOptions;
             RepresentColor = ARepresentColor;
-            RequestingRaptorNodeID = requestingRaptorNodeID;
+            RequestingTRexNodeID = requestingTRexNodeId;
         }
 
         private SubGridTreeSubGridExistenceBitMask OverallExistenceMap;
@@ -634,7 +634,7 @@ namespace VSS.TRex.Rendering.Executors
 
             // Construct the renderer, configure it, and set it on its way
             //  WorkingColourPalette = Nil;
-            Renderer = new PlanViewTileRenderer(RequestingRaptorNodeID);
+            Renderer = new PlanViewTileRenderer(RequestingTRexNodeID);
             try
             {
                 /* TODO 

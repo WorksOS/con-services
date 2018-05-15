@@ -23,7 +23,7 @@ using VSS.TRex.TAGFiles.Classes.Queues;
 namespace VSS.TRex.Servers.Compute
 {
   /// <summary>
-  /// Defines a representation of a server responsible for performing Raptor related compute operations using
+  /// Defines a representation of a server responsible for performing TRex related compute operations using
   /// the Ignite In Memory Data Grid
   /// </summary>
     public class MutableCacheComputeServer : IgniteServer
@@ -38,21 +38,21 @@ namespace VSS.TRex.Servers.Compute
 
     
     /// <summary>
-    /// Constructor for the Raptor cache compute server node. Responsible for starting all Ignite services and creating the grid
+    /// Constructor for the TRex cache compute server node. Responsible for starting all Ignite services and creating the grid
     /// and cache instance in preparation for client access by business logic running on the node.
     /// </summary>
     public MutableCacheComputeServer()
     {
       Log.Debug($"PersistentCacheStoreLocation is: {PersistentCacheStoreLocation}");
-      if (mutableRaptorGrid == null)
+      if (mutableTRexGrid == null)
       {
-        StartRaptorGridCacheNode();
+        StartTRexGridCacheNode();
       }
     }
 
-    public override void ConfigureRaptorGrid(IgniteConfiguration cfg)
+    public override void ConfigureTRexGrid(IgniteConfiguration cfg)
     {
-      base.ConfigureRaptorGrid(cfg);
+      base.ConfigureTRexGrid(cfg);
 
       cfg.IgniteInstanceName = TRexGrids.MutableGridName();
 
@@ -144,9 +144,9 @@ namespace VSS.TRex.Servers.Compute
       cfg.Backups = 0;
     }
 
-        public override ICache<NonSpatialAffinityKey, byte[]> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg)
+        public override ICache<NonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg)
     {
-            return mutableRaptorGrid.GetOrCreateCache<NonSpatialAffinityKey, byte[]>(CacheCfg);
+            return mutableTRexGrid.GetOrCreateCache<NonSpatialAffinityKey, byte[]>(CacheCfg);
     }
 
     public override void ConfigureMutableSpatialCache(CacheConfiguration cfg)
@@ -168,7 +168,7 @@ namespace VSS.TRex.Servers.Compute
 
     public override ICache<SubGridSpatialAffinityKey, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
     {
-      return mutableRaptorGrid.GetOrCreateCache<SubGridSpatialAffinityKey, byte[]>(CacheCfg);
+      return mutableTRexGrid.GetOrCreateCache<SubGridSpatialAffinityKey, byte[]>(CacheCfg);
     }
 
     public void ConfigureTAGFileBufferQueueCache(CacheConfiguration cfg)
@@ -190,7 +190,7 @@ namespace VSS.TRex.Servers.Compute
 
     public /*ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>*/ void InstantiateTAGFileBufferQueueCacheReference(CacheConfiguration CacheCfg)
     {
-      mutableRaptorGrid.GetOrCreateCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(CacheCfg);
+      mutableTRexGrid.GetOrCreateCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(CacheCfg);
     }
 
     public static bool SetGridActive(string gridName)
@@ -215,16 +215,16 @@ namespace VSS.TRex.Servers.Compute
       }
     }
 
-    public void StartRaptorGridCacheNode()
+    public void StartTRexGridCacheNode()
     {
       IgniteConfiguration cfg = new IgniteConfiguration();
-      ConfigureRaptorGrid(cfg);
+      ConfigureTRexGrid(cfg);
 
       Log.InfoFormat($"Creating new Ignite node for {cfg.IgniteInstanceName}");
 
       try
       {
-        mutableRaptorGrid = Ignition.Start(cfg);
+        mutableTRexGrid = Ignition.Start(cfg);
       }
       catch (Exception e)
       {
@@ -243,7 +243,7 @@ namespace VSS.TRex.Servers.Compute
 
       CacheConfiguration CacheCfg = new CacheConfiguration();
       ConfigureNonSpatialMutableCache(CacheCfg);
-      NonSpatialMutableCache = InstantiateRaptorCacheReference(CacheCfg);
+      NonSpatialMutableCache = InstantiateTRexCacheReference(CacheCfg);
 
       CacheCfg = new CacheConfiguration();
       ConfigureMutableSpatialCache(CacheCfg);

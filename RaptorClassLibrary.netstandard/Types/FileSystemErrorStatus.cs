@@ -1,7 +1,7 @@
 ﻿namespace VSS.TRex.Types
 {
     /// <summary>
-    /// The result coniditons returnable by the Raptor persistence layer that implements FS files.
+    /// The result coniditons returnable by the TRex persistence layer that implements FS files.
     /// </summary>
     public enum FileSystemErrorStatus
     {

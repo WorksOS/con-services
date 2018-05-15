@@ -29,7 +29,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         private IMessaging rmtMsg;
 
         [NonSerialized]
-        private string raptorNodeIDAsString = string.Empty;
+        private string tRexNodeIDAsString = string.Empty;
 
         [NonSerialized]
         private MemoryStream MS;
@@ -45,12 +45,12 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         {
             base.UnpackArgument(arg);
 
-            raptorNodeIDAsString = arg.RaptorNodeID;
+            tRexNodeIDAsString = arg.TRexNodeID;
 
             MS = new MemoryStream();
             buffer = new byte[10000];
 
-            Log.InfoFormat("RaptorNodeIDAsString is {0} in UnpackArgument()", raptorNodeIDAsString);
+            Log.InfoFormat("TRexNodeIDAsString is {0} in UnpackArgument()", tRexNodeIDAsString);
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
             ResponseCode = SubGridRequestsResponseResult.OK;
 
             IIgnite Ignite = Ignition.TryGetIgnite(TRexGrids.ImmutableGridName());
-            IClusterGroup group = Ignite?.GetCluster().ForAttribute("TRexNodeID", raptorNodeIDAsString);
+            IClusterGroup group = Ignite?.GetCluster().ForAttribute("TRexNodeId", tRexNodeIDAsString);
 
             if (group == null)
             {
@@ -112,7 +112,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                 // Log.InfoFormat("Sending result to {0} ({1} receivers) - First = {2}/{3}", 
                 //                localArg.MessageTopic, rmtMsg.ClusterGroup.GetNodes().Count, 
                 //                rmtMsg.ClusterGroup.GetNodes().Where(x => x.GetAttributes().Where(a => a.Key.StartsWith(ServerRoles.ROLE_ATTRIBUTE_NAME)).Count() > 0).Aggregate("|", (s1, s2) => s1 + s2 + "|"),
-                //                rmtMsg.ClusterGroup.GetNodes().First().GetAttribute<string>("TRexNodeID"));
+                //                rmtMsg.ClusterGroup.GetNodes().First().GetAttribute<string>("TRexNodeId"));
                 byte[] bytes = new byte[MS.Position];
                 MS.Position = 0;
                 MS.Read(bytes, 0, bytes.Length);

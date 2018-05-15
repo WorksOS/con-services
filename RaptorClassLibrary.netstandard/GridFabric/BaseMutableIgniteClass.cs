@@ -2,12 +2,12 @@
 
 namespace VSS.TRex.GridFabric
 {
-    public class BaseImmutableRaptorIgniteClass : BaseRaptorIgniteClass
+    public class BaseMutableIgniteClass : BaseIgniteClass
     {
         /// <summary>
         /// Default no-arg constructor that sets up cluster and compute projections available for use
         /// </summary>
-        public BaseImmutableRaptorIgniteClass(string role) : base(TRexGrids.ImmutableGridName(), role)
+        public BaseMutableIgniteClass(string role) : base(TRexGrids.MutableGridName(), role)
         {
         }
     }

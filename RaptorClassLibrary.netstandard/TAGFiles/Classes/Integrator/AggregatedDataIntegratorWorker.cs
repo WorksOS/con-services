@@ -18,7 +18,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
-        /// A queue of the tasks this worker will process into the Raptor data stores
+        /// A queue of the tasks this worker will process into the TRex data stores
         /// </summary>
         private ConcurrentQueue<AggregatedDataIntegratorTask> TasksToProcess;
 
@@ -30,7 +30,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         /// <summary>
         /// The mutable grid storage proxy
         /// </summary>
-        private IStorageProxy storageProxy_Mutable = StorageProxy.RaptorInstance(StorageMutability.Mutable);
+        private IStorageProxy storageProxy_Mutable = StorageProxy.Instance(StorageMutability.Mutable);
 
         /// <summary>
         /// Worker constructor that obtains the necessary storage proxies
@@ -383,7 +383,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
                             // Transfer the working sitemodel update map to the Task to allow the task finalizer to
                             // synchronise completion of this work unit in terms of persistence of
-                            // all the changes to disk with the notification to the wider Raptor stack
+                            // all the changes to disk with the notification to the wider TRex stack
                             // that a set of subgrids have been changed
                             Task.SetAggregateModifiedSubgrids(ref WorkingModelUpdateMap);
                         }

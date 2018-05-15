@@ -20,7 +20,7 @@ using VSS.TRex.Storage;
 namespace VSS.TRex.Servers.Client
 {
     /// <summary>
-    /// Defines a representation of a client able to request Raptor related compute operations using
+    /// Defines a representation of a client able to request TRex related compute operations using
     /// the Ignite In Memory Data Grid. All client type server classes should descend from this class.
     /// </summary>
     public class MutableClientServer : IgniteServer
@@ -41,23 +41,23 @@ namespace VSS.TRex.Servers.Client
         /// <param name="roles"></param>
         public MutableClientServer(string [] roles)
         {
-            if (mutableRaptorGrid == null)
+            if (mutableTRexGrid == null)
             {
                 // Attempt to attach to an already existing Ignite instance
-                mutableRaptorGrid = TRexGridFactory.Grid(TRexGrids.MutableGridName());
+                mutableTRexGrid = TRexGridFactory.Grid(TRexGrids.MutableGridName());
 
                 // If there was no connection obtained, attempt to create a new instance
-                if (mutableRaptorGrid == null)
+                if (mutableTRexGrid == null)
                 {
                     string roleNames = roles.Aggregate("|", (s1, s2) => s1 + s2 + "|");
 
-                    RaptorNodeID = Guid.NewGuid().ToString();
+                    TRexNodeID = Guid.NewGuid().ToString();
 
-                    Log.InfoFormat("Creating new Ignite node with Roles = {0} & TRexNodeID = {1}", roleNames, RaptorNodeID);
+                    Log.InfoFormat("Creating new Ignite node with Roles = {0} & TRexNodeId = {1}", roleNames, TRexNodeID);
 
                     IgniteConfiguration cfg = new IgniteConfiguration()
                     {
-                        // SpringConfigUrl = @".\RaptorIgniteConfig.xml",
+                        // SpringConfigUrl = @".\TRexIgniteConfig.xml",
 
                         IgniteInstanceName = TRexGrids.MutableGridName(),
                         ClientMode = true,
@@ -67,7 +67,7 @@ namespace VSS.TRex.Servers.Client
 
                         UserAttributes = new Dictionary<string, object>()
                         {
-                            { "TRexNodeID", RaptorNodeID }
+                            { "TRexNodeId", TRexNodeID }
                         },
 
                         // Enforce using only the LocalHost interface
@@ -132,28 +132,28 @@ namespace VSS.TRex.Servers.Client
 
                     try
                     {
-                        mutableRaptorGrid = Ignition.Start(cfg);
+                        mutableTRexGrid = Ignition.Start(cfg);
                     }
                     catch (Exception e)
                     {
-                        Log.InfoFormat("Creation of new Ignite node with Role = {0} & TRexNodeID = {1} failed with exception {2}", roleNames, RaptorNodeID, e);
+                        Log.InfoFormat("Creation of new Ignite node with Role = {0} & TRexNodeId = {1} failed with exception {2}", roleNames, TRexNodeID, e);
                     }
                     finally
                     {
-                        Log.InfoFormat("Completed creation of new Ignite node with Role = {0} & TRexNodeID = {1}", roleNames, RaptorNodeID);
+                        Log.InfoFormat("Completed creation of new Ignite node with Role = {0} & TRexNodeId = {1}", roleNames, TRexNodeID);
                     }
                 }
             }
         }
 
-        public override ICache<NonSpatialAffinityKey, byte[]> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg)
+        public override ICache<NonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg)
         {
-            return mutableRaptorGrid.GetCache<NonSpatialAffinityKey, byte[]>(CacheCfg.Name);
+            return mutableTRexGrid.GetCache<NonSpatialAffinityKey, byte[]>(CacheCfg.Name);
         }
 
         public override ICache<SubGridSpatialAffinityKey, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
         {
-            return mutableRaptorGrid.GetCache<SubGridSpatialAffinityKey, byte[]>(CacheCfg.Name);
+            return mutableTRexGrid.GetCache<SubGridSpatialAffinityKey, byte[]>(CacheCfg.Name);
         }       
     }
 }

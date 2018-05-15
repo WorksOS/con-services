@@ -7,7 +7,7 @@ using VSS.TRex.Servers.Client;
 namespace VSS.TRex.Servers.Compute
 {
     /// <summary>
-    /// Defines a representation of a server responsible for performing Raptor related compute operations using
+    /// Defines a representation of a server responsible for performing TRex related compute operations using
     /// the Ignite In Memory Data Grid
     /// </summary>
     public class TagProcComputeServer : MutableCacheComputeServer
@@ -20,9 +20,9 @@ namespace VSS.TRex.Servers.Compute
         /// </summary>
         private ImmutableClientServer ImmutableClientServer;
 
-        public override void ConfigureRaptorGrid(IgniteConfiguration cfg)
+        public override void ConfigureTRexGrid(IgniteConfiguration cfg)
         {
-            base.ConfigureRaptorGrid(cfg);
+            base.ConfigureTRexGrid(cfg);
 
             cfg.UserAttributes.Add($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{ServerRoles.TAG_PROCESSING_NODE}", "True");
         }
@@ -38,7 +38,7 @@ namespace VSS.TRex.Servers.Compute
         }
 
         /// <summary>
-        /// Constructor for the Raptor cache compute server node. Responsible for starting all Ignite services and creating the grid
+        /// Constructor for the TRex cache compute server node. Responsible for starting all Ignite services and creating the grid
         /// and cache instance in preparation for client access by business logic running on the node.
         /// </summary>
         public TagProcComputeServer()

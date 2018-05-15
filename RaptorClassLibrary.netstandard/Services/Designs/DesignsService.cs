@@ -17,7 +17,7 @@ namespace VSS.TRex.Services.Designs
     /// <summary>
     /// Service metaphor providing access andmanagement control over designs stored for site models
     /// </summary>
-    public class DesignsService : BaseRaptorService, IDesignsService // , IService, 
+    public class DesignsService : BaseService, IDesignsService // , IService, 
     {
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -154,7 +154,7 @@ namespace VSS.TRex.Services.Designs
             /// <param name="context"></param>
             public void Execute(IServiceContext context)
             {
-                Log.Info($"Executing Raptor Service 'Designs'");
+                Log.Info($"Executing TRex Service 'Designs'");
             }
 
             /// <summary>
@@ -184,7 +184,7 @@ namespace VSS.TRex.Services.Designs
        {
            try
            {
-               return mutableNonSpatialCache.Invoke(Raptor.Designs.Storage.Designs.CacheKey(SiteModelID),
+               return mutableNonSpatialCache.Invoke(TRex.Designs.Storage.Designs.CacheKey(SiteModelID),
                                                     new RemoveDesignProcessor(),
                                                     DesignID);
            }

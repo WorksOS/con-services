@@ -21,7 +21,7 @@ namespace VSS.TRex.Services.Surfaces
     /// <summary>
     /// A test of how to manage surveyed surfaces
     /// </summary>
-    public class SurveyedSurfaceService : BaseRaptorService, IService, ISurveyedSurfaceService
+    public class SurveyedSurfaceService : BaseService, IService, ISurveyedSurfaceService
     {
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -39,7 +39,7 @@ namespace VSS.TRex.Services.Surfaces
         private string CacheName;
 
         /// <summary>
-        /// Default no-arg constructor supplied default Raptor grid and MutableNonSpatial cache name for surveyed surface information
+        /// Default no-arg constructor supplied default TRex grid and MutableNonSpatial cache name for surveyed surface information
         /// </summary>
         public SurveyedSurfaceService(StorageMutability mutability) : base(TRexGrids.GridName(mutability), "SurveyedSurfaceService")
         {
@@ -143,7 +143,7 @@ namespace VSS.TRex.Services.Surfaces
         /// <param name="context"></param>
         public void Execute(IServiceContext context)
         {
-           Log.Info("Executing Raptor Service 'SurveyedSurfaceService'");
+           Log.Info("Executing TRex Service 'SurveyedSurfaceService'");
         }
 
         /// <summary>

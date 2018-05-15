@@ -37,7 +37,7 @@ namespace VSS.TRex.Servers.Client
         /// <returns>True if the grid was successfully set to active, or was already in an active state</returns>
         public bool SetGridActive(string gridName)
         {
-            using (RaptorClientServerFactory.NewClientNode(gridName, "Activator"))
+            using (TRexClientServerFactory.NewClientNode(gridName, "Activator"))
             {
                 try
                 {

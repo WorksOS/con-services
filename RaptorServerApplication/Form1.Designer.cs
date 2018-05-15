@@ -1,4 +1,4 @@
-﻿namespace RaptorServerApplication
+﻿namespace TRexServerApplication
 {
     partial class Form1
     {

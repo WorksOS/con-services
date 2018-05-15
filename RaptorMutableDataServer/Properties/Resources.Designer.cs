@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace RaptorMutableDataServer.Properties {
+namespace TRexMutableDataServer.Properties {
     using System;
     
     

@@ -1,4 +1,4 @@
-﻿namespace RaptorGridActivator
+﻿namespace TRexGridActivator
 {
     partial class Form1
     {

@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 using VSS.TRex;
 
-namespace RaptorPSNodeServer
+namespace TRexPSNodeServer
 {
     static class Program
     {

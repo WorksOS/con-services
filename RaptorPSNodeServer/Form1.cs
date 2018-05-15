@@ -1,7 +1,7 @@
 ﻿using System.Windows.Forms;
 using VSS.TRex.Servers.Compute;
 
-namespace RaptorPSNodeServer
+namespace TRexPSNodeServer
 {
     public partial class Form1 : Form
     {

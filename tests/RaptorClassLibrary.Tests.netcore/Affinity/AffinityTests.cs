@@ -9,7 +9,7 @@ using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Cluster;
 using Xunit;
 
-namespace RaptorClassLibrary.Tests.netcore.Affinity
+namespace VSS.TRex.Tests.netcore.Affinity
 {
     [Serializable]
     public class MutableNonSpatialAffinityFunction : IAffinityFunction

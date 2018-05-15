@@ -10,7 +10,7 @@ using VSS.TRex.Servers;
 namespace VSS.TRex.GridFabric
 {
     [Serializable]
-    public class BaseRaptorIgniteClass
+    public class BaseIgniteClass
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -60,7 +60,7 @@ namespace VSS.TRex.GridFabric
         /// <summary>
         /// Default no-arg constructor that sets up cluster and compute projections available for use
         /// </summary>
-        public BaseRaptorIgniteClass(string gridName, string role)
+        public BaseIgniteClass(string gridName, string role)
         {
             InitialiseIgniteContext(gridName, role);
         }
@@ -68,10 +68,10 @@ namespace VSS.TRex.GridFabric
         /// <summary>
         /// Default no-arg constructor that throws an exception as the two arg constructor should be used
         /// </summary>
-        public BaseRaptorIgniteClass()
+        public BaseIgniteClass()
         {
-            Log.Info("No-arg constructor BaseRaptorIgniteClass() called");
-            // throw new ArgumentException("No-arg constructor invalid for BaseRaptorIgniteClass, use two-arg constructor");
+            Log.Info("No-arg constructor BaseIgniteClass() called");
+            // throw new ArgumentException("No-arg constructor invalid for BaseIgniteClass, use two-arg constructor");
         }
 
         public void AcquireIgniteGridReference()

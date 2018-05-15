@@ -498,7 +498,7 @@
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Name = "Form1";
-            this.Text = "Raptor.Net/Ignite Test Application";
+            this.Text = "TRex/Ignite Test Application";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();

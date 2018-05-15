@@ -90,7 +90,7 @@ namespace VSS.TRex.SubGridTrees.Server
                     {
                         Items.Insert(I, Result);
 
-                        /* TODO add when more Raptor config vailable
+                        /* TODO add when more TRex config vailable
                          * if VLPDSvcLocations.Debug_PerformSegmentAdditionIntegrityChecks then
                            begin
                              Counter:= 0;

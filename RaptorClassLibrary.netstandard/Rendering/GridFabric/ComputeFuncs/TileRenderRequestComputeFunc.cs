@@ -38,11 +38,11 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
 
             try
             {
-                // Supply the Raptor ID of the Ignite node currently running this code to permit processing contexts to send
+                // Supply the TRex ID of the Ignite node currently running this code to permit processing contexts to send
                 // subgrid results to it.
-                arg.RaptorNodeID = RaptorNodeID.ThisNodeID(Storage.StorageMutability.Immutable);
+                arg.TRexNodeID = TRexNodeID.ThisNodeID(Storage.StorageMutability.Immutable);
 
-                Log.InfoFormat("Assigned TRexNodeID from local node is {0}", arg.RaptorNodeID);
+                Log.InfoFormat("Assigned TRexNodeId from local node is {0}", arg.TRexNodeID);
 
                 RenderOverlayTile render = new RenderOverlayTile
                     (arg.SiteModelID,
@@ -54,7 +54,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
                      arg.Filter1, arg.Filter2,
                      arg.CutFillDesignID,//arg.CutFillDesign,
                      Color.Black,
-                     arg.RaptorNodeID);
+                     arg.TRexNodeID);
 
                 Log.Info("Executing render.Execute()");
 

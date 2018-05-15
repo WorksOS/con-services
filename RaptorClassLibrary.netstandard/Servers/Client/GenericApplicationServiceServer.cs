@@ -8,12 +8,12 @@ namespace VSS.TRex.Servers.Client
     public class GenericApplicationServiceServer : ApplicationServiceServer
     {
         /// <summary>
-        /// Static intance of the RaptorApplicationServicesServer
+        /// Static intance of the TRexApplicationServicesServer
         /// </summary>
         private static GenericApplicationServiceServer _instance;
 
         /// <summary>
-        /// Obtains, or creates, the static singleton intances for the RaptorApplicationServicesServer
+        /// Obtains, or creates, the static singleton intances for the TRexApplicationServicesServer
         /// </summary>
         /// <returns></returns>
         public static GenericApplicationServiceServer  Instance() => _instance == null ? _instance : (_instance = new GenericApplicationServiceServer());
@@ -26,7 +26,7 @@ namespace VSS.TRex.Servers.Client
         }
 
         /// <summary>
-        /// Generic implenentation of a function lambda executed in the contect of the RaptorApplicationServicesServer
+        /// Generic implenentation of a function lambda executed in the contect of the TRexApplicationServicesServer
         /// </summary>
         /// <typeparam name="TResult"></typeparam>
         /// <param name="func"></param>

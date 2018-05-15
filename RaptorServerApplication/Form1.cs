@@ -1,7 +1,7 @@
 ﻿using System.Windows.Forms;
 using VSS.TRex.Servers.Client;
 
-namespace RaptorServerApplication
+namespace TRexServerApplication
 {
     public partial class Form1 : Form
     {

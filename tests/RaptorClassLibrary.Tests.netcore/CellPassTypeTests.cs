@@ -5,7 +5,7 @@ using VSS.TRex.Cells;
 using VSS.TRex.Types;
 using Xunit;
 
-namespace RaptorClassLibrary.Tests.netcore
+namespace VSS.TRex.Tests.netcore
 {
     public class CellPassTypeTests
     {

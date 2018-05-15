@@ -6,7 +6,7 @@ namespace VSS.TRex.GridFabric.Grids
     public static class TRexGridFactory
     {
         /// <summary>
-        /// Creates an appropriate new Ignite grid reference depending on the Raptor Grid passed in
+        /// Creates an appropriate new Ignite grid reference depending on the TRex Grid passed in
         /// </summary>
         /// <param name="gridName"></param>
         /// <returns></returns>

@@ -1,4 +1,4 @@
-﻿namespace RaptorPSNodeServer
+﻿namespace TRexPSNodeServer
 {
     partial class Form1
     {

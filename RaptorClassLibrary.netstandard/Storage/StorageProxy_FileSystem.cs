@@ -6,7 +6,7 @@ using VSS.TRex.Types;
 namespace VSS.TRex.Storage
 {
     /// <summary>
-    /// Implementation of the IStorageProxy interface that allows to read/write operations against Raptor IO Service
+    /// Implementation of the IStorageProxy interface that allows to read/write operations against TRex IO Service
     /// </summary>
     public class StorageProxy_FileSystem : IStorageProxy
     {

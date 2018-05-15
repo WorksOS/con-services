@@ -4,12 +4,12 @@ using VSS.TRex.GridFabric.Grids;
 namespace VSS.TRex.Servers.Client
 {
     /// <summary>
-    /// A factory class responsible for creating mutable or immutable raptor client nodes in the Ignite grid
+    /// A factory class responsible for creating mutable or immutable TRex client nodes in the Ignite grid
     /// </summary>
-    public static class RaptorClientServerFactory
+    public static class TRexClientServerFactory
     {
         /// <summary>
-        /// Creates an appropriate new Ignite client node depending on the Raptor Grid it is being attached to
+        /// Creates an appropriate new Ignite client node depending on the TRex Grid it is being attached to
         /// </summary>
         /// <param name="gridName"></param>
         /// <param name="role"></param>

@@ -5,7 +5,7 @@ using VSS.TRex.Servers;
 namespace VSS.TRex.Designs.GridFabric.Requests
 {
     /// <summary>
-    ///  Represents a request that can be made against the design profiler cluster group in the Raptor grid
+    ///  Represents a request that can be made against the design profiler cluster group in the TRex grid
     /// </summary>
     public class CacheComputePoolRequest<TArgument, TResponse> : BaseRequest<TArgument, TResponse>
     {

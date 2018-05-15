@@ -22,7 +22,7 @@ using VSS.TRex.Storage;
 namespace VSS.TRex.Servers.Compute
 {
   /// <summary>
-  /// Defines a representation of a server responsible for performing Raptor related compute operations using
+  /// Defines a representation of a server responsible for performing TRex related compute operations using
   /// the Ignite In Memory Data Grid
   /// </summary>
     public class ImmutableCacheComputeServer : IgniteServer
@@ -32,7 +32,7 @@ namespace VSS.TRex.Servers.Compute
     private string PersistentCacheStoreLocation = Path.Combine(Path.GetTempPath(), Path.Combine("TRexIgniteData", "Immutable"));
 
     /// <summary>
-    /// Constructor for the Raptor cache compute server node. Responsible for starting all Ignite services and creating the grid
+    /// Constructor for the TRex cache compute server node. Responsible for starting all Ignite services and creating the grid
     /// and cache instance in preparation for client access by business logic running on the node.
     /// </summary>
     public ImmutableCacheComputeServer()
@@ -40,15 +40,15 @@ namespace VSS.TRex.Servers.Compute
       Console.WriteLine("PersistentCacheLocation:" + PersistentCacheStoreLocation);
       Console.WriteLine($"Log is: {Log}");
       Log.Debug($"PersistentCacheStoreLocation: {PersistentCacheStoreLocation}");
-      if (immutableRaptorGrid == null)
+      if (immutableTRexGrid == null)
       {
-        StartRaptorGridCacheNode();
+        StartTRexGridCacheNode();
       }
     }
 
-    public override void ConfigureRaptorGrid(IgniteConfiguration cfg)
+    public override void ConfigureTRexGrid(IgniteConfiguration cfg)
     {
-      base.ConfigureRaptorGrid(cfg);
+      base.ConfigureTRexGrid(cfg);
 
       cfg.IgniteInstanceName = TRexGrids.ImmutableGridName();
 
@@ -121,12 +121,12 @@ namespace VSS.TRex.Servers.Compute
       cfg.Backups = 0;
     }
 
-        public override ICache<NonSpatialAffinityKey, byte[]> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg)
+        public override ICache<NonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg)
     {
       Console.WriteLine($"CacheConfig is: {CacheCfg}");
-      Console.WriteLine($"immutableRaptorGrid is : {immutableRaptorGrid}");
+      Console.WriteLine($"immutableTRexGrid is : {immutableTRexGrid}");
 
-      return immutableRaptorGrid.GetOrCreateCache<NonSpatialAffinityKey, byte[]>(CacheCfg);
+      return immutableTRexGrid.GetOrCreateCache<NonSpatialAffinityKey, byte[]>(CacheCfg);
     }
 
     public override void ConfigureImmutableSpatialCache(CacheConfiguration cfg)
@@ -147,7 +147,7 @@ namespace VSS.TRex.Servers.Compute
 
     public override ICache<SubGridSpatialAffinityKey, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
     {
-      return immutableRaptorGrid.GetOrCreateCache<SubGridSpatialAffinityKey, byte[]>(CacheCfg);
+      return immutableTRexGrid.GetOrCreateCache<SubGridSpatialAffinityKey, byte[]>(CacheCfg);
     }
 
     public static bool SetGridActive(string gridName)
@@ -172,19 +172,19 @@ namespace VSS.TRex.Servers.Compute
       }
     }
 
-    public void StartRaptorGridCacheNode()
+    public void StartTRexGridCacheNode()
     {
       Log.Info("Creating new Ignite node");
 
       IgniteConfiguration cfg = new IgniteConfiguration();
-      ConfigureRaptorGrid(cfg);
+      ConfigureTRexGrid(cfg);
 
       Log.Info($"Creating new Ignite node for {cfg.IgniteInstanceName}");
 
       try
       {
         Console.WriteLine($"Creating new Ignite node for {cfg.IgniteInstanceName}");
-        immutableRaptorGrid = Ignition.Start(cfg);
+        immutableTRexGrid = Ignition.Start(cfg);
       }
       catch (Exception e)
       {
@@ -203,7 +203,7 @@ namespace VSS.TRex.Servers.Compute
 
       CacheConfiguration CacheCfg = new CacheConfiguration();
       ConfigureNonSpatialImmutableCache(CacheCfg);
-      NonSpatialImmutableCache = InstantiateRaptorCacheReference(CacheCfg);
+      NonSpatialImmutableCache = InstantiateTRexCacheReference(CacheCfg);
 
       CacheCfg = new CacheConfiguration();
       ConfigureImmutableSpatialCache(CacheCfg);

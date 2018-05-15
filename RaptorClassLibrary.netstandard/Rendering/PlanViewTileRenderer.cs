@@ -21,9 +21,9 @@ namespace VSS.TRex.Rendering
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
-        /// The Raptor application service node performing the request
+        /// The TRex application service node performing the request
         /// </summary>
-        string RequestingRaptorNodeID { get; set; } = string.Empty;
+        string RequestingTRexNodeID { get; set; } = string.Empty;
 
         public long RequestDescriptor;
         // FExternalDescriptor : TASNodeRequestDescriptor;
@@ -249,7 +249,7 @@ namespace VSS.TRex.Rendering
 
                 // Displayer.ICOptions  = ICOptions;
 
-                PipelinedTask = new PVMRenderingTask(RequestDescriptor, RequestingRaptorNodeID, GridDataFromModeConverter.Convert(Mode), this);
+                PipelinedTask = new PVMRenderingTask(RequestDescriptor, RequestingTRexNodeID, GridDataFromModeConverter.Convert(Mode), this);
 
                 // ASNodeImplInstance.AsyncResponder.ASNodeResponseProcessor.ASTasks.Add(PipelinedTask);
                 try
@@ -370,13 +370,13 @@ namespace VSS.TRex.Rendering
         }
 
         /// <summary>
-        /// Basi constructor accepting the TRexNodeID indicating the originating server of the request
+        /// Basi constructor accepting the TRexNodeId indicating the originating server of the request
         /// to send responses to
         /// </summary>
-        /// <param name="requestingRaptorNodeID"></param>
-        public PlanViewTileRenderer(string requestingRaptorNodeID)
+        /// <param name="requestingTRexNodeId"></param>
+        public PlanViewTileRenderer(string requestingTRexNodeId)
         {
-            RequestingRaptorNodeID = requestingRaptorNodeID;
+            RequestingTRexNodeID = requestingTRexNodeId;
 
             AbortedDueToTimeout = false;
             Displayer = null;

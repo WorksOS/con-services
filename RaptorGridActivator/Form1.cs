@@ -5,7 +5,7 @@ using VSS.TRex.Servers.Client;
 using log4net;
 using System.Reflection;
 
-namespace RaptorGridActivator
+namespace TRexGridActivator
 {
     public partial class Form1 : Form
     {

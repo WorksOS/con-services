@@ -15,12 +15,12 @@ namespace VSS.TRex.Servers
         /// <summary>
         /// The mutable Ignite grid reference maintained by this server instance
         /// </summary>
-        protected IIgnite mutableRaptorGrid = null;
+        protected IIgnite mutableTRexGrid = null;
 
         /// <summary>
         /// The immutable Ignite grid reference maintained by this server instance
         /// </summary>
-        protected IIgnite immutableRaptorGrid = null;
+        protected IIgnite immutableTRexGrid = null;
 
         protected static ICache<NonSpatialAffinityKey, byte[]> NonSpatialMutableCache = null;
         protected static ICache<NonSpatialAffinityKey, byte[]> NonSpatialImmutableCache = null;
@@ -30,7 +30,7 @@ namespace VSS.TRex.Servers
         /// <summary>
         /// A unique identifier for this server that may be used by business logic executing on other nodes in the grid to locate it if needed for messaging
         /// </summary>
-        public string RaptorNodeID = string.Empty;
+        public string TRexNodeID = string.Empty;
 
         /// <summary>
         /// Permits configuration of server specific parameters that influence the initialisation of the server type
@@ -40,7 +40,7 @@ namespace VSS.TRex.Servers
         }
 
         /// <summary>
-        /// Default constructor for the Raptor Ignite Server. This must be called in the base() constructor chain to ensure
+        /// Default constructor for the TRex Ignite Server. This must be called in the base() constructor chain to ensure
         /// the server operating environment is correctly configured before instantiation of the server inner workings
         /// </summary>
         public IgniteServer()
@@ -52,7 +52,7 @@ namespace VSS.TRex.Servers
         /// Base configuration for the grid
         /// </summary>
         /// <param name="cfg"></param>
-        public virtual void ConfigureRaptorGrid(IgniteConfiguration cfg)
+        public virtual void ConfigureTRexGrid(IgniteConfiguration cfg)
         {
         }
 
@@ -74,7 +74,7 @@ namespace VSS.TRex.Servers
             cfg.DataRegionName = DataRegions.IMMUTABLE_NONSPATIAL_DATA_REGION;
         }
 
-        public abstract ICache<NonSpatialAffinityKey, byte[]> InstantiateRaptorCacheReference(CacheConfiguration CacheCfg);
+        public abstract ICache<NonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg);
 
         /// <summary>
         /// Base configuration for the mutable spatial cache
@@ -106,14 +106,14 @@ namespace VSS.TRex.Servers
                 if (disposing)
                 {
                     // TODO: dispose managed state (managed objects).
-                    if (mutableRaptorGrid != null)
+                    if (mutableTRexGrid != null)
                     {
-                        Ignition.Stop(mutableRaptorGrid.Name, false);
+                        Ignition.Stop(mutableTRexGrid.Name, false);
                     }
 
-                    if (immutableRaptorGrid != null)
+                    if (immutableTRexGrid != null)
                     {
-                        Ignition.Stop(immutableRaptorGrid.Name, false);
+                        Ignition.Stop(immutableTRexGrid.Name, false);
                     }
                 }
 

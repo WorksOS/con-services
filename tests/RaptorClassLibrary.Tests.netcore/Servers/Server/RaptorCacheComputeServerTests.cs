@@ -4,10 +4,10 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Servers.Server
 {
-        public class RaptorCacheComputeServerTests
+    public class TRexCacheComputeServerTests
     {
         [Fact]
-        public void Test_RaptorCacheComputeServer_Creation()
+        public void Test_TRexCacheComputeServer_Creation()
         {
 //            TagProcComputeServer server = new TagProcComputeServer();
 

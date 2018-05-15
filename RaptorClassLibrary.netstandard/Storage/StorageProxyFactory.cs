@@ -4,7 +4,7 @@ using VSS.TRex.Interfaces;
 namespace VSS.TRex.Storage
 {
     /// <summary>
-    ///  StorageProxyFactory is a factory for the storage proxy used in Raptor
+    ///  StorageProxyFactory is a factory for the storage proxy used in TRex
     /// </summary>
     public static class StorageProxyFactory
     {

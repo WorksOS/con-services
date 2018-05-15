@@ -6,7 +6,7 @@ using VSS.TRex.DI;
 using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Implementations.Framework;
 
-namespace RaptorServerApplication
+namespace TRexServerApplication
 {
     static class Program
     {

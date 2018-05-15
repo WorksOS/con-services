@@ -5,11 +5,11 @@ using VSS.TRex.GridFabric.Affinity;
 
 namespace VSS.TRex.GridFabric.Caches
 {
-    public class RaptorSpatialCacheStore : CacheStoreAdapter<SubGridSpatialAffinityKey, MemoryStream>
+    public class TRexSpatialCacheStore : CacheStoreAdapter<SubGridSpatialAffinityKey, MemoryStream>
     {
         private TRexCacheStoreUtilities Utilities;
 
-        public RaptorSpatialCacheStore(string mutabilitySuffix)
+        public TRexSpatialCacheStore(string mutabilitySuffix)
         {
             Utilities = new TRexCacheStoreUtilities(mutabilitySuffix);
         }

@@ -9,16 +9,16 @@ namespace VSS.TRex.GridFabric.Caches
     /// of information in data models
     /// </summary>
     [Serializable]
-    public class RaptorCacheStoreFactory : IFactory<ICacheStore>
+    public class CacheStoreFactory : IFactory<ICacheStore>
     {
         private bool IsMutable { get; set; }
         private bool IsSpatial { get; set; }
 
-        public RaptorCacheStoreFactory()
+        public CacheStoreFactory()
         {
         }
 
-        public RaptorCacheStoreFactory(bool isSpatial, bool isMutable) : this()
+        public CacheStoreFactory(bool isSpatial, bool isMutable) : this()
         {
             IsMutable = isMutable;
             IsSpatial = isSpatial;
@@ -27,8 +27,8 @@ namespace VSS.TRex.GridFabric.Caches
         public ICacheStore CreateInstance()
         {
             return IsSpatial ?
-                new RaptorSpatialCacheStore(IsMutable ? "(Mutable)" : "(Immutable)")  :
-                new RaptorNonSpatialCacheStore(IsMutable ? "(Mutable)" : "(Immutable)") as ICacheStore; 
+                new TRexSpatialCacheStore(IsMutable ? "(Mutable)" : "(Immutable)")  :
+                new TRexNonSpatialCacheStore(IsMutable ? "(Mutable)" : "(Immutable)") as ICacheStore; 
         }
     }
 }

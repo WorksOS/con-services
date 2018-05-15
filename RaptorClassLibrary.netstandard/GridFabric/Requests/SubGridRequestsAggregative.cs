@@ -37,7 +37,7 @@ namespace VSS.TRex.GridFabric.Requests
             // Construct the argument to be supplied to the compute cluster
             PrepareArgument();
 
-            Log.Info($"Prepared argument has TRexNodeID = {arg.RaptorNodeID}");
+            Log.Info($"Prepared argument has TRexNodeId = {arg.TRexNodeID}");
             Log.Info($"Production Data mask in argument to renderer contains {ProdDataMask.CountBits()} subgrids");
             Log.Info($"Surveyed Surface mask in argument to renderer contains {SurveyedSurfaceOnlyMask.CountBits()} subgrids");
 

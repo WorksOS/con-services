@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace RaptorGridActivator.Properties {
+namespace TRexGridActivator.Properties {
     using System;
     
     

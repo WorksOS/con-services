@@ -17,7 +17,7 @@ namespace VSS.TRex.GridFabric.Requests
     /// <summary>
     /// The SubGridRequests GridFabric class sends a request to the grid for a collection of subgrids to be processed according 
     /// to relevant filters other parameters. The grid fabric responds with responses as the servers in the fabric compute them, sending
-    /// them to the Raptor node identified by the TRexNodeID property
+    /// them to the TRex node identified by the TRexNodeId property
     /// </summary>
     public abstract class SubGridRequestsBase<TSubGridsRequestArgument, TSubGridRequestsResponse> : CacheComputePoolRequest<TSubGridsRequestArgument, TSubGridRequestsResponse> 
         where TSubGridsRequestArgument : SubGridsRequestArgument, new()
@@ -48,10 +48,10 @@ namespace VSS.TRex.GridFabric.Requests
         public long RequestID { get; set; } = -1;
 
         /// <summary>
-        /// The identifier of the Raptor Node that is issuing the request for subgrids and which wants to receive the processed
+        /// The identifier of the TRex Node that is issuing the request for subgrids and which wants to receive the processed
         /// subgrid responses
         /// </summary>
-        public string RaptorNodeID { get; set; } = string.Empty;
+        public string TRexNodeId { get; set; } = string.Empty;
 
         /// <summary>
         /// The type of grid data to be retrieved from the subgrid requests
@@ -97,7 +97,7 @@ namespace VSS.TRex.GridFabric.Requests
         /// <param name="task"></param>
         /// <param name="siteModelID"></param>
         /// <param name="requestID"></param>
-        /// <param name="raptorNodeID"></param>
+        /// <param name="trexNodeId"></param>
         /// <param name="requestedGridDataType"></param>
         /// <param name="includeSurveyedSurfaceInformation"></param>
         /// <param name="prodDataMask"></param>
@@ -107,7 +107,7 @@ namespace VSS.TRex.GridFabric.Requests
         public SubGridRequestsBase(ITask task,
                                    Guid siteModelID, 
                                    long requestID, 
-                                   string raptorNodeID, 
+                                   string trexNodeId, 
                                    GridDataType requestedGridDataType, 
                                    bool includeSurveyedSurfaceInformation,
                                    SubGridTreeSubGridExistenceBitMask prodDataMask,
@@ -118,7 +118,7 @@ namespace VSS.TRex.GridFabric.Requests
             Task = task;
             SiteModelID = siteModelID;
             RequestID = requestID;
-            RaptorNodeID = raptorNodeID;
+            TRexNodeId = trexNodeId;
             RequestedGridDataType = requestedGridDataType;
             IncludeSurveyedSurfaceInformation = includeSurveyedSurfaceInformation;
             ProdDataMask = prodDataMask;
@@ -133,7 +133,7 @@ namespace VSS.TRex.GridFabric.Requests
         /// <returns></returns>
         protected void PrepareArgument()
         {
-            Log.InfoFormat("Preparing argument with TRexNodeID = {0}", RaptorNodeID);
+            Log.InfoFormat("Preparing argument with TRexNodeId = {0}", TRexNodeId);
 
             using (MemoryStream ProdDataMS = new MemoryStream(), SurveyedSurfaceMS = new MemoryStream())
             {
@@ -152,7 +152,7 @@ namespace VSS.TRex.GridFabric.Requests
                         SurveyedSurfaceOnlyMaskBytes = SurveyedSurfaceMS.ToArray(),
                         Filters = Filters,
                         MessageTopic = string.Format("SubGridRequest:{0}", RequestID),
-                        RaptorNodeID = RaptorNodeID,
+                        TRexNodeID = TRexNodeId,
                         CutFillDesignID = CutFillDesignID
                     };
                 }

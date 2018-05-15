@@ -12,7 +12,7 @@ namespace VSS.TRex.Executors
 {
     /// <summary>
     /// Converts a TAG file from the vector based measurements of the machine's operation into the cell pass
-    /// and events based description used in a Raptor data model
+    /// and events based description used in a TRex data model
     /// </summary>
     public class TAGFileConverter
     {

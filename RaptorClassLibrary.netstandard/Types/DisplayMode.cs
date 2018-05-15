@@ -3,7 +3,7 @@
 namespace VSS.TRex.Types
 {
     /// <summary>
-    /// DisplayMode represents the displayable rendering modes supported by the Raptor tile rendering engine
+    /// DisplayMode represents the displayable rendering modes supported by the TRex tile rendering engine
     /// </summary>
     [Serializable]
     public enum DisplayMode

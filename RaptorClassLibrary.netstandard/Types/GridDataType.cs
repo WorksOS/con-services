@@ -5,7 +5,7 @@ namespace VSS.TRex.Types
 {
     /// <summary>
     /// Types of grid data that client leaf subgrids may represent. These largely map to the 
-    /// attribute and processing vectors supported by the Raptor processing engine with th eexception 
+    /// attribute and processing vectors supported by the TRex processing engine with the exception 
     /// of All which represents fully attributed call passes. This type is only used on server side
     /// full stack cell pass subgrids.
     /// </summary>

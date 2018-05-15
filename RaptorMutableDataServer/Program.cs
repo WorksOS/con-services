@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace RaptorMutableDataServer
+namespace TRexMutableDataServer
 {
     static class Program
     {
