@@ -1,4 +1,4 @@
-﻿namespace VSS.Raptor.IgnitePOC.TestApp
+﻿namespace VSS.TRex.IgnitePOC.TestApp
 {
     partial class Form1
     {

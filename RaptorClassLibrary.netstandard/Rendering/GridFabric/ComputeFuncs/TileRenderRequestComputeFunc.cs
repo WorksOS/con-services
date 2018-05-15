@@ -42,7 +42,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
                 // subgrid results to it.
                 arg.RaptorNodeID = RaptorNodeID.ThisNodeID(Storage.StorageMutability.Immutable);
 
-                Log.InfoFormat("Assigned RaptorNodeID from local node is {0}", arg.RaptorNodeID);
+                Log.InfoFormat("Assigned TRexNodeID from local node is {0}", arg.RaptorNodeID);
 
                 RenderOverlayTile render = new RenderOverlayTile
                     (arg.SiteModelID,

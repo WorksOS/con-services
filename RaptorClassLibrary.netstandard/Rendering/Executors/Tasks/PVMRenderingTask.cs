@@ -23,13 +23,13 @@ namespace VSS.TRex.Rendering.Executors.Tasks
         /// Constructs the PVM renderer as well as an argument and request to be used if needing to request elevations to support cut/fill operations
         /// </summary>
         /// <param name="requestDescriptor"></param>
-        /// <param name="raptorNodeID"></param>
+        /// <param name="tRexNodeId"></param>
         /// <param name="gridDataType"></param>
         /// <param name="tileRenderer"></param>
         public PVMRenderingTask(long requestDescriptor, 
-                                string raptorNodeID, 
+                                string tRexNodeId, 
                                 GridDataType gridDataType, 
-                                PlanViewTileRenderer tileRenderer) : base(requestDescriptor, raptorNodeID, gridDataType)
+                                PlanViewTileRenderer tileRenderer) : base(requestDescriptor, tRexNodeId, gridDataType)
         {
             TileRenderer = tileRenderer;
         }

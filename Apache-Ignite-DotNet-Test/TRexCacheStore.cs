@@ -11,7 +11,7 @@ namespace Apache_Ignite_DotNet_Test
     {
         public ICacheStore CreateInstance()
         {
-            return new RaptorCacheStore();
+            return new TRexCacheStore();
         }
     }
 
@@ -19,7 +19,7 @@ namespace Apache_Ignite_DotNet_Test
     /// Implements the Ignite ICacheStore interface
     /// </summary>
     [Serializable]
-    public class RaptorCacheStore : CacheStoreAdapter<object, object>, ICacheStore
+    public class TRexCacheStore : CacheStoreAdapter<object, object>, ICacheStore
     {
         private const string path = "C:\\Temp\\TRexIgniteData";
 

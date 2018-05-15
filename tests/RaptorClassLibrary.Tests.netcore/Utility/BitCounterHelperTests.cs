@@ -2,7 +2,7 @@
 using VSS.TRex.SubGridTrees.Helpers;
 using Xunit;
 
-namespace VSS.TRex.RaptorClassLibrary.Tests
+namespace VSS.TRex.Tests
 {
         public class BitCounterHelperTests
     {

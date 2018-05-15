@@ -370,7 +370,7 @@ namespace VSS.TRex.Rendering
         }
 
         /// <summary>
-        /// Basi constructor accepting the RaptorNodeID indicating the originating server of the request
+        /// Basi constructor accepting the TRexNodeID indicating the originating server of the request
         /// to send responses to
         /// </summary>
         /// <param name="requestingRaptorNodeID"></param>

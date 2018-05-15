@@ -44,7 +44,7 @@ using VSS.TRex.Volumes;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Volumes.GridFabric.Responses;
 
-namespace VSS.Raptor.IgnitePOC.TestApp
+namespace VSS.TRex.IgnitePOC.TestApp
 {
     public partial class Form1 : Form
     {
@@ -77,7 +77,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         {
             // Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
             // SiteModel siteModel = GenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
-            SiteModel siteModel = SiteModels.Instance().GetSiteModel(ID(), false);
+            SiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
 
             if (siteModel == null)
             {
@@ -125,7 +125,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
         private BoundingWorldExtent3D GetZoomAllExtents()
         {
-            SiteModel siteModel = SiteModels.Instance().GetSiteModel(ID(), false);
+            SiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
 
             if (siteModel != null)
             {
@@ -226,7 +226,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
         private void DoUpdateDesignsAndSurveyedSurfaces()
         {
-            Designs designs = DesignsService.Instance().List(ID());
+            Designs.Storage.Designs designs = DesignsService.Instance().List(ID());
 
             if (designs != null)
             {
@@ -491,7 +491,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         {
             try
             {
-                IIgnite ignite = RaptorGridFactory.Grid(TRexGrids.GridName(mutability));
+                IIgnite ignite = TRexGridFactory.Grid(TRexGrids.GridName(mutability));
 
                 if (ignite == null)
                 {
@@ -569,8 +569,8 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         private void button1_Click(object sender, EventArgs e)
         {
             // Obtain all the keys and write them into files
-            dumpKeysToFile(StorageMutability.Mutable, @"C:\Temp\AllRaptorIgniteCacheKeys = mutable.txt");
-            dumpKeysToFile(StorageMutability.Immutable, @"C:\Temp\AllRaptorIgniteCacheKeys = immutable.txt");
+            dumpKeysToFile(StorageMutability.Mutable, @"C:\Temp\AllTRexIgniteCacheKeys = mutable.txt");
+            dumpKeysToFile(StorageMutability.Immutable, @"C:\Temp\AllTRexIgniteCacheKeys = immutable.txt");
         }
 
         private void chkSelectEarliestPass_CheckedChanged(object sender, EventArgs e)
@@ -623,7 +623,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         }
 
         /// <summary>
-        /// Calculate statistics on the numbers and sizes of elements in the major Raptor caches
+        /// Calculate statistics on the numbers and sizes of elements in the major TRex caches
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -636,7 +636,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
             try
             {
-                IIgnite ignite = RaptorGridFactory.Grid(TRexGrids.MutableGridName());
+                IIgnite ignite = TRexGridFactory.Grid(TRexGrids.MutableGridName());
 
                 if (ignite != null)
                 {
@@ -649,7 +649,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                     MessageBox.Show("No Ignite referece for mutable Statistics");
                 }
 
-                ignite = RaptorGridFactory.Grid(TRexGrids.ImmutableGridName());
+                ignite = TRexGridFactory.Grid(TRexGrids.ImmutableGridName());
                 if (ignite != null)
                 {
                     string result = CalculateCacheStatistics(TRexCaches.ImmutableNonSpatialCacheName(), ignite.GetCache<object, byte[]>(TRexCaches.ImmutableNonSpatialCacheName())) + "\n" +
@@ -674,8 +674,8 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         private SimpleVolumesResponse PerformVolume(bool useScreenExtents)
         {
             // Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
-            // SiteModel siteModel = RaptorGenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
-            SiteModel siteModel = SiteModels.Instance().GetSiteModel(ID(), false);
+            // SiteModel siteModel = GenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
+            SiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
 
             try
             {
@@ -802,7 +802,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         {
             // Calculate cut fill statistics from the latest elevations to the selected design
 
-            var siteModel = SiteModels.Instance().GetSiteModel(ID(), false);
+            var siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
             var offsets = new [] { 0.5, 0.2, 0.1, 0, -0.1, -0.2, -0.5 };
 
             Stopwatch sw = new Stopwatch();

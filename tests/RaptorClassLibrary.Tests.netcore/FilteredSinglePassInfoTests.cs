@@ -2,7 +2,7 @@
 using VSS.TRex.Filters;
 using Xunit;
 
-namespace VSS.TRex.RaptorClassLibrary.Tests
+namespace VSS.TRex.Tests
 {
         public class FilteredSinglePassInfoTests
     {

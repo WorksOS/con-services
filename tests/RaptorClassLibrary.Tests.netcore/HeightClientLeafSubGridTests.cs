@@ -2,7 +2,7 @@
 using VSS.TRex.SubGridTrees.Client;
 using Xunit;
 
-namespace VSS.TRex.RaptorClassLibrary.Tests
+namespace VSS.TRex.Tests
 {
         public class HeightClientLeafSubGridTests
     {

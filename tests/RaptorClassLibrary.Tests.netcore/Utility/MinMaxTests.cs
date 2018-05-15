@@ -2,7 +2,7 @@
 using VSS.TRex.Utilities;
 using Xunit;
 
-namespace VSS.TRex.RaptorClassLibrary.MinMax.Tests
+namespace VSS.TRex.MinMax.Tests
 {
         public class MinMaxTests
     {

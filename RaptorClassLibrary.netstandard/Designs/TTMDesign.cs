@@ -679,7 +679,7 @@ namespace VSS.TRex.DesignProfiling
               Result = -1;
             try
     Result = TTrimbleTINModel.MemorySizeInKB(FileName) + (BA_AllocationSize(FSpatialIndex.BAtree) div 1024);
-            // debug LogWarnToRaptorLog(Format('Full Est%d',[Result]));
+            // debug LogWarnToTRexLog(Format('Full Est%d',[Result]));
 
             except
               on E: Exception do

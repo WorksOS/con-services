@@ -5,7 +5,7 @@ using VSS.TRex.Utilities.Interfaces;
 using VSS.TRex.Utilities.ExtensionMethods;
 using Xunit;
 
-namespace VSS.TRex.RaptorClassLibrary.Extensions.Tests
+namespace VSS.TRex.Extensions.Tests
 {
         public class FromToBytesTests
     {

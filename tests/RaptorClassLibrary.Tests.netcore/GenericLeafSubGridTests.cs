@@ -5,7 +5,7 @@ using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using Xunit;
 
-namespace VSS.TRex.RaptorClassLibrary.Tests
+namespace VSS.TRex.Tests
 {
         public class GenericLeafSubGridTests
     {

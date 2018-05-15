@@ -44,7 +44,7 @@ namespace VSS.TRex.Servers.Client
             if (mutableRaptorGrid == null)
             {
                 // Attempt to attach to an already existing Ignite instance
-                mutableRaptorGrid = RaptorGridFactory.Grid(TRexGrids.MutableGridName());
+                mutableRaptorGrid = TRexGridFactory.Grid(TRexGrids.MutableGridName());
 
                 // If there was no connection obtained, attempt to create a new instance
                 if (mutableRaptorGrid == null)
@@ -53,7 +53,7 @@ namespace VSS.TRex.Servers.Client
 
                     RaptorNodeID = Guid.NewGuid().ToString();
 
-                    Log.InfoFormat("Creating new Ignite node with Roles = {0} & RaptorNodeID = {1}", roleNames, RaptorNodeID);
+                    Log.InfoFormat("Creating new Ignite node with Roles = {0} & TRexNodeID = {1}", roleNames, RaptorNodeID);
 
                     IgniteConfiguration cfg = new IgniteConfiguration()
                     {
@@ -67,7 +67,7 @@ namespace VSS.TRex.Servers.Client
 
                         UserAttributes = new Dictionary<string, object>()
                         {
-                            { "RaptorNodeID", RaptorNodeID }
+                            { "TRexNodeID", RaptorNodeID }
                         },
 
                         // Enforce using only the LocalHost interface
@@ -136,11 +136,11 @@ namespace VSS.TRex.Servers.Client
                     }
                     catch (Exception e)
                     {
-                        Log.InfoFormat("Creation of new Ignite node with Role = {0} & RaptorNodeID = {1} failed with exception {2}", roleNames, RaptorNodeID, e);
+                        Log.InfoFormat("Creation of new Ignite node with Role = {0} & TRexNodeID = {1} failed with exception {2}", roleNames, RaptorNodeID, e);
                     }
                     finally
                     {
-                        Log.InfoFormat("Completed creation of new Ignite node with Role = {0} & RaptorNodeID = {1}", roleNames, RaptorNodeID);
+                        Log.InfoFormat("Completed creation of new Ignite node with Role = {0} & TRexNodeID = {1}", roleNames, RaptorNodeID);
                     }
                 }
             }

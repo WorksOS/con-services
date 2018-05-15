@@ -2,7 +2,7 @@
 using VSS.TRex.Servers.Compute;
 using Xunit;
 
-namespace VSS.TRex.RaptorClassLibrary.Tests.Servers.Server
+namespace VSS.TRex.Tests.Servers.Server
 {
         public class RaptorCacheComputeServerTests
     {

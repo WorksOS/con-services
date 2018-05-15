@@ -33,7 +33,7 @@ namespace VSS.TRex.Storage
         {
             Mutability = mutability;
 
-            ignite = RaptorGridFactory.Grid(TRexGrids.GridName(Mutability));
+            ignite = TRexGridFactory.Grid(TRexGrids.GridName(Mutability));
         }
 
         /// <summary>

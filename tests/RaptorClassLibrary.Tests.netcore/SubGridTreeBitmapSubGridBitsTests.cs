@@ -6,7 +6,7 @@ using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
 using Xunit;
 
-namespace VSS.TRex.RaptorClassLibrary.Tests
+namespace VSS.TRex.Tests
 {
         public class SubGridTreeBitmapSubGridBitsTests
     {

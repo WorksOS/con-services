@@ -153,7 +153,7 @@ namespace VSS.TRex.Servers.Compute
     public static bool SetGridActive(string gridName)
     {
       // Get an ignite reference to the named grid
-      IIgnite ignite = RaptorGridFactory.Grid(gridName);
+      IIgnite ignite = TRexGridFactory.Grid(gridName);
 
       // If the grid exists, and it is not active, then set it to active
       if (ignite != null && !ignite.GetCluster().IsActive())

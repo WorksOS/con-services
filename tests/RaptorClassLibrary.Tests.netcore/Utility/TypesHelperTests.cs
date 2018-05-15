@@ -7,7 +7,7 @@ using System.Reflection;
 using VSS.TRex.Utilities;
 using Xunit;
 
-namespace VSS.TRex.RaptorClassLibrary.Utility.Tests
+namespace VSS.TRex.Utility.Tests
 {
     public class TestClassBase : MemoryStream
     {

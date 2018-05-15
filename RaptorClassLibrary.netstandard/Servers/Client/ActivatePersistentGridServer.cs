@@ -42,7 +42,7 @@ namespace VSS.TRex.Servers.Client
                 try
                 {
                     // Get an ignite reference to the named grid
-                    IIgnite ignite = RaptorGridFactory.Grid(gridName);
+                    IIgnite ignite = TRexGridFactory.Grid(gridName);
 
                     // If the grid exists, and it is not active, then set it to active
                     if (ignite != null && !ignite.GetCluster().IsActive())
@@ -78,7 +78,7 @@ namespace VSS.TRex.Servers.Client
             try
             {
                 // Get an ignite reference to the named grid
-                IIgnite ignite = RaptorGridFactory.Grid(gridName);
+                IIgnite ignite = TRexGridFactory.Grid(gridName);
 
                 // If the grid exists, and it is active, then set it to inactive
                 if (ignite != null && ignite.GetCluster().IsActive())
@@ -108,7 +108,7 @@ namespace VSS.TRex.Servers.Client
         /// <param name="gridName">The name of the grid to wait for</param>
         public void WaitUntilGridActive(string gridName)
         {
-            IIgnite ignite = RaptorGridFactory.Grid(gridName);
+            IIgnite ignite = TRexGridFactory.Grid(gridName);
 
             if (ignite == null)
             {

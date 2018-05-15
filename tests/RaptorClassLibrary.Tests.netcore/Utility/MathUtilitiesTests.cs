@@ -2,7 +2,7 @@
 using VSS.TRex.Utilities;
 using Xunit;
 
-namespace VSS.TRex.RaptorClassLibrary.Utilities.Tests
+namespace VSS.TRex.Utilities.Tests
 {
         public class MathUtilitiesTests
     {

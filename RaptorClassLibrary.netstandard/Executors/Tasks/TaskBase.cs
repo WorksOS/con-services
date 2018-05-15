@@ -28,9 +28,9 @@ namespace VSS.TRex.Executors.Tasks
         public GridDataType GridDataType { get; set; } = GridDataType.All;
 
         /// <summary>
-        /// The raptor node wanting to recieve the results of task bases subgrid requests to the PSNode clustered processing layer
+        /// The node wanting to recieve the results of task bases subgrid requests to the PSNode clustered processing layer
         /// </summary>
-        public string RaptorNodeID { get; set; } = string.Empty;
+        public string TRexNodeID { get; set; } = string.Empty;
 
         /// <summary>
         /// Default no-arg constructor
@@ -43,12 +43,12 @@ namespace VSS.TRex.Executors.Tasks
         /// Constructor accepting a request descriptor identifying the overall request this task is associated with
         /// </summary>
         /// <param name="requestDescriptor"></param>
-        /// <param name="raptorNodeID"></param>
+        /// <param name="tRexNodeId"></param>
         /// <param name="gridDataType"></param>
-        public TaskBase(long requestDescriptor, string raptorNodeID, GridDataType gridDataType)
+        public TaskBase(long requestDescriptor, string tRexNodeId, GridDataType gridDataType)
         {
             RequestDescriptor = requestDescriptor;
-            RaptorNodeID = raptorNodeID;
+            TRexNodeID = tRexNodeId;
             GridDataType = gridDataType;
         }
 

@@ -17,7 +17,7 @@ namespace VSS.TRex.GridFabric.Requests
     /// <summary>
     /// The SubGridRequests GridFabric class sends a request to the grid for a collection of subgrids to be processed according 
     /// to relevant filters other parameters. The grid fabric responds with responses as the servers in the fabric compute them, sending
-    /// them to the Raptor node identified by the RaptorNodeID property
+    /// them to the Raptor node identified by the TRexNodeID property
     /// </summary>
     public abstract class SubGridRequestsBase<TSubGridsRequestArgument, TSubGridRequestsResponse> : CacheComputePoolRequest<TSubGridsRequestArgument, TSubGridRequestsResponse> 
         where TSubGridsRequestArgument : SubGridsRequestArgument, new()
@@ -133,7 +133,7 @@ namespace VSS.TRex.GridFabric.Requests
         /// <returns></returns>
         protected void PrepareArgument()
         {
-            Log.InfoFormat("Preparing argument with RaptorNodeID = {0}", RaptorNodeID);
+            Log.InfoFormat("Preparing argument with TRexNodeID = {0}", RaptorNodeID);
 
             using (MemoryStream ProdDataMS = new MemoryStream(), SurveyedSurfaceMS = new MemoryStream())
             {

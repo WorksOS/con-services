@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.TRex.Servers;
 
-namespace VSS.TRex.RaptorClassLibrary.Tests.MockedClasses.GridFabric
+namespace VSS.TRex.Tests.MockedClasses.GridFabric
 {
     public class MockedClusterServerNode : IClusterNode
     {

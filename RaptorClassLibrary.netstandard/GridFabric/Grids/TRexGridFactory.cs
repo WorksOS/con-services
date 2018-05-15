@@ -3,7 +3,7 @@ using System;
 
 namespace VSS.TRex.GridFabric.Grids
 {
-    public static class RaptorGridFactory
+    public static class TRexGridFactory
     {
         /// <summary>
         /// Creates an appropriate new Ignite grid reference depending on the Raptor Grid passed in

@@ -35,7 +35,7 @@ namespace VSS.TRex.Services.Surfaces
         /// </summary>
         public SurveyedSurfaceServiceProxy()
         {
-            IIgnite _ignite = RaptorGridFactory.Grid(TRexGrids.ImmutableGridName());
+            IIgnite _ignite = TRexGridFactory.Grid(TRexGrids.ImmutableGridName());
 
             // Get an instance of IServices for the cluster group.
             services = _ignite.GetCluster().GetServices();

@@ -3,7 +3,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Geometry;
 using Xunit;
 
-namespace VSS.TRex.RaptorClassLibrary.Tests
+namespace VSS.TRex.Tests
 {
         public class UTMCoordPointPairTests
     {

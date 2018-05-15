@@ -3,7 +3,7 @@ using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex;
 using Xunit;
 
-namespace VSS.TRex.RaptorClassLibrary.Tests
+namespace VSS.TRex.Tests
 {
         public class SubGridTreeUtilitiesTests
     {

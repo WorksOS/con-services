@@ -2,7 +2,7 @@
 using VSS.TRex.Volumes.GridFabric.Responses;
 using Xunit;
 
-namespace VSS.TRex.RaptorClassLibrary.Tests.Volumes
+namespace VSS.TRex.Tests.Volumes
 {
         public class SimpleVolumesResponseTests
     {

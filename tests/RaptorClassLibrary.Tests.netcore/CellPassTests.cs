@@ -6,7 +6,7 @@ using VSS.TRex.Cells;
 using VSS.TRex.Types;
 using Xunit;
 
-namespace VSS.TRex.RaptorClassLibrary.Tests
+namespace VSS.TRex.Tests
 {
         public class CellPassTests
     {

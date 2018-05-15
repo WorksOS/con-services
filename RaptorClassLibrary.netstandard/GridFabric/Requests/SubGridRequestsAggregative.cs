@@ -37,7 +37,7 @@ namespace VSS.TRex.GridFabric.Requests
             // Construct the argument to be supplied to the compute cluster
             PrepareArgument();
 
-            Log.Info($"Prepared argument has RaptorNodeID = {arg.RaptorNodeID}");
+            Log.Info($"Prepared argument has TRexNodeID = {arg.RaptorNodeID}");
             Log.Info($"Production Data mask in argument to renderer contains {ProdDataMask.CountBits()} subgrids");
             Log.Info($"Surveyed Surface mask in argument to renderer contains {SurveyedSurfaceOnlyMask.CountBits()} subgrids");
 
@@ -61,7 +61,7 @@ namespace VSS.TRex.GridFabric.Requests
                 sw.Stop();
                 Log.InfoFormat("TaskResult {0}: SubgidRequests.Execute() for DM:{1} from node {2} for data type {3} took {4}ms",
                                taskResult == null ? "<NullResult>" : taskResult.ResponseCode.ToString(), 
-                               Task.PipeLine.DataModelID, Task.RaptorNodeID, Task.GridDataType, sw.ElapsedMilliseconds);
+                               Task.PipeLine.DataModelID, Task.TRexNodeID, Task.GridDataType, sw.ElapsedMilliseconds);
             }
 
             // Advise the pipeline of all the subgrids that were examined in the aggregative processing

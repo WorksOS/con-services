@@ -5,7 +5,7 @@ using VSS.TRex.Storage;
 namespace VSS.TRex.Servers
 {
     /// <summary>
-    /// Determines and caches the RaptorNodeID set in the attributes for the local Ignite node 
+    /// Determines and caches the TRexNodeID set in the attributes for the local Ignite node 
     /// </summary>
     public class RaptorNodeID
     {
@@ -18,7 +18,7 @@ namespace VSS.TRex.Servers
         {
             if (raptorNodeIDs[(int)mutability] == "")
             {
-                raptorNodeIDs[(int)mutability] = Ignition.GetIgnite(TRexGrids.GridName(mutability)).GetCluster().GetLocalNode().GetAttribute<string>("RaptorNodeID");
+                raptorNodeIDs[(int)mutability] = Ignition.GetIgnite(TRexGrids.GridName(mutability)).GetCluster().GetLocalNode().GetAttribute<string>("TRexNodeID");
             }
 
             return raptorNodeIDs[(int)mutability];

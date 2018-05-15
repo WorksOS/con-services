@@ -15,9 +15,9 @@ namespace VSS.TRex.Executors.Tasks
         /// Primary task constructor
         /// </summary>
         /// <param name="requestDescriptor"></param>
-        /// <param name="raptorNodeID"></param>
+        /// <param name="tRexNodeID"></param>
         /// <param name="gridDataType"></param>
-        public PipelinedSubGridTask(long requestDescriptor, string raptorNodeID, GridDataType gridDataType) : base(requestDescriptor, raptorNodeID, gridDataType)
+        public PipelinedSubGridTask(long requestDescriptor, string tRexNodeID, GridDataType gridDataType) : base(requestDescriptor, tRexNodeID, gridDataType)
         {
         }
 

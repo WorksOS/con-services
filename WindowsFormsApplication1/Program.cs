@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using VSS.TRex.DesignProfiling;
 using VSS.TRex;
 
-namespace VSS.Raptor.IgnitePOC.TestApp
+namespace VSS.TRex.IgnitePOC.TestApp
 {
     static class Program
     {

@@ -11,7 +11,7 @@ using VSS.TRex.Volumes.GridFabric.Responses;
 //using VSS.VisionLink.Raptor.Types;
 using Xunit;
 
-namespace VSS.TRex.RaptorClassLibrary.Tests.Volumes
+namespace VSS.TRex.Tests.Volumes
 {
     public class SimpleVolumesRequestTests
     {

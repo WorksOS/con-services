@@ -229,7 +229,7 @@ namespace VSS.TRex.Pipelines
                 Task = PipelineTask,
                 SiteModelID = DataModelID,
                 RequestID = PipelineTask.RequestDescriptor,
-                RaptorNodeID = PipelineTask.RaptorNodeID,
+                RaptorNodeID = PipelineTask.TRexNodeID,
                 RequestedGridDataType = GridDataType,
                 IncludeSurveyedSurfaceInformation = IncludeSurveyedSurfaceInformation,
                 ProdDataMask = analyser.ProdDataMask,
