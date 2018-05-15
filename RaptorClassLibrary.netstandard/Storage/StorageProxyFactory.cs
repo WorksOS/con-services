@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.DI;
 using VSS.TRex.Interfaces;
 
 namespace VSS.TRex.Storage
@@ -16,7 +17,9 @@ namespace VSS.TRex.Storage
         /// <returns></returns>
         public static IStorageProxy MutableGridStorage()
         {
-            IStorageProxy proxy = new StorageProxy_Ignite_Transactional(StorageMutability.Mutable);
+            IStorageProxy proxy = 
+                StorageProxyDIContext.storageProxyFactory?.MutableGridStorage() ??
+                new StorageProxy_Ignite_Transactional(StorageMutability.Mutable);
 
             // Establish any available immutable storage proxy into the mutable storage proxy to allow transparnet
             // promotion of data changes in the mutable data store to the immutabvle data store.
@@ -33,7 +36,8 @@ namespace VSS.TRex.Storage
         /// <returns></returns>
         public static IStorageProxy ImmutableGridStorage()
         {
-            return new StorageProxy_Ignite_Transactional(StorageMutability.Immutable);
+            return StorageProxyDIContext.storageProxyFactory?.ImmutableGridStorage() ??
+                   new StorageProxy_Ignite_Transactional(StorageMutability.Immutable);
         }
 
         /// <summary>
