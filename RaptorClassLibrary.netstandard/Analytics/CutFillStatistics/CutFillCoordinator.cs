@@ -50,6 +50,11 @@ namespace VSS.TRex.Analytics.Coordinators
                 CutFillDesignID = argument.DesignID
             };
 
+        /// <summary>
+        /// Pull the required counts information from the internal cut fill aggregator state
+        /// </summary>
+        /// <param name="aggregator"></param>
+        /// <param name="response"></param>
         public override void ReadOutResults(AggregatorBase aggregator, CutFillStatisticsResponse response)
         {
             response.Counts = ((CutFillAggregator)aggregator).Counts;
