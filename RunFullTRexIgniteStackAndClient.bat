@@ -1,0 +1,4 @@
+call RunPSNodeCluster.bat
+call RunTRexServerApplication.bat
+call RunTRexIgniteTestClient.bat
+call RunTRexGridActivator.bat
