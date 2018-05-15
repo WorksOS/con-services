@@ -495,7 +495,7 @@ namespace VSS.TRex.Rendering.Executors
             }
 
             // Get the current production data existance map from the sitemodel
-            var ProdDataExistenceMap = SiteModel.GetProductionDataExistanceMap(SiteModels.SiteModels.StorageProxy);
+            var ProdDataExistenceMap = SiteModel.GetProductionDataExistanceMap(SiteModels.SiteModels.ImmutableStorageProxy);
 
             if (ProdDataExistenceMap == null)
             {
