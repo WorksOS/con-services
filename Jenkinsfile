@@ -48,7 +48,10 @@ node('Ubuntu_Slave') {
 			sh "(cd ./AcceptanceTests/scripts && bash ./deploy_linux.sh)"
 		}
 		stage ('Compose containers') {
-			sh "bash ./start_containers.sh;bash ./wait_container.sh testcontainers"
+			sh "bash ./start_containers.sh"
+		}
+		stage ('Wait for containers to finish') {
+			sh "bash ./wait_container.sh testcontainers"
 		}
 		stage ('Bring containers down and archive the logs') {
 			sh "(mkdir -p ./logs && docker-compose logs > ./logs/logs.txt)" 
