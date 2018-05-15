@@ -1,5 +1,5 @@
 ﻿using System.Windows.Forms;
-using VSS.VisionLink.Raptor.Servers.Compute;
+using VSS.TRex.Servers.Compute;
 
 namespace RaptorMutableDataServer
 {

@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Extensions.DependencyInjection;
 using RaptorTileServer;
-using VSS.VisionLink.Raptor.DI;
+using VSS.TRex.DI;
 using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Implementations.Framework;
 

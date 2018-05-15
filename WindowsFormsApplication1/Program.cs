@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using VSS.Velociraptor.DesignProfiling;
-using VSS.VisionLink.Raptor;
+using VSS.TRex;
 
 namespace VSS.Raptor.IgnitePOC.TestApp
 {

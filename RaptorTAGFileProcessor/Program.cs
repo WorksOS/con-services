@@ -5,10 +5,8 @@ using System.IO;
 using System.Reflection;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
-using VSS.VisionLink.Raptor.Machines;
-using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Requests;
-using VSS.VisionLink.Raptor.TAGFiles.Servers.Client;
+using VSS.TRex.Machines;
+using VSS.TRex.TAGFiles.Servers.Client;
 using VSSTests.TRex.Tests.Common;
 
 /*

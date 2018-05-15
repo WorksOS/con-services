@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using VSS.Velociraptor.DesignProfiling;
-using VSS.VisionLink.Raptor;
-using VSS.VisionLink.Raptor.Designs;
-using VSS.VisionLink.Raptor.ExistenceMaps;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.Services.Designs;
-using VSS.VisionLink.Raptor.Services.Surfaces;
-using VSS.VisionLink.Raptor.Surfaces;
+using VSS.TRex;
+using VSS.TRex.Designs;
+using VSS.TRex.ExistenceMaps;
+using VSS.TRex.Geometry;
+using VSS.TRex.Services.Designs;
+using VSS.TRex.Services.Surfaces;
+using VSS.TRex.Surfaces;
 
 namespace SurveyedSurfaceManager
 {
@@ -158,7 +157,7 @@ namespace SurveyedSurfaceManager
         /// <param name="e"></param>
         private void button1_Click_1(object sender, EventArgs e)
         {
-            SurveyedSurfaceService = new SurveyedSurfaceService(VSS.VisionLink.Raptor.Storage.StorageMutability.Immutable);
+            SurveyedSurfaceService = new SurveyedSurfaceService(VSS.TRex.Storage.StorageMutability.Immutable);
             SurveyedSurfaceService.Init(null);
         }
 
@@ -255,7 +254,7 @@ namespace SurveyedSurfaceManager
                     return;
                 }
 
-                VSS.VisionLink.Raptor.Designs.Storage.Designs designList = DesignsService.Instance().ListDirect(ID);
+                VSS.TRex.Designs.Storage.Designs designList = DesignsService.Instance().ListDirect(ID);
 
                 if (designList == null || designList.Count == 0)
                     MessageBox.Show("No designs");

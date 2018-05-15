@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-using VSS.VisionLink.Raptor.Servers.Client;
+using VSS.TRex.Servers.Client;
 
 namespace SurveyedSurfaceManager
 {

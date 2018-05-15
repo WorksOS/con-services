@@ -1,6 +1,5 @@
-﻿using System;
-using System.Windows.Forms;
-using VSS.VisionLink.Raptor.Servers.Client;
+﻿using System.Windows.Forms;
+using VSS.TRex.Servers.Client;
 
 namespace RaptorServerApplication
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
-using VSS.VisionLink.Raptor.Servers.Client;
+using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.Servers.Client;
 using log4net;
 using System.Reflection;
 
