@@ -29,13 +29,5 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics
                 Assert.True(Math.Abs(testPercents[i] - r.Percents[i]) < 0.00001, $"Invalid initial result percentage for item {i}");
             }
         }
-
-        [Fact]
-        public void Test_CutFillResult_Population_Failure()
-        {
-            CutFillResult r = new CutFillResult();
-
-            Assert.Throws<ArgumentException>("Response", () => { r.PopulateFromClusterComputeResponse(null); });
-        }
     }
 }
