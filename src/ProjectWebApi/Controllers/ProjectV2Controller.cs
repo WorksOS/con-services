@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -36,32 +37,40 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     protected readonly ICustomerRepository customerRepo;
 
+    /// <summary>
+    /// Gets or sets the httpContextAccessor.
+    /// </summary>
+    protected readonly IHttpContextAccessor httpContextAccessor;
+
 
     /// <summary>
     /// Default constructor.
     /// </summary>
     /// <param name="producer"></param>
     /// <param name="projectRepo"></param>
-    /// <param name="subscriptionsRepo"></param>
+    /// <param name="subscriptionRepo"></param>
+    /// <param name="fileRepo"></param>
     /// <param name="customerRepo"></param>
     /// <param name="store"></param>
     /// <param name="subscriptionProxy"></param>
     /// <param name="geofenceProxy"></param>
     /// <param name="raptorProxy"></param>
-    /// <param name="fileRepo"></param>
     /// <param name="logger"></param>
     /// <param name="serviceExceptionHandler">The ServiceException handler.</param>
+    /// <param name="httpContextAccessor"></param>
     public ProjectV2Controller(IKafka producer,
-      IProjectRepository projectRepo, ISubscriptionRepository subscriptionsRepo,
+      IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
       IFileRepository fileRepo, ICustomerRepository customerRepo,
       IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
       IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy,
-      ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
-      : base(producer, projectRepo, subscriptionsRepo, fileRepo, store, subscriptionProxy, geofenceProxy, raptorProxy,
+      ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
+      IHttpContextAccessor httpContextAccessor)
+      : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, geofenceProxy, raptorProxy,
         logger, serviceExceptionHandler, logger.CreateLogger<ProjectV2Controller>())
     {
       this.logger = logger;
       this.customerRepo = customerRepo;
+      this.httpContextAccessor = httpContextAccessor;
     }
 
     #region projects
@@ -120,7 +129,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
             geofenceProxy, raptorProxy, subscriptionProxy,
-            projectRepo, subscriptionRepo, fileRepo)
+            projectRepo, subscriptionRepo, fileRepo, null, httpContextAccessor)
           .ProcessAsync(createProjectEvent)
       );
 

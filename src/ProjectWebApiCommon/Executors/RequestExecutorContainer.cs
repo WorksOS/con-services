@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
@@ -89,6 +90,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// </summary>
     /// 
     protected ICustomerRepository customerRepo;
+
+    /// <summary>
+    /// Context of the API call
+    /// </summary>
+    /// 
+    protected IHttpContextAccessor httpContextAccessor;
 
     /// <summary>
     /// Generates the dynamic errorlist for instanciated executor.
@@ -186,8 +193,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       IDictionary<string, string> headers = null,
       IKafka producer = null, string kafkaTopicName = null,
       IGeofenceProxy geofenceProxy = null, IRaptorProxy raptorProxy = null, ISubscriptionProxy subscriptionProxy = null,
-      IProjectRepository projectRepo = null, ISubscriptionRepository subscriptionsRepo = null,
-      IFileRepository fileRepo = null, ICustomerRepository customerRepo = null)
+      IProjectRepository projectRepo = null, ISubscriptionRepository subscriptionRepo = null,
+      IFileRepository fileRepo = null, ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null)
     {
       log = logger;
       this.configStore = configStore;
@@ -202,9 +209,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.raptorProxy = raptorProxy;
       this.subscriptionProxy = subscriptionProxy;
       this.projectRepo = projectRepo;
-      this.subscriptionRepo = subscriptionsRepo;
+      this.subscriptionRepo = subscriptionRepo;
       this.fileRepo = fileRepo;
       this.customerRepo = customerRepo;
+      this.httpContextAccessor = httpContextAccessor;
     }
 
     /// <summary>
