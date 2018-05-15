@@ -40,7 +40,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(517, 13);
             this.label1.TabIndex = 0;
-            this.label1.Text = "The activator sets the Ignite.IsActive flag to true for the Raptor Ignite Grid wh" +
+            this.label1.Text = "The activator sets the Ignite.IsActive flag to true for the TRex Ignite Grid wh" +
     "en it is using Ignite Persistence.";
             // 
             // label2
@@ -73,7 +73,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Name = "Form1";
-            this.Text = "Raptor Grid Activator";
+            this.Text = "TRex Grid Activator";
             this.ResumeLayout(false);
             this.PerformLayout();
 

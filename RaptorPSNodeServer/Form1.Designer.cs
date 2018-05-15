@@ -38,7 +38,7 @@
             this.label1.Size = new System.Drawing.Size(286, 51);
             this.label1.TabIndex = 1;
             this.label1.Text = "When running, this server contains an instance of an Ignite PS Node server that I" +
-    "gnite Raptor compute servers may access to aid in processing client application " +
+    "gnite TRex compute servers may access to aid in processing client application " +
     "requests";
             // 
             // Form1
@@ -48,7 +48,7 @@
             this.ClientSize = new System.Drawing.Size(406, 125);
             this.Controls.Add(this.label1);
             this.Name = "Form1";
-            this.Text = "Raptor PS Node Server";
+            this.Text = "TRex PS Node Server";
             this.ResumeLayout(false);
 
         }

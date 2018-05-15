@@ -48,7 +48,7 @@
             this.ClientSize = new System.Drawing.Size(359, 94);
             this.Controls.Add(this.label1);
             this.Name = "Form1";
-            this.Text = "Raptor Application Server - Tiling";
+            this.Text = "TRex Application Server - Tiling";
             this.ResumeLayout(false);
 
         }

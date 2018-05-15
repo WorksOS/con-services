@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace RaptorTileServer.Properties {
+namespace TRexTileServer.Properties {
     using System;
     
     

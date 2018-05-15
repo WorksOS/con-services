@@ -20,11 +20,11 @@ namespace TRexGridActivator
         {
             try
             {
-                Log.Info("About to call ActivatePersistentGridServer.Instance().SetGridActive() for Immutable Raptor grid");
+                Log.Info("About to call ActivatePersistentGridServer.Instance().SetGridActive() for Immutable TRex grid");
                 bool result1 = ActivatePersistentGridServer.Instance().SetGridActive(TRexGrids.ImmutableGridName());
                 Log.Info($"Activation process completed: Immutable = {result1}");
 
-                Log.Info("About to call ActivatePersistentGridServer.Instance().SetGridActive() for Mutable Raptor grid");
+                Log.Info("About to call ActivatePersistentGridServer.Instance().SetGridActive() for Mutable TRex grid");
                 bool result2 = ActivatePersistentGridServer.Instance().SetGridActive(TRexGrids.MutableGridName());
                 Log.Info($"Activation process completed: Mutable = {result2}");
 

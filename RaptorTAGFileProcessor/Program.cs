@@ -17,7 +17,7 @@ Arguments for building project #6, Christchurch Southern Motorway:
 6 "J:\PP\Construction\Office software\SiteVision Office\Test Files\VisionLink Data\Southern Motorway\TAYLORS COMP"
 */
 
-namespace VSS.VisionLink.Raptor.Client
+namespace VSS.TRex.Client
 {
     class Program
     {

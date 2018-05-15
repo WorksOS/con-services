@@ -38,7 +38,7 @@
             this.label1.Size = new System.Drawing.Size(286, 51);
             this.label1.TabIndex = 2;
             this.label1.Text = "When running, this server contains an instance of an Ignite Mutable Data Server t" +
-    "hat Ignite Raptor TAG file processing clients may access";
+    "hat Ignite TRex TAG file processing clients may access";
             // 
             // Form1
             // 
@@ -47,7 +47,7 @@
             this.ClientSize = new System.Drawing.Size(436, 117);
             this.Controls.Add(this.label1);
             this.Name = "Form1";
-            this.Text = "Raptor Mutable Data Server";
+            this.Text = "TRex Mutable Data Server";
             this.ResumeLayout(false);
 
         }
