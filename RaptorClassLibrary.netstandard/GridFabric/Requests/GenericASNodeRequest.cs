@@ -1,5 +1,6 @@
 ﻿using Apache.Ignite.Core.Compute;
 using System;
+using VSS.TRex.GridFabric.Requests.Interfaces;
 
 namespace VSS.TRex.GridFabric.Requests
 {
@@ -10,9 +11,9 @@ namespace VSS.TRex.GridFabric.Requests
     /// <typeparam name="TComputeFunc"></typeparam>
     /// <typeparam name="TResponse"></typeparam>
     [Serializable]
-    public class GenericASNodeRequest<TArgument, TComputeFunc, TResponse> : ApplicationServicePoolRequest<TArgument, TResponse>
+    public class GenericASNodeRequest<TArgument, TComputeFunc, TResponse> : ApplicationServicePoolRequest<TArgument, TResponse>, IGenericASNodeRequest<TArgument, TResponse>
         where TComputeFunc : IComputeFunc<TArgument, TResponse>, new()
-        where TResponse : class
+        where TResponse : class, new()
     {
         /// <summary>
         /// Executes the generic request by instantiating the required ComputeFunc and sending it to 

@@ -808,7 +808,8 @@ namespace VSS.TRex.IgnitePOC.TestApp
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            CutFillResult result = CutFillOperation.Execute(new CutFillStatisticsArgument()
+            CutFillOperation operation = new CutFillOperation();
+            CutFillResult result = operation.Execute(new CutFillStatisticsArgument()
             {
                 DataModelID = siteModel.ID,
                 Filter = new CombinedFilter(),
