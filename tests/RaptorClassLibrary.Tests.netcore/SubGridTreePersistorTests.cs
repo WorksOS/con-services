@@ -15,7 +15,7 @@ namespace VSS.TRex.SubGridTrees.Tests
             MemoryStream MS = new MemoryStream();
 
             Assert.True(SubGridTreePersistor.Write(masktree, "Existance", 1, new BinaryWriter(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Write failed");
-            Assert.Equal(38, MS.Length);
+            Assert.Equal(46, MS.Length);
         }
 
         [Fact()]
@@ -28,7 +28,7 @@ namespace VSS.TRex.SubGridTrees.Tests
             MemoryStream MS = new MemoryStream();
 
             Assert.True(SubGridTreePersistor.Write(masktree, "Existance", 1, new BinaryWriter(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Write failed");
-            Assert.Equal(175, MS.Length);
+            Assert.Equal(183, MS.Length);
         }
 
         [Fact()]
