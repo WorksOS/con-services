@@ -27,7 +27,11 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
     /// </summary>
     public const string LOGGER_REPO_NAME = "WebApi";
 
-    public IConfigurationRoot Configuration { get; }
+    /// <summary>
+    /// Gets the default configuration object.
+    /// </summary>
+    private IConfigurationRoot Configuration { get; }
+
     private IServiceCollection serviceCollection;
 
     /// <summary>
@@ -54,24 +58,10 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
     {
       services.AddCommon<Startup>(SERVICE_TITLE, "API for 3D File Access");
 
-      services.AddLogging();
-
-      //Configure CORS
-      services.AddCors(options =>
-      {
-        options.AddPolicy("VSS", builder => builder.AllowAnyOrigin()
-                  .WithHeaders("Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization",
-                      "X-VisionLink-CustomerUid", "X-VisionLink-UserUid", "Cache-Control")
-                  .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE"));
-      });
-
-      //Configure application services
       services
         .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddSingleton<IFileRepository, FileRepository>();
-
-      services.AddMvc();
 
       serviceCollection = services;
     }
@@ -83,10 +73,11 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
     {
       loggerFactory.AddConsole(Configuration.GetSection("Logging"));
       loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(LOGGER_REPO_NAME);
 
-      //Enable CORS before TID so OPTIONS works without authentication
-      app.UseCommon("VSS");
+      serviceCollection.AddSingleton(loggerFactory);
+      serviceCollection.BuildServiceProvider();
+
+      app.UseCommon(SERVICE_TITLE);
 
 #if NET_4_7
       if (Configuration["newrelic"] == "true")
