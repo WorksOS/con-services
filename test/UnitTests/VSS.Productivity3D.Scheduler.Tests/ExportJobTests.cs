@@ -54,13 +54,14 @@ namespace VSS.Productivity3D.Scheduler.Tests
     }
 
     [TestMethod]
-    public void CanGetExportDataSuccess()
+    [DataRow("Export Success")]
+    public void CanGetExportDataSuccess(string message)
     {
       var customHeaders = new Dictionary<string, string>();
 
       var scheduleRequest = new ScheduleJobRequest { Url = "some url", Filename = "dummy"};
 
-      var context = GetMockHangfireContext(TestContext.TestName);
+      var context = GetMockHangfireContext(TestContext.TestName, message);
 
       Mock<IApiClient> apiClient = new Mock<IApiClient>();
       apiClient.Setup(a => a.SendRequest<ExportResult>(scheduleRequest, customHeaders, null)).ReturnsAsync(new ExportResult { ExportData = new byte[0] });
@@ -100,7 +101,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
       await exportJob.GetExportData(scheduleRequest, customHeaders, context);
     }
 
-    private PerformContext GetMockHangfireContext(string testName, string message = null)
+    private PerformContext GetMockHangfireContext(string testName, string message = "")
     {
       //Unfortunately Hangfire doesn't have interfaces for everything so we need to
       //explicitly create some objects rather than letting Moq do it.
