@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace RaptorClassLibrary.netstandard.AAAPlayground
+namespace VSS.TRex.AAAPlayground
 {
     public class ListsAndThings
     {
