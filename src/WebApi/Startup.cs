@@ -1,13 +1,9 @@
-﻿using System.Reflection;
-using System.IO;
-using System.Diagnostics;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Swashbuckle.AspNetCore.Swagger;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.TCCFileAccess;
@@ -67,34 +63,6 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
                   .WithHeaders("Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization",
                       "X-VisionLink-CustomerUid", "X-VisionLink-UserUid", "Cache-Control")
                   .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE"));
-      });
-
-      services.AddSwaggerGen(c =>
-      {
-        c.SwaggerDoc("v1", new Info { Title = "File Access API", Description = "API for File Access", Version = "v1" });
-      });
-
-      services.ConfigureSwaggerGen(options =>
-      {
-        string pathToXml;
-
-        var moduleName = typeof(Startup).GetTypeInfo().Assembly.ManifestModule.Name;
-        var assemblyName = moduleName.Substring(0, moduleName.LastIndexOf('.'));
-
-        if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), assemblyName + ".xml")))
-          pathToXml = Directory.GetCurrentDirectory();
-        else if (File.Exists(Path.Combine(System.AppContext.BaseDirectory, assemblyName + ".xml")))
-          pathToXml = System.AppContext.BaseDirectory;
-        else
-        {
-          var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
-          pathToXml = Path.GetDirectoryName(pathToExe);
-        }
-        options.IncludeXmlComments(Path.Combine(pathToXml, assemblyName + ".xml"));
-
-        options.IgnoreObsoleteProperties();
-        options.DescribeAllEnumsAsStrings();
-
       });
 
       //Configure application services
