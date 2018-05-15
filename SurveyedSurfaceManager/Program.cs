@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using VSS.VisionLink.Raptor.Servers.Client;
 
@@ -19,7 +16,7 @@ namespace SurveyedSurfaceManager
             log4net.GlobalContext.Properties["LogName"] = logFileName;
             log4net.Config.XmlConfigurator.Configure();
         
-            RaptorImmutableClientServer server = new RaptorImmutableClientServer("SurveyedSurfaceManager");
+            ImmutableClientServer server = new ImmutableClientServer("SurveyedSurfaceManager");
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

@@ -51,9 +51,9 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         BoundingWorldExtent3D extents = BoundingWorldExtent3D.Inverted();
 
         //        RaptorGenericApplicationServiceServer genericApplicationServiceServer = new RaptorGenericApplicationServiceServer();
-        RaptorTileRenderingServer tileRenderServer;
-        RaptorSimpleVolumesServer simpleVolumesServer;
-        RaptorMutableClientServer mutableClient;
+        TileRenderingServer tileRenderServer;
+        SimpleVolumesServer simpleVolumesServer;
+        MutableClientServer mutableClient;
 
         SiteModelAttributesChangedEventListener SiteModelAttrubutesChanged;
 
@@ -147,9 +147,9 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             displayMode.Items.AddRange(Enum.GetNames(typeof(DisplayMode)));
             displayMode.SelectedIndex = (int)DisplayMode.Height;
 
-            tileRenderServer = RaptorTileRenderingServer.NewInstance(new[] { RaptorApplicationServiceServer.DEFAULT_ROLE_CLIENT, ServerRoles.TILE_RENDERING_NODE });
-            simpleVolumesServer = RaptorSimpleVolumesServer.NewInstance(new [] { RaptorApplicationServiceServer.DEFAULT_ROLE_CLIENT });
-            mutableClient = new RaptorMutableClientServer("TestApplication");
+            tileRenderServer = TileRenderingServer.NewInstance(new[] { ApplicationServiceServer.DEFAULT_ROLE_CLIENT, ServerRoles.TILE_RENDERING_NODE });
+            simpleVolumesServer = SimpleVolumesServer.NewInstance(new [] { ApplicationServiceServer.DEFAULT_ROLE_CLIENT });
+            mutableClient = new MutableClientServer("TestApplication");
 
             // Instantiate a site model changed listener to catch changes to site model attributes
             SiteModelAttrubutesChanged = new SiteModelAttributesChangedEventListener(RaptorGrids.RaptorImmutableGridName());
