@@ -8,7 +8,7 @@ using log4net;
 using VSS.TRex.TAGFiles.Classes.Validator;
 using VSS.TRex.TAGFiles.Models;
 using VSS.Velociraptor.DesignProfiling.Servers.Client;
-using VSS.VisionLink.Raptor;
+using VSS.TRex;
 
 namespace VSS.TRex.TAGFiles.Classes
 {

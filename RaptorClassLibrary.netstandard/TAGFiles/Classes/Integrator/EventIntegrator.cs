@@ -1,10 +1,10 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 using log4net;
-using VSS.VisionLink.Raptor.Events;
-using VSS.VisionLink.Raptor.Events.Interfaces;
+using VSS.TRex.Events;
+using VSS.TRex.Events.Interfaces;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
+namespace VSS.TRex.TAGFiles.Classes.Integrator
 {
     /// <summary>
     /// Provides business logic driving integration of event lists derived from TAG file processing

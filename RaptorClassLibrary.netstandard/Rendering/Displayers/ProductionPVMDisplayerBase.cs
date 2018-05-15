@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
-using VSS.VisionLink.Raptor.SubGridTrees.Client;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Interfaces;
 
-namespace VSS.VisionLink.Raptor.Rendering.Displayers
+namespace VSS.TRex.Rendering.Displayers
 {
     public class ProductionPVMDisplayerBase
     {

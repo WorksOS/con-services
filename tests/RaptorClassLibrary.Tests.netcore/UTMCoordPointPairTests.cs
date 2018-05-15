@@ -1,9 +1,9 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.Common;
+using VSS.TRex.Common;
+using VSS.TRex.Geometry;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
+namespace VSS.TRex.RaptorClassLibrary.Tests
 {
         public class UTMCoordPointPairTests
     {

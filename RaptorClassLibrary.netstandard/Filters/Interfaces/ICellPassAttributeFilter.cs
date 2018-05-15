@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.Filters.Interfaces
+﻿namespace VSS.TRex.Filters.Interfaces
 {
     public interface ICellPassAttributeFilter
     {

@@ -1,7 +1,7 @@
-﻿using VSS.VisionLink.Raptor.Rendering.Palettes.Interfaces;
-using VSS.VisionLink.Raptor.Types;
+﻿using VSS.TRex.Rendering.Palettes.Interfaces;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.Rendering.Displayers
+namespace VSS.TRex.Rendering.Displayers
 {
     public class PVMDisplayerBase : ProductionPVMDisplayerBase
     {

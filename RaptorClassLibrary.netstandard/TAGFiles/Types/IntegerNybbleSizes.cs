@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Types
+namespace VSS.TRex.TAGFiles.Types
 {
     /// <summary>
     /// Supplies information regarding how many nybbles in the TAG file each integer field requires

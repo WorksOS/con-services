@@ -2,16 +2,16 @@
 using System.Collections;
 using System.IO;
 using System.Linq;
+using VSS.TRex.Cells;
+using VSS.TRex.Common;
+using VSS.TRex.Compression;
+using VSS.TRex.Machines;
 using VSS.TRex.SubGridTrees.Server;
-using VSS.VisionLink.Raptor.Cells;
-using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.Compression;
-using VSS.VisionLink.Raptor.Machines;
-using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Server.Utilities;
-using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
+using VSS.TRex.SubGridTrees.Server.Utilities;
+using VSS.TRex.SubGridTrees.Utilities;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server
+namespace VSS.TRex.SubGridTrees.Server
 {
     /// <summary>
     /// Represents an efficiently compressed version of the cell pass information included within a segment.

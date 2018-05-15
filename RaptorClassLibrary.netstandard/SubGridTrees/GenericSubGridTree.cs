@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Types;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Types;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees
+namespace VSS.TRex.SubGridTrees
 {
     /// <summary>
     /// GenericSubGridTree in T implements a subgrid tree where all the cells in the leaf subgrids are generic type T.

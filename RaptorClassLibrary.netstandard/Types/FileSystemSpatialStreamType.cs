@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.Types
+﻿namespace VSS.TRex.Types
 {
     /// <summary>
     ///  The types of data held in an FS file: Spatial Directory and segment information, events and ProductionDataXML

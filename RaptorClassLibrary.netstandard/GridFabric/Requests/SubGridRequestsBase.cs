@@ -3,16 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using VSS.VisionLink.Raptor.Designs.GridFabric.Requests;
-using VSS.VisionLink.Raptor.Executors.Tasks.Interfaces;
-using VSS.VisionLink.Raptor.Filters;
-using VSS.VisionLink.Raptor.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.GridFabric.Responses;
-using VSS.VisionLink.Raptor.SubGridTrees;
-using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Designs.GridFabric.Requests;
+using VSS.TRex.Executors.Tasks.Interfaces;
+using VSS.TRex.Filters;
+using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.GridFabric.Responses;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.GridFabric.Requests
+namespace VSS.TRex.GridFabric.Requests
 {
     /// <summary>
     /// The SubGridRequests GridFabric class sends a request to the grid for a collection of subgrids to be processed according 

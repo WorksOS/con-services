@@ -1,28 +1,28 @@
 ﻿using System.Text;
-using VSS.VisionLink.Raptor.Cells;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Compaction;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Compaction.CCA;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Compaction.CMV;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Compaction.PassCount;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Compaction.Temperature;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Compaction.Vibratory;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.ControlState;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.CoordinateSystem;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine.Events;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine.Location;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine.Sensors;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine.Telematics;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Ordinates;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Positioning;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Proofing;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Time;
-using VSS.VisionLink.Raptor.TAGFiles.Types;
-using VSS.VisionLink.Raptor.Time;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Cells;
+using VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction;
+using VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.CCA;
+using VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.CMV;
+using VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.PassCount;
+using VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.Temperature;
+using VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.Vibratory;
+using VSS.TRex.TAGFiles.Classes.ValueMatcher.ControlState;
+using VSS.TRex.TAGFiles.Classes.ValueMatcher.CoordinateSystem;
+using VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine;
+using VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine.Events;
+using VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine.Location;
+using VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine.Sensors;
+using VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine.Telematics;
+using VSS.TRex.TAGFiles.Classes.ValueMatcher.Ordinates;
+using VSS.TRex.TAGFiles.Classes.ValueMatcher.Positioning;
+using VSS.TRex.TAGFiles.Classes.ValueMatcher.Proofing;
+using VSS.TRex.TAGFiles.Classes.ValueMatcher.Time;
+using VSS.TRex.TAGFiles.Types;
+using VSS.TRex.Time;
+using VSS.TRex.Types;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
+namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Tests
 {
     public class TAGProcessorStateBase_Test : TAGProcessorStateBase
     {

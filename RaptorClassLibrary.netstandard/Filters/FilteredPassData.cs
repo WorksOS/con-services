@@ -1,6 +1,6 @@
-﻿using VSS.VisionLink.Raptor.Cells;
+﻿using VSS.TRex.Cells;
 
-namespace VSS.VisionLink.Raptor.Filters
+namespace VSS.TRex.Filters
 {
     /// <summary>
     /// Contains a filtered cell pass including the events and target values relevant to the 

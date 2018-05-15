@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.TAGFiles.Types
+﻿namespace VSS.TRex.TAGFiles.Types
 {
     /// <summary>
     /// The mode to use when integrating one subgrid tree into another during TAG file processing

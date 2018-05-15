@@ -1,17 +1,17 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.SubGridTrees;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Server;
-using VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators;
-using VSS.VisionLink.Raptor.SubGridTrees.Server.Utilities;
-using VSS.VisionLink.Raptor.SubGridTrees.Types;
-using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
-using VSS.VisionLink.Raptor.TAGFiles.Types;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Interfaces;
+using VSS.TRex.SiteModels;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.SubGridTrees.Server.Iterators;
+using VSS.TRex.SubGridTrees.Server.Utilities;
+using VSS.TRex.SubGridTrees.Types;
+using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.TAGFiles.Types;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
+namespace VSS.TRex.TAGFiles.Classes.Integrator
 {
     /// <summary>
     /// Responsible for orchestrating integration of mini-sitemodels processed from one or

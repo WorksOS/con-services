@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.Interfaces
+﻿namespace VSS.TRex.Interfaces
 {
     public interface ICellSpatialFilter
     {

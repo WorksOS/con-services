@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.GridFabric.Arguments
+namespace VSS.TRex.TAGFiles.GridFabric.Arguments
 {   
     [Serializable]
     public class ProcessTAGFileRequestArgument

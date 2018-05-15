@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using VSS.VisionLink.Raptor.Common;
+using VSS.TRex.Common;
 
-namespace VSS.VisionLink.Raptor.Designs
+namespace VSS.TRex.Designs
 {
     /// <summary>
     /// Provides a spatial index for triangles in a surface to provide rapid location and scanning from a spatial perspective

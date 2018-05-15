@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.Utilities
+﻿namespace VSS.TRex.Utilities
 {
     public static class PassCountSize
     {

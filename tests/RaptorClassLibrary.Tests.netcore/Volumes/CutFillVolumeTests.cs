@@ -1,4 +1,4 @@
-﻿using VSS.VisionLink.Raptor.Volumes;
+﻿using VSS.TRex.Volumes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.Volumes.Tests
+namespace VSS.TRex.Volumes.Tests
 {
         public class CutFillVolumeTests
     {

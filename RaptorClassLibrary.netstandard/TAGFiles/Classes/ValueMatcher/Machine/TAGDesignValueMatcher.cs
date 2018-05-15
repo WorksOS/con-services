@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine
+﻿namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
 {
     public class TAGDesignValueMatcher : TAGValueMatcher
     {

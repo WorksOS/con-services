@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.SubGridTrees.Server
+﻿namespace VSS.TRex.SubGridTrees.Server
 {
     /// <summary>
     /// Represents the number of passes and the location of the first cell pass for a cell within the set of cell passes

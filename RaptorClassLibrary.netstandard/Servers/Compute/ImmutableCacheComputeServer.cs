@@ -12,14 +12,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using VSS.VisionLink.Raptor.GridFabric.Affinity;
-using VSS.VisionLink.Raptor.GridFabric.Caches;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
-using VSS.VisionLink.Raptor.GridFabric.Queues;
-using VSS.VisionLink.Raptor.Servers.Client;
-using VSS.VisionLink.Raptor.Storage;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Caches;
+using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Queues;
+using VSS.TRex.Servers.Client;
+using VSS.TRex.Storage;
 
-namespace VSS.VisionLink.Raptor.Servers.Compute
+namespace VSS.TRex.Servers.Compute
 {
   /// <summary>
   /// Defines a representation of a server responsible for performing Raptor related compute operations using

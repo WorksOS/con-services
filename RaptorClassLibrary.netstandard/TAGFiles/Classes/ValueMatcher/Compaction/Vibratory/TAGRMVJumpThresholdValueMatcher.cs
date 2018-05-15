@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Compaction.Vibratory
+﻿namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.Vibratory
 {
     /// <summary>
     /// Handles the vibratory drum Resonance Meter Value jump threshold value configured on the machine

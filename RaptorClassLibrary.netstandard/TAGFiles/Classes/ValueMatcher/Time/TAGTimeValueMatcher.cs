@@ -1,7 +1,7 @@
-﻿using VSS.VisionLink.Raptor.TAGFiles.Types;
-using VSS.VisionLink.Raptor.Time;
+﻿using VSS.TRex.TAGFiles.Types;
+using VSS.TRex.Time;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Time
+namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Time
 {
     /// <summary>
     /// Handles TIME and WEEK values (both absolute and delta)

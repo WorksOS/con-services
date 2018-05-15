@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher
+﻿namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
 {
     /// <summary>
     /// Handles the machine control system research data flag

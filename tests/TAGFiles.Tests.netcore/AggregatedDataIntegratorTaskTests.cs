@@ -1,4 +1,4 @@
-﻿using VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator;
+﻿using VSS.TRex.TAGFiles.Classes.Integrator;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator.Tests
+namespace VSS.TRex.TAGFiles.Classes.Integrator.Tests
 {
         public class AggregatedDataIntegratorTaskTests
     {

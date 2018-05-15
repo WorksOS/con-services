@@ -1,5 +1,5 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Events.Interfaces;
+using VSS.TRex.Events.Interfaces;
 
 namespace VSS.TRex.Events.Interfaces
 {

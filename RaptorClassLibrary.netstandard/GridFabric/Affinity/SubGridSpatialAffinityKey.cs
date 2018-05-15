@@ -1,7 +1,7 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.SubGridTrees;
+using VSS.TRex.SubGridTrees;
 
-namespace VSS.VisionLink.Raptor.GridFabric.Affinity
+namespace VSS.TRex.GridFabric.Affinity
 {
     /// <summary>
     /// The key type used to drive spatial affinity key mapping for elements stored in the Ignite cache. This controls

@@ -1,10 +1,10 @@
 ﻿using System.Collections.Concurrent;
-using VSS.VisionLink.Raptor.Events;
-using VSS.VisionLink.Raptor.Machines;
-using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.SubGridTrees.Server;
+using VSS.TRex.Events;
+using VSS.TRex.Machines;
+using VSS.TRex.SiteModels;
+using VSS.TRex.SubGridTrees.Server;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
+namespace VSS.TRex.TAGFiles.Classes.Integrator
 {
     public class AggregatedDataIntegrator
     {

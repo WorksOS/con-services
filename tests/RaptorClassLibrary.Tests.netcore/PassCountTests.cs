@@ -1,8 +1,8 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Utilities;
+using VSS.TRex.Utilities;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
+namespace VSS.TRex.RaptorClassLibrary.Tests
 {
         public class PassCountTests
     {

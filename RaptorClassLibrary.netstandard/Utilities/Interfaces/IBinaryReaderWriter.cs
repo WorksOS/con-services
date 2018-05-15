@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace VSS.VisionLink.Raptor.Utilities.Interfaces
+namespace VSS.TRex.Utilities.Interfaces
 {
     /// <summary>
     /// Interface detailing 'from' and 'to' byte array serialisation semantics

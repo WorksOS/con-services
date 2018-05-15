@@ -1,8 +1,8 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Utilities;
+using VSS.TRex.Utilities;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.RaptorClassLibrary.MinMax.Tests
+namespace VSS.TRex.RaptorClassLibrary.MinMax.Tests
 {
         public class MinMaxTests
     {
@@ -12,10 +12,10 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.MinMax.Tests
             int a = 10;
             int b = 20;
 
-            Raptor.Utilities.MinMax.Swap(ref a, ref b);
+            TRex.Utilities.MinMax.Swap(ref a, ref b);
             Assert.True(a == 20 && b == 10, "Swap failed to swap items");
 
-            Raptor.Utilities.MinMax.Swap<int>(ref a, ref b);
+            TRex.Utilities.MinMax.Swap<int>(ref a, ref b);
             Assert.True(a == 10 && b == 20, "Swap failed to swap items");
         }
 
@@ -25,13 +25,13 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.MinMax.Tests
             double a = 10;
             double b = 20;
 
-            Raptor.Utilities.MinMax.SetMinMax(ref a, ref b);
+            TRex.Utilities.MinMax.SetMinMax(ref a, ref b);
             Assert.True(a == 10 && b == 20, "SetMinMax swapped values when it should not");
 
             double c = 20;
             double d = 10;
 
-            Raptor.Utilities.MinMax.SetMinMax(ref c, ref d);
+            TRex.Utilities.MinMax.SetMinMax(ref c, ref d);
             Assert.True(c == 10 && d == 20, "SetMinMax did not swap values when it should");
         }
 
@@ -41,13 +41,13 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.MinMax.Tests
             int a = 10;
             int b = 20;
 
-            Raptor.Utilities.MinMax.SetMinMax<int>(ref a, ref b);
+            TRex.Utilities.MinMax.SetMinMax<int>(ref a, ref b);
             Assert.True(a == 10 && b == 20, "SetMinMax swapped values when it should not");
 
             int c = 20;
             int d = 10;
 
-            Raptor.Utilities.MinMax.SetMinMax<int>(ref c, ref d);
+            TRex.Utilities.MinMax.SetMinMax<int>(ref c, ref d);
             Assert.True(c == 10 && d == 20, "SetMinMax did not swap values when it should");
         }
     }

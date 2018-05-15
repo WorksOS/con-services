@@ -1,7 +1,7 @@
 ﻿using VSS.Velociraptor.DesignProfiling.GridFabric.Arguments;
 using VSS.Velociraptor.DesignProfiling.GridFabric.Requests;
-using VSS.VisionLink.Raptor.Servers.Client;
-using VSS.VisionLink.Raptor.SubGridTrees.Client;
+using VSS.TRex.Servers.Client;
+using VSS.TRex.SubGridTrees.Client;
 
 namespace VSS.Velociraptor.DesignProfiling.Servers.Client
 {

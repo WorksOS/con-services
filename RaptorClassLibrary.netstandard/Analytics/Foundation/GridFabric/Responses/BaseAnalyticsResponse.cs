@@ -1,6 +1,6 @@
-﻿using VSS.VisionLink.Raptor.Types;
+﻿using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.Analytics.GridFabric.Responses
+namespace VSS.TRex.Analytics.GridFabric.Responses
 {
     /// <summary>
     /// Base class for analytics response. Defines common state such as ResutlStatus for each response type

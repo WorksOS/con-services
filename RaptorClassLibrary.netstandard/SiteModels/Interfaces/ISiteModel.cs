@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.SiteModels.Interfaces
+﻿namespace VSS.TRex.SiteModels.Interfaces
 {
     public interface ISiteModel
     {

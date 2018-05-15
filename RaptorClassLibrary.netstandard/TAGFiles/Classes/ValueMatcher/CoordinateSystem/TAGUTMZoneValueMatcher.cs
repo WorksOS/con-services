@@ -1,6 +1,6 @@
-﻿using VSS.VisionLink.Raptor.TAGFiles.Types;
+﻿using VSS.TRex.TAGFiles.Types;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.CoordinateSystem
+namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.CoordinateSystem
 {
     /// <summary>
     /// Handles the Universal Tranverse Mercator project zone being used for grid coordinates written into the TAG file data

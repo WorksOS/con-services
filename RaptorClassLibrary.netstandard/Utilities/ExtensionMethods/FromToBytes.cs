@@ -1,7 +1,7 @@
 ﻿using System.IO;
-using VSS.VisionLink.Raptor.Utilities.Interfaces;
+using VSS.TRex.Utilities.Interfaces;
 
-namespace VSS.VisionLink.Raptor.Utilities.ExtensionMethods
+namespace VSS.TRex.Utilities.ExtensionMethods
 {
     /// <summary>
     /// Extension methods supporting serialisation and deserialisation to and from vanilla byte arrays.

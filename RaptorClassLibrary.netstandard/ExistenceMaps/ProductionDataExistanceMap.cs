@@ -1,7 +1,7 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.SubGridTrees;
+using VSS.TRex.SubGridTrees;
 
-namespace VSS.VisionLink.Raptor.ExistenceMaps
+namespace VSS.TRex.ExistenceMaps
 {
     /// <summary>
     /// ProductionDataExistanceMap stores a map of existing subgrids that contain data processed into the datamodel

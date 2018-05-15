@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.Filters
+﻿namespace VSS.TRex.Filters
 {
     /// <summary>
     /// FilteredValueAssignmentContext provides a context for collecting filtered values from production data in the 

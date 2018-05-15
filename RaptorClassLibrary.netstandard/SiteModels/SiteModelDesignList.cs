@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Reflection;
 using log4net;
-using VSS.VisionLink.Raptor.Geometry;
+using VSS.TRex.Geometry;
 
-namespace VSS.VisionLink.Raptor.SiteModels
+namespace VSS.TRex.SiteModels
 {
     [Serializable]
     public class SiteModelDesignList : List<SiteModelDesign>

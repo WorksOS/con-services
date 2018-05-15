@@ -1,22 +1,22 @@
 ﻿using log4net;
 using System;
 using System.Reflection;
-using VSS.VisionLink.Raptor.Designs;
-using VSS.VisionLink.Raptor.Designs.Storage;
-using VSS.VisionLink.Raptor.Executors.Tasks;
-using VSS.VisionLink.Raptor.Filters;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.Pipelines;
-using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.SubGridTrees;
-using VSS.VisionLink.Raptor.Surfaces;
-using VSS.VisionLink.Raptor.Types;
-using VSS.VisionLink.Raptor.Volumes.Executors.Tasks;
-using VSS.VisionLink.Raptor.Volumes.GridFabric.Responses;
+using VSS.TRex.Designs;
+using VSS.TRex.Designs.Storage;
+using VSS.TRex.Executors.Tasks;
+using VSS.TRex.Filters;
+using VSS.TRex.Geometry;
+using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.Interfaces;
+using VSS.TRex.Pipelines;
+using VSS.TRex.SiteModels;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.Surfaces;
+using VSS.TRex.Types;
+using VSS.TRex.Volumes.Executors.Tasks;
+using VSS.TRex.Volumes.GridFabric.Responses;
 
-namespace VSS.VisionLink.Raptor.Volumes
+namespace VSS.TRex.Volumes
 {
     /// <summary>
     /// VolumesCalculatorBase provides a base class that may be extended/decorated

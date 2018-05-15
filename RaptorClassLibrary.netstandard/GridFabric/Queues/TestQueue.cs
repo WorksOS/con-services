@@ -5,9 +5,9 @@ using Apache.Ignite.Core.Cache.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
+using VSS.TRex.GridFabric.Grids;
 
-namespace VSS.VisionLink.Raptor.GridFabric.Queues
+namespace VSS.TRex.GridFabric.Queues
 {
     [Serializable]
     public class TestQueueItem

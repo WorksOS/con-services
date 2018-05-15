@@ -1,9 +1,9 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.Servers.Client;
-using VSS.VisionLink.Raptor.SiteModels;
+using VSS.TRex.Geometry;
+using VSS.TRex.Servers.Client;
+using VSS.TRex.SiteModels;
 
-namespace VSS.VisionLink.Raptor.Executors
+namespace VSS.TRex.Executors
 {
     /// <summary>
     /// Provides the ability to query a data model for its 3D spatial extents in a number of ways

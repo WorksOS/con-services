@@ -1,11 +1,11 @@
 ﻿using System.IO;
-using VSS.VisionLink.Raptor.Cells;
-using VSS.VisionLink.Raptor.TAGFiles.Classes;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.States;
-using VSS.VisionLink.Raptor.TAGFiles.Types;
+using VSS.TRex.Cells;
+using VSS.TRex.TAGFiles.Classes;
+using VSS.TRex.TAGFiles.Classes.Sinks;
+using VSS.TRex.TAGFiles.Classes.States;
+using VSS.TRex.TAGFiles.Types;
 
-namespace VSS.VisionLink.Raptor.Executors
+namespace VSS.TRex.Executors
 {
     /// <summary>
     /// Executes a TAG file pre scan to extract the pieces of information useful for determining how 

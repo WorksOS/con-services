@@ -1,14 +1,14 @@
 ﻿using System;
+using VSS.TRex.Filters;
+using VSS.TRex.Geometry;
+using VSS.TRex.GridFabric.Types;
 using VSS.TRex.RequestStatistics;
-using VSS.VisionLink.Raptor.Filters;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.GridFabric.Types;
-using VSS.VisionLink.Raptor.Types;
-using VSS.VisionLink.Raptor.Utilities;
-using VSS.VisionLink.Raptor.Volumes.GridFabric.Responses;
-using VSS.VisionLink.Raptor.SiteModels;
+using VSS.TRex.SiteModels;
+using VSS.TRex.Types;
+using VSS.TRex.Utilities;
+using VSS.TRex.Volumes.GridFabric.Responses;
 
-namespace VSS.VisionLink.Raptor.Volumes.Executors
+namespace VSS.TRex.Volumes.Executors
 {
     /// <summary>
     /// Computes a simple volumes calculation within a partition in the cache compute cluster

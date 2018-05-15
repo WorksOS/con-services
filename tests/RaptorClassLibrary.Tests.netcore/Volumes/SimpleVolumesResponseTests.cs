@@ -1,8 +1,8 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Volumes.GridFabric.Responses;
+using VSS.TRex.Volumes.GridFabric.Responses;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests.Volumes
+namespace VSS.TRex.RaptorClassLibrary.Tests.Volumes
 {
         public class SimpleVolumesResponseTests
     {

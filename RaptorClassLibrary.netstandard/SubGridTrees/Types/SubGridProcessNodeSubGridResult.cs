@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.SubGridTrees.Types
+﻿namespace VSS.TRex.SubGridTrees.Types
 {
     /// <summary>
     /// Control state for iterating through subgrids in a subgrid tree

@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.Types
+﻿namespace VSS.TRex.Types
 {
     /// <summary>
     /// The set of generic response codes various parts of the system emit...

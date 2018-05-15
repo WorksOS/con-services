@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using VSS.VisionLink.Raptor.Cells;
-using VSS.VisionLink.Raptor.Common;
+using VSS.TRex.Cells;
+using VSS.TRex.Common;
 
-namespace VSS.VisionLink.Raptor.Filters
+namespace VSS.TRex.Filters
 {
     /// <summary>
     /// FilteredMultiplePassInfo records all the information that a filtering operation

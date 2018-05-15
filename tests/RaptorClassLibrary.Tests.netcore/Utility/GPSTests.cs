@@ -1,4 +1,4 @@
-﻿using VSS.VisionLink.Raptor.Time;
+﻿using VSS.TRex.Time;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.Time.Tests
+namespace VSS.TRex.Time.Tests
 {
         public class GPSTests
     {

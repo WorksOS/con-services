@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
-using VSS.VisionLink.Raptor.Storage;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Storage;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.Interfaces
+namespace VSS.TRex.Interfaces
 {
     public interface IStorageProxy
     {

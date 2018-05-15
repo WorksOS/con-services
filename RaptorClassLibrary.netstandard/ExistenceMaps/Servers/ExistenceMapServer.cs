@@ -5,12 +5,12 @@ using log4net;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using VSS.VisionLink.Raptor.GridFabric.Affinity;
-using VSS.VisionLink.Raptor.GridFabric.Caches;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
-using VSS.VisionLink.Raptor.Storage;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Caches;
+using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.Storage;
 
-namespace VSS.VisionLink.Raptor.ExistenceMaps.Servers
+namespace VSS.TRex.ExistenceMaps.Servers
 {
     /// <summary>
     /// A server representing access operations for existance maps derived from topologic surfaces such as TTM designs

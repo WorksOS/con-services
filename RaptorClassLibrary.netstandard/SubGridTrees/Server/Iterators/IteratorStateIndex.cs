@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
-using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.Utilities;
+using VSS.TRex.Common;
+using VSS.TRex.SiteModels;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Utilities;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
+namespace VSS.TRex.SubGridTrees.Server.Iterators
 {
     /// <summary>
     /// TSubGridSegmentIteratorStateIndex records iteration progress across a subgrid

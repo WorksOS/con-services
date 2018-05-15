@@ -1,10 +1,10 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.GridFabric.NodeFilters;
-using VSS.VisionLink.Raptor.Servers;
-using VSS.VisionLink.Raptor.RaptorClassLibrary.Tests.MockedClasses.GridFabric;
+using VSS.TRex.GridFabric.NodeFilters;
+using VSS.TRex.RaptorClassLibrary.Tests.MockedClasses.GridFabric;
+using VSS.TRex.Servers;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.RaptorClassLibrary.GridFabric.Tests
+namespace VSS.TRex.RaptorClassLibrary.GridFabric.Tests
 {
         public class NodeFilterTests
     {

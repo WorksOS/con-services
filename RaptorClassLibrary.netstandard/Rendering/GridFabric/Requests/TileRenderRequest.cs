@@ -1,9 +1,9 @@
-﻿using VSS.VisionLink.Raptor.GridFabric.Requests;
-using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.Rendering.GridFabric.ComputeFuncs;
-using VSS.VisionLink.Raptor.Rendering.GridFabric.Responses;
+﻿using VSS.TRex.GridFabric.Requests;
+using VSS.TRex.Rendering.GridFabric.Arguments;
+using VSS.TRex.Rendering.GridFabric.ComputeFuncs;
+using VSS.TRex.Rendering.GridFabric.Responses;
 
-namespace VSS.VisionLink.Raptor.Rendering.GridFabric.Requests
+namespace VSS.TRex.Rendering.GridFabric.Requests
 {
     /// <summary>
     /// Sends a request to the grid for a tile to be rendered

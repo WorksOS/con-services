@@ -1,7 +1,7 @@
 ﻿using Apache.Ignite.Core;
 using System;
 
-namespace VSS.VisionLink.Raptor.GridFabric.Grids
+namespace VSS.TRex.GridFabric.Grids
 {
     public static class RaptorGridFactory
     {

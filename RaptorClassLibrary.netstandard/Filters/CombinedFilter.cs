@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.VisionLink.Raptor.Filters
+namespace VSS.TRex.Filters
 {
     /// <summary>
     /// Combined filter represents both spatial and attribute based filtering considerations

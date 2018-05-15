@@ -2,19 +2,19 @@
 using System;
 using System.Drawing;
 using System.Reflection;
+using VSS.TRex.Designs;
+using VSS.TRex.Filters;
+using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.Abstractions;
+using VSS.TRex.Rendering.Displayers;
 using VSS.TRex.RequestStatistics;
-using VSS.VisionLink.Raptor.Designs;
-using VSS.VisionLink.Raptor.Filters;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.Rendering.Displayers;
-using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.SubGridTrees;
-using VSS.VisionLink.Raptor.Surfaces;
-using VSS.VisionLink.Raptor.Types;
-using VSS.VisionLink.Raptor.Utilities;
+using VSS.TRex.SiteModels;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.Surfaces;
+using VSS.TRex.Types;
+using VSS.TRex.Utilities;
 
-namespace VSS.VisionLink.Raptor.Rendering.Executors
+namespace VSS.TRex.Rendering.Executors
 {
     /// <summary>
     /// Renders a tile of themmatic imagery for a location in the project

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace VSS.VisionLink.Raptor.Compression
+namespace VSS.TRex.Compression
 {
     public struct EncodedBitFieldDescriptor
     {

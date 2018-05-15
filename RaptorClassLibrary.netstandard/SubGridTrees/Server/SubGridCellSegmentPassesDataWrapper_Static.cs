@@ -1,13 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using VSS.VisionLink.Raptor.Cells;
-using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Server.Utilities;
-using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
-using VSS.VisionLink.Raptor.Utilities;
+using VSS.TRex.Cells;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
+using VSS.TRex.SubGridTrees.Server.Utilities;
+using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.Utilities;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server
+namespace VSS.TRex.SubGridTrees.Server
 {
     /// <summary>
     /// This is a static, immutable, version of the cell and cell passes that make up a subgrid segment

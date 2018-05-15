@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using VSS.VisionLink.Raptor.Filters;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Filters;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.Rendering
+namespace VSS.TRex.Rendering
 {
     public static class Utilities
     {

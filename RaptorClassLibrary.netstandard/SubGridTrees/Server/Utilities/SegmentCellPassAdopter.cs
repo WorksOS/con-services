@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
+using VSS.TRex.SubGridTrees.Utilities;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Utilities
+namespace VSS.TRex.SubGridTrees.Server.Utilities
 {
     public static class SegmentCellPassAdopter
     {

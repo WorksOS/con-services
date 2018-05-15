@@ -1,6 +1,6 @@
 ﻿using Apache.Ignite.Core.Cache.Configuration;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Queues
+namespace VSS.TRex.TAGFiles.Classes.Queues
 {
     /// <summary>
     /// Details a segment within the data store that has been replaced by a new version of a segment or cloven

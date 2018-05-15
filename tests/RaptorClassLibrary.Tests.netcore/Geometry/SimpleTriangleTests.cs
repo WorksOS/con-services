@@ -1,4 +1,4 @@
-﻿using VSS.VisionLink.Raptor.Geometry;
+﻿using VSS.TRex.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.Geometry.Tests
+namespace VSS.TRex.Geometry.Tests
 {
         public class SimpleTriangleTests
     {

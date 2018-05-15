@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
-using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.Types;
-using VSS.VisionLink.Raptor.Utilities;
+using VSS.TRex.Common;
+using VSS.TRex.Types;
+using VSS.TRex.Utilities;
 
-namespace VSS.VisionLink.Raptor.Cells
+namespace VSS.TRex.Cells
 {
     /* This unit implements the full pass coverage cells for the Intelligent
        Compaction data grid.

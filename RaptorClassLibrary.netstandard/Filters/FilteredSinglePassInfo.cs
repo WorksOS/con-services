@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.Filters
+﻿namespace VSS.TRex.Filters
 {
     /// <summary>
     /// Records all the information that a filtering operation selected from a grid

@@ -1,8 +1,8 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Filters;
-using VSS.VisionLink.Raptor.SubGridTrees;
+using VSS.TRex.Filters;
+using VSS.TRex.SubGridTrees;
 
-namespace VSS.VisionLink.Raptor.Designs
+namespace VSS.TRex.Designs
 {
     /// <summary>
     /// Utilitites relating to interactions between filters and design surfaces

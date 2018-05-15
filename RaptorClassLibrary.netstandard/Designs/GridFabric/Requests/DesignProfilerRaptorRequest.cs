@@ -1,5 +1,5 @@
-﻿using VSS.VisionLink.Raptor.GridFabric.Grids;
-using VSS.VisionLink.Raptor.GridFabric.Requests;
+﻿using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Requests;
 
 namespace VSS.VisionLink.DesignProfiling.GridFabric.Requests
 {

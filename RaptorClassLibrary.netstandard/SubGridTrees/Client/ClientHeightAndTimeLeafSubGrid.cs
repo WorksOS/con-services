@@ -2,10 +2,10 @@
 using System;
 using System.IO;
 using System.Reflection;
-using VSS.VisionLink.Raptor.Filters;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+using VSS.TRex.Filters;
+using VSS.TRex.SubGridTrees.Interfaces;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Client
+namespace VSS.TRex.SubGridTrees.Client
 {
     /*
         /// <summary>
@@ -71,7 +71,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// <param name="indexOriginOffset"></param>
         public ClientHeightAndTimeLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
         {
-            _gridDataType = Raptor.Types.GridDataType.HeightAndTime;
+            _gridDataType = TRex.Types.GridDataType.HeightAndTime;
         }
 
         /// <summary>

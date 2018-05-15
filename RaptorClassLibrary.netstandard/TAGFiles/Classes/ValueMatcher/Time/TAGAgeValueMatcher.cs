@@ -1,6 +1,6 @@
-﻿using VSS.VisionLink.Raptor.TAGFiles.Types;
+﻿using VSS.TRex.TAGFiles.Types;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Time
+namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Time
 {
     public class TAGAgeValueMatcher : TAGValueMatcher
     {

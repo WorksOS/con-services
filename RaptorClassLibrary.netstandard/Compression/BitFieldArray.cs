@@ -4,7 +4,7 @@ using System.IO;
 
 // This unit implements support for storing attribute values as variable bit field arrays and records 
 
-namespace VSS.VisionLink.Raptor.Compression
+namespace VSS.TRex.Compression
 {
     /// <summary>
     /// Bit field arrays implement arrays variable bit fields to more efficiently use memory.

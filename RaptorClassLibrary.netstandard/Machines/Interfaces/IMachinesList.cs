@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.Machines.Interfaces
+﻿namespace VSS.TRex.Machines.Interfaces
 {
     public interface IMachinesList
     {

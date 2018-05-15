@@ -1,9 +1,9 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.Executors.Tasks
+namespace VSS.TRex.Executors.Tasks
 {
     /// <summary>
     /// Provides pipelined task semantics for workflows where the subgrids being processed are being aggregated into
@@ -20,7 +20,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
         /// Constructor acceoting an aggregator and defaulting all other internal Task state
         /// </summary>
         /// <param name="aggregator"></param>
-        public AggregatedPipelinedSubGridTask(ISubGridRequestsAggregator aggregator) : base(Guid.NewGuid().GetHashCode(), "", GridDataType.All)
+        public AggregatedPipelinedSubGridTask(ISubGridRequestsAggregator aggregator) : base(Guid.NewGuid().GetHashCode(), "", Types.GridDataType.All)
         {
             Aggregator = aggregator;
         }

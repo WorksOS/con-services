@@ -1,8 +1,8 @@
 ﻿using System.IO;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+using VSS.TRex.Geometry;
+using VSS.TRex.SubGridTrees.Interfaces;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees
+namespace VSS.TRex.SubGridTrees
 {
     /// <summary>
     ///  A subgrid variant that contains a bit mask construct to represent a one-bit-per-pixel map

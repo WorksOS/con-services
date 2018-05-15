@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor
+﻿namespace VSS.TRex
 {
     /// <summary>
     /// A class to contain a collection of Raptor configuration controls.

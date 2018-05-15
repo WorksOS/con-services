@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Common;
+using VSS.TRex.Common;
 
-namespace VSS.VisionLink.Raptor.Geometry
+namespace VSS.TRex.Geometry
 {
     /// <summary>
     /// T3DBoundingWorldExtent describes a plan extent (X and Y) covering a

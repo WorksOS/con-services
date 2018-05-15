@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server
+namespace VSS.TRex.SubGridTrees.Server
 {
     public class SubGridDirectory
     {

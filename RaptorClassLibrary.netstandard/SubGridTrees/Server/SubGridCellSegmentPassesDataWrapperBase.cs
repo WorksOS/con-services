@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server
+namespace VSS.TRex.SubGridTrees.Server
 {
     /// <summary>
     /// Base class to hold common aspects of the segment implementation data wrapper between NonStatic, Static and 

@@ -2,9 +2,9 @@
 using Apache.Ignite.Core.Cache.Configuration;
 using log4net;
 using System.Reflection;
-using VSS.VisionLink.Raptor.Servers.Client;
+using VSS.TRex.Servers.Client;
 
-namespace VSS.VisionLink.Raptor.Servers.Compute
+namespace VSS.TRex.Servers.Compute
 {
     /// <summary>
     /// Defines a representation of a server responsible for performing Raptor related compute operations using

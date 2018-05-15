@@ -1,7 +1,7 @@
-﻿using VSS.VisionLink.Raptor.Servers;
-using VSS.VisionLink.Raptor.Servers.Client;
+﻿using VSS.TRex.Servers;
+using VSS.TRex.Servers.Client;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Servers.Client
+namespace VSS.TRex.TAGFiles.Servers.Client
 {
     /// <summary>
     /// A server instance that represents the activities of the TAG file submitter as a client of the core cache/compute grids

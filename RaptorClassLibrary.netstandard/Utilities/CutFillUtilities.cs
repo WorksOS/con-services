@@ -1,12 +1,12 @@
 ﻿using System;
+using VSS.TRex.Common;
+using VSS.TRex.Designs.Storage;
+using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Utilities;
 using VSS.Velociraptor.DesignProfiling;
-using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.Designs.Storage;
-using VSS.VisionLink.Raptor.SubGridTrees.Client;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 
-namespace VSS.VisionLink.Raptor.Utilities
+namespace VSS.TRex.Utilities
 {
     /// <summary>
     /// Contains methods relevant to supporting Cut/Fill operations, such a computing cut/fill elevation subgrids

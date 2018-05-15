@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace VSS.VisionLink.Raptor.TAGFiles
+namespace VSS.TRex.TAGFiles
 {
     /// <summary>
     /// The array of all names TAGs that are supported by the TAG file parser

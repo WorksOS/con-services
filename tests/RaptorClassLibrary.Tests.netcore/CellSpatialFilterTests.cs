@@ -1,9 +1,9 @@
-﻿using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.Designs;
+﻿using VSS.TRex.Common;
+using VSS.TRex.Geometry;
+using VSS.TRex.Designs;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.Filters.Tests
+namespace VSS.TRex.Filters.Tests
 {
         public class CellSpatialFilterTests
     {

@@ -1,9 +1,9 @@
 ﻿using Apache.Ignite.Core.Cache.Store;
 using System;
 using System.IO;
-using VSS.VisionLink.Raptor.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Affinity;
 
-namespace VSS.VisionLink.Raptor.GridFabric.Caches
+namespace VSS.TRex.GridFabric.Caches
 {
     public class RaptorSpatialCacheStore : CacheStoreAdapter<SubGridSpatialAffinityKey, MemoryStream>
     {

@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Interfaces
+namespace VSS.TRex.SubGridTrees.Interfaces
 {
     /// <summary>
     /// Interface defining basic interface methods for the base sub grid type underlying all sub grid types

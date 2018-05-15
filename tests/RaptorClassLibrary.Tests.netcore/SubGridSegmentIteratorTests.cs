@@ -1,9 +1,9 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Storage;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+using VSS.TRex.Storage;
+using VSS.TRex.SubGridTrees.Interfaces;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators.Tests
+namespace VSS.TRex.SubGridTrees.Server.Iterators.Tests
 {
         public class SubGridSegmentIteratorTests
     {

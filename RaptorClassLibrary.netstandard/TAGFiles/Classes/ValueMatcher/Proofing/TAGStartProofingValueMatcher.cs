@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Proofing
+namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Proofing
 {
     /// <summary>
     /// Handles proofing run starting TAGs

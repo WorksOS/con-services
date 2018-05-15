@@ -1,9 +1,9 @@
-﻿using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.Storage;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+﻿using VSS.TRex.Interfaces;
+using VSS.TRex.SiteModels;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Storage;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server
+namespace VSS.TRex.SubGridTrees.Server
 {
     public class ServerSubGridTree : SubGridTree, IServerSubGridTree
     {

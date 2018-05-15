@@ -1,6 +1,6 @@
 ﻿using Apache.Ignite.Core.Cluster;
 
-namespace VSS.VisionLink.Raptor.GridFabric.NodeFilters
+namespace VSS.TRex.GridFabric.NodeFilters
 {
     /// <summary>
     /// Defines a server node filter that filters nodes based on a defined role attribute

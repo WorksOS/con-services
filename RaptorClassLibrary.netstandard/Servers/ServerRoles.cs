@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.Servers
+﻿namespace VSS.TRex.Servers
 {
     /// <summary>
     /// Defines names of various role that servers can occupy in the grid

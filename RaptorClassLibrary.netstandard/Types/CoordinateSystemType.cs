@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.Types
+﻿namespace VSS.TRex.Types
 {
     /// <summary>
     /// The type of coordinate system used to define the location written into TAG positioning values

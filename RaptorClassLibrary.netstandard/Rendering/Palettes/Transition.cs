@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace VSS.VisionLink.Raptor.Rendering.Palettes
+namespace VSS.TRex.Rendering.Palettes
 {
     /// <summary>
     /// Transition represents a point on a value line being visualised where a new color starts being used to render the interval of values above the transition value

@@ -1,7 +1,7 @@
-﻿using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.Types;
+﻿using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Client
+namespace VSS.TRex.SubGridTrees.Client
 {
     /// <summary>
     /// The factory used to create the client subgrid creation factory. This abstracts the factory creation aspect away

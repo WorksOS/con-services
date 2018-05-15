@@ -1,8 +1,8 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
+using VSS.TRex.SubGridTrees.Utilities;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Utilities
+namespace VSS.TRex.SubGridTrees.Server.Utilities
 {
     /// <summary>
     /// Supports calculating elevation ranges across cell passes

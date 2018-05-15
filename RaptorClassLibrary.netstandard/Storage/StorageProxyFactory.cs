@@ -1,7 +1,7 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Interfaces;
+using VSS.TRex.Interfaces;
 
-namespace VSS.VisionLink.Raptor.Storage
+namespace VSS.TRex.Storage
 {
     /// <summary>
     ///  StorageProxyFactory is a factory for the storage proxy used in Raptor

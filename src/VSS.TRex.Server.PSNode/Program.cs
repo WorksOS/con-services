@@ -3,7 +3,7 @@ using System.IO;
 using System.Reflection;
 using log4net;
 using log4net.Config;
-using VSS.VisionLink.Raptor.Servers.Compute;
+using VSS.TRex.Servers.Compute;
 
 namespace VSS.TRex.Server.PSNode
 {

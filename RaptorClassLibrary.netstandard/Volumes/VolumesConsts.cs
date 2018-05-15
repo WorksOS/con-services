@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.Volumes
+﻿namespace VSS.TRex.Volumes
 {
     /// <summary>
     /// Useful constants for volumes operations

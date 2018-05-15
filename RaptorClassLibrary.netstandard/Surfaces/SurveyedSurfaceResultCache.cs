@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using VSS.VisionLink.Raptor.SubGridTrees.Client;
-using VSS.VisionLink.Raptor.Surfaces.GridFabric.Arguments;
+using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.Surfaces.GridFabric.Arguments;
 
-namespace VSS.VisionLink.Raptor.Surfaces
+namespace VSS.TRex.Surfaces
 {
     /// <summary>
     /// Contains a cache of previously requested surveyed surface elevation results. This cache is simple in that no cap or retirement policy is implemented

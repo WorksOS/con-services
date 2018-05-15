@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
-using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
+using VSS.TRex.GridFabric.Requests.Interfaces;
 
-namespace VSS.VisionLink.Raptor.Analytics.GridFabric.Responses
+namespace VSS.TRex.Analytics.GridFabric.Responses
 {
     /// <summary>
     /// The response state returned from a cut/fill statistics request

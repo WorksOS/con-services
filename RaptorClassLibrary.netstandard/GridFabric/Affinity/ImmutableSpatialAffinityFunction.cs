@@ -1,7 +1,7 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.SubGridTrees;
+using VSS.TRex.SubGridTrees;
 
-namespace VSS.VisionLink.Raptor.GridFabric.Affinity
+namespace VSS.TRex.GridFabric.Affinity
 {
     /// <summary>
     /// The affinity function used by Raptor to spread spatial data amongst processing servers

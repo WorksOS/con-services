@@ -1,11 +1,11 @@
 ﻿using Apache.Ignite.Core.Compute;
 using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.GridFabric.Requests;
-using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.TAGFiles.GridFabric.ComputeFuncs;
-using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Responses;
+using VSS.TRex.GridFabric.Requests;
+using VSS.TRex.TAGFiles.GridFabric.Arguments;
+using VSS.TRex.TAGFiles.GridFabric.ComputeFuncs;
+using VSS.TRex.TAGFiles.GridFabric.Responses;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.GridFabric.Requests
+namespace VSS.TRex.TAGFiles.GridFabric.Requests
 {
     /// <summary>
     /// Provides a request to process one or more TAG files into a project

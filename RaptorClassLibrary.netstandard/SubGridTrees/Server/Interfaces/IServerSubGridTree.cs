@@ -1,7 +1,7 @@
-﻿using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Server;
+﻿using VSS.TRex.Interfaces;
+using VSS.TRex.SubGridTrees.Server;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Interfaces
+namespace VSS.TRex.SubGridTrees.Interfaces
 {
     public interface IServerSubGridTree
     {

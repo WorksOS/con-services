@@ -1,4 +1,4 @@
-﻿using VSS.VisionLink.Raptor.SubGridTrees;
+﻿using VSS.TRex.SubGridTrees;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Tests
+namespace VSS.TRex.SubGridTrees.Tests
 {
         public class SubGridTreeBitMaskTests
     {

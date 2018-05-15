@@ -2,12 +2,12 @@
 using log4net;
 using System;
 using System.Reflection;
-using VSS.VisionLink.Raptor.SubGridTrees.Client;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.Surfaces.Executors;
-using VSS.VisionLink.Raptor.Surfaces.GridFabric.Arguments;
+using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Surfaces.Executors;
+using VSS.TRex.Surfaces.GridFabric.Arguments;
 
-namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.ComputeFuncs
+namespace VSS.TRex.Surfaces.GridFabric.ComputeFuncs
 {
     [Serializable]
     public class SurfaceElevationPatchComputeFunc : /*BaseRaptorComputeFunc,*/ IComputeFunc<SurfaceElevationPatchArgument, byte[] /*ClientHeightAndTimeLeafSubGrid*/>

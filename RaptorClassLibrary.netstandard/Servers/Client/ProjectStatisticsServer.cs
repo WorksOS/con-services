@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.Servers.Client
+﻿namespace VSS.TRex.Servers.Client
 {
     /// <summary>
     /// A server type supporting requests relating to project statistics

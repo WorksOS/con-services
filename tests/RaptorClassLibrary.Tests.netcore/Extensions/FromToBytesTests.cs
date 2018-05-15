@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
-using VSS.VisionLink.Raptor.Utilities.Interfaces;
 using System.Linq;
-using VSS.VisionLink.Raptor.Utilities.ExtensionMethods;
+using VSS.TRex.Utilities.Interfaces;
+using VSS.TRex.Utilities.ExtensionMethods;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Extensions.Tests
+namespace VSS.TRex.RaptorClassLibrary.Extensions.Tests
 {
         public class FromToBytesTests
     {

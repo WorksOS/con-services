@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace VSS.VisionLink.Raptor.Common
+namespace VSS.TRex.Common
 {
     /// <summary>
     /// Provides a very simple implementation of a concurrent bag that holds a collection of class instances. It provides no

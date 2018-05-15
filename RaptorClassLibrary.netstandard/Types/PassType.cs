@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.VisionLink.Raptor.Types
+namespace VSS.TRex.Types
 {
     /// <summary>
     /// The different varieties of 'passes' that are tracked. Passes are made by the front axle/implement, rear axle/implement, 

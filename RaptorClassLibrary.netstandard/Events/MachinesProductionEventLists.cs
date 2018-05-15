@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using VSS.VisionLink.Raptor.Events.Interfaces;
-using VSS.VisionLink.Raptor.SiteModels;
+using VSS.TRex.Events.Interfaces;
+using VSS.TRex.SiteModels;
 
-namespace VSS.VisionLink.Raptor.Events
+namespace VSS.TRex.Events
 {
     /// <summary>
     /// Stores the list of sets of machine events. Each machine has a set of event lists. MachinesTargetValues 

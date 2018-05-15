@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher;
-using VSS.VisionLink.Raptor.Utilities;
+using VSS.TRex.TAGFiles.Classes.ValueMatcher;
+using VSS.TRex.Utilities;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks
+namespace VSS.TRex.TAGFiles.Classes.Sinks
 {
     /// <summary>
     /// Implements a sink against all defined TAG values.

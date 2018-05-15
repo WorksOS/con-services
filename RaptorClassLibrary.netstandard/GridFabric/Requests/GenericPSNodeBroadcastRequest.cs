@@ -1,10 +1,10 @@
 ﻿using Apache.Ignite.Core.Compute;
 using System.Collections.Generic;
 using System.Linq;
-using VSS.VisionLink.Raptor.Designs.GridFabric.Requests;
-using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
+using VSS.TRex.Designs.GridFabric.Requests;
+using VSS.TRex.GridFabric.Requests.Interfaces;
 
-namespace VSS.VisionLink.Raptor.GridFabric.Requests
+namespace VSS.TRex.GridFabric.Requests
 {
     /// <summary>
     /// Provides a highly genericised class for making mapReduce style requests to the 'PSNode' compute cluster.

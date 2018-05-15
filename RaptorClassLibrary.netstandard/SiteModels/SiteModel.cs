@@ -4,21 +4,21 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using log4net;
-using VSS.VisionLink.Raptor.Events;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.GridFabric.Caches;
-using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.Machines;
-using VSS.VisionLink.Raptor.Services.Surfaces;
-using VSS.VisionLink.Raptor.SiteModels.Interfaces;
-using VSS.VisionLink.Raptor.Storage;
-using VSS.VisionLink.Raptor.SubGridTrees;
-using VSS.VisionLink.Raptor.SubGridTrees.Server;
-using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
-using VSS.VisionLink.Raptor.Surfaces;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Events;
+using VSS.TRex.Geometry;
+using VSS.TRex.GridFabric.Caches;
+using VSS.TRex.Interfaces;
+using VSS.TRex.Machines;
+using VSS.TRex.Services.Surfaces;
+using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Storage;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.Surfaces;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.SiteModels
+namespace VSS.TRex.SiteModels
 {
     [Serializable]
     public class SiteModel : ISiteModel

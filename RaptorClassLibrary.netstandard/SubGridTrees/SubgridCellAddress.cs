@@ -1,7 +1,7 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Utilities;
+using VSS.TRex.Utilities;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees
+namespace VSS.TRex.SubGridTrees
 {
     /// <summary>
     /// Identifies a cell address or location within a subgrid tree

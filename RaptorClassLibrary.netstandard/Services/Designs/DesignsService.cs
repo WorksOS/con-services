@@ -3,15 +3,16 @@ using log4net;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.Utilities.ExtensionMethods;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
-using VSS.VisionLink.Raptor.GridFabric.Caches;
-using VSS.VisionLink.Raptor.Designs;
-using VSS.VisionLink.Raptor.GridFabric.Affinity;
-using VSS.VisionLink.Raptor.Storage;
+using VSS.TRex.Designs;
+using VSS.TRex.Designs.Storage;
+using VSS.TRex.Geometry;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Caches;
+using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.Storage;
+using VSS.TRex.Utilities.ExtensionMethods;
 
-namespace VSS.VisionLink.Raptor.Services.Designs
+namespace VSS.TRex.Services.Designs
 {
     /// <summary>
     /// Service metaphor providing access andmanagement control over designs stored for site models
@@ -97,11 +98,11 @@ namespace VSS.VisionLink.Raptor.Services.Designs
         {
             // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
 
-            NonSpatialAffinityKey cacheKey = Raptor.Designs.Storage.Designs.CacheKey(SiteModelID);
+            NonSpatialAffinityKey cacheKey = TRex.Designs.Storage.Designs.CacheKey(SiteModelID);
             DesignID = Guid.NewGuid().GetHashCode();
 
             // Get the designs, creating it if it does not exist
-            Raptor.Designs.Storage.Designs designList = new Raptor.Designs.Storage.Designs();
+            TRex.Designs.Storage.Designs designList = new TRex.Designs.Storage.Designs();
             try
             {
                 designList.FromBytes(mutableNonSpatialCache.Get(cacheKey));
@@ -118,14 +119,14 @@ namespace VSS.VisionLink.Raptor.Services.Designs
             mutableNonSpatialCache.Put(cacheKey, designList.ToBytes());
         }
 
-        public Raptor.Designs.Storage.Designs List(Guid SiteModelID)
+        public TRex.Designs.Storage.Designs List(Guid SiteModelID)
         {
-            Log.InfoFormat($"Listing designs from {Raptor.Designs.Storage.Designs.CacheKey(SiteModelID)}");
+            Log.InfoFormat($"Listing designs from {TRex.Designs.Storage.Designs.CacheKey(SiteModelID)}");
 
             try
             {
-                Raptor.Designs.Storage.Designs designList = new Raptor.Designs.Storage.Designs();
-                designList.FromBytes(mutableNonSpatialCache.Get(Raptor.Designs.Storage.Designs.CacheKey(SiteModelID)));
+                TRex.Designs.Storage.Designs designList = new TRex.Designs.Storage.Designs();
+                designList.FromBytes(mutableNonSpatialCache.Get(TRex.Designs.Storage.Designs.CacheKey(SiteModelID)));
 
                 return designList;
             }
@@ -135,7 +136,7 @@ namespace VSS.VisionLink.Raptor.Services.Designs
             }
         }
 
-        public Raptor.Designs.Storage.Designs ListDirect(Guid SiteModelID) => List(SiteModelID);
+        public TRex.Designs.Storage.Designs ListDirect(Guid SiteModelID) => List(SiteModelID);
 
         /*
             /// <summary>
@@ -205,10 +206,10 @@ namespace VSS.VisionLink.Raptor.Services.Designs
             // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
             try
             {
-                NonSpatialAffinityKey cacheKey = Raptor.Designs.Storage.Designs.CacheKey(SiteModelID);
+                NonSpatialAffinityKey cacheKey = TRex.Designs.Storage.Designs.CacheKey(SiteModelID);
 
                 // Get the designs, creating it if it does not exist
-                Raptor.Designs.Storage.Designs designList = new Raptor.Designs.Storage.Designs();
+                TRex.Designs.Storage.Designs designList = new TRex.Designs.Storage.Designs();
                 designList.FromBytes(mutableNonSpatialCache.Get(cacheKey));
 
                 // Remove the design
@@ -234,7 +235,7 @@ namespace VSS.VisionLink.Raptor.Services.Designs
         /// <param name="SiteModelID"></param>
         /// <param name="DesignID"></param>
         /// <returns></returns>
-        public Raptor.Designs.Storage.Design Find(Guid SiteModelID, long DesignID) => FindDirect(SiteModelID, DesignID);
+        public Design Find(Guid SiteModelID, long DesignID) => FindDirect(SiteModelID, DesignID);
 
         /// <summary>
         /// Finds a given design in a site model
@@ -242,14 +243,14 @@ namespace VSS.VisionLink.Raptor.Services.Designs
         /// <param name="SiteModelID"></param>
         /// <param name="DesignID"></param>
         /// <returns></returns>
-        public Raptor.Designs.Storage.Design FindDirect(Guid SiteModelID, long DesignID)
+        public Design FindDirect(Guid SiteModelID, long DesignID)
         {
             try
             {
-                NonSpatialAffinityKey cacheKey = Raptor.Designs.Storage.Designs.CacheKey(SiteModelID);
+                NonSpatialAffinityKey cacheKey = TRex.Designs.Storage.Designs.CacheKey(SiteModelID);
 
                 // Get the designs, creating it if it does not exist
-                Raptor.Designs.Storage.Designs designList = new Raptor.Designs.Storage.Designs();
+                TRex.Designs.Storage.Designs designList = new TRex.Designs.Storage.Designs();
                 designList.FromBytes(mutableNonSpatialCache.Get(cacheKey));
 
                 // Find the design and return it

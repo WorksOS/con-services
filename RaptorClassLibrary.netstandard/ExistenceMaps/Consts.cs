@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.ExistenceMaps
+﻿namespace VSS.TRex.ExistenceMaps
 {
     /// <summary>
     /// Constants related to existence maps

@@ -1,6 +1,6 @@
-﻿using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+﻿using VSS.TRex.SubGridTrees.Interfaces;
 
-namespace VSS.VisionLink.Raptor.Interfaces
+namespace VSS.TRex.Interfaces
 {
     /// <summary>
     /// Interface supporting SubGridRequestors performing aggregative processing of a set of subgrids in a request

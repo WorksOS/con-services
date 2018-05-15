@@ -1,6 +1,6 @@
-﻿using VSS.VisionLink.Raptor.Storage;
+﻿using VSS.TRex.Storage;
 
-namespace VSS.VisionLink.Raptor.GridFabric.Caches
+namespace VSS.TRex.GridFabric.Caches
 {
     /// <summary>
     /// Sptial grid cache provides logic to determine which of the spatial data grid caches an application should read data from

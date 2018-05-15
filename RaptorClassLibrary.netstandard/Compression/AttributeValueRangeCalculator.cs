@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.Compression
+﻿namespace VSS.TRex.Compression
 {
     public static class AttributeValueRangeCalculator
     {

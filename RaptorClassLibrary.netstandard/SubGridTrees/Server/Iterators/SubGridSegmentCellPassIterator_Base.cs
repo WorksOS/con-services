@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
-using VSS.VisionLink.Raptor.Cells;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
-using VSS.VisionLink.Raptor.Utilities;
+using VSS.TRex.Cells;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
+using VSS.TRex.Utilities;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
+namespace VSS.TRex.SubGridTrees.Server.Iterators
 {
     /// <summary>
     /// Provides a base class for iterating through cells in subgrids in a cell pass by cell pass manner.

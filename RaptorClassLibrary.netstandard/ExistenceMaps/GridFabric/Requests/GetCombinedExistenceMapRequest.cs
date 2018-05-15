@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using VSS.VisionLink.Raptor.GridFabric.Affinity;
-using VSS.VisionLink.Raptor.SubGridTrees;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.SubGridTrees;
 
-namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
+namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
 {
     /// <summary>
     /// Represents a request that will extract and combine a set of existance maps into a single existence map

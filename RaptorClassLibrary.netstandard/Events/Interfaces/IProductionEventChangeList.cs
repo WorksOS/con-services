@@ -1,7 +1,7 @@
 ﻿using VSS.TRex.Events.Interfaces;
-using VSS.VisionLink.Raptor.Interfaces;
+using VSS.TRex.Interfaces;
 
-namespace VSS.VisionLink.Raptor.Events.Interfaces
+namespace VSS.TRex.Events.Interfaces
 {
     public interface IProductionEvents
     {

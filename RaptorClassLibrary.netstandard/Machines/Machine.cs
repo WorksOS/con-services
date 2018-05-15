@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
-using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.Events;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Common;
+using VSS.TRex.Events;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.Machines
+namespace VSS.TRex.Machines
 {
     /// <summary>
     /// Defines all the metadata relating to a machine that has contributed in some way to a site model. These machine instances

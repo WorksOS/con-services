@@ -1,6 +1,6 @@
-﻿using VSS.VisionLink.Raptor.Types;
+﻿using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Client
+namespace VSS.TRex.SubGridTrees.Client
 {
     public static class Utilities
     {

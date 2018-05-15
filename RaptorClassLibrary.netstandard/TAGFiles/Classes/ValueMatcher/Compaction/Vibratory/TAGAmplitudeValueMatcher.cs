@@ -1,7 +1,7 @@
-﻿using VSS.VisionLink.Raptor.Cells;
-using VSS.VisionLink.Raptor.TAGFiles.Types;
+﻿using VSS.TRex.Cells;
+using VSS.TRex.TAGFiles.Types;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Compaction.Vibratory
+namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.Vibratory
 {
     /// <summary>
     /// Handles vibratory drum amplitude frequency Values reported by the machine 

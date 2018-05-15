@@ -2,12 +2,11 @@
 using System.Reflection;
 using log4net;
 using VSS.TRex.Events.Interfaces;
-using VSS.VisionLink.Raptor.Events.Interfaces;
-using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Interfaces;
+using VSS.TRex.SiteModels;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.Events
+namespace VSS.TRex.Events
 {
     /// <summary>
     /// A wrapper for all the event information related to a particular machine's activities within a particular

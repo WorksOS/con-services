@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.Common
+﻿namespace VSS.TRex.Common
 {
     public static class Consts
     {

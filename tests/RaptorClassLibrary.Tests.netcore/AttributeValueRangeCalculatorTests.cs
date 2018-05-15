@@ -4,14 +4,14 @@ using System.IO;
 //using System.Collections.Generic;
 //using System.Text;
 //using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.Types;
 using System.Text;
 using System.Linq;
-using VSS.VisionLink.Raptor.Compression;
+using VSS.TRex.Compression;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.Compression.Tests
+namespace VSS.TRex.Compression.Tests
 {
         public class AttributeValueRangeCalculatorTests
     {

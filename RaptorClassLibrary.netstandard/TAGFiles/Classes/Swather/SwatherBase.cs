@@ -1,15 +1,15 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Cells;
-using VSS.VisionLink.Raptor.Events;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Server;
-using VSS.VisionLink.Raptor.SubGridTrees.Types;
-using VSS.VisionLink.Raptor.TAGFiles.Types;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Cells;
+using VSS.TRex.Events;
+using VSS.TRex.Geometry;
+using VSS.TRex.SiteModels;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.SubGridTrees.Types;
+using VSS.TRex.TAGFiles.Types;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather
+namespace VSS.TRex.TAGFiles.Classes.Swather
 {
     /// <summary>
     /// SwatherBase provides a base class for the process of computing swathing

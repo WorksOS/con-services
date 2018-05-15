@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Linq;
-using VSS.VisionLink.Raptor.Geometry;
+using VSS.TRex.Geometry;
 
 namespace VSS.Velociraptor.Designs.TTM
 {

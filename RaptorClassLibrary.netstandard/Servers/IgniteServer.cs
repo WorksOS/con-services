@@ -2,10 +2,10 @@
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using System;
-using VSS.VisionLink.Raptor.GridFabric.Affinity;
-using VSS.VisionLink.Raptor.Storage;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.Storage;
 
-namespace VSS.VisionLink.Raptor.Servers
+namespace VSS.TRex.Servers
 {
     /// <summary>
     /// A base class for deriving server and client instances that interact with the Ignite In Memory Data Grid

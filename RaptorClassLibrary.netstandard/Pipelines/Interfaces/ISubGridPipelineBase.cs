@@ -1,8 +1,8 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Filters;
-using VSS.VisionLink.Raptor.SubGridTrees;
+using VSS.TRex.Filters;
+using VSS.TRex.SubGridTrees;
 
-namespace VSS.VisionLink.Raptor.Pipelines.Interfaces
+namespace VSS.TRex.Pipelines.Interfaces
 {
     /// <summary>
     /// Interface for pipeline state and control for tasks and requests to access

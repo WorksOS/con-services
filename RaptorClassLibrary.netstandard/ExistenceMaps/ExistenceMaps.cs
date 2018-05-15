@@ -1,9 +1,9 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests;
-using VSS.VisionLink.Raptor.GridFabric.Affinity;
-using VSS.VisionLink.Raptor.SubGridTrees;
+using VSS.TRex.ExistenceMaps.GridFabric.Requests;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.SubGridTrees;
 
-namespace VSS.VisionLink.Raptor.ExistenceMaps
+namespace VSS.TRex.ExistenceMaps
 {
     /// <summary>
     /// A static class facade around the existence map requests

@@ -3,11 +3,11 @@ using log4net;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using VSS.VisionLink.Raptor.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
-using VSS.VisionLink.Raptor.GridFabric.Responses;
+using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.GridFabric.ComputeFuncs;
+using VSS.TRex.GridFabric.Responses;
 
-namespace VSS.VisionLink.Raptor.GridFabric.Requests
+namespace VSS.TRex.GridFabric.Requests
 {
     /// <summary>
     /// Performs subgrid requests where the procesing result is aggregated and returned as one of set of partitioned responses

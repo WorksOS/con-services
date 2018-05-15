@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.TAGFiles.Types
+﻿namespace VSS.TRex.TAGFiles.Types
 {
     /// <summary>
     /// The types of TAGs (fields) supported in the TAG file. Field data types that may be found in the tag file

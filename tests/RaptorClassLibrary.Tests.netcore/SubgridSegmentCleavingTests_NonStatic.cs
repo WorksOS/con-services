@@ -1,15 +1,15 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Cells;
-using VSS.VisionLink.Raptor.Storage;
-using VSS.VisionLink.Raptor.SubGridTrees;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Server;
-using VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators;
-using VSS.VisionLink.Raptor.SubGridTrees.Server.Utilities;
-using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
+using VSS.TRex.Cells;
+using VSS.TRex.Storage;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.SubGridTrees.Server.Iterators;
+using VSS.TRex.SubGridTrees.Server.Utilities;
+using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
+namespace VSS.TRex.RaptorClassLibrary.Tests
 {
     public class SubgridSegmentCleavingTests_NonStatic
     {

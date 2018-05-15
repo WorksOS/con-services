@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.Types
+﻿namespace VSS.TRex.Types
 {
     /// <summary>
     /// Machine gear selected at the timw of cell pass measurment

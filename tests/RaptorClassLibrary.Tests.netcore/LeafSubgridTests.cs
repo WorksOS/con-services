@@ -1,10 +1,10 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees;
-using VSS.VisionLink.Raptor;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
+namespace VSS.TRex.RaptorClassLibrary.Tests
 {
         public class LeafSubgridTests
     {

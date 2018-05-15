@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.Servers.Client
+﻿namespace VSS.TRex.Servers.Client
 {
     /// <summary>
     /// Represents a server instance that client servers implmenting application service type capabilities such as

@@ -1,9 +1,9 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
+using VSS.TRex.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
+namespace VSS.TRex.SubGridTrees.Server.Iterators
 {
     /// <summary>
     /// This supports the idea of iterating through the segments in a subgrid in a way that hides all the details

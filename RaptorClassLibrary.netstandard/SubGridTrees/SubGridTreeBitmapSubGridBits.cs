@@ -2,10 +2,10 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.SubGridTrees.Helpers;
+using VSS.TRex.Geometry;
+using VSS.TRex.SubGridTrees.Helpers;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees
+namespace VSS.TRex.SubGridTrees
 {
     [Serializable]
     public struct SubGridTreeBitmapSubGridBits : IEquatable<SubGridTreeBitmapSubGridBits>

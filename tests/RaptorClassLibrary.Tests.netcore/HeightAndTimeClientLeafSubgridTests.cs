@@ -1,7 +1,7 @@
 ﻿using System;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
+namespace VSS.TRex.RaptorClassLibrary.Tests
 {
         public class HeightAndTimeClientLeafSubgridTests
     {

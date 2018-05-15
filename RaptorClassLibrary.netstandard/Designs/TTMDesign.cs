@@ -6,13 +6,13 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using VSS.Velociraptor.Designs.TTM;
-using VSS.VisionLink.Raptor;
-using VSS.VisionLink.Raptor.Designs;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.SubGridTrees;
-using VSS.VisionLink.Raptor.SubGridTrees.Types;
-using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
-using VSS.VisionLink.Raptor.Utilities;
+using VSS.TRex;
+using VSS.TRex.Designs;
+using VSS.TRex.Geometry;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Types;
+using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.Utilities;
 
 namespace VSS.Velociraptor.DesignProfiling
 {

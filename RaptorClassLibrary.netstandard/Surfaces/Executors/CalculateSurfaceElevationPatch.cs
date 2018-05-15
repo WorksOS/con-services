@@ -1,9 +1,9 @@
-﻿using VSS.Velociraptor.DesignProfiling;
-using VSS.VisionLink.Raptor.SubGridTrees.Client;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.Surfaces.GridFabric.Arguments;
+﻿using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Surfaces.GridFabric.Arguments;
+using VSS.Velociraptor.DesignProfiling;
 
-namespace VSS.VisionLink.Raptor.Surfaces.Executors
+namespace VSS.TRex.Surfaces.Executors
 {
     public class CalculateSurfaceElevationPatch
     {

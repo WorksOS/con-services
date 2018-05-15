@@ -1,8 +1,8 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Cells;
-using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
+using VSS.TRex.Cells;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Interfaces
+namespace VSS.TRex.SubGridTrees.Interfaces
 {
     /// <summary>
     /// Interface for the iterator responsible for iterating through cell passes within a cell within segments within a subgrid

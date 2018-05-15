@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.TAGFiles.Classes.States
+﻿namespace VSS.TRex.TAGFiles.Classes.States
 {
     /// <summary>
     /// Handles prescanning TAG values an extracting the first encountered accurate grid point positions

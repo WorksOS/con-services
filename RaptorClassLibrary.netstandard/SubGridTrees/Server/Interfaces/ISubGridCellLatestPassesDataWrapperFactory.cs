@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces
+﻿namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
     public interface ISubGridCellLatestPassesDataWrapperFactory
     {

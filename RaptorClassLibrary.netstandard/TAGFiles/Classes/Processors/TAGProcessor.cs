@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Diagnostics;
-using VSS.VisionLink.Raptor.Events;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.Machines;
-using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.SubGridTrees.Server;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.Swather;
-using VSS.VisionLink.Raptor.TAGFiles.Types;
-using VSS.VisionLink.Raptor.Time;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Events;
+using VSS.TRex.Geometry;
+using VSS.TRex.Machines;
+using VSS.TRex.SiteModels;
+using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.TAGFiles.Classes.Swather;
+using VSS.TRex.TAGFiles.Types;
+using VSS.TRex.Types;
+using VSS.TRex.Time;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes
+namespace VSS.TRex.TAGFiles.Classes
 {
     /// <summary>
     /// Coordinates reading and converting recorded information from compaction machines into the IC server database.
@@ -385,9 +385,9 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 
             MachineGear Gear = MachineGear.Null;
 
-            if (Value == MachineDirection.Forward)
+            if (Value == TRex.Types.MachineDirection.Forward)
                 Gear = MachineGear.Forward;
-            else if (Value == MachineDirection.Reverse)
+            else if (Value == TRex.Types.MachineDirection.Reverse)
                 Gear = MachineGear.Reverse;
 
             if (DataTime != DateTime.MinValue && (Gear == MachineGear.Forward || Gear == MachineGear.Reverse))
@@ -586,12 +586,12 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 
             if (DataTime != DateTime.MinValue)
             {
-                if (PositioningTech == PositioningTech.Unknown || PositioningTech == PositioningTech.UTS)
+                if (PositioningTech == TRex.Types.PositioningTech.Unknown || PositioningTech == TRex.Types.PositioningTech.UTS)
                 {
                     if (Value != GPSMode.NoGPS)
-                        MachineTargetValueChangesAggregator.PositioningTechStateEvents.PutValueAtDate(DataTime, PositioningTech.GPS);
+                        MachineTargetValueChangesAggregator.PositioningTechStateEvents.PutValueAtDate(DataTime, TRex.Types.PositioningTech.GPS);
                     else
-                        MachineTargetValueChangesAggregator.PositioningTechStateEvents.PutValueAtDate(DataTime, PositioningTech.UTS);
+                        MachineTargetValueChangesAggregator.PositioningTechStateEvents.PutValueAtDate(DataTime, TRex.Types.PositioningTech.UTS);
                 }
 
                 MachineTargetValueChangesAggregator.GPSModeStateEvents.PutValueAtDate(DataTime, Value);
@@ -730,7 +730,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes
                 if (!HasGPSModeBeenSet)
                 {
                     MachineTargetValueChangesAggregator.GPSModeStateEvents.PutValueAtDate(TagFileStartTime, GPSMode.NoGPS);
-                    MachineTargetValueChangesAggregator.PositioningTechStateEvents.PutValueAtDate(TagFileStartTime, PositioningTech.UTS);
+                    MachineTargetValueChangesAggregator.PositioningTechStateEvents.PutValueAtDate(TagFileStartTime, TRex.Types.PositioningTech.UTS);
                 }
             }
 

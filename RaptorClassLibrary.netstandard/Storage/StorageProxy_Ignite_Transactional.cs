@@ -1,11 +1,11 @@
 ﻿using System;
 using log4net;
 using System.Reflection;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Caches;
 using VSS.TRex.Storage;
-using VSS.VisionLink.Raptor.GridFabric.Affinity;
-using VSS.VisionLink.Raptor.GridFabric.Caches;
 
-namespace VSS.VisionLink.Raptor.Storage
+namespace VSS.TRex.Storage
 {
     /// <summary>
     /// Implementation of the IStorageProxy interface that provides read through for items covered by the storage proxy

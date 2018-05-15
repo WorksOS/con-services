@@ -3,10 +3,10 @@ using System.IO;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using VSS.TRex.TAGFiles.Classes.Queues;
-using VSS.VisionLink.Raptor.GridFabric.Caches;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
-using VSS.VisionLink.Raptor.Servers;
-using VSS.VisionLink.Raptor.Servers.Client;
+using VSS.TRex.GridFabric.Caches;
+using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.Servers;
+using VSS.TRex.Servers.Client;
 using VSSTests.TRex.Tests.Common;
 using Xunit;
 

@@ -1,19 +1,19 @@
 ﻿using log4net;
 using System;
 using System.Reflection;
-using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.Executors.Tasks;
-using VSS.VisionLink.Raptor.Filters;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.GridFabric.Responses;
-using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.Pipelines;
-using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.SubGridTrees;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Common;
+using VSS.TRex.Executors.Tasks;
+using VSS.TRex.Filters;
+using VSS.TRex.Geometry;
+using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.GridFabric.Responses;
+using VSS.TRex.Interfaces;
+using VSS.TRex.Pipelines;
+using VSS.TRex.SiteModels;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.Analytics
+namespace VSS.TRex.Analytics
 {
     /// <summary>
     /// The base class the implements the analytics computation framework 

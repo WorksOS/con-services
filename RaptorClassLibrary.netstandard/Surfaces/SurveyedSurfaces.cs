@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using VSS.VisionLink.Raptor.Designs;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.GridFabric.Affinity;
-using VSS.VisionLink.Raptor.Utilities.Interfaces;
+using VSS.TRex.Designs;
+using VSS.TRex.Geometry;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.Utilities.Interfaces;
 
-namespace VSS.VisionLink.Raptor.Surfaces
+namespace VSS.TRex.Surfaces
 {
     [Serializable]
     public class SurveyedSurfaces : List<SurveyedSurface>, IComparable<SurveyedSurface>, IBinaryReaderWriter

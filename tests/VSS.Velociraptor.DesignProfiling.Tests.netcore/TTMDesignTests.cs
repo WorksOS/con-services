@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VSS.VisionLink.Raptor;
+using VSS.TRex;
 using VSS.Velociraptor.Designs.TTM;
-using VSS.VisionLink.Raptor.Designs;
+using VSS.TRex.Designs;
 using Xunit;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.Velociraptor.DesignProfiling.Tests
 {

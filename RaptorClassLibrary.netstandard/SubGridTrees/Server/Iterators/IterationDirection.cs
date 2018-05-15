@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
+﻿namespace VSS.TRex.SubGridTrees.Server.Iterators
 {
     /// <summary>
     /// The time iteration direction for iterating thorugh the segments in the subgrid

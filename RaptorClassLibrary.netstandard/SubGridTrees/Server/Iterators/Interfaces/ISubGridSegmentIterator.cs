@@ -1,8 +1,8 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Server.Iterators;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces
+namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
     public interface ISubGridSegmentIterator
     {

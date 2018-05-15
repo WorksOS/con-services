@@ -1,9 +1,9 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Types;
+using VSS.TRex.Geometry;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Types;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees
+namespace VSS.TRex.SubGridTrees
 {
     public class NodeSubGrid : SubGrid, INodeSubGrid
     {

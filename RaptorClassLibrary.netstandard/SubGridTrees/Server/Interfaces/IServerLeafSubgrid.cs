@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
-using VSS.VisionLink.Raptor.Cells;
-using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Server;
-using VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators;
+using VSS.TRex.Cells;
+using VSS.TRex.Interfaces;
+using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.SubGridTrees.Server.Iterators;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Interfaces
+namespace VSS.TRex.SubGridTrees.Interfaces
 {
     public interface IServerLeafSubGrid : ILeafSubGrid
     {

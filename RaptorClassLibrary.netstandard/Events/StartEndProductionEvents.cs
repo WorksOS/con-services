@@ -5,7 +5,7 @@ using System.Reflection;
 using log4net;
 using VSS.TRex.Events.Interfaces;
 
-namespace VSS.VisionLink.Raptor.Events
+namespace VSS.TRex.Events
 {
     /// <summary>
     /// Implements an event list containing events that detail when a machine started recording production data, and when it stopped

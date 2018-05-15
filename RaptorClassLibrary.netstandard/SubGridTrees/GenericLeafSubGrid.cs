@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees
+namespace VSS.TRex.SubGridTrees
 {
     /// <summary>
     /// GenericLeafSubGrid in T implements a leaf subgrid where all the cells in the leaf are generic type T.

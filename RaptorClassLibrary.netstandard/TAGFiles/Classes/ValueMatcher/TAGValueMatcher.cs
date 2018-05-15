@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher
+namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
 {
     /// <summary>
     /// TAGValueMatcher is a base class used to produce a set of derived classes

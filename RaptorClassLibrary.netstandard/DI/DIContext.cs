@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.Rendering.Abstractions;
 
-namespace VSS.VisionLink.Raptor.DI
+namespace VSS.TRex.DI
 {
     public static class DIContext
     {

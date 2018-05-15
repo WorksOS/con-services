@@ -3,16 +3,16 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using VSS.VisionLink.Raptor.Cells;
-using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators;
-using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Cells;
+using VSS.TRex.Common;
+using VSS.TRex.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
+using VSS.TRex.SubGridTrees.Server.Iterators;
+using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server
+namespace VSS.TRex.SubGridTrees.Server
 {
     /// <summary>
     /// The core class containing a description of all cell passes recorded within the spatial confines

@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using VSS.VisionLink.Raptor.Cells;
-using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.Events;
-using VSS.VisionLink.Raptor.Machines;
-using VSS.VisionLink.Raptor.SubGridTrees.Client;
-using VSS.VisionLink.Raptor.Types;
-using VSS.VisionLink.Raptor.Utilities;
+using VSS.TRex.Cells;
+using VSS.TRex.Common;
+using VSS.TRex.Events;
+using VSS.TRex.Machines;
+using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.Types;
+using VSS.TRex.Utilities;
 
-namespace VSS.VisionLink.Raptor.Filters
+namespace VSS.TRex.Filters
 {
     /*
     This unit defines support for filtering information stored in the data grid.
@@ -689,7 +689,7 @@ FAvoidZoneUndergroundServiceZones = false;
             GPSAccuracyAndTolerance GPSAccuracyAndToleranceValue = GPSAccuracyAndTolerance.Null();
             PositioningTech PositioningTechStateValue = PositioningTech.Unknown;
             MachineAutomaticsMode GCSGuidanceModeValue = MachineAutomaticsMode.Unknown;
-            Machine Machine;
+            Machines.Machine Machine;
             ushort LayerIDStateValue = ushort.MaxValue;  // ID of current layer
 
             /* SPR 10733: AZ filters should only apply to AZ transgression events
@@ -779,8 +779,8 @@ FAvoidZoneUndergroundServiceZones = false;
             {
                 MachineGearValue = machineTargetValues.MachineGearStateEvents.GetValueAtDate(PassValue.Time, out StateChangeIndex, MachineGearValue);
 
-                if (((MachineDirection == MachineDirection.Forward && !Machine.MachineGearIsForwardGear(MachineGearValue))) ||
-                    ((MachineDirection == MachineDirection.Reverse && !Machine.MachineGearIsReverseGear(MachineGearValue))))
+                if (((MachineDirection == MachineDirection.Forward && !Machines.Machine.MachineGearIsForwardGear(MachineGearValue))) ||
+                    ((MachineDirection == MachineDirection.Reverse && !Machines.Machine.MachineGearIsReverseGear(MachineGearValue))))
                     return false;
             }
 
@@ -876,7 +876,7 @@ FAvoidZoneUndergroundServiceZones = false;
           AZUSResult : Boolean;
             */
 
-            Machine Machine;
+            Machines.Machine Machine;
 
             if (!AnyFilterSelections)
             {
@@ -933,7 +933,7 @@ FAvoidZoneUndergroundServiceZones = false;
 
             if (HasMachineDirectionFilter)
             {
-                if (((MachineDirection == MachineDirection.Forward && !Machine.MachineGearIsForwardGear(PassValue.EventValues.EventMachineGear))) ||
+                if (((MachineDirection == MachineDirection.Forward && !Machines.Machine.MachineGearIsForwardGear(PassValue.EventValues.EventMachineGear))) ||
                     ((MachineDirection == MachineDirection.Reverse && !Machine.MachineGearIsReverseGear(PassValue.EventValues.EventMachineGear))))
                     return false;
             }

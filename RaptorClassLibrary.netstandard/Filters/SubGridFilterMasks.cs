@@ -1,10 +1,10 @@
-﻿using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.SubGridTrees;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Server;
+﻿using VSS.TRex.Geometry;
+using VSS.TRex.SiteModels;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Server;
 
-namespace VSS.VisionLink.Raptor.Filters
+namespace VSS.TRex.Filters
 {
     /// <summary>
     /// Methods that support the calculation of subgrid filter masks controlling which cells in a subgrid

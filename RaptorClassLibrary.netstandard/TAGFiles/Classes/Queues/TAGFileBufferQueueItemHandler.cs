@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using log4net;
-using VSS.VisionLink.Raptor.GridFabric.Caches;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
-using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Requests;
-using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Responses;
+using VSS.TRex.GridFabric.Caches;
+using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.TAGFiles.GridFabric.Arguments;
+using VSS.TRex.TAGFiles.GridFabric.Requests;
+using VSS.TRex.TAGFiles.GridFabric.Responses;
 
 namespace VSS.TRex.TAGFiles.Classes.Queues
 {

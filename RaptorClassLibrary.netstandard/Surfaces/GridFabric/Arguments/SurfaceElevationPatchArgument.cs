@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using VSS.VisionLink.Raptor.SubGridTrees;
+using VSS.TRex.SubGridTrees;
 
-namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.Arguments
+namespace VSS.TRex.Surfaces.GridFabric.Arguments
 {
     public class SurfaceElevationPatchArgument
     {

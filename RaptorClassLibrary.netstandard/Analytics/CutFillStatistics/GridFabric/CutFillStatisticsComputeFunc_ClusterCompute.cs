@@ -1,8 +1,8 @@
-﻿using VSS.VisionLink.Raptor.Analytics.Coordinators;
-using VSS.VisionLink.Raptor.Analytics.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.Analytics.GridFabric.Responses;
+﻿using VSS.TRex.Analytics.Coordinators;
+using VSS.TRex.Analytics.GridFabric.Arguments;
+using VSS.TRex.Analytics.GridFabric.Responses;
 
-namespace VSS.VisionLink.Raptor.Analytics.GridFabric.ComputeFuncs
+namespace VSS.TRex.Analytics.GridFabric.ComputeFuncs
 {
     /// <summary>
     /// Cut/fill statistics specific request to make to the cluster compute context

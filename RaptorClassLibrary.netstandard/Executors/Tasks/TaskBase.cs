@@ -1,8 +1,8 @@
-﻿using VSS.VisionLink.Raptor.Executors.Tasks.Interfaces;
-using VSS.VisionLink.Raptor.Pipelines.Interfaces;
-using VSS.VisionLink.Raptor.Types;
+﻿using VSS.TRex.Executors.Tasks.Interfaces;
+using VSS.TRex.Pipelines.Interfaces;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.Executors.Tasks
+namespace VSS.TRex.Executors.Tasks
 {
     /// <summary>
     /// ITaskBase/TaskBase is an interface/base class implementation that other classes 

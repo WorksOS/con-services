@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Types;
+using VSS.TRex.Geometry;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Types;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
+namespace VSS.TRex.SubGridTrees.Server.Iterators
 {
     public abstract class SubGridTreeScannerBase
     {

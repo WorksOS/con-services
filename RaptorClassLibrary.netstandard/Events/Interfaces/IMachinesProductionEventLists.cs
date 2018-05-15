@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.Events.Interfaces
+﻿namespace VSS.TRex.Events.Interfaces
 {
     public interface IMachinesProductionEventLists
     {

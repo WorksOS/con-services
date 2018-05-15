@@ -1,8 +1,8 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Filters;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Filters;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.GridFabric.Arguments
+namespace VSS.TRex.GridFabric.Arguments
 {
     /// <summary>
     /// Contains all the parameters necessary to be sent for a generic subgrids request made to the compute cluster

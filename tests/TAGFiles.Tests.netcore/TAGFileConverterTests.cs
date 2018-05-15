@@ -1,16 +1,16 @@
-﻿using VSS.VisionLink.Raptor.Executors;
+﻿using VSS.TRex.Executors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using VSS.VisionLink.Raptor.TAGFiles.Tests;
-using VSS.VisionLink.Raptor.TAGFiles.Types;
+using VSS.TRex.TAGFiles.Types;
+using VSS.TRex.TAGFiles.Tests;
 using VSSTests.TRex.Tests.Common;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.Executors.Tests
+namespace VSS.TRex.Executors.Tests
 {
         public class TAGFileConverterTests
     {

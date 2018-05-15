@@ -12,12 +12,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using VSS.VisionLink.Raptor.GridFabric.Affinity;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
-using VSS.VisionLink.Raptor.GridFabric.Queues;
-using VSS.VisionLink.Raptor.Storage;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Queues;
+using VSS.TRex.Storage;
 
-namespace VSS.VisionLink.Raptor.Servers.Client
+namespace VSS.TRex.Servers.Client
 {
     /// <summary>
     /// Defines a representation of a client able to request Raptor related compute operations using

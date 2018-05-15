@@ -2,11 +2,11 @@
 using log4net;
 using System;
 using System.Reflection;
-using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
-using VSS.VisionLink.Raptor.GridFabric.Requests;
-using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
+using VSS.TRex.GridFabric.ComputeFuncs;
+using VSS.TRex.GridFabric.Requests;
+using VSS.TRex.GridFabric.Requests.Interfaces;
 
-namespace VSS.VisionLink.Raptor.Analytics.GridFabric.ComputeFuncs
+namespace VSS.TRex.Analytics.GridFabric.ComputeFuncs
 {
     /// <summary>
     /// This compute func operates in the context of an application server that reaches out to the compute cluster to 

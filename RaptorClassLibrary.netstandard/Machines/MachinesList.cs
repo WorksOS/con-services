@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using VSS.VisionLink.Raptor.Machines.Interfaces;
+using VSS.TRex.Machines.Interfaces;
 
-namespace VSS.VisionLink.Raptor.Machines
+namespace VSS.TRex.Machines
 {
     /// <summary>
     /// Implements a container for all the machines that have had activity within a Site Model

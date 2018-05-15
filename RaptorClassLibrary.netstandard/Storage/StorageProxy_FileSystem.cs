@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
-using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Interfaces;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.Storage
+namespace VSS.TRex.Storage
 {
     /// <summary>
     /// Implementation of the IStorageProxy interface that allows to read/write operations against Raptor IO Service

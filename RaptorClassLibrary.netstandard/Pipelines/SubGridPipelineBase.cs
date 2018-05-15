@@ -4,18 +4,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using VSS.VisionLink.Raptor.Executors.Tasks;
-using VSS.VisionLink.Raptor.Filters;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.GridFabric.Requests;
-using VSS.VisionLink.Raptor.GridFabric.Responses;
-using VSS.VisionLink.Raptor.GridFabric.Types;
-using VSS.VisionLink.Raptor.Pipelines.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Executors.Tasks;
+using VSS.TRex.Filters;
+using VSS.TRex.Geometry;
+using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.GridFabric.Requests;
+using VSS.TRex.GridFabric.Responses;
+using VSS.TRex.GridFabric.Types;
+using VSS.TRex.Pipelines.Interfaces;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.Pipelines
+namespace VSS.TRex.Pipelines
 {
     /// <summary>
     /// Derived from TSVOICSubGridPipelineBase = class(TObject)

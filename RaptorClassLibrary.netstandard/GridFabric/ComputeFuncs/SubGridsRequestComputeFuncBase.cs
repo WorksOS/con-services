@@ -2,26 +2,26 @@
 using System;
 using System.IO;
 using System.Linq;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.GridFabric.Responses;
-using VSS.VisionLink.Raptor.GridFabric.Types;
-using VSS.VisionLink.Raptor.SubGridTrees;
-using VSS.VisionLink.Raptor.SubGridTrees.Client;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.Types;
-using VSS.VisionLink.Raptor.SiteModels;
 using log4net;
 using System.Reflection;
 using System.Diagnostics;
+using VSS.TRex.Designs.Storage;
+using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Affinity;
-using VSS.VisionLink.Raptor.Utilities;
-using VSS.VisionLink.Raptor.Designs.Storage;
-using VSS.VisionLink.Raptor.Services.Designs;
+using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.GridFabric.Responses;
+using VSS.TRex.GridFabric.Types;
+using VSS.TRex.Services.Designs;
+using VSS.TRex.SiteModels;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.Types;
+using VSS.TRex.Utilities;
 using VSS.Velociraptor.DesignProfiling;
-using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 
-namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
+namespace VSS.TRex.GridFabric.ComputeFuncs
 {
     /// <summary>
     /// The closure/function that implements subgrid request processing on compute nodes

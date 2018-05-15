@@ -3,9 +3,9 @@ using Apache.Ignite.Core.Services;
 using log4net;
 using System;
 using System.Reflection;
-using VSS.VisionLink.Raptor.GridFabric.Caches;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
-using VSS.VisionLink.Raptor.GridFabric.NodeFilters;
+using VSS.TRex.GridFabric.Caches;
+using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.NodeFilters;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Services
 {

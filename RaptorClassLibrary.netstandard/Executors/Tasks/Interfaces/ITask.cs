@@ -1,7 +1,7 @@
-﻿using VSS.VisionLink.Raptor.Pipelines.Interfaces;
-using VSS.VisionLink.Raptor.Types;
+﻿using VSS.TRex.Pipelines.Interfaces;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.Executors.Tasks.Interfaces
+namespace VSS.TRex.Executors.Tasks.Interfaces
 {
     public interface ITask  
     {

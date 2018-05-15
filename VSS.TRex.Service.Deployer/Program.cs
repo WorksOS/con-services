@@ -4,7 +4,7 @@ using System.Reflection;
 using log4net;
 using log4net.Config;
 using VSS.TRex.TAGFiles.GridFabric.Services;
-using VSS.VisionLink.Raptor.Servers.Client;
+using VSS.TRex.Servers.Client;
 
 namespace TRex.Service.Deployer
 {

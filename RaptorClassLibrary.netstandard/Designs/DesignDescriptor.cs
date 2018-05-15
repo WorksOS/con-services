@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace VSS.VisionLink.Raptor.Designs
+namespace VSS.TRex.Designs
 {
     [Serializable]
     public struct DesignDescriptor : IEquatable<DesignDescriptor>

@@ -2,14 +2,14 @@
 using log4net;
 using System;
 using System.Reflection;
-using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
-using VSS.VisionLink.Raptor.Servers;
-using VSS.VisionLink.Raptor.Volumes.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.Volumes.GridFabric.Requests;
-using VSS.VisionLink.Raptor.Volumes.GridFabric.Responses;
+using VSS.TRex.GridFabric.ComputeFuncs;
+using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.Servers;
+using VSS.TRex.Volumes.GridFabric.Arguments;
+using VSS.TRex.Volumes.GridFabric.Requests;
+using VSS.TRex.Volumes.GridFabric.Responses;
 
-namespace VSS.VisionLink.Raptor.Volumes.GridFabric.ComputeFuncs
+namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
 {
     /// <summary>
     /// This compute func operates in the context of an application server that reaches out to the compute cluster to 

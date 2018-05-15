@@ -3,14 +3,14 @@ using Apache.Ignite.Core;
 using log4net;
 using System.IO;
 using System.Reflection;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Storage.Interfaces;
-using VSS.VisionLink.Raptor.GridFabric.Affinity;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
-using VSS.VisionLink.Raptor.Storage.Utilities;
-using VSS.VisionLink.Raptor.SubGridTrees.Server;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Storage.Utilities;
+using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.Storage
+namespace VSS.TRex.Storage
 {
     public abstract class StorageProxy_IgniteBase
     {

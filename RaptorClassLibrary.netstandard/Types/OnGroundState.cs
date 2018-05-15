@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.Types
+﻿namespace VSS.TRex.Types
 {
     /// <summary>
     /// The known information about if the blade is in contact with the ground, and the 

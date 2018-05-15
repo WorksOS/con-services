@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
-using VSS.VisionLink.Raptor.Rendering.Palettes.Interfaces;
+using VSS.TRex.Rendering.Palettes.Interfaces;
 
-namespace VSS.VisionLink.Raptor.Rendering.Palettes
+namespace VSS.TRex.Rendering.Palettes
 {
     // A basic palette class that defines a sdet of transitions covering a value range being rendered
     public class PaletteBase : IPlanViewPalette

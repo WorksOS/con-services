@@ -1,16 +1,17 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Events;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.Machines;
-using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.Storage;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Server;
-using VSS.VisionLink.Raptor.TAGFiles.Types;
+using VSS.TRex.Events;
+using VSS.TRex.Geometry;
+using VSS.TRex.Interfaces;
+using VSS.TRex.Machines;
+using VSS.TRex.SiteModels;
+using VSS.TRex.Storage;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.TAGFiles.Types;
+using VSS.TRex.Types;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather.Tests
+namespace VSS.TRex.TAGFiles.Classes.Swather.Tests
 {
     public class TerrainSwatherTests
     {
@@ -66,7 +67,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather.Tests
             var TimeInterpolator2 = new SimpleTriangle(T01, T11, T10);
 
             // Compute swath with full cell pass on the front (blade) mesurement location
-            bool swathResult = swather.PerformSwathing(HeightInterpolator1, HeightInterpolator2, TimeInterpolator1, TimeInterpolator2, false, Raptor.Types.PassType.Front, MachineSide.None);
+            bool swathResult = swather.PerformSwathing(HeightInterpolator1, HeightInterpolator2, TimeInterpolator1, TimeInterpolator2, false, PassType.Front, MachineSide.None);
 
             // Did the swathing operation succeed?
             Assert.True(swathResult, "Performaswathing failed");

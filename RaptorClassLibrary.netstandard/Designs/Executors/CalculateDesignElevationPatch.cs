@@ -1,6 +1,6 @@
 ﻿using VSS.Velociraptor.DesignProfiling.GridFabric.Arguments;
-using VSS.VisionLink.Raptor;
-using VSS.VisionLink.Raptor.SubGridTrees.Client;
+using VSS.TRex;
+using VSS.TRex.SubGridTrees.Client;
 
 namespace VSS.Velociraptor.DesignProfiling.Executors
 {

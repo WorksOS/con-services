@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees
+namespace VSS.TRex.SubGridTrees
 {
     public class LeafSubGridBase : SubGrid
     {

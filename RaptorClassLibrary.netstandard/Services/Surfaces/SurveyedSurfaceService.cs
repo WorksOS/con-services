@@ -6,16 +6,16 @@ using log4net;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using VSS.VisionLink.Raptor.Designs;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.GridFabric.Affinity;
-using VSS.VisionLink.Raptor.GridFabric.Caches;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
-using VSS.VisionLink.Raptor.Storage;
-using VSS.VisionLink.Raptor.Surfaces;
-using VSS.VisionLink.Raptor.Utilities.ExtensionMethods;
+using VSS.TRex.Designs;
+using VSS.TRex.Geometry;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Caches;
+using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.Storage;
+using VSS.TRex.Surfaces;
+using VSS.TRex.Utilities.ExtensionMethods;
 
-namespace VSS.VisionLink.Raptor.Services.Surfaces
+namespace VSS.TRex.Services.Surfaces
 {
 
     /// <summary>

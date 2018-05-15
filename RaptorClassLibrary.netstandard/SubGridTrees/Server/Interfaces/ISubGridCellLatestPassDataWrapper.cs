@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
-using VSS.VisionLink.Raptor.Cells;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Cells;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces
+namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
     public interface ISubGridCellLatestPassDataWrapper
     {

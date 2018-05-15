@@ -1,7 +1,7 @@
 ﻿using System.IO;
-using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server
+namespace VSS.TRex.SubGridTrees.Server
 {
     /// <summary>
     /// A wrapper for a subgrid containing all information related to the 'latest kown' information related to each cell.

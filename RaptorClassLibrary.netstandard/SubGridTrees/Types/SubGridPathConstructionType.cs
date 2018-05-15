@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.SubGridTrees.Types
+﻿namespace VSS.TRex.SubGridTrees.Types
 {
     /// <summary>
     /// When construcing a path through a subgrid tree to a subgrid, use the following mode to control

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using VSS.VisionLink.Raptor.TAGFiles.Types;
+using VSS.TRex.TAGFiles.Types;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes
+namespace VSS.TRex.TAGFiles.Classes
 {
     /// <summary>
     /// The core dictionary that maps the TAG file items by the ID used in the TAG file to the 

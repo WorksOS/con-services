@@ -1,3 +1,3 @@
-﻿namespace VSS.VisionLink.Raptor.SubGridTrees.Server
+﻿namespace VSS.TRex.SubGridTrees.Server
 {
 }

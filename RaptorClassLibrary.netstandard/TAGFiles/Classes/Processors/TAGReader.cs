@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes
+namespace VSS.TRex.TAGFiles.Classes
 {
     /// <summary>
     /// Implements TAG file reading semantics for TAG file data represented to it via a stream

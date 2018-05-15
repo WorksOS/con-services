@@ -2,7 +2,7 @@
 using Apache.Ignite.Core.Common;
 using System;
 
-namespace VSS.VisionLink.Raptor.GridFabric.Caches
+namespace VSS.TRex.GridFabric.Caches
 {
     /// <summary>
     /// The cache store factory responsible for creating a cache store tailored for storing immutable representations

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Types;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.Compression.Tests
+namespace VSS.TRex.Compression.Tests
 {
         public class GPSModeTests
     {

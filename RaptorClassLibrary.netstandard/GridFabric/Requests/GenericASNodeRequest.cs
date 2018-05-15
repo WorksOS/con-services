@@ -1,7 +1,7 @@
 ﻿using Apache.Ignite.Core.Compute;
 using System;
 
-namespace VSS.VisionLink.Raptor.GridFabric.Requests
+namespace VSS.TRex.GridFabric.Requests
 {
     /// <summary>
     /// Provides a highly genericised class for making a request to a member of the 'ASNode' node pool

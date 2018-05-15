@@ -1,4 +1,4 @@
-﻿using VSS.VisionLink.Raptor.Storage.Utilities;
+﻿using VSS.TRex.Storage.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.IO;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.Storage.Utilities.Tests
+namespace VSS.TRex.Storage.Utilities.Tests
 {
         public class MemoryStreamCompressionTests
     {

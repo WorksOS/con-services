@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine.Telematics
+namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine.Telematics
 {
     public class TAGRadioTypeValueMatcher : TAGValueMatcher
     {

@@ -3,9 +3,9 @@ using log4net;
 using System;
 using System.Reflection;
 using System.Threading;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
+using VSS.TRex.GridFabric.Grids;
 
-namespace VSS.VisionLink.Raptor.Servers.Client
+namespace VSS.TRex.Servers.Client
 {
     /// <summary>
     /// This class simply marks the named grid as being active when executed

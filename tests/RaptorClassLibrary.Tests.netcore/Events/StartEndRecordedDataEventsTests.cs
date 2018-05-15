@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using VSS.VisionLink.Raptor.Events;
+using VSS.TRex.Events;
 using Xunit;
 
 namespace RaptorClassLibrary.Tests.netcore.Events

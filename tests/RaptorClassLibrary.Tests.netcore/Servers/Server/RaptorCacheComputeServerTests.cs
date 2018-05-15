@@ -1,8 +1,8 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Servers.Compute;
+using VSS.TRex.Servers.Compute;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests.Servers.Server
+namespace VSS.TRex.RaptorClassLibrary.Tests.Servers.Server
 {
         public class RaptorCacheComputeServerTests
     {

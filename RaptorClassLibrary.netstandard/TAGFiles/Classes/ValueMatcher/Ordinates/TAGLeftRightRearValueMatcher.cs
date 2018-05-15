@@ -1,6 +1,6 @@
-﻿using VSS.VisionLink.Raptor.TAGFiles.Types;
+﻿using VSS.TRex.TAGFiles.Types;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Ordinates
+namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Ordinates
 {
     /// <summary>
     /// Handles left/right (side) empty values for rear axle positioning

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace VSS.VisionLink.Raptor.GridFabric.Caches
+namespace VSS.TRex.GridFabric.Caches
 {
     /// <summary>
     /// Implements the Ignite ICacheStore interface

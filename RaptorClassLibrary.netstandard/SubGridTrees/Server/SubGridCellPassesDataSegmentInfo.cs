@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
-using VSS.VisionLink.Raptor.Common;
+using VSS.TRex.Common;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server
+namespace VSS.TRex.SubGridTrees.Server
 {
     public class SubGridCellPassesDataSegmentInfo
     {

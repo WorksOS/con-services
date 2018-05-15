@@ -4,7 +4,7 @@ using log4net;
 using System;
 using System.Reflection;
 
-namespace VSS.VisionLink.Raptor.GridFabric.Events
+namespace VSS.TRex.GridFabric.Events
 {
     public class SiteModelAttributesChangedEventListener : IMessageListener<SiteModelAttributesChangedEvent>, IDisposable
     {

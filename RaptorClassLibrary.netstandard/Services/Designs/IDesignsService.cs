@@ -1,8 +1,9 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Designs;
-using VSS.VisionLink.Raptor.Geometry;
+using VSS.TRex.Designs;
+using VSS.TRex.Designs.Storage;
+using VSS.TRex.Geometry;
 
-namespace VSS.VisionLink.Raptor.Services.Designs
+namespace VSS.TRex.Services.Designs
 {
     /// <summary>
     /// Interface detailing the API for the service that supports adding and managing designs
@@ -23,14 +24,14 @@ namespace VSS.VisionLink.Raptor.Services.Designs
         /// <param name="SiteModelID"></param>
         /// <param name="designID"></param>
         /// <returns></returns>
-        Raptor.Designs.Storage.Design Find(Guid SiteModelID, long designID);
+        Design Find(Guid SiteModelID, long designID);
 
         /// <summary>
         /// Request the list of designs from a site model
         /// </summary>
         /// <param name="SiteModelID"></param>
         /// <returns></returns>
-        Raptor.Designs.Storage.Designs List(Guid SiteModelID);
+        TRex.Designs.Storage.Designs List(Guid SiteModelID);
 
         /// <summary>
         /// Removes a design from a site model

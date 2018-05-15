@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.VisionLink.Raptor.Utilities
+namespace VSS.TRex.Utilities
 {
     /// <summary>
     /// A collection of things that aren't readily apparent in the .Net platform

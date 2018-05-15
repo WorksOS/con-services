@@ -1,9 +1,9 @@
-﻿using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.Rendering.Palettes.Interfaces;
-using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.Types;
+﻿using VSS.TRex.Geometry;
+using VSS.TRex.Rendering.Palettes.Interfaces;
+using VSS.TRex.SiteModels;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.Rendering.Palettes
+namespace VSS.TRex.Rendering.Palettes
 {
     /// <summary>
     /// A factory responsible for determining the appropriate plan view map colour palette to use

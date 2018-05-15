@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using VSS.VisionLink.Raptor.Cells;
-using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Cells;
+using VSS.TRex.Common;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes
+namespace VSS.TRex.TAGFiles.Classes
 {
     /// <summary>
     /// AccumulatedAttribute records the state of an attribute supplied to the

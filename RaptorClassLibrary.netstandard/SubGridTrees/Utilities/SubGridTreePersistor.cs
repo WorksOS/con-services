@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
+namespace VSS.TRex.SubGridTrees.Utilities
 {
     /// <summary>
     /// SubGridTreePersistor is a helper class that coordinates serialising and deserialising the 

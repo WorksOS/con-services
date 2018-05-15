@@ -1,7 +1,7 @@
-﻿using VSS.VisionLink.Raptor.Cells;
-using VSS.VisionLink.Raptor.TAGFiles.Types;
+﻿using VSS.TRex.Cells;
+using VSS.TRex.TAGFiles.Types;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Compaction
+namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction
 {
     /// <summary>
     /// Handles the Volkel sensor util range measurement recorded byt he machine

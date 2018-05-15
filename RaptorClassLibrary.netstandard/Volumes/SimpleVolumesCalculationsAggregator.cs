@@ -3,20 +3,20 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 using log4net;
+using VSS.TRex.Common;
+using VSS.TRex.Designs;
+using VSS.TRex.Designs.Storage;
+using VSS.TRex.Geometry;
+using VSS.TRex.GridFabric.Requests.Interfaces;
+using VSS.TRex.Interfaces;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Types;
+using VSS.TRex.Utilities;
 using VSS.Velociraptor.DesignProfiling;
-using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.Designs;
-using VSS.VisionLink.Raptor.Designs.Storage;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
-using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees;
-using VSS.VisionLink.Raptor.SubGridTrees.Client;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Types;
-using VSS.VisionLink.Raptor.Utilities;
 
-namespace VSS.VisionLink.Raptor.Volumes
+namespace VSS.TRex.Volumes
 {
     /// <summary>
     /// Defines an aggregator that summaries simple volumes information for subgrids

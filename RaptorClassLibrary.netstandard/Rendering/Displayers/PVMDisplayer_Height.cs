@@ -1,9 +1,9 @@
 ﻿using System.Drawing;
-using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.SubGridTrees.Client;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+using VSS.TRex.Common;
+using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Interfaces;
 
-namespace VSS.VisionLink.Raptor.Rendering.Displayers
+namespace VSS.TRex.Rendering.Displayers
 {
     /// <summary>
     /// Plan View Map displayer renderer for height/elevation information presented as rendered tiles

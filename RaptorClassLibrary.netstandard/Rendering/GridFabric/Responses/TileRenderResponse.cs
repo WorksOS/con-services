@@ -1,7 +1,7 @@
-﻿using VSS.TRex.Rendering.Abstractions.GridFabric.Factories;
-using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
+﻿using VSS.TRex.GridFabric.Requests.Interfaces;
+using VSS.TRex.Rendering.Abstractions.GridFabric.Factories;
 
-namespace VSS.VisionLink.Raptor.Rendering.GridFabric.Responses
+namespace VSS.TRex.Rendering.GridFabric.Responses
 {
     /// <summary>
     /// Contains the response bitmap for a tile request. Supports compositing of another bitmap with this one

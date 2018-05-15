@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Common;
+using VSS.TRex.Common;
 
-namespace VSS.VisionLink.Raptor.Geometry
+namespace VSS.TRex.Geometry
 {
     /// <summary>
     /// A simple polygon desribing a fence and including tests for different geometry elements

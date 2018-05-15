@@ -1,7 +1,7 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
+using VSS.TRex.GridFabric.Grids;
 
-namespace VSS.VisionLink.Raptor.Servers.Client
+namespace VSS.TRex.Servers.Client
 {
     /// <summary>
     /// A factory class responsible for creating mutable or immutable raptor client nodes in the Ignite grid

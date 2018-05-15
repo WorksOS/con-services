@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.VisionLink.Raptor.Filters
+namespace VSS.TRex.Filters
 {
     /// <summary>
     /// FilterSet represents a set of filters to be applied to each subgrid in a query within a single operation

@@ -1,10 +1,10 @@
-﻿using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.Rendering.GridFabric.Requests;
-using VSS.VisionLink.Raptor.Rendering.GridFabric.Responses;
-using VSS.VisionLink.Raptor.Servers;
-using VSS.VisionLink.Raptor.Servers.Client;
+﻿using VSS.TRex.Rendering.GridFabric.Arguments;
+using VSS.TRex.Rendering.GridFabric.Requests;
+using VSS.TRex.Rendering.GridFabric.Responses;
+using VSS.TRex.Servers;
+using VSS.TRex.Servers.Client;
 
-namespace VSS.VisionLink.Raptor.Rendering.Servers.Client
+namespace VSS.TRex.Rendering.Servers.Client
 {
     /// <summary>
     /// The server used to house tile rendering services

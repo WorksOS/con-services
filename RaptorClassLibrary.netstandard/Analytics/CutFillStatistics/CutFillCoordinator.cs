@@ -1,14 +1,14 @@
 ﻿using log4net;
 using System;
 using System.Reflection;
-using VSS.VisionLink.Raptor.Analytics.Aggregators;
-using VSS.VisionLink.Raptor.Analytics.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.Analytics.GridFabric.Responses;
-using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.Types;
-using VSS.VisionLink.Raptor.Utilities;
+using VSS.TRex.Analytics.Aggregators;
+using VSS.TRex.Analytics.GridFabric.Arguments;
+using VSS.TRex.Analytics.GridFabric.Responses;
+using VSS.TRex.SiteModels;
+using VSS.TRex.Types;
+using VSS.TRex.Utilities;
 
-namespace VSS.VisionLink.Raptor.Analytics.Coordinators
+namespace VSS.TRex.Analytics.Coordinators
 {
     /// <summary>
     /// Computes cut fill statistics. Executes in the 'application service' layer and acts as the coordinator

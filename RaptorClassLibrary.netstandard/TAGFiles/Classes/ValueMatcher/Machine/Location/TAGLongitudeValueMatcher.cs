@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine.Location
+﻿namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine.Location
 {
     /// <summary>
     /// Handles a latitude position (such as TAG file seed location) reported by a machine

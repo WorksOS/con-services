@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees
+namespace VSS.TRex.SubGridTrees
 {
     /// <summary>
     /// Defines the header written at the start of a stream containing subgrid informatation, either subgrid directory or subgrid segment.

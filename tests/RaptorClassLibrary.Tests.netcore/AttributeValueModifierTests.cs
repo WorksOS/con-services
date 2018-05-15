@@ -1,9 +1,9 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Types;
-using VSS.VisionLink.Raptor.Common;
+using VSS.TRex.Common;
+using VSS.TRex.Types;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.Compression.Tests
+namespace VSS.TRex.Compression.Tests
 {
         public class AttributeValueModifierTests
     {

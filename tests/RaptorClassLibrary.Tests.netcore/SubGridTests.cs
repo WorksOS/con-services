@@ -1,10 +1,11 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees;
-using VSS.VisionLink.Raptor;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Types;
+using VSS.TRex;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
+namespace VSS.TRex.RaptorClassLibrary.Tests
 {
         public class SubGridTests
     {
@@ -272,7 +273,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 
             // Create a leaf subgrid with it's cell origin (IndexOriginOffset, IndexOriginOffset) 
             // matching the real work coordaintge origin (0, 0)
-            leafSubgrid = tree.ConstructPathToCell(tree.IndexOriginOffset, tree.IndexOriginOffset, VSS.VisionLink.Raptor.SubGridTrees.Types.SubGridPathConstructionType.CreateLeaf);
+            leafSubgrid = tree.ConstructPathToCell(tree.IndexOriginOffset, tree.IndexOriginOffset, SubGridPathConstructionType.CreateLeaf);
 
             Assert.NotNull(leafSubgrid);
             Assert.True(leafSubgrid.OriginX == tree.IndexOriginOffset && leafSubgrid.OriginX == tree.IndexOriginOffset,

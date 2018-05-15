@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.SubGridTrees.Interfaces
+﻿namespace VSS.TRex.SubGridTrees.Interfaces
 {
     public interface ILeafSubGrid : ISubGrid
     {

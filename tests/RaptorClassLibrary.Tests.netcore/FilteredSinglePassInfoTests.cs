@@ -1,8 +1,8 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Filters;
+using VSS.TRex.Filters;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
+namespace VSS.TRex.RaptorClassLibrary.Tests
 {
         public class FilteredSinglePassInfoTests
     {

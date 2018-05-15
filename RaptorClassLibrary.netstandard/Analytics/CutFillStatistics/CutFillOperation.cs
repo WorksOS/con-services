@@ -1,6 +1,6 @@
-﻿using VSS.VisionLink.Raptor.Analytics.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.Analytics.GridFabric.Requests;
-using VSS.VisionLink.Raptor.Analytics.Models;
+﻿using VSS.TRex.Analytics.GridFabric.Arguments;
+using VSS.TRex.Analytics.GridFabric.Requests;
+using VSS.TRex.Analytics.Models;
 
 namespace VSS.VisionLink.Analytics.Operations
 {

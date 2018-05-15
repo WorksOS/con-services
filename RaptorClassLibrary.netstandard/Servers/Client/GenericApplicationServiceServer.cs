@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.VisionLink.Raptor.Servers.Client
+namespace VSS.TRex.Servers.Client
 {
     /// <summary>
     /// An application service server that can take a generic action to perform in the context of an application service service

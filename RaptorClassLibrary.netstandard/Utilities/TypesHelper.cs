@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace VSS.VisionLink.Raptor.Utilities
+namespace VSS.TRex.Utilities
 {
     /// <summary>
     /// Provides handy rflection based haelpers for discovering types

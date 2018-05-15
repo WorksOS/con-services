@@ -1,12 +1,12 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.SubGridTrees;
-using VSS.VisionLink.Raptor;
+using VSS.TRex;
 using System.IO;
-using VSS.VisionLink.Raptor.Geometry;
 using System.Text;
+using VSS.TRex.Geometry;
+using VSS.TRex.SubGridTrees;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
+namespace VSS.TRex.RaptorClassLibrary.Tests
 {
         public class SubGridTreeBitmapSubGridBitsTests
     {

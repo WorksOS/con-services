@@ -1,12 +1,12 @@
 ﻿using log4net;
 using System;
 using System.Reflection;
-using VSS.VisionLink.Raptor.Executors.Tasks;
-using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Executors.Tasks;
+using VSS.TRex.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.Volumes.Executors.Tasks
+namespace VSS.TRex.Volumes.Executors.Tasks
 {
     /// <summary>
     /// A pipelined subgrid task that accepts pairs of processed client height grids and compares them to compute volume

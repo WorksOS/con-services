@@ -1,9 +1,9 @@
 ﻿using System.IO;
 using System.Text;
-using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees.Utilities;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Tests
+namespace VSS.TRex.SubGridTrees.Tests
 {
     public class SubGridTreePersistorTests
     {

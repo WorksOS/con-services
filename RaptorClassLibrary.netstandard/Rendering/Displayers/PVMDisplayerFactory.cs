@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.Rendering.Displayers
+namespace VSS.TRex.Rendering.Displayers
 {
     public static class PVMDisplayerFactory
     {

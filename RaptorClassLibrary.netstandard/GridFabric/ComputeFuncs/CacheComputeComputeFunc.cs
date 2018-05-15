@@ -1,8 +1,8 @@
-﻿using VSS.VisionLink.Raptor.GridFabric.Grids;
-using VSS.VisionLink.Raptor.GridFabric.Requests;
-using VSS.VisionLink.Raptor.Servers;
+﻿using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Requests;
+using VSS.TRex.Servers;
 
-namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
+namespace VSS.TRex.GridFabric.ComputeFuncs
 {
     /// <summary>
     ///  Represents a request that can be made against the design profiler cluster group in the Raptor grid

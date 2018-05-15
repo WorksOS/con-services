@@ -1,7 +1,7 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Cells;
+using VSS.TRex.Cells;
 
-namespace VSS.VisionLink.Raptor.Types
+namespace VSS.TRex.Types
 {
     /// <summary>
     /// Stores a paired value of GPS accuracy and tolerance (they are reported as a pair from the machine)

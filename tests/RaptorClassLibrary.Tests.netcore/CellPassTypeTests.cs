@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using VSS.VisionLink.Raptor.Cells;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Cells;
+using VSS.TRex.Types;
 using Xunit;
 
 namespace RaptorClassLibrary.Tests.netcore

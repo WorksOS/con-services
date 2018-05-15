@@ -1,9 +1,9 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.Interfaces;
+using VSS.TRex.Common;
+using VSS.TRex.Geometry;
+using VSS.TRex.Interfaces;
 
-namespace VSS.VisionLink.Raptor.Filters
+namespace VSS.TRex.Filters
 {
     /*  Of the two varieties of filtering used, this unit supports:
         - Cell selection filtering

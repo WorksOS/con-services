@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.GridFabric.Arguments
+namespace VSS.TRex.TAGFiles.GridFabric.Arguments
 {
     /// <summary>
     /// Represents an internal TAG file item to be processed into a site model. It defines the underlying filename for 

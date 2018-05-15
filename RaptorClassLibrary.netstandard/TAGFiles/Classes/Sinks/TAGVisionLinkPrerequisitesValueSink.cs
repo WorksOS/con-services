@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks
+﻿namespace VSS.TRex.TAGFiles.Classes.Sinks
 {
     /// <summary>
     /// Specialised TAG value sink that determines if the prerequisites for processing this information into 

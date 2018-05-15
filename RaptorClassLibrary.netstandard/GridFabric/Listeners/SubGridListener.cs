@@ -4,11 +4,11 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using VSS.VisionLink.Raptor.Executors.Tasks.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Client;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+using VSS.TRex.Executors.Tasks.Interfaces;
+using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Interfaces;
 
-namespace VSS.VisionLink.Raptor.GridFabric.Listeners
+namespace VSS.TRex.GridFabric.Listeners
 {
     /// <summary>
     /// SubGridListener implements a listening post for subgrid results being sent by processing nodes back

@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.SubGridTrees.Interfaces
+﻿namespace VSS.TRex.SubGridTrees.Interfaces
 {
     /// <summary>
     /// Factory interface used to implement concrete subgrid factory for use by a sub grid tree

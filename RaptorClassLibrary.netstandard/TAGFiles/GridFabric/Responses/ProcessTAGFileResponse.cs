@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.GridFabric.Responses
+namespace VSS.TRex.TAGFiles.GridFabric.Responses
 {
     [Serializable]
     public class ProcessTAGFileResponse

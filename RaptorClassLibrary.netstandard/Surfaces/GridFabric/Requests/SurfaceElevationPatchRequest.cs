@@ -3,13 +3,13 @@ using Apache.Ignite.Core.Compute;
 using log4net;
 using System;
 using System.Reflection;
+using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Surfaces.GridFabric.Arguments;
+using VSS.TRex.Surfaces.GridFabric.ComputeFuncs;
 using VSS.VisionLink.DesignProfiling.GridFabric.Requests;
-using VSS.VisionLink.Raptor.SubGridTrees.Client;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.Surfaces.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.Surfaces.GridFabric.ComputeFuncs;
 
-namespace VSS.VisionLink.Raptor.Surfaces.GridFabric.Requests
+namespace VSS.TRex.Surfaces.GridFabric.Requests
 {
     public class SurfaceElevationPatchRequest : DesignProfilerRaptorRequest<SurfaceElevationPatchArgument, ClientHeightAndTimeLeafSubGrid>
     {

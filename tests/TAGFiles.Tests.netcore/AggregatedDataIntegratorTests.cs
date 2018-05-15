@@ -1,18 +1,18 @@
-﻿using VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator;
+﻿using VSS.TRex.TAGFiles.Classes.Integrator;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.SubGridTrees.Server;
-using VSS.VisionLink.Raptor.SubGridTrees;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.Events;
-using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.Machines;
+using VSS.TRex.Events;
+using VSS.TRex.Machines;
+using VSS.TRex.SiteModels;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Server;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator.Tests
+namespace VSS.TRex.TAGFiles.Classes.Integrator.Tests
 {
         public class AggregatedDataIntegratorTests
     {

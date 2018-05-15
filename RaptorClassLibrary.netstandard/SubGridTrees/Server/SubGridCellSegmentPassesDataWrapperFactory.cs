@@ -1,6 +1,6 @@
-﻿using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
+﻿using VSS.TRex.SubGridTrees.Server.Interfaces;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server
+namespace VSS.TRex.SubGridTrees.Server
 {
     /// <summary>
     /// Factory that creates subgrid segments that contain collections of cell passes

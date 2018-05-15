@@ -1,11 +1,11 @@
 ﻿using log4net;
 using System.Diagnostics;
 using System.Reflection;
-using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Server;
+using VSS.TRex.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Server;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
+namespace VSS.TRex.SubGridTrees.Utilities
 {
     public static partial class SubGridUtilities
     {

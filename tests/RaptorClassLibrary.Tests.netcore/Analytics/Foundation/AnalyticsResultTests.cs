@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using VSS.VisionLink.Raptor.Analytics.Models;
+using VSS.TRex.Analytics.Models;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.Tests.Analytics.Foundation
+namespace VSS.TRex.Tests.Analytics.Foundation
 {
     public class AnalyticsResultTests
     {

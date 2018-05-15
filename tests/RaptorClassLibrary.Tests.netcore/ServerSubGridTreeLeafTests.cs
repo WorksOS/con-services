@@ -1,15 +1,16 @@
-﻿using VSS.VisionLink.Raptor.SubGridTrees.Server;
+﻿using VSS.TRex.SubGridTrees.Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Cells;
-using VSS.VisionLink.Raptor.Storage;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+using VSS.TRex.Cells;
+using VSS.TRex.Storage;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Types;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
+namespace VSS.TRex.SubGridTrees.Server.Tests
 {
         public class ServerSubGridTreeLeafTests
     {
@@ -21,7 +22,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
                 CCA = 200,
                 CCV = 300,
                 Frequency = 500,
-                gpsMode = Raptor.Types.GPSMode.Fixed,
+                gpsMode = GPSMode.Fixed,
                 HalfPass = false,
                 Height = (float)123.0,
                 //MachineID = 12345,
@@ -29,7 +30,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
                 MachineSpeed = 234,
                 MaterialTemperature = 700,
                 MDP = 800,
-                PassType = Raptor.Types.PassType.Front,
+                PassType = PassType.Front,
                 RadioLatency = 10,
                 RMV = 900,
                 Time = new DateTime(2000, 1, 1, 1, 1, 1)

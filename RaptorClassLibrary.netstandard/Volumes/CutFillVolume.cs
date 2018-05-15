@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace VSS.VisionLink.Raptor.Volumes
+namespace VSS.TRex.Volumes
 {
     /// <summary>
     /// Tracks cut anf fille volume information...

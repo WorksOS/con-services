@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using VSS.VisionLink.Raptor.Geometry;
+using VSS.TRex.Geometry;
 
 namespace VSS.Velociraptor.Designs.TTM
 {

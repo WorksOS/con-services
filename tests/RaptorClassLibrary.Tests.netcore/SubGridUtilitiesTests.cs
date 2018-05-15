@@ -5,12 +5,12 @@ using System.IO;
 //using System.Linq;
 //using System.Text;
 //using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.Types;
 using System.Text;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities.Tests
+namespace VSS.TRex.SubGridTrees.Utilities.Tests
 {
         public class SubGridUtilitiesTests
     {

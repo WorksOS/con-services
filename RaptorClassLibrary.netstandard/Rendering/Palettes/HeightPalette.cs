@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Drawing;
 using System.Linq;
-using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.Rendering.Palettes.Interfaces;
-using VSS.VisionLink.Raptor.Utilities;
+using VSS.TRex.Common;
+using VSS.TRex.Rendering.Palettes.Interfaces;
+using VSS.TRex.Utilities;
 
-namespace VSS.VisionLink.Raptor.Rendering.Palettes
+namespace VSS.TRex.Rendering.Palettes
 {
     public class HeightPalette : IPlanViewPalette
     {

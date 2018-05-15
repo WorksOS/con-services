@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.Filters;
-using VSS.VisionLink.Raptor.Cells;
+using VSS.TRex.Cells;
+using VSS.TRex.Filters;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Client
+namespace VSS.TRex.SubGridTrees.Client
 {   
     /// <summary>
     /// The content of each cell in a temperature client leaf sub grid. Each cell stores a temperature only.
@@ -28,7 +29,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         /// <param name="indexOriginOffset"></param>
         public ClientTemperatureLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
         {
-            _gridDataType = Raptor.Types.GridDataType.Temperature;
+            _gridDataType = GridDataType.Temperature;
         }
 
         /// <summary>

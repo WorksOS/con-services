@@ -4,10 +4,10 @@ using System.Reflection;
 using log4net;
 using log4net.Config;
 using Microsoft.Extensions.DependencyInjection;
-using VSS.VisionLink.Raptor.DI;
+using VSS.TRex.DI;
 using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Implementations.Core2;
-using VSS.VisionLink.Raptor.Servers.Client;
+using VSS.TRex.Servers.Client;
 
 namespace VSS.TRex.Server.Application
 {

@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.TAGFiles.Types
+﻿namespace VSS.TRex.TAGFiles.Types
 {
     public static class MachineSideConst
   {

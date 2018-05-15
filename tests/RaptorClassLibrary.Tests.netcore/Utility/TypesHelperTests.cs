@@ -1,13 +1,13 @@
 ﻿using System;
 using System.IO;
-using VSS.VisionLink.Raptor.Utilities.Interfaces;
+using VSS.TRex.Utilities.Interfaces;
 using System.Linq;
-using VSS.VisionLink.Raptor.Utilities;
 using System.Collections.Generic;
 using System.Reflection;
+using VSS.TRex.Utilities;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Utility.Tests
+namespace VSS.TRex.RaptorClassLibrary.Utility.Tests
 {
     public class TestClassBase : MemoryStream
     {

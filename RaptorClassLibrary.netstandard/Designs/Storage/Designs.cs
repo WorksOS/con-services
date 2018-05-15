@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.GridFabric.Affinity;
-using VSS.VisionLink.Raptor.Utilities.Interfaces;
+using VSS.TRex.Geometry;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.Utilities.Interfaces;
 
-namespace VSS.VisionLink.Raptor.Designs.Storage
+namespace VSS.TRex.Designs.Storage
 {
     [Serializable]
     public class Designs : List<Design>, IBinaryReaderWriter

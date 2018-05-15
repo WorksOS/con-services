@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
-using VSS.VisionLink.Raptor.Cells;
+using VSS.TRex.Cells;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces
+namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
     public interface ISubGridCellSegmentPassesDataWrapper
     {

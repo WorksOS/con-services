@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.VisionLink.Raptor.GridFabric.Events
+namespace VSS.TRex.GridFabric.Events
 {
     public class SiteModelAttributesChangedEvent
     {

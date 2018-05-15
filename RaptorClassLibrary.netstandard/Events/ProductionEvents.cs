@@ -7,12 +7,11 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using log4net;
 using VSS.TRex.Events.Interfaces;
-using VSS.VisionLink.Raptor.Events.Interfaces;
-using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.Types;
-using VSS.VisionLink.Raptor.Utilities;
+using VSS.TRex.Interfaces;
+using VSS.TRex.Types;
+using VSS.TRex.Utilities;
 
-namespace VSS.VisionLink.Raptor.Events
+namespace VSS.TRex.Events
 {
     /// <summary>
     /// ProductionEvents implements a generic event list without using class instances for each event

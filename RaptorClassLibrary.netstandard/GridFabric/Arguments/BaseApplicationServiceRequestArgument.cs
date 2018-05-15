@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.VisionLink.Raptor.GridFabric.Arguments
+namespace VSS.TRex.GridFabric.Arguments
 {
     /// <summary>
     ///  Forms the base request argument state that specific application service request contexts may leverage. It's roles include

@@ -5,9 +5,9 @@ using Apache.Ignite.Core.Cache.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using VSS.VisionLink.Raptor.GridFabric.Caches;
+using VSS.TRex.GridFabric.Caches;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Queues
+namespace VSS.TRex.TAGFiles.Classes.Queues
 {
     /// <summary>
     /// Implements a queue of segments requiring 'retiring' from the cache. Each retiree has an expiry date at which it

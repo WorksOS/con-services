@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Types;
-using VSS.VisionLink.Raptor.Utilities;
+using VSS.TRex.Geometry;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Types;
+using VSS.TRex.Utilities;
 
 /*
 Glossary
@@ -55,7 +55,7 @@ acess mechanisms chiefly revolve around sub-grids, rather than actual cells
 themselves, apart from cell X/Y location references used to locate subgrids.
 */
 
-namespace VSS.VisionLink.Raptor
+namespace VSS.TRex
 {
     /// <summary>
     /// Base class for implementation of sub grid trees that defines various parameters and constants related to them

@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.ControlState
+﻿namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.ControlState
 {
     public class TAGControlStateLiftValueMatcher : TAGValueMatcher
     {

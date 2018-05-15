@@ -1,6 +1,6 @@
-﻿using VSS.VisionLink.Raptor.TAGFiles.Types;
+﻿using VSS.TRex.TAGFiles.Types;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes
+namespace VSS.TRex.TAGFiles.Classes
 {
     /// <summary>
     /// Describes an entry in the TAG file schema dictionary read in from the TAG file

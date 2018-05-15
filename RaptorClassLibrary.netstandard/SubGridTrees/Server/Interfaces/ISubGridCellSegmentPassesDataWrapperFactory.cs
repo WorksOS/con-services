@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces
+﻿namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
     /// <summary>
     /// Interface for the subgrid cell segment cell pass collection wrapper factory

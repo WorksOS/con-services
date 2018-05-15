@@ -1,7 +1,7 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Positioning
+namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Positioning
 {
     /// <summary>
     /// Handles transmission gear selection reported by the machine

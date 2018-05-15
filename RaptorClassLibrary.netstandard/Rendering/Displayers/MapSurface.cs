@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Drawing;
 using System.Linq;
-using VSS.VisionLink.Raptor.Common;
+using VSS.TRex.Common;
+using VSS.TRex.DI;
 using VSS.TRex.Rendering.Abstractions;
-using VSS.VisionLink.Raptor.DI;
+using VSS.TRex.Utilities;
 
-namespace VSS.VisionLink.Raptor.Rendering.Displayers
+namespace VSS.TRex.Rendering.Displayers
 {
     public class MapSurface
     {
@@ -478,8 +479,8 @@ namespace VSS.VisionLink.Raptor.Rendering.Displayers
         {
             double Aspect = (double)BitmapCanvas.Height / (double)BitmapCanvas.Width;
 
-            Raptor.Utilities.MinMax.SetMinMax(ref MinX, ref MaxX);
-            Raptor.Utilities.MinMax.SetMinMax(ref MinY, ref MaxY);
+            MinMax.SetMinMax(ref MinX, ref MaxX);
+            MinMax.SetMinMax(ref MinY, ref MaxY);
 
             // We restrict the maximum zoom extent (ie width/height across view) to +-20,000,000 metres
             if ((MaxX - MinX) > MaxViewDimensionMetres)
@@ -548,8 +549,8 @@ double BorderSize)
 
             double AspectRatio = ((double)ClipHeight + 1) / ((double)ClipWidth + 1);
 
-            Raptor.Utilities.MinMax.SetMinMax(ref MinX, ref MaxX);
-            Raptor.Utilities.MinMax.SetMinMax(ref MinY, ref MaxY);
+            MinMax.SetMinMax(ref MinX, ref MaxX);
+            MinMax.SetMinMax(ref MinY, ref MaxY);
 
             double BorderWidthX = (MaxX - MinX) * BorderSize;
             double BorderWidthY = (MaxY - MinY) * BorderSize;

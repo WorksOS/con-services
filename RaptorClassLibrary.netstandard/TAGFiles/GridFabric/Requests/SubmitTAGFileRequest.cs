@@ -3,7 +3,7 @@ using Apache.Ignite.Core.Compute;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.ComputeFuncs;
 using VSS.TRex.TAGFiles.GridFabric.Responses;
-using VSS.VisionLink.Raptor.GridFabric.Requests;
+using VSS.TRex.GridFabric.Requests;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Requests
 {

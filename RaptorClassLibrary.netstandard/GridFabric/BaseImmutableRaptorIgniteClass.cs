@@ -1,6 +1,6 @@
-﻿using VSS.VisionLink.Raptor.GridFabric.Grids;
+﻿using VSS.TRex.GridFabric.Grids;
 
-namespace VSS.VisionLink.Raptor.GridFabric
+namespace VSS.TRex.GridFabric
 {
     public class BaseImmutableRaptorIgniteClass : BaseRaptorIgniteClass
     {

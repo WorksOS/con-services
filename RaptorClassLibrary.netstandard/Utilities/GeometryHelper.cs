@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.VisionLink.Raptor.Utilities
+namespace VSS.TRex.Utilities
 {
     /// <summary>
     /// Some handy geometry helper methods

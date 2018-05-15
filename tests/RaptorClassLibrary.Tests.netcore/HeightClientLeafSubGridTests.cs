@@ -1,8 +1,8 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Client;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
+namespace VSS.TRex.RaptorClassLibrary.Tests
 {
         public class HeightClientLeafSubGridTests
     {

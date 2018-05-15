@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
+using VSS.TRex.GridFabric.Grids;
 
-namespace VSS.VisionLink.Raptor.GridFabric.Events
+namespace VSS.TRex.GridFabric.Events
 {
     /// <summary>
     /// Responsible for sending a notification that the attributes of a site model have changed

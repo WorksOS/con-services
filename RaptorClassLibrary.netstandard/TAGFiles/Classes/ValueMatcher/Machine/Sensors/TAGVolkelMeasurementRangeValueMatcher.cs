@@ -1,6 +1,6 @@
-﻿using VSS.VisionLink.Raptor.TAGFiles.Types;
+﻿using VSS.TRex.TAGFiles.Types;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine.Sensors
+namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine.Sensors
 {
     /// <summary>
     /// Handles the Volker compaction sensor measurment range from the machine

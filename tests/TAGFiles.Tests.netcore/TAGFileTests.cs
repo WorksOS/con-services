@@ -1,12 +1,12 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.TAGFiles.Classes;
 using System.IO;
-using VSS.VisionLink.Raptor.TAGFiles.Types;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks;
+using VSS.TRex.TAGFiles.Classes;
+using VSS.TRex.TAGFiles.Classes.Sinks;
+using VSS.TRex.TAGFiles.Types;
 using VSSTests.TRex.Tests.Common;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Tests
+namespace VSS.TRex.TAGFiles.Tests
 {
         public class TAGFileTests
     {

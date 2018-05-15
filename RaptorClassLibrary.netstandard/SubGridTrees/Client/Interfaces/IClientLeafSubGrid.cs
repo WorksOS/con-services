@@ -1,7 +1,7 @@
-﻿using VSS.VisionLink.Raptor.Filters;
-using VSS.VisionLink.Raptor.Types;
+﻿using VSS.TRex.Filters;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Interfaces
+namespace VSS.TRex.SubGridTrees.Interfaces
 {
     /// <summary>
     /// Interface for ClientLeafSubgrid derivations based on ClientLeafSubGrid

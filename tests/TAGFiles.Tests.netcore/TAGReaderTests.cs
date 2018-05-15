@@ -1,9 +1,9 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.TAGFiles.Classes;
 using System.IO;
+using VSS.TRex.TAGFiles.Classes;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Tests
+namespace VSS.TRex.TAGFiles.Tests
 {
         public class TAGReaderTests
     {

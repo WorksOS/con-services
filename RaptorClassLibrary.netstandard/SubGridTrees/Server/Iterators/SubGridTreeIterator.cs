@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
-using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
+using VSS.TRex.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Utilities;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
+namespace VSS.TRex.SubGridTrees.Server.Iterators
 {
     /*
     This unit implements an iterator for subgrid trees.It's purpose is to allow iteration

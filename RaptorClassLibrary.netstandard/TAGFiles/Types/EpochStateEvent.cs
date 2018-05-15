@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.TAGFiles.Types
+﻿namespace VSS.TRex.TAGFiles.Types
 {
     /// <summary>
     /// EpochStateEvent defines a list of events that may occur during an

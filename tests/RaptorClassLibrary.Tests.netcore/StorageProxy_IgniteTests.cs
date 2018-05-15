@@ -1,4 +1,4 @@
-﻿using VSS.VisionLink.Raptor.Storage;
+﻿using VSS.TRex.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.Storage.Tests
+namespace VSS.TRex.Storage.Tests
 {
         public class StorageProxy_IgniteTests
     {

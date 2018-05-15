@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using VSS.VisionLink.Raptor.Designs;
+using VSS.TRex.Designs;
 
 namespace VSS.Velociraptor.DesignProfiling
 {

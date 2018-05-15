@@ -3,15 +3,15 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using log4net;
-using VSS.VisionLink.Raptor.Events;
-using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.Machines;
-using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.Storage;
-using VSS.VisionLink.Raptor.SubGridTrees;
-using VSS.VisionLink.Raptor.TAGFiles.Types;
+using VSS.TRex.Events;
+using VSS.TRex.Interfaces;
+using VSS.TRex.Machines;
+using VSS.TRex.SiteModels;
+using VSS.TRex.Storage;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.TAGFiles.Types;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
+namespace VSS.TRex.TAGFiles.Classes.Integrator
 {
     public class AggregatedDataIntegratorWorker
     {

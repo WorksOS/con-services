@@ -3,9 +3,9 @@ using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using log4net;
 using System.Reflection;
-using VSS.VisionLink.Raptor.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Affinity;
 
-namespace VSS.VisionLink.Raptor.Servers.Compute
+namespace VSS.TRex.Servers.Compute
 {
     /// <summary>
     /// A server type that represents a server useful for context processing sets of SubGrid information. This is essentially an analogue of

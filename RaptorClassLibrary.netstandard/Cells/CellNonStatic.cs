@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 
-namespace VSS.VisionLink.Raptor.Cells
+namespace VSS.TRex.Cells
 {
     /// <summary>
     /// Cell_NonStatic represents cell instances stored in the compaction information grid.

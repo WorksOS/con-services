@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Common;
+using VSS.TRex.Common;
 
 /*
   Triangle and vector calculations
@@ -38,7 +38,7 @@ using VSS.VisionLink.Raptor.Common;
   UnitVector            Returns a vector of length 1 in the same direction
 */
 
-namespace VSS.VisionLink.Raptor.Geometry
+namespace VSS.TRex.Geometry
 {
     /// <summary>
     /// An XYZ defines a standard point in 3 dimensional cartesian space

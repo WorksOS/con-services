@@ -1,7 +1,7 @@
-﻿using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.TAGFiles.Types;
+﻿using VSS.TRex.Geometry;
+using VSS.TRex.TAGFiles.Types;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Ordinates
+namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Ordinates
 {
     /// <summary>
     /// Handles ordinates in 3 space (ie: easting, northing and elevation). Both absolute and delta values are handled. Both

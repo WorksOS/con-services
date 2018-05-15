@@ -1,7 +1,7 @@
-﻿using VSS.VisionLink.Raptor.TAGFiles.Types;
-using VSS.VisionLink.Raptor.Time;
+﻿using VSS.TRex.TAGFiles.Types;
+using VSS.TRex.Time;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Proofing
+namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Proofing
 {
     /// <summary>
     /// Handles proofing run start week and time TAGs

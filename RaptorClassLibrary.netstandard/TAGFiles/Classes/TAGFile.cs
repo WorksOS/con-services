@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks;
-using VSS.VisionLink.Raptor.TAGFiles.Types;
+using VSS.TRex.TAGFiles.Classes.Sinks;
+using VSS.TRex.TAGFiles.Types;
 
 /*
 { This unit defines the schema used in the new EBML based Tag file format
@@ -108,7 +108,7 @@ using VSS.VisionLink.Raptor.TAGFiles.Types;
 }
 */
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes
+namespace VSS.TRex.TAGFiles.Classes
 {
     public class TAGFile
     {

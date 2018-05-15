@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Positioning
+﻿namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Positioning
 {
     public class TAGGPSBasePositionValueMatcher : TAGValueMatcher
     {

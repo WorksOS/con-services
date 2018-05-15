@@ -3,17 +3,17 @@ using log4net;
 using System;
 using System.Drawing;
 using System.Reflection;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
-using VSS.VisionLink.Raptor.Rendering.Executors;
-using VSS.VisionLink.Raptor.Rendering.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.Servers;
+using VSS.TRex.DI;
+using VSS.TRex.Geometry;
+using VSS.TRex.GridFabric.ComputeFuncs;
+using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Rendering.Abstractions;
-using VSS.VisionLink.Raptor.DI;
-using VSS.VisionLink.Raptor.Rendering.GridFabric.Responses;
+using VSS.TRex.Rendering.Executors;
+using VSS.TRex.Rendering.GridFabric.Arguments;
+using VSS.TRex.Rendering.GridFabric.Responses;
+using VSS.TRex.Servers;
 
-namespace VSS.VisionLink.Raptor.Rendering.GridFabric.ComputeFuncs
+namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
 {
     /// <summary>
     /// The grid compute function responsible for coordinating rendering of a tile on a server compute node in response to 

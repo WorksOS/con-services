@@ -1,9 +1,9 @@
-﻿using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.SubGridTrees.Client;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
+﻿using VSS.TRex.Common;
+using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Utilities;
 
-namespace VSS.VisionLink.Raptor.Analytics.Aggregators
+namespace VSS.TRex.Analytics.Aggregators
 {
     /// <summary>
     /// Implements the specific business rules for calculating a cut fill summary

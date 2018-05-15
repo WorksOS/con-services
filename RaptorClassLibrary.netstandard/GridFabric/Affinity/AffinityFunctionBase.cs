@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace VSS.VisionLink.Raptor.GridFabric.Affinity
+namespace VSS.TRex.GridFabric.Affinity
 {
     /// <summary>
     /// The affinity function used by TRex to spread data amongst processing servers

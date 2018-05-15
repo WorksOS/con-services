@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VSS.VisionLink.Raptor.Geometry
+namespace VSS.TRex.Geometry
 {
     /// <summary>
     /// Implements a very simple triangle class that uses three XYZ 3D points to concretely describe the vertices and 

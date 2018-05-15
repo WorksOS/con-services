@@ -1,16 +1,16 @@
-﻿using VSS.VisionLink.Raptor.TAGFiles.Classes;
+﻿using VSS.TRex.TAGFiles.Classes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Types;
-using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.Cells;
+using VSS.TRex.Cells;
+using VSS.TRex.Common;
+using VSS.TRex.Geometry;
+using VSS.TRex.Types;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Tests
+namespace VSS.TRex.TAGFiles.Classes.Tests
 {
         public class TAGProcessorStateBaseTests
     {

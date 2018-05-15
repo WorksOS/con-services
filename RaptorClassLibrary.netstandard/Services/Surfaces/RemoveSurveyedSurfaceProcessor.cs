@@ -1,10 +1,10 @@
 ﻿using Apache.Ignite.Core.Cache;
 using System;
-using VSS.VisionLink.Raptor.GridFabric.Affinity;
-using VSS.VisionLink.Raptor.Surfaces;
-using VSS.VisionLink.Raptor.Utilities.ExtensionMethods;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.Surfaces;
+using VSS.TRex.Utilities.ExtensionMethods;
 
-namespace VSS.VisionLink.Raptor.Services.Surfaces
+namespace VSS.TRex.Services.Surfaces
 {
     /// <summary>
     /// Service processor to handle removing a surveyed surface from the list for a sitemodel

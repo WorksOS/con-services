@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.Volumes
+﻿namespace VSS.TRex.Volumes
 {
     /// <summary>
     /// ProdReportSelectionType denotes whether the 'from' or 'to' surface used for the

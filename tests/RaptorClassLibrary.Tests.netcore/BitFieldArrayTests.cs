@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.Compression.Tests
+namespace VSS.TRex.Compression.Tests
 {
         public class BitFieldArrayTests
     {

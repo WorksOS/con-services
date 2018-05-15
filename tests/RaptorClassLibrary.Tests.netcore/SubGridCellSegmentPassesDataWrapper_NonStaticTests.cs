@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
-using VSS.VisionLink.Raptor.Cells;
-using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 using System.IO;
+using VSS.TRex.Cells;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
+using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.Types;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
+namespace VSS.TRex.SubGridTrees.Server.Tests
 {
         public class SubGridCellSegmentPassesDataWrapper_NonStaticTests
     {
@@ -23,7 +24,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
                 CCA = 101,
                 CCV = 102,
                 Frequency = 103,
-                gpsMode = Raptor.Types.GPSMode.Fixed,
+                gpsMode = GPSMode.Fixed,
                 HalfPass = false,
                 Height = 104,
                 // MachineID = 105,
@@ -32,7 +33,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
                 MachineSpeed = 106,
                 MaterialTemperature = 107,
                 MDP = 108,
-                PassType = Raptor.Types.PassType.Track,
+                PassType = PassType.Track,
                 RadioLatency = 109,
                 RMV = 110,
                 Time = new DateTime(2000, 1, 2, 3, 4, 5)

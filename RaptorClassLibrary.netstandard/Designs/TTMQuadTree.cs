@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using VSS.Velociraptor.Designs.TTM;
 
-namespace VSS.VisionLink.Raptor.Designs
+namespace VSS.TRex.Designs
 {
     public class TTMQuadTree : TriangleQuadTree
     {

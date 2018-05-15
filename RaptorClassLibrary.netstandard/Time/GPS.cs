@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.VisionLink.Raptor.Time
+namespace VSS.TRex.Time
 {
     /// <summary>
     /// Utility functions related to GPS time

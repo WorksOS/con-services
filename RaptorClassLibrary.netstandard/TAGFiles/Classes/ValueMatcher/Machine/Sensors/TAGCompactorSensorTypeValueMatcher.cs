@@ -1,7 +1,7 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine.Sensors
+namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine.Sensors
 {
     public class TAGCompactorSensorTypeValueMatcher : TAGValueMatcher
     {

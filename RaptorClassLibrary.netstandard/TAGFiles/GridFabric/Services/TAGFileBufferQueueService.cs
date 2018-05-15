@@ -9,8 +9,8 @@ using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Query;
 using Apache.Ignite.Core.Cache.Query.Continuous;
 using VSS.TRex.TAGFiles.Classes.Queues;
-using VSS.VisionLink.Raptor.GridFabric.Caches;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
+using VSS.TRex.GridFabric.Caches;
+using VSS.TRex.GridFabric.Grids;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Services
 {

@@ -1,6 +1,6 @@
-﻿using VSS.VisionLink.Raptor.Storage;
+﻿using VSS.TRex.Storage;
 
-namespace VSS.VisionLink.Raptor.GridFabric.Grids
+namespace VSS.TRex.GridFabric.Grids
 {
     /// <summary>
     /// Represents information regarding the grids present in the Raptor system

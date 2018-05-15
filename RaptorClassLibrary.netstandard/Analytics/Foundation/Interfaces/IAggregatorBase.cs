@@ -1,6 +1,6 @@
-﻿using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+﻿using VSS.TRex.SubGridTrees.Interfaces;
 
-namespace VSS.VisionLink.Raptor.Analytics.Interfaces
+namespace VSS.TRex.Analytics.Interfaces
 {
     /// <summary>
     /// Interface for state aggrgator

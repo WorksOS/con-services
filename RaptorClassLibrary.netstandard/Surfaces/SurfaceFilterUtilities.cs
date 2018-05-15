@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using VSS.VisionLink.Raptor.Filters;
-using VSS.VisionLink.Raptor.SubGridTrees;
+using VSS.TRex.Filters;
+using VSS.TRex.SubGridTrees;
 
-namespace VSS.VisionLink.Raptor.Surfaces
+namespace VSS.TRex.Surfaces
 {
     /// <summary>
     /// Utilities relating to interactions between filters and sets of surveyed surfaces

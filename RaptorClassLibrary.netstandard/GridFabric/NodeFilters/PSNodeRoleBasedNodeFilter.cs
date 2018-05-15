@@ -1,6 +1,6 @@
-﻿using VSS.VisionLink.Raptor.Servers;
+﻿using VSS.TRex.Servers;
 
-namespace VSS.VisionLink.Raptor.GridFabric.NodeFilters
+namespace VSS.TRex.GridFabric.NodeFilters
 {
     /// <summary>
     /// Defines a node filter that filters nodes based on membership of the "PSNode" role

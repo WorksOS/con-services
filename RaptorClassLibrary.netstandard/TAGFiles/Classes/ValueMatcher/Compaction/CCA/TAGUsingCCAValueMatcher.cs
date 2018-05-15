@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Compaction.CCA
+﻿namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.CCA
 {
     /// <summary>
     /// Handle the flag indicating the compactor machine is using the Caterpillar Compaction Algorithm

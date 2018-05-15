@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
+namespace VSS.TRex.SubGridTrees.Utilities
 {
     public static partial class SubGridUtilities
     {

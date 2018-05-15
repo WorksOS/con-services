@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
-using VSS.VisionLink.Raptor.ExistenceMaps.Servers;
-using VSS.VisionLink.Raptor.GridFabric.Affinity;
-using VSS.VisionLink.Raptor.SubGridTrees;
-using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
+using VSS.TRex.ExistenceMaps.Servers;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Utilities;
 
-namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
+namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
 {
     /// <summary>
     /// Represents a request that will store an existence map

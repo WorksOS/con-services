@@ -4,7 +4,7 @@ using System.Linq;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Events;
-using VSS.VisionLink.Raptor;
+using VSS.TRex;
 
 namespace VSS.TRex.GridFabric.Affinity
 {    

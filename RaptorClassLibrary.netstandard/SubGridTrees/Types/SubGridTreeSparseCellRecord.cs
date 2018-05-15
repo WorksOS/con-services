@@ -1,6 +1,6 @@
-﻿using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+﻿using VSS.TRex.SubGridTrees.Interfaces;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Types
+namespace VSS.TRex.SubGridTrees.Types
 {
     /// <summary>
     /// Contains the location of, and reference to, a child cell within this subgrid.

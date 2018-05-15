@@ -1,10 +1,10 @@
-﻿using VSS.VisionLink.Raptor.TAGFiles.Types;
-using System.IO;
-using VSS.VisionLink.Raptor.Cells;
+﻿using System.IO;
+using VSS.TRex.Cells;
+using VSS.TRex.TAGFiles.Types;
 using VSSTests.TRex.Tests.Common;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.Executors.Tests
+namespace VSS.TRex.Executors.Tests
 {
         public class TAGFilePreScanTests
     {

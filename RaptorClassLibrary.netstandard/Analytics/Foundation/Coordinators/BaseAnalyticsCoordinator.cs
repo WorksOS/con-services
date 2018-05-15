@@ -1,7 +1,7 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Filters;
+using VSS.TRex.Filters;
 
-namespace VSS.VisionLink.Raptor.Analytics.Coordinators
+namespace VSS.TRex.Analytics.Coordinators
 {
     /// <summary>
     /// Base class used by all Analytics style operations. It defines common state and behaviour for those requests at the client context level.

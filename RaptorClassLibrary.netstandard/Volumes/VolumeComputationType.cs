@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.Volumes
+﻿namespace VSS.TRex.Volumes
 {
     /// <summary>
     /// Denotes the different types of volume conputations that may be performed

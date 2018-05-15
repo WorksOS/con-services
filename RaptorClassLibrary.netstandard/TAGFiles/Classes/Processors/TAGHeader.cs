@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.TAGFiles.Classes
+﻿namespace VSS.TRex.TAGFiles.Classes
 {
     /// <summary>
     ///  TAG files start with this initial header

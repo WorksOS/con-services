@@ -1,7 +1,7 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.GridFabric.Types;
+using VSS.TRex.GridFabric.Types;
 
-namespace VSS.VisionLink.Raptor.GridFabric.Responses
+namespace VSS.TRex.GridFabric.Responses
 {
     /// <summary>
     /// SubGridRequestsResponse represents the formal completion response sent back to a requestor from a 

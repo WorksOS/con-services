@@ -1,8 +1,8 @@
 ﻿using log4net;
 using System.Reflection;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.Executors.Tasks
+namespace VSS.TRex.Executors.Tasks
 {
     /// <summary>
     /// A base class implementing activities that accept subgrids from a pipelined subgrid query process

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
-using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Common;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Client
+namespace VSS.TRex.SubGridTrees.Client
 {
     /// <summary>
     /// Factory responsible for creating concrete 'grid data' specific client sub grid leaf instances

@@ -1,9 +1,9 @@
-﻿using VSS.VisionLink.Raptor.Executors.Tasks;
-using VSS.VisionLink.Raptor.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.GridFabric.Requests;
-using VSS.VisionLink.Raptor.GridFabric.Responses;
+﻿using VSS.TRex.Executors.Tasks;
+using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.GridFabric.Requests;
+using VSS.TRex.GridFabric.Responses;
 
-namespace VSS.VisionLink.Raptor.Pipelines
+namespace VSS.TRex.Pipelines
 {
     /// <summary>
     /// Defines a generic class that decorates progressive pipeline semantics with the desired argument and request response

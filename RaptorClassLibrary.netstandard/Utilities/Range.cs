@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.VisionLink.Raptor.Utilities
+namespace VSS.TRex.Utilities
 {
     /// <summary>
     /// Provides a set of useful functions for Range Truncation not supported in Math namespace

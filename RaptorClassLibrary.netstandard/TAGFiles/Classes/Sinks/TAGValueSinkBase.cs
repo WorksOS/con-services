@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks
+﻿namespace VSS.TRex.TAGFiles.Classes.Sinks
 {
     /// <summary>
     /// TAGValueSink defines a sink where values are sent to as they are parsed from the TAG information

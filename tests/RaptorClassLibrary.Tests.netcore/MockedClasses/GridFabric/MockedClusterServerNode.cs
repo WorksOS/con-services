@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.Servers;
+using VSS.TRex.Servers;
 
-namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests.MockedClasses.GridFabric
+namespace VSS.TRex.RaptorClassLibrary.Tests.MockedClasses.GridFabric
 {
     public class MockedClusterServerNode : IClusterNode
     {

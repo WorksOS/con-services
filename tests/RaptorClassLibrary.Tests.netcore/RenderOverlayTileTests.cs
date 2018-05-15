@@ -1,11 +1,11 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Types;
-using VSS.VisionLink.Raptor.Geometry;
 using System.Drawing;
-using VSS.VisionLink.Raptor.Rendering.Executors;
+using VSS.TRex.Geometry;
+using VSS.TRex.Rendering.Executors;
+using VSS.TRex.Types;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.Executors.Tests
+namespace VSS.TRex.Executors.Tests
 {
         public class RenderOverlayTileTests
     {

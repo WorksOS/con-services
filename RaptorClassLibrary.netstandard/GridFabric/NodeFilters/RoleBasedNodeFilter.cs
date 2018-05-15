@@ -1,9 +1,9 @@
 ﻿using System;
 using Apache.Ignite.Core.Cluster;
 using System.Collections.Generic;
-using VSS.VisionLink.Raptor.Servers;
+using VSS.TRex.Servers;
 
-namespace VSS.VisionLink.Raptor.GridFabric.NodeFilters
+namespace VSS.TRex.GridFabric.NodeFilters
 {
     /// <summary>
     /// Defines a node filter that filters nodes based on a defined role attribute

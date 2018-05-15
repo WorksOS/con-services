@@ -1,8 +1,8 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.SubGridTrees.Types;
+using VSS.TRex.Geometry;
+using VSS.TRex.SubGridTrees.Types;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Interfaces
+namespace VSS.TRex.SubGridTrees.Interfaces
 {
     public interface ISubGridTree
     {

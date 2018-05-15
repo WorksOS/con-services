@@ -1,5 +1,5 @@
 ﻿using VSS.TRex.Rendering.Abstractions.GridFabric.Factories;
-using VSS.VisionLink.Raptor.Rendering.GridFabric.Responses;
+using VSS.TRex.Rendering.GridFabric.Responses;
 
 namespace VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses
 {

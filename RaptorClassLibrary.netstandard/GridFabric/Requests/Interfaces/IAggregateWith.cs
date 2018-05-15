@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces
+﻿namespace VSS.TRex.GridFabric.Requests.Interfaces
 {
     /// <summary>
     /// Defines the interface for an aggregator that reduces, for example, cluster compute responses into a single response

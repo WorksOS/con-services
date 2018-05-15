@@ -1,14 +1,14 @@
 ﻿using Apache.Ignite.Core;
 using Apache.Ignite.Core.Services;
 using System;
-using VSS.VisionLink.Raptor.Designs;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
-using VSS.VisionLink.Raptor.GridFabric.NodeFilters;
-using VSS.VisionLink.Raptor.Storage;
-using VSS.VisionLink.Raptor.Surfaces;
+using VSS.TRex.Designs;
+using VSS.TRex.Geometry;
+using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.NodeFilters;
+using VSS.TRex.Storage;
+using VSS.TRex.Surfaces;
 
-namespace VSS.VisionLink.Raptor.Services.Surfaces
+namespace VSS.TRex.Services.Surfaces
 {
     /// <summary>
     /// Class responsible for deploying the add surveyed surface service

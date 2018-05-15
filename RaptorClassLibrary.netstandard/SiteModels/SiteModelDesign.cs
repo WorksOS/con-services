@@ -1,7 +1,7 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Geometry;
+using VSS.TRex.Geometry;
 
-namespace VSS.VisionLink.Raptor.SiteModels
+namespace VSS.TRex.SiteModels
 {
     /// <summary>
     /// Describes a single design used in the site model. It's chief purpose is to record the name of the design 

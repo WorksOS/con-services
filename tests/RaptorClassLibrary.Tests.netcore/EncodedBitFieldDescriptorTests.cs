@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
-using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.Types;
 using System.Text;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.Compression.Tests
+namespace VSS.TRex.Compression.Tests
 {
         public class EncodedBitFieldDescriptorTests
     {

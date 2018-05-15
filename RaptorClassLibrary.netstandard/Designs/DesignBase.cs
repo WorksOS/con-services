@@ -1,6 +1,6 @@
 ﻿using System.Threading;
-using VSS.VisionLink.Raptor.Designs;
-using VSS.VisionLink.Raptor.SubGridTrees;
+using VSS.TRex.Designs;
+using VSS.TRex.SubGridTrees;
 
 namespace VSS.Velociraptor.DesignProfiling
 {

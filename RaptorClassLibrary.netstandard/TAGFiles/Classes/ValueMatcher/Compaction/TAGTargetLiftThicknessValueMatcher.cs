@@ -1,6 +1,6 @@
-﻿using VSS.VisionLink.Raptor.TAGFiles.Types;
+﻿using VSS.TRex.TAGFiles.Types;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Compaction.PassCount
+namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.PassCount
 {
     /// <summary>
     /// Handles Target Thinkness vlaues set on the machine by an operator

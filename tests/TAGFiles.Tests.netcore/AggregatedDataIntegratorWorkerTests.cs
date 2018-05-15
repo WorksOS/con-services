@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using VSS.VisionLink.Raptor.Executors;
-using VSS.VisionLink.Raptor.Machines;
-using VSS.VisionLink.Raptor.SiteModels;
+using VSS.TRex.Executors;
+using VSS.TRex.Machines;
+using VSS.TRex.SiteModels;
 using VSSTests.TRex.Tests.Common;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator.Tests
+namespace VSS.TRex.TAGFiles.Classes.Integrator.Tests
 {
     public class AggregatedDataIntegratorWorkerTests
     {

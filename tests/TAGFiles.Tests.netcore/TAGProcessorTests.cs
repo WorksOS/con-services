@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Linq;
-using VSS.VisionLink.Raptor.Events;
-using VSS.VisionLink.Raptor.SubGridTrees.Server;
-using VSS.VisionLink.Raptor.Types;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.Machines;
+using VSS.TRex.Events;
+using VSS.TRex.Geometry;
+using VSS.TRex.Machines;
+using VSS.TRex.SiteModels;
+using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.Types;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Tests
+namespace VSS.TRex.TAGFiles.Classes.Tests
 {
         public class TAGProcessorTests
     {

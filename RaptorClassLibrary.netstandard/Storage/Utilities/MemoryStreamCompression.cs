@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.IO.Compression;
 
-namespace VSS.VisionLink.Raptor.Storage.Utilities
+namespace VSS.TRex.Storage.Utilities
 {
     /// <summary>
     /// Provides a capability to take a memory stream compress it

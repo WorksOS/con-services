@@ -1,6 +1,6 @@
-﻿using VSS.VisionLink.Raptor.Common;
+﻿using VSS.TRex.Common;
 
-namespace VSS.VisionLink.Raptor.Cells
+namespace VSS.TRex.Cells
 {
     /// <summary>
     /// Stores the values of various 'target' values that were active on the machine at the time the pass information was captured.

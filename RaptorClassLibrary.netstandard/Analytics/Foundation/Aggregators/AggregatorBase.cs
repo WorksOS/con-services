@@ -1,9 +1,9 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
-using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+using VSS.TRex.GridFabric.Requests.Interfaces;
+using VSS.TRex.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
 
-namespace VSS.VisionLink.Raptor.Analytics.Aggregators
+namespace VSS.TRex.Analytics.Aggregators
 {
     /// <summary>
     /// Base class used by all analytics aggregators supporting funcitons such as pass count summary, cut/fill summary, speed summary etc

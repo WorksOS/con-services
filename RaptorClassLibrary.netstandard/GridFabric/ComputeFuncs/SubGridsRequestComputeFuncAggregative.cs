@@ -1,11 +1,11 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Executors.Tasks.Interfaces;
-using VSS.VisionLink.Raptor.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.GridFabric.Responses;
-using VSS.VisionLink.Raptor.GridFabric.Types;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+using VSS.TRex.Executors.Tasks.Interfaces;
+using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.GridFabric.Responses;
+using VSS.TRex.GridFabric.Types;
+using VSS.TRex.SubGridTrees.Interfaces;
 
-namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
+namespace VSS.TRex.GridFabric.ComputeFuncs
 {
     /// <summary>
     /// The base closure/function that implements subgrid request processing on compute nodes.

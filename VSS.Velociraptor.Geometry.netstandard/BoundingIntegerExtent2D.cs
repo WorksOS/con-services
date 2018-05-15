@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VSS.VisionLink.Raptor.Geometry
+namespace VSS.TRex.Geometry
 {
     [Serializable]
     public struct BoundingIntegerExtent2D : IEquatable<BoundingIntegerExtent2D>

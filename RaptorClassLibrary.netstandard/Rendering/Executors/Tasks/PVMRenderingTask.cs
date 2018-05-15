@@ -1,11 +1,11 @@
 ﻿using System.Linq;
 using log4net;
 using System.Reflection;
-using VSS.VisionLink.Raptor.Executors.Tasks;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Executors.Tasks;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.Rendering.Executors.Tasks
+namespace VSS.TRex.Rendering.Executors.Tasks
 {
     /// <summary>
     /// A Task specialised towards rendering subgrid based information onto Plan View Map tiles

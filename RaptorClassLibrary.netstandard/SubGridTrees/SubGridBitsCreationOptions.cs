@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.SubGridTrees
+﻿namespace VSS.TRex.SubGridTrees
 {
     /// <summary>
     /// The options used to control the initial state of a BitMask when it is created

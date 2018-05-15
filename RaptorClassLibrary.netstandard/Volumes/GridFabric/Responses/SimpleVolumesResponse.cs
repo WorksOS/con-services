@@ -1,8 +1,8 @@
-﻿using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
-using VSS.VisionLink.Raptor.GridFabric.Responses;
+﻿using VSS.TRex.Geometry;
+using VSS.TRex.GridFabric.Requests.Interfaces;
+using VSS.TRex.GridFabric.Responses;
 
-namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Responses
+namespace VSS.TRex.Volumes.GridFabric.Responses
 {
     /// <summary>
     /// Describes the result of a simple volumes computation in terms of cut, fill and total volumes plus coverage areas

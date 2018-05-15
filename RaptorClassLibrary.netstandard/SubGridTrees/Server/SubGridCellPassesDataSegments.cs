@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server
+namespace VSS.TRex.SubGridTrees.Server
 {
     public class SubGridCellPassesDataSegments
     {

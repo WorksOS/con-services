@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace VSS.VisionLink.Raptor.Rendering.Palettes
+namespace VSS.TRex.Rendering.Palettes
 {
     /// <summary>
     /// Simple palette for rendering temperature data

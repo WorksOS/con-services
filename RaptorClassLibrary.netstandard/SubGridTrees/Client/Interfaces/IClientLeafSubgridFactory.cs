@@ -1,7 +1,7 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Interfaces
+namespace VSS.TRex.SubGridTrees.Interfaces
 {
     /// <summary>
     /// Factory interface used to implement concrete client leaf subgrid factory for use by processing

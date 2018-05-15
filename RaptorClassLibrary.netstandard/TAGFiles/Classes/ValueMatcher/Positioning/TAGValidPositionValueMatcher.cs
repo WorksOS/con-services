@@ -1,6 +1,6 @@
-﻿using VSS.VisionLink.Raptor.TAGFiles.Types;
+﻿using VSS.TRex.TAGFiles.Types;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Positioning
+namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Positioning
 {
     public class TAGValidPositionValueMatcher : TAGValueMatcher
     {

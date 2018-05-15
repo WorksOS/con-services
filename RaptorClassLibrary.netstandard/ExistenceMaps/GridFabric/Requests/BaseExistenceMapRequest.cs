@@ -1,7 +1,7 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Affinity;
 
-namespace VSS.VisionLink.Raptor.ExistenceMaps.GridFabric.Requests
+namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
 {
     /// <summary>
     /// Base class for existence maps requests. Defines existnace map type descriptors and related base functionality sucj as cachey key calculation

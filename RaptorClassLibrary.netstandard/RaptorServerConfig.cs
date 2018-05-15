@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 
-namespace VSS.VisionLink.Raptor
+namespace VSS.TRex
 {
     /// <summary>
     /// Raptor server config is intended to collect and represent configuration presented to this server instance

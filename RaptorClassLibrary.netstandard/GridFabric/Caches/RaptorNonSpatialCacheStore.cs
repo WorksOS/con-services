@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace VSS.VisionLink.Raptor.GridFabric.Caches
+namespace VSS.TRex.GridFabric.Caches
 {
     public class RaptorNonSpatialCacheStore : CacheStoreAdapter<string, MemoryStream>
     {

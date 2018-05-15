@@ -2,11 +2,11 @@
 using System.Diagnostics;
 using System.Reflection;
 using log4net;
-using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators;
+using VSS.TRex.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Server.Iterators;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Utilities
+namespace VSS.TRex.SubGridTrees.Server.Utilities
 {
     /// <summary>
     /// Provides segment cleaving semantics against the set of segments contained within a subgrid

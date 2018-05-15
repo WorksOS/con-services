@@ -1,17 +1,17 @@
 ﻿//using System;
 
 using System;
-using VSS.VisionLink.Raptor.Filters;
-using VSS.VisionLink.Raptor.Volumes.GridFabric.Requests;
-using VSS.VisionLink.Raptor.Volumes.GridFabric.Responses;
-using VSS.VisionLink.Raptor.Volumes.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.Geometry;
+using VSS.TRex.Filters;
+using VSS.TRex.Geometry;
+using VSS.TRex.Volumes;
+using VSS.TRex.Volumes.GridFabric.Arguments;
+using VSS.TRex.Volumes.GridFabric.Requests;
+using VSS.TRex.Volumes.GridFabric.Responses;
 //using VSS.VisionLink.Raptor.Rendering.Servers.Client;
 //using VSS.VisionLink.Raptor.Types;
-using VSS.VisionLink.Raptor.Volumes;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests.Volumes
+namespace VSS.TRex.RaptorClassLibrary.Tests.Volumes
 {
     public class SimpleVolumesRequestTests
     {

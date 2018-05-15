@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
-using VSS.VisionLink.Raptor.Filters;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.Pipelines.Interfaces;
-using VSS.VisionLink.Raptor.SubGridTrees;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+using VSS.TRex.Filters;
+using VSS.TRex.Geometry;
+using VSS.TRex.Pipelines.Interfaces;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
 
-namespace VSS.VisionLink.Raptor.Pipelines
+namespace VSS.TRex.Pipelines
 {
     /// <summary>
     /// RequestAnalyzer examines the set of parameters defining a request and determines the full set of subgrids

@@ -1,9 +1,9 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Filters;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Filters;
+using VSS.TRex.Geometry;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.Utilities
+namespace VSS.TRex.Utilities
 {
     public static class FilterUtilities
     {

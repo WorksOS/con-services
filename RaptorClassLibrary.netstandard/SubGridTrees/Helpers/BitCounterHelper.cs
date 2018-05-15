@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.SubGridTrees.Helpers
+﻿namespace VSS.TRex.SubGridTrees.Helpers
 {
     public static class BitCounterHelper
     {

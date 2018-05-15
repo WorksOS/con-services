@@ -1,12 +1,12 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Types;
 using System.IO;
-using VSS.VisionLink.Raptor;
-using VSS.VisionLink.Raptor.Cells;
+using VSS.TRex;
 using System.Text;
+using VSS.TRex.Cells;
+using VSS.TRex.Types;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
+namespace VSS.TRex.RaptorClassLibrary.Tests
 {
         public class CellPassTests
     {

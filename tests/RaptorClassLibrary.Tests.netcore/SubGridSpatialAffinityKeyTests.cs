@@ -1,9 +1,9 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.GridFabric.Affinity;
-using VSS.VisionLink.Raptor.SubGridTrees;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.SubGridTrees;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
+namespace VSS.TRex.RaptorClassLibrary.Tests
 {
         public class SubGridSpatialAffinityKeyTests
     {

@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.Storage
+﻿namespace VSS.TRex.Storage
 {
     /// <summary>
     /// Handles actions and configuration related to data regions introduced in Ignite 2.3 to allow per-cache control of persistency, memory usage etc

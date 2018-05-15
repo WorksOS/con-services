@@ -1,20 +1,20 @@
 ﻿using log4net;
 using System;
 using System.Reflection;
-using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.Filters;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.Storage;
-using VSS.VisionLink.Raptor.SubGridTrees.Client;
-using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
-using VSS.VisionLink.Raptor.Surfaces;
-using VSS.VisionLink.Raptor.Surfaces.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.Surfaces.GridFabric.Requests;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Common;
+using VSS.TRex.Filters;
+using VSS.TRex.Geometry;
+using VSS.TRex.Interfaces;
+using VSS.TRex.SiteModels;
+using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Surfaces;
+using VSS.TRex.Surfaces.GridFabric.Arguments;
+using VSS.TRex.Surfaces.GridFabric.Requests;
+using VSS.TRex.Types;
+using VSS.TRex.Storage;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees
+namespace VSS.TRex.SubGridTrees
 {
     public class SubGridRequestor
     {

@@ -1,8 +1,8 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Common;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Common;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.Compression
+namespace VSS.TRex.Compression
 {
     /// <summary>
     /// Supports logic for consistent modification of attributes used during compression using bit field arrays

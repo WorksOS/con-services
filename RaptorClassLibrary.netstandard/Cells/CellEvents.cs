@@ -1,7 +1,7 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.Cells
+namespace VSS.TRex.Cells
 {
     /// <summary>
     ///  Stores the values of various 'event' values at the time the pass information was captured.

@@ -5,9 +5,9 @@ using log4net;
 using System;
 using System.Reflection;
 using Apache.Ignite.Core.Common;
-using VSS.VisionLink.Raptor.Servers;
+using VSS.TRex.Servers;
 
-namespace VSS.VisionLink.Raptor.GridFabric
+namespace VSS.TRex.GridFabric
 {
     [Serializable]
     public class BaseRaptorIgniteClass

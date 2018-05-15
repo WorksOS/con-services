@@ -3,14 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Caches;
+using VSS.TRex.Interfaces;
 using VSS.TRex.Storage;
-using VSS.VisionLink.Raptor.GridFabric.Affinity;
-using VSS.VisionLink.Raptor.GridFabric.Caches;
-using VSS.VisionLink.Raptor.Interfaces;
-using VSS.VisionLink.Raptor.Storage.Utilities;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Storage.Utilities;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.Storage
+namespace VSS.TRex.Storage
 {
     /// <summary>
     /// Implementation of the IStorageProxy interface that allows to read/write operations against Ignite based IO support.

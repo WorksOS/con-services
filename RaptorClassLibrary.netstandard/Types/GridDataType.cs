@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace VSS.VisionLink.Raptor.Types
+namespace VSS.TRex.Types
 {
     /// <summary>
     /// Types of grid data that client leaf subgrids may represent. These largely map to the 

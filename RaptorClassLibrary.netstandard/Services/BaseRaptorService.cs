@@ -1,6 +1,6 @@
-﻿using VSS.VisionLink.Raptor.GridFabric;
+﻿using VSS.TRex.GridFabric;
 
-namespace VSS.VisionLink.Raptor.Services
+namespace VSS.TRex.Services
 {
     /// <summary>
     /// The base class for services. This provides common aspects such as the injected Ignite instance

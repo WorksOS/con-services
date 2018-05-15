@@ -1,7 +1,7 @@
-﻿using VSS.VisionLink.Raptor.Cells;
-using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
+﻿using VSS.TRex.Cells;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
+namespace VSS.TRex.SubGridTrees.Server.Iterators
 {
     /// <summary>
     /// Iterates through cells in subgrids in a cell pass by cell pass manner.

@@ -4,9 +4,9 @@ using Apache.Ignite.Core;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
 using VSS.TRex.TAGFiles.GridFabric.Responses;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
-using VSS.VisionLink.Raptor.Servers;
-using VSS.VisionLink.Raptor.Servers.Client;
+using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.Servers;
+using VSS.TRex.Servers.Client;
 using VSSTests.TRex.Tests.Common;
 using Xunit;
 

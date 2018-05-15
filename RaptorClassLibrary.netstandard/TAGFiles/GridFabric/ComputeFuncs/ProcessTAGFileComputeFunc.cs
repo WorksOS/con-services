@@ -1,12 +1,12 @@
 ﻿using Apache.Ignite.Core.Compute;
-using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
-using VSS.VisionLink.Raptor.Servers;
-using VSS.VisionLink.Raptor.TAGFiles.Executors;
-using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Responses;
+using VSS.TRex.GridFabric.ComputeFuncs;
+using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.Servers;
+using VSS.TRex.TAGFiles.Executors;
+using VSS.TRex.TAGFiles.GridFabric.Arguments;
+using VSS.TRex.TAGFiles.GridFabric.Responses;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.GridFabric.ComputeFuncs
+namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
 {
     public class ProcessTAGFileComputeFunc : BaseRaptorComputeFunc, IComputeFunc<ProcessTAGFileRequestArgument, ProcessTAGFileResponse>
     {

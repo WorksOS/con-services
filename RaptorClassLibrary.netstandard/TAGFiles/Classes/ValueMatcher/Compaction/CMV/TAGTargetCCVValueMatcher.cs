@@ -1,6 +1,6 @@
-﻿using VSS.VisionLink.Raptor.TAGFiles.Types;
+﻿using VSS.TRex.TAGFiles.Types;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Compaction.CMV
+namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.CMV
 {
     /// <summary>
     /// Handles Target CCV vlaues set on the machine by an operator

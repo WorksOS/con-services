@@ -1,8 +1,8 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.SubGridTrees.Helpers;
+using VSS.TRex.SubGridTrees.Helpers;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
+namespace VSS.TRex.RaptorClassLibrary.Tests
 {
         public class BitCounterHelperTests
     {

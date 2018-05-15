@@ -2,8 +2,8 @@
 using VSS.Velociraptor.DesignProfiling.GridFabric.Arguments;
 using VSS.Velociraptor.DesignProfiling.GridFabric.ComputeFuncs;
 using VSS.VisionLink.DesignProfiling.GridFabric.Requests;
-using VSS.VisionLink.Raptor;
-using VSS.VisionLink.Raptor.SubGridTrees.Client;
+using VSS.TRex;
+using VSS.TRex.SubGridTrees.Client;
 
 namespace VSS.Velociraptor.DesignProfiling.GridFabric.Requests
 {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.VisionLink.Raptor.GridFabric.Affinity
+namespace VSS.TRex.GridFabric.Affinity
 {
     /// <summary>
     /// The key type used to drive non-spatial affinity key mapping for elements stored in the Ignite cache. This controls

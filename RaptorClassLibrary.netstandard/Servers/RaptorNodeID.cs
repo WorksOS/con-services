@@ -1,8 +1,8 @@
 ﻿using Apache.Ignite.Core;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
-using VSS.VisionLink.Raptor.Storage;
+using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.Storage;
 
-namespace VSS.VisionLink.Raptor.Servers
+namespace VSS.TRex.Servers
 {
     /// <summary>
     /// Determines and caches the RaptorNodeID set in the attributes for the local Ignite node 

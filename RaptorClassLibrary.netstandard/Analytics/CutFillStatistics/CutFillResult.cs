@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using VSS.VisionLink.Raptor.Analytics.GridFabric.Responses;
+using VSS.TRex.Analytics.GridFabric.Responses;
 
-namespace VSS.VisionLink.Raptor.Analytics.Models
+namespace VSS.TRex.Analytics.Models
 {
     /// <summary>
     /// The result obtained fcrom performing a CutFill analytics request

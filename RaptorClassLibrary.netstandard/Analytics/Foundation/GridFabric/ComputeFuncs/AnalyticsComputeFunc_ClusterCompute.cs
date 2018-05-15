@@ -2,13 +2,13 @@
 using log4net;
 using System;
 using System.Reflection;
-using VSS.VisionLink.Raptor.Analytics.Coordinators;
-using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
-using VSS.VisionLink.Raptor.GridFabric.Grids;
-using VSS.VisionLink.Raptor.GridFabric.Requests.Interfaces;
-using VSS.VisionLink.Raptor.Servers;
+using VSS.TRex.Analytics.Coordinators;
+using VSS.TRex.GridFabric.ComputeFuncs;
+using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Requests.Interfaces;
+using VSS.TRex.Servers;
 
-namespace VSS.VisionLink.Raptor.Analytics.GridFabric.ComputeFuncs
+namespace VSS.TRex.Analytics.GridFabric.ComputeFuncs
 {
     public class AnalyticsComputeFunc_ClusterCompute<TArgument, TResponse, TCoordinator> : BaseRaptorComputeFunc, IComputeFunc<TArgument, TResponse>
         where TArgument : class

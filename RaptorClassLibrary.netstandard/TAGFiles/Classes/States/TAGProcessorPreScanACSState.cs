@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using VSS.VisionLink.Raptor.Geometry;
+using VSS.TRex.Geometry;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.States
+namespace VSS.TRex.TAGFiles.Classes.States
 {
     /// <summary>
     /// Handles scanning a TAG value stream and extracting the blade/track/wheel/read positions into a set

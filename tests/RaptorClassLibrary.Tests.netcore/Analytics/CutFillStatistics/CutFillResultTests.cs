@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using VSS.VisionLink.Raptor.Analytics.GridFabric.Responses;
-using VSS.VisionLink.Raptor.Analytics.Models;
+using VSS.TRex.Analytics.GridFabric.Responses;
+using VSS.TRex.Analytics.Models;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.Tests.Analytics.CutFillStatistics
+namespace VSS.TRex.Tests.Analytics.CutFillStatistics
 {
     public class CutFillResultTests
     {

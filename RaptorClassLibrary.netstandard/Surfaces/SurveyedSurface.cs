@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
-using VSS.VisionLink.Raptor.Designs;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.Utilities.Interfaces;
+using VSS.TRex.Designs;
+using VSS.TRex.Geometry;
+using VSS.TRex.Utilities.Interfaces;
 
-namespace VSS.VisionLink.Raptor.Surfaces
+namespace VSS.TRex.Surfaces
 {
     /// <summary>
     /// Defines all the state information describing a surveyed surface based on a design descriptor

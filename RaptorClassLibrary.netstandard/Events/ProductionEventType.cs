@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.VisionLink.Raptor.Events
+namespace VSS.TRex.Events
 {
     /// <summary>
     /// Denotes the types of events processed and stored from ingested production data

@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.TAGFiles.Types
+﻿namespace VSS.TRex.TAGFiles.Types
 {
     /// <summary>
     /// Denotes a set of error conditions that the ReadFile method in TagFile can return.

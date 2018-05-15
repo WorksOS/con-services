@@ -2,9 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.Analytics.Models
+namespace VSS.TRex.Analytics.Models
 {
     /// <summary>
     /// Base class for results sent to client calling contexts for analytics functions

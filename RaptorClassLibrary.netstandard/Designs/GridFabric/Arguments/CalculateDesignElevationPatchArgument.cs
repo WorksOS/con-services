@@ -1,6 +1,6 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Designs;
-using VSS.VisionLink.Raptor.GridFabric.Arguments;
+using VSS.TRex.Designs;
+using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.Velociraptor.DesignProfiling.GridFabric.Arguments
 {

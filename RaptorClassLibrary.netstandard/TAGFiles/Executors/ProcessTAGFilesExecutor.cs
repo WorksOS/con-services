@@ -4,15 +4,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using VSS.VisionLink.Raptor.Executors;
-using VSS.VisionLink.Raptor.Machines;
-using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.Storage;
-using VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator;
-using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.TAGFiles.GridFabric.Responses;
+using VSS.TRex.Executors;
+using VSS.TRex.TAGFiles.Classes.Integrator;
+using VSS.TRex.TAGFiles.GridFabric.Arguments;
+using VSS.TRex.TAGFiles.GridFabric.Responses;
+using VSS.TRex.Machines;
+using VSS.TRex.SiteModels;
+using VSS.TRex.Storage;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Executors
+namespace VSS.TRex.TAGFiles.Executors
 {
     /// <summary>
     /// Provides an executor that accepts a set of TAG files to be processed and orchestrates their processing using

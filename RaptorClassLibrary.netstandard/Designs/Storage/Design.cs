@@ -1,14 +1,14 @@
 ﻿using System;
 using System.IO;
+using VSS.TRex.Geometry;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.Utilities.Interfaces;
 using VSS.Velociraptor.DesignProfiling;
 using VSS.Velociraptor.DesignProfiling.GridFabric.Arguments;
 using VSS.Velociraptor.DesignProfiling.GridFabric.Requests;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.SubGridTrees;
-using VSS.VisionLink.Raptor.SubGridTrees.Client;
-using VSS.VisionLink.Raptor.Utilities.Interfaces;
 
-namespace VSS.VisionLink.Raptor.Designs.Storage
+namespace VSS.TRex.Designs.Storage
 {
     /// <summary>
     /// Represents the information known about a design

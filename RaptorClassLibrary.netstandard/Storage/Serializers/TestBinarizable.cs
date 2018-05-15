@@ -1,7 +1,7 @@
 ﻿using Apache.Ignite.Core.Binary;
 using System;
 
-namespace VSS.VisionLink.Raptor.Storage.Serializers
+namespace VSS.TRex.Storage.Serializers
 {
     public class TestBinarizable : IBinarizable
     {

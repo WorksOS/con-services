@@ -1,6 +1,6 @@
-﻿using VSS.VisionLink.Raptor.TAGFiles.Types;
+﻿using VSS.TRex.TAGFiles.Types;
 
-namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine
+namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Machine
 {
     /// <summary>
     /// Handles the flag indicating when the machine is recording minimum elevation mapping information

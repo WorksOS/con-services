@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.SubGridTrees.Helpers
+﻿namespace VSS.TRex.SubGridTrees.Helpers
 {
     /// <summary>
     /// A helper class that contains definitions of Clear and Filled Bits subgrid mitmask bit arrays as well as

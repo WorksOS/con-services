@@ -6,12 +6,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
-using VSS.VisionLink.Raptor.GridFabric.Arguments;
-using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
-using VSS.VisionLink.Raptor.GridFabric.Listeners;
-using VSS.VisionLink.Raptor.GridFabric.Responses;
+using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.GridFabric.ComputeFuncs;
+using VSS.TRex.GridFabric.Listeners;
+using VSS.TRex.GridFabric.Responses;
 
-namespace VSS.VisionLink.Raptor.GridFabric.Requests
+namespace VSS.TRex.GridFabric.Requests
 {
     /// <summary>
     /// Requests subgrids from the cache compute cluster allowing in-progress updates of results to be sent back to

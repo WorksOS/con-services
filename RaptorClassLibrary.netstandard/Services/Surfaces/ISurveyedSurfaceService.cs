@@ -1,9 +1,9 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Designs;
-using VSS.VisionLink.Raptor.Geometry;
-using VSS.VisionLink.Raptor.Surfaces;
+using VSS.TRex.Designs;
+using VSS.TRex.Geometry;
+using VSS.TRex.Surfaces;
 
-namespace VSS.VisionLink.Raptor.Services.Surfaces
+namespace VSS.TRex.Services.Surfaces
 {
     /// <summary>
     /// Interface detailing the API for the service that supports adding and managing surveyed surfaces

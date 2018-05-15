@@ -1,6 +1,6 @@
-﻿using VSS.VisionLink.Raptor.Types;
+﻿using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.Volumes
+namespace VSS.TRex.Volumes
 {
     /// <summary>
     /// VolumesCalculator extends VolumesCalculatorBase to include volume

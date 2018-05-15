@@ -1,10 +1,10 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Cells;
-using VSS.VisionLink.Raptor.Filters.Interfaces;
-using VSS.VisionLink.Raptor.SiteModels;
-using VSS.VisionLink.Raptor.Types;
+using VSS.TRex.Cells;
+using VSS.TRex.Filters.Interfaces;
+using VSS.TRex.SiteModels;
+using VSS.TRex.Types;
 
-namespace VSS.VisionLink.Raptor.Filters
+namespace VSS.TRex.Filters
 {
     /// <summary>
     /// DataPassFilter describes a filter that controls how the information held in the

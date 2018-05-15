@@ -1,4 +1,4 @@
-﻿using VSS.VisionLink.Raptor.SubGridTrees.Server;
+﻿using VSS.TRex.SubGridTrees.Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
+namespace VSS.TRex.SubGridTrees.Server.Tests
 {
         public class Test_SubGridCellLatestPassDataWrapper
     {

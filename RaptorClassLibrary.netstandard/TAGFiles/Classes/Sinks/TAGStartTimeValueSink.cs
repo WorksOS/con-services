@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Sinks
+﻿namespace VSS.TRex.TAGFiles.Classes.Sinks
 {
     /// <summary>
     /// Derived TAG value sink that just looks for the first instance of GPS Week and Time values before completing

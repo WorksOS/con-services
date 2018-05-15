@@ -1,8 +1,8 @@
 ﻿using System;
-using VSS.VisionLink.Raptor.Filters;
-using VSS.VisionLink.Raptor.GridFabric.Arguments;
+using VSS.TRex.Filters;
+using VSS.TRex.GridFabric.Arguments;
 
-namespace VSS.VisionLink.Raptor.Volumes.GridFabric.Arguments
+namespace VSS.TRex.Volumes.GridFabric.Arguments
 {
     /// <summary>
     /// The argument passed to simple volumes requests

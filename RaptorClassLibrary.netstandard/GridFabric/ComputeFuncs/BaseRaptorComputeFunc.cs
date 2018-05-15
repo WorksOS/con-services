@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
+﻿namespace VSS.TRex.GridFabric.ComputeFuncs
 {
     /// <summary>
     /// The base class for compute funcs. This provides common aspects such as the injected Ignite instance

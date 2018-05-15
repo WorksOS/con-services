@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.VisionLink.Raptor.Types
+namespace VSS.TRex.Types
 {
     /// <summary>
     /// DisplayMode represents the displayable rendering modes supported by the Raptor tile rendering engine
