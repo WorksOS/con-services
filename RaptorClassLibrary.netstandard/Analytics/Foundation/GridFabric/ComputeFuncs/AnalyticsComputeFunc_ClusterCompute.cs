@@ -3,6 +3,8 @@ using log4net;
 using System;
 using System.Reflection;
 using VSS.TRex.Analytics.Coordinators;
+using VSS.TRex.Analytics.GridFabric.Responses;
+using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Requests.Interfaces;
@@ -11,8 +13,8 @@ using VSS.TRex.Servers;
 namespace VSS.TRex.Analytics.GridFabric.ComputeFuncs
 {
     public class AnalyticsComputeFunc_ClusterCompute<TArgument, TResponse, TCoordinator> : BaseComputeFunc, IComputeFunc<TArgument, TResponse>
-        where TArgument : class
-        where TResponse : class, IAggregateWith<TResponse>
+        where TArgument : BaseApplicationServiceRequestArgument
+        where TResponse : BaseAnalyticsResponse, IAggregateWith<TResponse>, new()
         where TCoordinator : BaseAnalyticsCoordinator<TArgument, TResponse>, new()
     {
         [NonSerialized]

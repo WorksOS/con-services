@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.Filters;
 
 namespace VSS.TRex.GridFabric.Arguments
 {
@@ -14,5 +15,15 @@ namespace VSS.TRex.GridFabric.Arguments
         /// should be sent on a message topic contained within the derived request. 
         /// </summary>
         public string TRexNodeID { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The project the request is relevant to
+        /// </summary>
+        public Guid DataModelID { get; set; }
+
+        /// <summary>
+        /// The filter to be used for the request
+        /// </summary>
+        public CombinedFilter Filter { get; set; }
     }
 }

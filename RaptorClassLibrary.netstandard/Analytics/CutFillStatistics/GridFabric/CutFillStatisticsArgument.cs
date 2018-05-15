@@ -10,17 +10,7 @@ namespace VSS.TRex.Analytics.GridFabric.Arguments
     [Serializable]
     public class CutFillStatisticsArgument : BaseApplicationServiceRequestArgument
     {
-        /// <summary>
-        /// The project the request is relevant to
-        /// </summary>
-        public Guid DataModelID { get; set; }
-
         // TODO If desired: ExternalDescriptor :TASNodeRequestDescriptor;
-
-        /// <summary>
-        /// The filter to be used for the request
-        /// </summary>
-        public CombinedFilter Filter { get; set; }
 
         /// <summary>
         /// The set of cut/fill offsets

@@ -1,12 +1,9 @@
 ﻿using log4net;
-using System;
 using System.Reflection;
 using VSS.TRex.Analytics.Aggregators;
 using VSS.TRex.Analytics.GridFabric.Arguments;
 using VSS.TRex.Analytics.GridFabric.Responses;
-using VSS.TRex.SiteModels;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities;
 
 namespace VSS.TRex.Analytics.Coordinators
 {
@@ -19,116 +16,43 @@ namespace VSS.TRex.Analytics.Coordinators
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
-        /// Executes the cut fill analytics request returning the counts and percetages for the (7) defined cut fill bands
+        /// Constructs the aggregator from the supplied argument to be used for the cut/fill statistics analytics request
+        /// Create the aggregator to collect and reduce the results. As a part of this locate the
+        /// design instance representing the design the cut/fill information is being calculated against
+        /// and supply that to the aggregator
         /// </summary>
-        /// <param name="arg"></param>
+        /// <param name="argument"></param>
         /// <returns></returns>
-        public override CutFillStatisticsResponse Execute(CutFillStatisticsArgument arg) 
+        public override AggregatorBase ConstructAggregator(CutFillStatisticsArgument argument) => new CutFillAggregator
+            {
+                RequiresSerialisation = true,
+                SiteModelID = argument.DataModelID,
+                //LiftBuildSettings := LiftBuildSettings;
+                CellSize = SiteModel.Grid.CellSize,
+                Offsets = argument.Offsets
+            };
+
+        /// <summary>
+        /// Constructs the computer from the supplied argument and aggregator for the cut fill statistics analytics request
+        /// </summary>
+        /// <param name="argument"></param>
+        /// <param name="aggregator"></param>
+        /// <returns></returns>
+        public override AnalyticsComputor ConstructComputor(CutFillStatisticsArgument argument,
+                                                           AggregatorBase aggregator) => new AnalyticsComputor
+            {
+                RequestDescriptor = RequestDescriptor,
+                SiteModel = SiteModel,
+                Aggregator = aggregator,
+                Filter = argument.Filter,
+                IncludeSurveyedSurfaces = true,
+                RequestedGridDataType = GridDataType.CutFill,
+                CutFillDesignID = argument.DesignID
+            };
+
+        public override void ReadOutResults(AggregatorBase aggregator, CutFillStatisticsResponse response)
         {
-            Log.Info("In: Executing Coordination logic");
-
-            //  ScheduledWithGovernor       :Boolean = false;
-            //  SurveyedSurfaceExclusionList:TSurveyedSurfaceIDList;
-            var result = new CutFillStatisticsResponse();
-
-            try
-            {
-                /* TODO...
-                if not Assigned(ASNodeImplInstance) or ASNodeImplInstance.ServiceStopped then
-                  begin
-                    SIGLogMessage.PublishNoODS(Self, Format('%s.Execute: Aborting request as service has been stopped', [Self.ClassName]), slmcWarning);
-                    Exit;
-                  end;
-
-                if Assigned(ASNodeImplInstance.RequestCancellations) and ASNodeImplInstance.RequestCancellations.IsRequestCancelled(FExternalDescriptor) then
-                  begin
-                    SIGLogMessage.PublishNoODS(Self, 'Request cancelled: ' + FExternalDescriptor.ToString, slmcDebug);
-                    ASNodeResult := asneRequestHasBeenCancelled;
-                    Exit;
-                  end;
-          */
-
-                Log.Info($"#In# Performing Execute for DataModel:{arg.DataModelID}");
-
-                /* TODO...
-                 *ScheduledWithGovernor := ASNodeImplInstance.Governor.Schedule(FExternalDescriptor, Self, gqVolumes, ASNodeResult);
-                      if not ScheduledWithGovernor then
-                        Exit;
-
-                        SetLength(SurveyedSurfaceExclusionList, 0);
-
-                      if ASNodeImplInstance.PSLoadBalancer.LoadBalancedPSService.GetDataModelSpatialExtents(FDataModelID, SurveyedSurfaceExclusionList, SpatialExtent, CellSize, IndexOriginOffset) <> icsrrNoError then
-                        begin
-                          ASNodeResult := asneFailedToRequestDatamodelStatistics;
-                          Exit;
-                        end;
-                */
-
-                //BoundingWorldExtent3D ResultBoundingExtents = BoundingWorldExtent3D.Null();
-                //BoundingWorldExtent3D SpatialExtent = BoundingWorldExtent3D.Null();
-                //long[] SurveyedSurfaceExclusionList = new long[0];
-
-                long RequestDescriptor = Guid.NewGuid().GetHashCode(); // TODO ASNodeImplInstance.NextDescriptor;
-
-                result.ResultStatus = FilterUtilities.PrepareFilterForUse(arg.Filter, arg.DataModelID);
-                if (result.ResultStatus != RequestErrorStatus.OK)
-                {
-                    Log.Info($"PrepareFilterForUse failed: Datamodel={arg.DataModelID}");
-                    return result;
-                }
-
-                // Obtain the site model context for the request
-                SiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(arg.DataModelID);
-
-                // Create the aggregator to collect and reduce the results. As a part of this locate the
-                // design instance representing the design the cut/fill information is being calculated against
-                // and supply that to the aggregator
-                CutFillAggregator Aggregator = new CutFillAggregator()
-                {
-                    RequiresSerialisation = true,
-                    SiteModelID = arg.DataModelID,
-                    //LiftBuildSettings := LiftBuildSettings;
-                    CellSize = SiteModel.Grid.CellSize,
-                    Offsets = arg.Offsets
-                };
-
-                // Create the analytics engine to orchestrate the calculation
-                AnalyticsComputor Computor = new AnalyticsComputor()
-                {
-                    RequestDescriptor = RequestDescriptor,
-                    SiteModel = SiteModel,
-                    Aggregator = Aggregator,
-                    Filter = arg.Filter,
-                    IncludeSurveyedSurfaces = true,
-                    RequestedGridDataType = GridDataType.CutFill,
-                    CutFillDesignID = arg.DesignID
-                };
-
-                // TODO
-                // Reporter.LiftBuildSettings.Assign(FLiftBuildSettings);
-
-                if (Computor.ComputeAnalytics())
-                    result.ResultStatus = RequestErrorStatus.OK;
-                else if (Computor.AbortedDueToTimeout)
-                    result.ResultStatus = RequestErrorStatus.AbortedDueToPipelineTimeout;
-                else
-                    result.ResultStatus = RequestErrorStatus.Unknown;
-
-                if (result.ResultStatus == RequestErrorStatus.OK)
-                {
-                    // Instruct the Aggregator to perform any finalisation logic before reading out the results
-                    Aggregator.Finalise();
-                    result.Counts = Aggregator.Counts;
-                }
-            }
-            catch (Exception E)
-            {
-                Log.Error($"Exception {E}");
-            }
-
-            Log.Info("Out: Executing Coordination logic");
-
-            return result;
+            response.Counts = ((CutFillAggregator)aggregator).Counts;
         }
     }
 }
