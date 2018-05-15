@@ -6,8 +6,8 @@ using VSS.TRex.SiteModels;
 namespace VSS.TRex.Analytics.Foundation.Interfaces
 {
     public interface IBaseAnalyticsCoordinator<TArgument, TResponse> 
-        where TArgument : BaseApplicationServiceRequestArgument 
-        where TResponse : BaseAnalyticsResponse, new()
+       // where TArgument : BaseApplicationServiceRequestArgument 
+       // where TResponse : BaseAnalyticsResponse, new()
     {
         /// <summary>
         /// The SiteModel context for computing the result of the request

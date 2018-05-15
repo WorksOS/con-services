@@ -9,7 +9,7 @@ namespace VSS.TRex.Analytics.GridFabric.Responses
     public class CutFillStatisticsResponse : BaseAnalyticsResponse, IAggregateWith<CutFillStatisticsResponse>
     {
         /// <summary>
-        /// An array (or always 7) values represnting the counts of cells within each of the cut fill bands defined in the request.
+        /// An array (always 7) values representing the counts of cells within each of the cut fill bands defined in the request.
         /// </summary>
         public long[] Counts { get; set; }
 

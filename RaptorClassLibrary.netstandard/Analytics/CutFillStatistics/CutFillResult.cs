@@ -7,7 +7,7 @@ namespace VSS.TRex.Analytics.Models
     /// <summary>
     /// The result obtained fcrom performing a CutFill analytics request
     /// </summary>
-    public class CutFillResult : AnalyticsResult
+    public class CutFillResult : AnalyticsResult<CutFillStatisticsResponse>
     {
         private long[] counts;
 
@@ -70,15 +70,10 @@ namespace VSS.TRex.Analytics.Models
         ///  Takes a response from the cluster compuet layer and transforms it into the model to be handed back to the client context
         /// </summary>
         /// <param name="response"></param>
-        public override void PopulateFromClusterComputeResponse(object response)
+        public override void PopulateFromClusterComputeResponse(CutFillStatisticsResponse response)
         {
-            if (!(response is CutFillStatisticsResponse statisticsResponse))
-            {
-                throw new ArgumentException("Response argument is null or not a CutFillStatisticsResponse instance", "Response");
-            }
-
-            Counts = statisticsResponse.Counts;
-            ResultStatus = statisticsResponse.ResultStatus;
+            Counts = response.Counts;
+            ResultStatus = response.ResultStatus;
         }
     }
 }

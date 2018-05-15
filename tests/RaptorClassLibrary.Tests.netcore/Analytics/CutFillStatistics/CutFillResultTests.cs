@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using VSS.TRex.Analytics.GridFabric.Responses;
 using VSS.TRex.Analytics.Models;
 using Xunit;
@@ -38,7 +36,6 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics
             CutFillResult r = new CutFillResult();
 
             Assert.Throws<ArgumentException>("Response", () => { r.PopulateFromClusterComputeResponse(null); });
-            Assert.Throws<ArgumentException>("Response", () => { r.PopulateFromClusterComputeResponse(new object()); });
         }
     }
 }

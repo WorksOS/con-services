@@ -1,7 +1,7 @@
 ﻿namespace VSS.TRex.Analytics.Foundation.Interfaces
 {
-    public interface IAnalyticsResult
+    public interface IAnalyticsResult<TResponse>
     {
-        void PopulateFromClusterComputeResponse(object response);
+        void PopulateFromClusterComputeResponse(TResponse response);
     }
 }

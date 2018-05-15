@@ -39,7 +39,7 @@ namespace VSS.TRex.Analytics.Coordinators
         /// <param name="aggregator"></param>
         /// <returns></returns>
         public override AnalyticsComputor ConstructComputor(CutFillStatisticsArgument argument,
-                                                           AggregatorBase aggregator) => new AnalyticsComputor
+                                                            AggregatorBase aggregator) => new AnalyticsComputor
             {
                 RequestDescriptor = RequestDescriptor,
                 SiteModel = SiteModel,
