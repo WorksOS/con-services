@@ -12,7 +12,7 @@ namespace VSS.TRex.Designs.GridFabric.Requests
         /// <summary>
         /// Default no-arg constructor that sets up cluster and compute projections available for use
         /// </summary>
-        public CacheComputePoolRequest() : base(RaptorGrids.RaptorImmutableGridName(), ServerRoles.PSNODE)
+        public CacheComputePoolRequest() : base(TRexGrids.ImmutableGridName(), ServerRoles.PSNODE)
         {
         }
     }

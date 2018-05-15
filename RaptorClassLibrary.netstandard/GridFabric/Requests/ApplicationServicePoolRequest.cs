@@ -11,7 +11,7 @@ namespace VSS.TRex.GridFabric.Requests
         /// <summary>
         /// Default no-arg constructor that sets up cluster and compute projections available for use
         /// </summary>
-        public ApplicationServicePoolRequest() : base(RaptorGrids.RaptorImmutableGridName(), ServerRoles.ASNODE)
+        public ApplicationServicePoolRequest() : base(TRexGrids.ImmutableGridName(), ServerRoles.ASNODE)
         {
         }
     }

@@ -11,7 +11,7 @@ namespace VSS.TRex.GridFabric.Requests
         /// <summary>
         /// Default no-arg constructor that sets up cluster and compute projections available for use by the TAG file processing pipeline
         /// </summary>
-        public TAGFileProcessingPoolRequest() : base(RaptorGrids.RaptorMutableGridName(), ServerRoles.TAG_PROCESSING_NODE)
+        public TAGFileProcessingPoolRequest() : base(TRexGrids.MutableGridName(), ServerRoles.TAG_PROCESSING_NODE)
         {
         }
     }

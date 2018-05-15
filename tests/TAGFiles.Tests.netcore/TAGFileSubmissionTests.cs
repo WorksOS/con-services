@@ -21,12 +21,12 @@ namespace TAGFiles.Tests.netcore
         {
             try
             {
-                ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
+                ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
             }
             catch
             {
                 TAGClientServer = TAGClientServer ?? new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT);
-                ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
+                ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
             }
         }
 

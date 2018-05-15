@@ -23,7 +23,7 @@ namespace VSS.TRex.Analytics.GridFabric.ComputeFuncs
         {
         }
 
-        public AnalyticsComputeFunc_ClusterCompute() : this(RaptorGrids.RaptorImmutableGridName(), ServerRoles.PSNODE)
+        public AnalyticsComputeFunc_ClusterCompute() : this(TRexGrids.ImmutableGridName(), ServerRoles.PSNODE)
         {
         }
 

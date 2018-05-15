@@ -12,7 +12,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         /// <summary>
         /// Default no-arg constructor that sets up cluster and compute projections available for use
         /// </summary>
-        public CacheComputeComputeFunc() : base(RaptorGrids.RaptorImmutableGridName(), ServerRoles.PSNODE)
+        public CacheComputeComputeFunc() : base(TRexGrids.ImmutableGridName(), ServerRoles.PSNODE)
         {
         }
     }

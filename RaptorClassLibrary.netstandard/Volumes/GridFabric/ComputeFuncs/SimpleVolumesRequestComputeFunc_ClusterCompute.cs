@@ -23,7 +23,7 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
         /// <summary>
         /// Default no-arg constructor that orients the request to the available PSNODE servers on the immutable grid projection
         /// </summary>
-        public SimpleVolumesRequestComputeFunc_ClusterCompute() : base(RaptorGrids.RaptorImmutableGridName(), ServerRoles.PSNODE)
+        public SimpleVolumesRequestComputeFunc_ClusterCompute() : base(TRexGrids.ImmutableGridName(), ServerRoles.PSNODE)
         {
         }
 

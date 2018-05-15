@@ -342,7 +342,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// </summary>
         public TAGFileBufferQueueItemHandler()
         {
-            ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
+            ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
             queueCache = ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(RaptorCaches.TAGFileBufferQueueCacheName());
 
             // Create the grouper responsible for grouping TAG files into projecft/asset combinations

@@ -13,7 +13,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
         /// <summary>
         /// Default no-arg constructor that orients the request to the available TAG processing server nodes on the mutable grid projection
         /// </summary>
-        public ProcessTAGFileComputeFunc() : base(RaptorGrids.RaptorMutableGridName(), ServerRoles.TAG_PROCESSING_NODE)
+        public ProcessTAGFileComputeFunc() : base(TRexGrids.MutableGridName(), ServerRoles.TAG_PROCESSING_NODE)
         {
         }
 

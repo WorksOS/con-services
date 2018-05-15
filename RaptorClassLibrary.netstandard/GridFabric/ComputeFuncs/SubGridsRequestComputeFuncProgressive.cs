@@ -60,7 +60,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         {
             ResponseCode = SubGridRequestsResponseResult.OK;
 
-            IIgnite Ignite = Ignition.TryGetIgnite(RaptorGrids.RaptorImmutableGridName());
+            IIgnite Ignite = Ignition.TryGetIgnite(TRexGrids.ImmutableGridName());
             IClusterGroup group = Ignite?.GetCluster().ForAttribute("RaptorNodeID", raptorNodeIDAsString);
 
             if (group == null)

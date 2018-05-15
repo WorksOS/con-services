@@ -12,11 +12,11 @@ namespace VSS.TRex.GridFabric.Grids
         /// <returns></returns>
         public static IIgnite Grid(string gridName)
         {
-            if (gridName.Equals(RaptorGrids.RaptorMutableGridName()))
+            if (gridName.Equals(TRexGrids.MutableGridName()))
             {
                 return Ignition.TryGetIgnite(gridName);
             }
-            if (gridName.Equals(RaptorGrids.RaptorImmutableGridName()))
+            if (gridName.Equals(TRexGrids.ImmutableGridName()))
             {
                 return Ignition.TryGetIgnite(gridName);
             }

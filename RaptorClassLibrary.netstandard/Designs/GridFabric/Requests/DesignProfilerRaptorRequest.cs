@@ -11,7 +11,7 @@ namespace VSS.VisionLink.DesignProfiling.GridFabric.Requests
         /// <summary>
         /// Default no-arg constructor that sets up cluster and compute projections available for use
         /// </summary>
-        public DesignProfilerRaptorRequest() : base(RaptorGrids.RaptorImmutableGridName(), "DesignProfiler")
+        public DesignProfilerRaptorRequest() : base(TRexGrids.ImmutableGridName(), "DesignProfiler")
         {
         }
     }

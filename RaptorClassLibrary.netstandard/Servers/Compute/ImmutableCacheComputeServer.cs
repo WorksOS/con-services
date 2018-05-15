@@ -51,13 +51,13 @@ namespace VSS.TRex.Servers.Compute
     {
       base.ConfigureRaptorGrid(cfg);
 
-      cfg.IgniteInstanceName = RaptorGrids.RaptorImmutableGridName();
+      cfg.IgniteInstanceName = TRexGrids.ImmutableGridName();
 
       cfg.JvmInitialMemoryMb = 512; // Set to minimum advised memory for Ignite grid JVM of 512Mb
       cfg.JvmMaxMemoryMb = 1 * 1024; // Set max to 1Gb
       cfg.UserAttributes = new Dictionary<string, object>
             {
-                { "Owner", RaptorGrids.RaptorImmutableGridName() }
+                { "Owner", TRexGrids.ImmutableGridName() }
             };
 
       // Configure the Ignite 2.1 persistence layer to store our data
@@ -198,7 +198,7 @@ namespace VSS.TRex.Servers.Compute
       }
 
       // Wait until the grid is active
-      ActivatePersistentGridServer.Instance().WaitUntilGridActive(RaptorGrids.RaptorImmutableGridName());
+      ActivatePersistentGridServer.Instance().WaitUntilGridActive(TRexGrids.ImmutableGridName());
 
       // Add the immutable Spatial & NonSpatial caches
 

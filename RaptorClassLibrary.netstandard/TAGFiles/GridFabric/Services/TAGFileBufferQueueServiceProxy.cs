@@ -38,7 +38,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         /// </summary>
         public TAGFileBufferQueueServiceProxy()
         {
-            IIgnite _ignite = RaptorGridFactory.Grid(RaptorGrids.RaptorMutableGridName());
+            IIgnite _ignite = RaptorGridFactory.Grid(TRexGrids.MutableGridName());
 
             //var cacheGroup = _ignite.GetCluster().ForCacheNodes(RaptorCaches.TAGFileBufferQueueCacheName());
 

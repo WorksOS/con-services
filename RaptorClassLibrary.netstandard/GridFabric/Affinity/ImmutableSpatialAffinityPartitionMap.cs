@@ -19,7 +19,7 @@ namespace VSS.TRex.GridFabric.Affinity
         /// Default no-args constructor that prepares a spatial affinity partition map for the immutable spatial caches
         /// </summary>
         public ImmutableSpatialAffinityPartitionMap() :
-            base(Ignition.GetIgnite(RaptorGrids.RaptorImmutableGridName())
+            base(Ignition.GetIgnite(TRexGrids.ImmutableGridName())
                 .GetCache<SubGridSpatialAffinityKey, byte[]>(RaptorCaches.ImmutableSpatialCacheName()))
         {
         }

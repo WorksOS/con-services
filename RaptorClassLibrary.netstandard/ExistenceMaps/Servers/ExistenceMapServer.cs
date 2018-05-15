@@ -50,7 +50,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
         /// </summary>
         public ExistenceMapServer()
         {
-            ignite = RaptorGridFactory.Grid(RaptorGrids.RaptorImmutableGridName());
+            ignite = RaptorGridFactory.Grid(TRexGrids.ImmutableGridName());
             
             if (ignite == null)
             {

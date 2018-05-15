@@ -28,7 +28,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
         /// <summary>
         /// Default no-arg constructor that orients the request to the available ASNODE servers on the immutable grid projection
         /// </summary>
-        public TileRenderRequestComputeFunc() : base(RaptorGrids.RaptorImmutableGridName(), ServerRoles.ASNODE)
+        public TileRenderRequestComputeFunc() : base(TRexGrids.ImmutableGridName(), ServerRoles.ASNODE)
         {
         }
 

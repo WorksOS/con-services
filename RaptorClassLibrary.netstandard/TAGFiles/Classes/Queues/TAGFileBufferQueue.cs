@@ -32,7 +32,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// </summary>
         private void InstantiateCache()
         {
-            IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
+            IIgnite ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
 
             QueueCache = ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(RaptorCaches.TAGFileBufferQueueCacheName());
 

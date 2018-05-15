@@ -44,7 +44,7 @@ namespace VSS.TRex.Servers.Client
             if (immutableRaptorGrid == null)
             {
                 // Attempt to attach to an already existing Ignite instance
-                immutableRaptorGrid = RaptorGridFactory.Grid(RaptorGrids.RaptorImmutableGridName());
+                immutableRaptorGrid = RaptorGridFactory.Grid(TRexGrids.ImmutableGridName());
 
                 // If there was no connection obtained, attempt to create a new instance
                 if (immutableRaptorGrid == null)
@@ -59,7 +59,7 @@ namespace VSS.TRex.Servers.Client
                     {
                         // SpringConfigUrl = @".\RaptorIgniteConfig.xml",
 
-                        IgniteInstanceName = RaptorGrids.RaptorImmutableGridName(),
+                        IgniteInstanceName = TRexGrids.ImmutableGridName(),
                         ClientMode = true,
 
                         JvmInitialMemoryMb = 512, // Set to minimum advised memory for Ignite grid JVM of 512Mb

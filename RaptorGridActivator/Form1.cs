@@ -21,11 +21,11 @@ namespace RaptorGridActivator
             try
             {
                 Log.Info("About to call ActivatePersistentGridServer.Instance().SetGridActive() for Immutable Raptor grid");
-                bool result1 = ActivatePersistentGridServer.Instance().SetGridActive(RaptorGrids.RaptorImmutableGridName());
+                bool result1 = ActivatePersistentGridServer.Instance().SetGridActive(TRexGrids.RaptorImmutableGridName());
                 Log.Info($"Activation process completed: Immutable = {result1}");
 
                 Log.Info("About to call ActivatePersistentGridServer.Instance().SetGridActive() for Mutable Raptor grid");
-                bool result2 = ActivatePersistentGridServer.Instance().SetGridActive(RaptorGrids.RaptorMutableGridName());
+                bool result2 = ActivatePersistentGridServer.Instance().SetGridActive(TRexGrids.RaptorMutableGridName());
                 Log.Info($"Activation process completed: Mutable = {result2}");
 
                 MessageBox.Show($"Activation process completed: Mutable = {result1}, Immutable = {result2}");

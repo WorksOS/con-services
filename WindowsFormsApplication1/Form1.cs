@@ -152,7 +152,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             mutableClient = new MutableClientServer("TestApplication");
 
             // Instantiate a site model changed listener to catch changes to site model attributes
-            SiteModelAttrubutesChanged = new SiteModelAttributesChangedEventListener(RaptorGrids.RaptorImmutableGridName());
+            SiteModelAttrubutesChanged = new SiteModelAttributesChangedEventListener(TRexGrids.RaptorImmutableGridName());
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -491,11 +491,11 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         {
             try
             {
-                IIgnite ignite = RaptorGridFactory.Grid(RaptorGrids.RaptorGridName(mutability));
+                IIgnite ignite = RaptorGridFactory.Grid(TRexGrids.RaptorGridName(mutability));
 
                 if (ignite == null)
                 {
-                    MessageBox.Show($"No ignite reference for {RaptorGrids.RaptorGridName(mutability)} grid");
+                    MessageBox.Show($"No ignite reference for {TRexGrids.RaptorGridName(mutability)} grid");
                     return;
                 }
 
@@ -636,7 +636,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
             try
             {
-                IIgnite ignite = RaptorGridFactory.Grid(RaptorGrids.RaptorMutableGridName());
+                IIgnite ignite = RaptorGridFactory.Grid(TRexGrids.RaptorMutableGridName());
 
                 if (ignite != null)
                 {
@@ -649,7 +649,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                     MessageBox.Show("No Ignite referece for mutable Statistics");
                 }
 
-                ignite = RaptorGridFactory.Grid(RaptorGrids.RaptorImmutableGridName());
+                ignite = RaptorGridFactory.Grid(TRexGrids.RaptorImmutableGridName());
                 if (ignite != null)
                 {
                     string result = CalculateCacheStatistics(RaptorCaches.ImmutableNonSpatialCacheName(), ignite.GetCache<object, byte[]>(RaptorCaches.ImmutableNonSpatialCacheName())) + "\n" +
@@ -778,7 +778,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         {
             // Test adding a stream for "<NewID>-ProductionDataModel.XML" to the mutable non-spatial cache 
 
-            IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
+            IIgnite ignite = Ignition.GetIgnite(TRexGrids.RaptorMutableGridName());
 
             ICache<NonSpatialAffinityKey, byte[]> cache = ignite.GetCache<NonSpatialAffinityKey, byte[]>(RaptorCaches.MutableNonSpatialCacheName());
 

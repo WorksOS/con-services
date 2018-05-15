@@ -52,7 +52,7 @@ namespace VSS.TRex.Services.Designs
         /// <summary>
         /// Default no-arg constructor that sets the grid and cache name to default values
         /// </summary>
-        public DesignsService(StorageMutability Mutability) : base(RaptorGrids.RaptorGridName(Mutability), "DesignsService")
+        public DesignsService(StorageMutability Mutability) : base(TRexGrids.GridName(Mutability), "DesignsService")
         {
             CacheName = RaptorCaches.ImmutableNonSpatialCacheName();
         }

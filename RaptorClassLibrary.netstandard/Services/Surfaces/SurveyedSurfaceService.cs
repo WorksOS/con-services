@@ -41,7 +41,7 @@ namespace VSS.TRex.Services.Surfaces
         /// <summary>
         /// Default no-arg constructor supplied default Raptor grid and MutableNonSpatial cache name for surveyed surface information
         /// </summary>
-        public SurveyedSurfaceService(StorageMutability mutability) : base(RaptorGrids.RaptorGridName(mutability), "SurveyedSurfaceService")
+        public SurveyedSurfaceService(StorageMutability mutability) : base(TRexGrids.GridName(mutability), "SurveyedSurfaceService")
         {
             CacheName = RaptorCaches.ImmutableNonSpatialCacheName();
         }

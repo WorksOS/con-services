@@ -39,7 +39,7 @@ namespace VSS.TRex.GridFabric.Queues
         public TestQueueHolder()
         {
           //  MutableClientServer Server = new MutableClientServer(new [] { "TestQueue2" });
-            IIgnite Ignite = Ignition.GetIgnite(RaptorGrids.RaptorMutableGridName());
+            IIgnite Ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
             QueueCache = Ignite.GetOrCreateCache<long, TestQueueItem>(
                 new CacheConfiguration
                 {

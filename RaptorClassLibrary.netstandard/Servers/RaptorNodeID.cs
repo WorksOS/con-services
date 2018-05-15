@@ -18,7 +18,7 @@ namespace VSS.TRex.Servers
         {
             if (raptorNodeIDs[(int)mutability] == "")
             {
-                raptorNodeIDs[(int)mutability] = Ignition.GetIgnite(RaptorGrids.RaptorGridName(mutability)).GetCluster().GetLocalNode().GetAttribute<string>("RaptorNodeID");
+                raptorNodeIDs[(int)mutability] = Ignition.GetIgnite(TRexGrids.GridName(mutability)).GetCluster().GetLocalNode().GetAttribute<string>("RaptorNodeID");
             }
 
             return raptorNodeIDs[(int)mutability];

@@ -7,7 +7,7 @@ namespace VSS.TRex.GridFabric
         /// <summary>
         /// Default no-arg constructor that sets up cluster and compute projections available for use
         /// </summary>
-        public BaseImmutableRaptorIgniteClass(string role) : base(RaptorGrids.RaptorImmutableGridName(), role)
+        public BaseImmutableRaptorIgniteClass(string role) : base(TRexGrids.ImmutableGridName(), role)
         {
         }
     }

@@ -23,7 +23,7 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
         /// <summary>
         /// Default no-arg constructor that orients the request to the available ASNODE servers on the immutable grid projection
         /// </summary>
-        public SimpleVolumesRequestComputeFunc_ApplicationService() : base(RaptorGrids.RaptorImmutableGridName(), ServerRoles.ASNODE)
+        public SimpleVolumesRequestComputeFunc_ApplicationService() : base(TRexGrids.ImmutableGridName(), ServerRoles.ASNODE)
         {
         }
 

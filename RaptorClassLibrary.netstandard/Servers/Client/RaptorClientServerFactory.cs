@@ -16,11 +16,11 @@ namespace VSS.TRex.Servers.Client
         /// <returns></returns>
         public static IgniteServer NewClientNode(string gridName, string role)
         {
-            if (gridName.Equals(RaptorGrids.RaptorMutableGridName()))
+            if (gridName.Equals(TRexGrids.MutableGridName()))
             {
                 return new MutableClientServer(role);
             }
-            if (gridName.Equals(RaptorGrids.RaptorImmutableGridName()))
+            if (gridName.Equals(TRexGrids.ImmutableGridName()))
             {
                 return new ImmutableClientServer(role);
             }
