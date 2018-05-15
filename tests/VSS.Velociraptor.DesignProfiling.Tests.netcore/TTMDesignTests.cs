@@ -1,16 +1,16 @@
-﻿using VSS.Velociraptor.DesignProfiling;
+﻿using VSS.TRex.DesignProfiling;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.TRex;
-using VSS.Velociraptor.Designs.TTM;
+using VSS.TRex.Designs.TTM;
 using VSS.TRex.Designs;
 using Xunit;
 using VSS.TRex.SubGridTrees.Interfaces;
 
-namespace VSS.Velociraptor.DesignProfiling.Tests
+namespace VSS.TRex.DesignProfiling.Tests
 {
     public class TTMDesignTests
     {

@@ -54,7 +54,7 @@ namespace VSS.TRex.Services.Designs
         /// </summary>
         public DesignsService(StorageMutability Mutability) : base(TRexGrids.GridName(Mutability), "DesignsService")
         {
-            CacheName = RaptorCaches.ImmutableNonSpatialCacheName();
+            CacheName = TRexCaches.ImmutableNonSpatialCacheName();
         }
 
         public DesignsService(string cacheName) : this(StorageMutability.Immutable)
@@ -168,7 +168,7 @@ namespace VSS.TRex.Services.Designs
                     _svcName = context.Name;
                 }
 
-                mutableNonSpatialCache = _ignite.GetCache<NonSpatialAffinityKey, Byte[]>(CacheName /*RaptorCaches.MutableNonSpatialCacheName());
+                mutableNonSpatialCache = _ignite.GetCache<NonSpatialAffinityKey, Byte[]>(CacheName /*TRexCaches.MutableNonSpatialCacheName());
     */
 
         public bool Remove(Guid SiteModelID, long DesignID) => RemoveDirect(SiteModelID, DesignID);

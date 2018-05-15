@@ -20,7 +20,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
     /// a client server instance requesting it.
     /// </summary>
     [Serializable]
-    public class TileRenderRequestComputeFunc : BaseRaptorComputeFunc, IComputeFunc<TileRenderRequestArgument, TileRenderResponse>
+    public class TileRenderRequestComputeFunc : BaseComputeFunc, IComputeFunc<TileRenderRequestArgument, TileRenderResponse>
     {
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

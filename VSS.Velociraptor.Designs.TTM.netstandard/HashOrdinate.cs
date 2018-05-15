@@ -1,4 +1,4 @@
-﻿namespace VSS.Velociraptor.Designs.TTM
+﻿namespace VSS.TRex.Designs.TTM
 {
     /// <summary>
     /// Defines the basis for hashed coordinates used to index TriVertex instances

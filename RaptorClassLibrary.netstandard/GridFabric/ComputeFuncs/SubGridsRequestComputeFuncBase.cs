@@ -19,7 +19,7 @@ using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.Types;
 using VSS.TRex.Utilities;
-using VSS.Velociraptor.DesignProfiling;
+using VSS.TRex.DesignProfiling;
 
 namespace VSS.TRex.GridFabric.ComputeFuncs
 {

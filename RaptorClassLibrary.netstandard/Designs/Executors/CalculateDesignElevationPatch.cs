@@ -1,8 +1,8 @@
-﻿using VSS.Velociraptor.DesignProfiling.GridFabric.Arguments;
-using VSS.TRex;
+﻿using VSS.TRex;
+using VSS.TRex.DesignProfiling.GridFabric.Arguments;
 using VSS.TRex.SubGridTrees.Client;
 
-namespace VSS.Velociraptor.DesignProfiling.Executors
+namespace VSS.TRex.DesignProfiling.Executors
 {
     public class CalculateDesignElevationPatch
     {

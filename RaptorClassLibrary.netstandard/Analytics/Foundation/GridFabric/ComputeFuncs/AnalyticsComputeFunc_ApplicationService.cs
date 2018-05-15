@@ -12,10 +12,10 @@ namespace VSS.TRex.Analytics.GridFabric.ComputeFuncs
     /// This compute func operates in the context of an application server that reaches out to the compute cluster to 
     /// perform subgrid processing.
     /// </summary>
-    public class AnalyticsComputeFunc_ApplicationService<TArgument, TResponse, TRequest> : BaseRaptorComputeFunc, IComputeFunc<TArgument, TResponse>
+    public class AnalyticsComputeFunc_ApplicationService<TArgument, TResponse, TRequest> : BaseComputeFunc, IComputeFunc<TArgument, TResponse>
         where TArgument : class
         where TResponse : class, IAggregateWith<TResponse>
-        where TRequest : BaseRaptorRequest<TArgument, TResponse>, new()
+        where TRequest : BaseRequest<TArgument, TResponse>, new()
     {
         [NonSerialized]
         // ReSharper disable once StaticMemberInGenericType

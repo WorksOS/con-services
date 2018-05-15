@@ -14,8 +14,8 @@ using VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
-using VSS.Velociraptor.DesignProfiling;
-using VSS.VisionLink.Analytics.Operations;
+using VSS.TRex.DesignProfiling;
+using VSS.TRex.Analytics.Operations;
 using VSS.TRex;
 using VSS.TRex.Analytics.GridFabric.Arguments;
 using VSS.TRex.Analytics.Models;
@@ -50,7 +50,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
     {
         BoundingWorldExtent3D extents = BoundingWorldExtent3D.Inverted();
 
-        //        RaptorGenericApplicationServiceServer genericApplicationServiceServer = new RaptorGenericApplicationServiceServer();
+        //GenericApplicationServiceServer genericApplicationServiceServer = new GenericApplicationServiceServer();
         TileRenderingServer tileRenderServer;
         SimpleVolumesServer simpleVolumesServer;
         MutableClientServer mutableClient;
@@ -76,7 +76,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         private System.Drawing.Bitmap PerformRender(DisplayMode displayMode, int width, int height, bool returnEarliestFilteredCellPass, BoundingWorldExtent3D extents)
         {
             // Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
-            // SiteModel siteModel = RaptorGenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
+            // SiteModel siteModel = GenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
             SiteModel siteModel = SiteModels.Instance().GetSiteModel(ID(), false);
 
             if (siteModel == null)
@@ -507,7 +507,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                         {
                             try
                             {
-                                writeKeys(RaptorCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<NonSpatialAffinityKey, byte[]>(RaptorCaches.ImmutableNonSpatialCacheName()));
+                                writeKeys(TRexCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<NonSpatialAffinityKey, byte[]>(TRexCaches.ImmutableNonSpatialCacheName()));
                             }
                             catch (Exception E)
                             {
@@ -515,7 +515,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                             }
                             try
                             {
-                                writeKeys(RaptorCaches.DesignTopologyExistenceMapsCacheName(), writer, ignite.GetCache<NonSpatialAffinityKey, byte[]>(RaptorCaches.DesignTopologyExistenceMapsCacheName()));
+                                writeKeys(TRexCaches.DesignTopologyExistenceMapsCacheName(), writer, ignite.GetCache<NonSpatialAffinityKey, byte[]>(TRexCaches.DesignTopologyExistenceMapsCacheName()));
                             }
                             catch (Exception E)
                             {
@@ -523,7 +523,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                             }
                             try
                             {
-                                WriteKeysSpatial(RaptorCaches.ImmutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, byte[]>(RaptorCaches.ImmutableSpatialCacheName()));
+                                WriteKeysSpatial(TRexCaches.ImmutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, byte[]>(TRexCaches.ImmutableSpatialCacheName()));
                             }
                             catch (Exception E)
                             {
@@ -534,7 +534,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                         {
                             try
                             {
-                                writeKeys(RaptorCaches.MutableNonSpatialCacheName(), writer, ignite.GetCache<NonSpatialAffinityKey, byte[]>(RaptorCaches.MutableNonSpatialCacheName()));
+                                writeKeys(TRexCaches.MutableNonSpatialCacheName(), writer, ignite.GetCache<NonSpatialAffinityKey, byte[]>(TRexCaches.MutableNonSpatialCacheName()));
                             }
                             catch (Exception E)
                             {
@@ -542,7 +542,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                             }
                             try
                             {
-                                WriteKeysSpatial(RaptorCaches.MutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, byte[]>(RaptorCaches.MutableSpatialCacheName()));
+                                WriteKeysSpatial(TRexCaches.MutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, byte[]>(TRexCaches.MutableSpatialCacheName()));
                             }
                             catch (Exception E)
                             {
@@ -550,7 +550,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                             }
                             try
                             {
-                                writeTAGFileBufferQueueKeys(RaptorCaches.TAGFileBufferQueueCacheName(), writer, ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(RaptorCaches.TAGFileBufferQueueCacheName()));
+                                writeTAGFileBufferQueueKeys(TRexCaches.TAGFileBufferQueueCacheName(), writer, ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName()));
                             }
                             catch (Exception E)
                             {
@@ -640,8 +640,8 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
                 if (ignite != null)
                 {
-                    string result = CalculateCacheStatistics(RaptorCaches.MutableNonSpatialCacheName(), ignite.GetCache<object, byte[]>(RaptorCaches.MutableNonSpatialCacheName())) + "\n" +
-                                    CalculateCacheStatistics(RaptorCaches.MutableSpatialCacheName(), ignite.GetCache<object, byte[]>(RaptorCaches.MutableSpatialCacheName()));
+                    string result = CalculateCacheStatistics(TRexCaches.MutableNonSpatialCacheName(), ignite.GetCache<object, byte[]>(TRexCaches.MutableNonSpatialCacheName())) + "\n" +
+                                    CalculateCacheStatistics(TRexCaches.MutableSpatialCacheName(), ignite.GetCache<object, byte[]>(TRexCaches.MutableSpatialCacheName()));
                     MessageBox.Show(result, "Mutable Statistics");
                 }
                 else
@@ -652,8 +652,8 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                 ignite = RaptorGridFactory.Grid(TRexGrids.ImmutableGridName());
                 if (ignite != null)
                 {
-                    string result = CalculateCacheStatistics(RaptorCaches.ImmutableNonSpatialCacheName(), ignite.GetCache<object, byte[]>(RaptorCaches.ImmutableNonSpatialCacheName())) + "\n" +
-                                    CalculateCacheStatistics(RaptorCaches.ImmutableSpatialCacheName(), ignite.GetCache<object, byte[]>(RaptorCaches.ImmutableSpatialCacheName()));
+                    string result = CalculateCacheStatistics(TRexCaches.ImmutableNonSpatialCacheName(), ignite.GetCache<object, byte[]>(TRexCaches.ImmutableNonSpatialCacheName())) + "\n" +
+                                    CalculateCacheStatistics(TRexCaches.ImmutableSpatialCacheName(), ignite.GetCache<object, byte[]>(TRexCaches.ImmutableSpatialCacheName()));
                     MessageBox.Show(result, "Immutable Statistics");
                 }
                 else
@@ -780,7 +780,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
             IIgnite ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
 
-            ICache<NonSpatialAffinityKey, byte[]> cache = ignite.GetCache<NonSpatialAffinityKey, byte[]>(RaptorCaches.MutableNonSpatialCacheName());
+            ICache<NonSpatialAffinityKey, byte[]> cache = ignite.GetCache<NonSpatialAffinityKey, byte[]>(TRexCaches.MutableNonSpatialCacheName());
 
             byte[] bytes = new byte[100];
 

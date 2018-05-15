@@ -39,7 +39,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
             // Get the ignite grid and cache references
             ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
-            ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> queueCache = ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(RaptorCaches.TAGFileBufferQueueCacheName());
+            ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> queueCache = ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
 
             RemoteTAGFileFilter TAGFileFilter = new RemoteTAGFileFilter();
 

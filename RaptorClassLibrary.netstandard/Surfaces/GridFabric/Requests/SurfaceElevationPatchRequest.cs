@@ -11,7 +11,7 @@ using VSS.VisionLink.DesignProfiling.GridFabric.Requests;
 
 namespace VSS.TRex.Surfaces.GridFabric.Requests
 {
-    public class SurfaceElevationPatchRequest : DesignProfilerRaptorRequest<SurfaceElevationPatchArgument, ClientHeightAndTimeLeafSubGrid>
+    public class SurfaceElevationPatchRequest : DesignProfilerRequest<SurfaceElevationPatchArgument, ClientHeightAndTimeLeafSubGrid>
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 

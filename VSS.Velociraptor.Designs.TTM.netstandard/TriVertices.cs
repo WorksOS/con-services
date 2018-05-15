@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace VSS.Velociraptor.Designs.TTM
+namespace VSS.TRex.Designs.TTM
 {
     public class TriVertices : List<TriVertex>
     {

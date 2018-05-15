@@ -3,7 +3,7 @@ using System.IO;
 using System.Reflection;
 using log4net;
 using log4net.Config;
-using VSS.Velociraptor.DesignProfiling.Servers.Client;
+using VSS.TRex.DesignProfiling.Servers.Client;
 
 namespace VSS.TRex.Server.DesignElevation
 {

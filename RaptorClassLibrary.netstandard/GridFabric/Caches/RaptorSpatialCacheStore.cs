@@ -7,11 +7,11 @@ namespace VSS.TRex.GridFabric.Caches
 {
     public class RaptorSpatialCacheStore : CacheStoreAdapter<SubGridSpatialAffinityKey, MemoryStream>
     {
-        private RaptorCacheStoreUtilities Utilities;
+        private TRexCacheStoreUtilities Utilities;
 
         public RaptorSpatialCacheStore(string mutabilitySuffix)
         {
-            Utilities = new RaptorCacheStoreUtilities(mutabilitySuffix);
+            Utilities = new TRexCacheStoreUtilities(mutabilitySuffix);
         }
 
         public override void Delete(SubGridSpatialAffinityKey key)

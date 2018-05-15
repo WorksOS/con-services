@@ -1,7 +1,7 @@
 ﻿using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Surfaces.GridFabric.Arguments;
-using VSS.Velociraptor.DesignProfiling;
+using VSS.TRex.DesignProfiling;
 
 namespace VSS.TRex.Surfaces.Executors
 {

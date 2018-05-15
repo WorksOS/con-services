@@ -40,7 +40,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         {
             IIgnite _ignite = RaptorGridFactory.Grid(TRexGrids.MutableGridName());
 
-            //var cacheGroup = _ignite.GetCluster().ForCacheNodes(RaptorCaches.TAGFileBufferQueueCacheName());
+            //var cacheGroup = _ignite.GetCluster().ForCacheNodes(TRexCaches.TAGFileBufferQueueCacheName());
 
             // Get an instance of IServices for the cluster group.
             services = _ignite.GetServices();

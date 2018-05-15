@@ -1,4 +1,4 @@
-﻿namespace VSS.Velociraptor.DesignProfiling
+﻿namespace VSS.TRex.DesignProfiling
 {
     public enum DesignProfilerRequestResult
     {

@@ -1,4 +1,4 @@
-﻿using VSS.Velociraptor.Designs.TTM;
+﻿using VSS.TRex.Designs.TTM;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Sdk;
 
-namespace VSS.Velociraptor.Designs.TTM.Tests
+namespace VSS.TRex.Designs.TTM.Tests
 {
     public class TrimbleTinModelTests
     {

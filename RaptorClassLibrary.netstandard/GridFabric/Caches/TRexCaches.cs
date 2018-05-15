@@ -6,7 +6,7 @@ namespace VSS.TRex.GridFabric.Caches
     /// Sptial grid cache provides logic to determine which of the spatial data grid caches an application should read data from
     /// depending on it settings in TRexServerConfig
     /// </summary>
-    public static class RaptorCaches
+    public static class TRexCaches
     {
         private const string kSpatialMutable = "Spatial-Mutable";
         private const string kSpatialImmutable = "Spatial-Immutable";

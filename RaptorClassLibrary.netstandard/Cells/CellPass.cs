@@ -264,7 +264,7 @@ namespace VSS.TRex.Cells
         }
 
         /// <summary>
-        /// The external descriptor for a machine within a project. This is immutable and once a machine is created in the Raptor project the machine
+        /// The external descriptor for a machine within a project. This is immutable and once a machine is created in the project. The machine
         /// may always be referred to via this descriptor
         /// </summary>
         /// Note: This is removed in favour of CellPasses only ever containing the internal sitemodel machine index

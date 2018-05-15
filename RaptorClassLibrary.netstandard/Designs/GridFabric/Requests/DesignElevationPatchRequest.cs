@@ -1,13 +1,12 @@
 ﻿using Apache.Ignite.Core.Compute;
-using VSS.Velociraptor.DesignProfiling.GridFabric.Arguments;
-using VSS.Velociraptor.DesignProfiling.GridFabric.ComputeFuncs;
 using VSS.VisionLink.DesignProfiling.GridFabric.Requests;
-using VSS.TRex;
+using VSS.TRex.DesignProfiling.GridFabric.Arguments;
+using VSS.TRex.DesignProfiling.GridFabric.ComputeFuncs;
 using VSS.TRex.SubGridTrees.Client;
 
-namespace VSS.Velociraptor.DesignProfiling.GridFabric.Requests
+namespace VSS.TRex.DesignProfiling.GridFabric.Requests
 {
-    public class DesignElevationPatchRequest : DesignProfilerRaptorRequest<CalculateDesignElevationPatchArgument, ClientHeightLeafSubGrid>
+    public class DesignElevationPatchRequest : DesignProfilerRequest<CalculateDesignElevationPatchArgument, ClientHeightLeafSubGrid>
     {
         public override ClientHeightLeafSubGrid Execute(CalculateDesignElevationPatchArgument arg)
         {

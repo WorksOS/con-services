@@ -32,10 +32,10 @@ namespace VSS.TRex.Storage
         private void EstablishCaches()
         {
             spatialCache = new StorageProxyCacheTransacted<SubGridSpatialAffinityKey, byte[]>(
-                ignite.GetCache<SubGridSpatialAffinityKey, byte[]>(RaptorCaches.SpatialCacheName(Mutability)));
+                ignite.GetCache<SubGridSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(Mutability)));
             nonSpatialCache =
                 new StorageProxyCacheTransacted<NonSpatialAffinityKey, byte[]>(
-                    ignite.GetCache<NonSpatialAffinityKey, byte[]>(RaptorCaches.NonSpatialCacheName(Mutability)));
+                    ignite.GetCache<NonSpatialAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(Mutability)));
         }
 
         /// <summary>

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace VSS.Velociraptor.Designs.TTM
+namespace VSS.TRex.Designs.TTM
 {
     public class Triangles : List<Triangle>
     {

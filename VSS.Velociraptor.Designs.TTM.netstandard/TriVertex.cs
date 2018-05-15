@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.TRex.Geometry;
 
-namespace VSS.Velociraptor.Designs.TTM
+namespace VSS.TRex.Designs.TTM
 {
     /// <summary>
     /// Implements a vertex at the corner of triangles in the TTM mesh

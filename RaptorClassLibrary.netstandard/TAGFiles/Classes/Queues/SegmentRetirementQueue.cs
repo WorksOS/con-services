@@ -30,7 +30,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             QueueCache = Ignite.GetOrCreateCache<long, SegmentRetirementQueueItem>(
                 new CacheConfiguration
                 {
-                    Name = RaptorCaches.SegmentRetirementQueueCacheName(),
+                    Name = TRexCaches.SegmentRetirementQueueCacheName(),
                     QueryEntities = new[] 
                     {
                         new QueryEntity(typeof(long), typeof(SegmentRetirementQueueItem))

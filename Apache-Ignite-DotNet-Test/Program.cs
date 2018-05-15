@@ -27,7 +27,7 @@ namespace Apache_Ignite_DotNet_Test
 
         public string Invoke()
         {
-            IIgnite ignite = Ignition.TryGetIgnite("Raptor");
+            IIgnite ignite = Ignition.TryGetIgnite("TRex");
 
             if (ignite != null)
             {
@@ -134,7 +134,7 @@ namespace Apache_Ignite_DotNet_Test
 
             IgniteConfiguration cfg = new IgniteConfiguration()
             {
-                IgniteInstanceName = "Raptor",
+                IgniteInstanceName = "TRex",
 
                 // Register custom class for Ignite serialization
                 BinaryConfiguration = new Apache.Ignite.Core.Binary.BinaryConfiguration(typeof(MyCacheClass))                                    
@@ -149,7 +149,7 @@ namespace Apache_Ignite_DotNet_Test
                     Name = "TestCache",
                     CopyOnRead = false,
                     KeepBinaryInStore = false,
-                    CacheStoreFactory = new RaptorCacheStoreFactory(),
+                    CacheStoreFactory = new TRexCacheStoreFactory(),
                     ReadThrough = true,
                     WriteThrough = true,
                     WriteBehindFlushFrequency = new TimeSpan(0, 0, 5), // 5 seconds 

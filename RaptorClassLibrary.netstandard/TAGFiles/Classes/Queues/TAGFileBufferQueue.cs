@@ -34,11 +34,11 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         {
             IIgnite ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
 
-            QueueCache = ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(RaptorCaches.TAGFileBufferQueueCacheName());
+            QueueCache = ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
 
             if (QueueCache == null)
             {
-                Log.Info($"Failed to get Ignite cache {RaptorCaches.TAGFileBufferQueueCacheName()}");
+                Log.Info($"Failed to get Ignite cache {TRexCaches.TAGFileBufferQueueCacheName()}");
                 throw new ArgumentException("Ignite cache not available");
             }
         }

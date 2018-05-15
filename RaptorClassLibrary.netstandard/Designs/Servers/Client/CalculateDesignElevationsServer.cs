@@ -1,9 +1,9 @@
-﻿using VSS.Velociraptor.DesignProfiling.GridFabric.Arguments;
-using VSS.Velociraptor.DesignProfiling.GridFabric.Requests;
+﻿using VSS.TRex.DesignProfiling.GridFabric.Arguments;
+using VSS.TRex.DesignProfiling.GridFabric.Requests;
 using VSS.TRex.Servers.Client;
 using VSS.TRex.SubGridTrees.Client;
 
-namespace VSS.Velociraptor.DesignProfiling.Servers.Client
+namespace VSS.TRex.DesignProfiling.Servers.Client
 {
     public class CalculateDesignElevationsServer : ImmutableClientServer
     {

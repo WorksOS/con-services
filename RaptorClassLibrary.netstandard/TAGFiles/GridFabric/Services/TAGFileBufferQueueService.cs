@@ -80,7 +80,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
             }
 
             ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> queueCache =
-                _ignite?.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(RaptorCaches.TAGFileBufferQueueCacheName());
+                _ignite?.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
 
             TAGFileBufferQueueItemHandler handler = TAGFileBufferQueueItemHandler.Instance();
 

@@ -2,7 +2,7 @@
 using VSS.TRex.Designs;
 using VSS.TRex.SubGridTrees;
 
-namespace VSS.Velociraptor.DesignProfiling
+namespace VSS.TRex.DesignProfiling
 {
     public abstract class DesignBase
     {

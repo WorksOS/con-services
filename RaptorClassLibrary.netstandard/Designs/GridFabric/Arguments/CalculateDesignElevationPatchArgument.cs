@@ -2,7 +2,7 @@
 using VSS.TRex.Designs;
 using VSS.TRex.GridFabric.Arguments;
 
-namespace VSS.Velociraptor.DesignProfiling.GridFabric.Arguments
+namespace VSS.TRex.DesignProfiling.GridFabric.Arguments
 {
     [Serializable]
     public class CalculateDesignElevationPatchArgument : BaseApplicationServiceRequestArgument

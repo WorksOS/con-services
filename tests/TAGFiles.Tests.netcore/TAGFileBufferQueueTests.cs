@@ -81,7 +81,7 @@ namespace TAGFiles.Tests.netcore
             // Read it back from the cache to ensure it was added as expected.
             ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> QueueCache =
                 ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(
-                    RaptorCaches.TAGFileBufferQueueCacheName());
+                    TRexCaches.TAGFileBufferQueueCacheName());
 
             TAGFileBufferQueueItem tagItem2 = QueueCache.Get(tagKey);
 

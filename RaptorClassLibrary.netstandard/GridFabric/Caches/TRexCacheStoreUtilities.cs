@@ -7,17 +7,17 @@ namespace VSS.TRex.GridFabric.Caches
     /// Implements the Ignite ICacheStore interface
     /// </summary>
     [Serializable]
-    public class RaptorCacheStoreUtilities 
+    public class TRexCacheStoreUtilities 
     {
         /// <summary>
         /// The location to store the files containing the persisted cache entries
         /// </summary>
-        protected string path = "C:\\Temp\\RaptorIgniteData";
+        protected string path = "C:\\Temp\\TRexIgniteData";
 
         /// <summary>
         /// Default constructor that adds the mutability suffix to the path to store persisted cache items
         /// </summary>
-        public RaptorCacheStoreUtilities(string MutabilitySuffix)
+        public TRexCacheStoreUtilities(string MutabilitySuffix)
         {
             path = path + MutabilitySuffix;
 

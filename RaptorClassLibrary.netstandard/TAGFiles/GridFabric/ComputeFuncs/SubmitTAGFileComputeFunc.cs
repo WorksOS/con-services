@@ -11,7 +11,7 @@ using VSS.TRex.Servers;
 
 namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
 {
-    public class SubmitTAGFileComputeFunc : BaseRaptorComputeFunc, IComputeFunc<SubmitTAGFileRequestArgument, SubmitTAGFileResponse>
+    public class SubmitTAGFileComputeFunc : BaseComputeFunc, IComputeFunc<SubmitTAGFileRequestArgument, SubmitTAGFileResponse>
     {
         /// <summary>
         /// Default no-arg constructor that orients the request to the available TAG processing server nodes on the mutable grid projection

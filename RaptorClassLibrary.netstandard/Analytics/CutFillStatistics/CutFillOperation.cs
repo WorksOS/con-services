@@ -2,7 +2,7 @@
 using VSS.TRex.Analytics.GridFabric.Requests;
 using VSS.TRex.Analytics.Models;
 
-namespace VSS.VisionLink.Analytics.Operations
+namespace VSS.TRex.Analytics.Operations
 {
     /// <summary>
     /// Provides a client onsumable operation for performing cut fill analytics that returns a client model space cut fill result.

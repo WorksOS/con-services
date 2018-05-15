@@ -32,9 +32,9 @@ namespace VSS.TRex.Servers.Compute
 
 
     //TODO: Make configurable - this not not run on linux!
-    //private const string PersistentCacheStoreLocation = @"C:\Temp\RaptorIgniteData\Mutable";
+    //private const string PersistentCacheStoreLocation = @"C:\Temp\TRexIgniteData\Mutable";
 
-    private string PersistentCacheStoreLocation = Path.Combine(Path.GetTempPath(), Path.Combine("RaptorIgniteData", "Mutable"));
+    private string PersistentCacheStoreLocation = Path.Combine(Path.GetTempPath(), Path.Combine("TRexIgniteData", "Mutable"));
 
     
     /// <summary>
@@ -129,7 +129,7 @@ namespace VSS.TRex.Servers.Compute
     {
       base.ConfigureNonSpatialMutableCache(cfg);
 
-      cfg.Name = RaptorCaches.MutableNonSpatialCacheName();
+      cfg.Name = TRexCaches.MutableNonSpatialCacheName();
       //            cfg.CopyOnRead = false;   Leave as default as should have no effect with 2.1+ without on heap caching enabled
       cfg.KeepBinaryInStore = false;
 
@@ -153,7 +153,7 @@ namespace VSS.TRex.Servers.Compute
     {
       base.ConfigureMutableSpatialCache(cfg);
 
-      cfg.Name = RaptorCaches.MutableSpatialCacheName();
+      cfg.Name = TRexCaches.MutableSpatialCacheName();
       //            cfg.CopyOnRead = false;   Leave as default as should have no effect with 2.1+ without on heap caching enabled
       cfg.KeepBinaryInStore = false;
 
@@ -173,7 +173,7 @@ namespace VSS.TRex.Servers.Compute
 
     public void ConfigureTAGFileBufferQueueCache(CacheConfiguration cfg)
     {
-      cfg.Name = RaptorCaches.TAGFileBufferQueueCacheName();
+      cfg.Name = TRexCaches.TAGFileBufferQueueCacheName();
 
       cfg.KeepBinaryInStore = true;
 

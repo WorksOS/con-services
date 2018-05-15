@@ -2,7 +2,7 @@
 using System.Linq;
 using VSS.TRex.Geometry;
 
-namespace VSS.Velociraptor.Designs.TTM
+namespace VSS.TRex.Designs.TTM
 {
     /// <summary>
     /// Describes a triangle in the TIN mesh

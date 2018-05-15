@@ -86,7 +86,7 @@ namespace VSS.TRex.SiteModels
             {
                 if (!SurveyedSurfacesLoaded)
                 {
-                    SurveyedSurfaceService proxy = new SurveyedSurfaceService(StorageMutability.Immutable, RaptorCaches.ImmutableNonSpatialCacheName());
+                    SurveyedSurfaceService proxy = new SurveyedSurfaceService(StorageMutability.Immutable, TRexCaches.ImmutableNonSpatialCacheName());
                     proxy.Init(null); // TODO: Not needed when this moves to Ignite deployed service model
                     SurveyedSurfaces ss = proxy.ListDirect(ID);
 

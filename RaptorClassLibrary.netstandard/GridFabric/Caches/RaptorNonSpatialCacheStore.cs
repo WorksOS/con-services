@@ -6,11 +6,11 @@ namespace VSS.TRex.GridFabric.Caches
 {
     public class RaptorNonSpatialCacheStore : CacheStoreAdapter<string, MemoryStream>
     {
-        private RaptorCacheStoreUtilities Utilities;
+        private TRexCacheStoreUtilities Utilities;
 
         public RaptorNonSpatialCacheStore(string mutabilitySuffix)
         {
-            Utilities = new RaptorCacheStoreUtilities(mutabilitySuffix);
+            Utilities = new TRexCacheStoreUtilities(mutabilitySuffix);
         }
 
         public override void Delete(string key)

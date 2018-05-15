@@ -15,7 +15,7 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
     /// This compute func operates in the context of an application server that reaches out to the compute cluster to 
     /// perform subgrid processing.
     /// </summary>
-    public class SimpleVolumesRequestComputeFunc_ApplicationService : BaseRaptorComputeFunc, IComputeFunc<SimpleVolumesRequestArgument, SimpleVolumesResponse>
+    public class SimpleVolumesRequestComputeFunc_ApplicationService : BaseComputeFunc, IComputeFunc<SimpleVolumesRequestArgument, SimpleVolumesResponse>
     {
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

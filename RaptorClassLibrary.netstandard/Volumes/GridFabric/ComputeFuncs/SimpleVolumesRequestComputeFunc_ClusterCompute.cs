@@ -15,7 +15,7 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
     /// The cimple volumes compute function that runs in the context of the cluster compute nodes. This function
     /// performs a volumes calculation across the paritions on this node only.
     /// </summary>
-    public class SimpleVolumesRequestComputeFunc_ClusterCompute : BaseRaptorComputeFunc, IComputeFunc<SimpleVolumesRequestArgument, SimpleVolumesResponse>
+    public class SimpleVolumesRequestComputeFunc_ClusterCompute : BaseComputeFunc, IComputeFunc<SimpleVolumesRequestArgument, SimpleVolumesResponse>
     {
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

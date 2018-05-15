@@ -2,10 +2,10 @@
 using log4net;
 using System;
 using System.Reflection;
-using VSS.Velociraptor.DesignProfiling.Executors;
-using VSS.Velociraptor.DesignProfiling.GridFabric.Arguments;
+using VSS.TRex.DesignProfiling.Executors;
+using VSS.TRex.DesignProfiling.GridFabric.Arguments;
 
-namespace VSS.Velociraptor.DesignProfiling.GridFabric.ComputeFuncs
+namespace VSS.TRex.DesignProfiling.GridFabric.ComputeFuncs
 {
     /// <summary>
     /// Ignite ComputeFunc responsible for executing the elevation patch calculator

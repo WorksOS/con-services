@@ -20,7 +20,7 @@ namespace VSS.TRex.GridFabric.Affinity
         /// </summary>
         public ImmutableSpatialAffinityPartitionMap() :
             base(Ignition.GetIgnite(TRexGrids.ImmutableGridName())
-                .GetCache<SubGridSpatialAffinityKey, byte[]>(RaptorCaches.ImmutableSpatialCacheName()))
+                .GetCache<SubGridSpatialAffinityKey, byte[]>(TRexCaches.ImmutableSpatialCacheName()))
         {
         }
 

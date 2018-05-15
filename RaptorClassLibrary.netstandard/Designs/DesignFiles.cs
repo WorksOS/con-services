@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using VSS.TRex.Designs;
 
-namespace VSS.Velociraptor.DesignProfiling
+namespace VSS.TRex.DesignProfiling
 {
     /*
   TDesignFiles = class(TObject)

@@ -7,7 +7,7 @@ using Apache.Ignite.Core.Common;
 namespace Apache_Ignite_DotNet_Test
 {
     [Serializable]
-    public class RaptorCacheStoreFactory : IFactory<ICacheStore>
+    public class TRexCacheStoreFactory : IFactory<ICacheStore>
     {
         public ICacheStore CreateInstance()
         {
@@ -21,7 +21,7 @@ namespace Apache_Ignite_DotNet_Test
     [Serializable]
     public class RaptorCacheStore : CacheStoreAdapter<object, object>, ICacheStore
     {
-        private const string path = "C:\\Temp\\RaptorIgniteData";
+        private const string path = "C:\\Temp\\TRexIgniteData";
 
         public override void Delete(object key)
         {

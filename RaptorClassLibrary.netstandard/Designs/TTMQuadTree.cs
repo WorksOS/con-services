@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using VSS.Velociraptor.Designs.TTM;
+using VSS.TRex.Designs.TTM;
 
 namespace VSS.TRex.Designs
 {

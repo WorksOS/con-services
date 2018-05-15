@@ -60,7 +60,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
 
             try
             {
-                DesignTopologyExistanceMapsCache = ignite.GetCache<NonSpatialAffinityKey, byte[]>(RaptorCaches.DesignTopologyExistenceMapsCacheName());
+                DesignTopologyExistanceMapsCache = ignite.GetCache<NonSpatialAffinityKey, byte[]>(TRexCaches.DesignTopologyExistenceMapsCacheName());
             }
             catch // Exception is thrown if the cache does not exist
             {
@@ -69,7 +69,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
 
             if (DesignTopologyExistanceMapsCache == null)
             {
-                Log.Info($"Failed to get or create Ignite cache {RaptorCaches.DesignTopologyExistenceMapsCacheName()}");
+                Log.Info($"Failed to get or create Ignite cache {TRexCaches.DesignTopologyExistenceMapsCacheName()}");
                 throw new ArgumentException("Ignite cache not available");
             }
         }
@@ -81,7 +81,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
         {
             return new CacheConfiguration()
             {
-                Name = RaptorCaches.DesignTopologyExistenceMapsCacheName(),
+                Name = TRexCaches.DesignTopologyExistenceMapsCacheName(),
 
                 // cfg.CopyOnRead = false;   Leave as default as should have no effect with 2.1+ without on heap caching enabled
                 KeepBinaryInStore = false,

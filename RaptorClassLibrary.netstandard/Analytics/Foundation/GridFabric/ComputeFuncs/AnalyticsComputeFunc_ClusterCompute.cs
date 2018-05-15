@@ -10,7 +10,7 @@ using VSS.TRex.Servers;
 
 namespace VSS.TRex.Analytics.GridFabric.ComputeFuncs
 {
-    public class AnalyticsComputeFunc_ClusterCompute<TArgument, TResponse, TCoordinator> : BaseRaptorComputeFunc, IComputeFunc<TArgument, TResponse>
+    public class AnalyticsComputeFunc_ClusterCompute<TArgument, TResponse, TCoordinator> : BaseComputeFunc, IComputeFunc<TArgument, TResponse>
         where TArgument : class
         where TResponse : class, IAggregateWith<TResponse>
         where TCoordinator : BaseAnalyticsCoordinator<TArgument, TResponse>, new()

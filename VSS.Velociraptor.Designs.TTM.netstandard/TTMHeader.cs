@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Runtime.InteropServices;
 
-namespace VSS.Velociraptor.Designs.TTM
+namespace VSS.TRex.Designs.TTM
 {
 
     public static class HeaderConsts

@@ -43,7 +43,7 @@ namespace VSS.TRex.Services.Surfaces
         /// </summary>
         public SurveyedSurfaceService(StorageMutability mutability) : base(TRexGrids.GridName(mutability), "SurveyedSurfaceService")
         {
-            CacheName = RaptorCaches.ImmutableNonSpatialCacheName();
+            CacheName = TRexCaches.ImmutableNonSpatialCacheName();
         }
 
         public SurveyedSurfaceService(StorageMutability mutability, string cacheName) : this(mutability)

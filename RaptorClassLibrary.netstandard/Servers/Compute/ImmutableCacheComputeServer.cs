@@ -29,8 +29,7 @@ namespace VSS.TRex.Servers.Compute
   {
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-    //private const string PersistentCacheStoreLocation = @"C:\Temp\RaptorIgniteData\Immutable";
-    private string PersistentCacheStoreLocation = Path.Combine(Path.GetTempPath(), Path.Combine("RaptorIgniteData", "Immutable"));
+    private string PersistentCacheStoreLocation = Path.Combine(Path.GetTempPath(), Path.Combine("TRexIgniteData", "Immutable"));
 
     /// <summary>
     /// Constructor for the Raptor cache compute server node. Responsible for starting all Ignite services and creating the grid
@@ -113,7 +112,7 @@ namespace VSS.TRex.Servers.Compute
     {
       base.ConfigureNonSpatialImmutableCache(cfg);
 
-      cfg.Name = RaptorCaches.ImmutableNonSpatialCacheName();
+      cfg.Name = TRexCaches.ImmutableNonSpatialCacheName();
       //            cfg.CopyOnRead = false;   Leave as default as should have no effect with 2.1+ without on heap caching enabled
       cfg.KeepBinaryInStore = false;
 
@@ -134,7 +133,7 @@ namespace VSS.TRex.Servers.Compute
     {
       base.ConfigureImmutableSpatialCache(cfg);
 
-      cfg.Name = RaptorCaches.ImmutableSpatialCacheName();
+      cfg.Name = TRexCaches.ImmutableSpatialCacheName();
       //            cfg.CopyOnRead = false;   Leave as default as should have no effect with 2.1+ without on heap caching enabled
       cfg.KeepBinaryInStore = false;
       cfg.Backups = 0;

@@ -5,8 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using VSS.Velociraptor.Designs.TTM;
-using VSS.TRex;
+using VSS.TRex.Designs.TTM;
 using VSS.TRex.Designs;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
@@ -14,7 +13,7 @@ using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.Utilities;
 
-namespace VSS.Velociraptor.DesignProfiling
+namespace VSS.TRex.DesignProfiling
 {
     /// <summary>
     /// A design comprised of a Triangulated Irregular Network TIN surface, comsumed from a Timble TIN Model file

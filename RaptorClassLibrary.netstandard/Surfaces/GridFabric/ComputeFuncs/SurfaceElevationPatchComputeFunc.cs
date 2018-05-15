@@ -10,7 +10,7 @@ using VSS.TRex.Surfaces.GridFabric.Arguments;
 namespace VSS.TRex.Surfaces.GridFabric.ComputeFuncs
 {
     [Serializable]
-    public class SurfaceElevationPatchComputeFunc : /*BaseRaptorComputeFunc,*/ IComputeFunc<SurfaceElevationPatchArgument, byte[] /*ClientHeightAndTimeLeafSubGrid*/>
+    public class SurfaceElevationPatchComputeFunc : /*BaseComputeFunc,*/ IComputeFunc<SurfaceElevationPatchArgument, byte[] /*ClientHeightAndTimeLeafSubGrid*/>
     {
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

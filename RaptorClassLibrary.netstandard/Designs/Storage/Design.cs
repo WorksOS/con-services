@@ -4,9 +4,9 @@ using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.Utilities.Interfaces;
-using VSS.Velociraptor.DesignProfiling;
-using VSS.Velociraptor.DesignProfiling.GridFabric.Arguments;
-using VSS.Velociraptor.DesignProfiling.GridFabric.Requests;
+using VSS.TRex.DesignProfiling;
+using VSS.TRex.DesignProfiling.GridFabric.Arguments;
+using VSS.TRex.DesignProfiling.GridFabric.Requests;
 
 namespace VSS.TRex.Designs.Storage
 {

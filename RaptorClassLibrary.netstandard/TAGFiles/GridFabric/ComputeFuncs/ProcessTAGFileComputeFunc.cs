@@ -8,7 +8,7 @@ using VSS.TRex.TAGFiles.GridFabric.Responses;
 
 namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
 {
-    public class ProcessTAGFileComputeFunc : BaseRaptorComputeFunc, IComputeFunc<ProcessTAGFileRequestArgument, ProcessTAGFileResponse>
+    public class ProcessTAGFileComputeFunc : BaseComputeFunc, IComputeFunc<ProcessTAGFileRequestArgument, ProcessTAGFileResponse>
     {
         /// <summary>
         /// Default no-arg constructor that orients the request to the available TAG processing server nodes on the mutable grid projection
