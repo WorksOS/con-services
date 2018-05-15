@@ -1,13 +1,13 @@
-﻿using ASNodeDecls;
-using ASNodeRaptorReports;
-using Microsoft.Extensions.Logging;
-using SVOICFilterSettings;
-using System;
+﻿using System;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Text;
+using ASNodeDecls;
+using ASNodeRaptorReports;
+using Microsoft.Extensions.Logging;
+using SVOICFilterSettings;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -16,7 +16,7 @@ using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 
-namespace VSS.Productivity3D.WebApiModels.Report.Executors
+namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
   /// <summary>
   /// The executor which passes the summary pass counts request to Raptor
