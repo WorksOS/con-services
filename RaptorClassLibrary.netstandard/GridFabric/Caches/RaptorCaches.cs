@@ -4,7 +4,7 @@ namespace VSS.TRex.GridFabric.Caches
 {
     /// <summary>
     /// Sptial grid cache provides logic to determine which of the spatial data grid caches an application should read data from
-    /// depending on it settings in RaptorServerConfig
+    /// depending on it settings in TRexServerConfig
     /// </summary>
     public static class RaptorCaches
     {
@@ -26,12 +26,12 @@ namespace VSS.TRex.GridFabric.Caches
         public static string MutableSpatialCacheName() => kSpatialMutable;
 /*
          {
-            if (RaptorServerConfig.Instance().UseMutableSpatialData)
+            if (TRexServerConfig.Instance().UseMutableSpatialData)
             {
                 return kSpatialMutable;
             }
 
-            if (RaptorServerConfig.Instance().CompressImmutableSpatialData)
+            if (TRexServerConfig.Instance().CompressImmutableSpatialData)
             {
                 return kSpatialImmutableCompressed;
             }
@@ -45,7 +45,7 @@ namespace VSS.TRex.GridFabric.Caches
         /// <returns></returns>
         public static string ImmutableSpatialCacheName()
         {
-            if (RaptorServerConfig.Instance().CompressImmutableSpatialData)
+            if (TRexServerConfig.Instance().CompressImmutableSpatialData)
             {
                 return kSpatialImmutableCompressed;
             }
@@ -59,12 +59,12 @@ namespace VSS.TRex.GridFabric.Caches
         public static string MutableNonSpatialCacheName() => kNonSpatialMutable;
 /*
          {
-            if (RaptorServerConfig.Instance().UseMutableNonSpatialData)
+            if (TRexServerConfig.Instance().UseMutableNonSpatialData)
             {
                 return kNonSpatialMutable;
             }
 
-            if (RaptorServerConfig.Instance().CompressImmutableNonSpatialData)
+            if (TRexServerConfig.Instance().CompressImmutableNonSpatialData)
             {
                 return kNonSpatialImmutableCompressed;
             }
@@ -79,7 +79,7 @@ namespace VSS.TRex.GridFabric.Caches
         /// <returns></returns>
         public static string ImmutableNonSpatialCacheName()
         {
-            if (RaptorServerConfig.Instance().CompressImmutableNonSpatialData)
+            if (TRexServerConfig.Instance().CompressImmutableNonSpatialData)
             {
                 return kNonSpatialImmutableCompressed;
             }

@@ -18,8 +18,8 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <returns></returns>
         public ISubGridCellLatestPassDataWrapper NewWrapper()
         {
-            return NewWrapper(RaptorServerConfig.Instance().UseMutableSpatialData,
-                              RaptorServerConfig.Instance().CompressImmutableSpatialData);
+            return NewWrapper(TRexServerConfig.Instance().UseMutableSpatialData,
+                              TRexServerConfig.Instance().CompressImmutableSpatialData);
 
         }
 

@@ -6,25 +6,25 @@ using System.Reflection;
 namespace VSS.TRex
 {
     /// <summary>
-    /// Raptor server config is intended to collect and represent configuration presented to this server instance
+    /// TRex server config is intended to collect and represent configuration presented to this server instance
     /// in particular, such as its spatial subdivision role or whether it handles mutable or immutable spatial data 
     /// (ie: read-write or read-only contexts)
     /// </summary>
-    public class RaptorServerConfig
+    public class TRexServerConfig
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private static RaptorServerConfig instance;
+        private static TRexServerConfig instance;
 
         /// <summary>
         /// Constructs a static instance of the configuration information supplied to the process on the command line
         /// </summary>
         /// <returns></returns>
-        public static RaptorServerConfig Instance()
+        public static TRexServerConfig Instance()
         {
             if (instance == null)
             {
-                Log.Info("Creating RaptorServerConfig");
+                Log.Info("Creating TRexServerConfig");
 
                 string[] args = Environment.CommandLine.Split(new [] { " " }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -34,13 +34,13 @@ namespace VSS.TRex
                     Log.Info($"Process args: {args.Aggregate((s1, s2) => s1 + " " + s2 + "\n")}");
                 }
 
-                instance = new RaptorServerConfig();
+                instance = new TRexServerConfig();
             }
 
             return instance;
         }
 
-        public RaptorServerConfig()
+        public TRexServerConfig()
         {
             // Pick up the parameters from command line or other sources...
         }

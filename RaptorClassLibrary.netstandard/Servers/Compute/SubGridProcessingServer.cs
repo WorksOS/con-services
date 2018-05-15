@@ -1,9 +1,6 @@
 ﻿using Apache.Ignite.Core;
-using Apache.Ignite.Core.Cache;
-using Apache.Ignite.Core.Cache.Configuration;
 using log4net;
 using System.Reflection;
-using VSS.TRex.GridFabric.Affinity;
 
 namespace VSS.TRex.Servers.Compute
 {
@@ -37,8 +34,8 @@ namespace VSS.TRex.Servers.Compute
         public override void SetupServerSpecificConfiguration()
         {
             // Enable use of immutable data pools when processing requests
-            RaptorServerConfig.Instance().UseMutableSpatialData = false;
-            RaptorServerConfig.Instance().UseMutableNonSpatialData = false;
+            TRexServerConfig.Instance().UseMutableSpatialData = false;
+            TRexServerConfig.Instance().UseMutableNonSpatialData = false;
         }
     }
 }
