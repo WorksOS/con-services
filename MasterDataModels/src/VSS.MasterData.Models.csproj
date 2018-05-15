@@ -6,8 +6,8 @@
     <Company>VSS</Company>
     <Product>VSS.MasterData.Models.netcore</Product>
     <Description>Shared models for 3D Productivity</Description>
-    <VersionPrefix>2.21.0</VersionPrefix>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <VersionPrefix>2.22.0</VersionPrefix>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>VSS.MasterData.Models</AssemblyName>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
@@ -28,9 +28,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.MVC.Core" Version="2.0.4" />
     <PackageReference Include="System.Net.Security" Version="4.3.2" />
-    <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.0.2" />
+    <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.1.0" />
     <PackageReference Include="NodaTime" Version="2.2.6" />
-
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
