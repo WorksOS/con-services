@@ -109,7 +109,7 @@ namespace VSS.TRex.SubGridTrees
         /// of the parent subgrid that contains it. All cell addresses within that subgrid will return the same normalised 
         /// origin descriptor.
         /// </summary>
-        public static uint ToSpatialPartitionDescriptor(uint X, uint Y) => (((X >> SubGridTree.SubGridIndexBitsPerLevel) & 0xAAAAAAAA) | ((Y >> SubGridTree.SubGridIndexBitsPerLevel) & 0x55555555)) % RaptorConfig.NumPartitionsPerDataCache;
+        public static uint ToSpatialPartitionDescriptor(uint X, uint Y) => (((X >> SubGridTree.SubGridIndexBitsPerLevel) & 0xAAAAAAAA) | ((Y >> SubGridTree.SubGridIndexBitsPerLevel) & 0x55555555)) % TRexConfig.NumPartitionsPerDataCache;
 
         /// <summary>
         /// Constructs a spatial partition descriptor from a cell address that skips and interleaves alternate bits from each of the 
@@ -117,7 +117,7 @@ namespace VSS.TRex.SubGridTrees
         /// of the parent subgrid that contains it. All cell addresses within that subgrid will return the same normalised 
         /// origin descriptor.
         /// </summary>
-        public uint ToSpatialPartitionDescriptor() => (((X >> SubGridTree.SubGridIndexBitsPerLevel) & 0xAAAAAAAA) | ((Y >> SubGridTree.SubGridIndexBitsPerLevel) & 0x55555555)) % RaptorConfig.NumPartitionsPerDataCache;
+        public uint ToSpatialPartitionDescriptor() => (((X >> SubGridTree.SubGridIndexBitsPerLevel) & 0xAAAAAAAA) | ((Y >> SubGridTree.SubGridIndexBitsPerLevel) & 0x55555555)) % TRexConfig.NumPartitionsPerDataCache;
 
         /// <summary>
         /// Constructs a descriptor from a cell address that skips and interleaves alternate bits from each of the 

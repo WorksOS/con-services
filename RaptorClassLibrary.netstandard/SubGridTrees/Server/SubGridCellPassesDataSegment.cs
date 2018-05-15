@@ -295,8 +295,8 @@ namespace VSS.TRex.SubGridTrees.Server
         {
             SegmentTotalPassesCalculator.CalculateTotalPasses(PassesData, out uint TotalPasses, out uint MaxPassCount);
 
-            return TotalPasses > RaptorConfig.VLPD_SubGridSegmentPassCountLimit ||
-                   MaxPassCount > RaptorConfig.VLPD_SubGridMaxSegmentCellPassesLimit;
+            return TotalPasses > TRexConfig.VLPD_SubGridSegmentPassCountLimit ||
+                   MaxPassCount > TRexConfig.VLPD_SubGridMaxSegmentCellPassesLimit;
         }
     }
 }

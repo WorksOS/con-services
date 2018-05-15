@@ -17,7 +17,7 @@ namespace VSS.TRex.GridFabric.Affinity
         protected static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         // Set NumPartitions to the default number of partitions
-        protected int NumPartitions = (int)RaptorConfig.NumPartitionsPerDataCache;
+        protected int NumPartitions = (int)TRexConfig.NumPartitionsPerDataCache;
 
         /// <summary>
         /// Return the number of partitions to use for affinity. 

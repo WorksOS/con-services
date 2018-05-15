@@ -310,12 +310,12 @@ namespace VSS.TRex.SubGridTrees
             {
                 if (SparseCells == null)
                 {
-                    SparseCells = new SubgridTreeSparseCellRecord[RaptorConfig.SubGridTreeNodeCellSparcityLimit()];
+                    SparseCells = new SubgridTreeSparseCellRecord[TRexConfig.SubGridTreeNodeCellSparcityLimit()];
                     SparseCellCount = 0;
                 }
 
                 // Add it to the sparse list
-                if (SparseCellCount < RaptorConfig.SubGridTreeNodeCellSparcityLimit())
+                if (SparseCellCount < TRexConfig.SubGridTreeNodeCellSparcityLimit())
                 {
                     SparseCells[SparseCellCount++] = new SubgridTreeSparseCellRecord(X, Y, Value);
                 }

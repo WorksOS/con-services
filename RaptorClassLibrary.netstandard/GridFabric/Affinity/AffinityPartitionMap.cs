@@ -66,7 +66,7 @@ namespace VSS.TRex.GridFabric.Affinity
         /// <returns></returns>
         private bool[] GetPrimaryPartitions()
         {
-            bool[] result = new bool[RaptorConfig.NumPartitionsPerDataCache];
+            bool[] result = new bool[TRexConfig.NumPartitionsPerDataCache];
 
             foreach (int partition in Affinity.GetPrimaryPartitions(LocalNode))
                 result[partition] = true;

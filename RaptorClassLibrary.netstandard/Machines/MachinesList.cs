@@ -34,7 +34,7 @@ namespace VSS.TRex.Machines
         private Guid UniqueJohnDoeID() => Guid.NewGuid();
         /*
         {
-            long Result = RaptorConfig.JohnDoeBaseNumber() + 1;
+            long Result = TRexConfig.JohnDoeBaseNumber() + 1;
             
             ForEach(x => { if (x.IsJohnDoeMachine && x.ID != Machine.kJohnDoeAssetID && x.ID >= Result) { Result++; } });
 

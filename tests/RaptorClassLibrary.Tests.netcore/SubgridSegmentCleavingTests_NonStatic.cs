@@ -221,11 +221,11 @@ namespace VSS.TRex.Tests
             try
             {
                 // Modify the cleaving limit to 100000 to force the segment not to be cloven = the cleave result should be false
-                RaptorConfig.VLPD_SubGridSegmentPassCountLimit = 100000;
+                TRexConfig.VLPD_SubGridSegmentPassCountLimit = 100000;
                 Assert.False(subGrid.Cells.CleaveSegment(segment), "Segment was cloven when cell pass count was below limit");
 
                 // Modify the cleaving limit to 10000 to force the segment not to be cloven = the cleave result should be true
-                RaptorConfig.VLPD_SubGridSegmentPassCountLimit = 10000;
+                TRexConfig.VLPD_SubGridSegmentPassCountLimit = 10000;
                 Assert.True(subGrid.Cells.CleaveSegment(segment), "Segment failed to cleave with pass count above limit");
             }
             finally
@@ -259,7 +259,7 @@ namespace VSS.TRex.Tests
             IServerLeafSubGrid subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
 
             // Modify the cleaving limit to 10000 to force the segment not to be cloven = the cleave result should be true
-            RaptorConfig.VLPD_SubGridSegmentPassCountLimit = 10000;
+            TRexConfig.VLPD_SubGridSegmentPassCountLimit = 10000;
 
             // Exercise the cleaver!
             // Instruct the segment container to cleave the segment, locking the owner while it occurs

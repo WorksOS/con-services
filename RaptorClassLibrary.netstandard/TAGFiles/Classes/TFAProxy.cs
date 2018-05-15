@@ -55,7 +55,7 @@ namespace VSS.TRex.TAGFiles.Classes
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(req);
 
             // Update port # in the following line.
-            string URL = RaptorConfig.TFAServiceURL + RaptorConfig.TFAServiceGetProjectID;
+            string URL = TRexConfig.TFAServiceURL + TRexConfig.TFAServiceGetProjectID;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URL);
             request.Method = "POST";
             request.ContentType = "application/json";

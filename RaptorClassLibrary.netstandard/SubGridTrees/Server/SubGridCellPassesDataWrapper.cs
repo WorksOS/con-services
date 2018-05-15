@@ -117,12 +117,12 @@ namespace VSS.TRex.SubGridTrees.Server
             //CleavingSegment.VerifyComputedAndRecordedSegmentTimeRangeBounds;
             //{$ENDIF}
 
-            if (TotalPassCount < RaptorConfig.VLPD_SubGridSegmentPassCountLimit)
+            if (TotalPassCount < TRexConfig.VLPD_SubGridSegmentPassCountLimit)
             {
                 return false; // There is no need to cleave this segment
             }
 
-            int NumRequiredClovenSegments = ((int) TotalPassCount - 1) / RaptorConfig.VLPD_SubGridSegmentPassCountLimit + 1;
+            int NumRequiredClovenSegments = ((int) TotalPassCount - 1) / TRexConfig.VLPD_SubGridSegmentPassCountLimit + 1;
 
             // Determine the actual time range of the passes within the segment
             CleavingSegment.PassesData.CalculateTimeRange(out DateTime CoveredTimeRangeStart,

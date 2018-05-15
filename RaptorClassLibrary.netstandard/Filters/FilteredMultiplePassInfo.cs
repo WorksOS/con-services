@@ -53,7 +53,7 @@ namespace VSS.TRex.Filters
             // Increase the length of the passes array
             if (PassCount == FilteredPassData.Length)
             {
-                Array.Resize(ref FilteredPassData, PassCount + RaptorConfig.VLPDPSNode_CellPassAggregationListSizeIncrement);
+                Array.Resize(ref FilteredPassData, PassCount + TRexConfig.VLPDPSNode_CellPassAggregationListSizeIncrement);
             }
 
             // Add the pass to the list
@@ -85,7 +85,7 @@ namespace VSS.TRex.Filters
             // Increase the length of the passes array
             if (PassCount == FilteredPassData.Length)
             {
-                Array.Resize(ref FilteredPassData, PassCount + RaptorConfig.VLPDPSNode_CellPassAggregationListSizeIncrement);
+                Array.Resize(ref FilteredPassData, PassCount + TRexConfig.VLPDPSNode_CellPassAggregationListSizeIncrement);
             }
 
             // Add the pass to the list

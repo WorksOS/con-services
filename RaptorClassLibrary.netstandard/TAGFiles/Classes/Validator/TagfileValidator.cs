@@ -69,7 +69,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
 
             // Perform some Validation Checks
 
-            if (tagDetail.tagFileContent.Length <= RaptorConfig.MinTAGFileLength)
+            if (tagDetail.tagFileContent.Length <= TRexConfig.MinTAGFileLength)
                 return ValidationResult.Invalid;
 
             // Now open tagfile and validate contents
@@ -91,7 +91,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
 
             // Tagfile contents are OK so proceed
 
-            if (!RaptorConfig.EnableTFAService) // allows us to bypass a TFA service
+            if (!TRexConfig.EnableTFAService) // allows us to bypass a TFA service
             {
                 Log.Warn(
                         $"SubmitTAGFileResponse.ValidSubmission. EnableTFAService disabled. Bypassing TFS validation checks");

@@ -4,7 +4,7 @@
     /// A class to contain a collection of Raptor configuration controls.
     /// Shoulb be refactored or modified so the standard c# configuration system is used or underpins it.
     /// </summary>
-    public static class RaptorConfig
+    public static class TRexConfig
     {
         /// <summary>
         /// The limit under which node subgrids are represented by sparse lists rather than a complete subgrid array of child subgrid references

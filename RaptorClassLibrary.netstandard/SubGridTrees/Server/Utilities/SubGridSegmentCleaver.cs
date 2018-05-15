@@ -75,7 +75,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                         if (Segment.RequiresCleaving())
                         {
                             SegmentTotalPassesCalculator.CalculateTotalPasses(segment.PassesData,out uint TotalPassCount, out uint MaximumPassCount);
-                            Log.Info($"Info: Cleave on segment ({CleavedTimeRangeStart}-{CleavedTimeRangeEnd}) of subgrid {subGrid.Moniker()} failed to reduce cell pass count below maximums (max passes = {TotalPassCount}/{RaptorConfig.VLPD_SubGridSegmentPassCountLimit}, per cell = {MaximumPassCount}/{RaptorConfig.VLPD_SubGridMaxSegmentCellPassesLimit})");
+                            Log.Info($"Info: Cleave on segment ({CleavedTimeRangeStart}-{CleavedTimeRangeEnd}) of subgrid {subGrid.Moniker()} failed to reduce cell pass count below maximums (max passes = {TotalPassCount}/{TRexConfig.VLPD_SubGridSegmentPassCountLimit}, per cell = {MaximumPassCount}/{TRexConfig.VLPD_SubGridMaxSegmentCellPassesLimit})");
                         }
                     }
                 }
