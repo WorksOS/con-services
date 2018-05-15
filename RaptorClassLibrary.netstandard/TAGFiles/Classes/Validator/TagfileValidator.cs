@@ -38,7 +38,8 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
             Licensing is checked for manual subscription
 
             Type C: Override submission.
-            This is where the ProjectId and AssetId is both supplied. It bypasses TFA service and providing the tagfile is valid, is processed straight into the project. This is not a typical submission but is handy for testing and a situation where a known third party source other than NG could determine the AssetId and Project. Typical NG users could not submit via this method thus avoiding a license check. 
+            This is where the ProjectId and AssetId is both supplied. It bypasses TFA service and providing the tagfile is valid, is processed straight into the project.
+            This is not a typical submission but is handy for testing and in a situation where a known third party source other than NG could determine the AssetId and Project. Typical NG users could not submit via this method thus avoiding our license check. 
              
              */
 
@@ -46,15 +47,22 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
             if (tagDetail.assetId != Guid.Empty && tagDetail.projectId != Guid.Empty) 
                 return ValidationResult.Valid;
 
-            string radioType = processor.RadioType;
-            if (radioType == "tourch") // Business rule
-                radioType = "SNM940";
+            // Business rule for device type conversion
+            // DeviceType radioType = processor.RadioType == "torch" ? DeviceType.SNM940 : DeviceType.ManualDevice;
+            int radioType = processor.RadioType == "torch" ? 6 : 0;
+
 
             TFAProxy tfa = new TFAProxy(); // Todo This can be refactored at a later stage
             Log.Info($"#Info# Calling TFA servce to validate tagfile {tagDetail.tagFileName} ");
             // use decimal degrees
-            return ValidationResult.Valid;
-            //  return tfa.ValidateTagfile(tagDetail.tccOrgId,processor.RadioSerial, radioType,processor.LLHLat * (180/Math.PI),processor.LLHLon * (180 / Math.PI), processor.DataTime,out tagDetail.projectId, out tagDetail.assetId);
+            // return ValidationResult.Valid;
+            var apiResult = tfa.ValidateTagfile(tagDetail.projectId, Guid.Parse(tagDetail.tccOrgId), processor.RadioSerial, radioType, processor.LLHLat * (180 / Math.PI), processor.LLHLon * (180 / Math.PI), processor.DataTime, out tagDetail.projectId, out tagDetail.assetId);
+            Log.Info($"#Info# TFA GetId returned for {tagDetail.tagFileName} StatusCode: {apiResult}, ProjectId:{tagDetail.projectId}, AssetId:{tagDetail.assetId}");
+            if (apiResult == ValidationResult.Valid)
+            {
+                // Do some checks
+            }
+            return apiResult;
         }
 
         /// <summary>
@@ -93,8 +101,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
 
             if (!TRexConfig.EnableTFAService) // allows us to bypass a TFA service
             {
-                Log.Warn(
-                        $"SubmitTAGFileResponse.ValidSubmission. EnableTFAService disabled. Bypassing TFS validation checks");
+                Log.Warn($"SubmitTAGFileResponse.ValidSubmission. EnableTFAService disabled. Bypassing TFS validation checks");
                 if (tagDetail.assetId != Guid.Empty && tagDetail.projectId != Guid.Empty) // do we have what we need
                     return ValidationResult.Valid;
                 else
