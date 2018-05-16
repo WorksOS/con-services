@@ -24,7 +24,7 @@ def versionNumber = versionPrefix + buildNumber
 def fullVersion = versionNumber + suffix
 
 
-node ('jenkinsslave') {
+node ('jenkinsslave-pod') {
     checkout scm
     docker.build("vss.trex:${fullVersion}")
     
