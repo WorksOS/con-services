@@ -17,6 +17,7 @@ using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.Surfaces;
 using VSS.TRex.Types;
+using VSS.TRex.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.SiteModels
 {
@@ -267,9 +268,7 @@ namespace VSS.TRex.SiteModels
             // Read the ID of the data model from the stream.
             // If the site model already has an assigned ID then
             // use this ID in favour of the ID read from the data model.
-            byte [] bytes = new byte[16];
-            reader.Read(bytes, 0, 16);
-            Guid LocalID = new Guid(bytes);
+            Guid LocalID = reader.ReadGuid();
 
             if (ID == Guid.Empty)
             {

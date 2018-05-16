@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using VSS.TRex.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.Designs
 {
@@ -86,10 +87,7 @@ namespace VSS.TRex.Designs
 
         public void Read(BinaryReader reader)
         {
-            byte[] bytes = new byte[16];
-            reader.Read(bytes, 0, 16);
-            DesignID = new Guid(bytes);
-
+            DesignID = reader.ReadGuid();
             FileSpace = reader.ReadString();
             FileSpaceID = reader.ReadString();
             Folder = reader.ReadString();

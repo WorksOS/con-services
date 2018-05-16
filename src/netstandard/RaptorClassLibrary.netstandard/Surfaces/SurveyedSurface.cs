@@ -2,6 +2,7 @@
 using System.IO;
 using VSS.TRex.Designs;
 using VSS.TRex.Geometry;
+using VSS.TRex.Utilities.ExtensionMethods;
 using VSS.TRex.Utilities.Interfaces;
 
 namespace VSS.TRex.Surfaces
@@ -57,9 +58,7 @@ namespace VSS.TRex.Surfaces
         /// <param name="reader"></param>
         public void Read(BinaryReader reader)
         {
-            byte[] bytes = new byte[16];
-            reader.Read(bytes, 0, 16);
-            FID = new Guid(bytes);
+            FID = reader.ReadGuid();
             FDesignDescriptor.Read(reader);
             FAsAtDate = DateTime.FromBinary(reader.ReadInt64());
             FExtents.Read(reader);

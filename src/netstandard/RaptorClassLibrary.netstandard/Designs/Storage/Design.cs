@@ -7,6 +7,7 @@ using VSS.TRex.Utilities.Interfaces;
 using VSS.TRex.DesignProfiling;
 using VSS.TRex.DesignProfiling.GridFabric.Arguments;
 using VSS.TRex.DesignProfiling.GridFabric.Requests;
+using VSS.TRex.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.Designs.Storage
 {
@@ -49,9 +50,7 @@ namespace VSS.TRex.Designs.Storage
         /// <param name="reader"></param>
         public void Read(BinaryReader reader)
         {
-            byte[] bytes = new byte[16];
-            reader.Read(bytes, 0, 16);
-            ID = new Guid(bytes);
+            ID = reader.ReadGuid();
             FDesignDescriptor.Read(reader);
             FExtents.Read(reader);
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using VSS.TRex.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.SubGridTrees.Server
 {
@@ -26,10 +27,7 @@ namespace VSS.TRex.SubGridTrees.Server
         public void Read(BinaryReader reader)
         {
             _SiteModelMachineIndex = reader.ReadInt16();
-
-            byte[] bytes = new byte[16];
-            reader.Read(bytes, 0, 16);
-            _MachineID = new Guid(bytes);
+            _MachineID = reader.ReadGuid();
         }
 
         /// <summary>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.SubGridTrees.Utilities
 {
@@ -86,9 +87,7 @@ namespace VSS.TRex.SubGridTrees.Utilities
         {
             try
             {
-                byte[] bytes = new byte[16];
-                reader.Read(bytes, 0, 16);
-                tree.ID = new Guid(bytes);
+                tree.ID = reader.ReadGuid();
 
                 // Read in the number of subgrids
                 long SubGridCount = reader.ReadInt64();
