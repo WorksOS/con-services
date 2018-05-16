@@ -1,1 +1,1 @@
-start C:\Dev\VSS.TRex\RaptorServerApplication\bin\x64\debug\RaptorServerApplication.exe
+start C:\Dev\VSS.TRex\src\framework\TRexServerApplication\bin\x64\debug\TRexServerApplication.exe

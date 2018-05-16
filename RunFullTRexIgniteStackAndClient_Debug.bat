@@ -1,21 +1,14 @@
-start C:\Dev\VSS.TRex\RaptorPSNodeServer\bin\debug\RaptorPSNodeServer.exe SpatialDivision=0
+start C:\Dev\VSS.TRex\src\framework\TRexImmutableDataServer\bin\debug\TRexImmutableDataServer.exe SpatialDivision=0
 timeout 7
-rem start C:\Dev\VSS.TRex\RaptorPSNodeServer\bin\debug\RaptorPSNodeServer.exe SpatialDivision=1
-rem timeout 7
-rem start C:\Dev\VSS.TRex\RaptorPSNodeServer\bin\debug\RaptorPSNodeServer.exe SpatialDivision=2
-rem timeout 7
-rem start C:\Dev\VSS.TRex\RaptorPSNodeServer\bin\debug\RaptorPSNodeServer.exe SpatialDivision=3
-rem timeout 7
-start C:\Dev\VSS.TRex\RaptorMutableDataServer\bin\debug\RaptorMutableDataServer.exe SpatialDivision=0
-rem start C:\Dev\VSS.TRex\RaptorTAGFileServer\bin\debug\RaptorTAGFileServer.exe SpatialDivision=0
+start C:\Dev\VSS.TRex\src\framework\TRexMutableDataServer\bin\debug\TRexMutableDataServer.exe SpatialDivision=0
 timeout 7
-start C:\Dev\VSS.TRex\RaptorServerApplication\bin\debug\RaptorTileServer.exe
+start C:\Dev\VSS.TRex\src\framework\TRexServerApplication\bin\debug\TRexTileServer.exe
 timeout 7
-start C:\Dev\VSS.TRex\RaptorDesignElevationsServer\bin\debug\RaptorDesignElevationsServer.exe
+start C:\Dev\VSS.TRex\src\framework\TRexDesignElevationsServer\bin\debug\TRexDesignElevationsServer.exe
 timeout 7
-start C:\Dev\VSS.TRex\WindowsFormsApplication1\bin\debug\RaptorIgniteTest.exe
+start C:\Dev\VSS.TRex\src\framework\TRexIgniteTest\bin\debug\TRexIgniteTest.exe
 timeout 7
-start C:\Dev\VSS.TRex\RaptorGridActivator\bin\debug\RaptorGridActivator.exe
-dotnet C:\Dev\VSS.TRex\VSS.TRex.Service.Deployer\bin\Debug\netcoreapp2.0\VSS.TRex.Service.Deployer.dll
+start C:\Dev\VSS.TRex\src\framework\TRexGridActivator\bin\debug\TRexGridActivator.exe
+dotnet C:\Dev\VSS.TRex\src\tools\VSS.TRex.Service.Deployer\bin\Debug\netcoreapp2.0\VSS.TRex.Service.Deployer.dll
 
  
