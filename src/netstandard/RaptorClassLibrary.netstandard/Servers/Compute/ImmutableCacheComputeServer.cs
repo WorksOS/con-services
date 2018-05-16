@@ -1,5 +1,4 @@
 ﻿using Apache.Ignite.Core;
-using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Communication.Tcp;
@@ -15,7 +14,6 @@ using System.Reflection;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Caches;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Queues;
 using VSS.TRex.Servers.Client;
 using VSS.TRex.Storage;
 
@@ -29,17 +27,15 @@ namespace VSS.TRex.Servers.Compute
   {
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-    private string PersistentCacheStoreLocation = Path.Combine(Path.GetTempPath(), Path.Combine("TRexIgniteData", "Immutable"));
-
     /// <summary>
     /// Constructor for the TRex cache compute server node. Responsible for starting all Ignite services and creating the grid
     /// and cache instance in preparation for client access by business logic running on the node.
     /// </summary>
     public ImmutableCacheComputeServer()
     {
-      Console.WriteLine("PersistentCacheLocation:" + PersistentCacheStoreLocation);
+      Console.WriteLine("PersistentCacheLocation:" + TRexConfig.PersistentCacheStoreLocation);
       Console.WriteLine($"Log is: {Log}");
-      Log.Debug($"PersistentCacheStoreLocation: {PersistentCacheStoreLocation}");
+      Log.Debug($"PersistentCacheStoreLocation: {TRexConfig.PersistentCacheStoreLocation}");
       if (immutableTRexGrid == null)
       {
         StartTRexGridCacheNode();
@@ -65,9 +61,9 @@ namespace VSS.TRex.Servers.Compute
       {
         PageSize = DataRegions.DEFAULT_IMMUTABLE_DATA_REGION_PAGE_SIZE,
 
-        StoragePath = Path.Combine(PersistentCacheStoreLocation, "Persistence"),
-        WalArchivePath = Path.Combine(PersistentCacheStoreLocation, "WalArchive"),
-        WalPath = Path.Combine(PersistentCacheStoreLocation, "WalStore"),
+        StoragePath = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Persistence"),
+        WalArchivePath = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "WalArchive"),
+        WalPath = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "WalStore"),
 
         DefaultDataRegionConfiguration = new DataRegionConfiguration
         {
@@ -79,9 +75,13 @@ namespace VSS.TRex.Servers.Compute
         }
       };
 
-      //cfg.JvmOptions = new List<string>() { "-DIGNITE_QUIET=false" };
+        Log.Info($"cfg.DataStorageConfiguration.StoragePath={cfg.DataStorageConfiguration.StoragePath}");
+        Log.Info($"cfg.DataStorageConfiguration.WalArchivePath={cfg.DataStorageConfiguration.WalArchivePath}");
+        Log.Info($"cfg.DataStorageConfiguration.WalPath={cfg.DataStorageConfiguration.WalPath}");
+      
+        //cfg.JvmOptions = new List<string>() { "-DIGNITE_QUIET=false" };
 
-      cfg.DiscoverySpi = new TcpDiscoverySpi()
+            cfg.DiscoverySpi = new TcpDiscoverySpi()
       {
         LocalAddress = "127.0.0.1",
         LocalPort = 47500,
@@ -105,7 +105,7 @@ namespace VSS.TRex.Servers.Compute
 
       cfg.PublicThreadPoolSize = 50;
 
-      cfg.BinaryConfiguration = new BinaryConfiguration(typeof(TestQueueItem));
+      //cfg.BinaryConfiguration = new BinaryConfiguration(typeof(TestQueueItem));
     }
 
     public override void ConfigureNonSpatialImmutableCache(CacheConfiguration cfg)

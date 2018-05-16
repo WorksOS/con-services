@@ -68,9 +68,10 @@
             this.txtFilePath.Name = "txtFilePath";
             this.txtFilePath.Size = new System.Drawing.Size(369, 20);
             this.txtFilePath.TabIndex = 1;
-            this.txtFilePath.Text = "C:\\Dev\\VSS.TRex\\test\\TestData\\Dimensions 2012\\BC Data\\Sites\\BootCamp 2012\\" +
-    "Designs(linework in USFt)\\Original Ground Survey";
+            this.txtFilePath.Text = "C:\\Dev\\VSS.TRex\\tests\\TestData\\Dimensions 2012\\BC Data\\Sites\\BootCamp 2012\\Design" +
+    "s(linework in USFt)\\Original Ground Survey";
             this.txtFilePath.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.txtFilePath.TextChanged += new System.EventHandler(this.txtFilePath_TextChanged);
             // 
             // txtFileName
             // 

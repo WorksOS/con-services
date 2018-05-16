@@ -516,9 +516,7 @@ namespace VSS.TRex.DesignProfiling
                     }
                     else
                     {
-                        // TODO: Readd when logging available
-                        // SIGLogMessage.PublishNoODS(Self, Format('Triangle %d failed to have intersection line calculated for it', [Tri.Tag]), slmcWarning);
-                        return;
+                        Log.Warn($"Triangle {Tri.Tag} failed to have intersection line calculated for it");
                     }
                 }
                 else
@@ -581,8 +579,7 @@ namespace VSS.TRex.DesignProfiling
             // subgrid index.
             try
             {
-                // TODO Readd when logging available
-                //SIGLogMessage.PublishNoODS(Self, Format('In: Constructing subgrid index for design %s containing %d triangles', [SubgridIndexFileName, FData.Triangles.Count]), slmcMessage);
+                Log.Info($"In: Constructing subgrid index for design containing {FData.Triangles.Count} triangles");
 
                 try
                 {
@@ -604,10 +601,9 @@ namespace VSS.TRex.DesignProfiling
 
                 return true;
             }
-            catch // (Exception E)
+            catch (Exception e)
             {
-                // TODO readd when logging available
-                //  SIGLogMessage.PublishNoODS(Self, Format('Exception in TTTMDesign.ConstructSubgridIndex: %s', [E.Message]), slmcException);
+                Log.Error($"Exception in TTTMDesign.ConstructSubgridIndex: {e}");
                 return false;
             }
         }
@@ -950,11 +946,9 @@ namespace VSS.TRex.DesignProfiling
 
                 return ValueCount > 0;
             }
-            catch // (Exception E)
+            catch (Exception e)
             {
-                // TODO readd when logging available
-                // SIGLogMessage.PublishNoODS(Self, Format('Exception "%s" occurred in TTTMDesign.InterpolateHeights', [E.Message]), slmcException);
-
+                Log.Error($"Exception {e} occurred in TTTMDesign.InterpolateHeights");
                 return false;
             }
         }
@@ -999,10 +993,9 @@ namespace VSS.TRex.DesignProfiling
 
                 return ValueCount > 0;
             }
-            catch // (Exception E)
+            catch (Exception e)
             {
-                // TODO readd when logging available
-                // SIGLogMessage.PublishNoODS(Self, Format('Exception "%s" occurred in TTTMDesign.InterpolateHeights', [E.Message]), slmcException);
+                Log.Error($"Exception {e} occurred in TTTMDesign.InterpolateHeights");
 
                 return false;
             }
@@ -1048,11 +1041,9 @@ namespace VSS.TRex.DesignProfiling
 
                 return ValueCount > 0;
             }
-            catch // (Exception E)
+            catch (Exception e)
             {
-                // TODO readd when logging available
-                // SIGLogMessage.PublishNoODS(Self, Format('Exception "%s" occurred in TTTMDesign.InterpolateHeights', [E.Message]), slmcException);
-
+                Log.Error($"Exception {e} occurred in TTTMDesign.InterpolateHeights");
                 return false;
             }
         }
@@ -1098,8 +1089,7 @@ namespace VSS.TRex.DesignProfiling
             // determine which subgrids in the index intersect it and add it to those subgrids
             try
             {
-                // TODO Readd when logging available
-                //SIGLogMessage.PublishNoODS(Self, Format('In: Constructing subgrid index for design %s containing %d triangles', [SubgridIndexFileName, FData.Triangles.Count]), slmcMessage);
+                Log.Info($"In: Constructing subgrid index for design containing {FData.Triangles.Count} triangles");
                 try
                 {
                     // Construct a subgrid tree containing list of triangles that intersect each on-the-ground subgrid
@@ -1180,10 +1170,9 @@ namespace VSS.TRex.DesignProfiling
 
                 return true;
             }
-            catch // (Exception E)
+            catch (Exception e)
             {
-                // TODO readd when logging available
-                //  SIGLogMessage.PublishNoODS(Self, Format('Exception in TTTMDesign.ConstructSpatialIndex: %s', [E.Message]), slmcException);
+                Log.Error($"Exception {e} in TTTMDesign.ConstructSpatialIndex");
                 return false;
             }
         }
@@ -1253,10 +1242,9 @@ namespace VSS.TRex.DesignProfiling
                     return false;
                 }
             }
-            catch // (Exception E)
+            catch (Exception e)
             {
-                // Readd when logging available
-                // SIGLogMessage.PublishNoODS(Self, Format('Exception ''%s'' in %s.LoadSubgridIndex', [E.Message, Self.ClassName]), slmcException);
+                Log.Error($"Exception {e} in LoadSubgridIndex");
 
                 return false;
             }
@@ -1269,8 +1257,7 @@ namespace VSS.TRex.DesignProfiling
         /// <returns></returns>
         protected bool LoadSubgridIndexFile(string SubgridIndexFileName)
         {
-            // TODO Readd when logging available
-            // SIGLogMessage.PublishNoODS(Self, Format('Loading subgrid index file %s', [SubgridIndexFileName]), slmcMessage);
+            Log.Info($"Loading subgrid index file {SubgridIndexFileName}");
 
             bool Result = LoadSubgridIndex(SubgridIndexFileName);
 
@@ -1282,19 +1269,16 @@ namespace VSS.TRex.DesignProfiling
                 {
                     if (SaveSubgridIndex(SubgridIndexFileName))
                     {
-                        // TODO Readd when logging available
-                        //SIGLogMessage.PublishNoODS(Self, Format('Saved constructed subgrid index file %s', [SubgridIndexFileName]), slmcMessage)
+                        Log.Info($"Saved constructed subgrid index file {SubgridIndexFileName}");
                     }
                     else
                     {
-                        // TODO Readd when logging available
-                        //SIGLogMessage.PublishNoODS(Self, Format('Unable to save subgrid index file %s - continuing with unsaved index', [SubgridIndexFileName]), slmcError)
+                        Log.Error($"Unable to save subgrid index file {SubgridIndexFileName} - continuing with unsaved index");
                     }
                 }
                 else
                 {
-                    // TODO Readd when logging available
-                    // SIGLogMessage.PublishNoODS(Self, Format('Unable to create and save subgrid index file %s', [SubgridIndexFileName]), slmcError);
+                    Log.Error($"Unable to create and save subgrid index file {SubgridIndexFileName}");
                 }
             }
 
@@ -1346,10 +1330,9 @@ namespace VSS.TRex.DesignProfiling
 
                 Result = true;
             }
-            catch // (Exception E)
+            catch (Exception e)
             {
-                // TODO Readd when logging available
-                //SIGLogMessage.PublishNoODS(Self, Format('Exception ''%s'' in %s.SaveSubgridIndex', [E.Message, Self.ClassName]), slmcException);
+                Log.Error($"Exception {e} SaveSubgridIndex");
             }
 
             return Result;

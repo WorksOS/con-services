@@ -122,7 +122,7 @@ namespace VSS.TRex.Servers.Client
 
                         PublicThreadPoolSize = 50,
 
-                        BinaryConfiguration = new BinaryConfiguration(typeof(TestQueueItem))
+                        //BinaryConfiguration = new BinaryConfiguration(typeof(TestQueueItem))
                     };
 
                     foreach (string roleName in roles)

@@ -1,4 +1,6 @@
-﻿namespace VSS.TRex
+﻿using System.IO;
+
+namespace VSS.TRex
 {
     /// <summary>
     /// A class to contain a collection of TRex configuration controls.
@@ -37,6 +39,11 @@
         /// The number of paritions configured for caches that store spatial subgrid data
         /// </summary>
         public static uint NumPartitionsPerDataCache = 1024;
+
+        /// <summary>
+        /// The file system location in which to store Ignite persistent data
+        /// </summary>
+        public static string PersistentCacheStoreLocation = Path.Combine(Path.GetTempPath(), Path.Combine("TRexIgniteData", "Immutable"));
 
 
         public static bool EnableTFAService = true;
