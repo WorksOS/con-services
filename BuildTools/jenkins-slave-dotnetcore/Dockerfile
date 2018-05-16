@@ -64,6 +64,13 @@ RUN wget "s3.amazonaws.com/aws-cli/awscli-bundle.zip" -O "awscli-bundle.zip" && 
 
 EXPOSE 22
 
+# Install docker
+RUN apk add --no-cache \
+	openssh-client \
+	docker
+
+	
+
 # https://github.com/docker/docker/blob/master/project/PACKAGERS.md#runtime-dependencies
 RUN set -eux; \
 	apk add --no-cache \
@@ -107,7 +114,15 @@ VOLUME /var/lib/docker
 EXPOSE 2375
 
 RUN apk add supervisor
-ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf 
+ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
+#Try this out
+COPY super-entrypoint.sh /usr/local/bin/ 
 
-CMD ["/usr/bin/supervisord"]
+# Supervisor does not support entrypoint must use CMD
+# https://stackoverflow.com/questions/22465003/error-positional-arguments-are-not-supported
+#CMD ["/usr/bin/supervisord"]
+ENTRYPOINT ["super-entrypoint.sh"]
+#CMD ["super-entrypoint.sh"]
+#ENTRYPOINT ["bash", "-c", "dockerd-entrypoint.sh", "&&", "bash"]
+#CMD ["dockerd-entrypoint.sh"]
