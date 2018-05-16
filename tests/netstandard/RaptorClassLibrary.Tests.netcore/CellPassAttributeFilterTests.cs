@@ -1,6 +1,6 @@
 ﻿using System;
 using VSS.TRex.Common;
-using VSS.TRex.Designs;
+using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Filters.Tests
@@ -74,10 +74,10 @@ namespace VSS.TRex.Filters.Tests
         public void Test_CellPassAttributeFilter_ClearVibeState()
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("VibeState", 
-                                                            x => { x.HasVibeStateFilter = true; x.VibeState = Types.VibrationState.Off; },
-                                                            x => x.HasVibeStateFilter && x.VibeState == Types.VibrationState.Off,
+                                                            x => { x.HasVibeStateFilter = true; x.VibeState = VibrationState.Off; },
+                                                            x => x.HasVibeStateFilter && x.VibeState == VibrationState.Off,
                                                             x => { x.ClearVibeState(); }, 
-                                                            x => !x.HasVibeStateFilter && x.VibeState == Types.VibrationState.Invalid);
+                                                            x => !x.HasVibeStateFilter && x.VibeState == VibrationState.Invalid);
         }
 
         private void Test_CellPassAttributeFilter_CompareTo_Aspect(string name, Action<CellPassAttributeFilter> SetState)
@@ -135,19 +135,19 @@ namespace VSS.TRex.Filters.Tests
         [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_ElevationType()
         {
-            Test_CellPassAttributeFilter_CompareTo_Aspect("ElevationType", x => { x.HasElevationTypeFilter = true; x.ElevationType = Types.ElevationType.Highest; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("ElevationType", x => { x.HasElevationTypeFilter = true; x.ElevationType = ElevationType.Highest; });
         }
 
         [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_GCSGuidanceMode()
         {
-            Test_CellPassAttributeFilter_CompareTo_Aspect("GCSGuidanceMode", x => { x.HasGCSGuidanceModeFilter = true; x.GCSGuidanceMode = Types.MachineAutomaticsMode.Automatics; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("GCSGuidanceMode", x => { x.HasGCSGuidanceModeFilter = true; x.GCSGuidanceMode = MachineAutomaticsMode.Automatics; });
         }
 
         [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_GPSAccuracy()
         {
-            Test_CellPassAttributeFilter_CompareTo_Aspect("GPSAccuracy", x => { x.HasGPSAccuracyFilter = true; x.GPSAccuracy = Types.GPSAccuracy.Medium; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("GPSAccuracy", x => { x.HasGPSAccuracyFilter = true; x.GPSAccuracy = GPSAccuracy.Medium; });
         }
 
         [Fact()]
@@ -165,15 +165,15 @@ namespace VSS.TRex.Filters.Tests
         [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_LayerState()
         {
-            Test_CellPassAttributeFilter_CompareTo_Aspect("LayerState On", x => { x.HasLayerStateFilter = true; x.LayerState = Types.LayerState.On; });
-            Test_CellPassAttributeFilter_CompareTo_Aspect("LayerState Off", x => { x.HasLayerStateFilter = true; x.LayerState = Types.LayerState.Off; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("LayerState On", x => { x.HasLayerStateFilter = true; x.LayerState = LayerState.On; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("LayerState Off", x => { x.HasLayerStateFilter = true; x.LayerState = LayerState.Off; });
         }
 
         [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_MachineDirection()
         {
-            Test_CellPassAttributeFilter_CompareTo_Aspect("MachineDirection forward", x => { x.HasMachineDirectionFilter = true; x.MachineDirection = Types.MachineDirection.Forward; });
-            Test_CellPassAttributeFilter_CompareTo_Aspect("MachineDirection reverse", x => { x.HasMachineDirectionFilter = true; x.MachineDirection = Types.MachineDirection.Reverse; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("MachineDirection forward", x => { x.HasMachineDirectionFilter = true; x.MachineDirection = MachineDirection.Forward; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("MachineDirection reverse", x => { x.HasMachineDirectionFilter = true; x.MachineDirection = MachineDirection.Reverse; });
         }
 
         [Fact()]
@@ -200,15 +200,15 @@ namespace VSS.TRex.Filters.Tests
         [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_PositioningTech()
         {
-            Test_CellPassAttributeFilter_CompareTo_Aspect("PositioningTech GPS", x => { x.HasPositioningTechFilter = true; x.PositioningTech = Types.PositioningTech.GPS; });
-            Test_CellPassAttributeFilter_CompareTo_Aspect("PositioningTech UTS", x => { x.HasPositioningTechFilter = true; x.PositioningTech = Types.PositioningTech.UTS; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("PositioningTech GPS", x => { x.HasPositioningTechFilter = true; x.PositioningTech = PositioningTech.GPS; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("PositioningTech UTS", x => { x.HasPositioningTechFilter = true; x.PositioningTech = PositioningTech.UTS; });
         }
 
         [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_VibeState()
         {
-            Test_CellPassAttributeFilter_CompareTo_Aspect("VibeState Off", x => { x.HasVibeStateFilter = true; x.VibeState = Types.VibrationState.Off; });
-            Test_CellPassAttributeFilter_CompareTo_Aspect("VibeState On", x => { x.HasVibeStateFilter = true; x.VibeState = Types.VibrationState.On; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("VibeState Off", x => { x.HasVibeStateFilter = true; x.VibeState = VibrationState.Off; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("VibeState On", x => { x.HasVibeStateFilter = true; x.VibeState = VibrationState.On; });
         }
 
         [Fact()]
@@ -281,10 +281,10 @@ namespace VSS.TRex.Filters.Tests
         public void Test_CellPassAttributeFilter_ClearGuidanceMode()
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("GuidanceMode",
-                                                            x => { x.HasGCSGuidanceModeFilter = true; x.GCSGuidanceMode = Types.MachineAutomaticsMode.Automatics; },
-                                                            x => x.HasGCSGuidanceModeFilter && x.GCSGuidanceMode == Types.MachineAutomaticsMode.Automatics,
+                                                            x => { x.HasGCSGuidanceModeFilter = true; x.GCSGuidanceMode = MachineAutomaticsMode.Automatics; },
+                                                            x => x.HasGCSGuidanceModeFilter && x.GCSGuidanceMode == MachineAutomaticsMode.Automatics,
                                                             x => { x.ClearGuidanceMode(); },
-                                                            x => !x.HasGCSGuidanceModeFilter && x.GCSGuidanceMode == Types.MachineAutomaticsMode.Unknown);
+                                                            x => !x.HasGCSGuidanceModeFilter && x.GCSGuidanceMode == MachineAutomaticsMode.Unknown);
         }
 
         [Fact()]
@@ -327,10 +327,10 @@ namespace VSS.TRex.Filters.Tests
         public void Test_CellPassAttributeFilter_ClearMachineDirection()
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("MachineDirection",
-                                                            x => { x.HasMachineDirectionFilter = true; x.MachineDirection = Types.MachineDirection.Reverse; },
+                                                            x => { x.HasMachineDirectionFilter = true; x.MachineDirection = MachineDirection.Reverse; },
                                                             x => x.HasMachineDirectionFilter,
                                                             x => { x.ClearMachineDirection(); },
-                                                            x => !x.HasMachineDirectionFilter && x.MachineDirection == Types.MachineDirection.Unknown);
+                                                            x => !x.HasMachineDirectionFilter && x.MachineDirection == MachineDirection.Unknown);
         }
 
         [Fact(Skip = "Not Implemented")]
@@ -351,24 +351,21 @@ namespace VSS.TRex.Filters.Tests
                                                             x => !x.HasMinElevMappingFilter && x.MinElevationMapping == false);
         }
 
-        [Fact(Skip = "Not Implemented")]
+        [Fact()]
         public void Test_CellPassAttributeFilter_ClearPassType()
         {
-            // TODO: Readd when pass type is available
-            /*Test_CellPassAttributeFilter_ClearFilter_Aspect("PassType",
-                                                            x => { x.HasPassTypeFilter = true; x.??? = ??; },
-                                                            x => x.HasPassTypeFilter;,
+            Test_CellPassAttributeFilter_ClearFilter_Aspect("PassType",
+                                                            x => { x.HasPassTypeFilter = true; x.PassTypeSet = PassTypeSet.Front | PassTypeSet.Rear; },
+                                                            x => x.HasPassTypeFilter,
                                                             x => { x.ClearPassType(); },
-                                                            x => { return !x.HasPassTypeFilter; x.??? = ??; });*/
-            Assert.True(false);
-
+                                                            x => !x.HasPassTypeFilter && x.PassTypeSet == PassTypeSet.None);
         }
 
         [Fact()]
         public void Test_CellPassAttributeFilter_ClearPositioningTech()
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("PositioningTech",
-                                                            x => { x.HasPositioningTechFilter = true; x.PositioningTech = Types.PositioningTech.GPS; },
+                                                            x => { x.HasPositioningTechFilter = true; x.PositioningTech = PositioningTech.GPS; },
                                                             x => x.HasPositioningTechFilter,
                                                             x => { x.ClearPositioningTech(); },
                                                             x => !x.HasPositioningTechFilter);

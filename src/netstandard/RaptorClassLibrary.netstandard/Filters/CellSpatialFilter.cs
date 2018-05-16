@@ -137,7 +137,7 @@ namespace VSS.TRex.Filters
         public bool IsAlignmentMask { get; set; }
 
         /// <summary>
-        /// Using a design to spatiall cut-out the cells to be included in the filter. This appears similar to DesignMask (TODO: Resolve this).
+        /// Using a design to spatial cut-out the cells to be included in the filter. This appears similar to DesignMask (TODO: Resolve this).
         /// </summary>
         public bool IsDesignFilter { get; set; }
 

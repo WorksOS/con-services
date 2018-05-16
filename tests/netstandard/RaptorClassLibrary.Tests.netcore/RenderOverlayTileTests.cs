@@ -29,7 +29,6 @@ namespace VSS.TRex.Executors.Tests
         }
 
         [Fact(Skip = "not implemented")]
-        //TODO need to implement this
         public void Test_RenderOverlayTile_Execute()
         {
         /*    RenderOverlayTile render = new RenderOverlayTile(1,
