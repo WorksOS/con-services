@@ -1,4 +1,6 @@
-﻿namespace VSS.MasterData.Models.ResultHandling
+﻿using Newtonsoft.Json;
+
+namespace VSS.MasterData.Models.ResultHandling
 {
   /// <summary>
   /// Result of an export job schedule request
@@ -8,6 +10,7 @@
     /// <summary>
     /// The job ID of the scheduled job
     /// </summary>
-    public string jobId { get; set; }
+    [JsonProperty(PropertyName = "jobId", Required = Required.Always)]
+    public string JobId { get; set; }
   }
 }

@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Net;
+using System.Web.Http;
+using Microsoft.AspNetCore.Mvc;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace MockProjectWebApi.Controllers
 {
@@ -15,24 +18,38 @@ namespace MockProjectWebApi.Controllers
         jobId = SUCCESS_JOB_ID;
       if (request.Url.Contains("Test-failed"))
         jobId = FAILURE_JOB_ID;
-      return new ScheduleJobResult { jobId = jobId };
+      return new ScheduleJobResult { JobId = jobId };
     }
 
     [Route("/api/v1/mock/export/{jobId}")]
     [HttpGet]
     public JobStatusResult GetMockExportJobStatus(string jobId)
     {
+      string downloadLink = null;
+      FailureDetails details = null;
+
       string status = IN_PROGRESS_STATUS;
       if (jobId == SUCCESS_JOB_ID)
+      {
         status = SUCCESS_STATUS;
+        downloadLink = "some download link";
+      }
       else if (jobId == FAILURE_JOB_ID)
+      {
         status = FAILURE_STATUS;
+        details = new FailureDetails {Code = HttpStatusCode.BadRequest, Result = new ContractExecutionResult(2005, "Export limit reached") };
+      }
 
-      return new JobStatusResult { key = jobId, status = status };
+      return new JobStatusResult { Key = GetS3Key(jobId, "dummy file"), Status = status, DownloadLink= downloadLink, FailureDetails = details };
+    }
+
+    private string GetS3Key(string jobId, string filename)
+    {
+      return $"3dpm/{jobId}/{filename}.zip";
     }
 
     public static readonly string SUCCESS_JOB_ID = "Test_Job_1";
-    private readonly string FAILURE_JOB_ID = "Test_Job_2";
+    public static readonly string FAILURE_JOB_ID = "Test_Job_2";
     private readonly string IN_PROGRESS_JOB_ID = "Test_Job_3";
 
     private readonly string SUCCESS_STATUS = "SUCCEEDED";

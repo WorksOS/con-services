@@ -12,9 +12,7 @@ using Moq;
 using VSS.Common.Exceptions;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.WebApi.Common;
 
 namespace VSS.WebApi.Common.UnitTests
 {
@@ -41,7 +39,7 @@ namespace VSS.WebApi.Common.UnitTests
       serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
       serviceCollection
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddTransient<IErrorCodesProvider, ErrorCodesProvider>();
+        .AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();
 
       ServiceProvider = serviceCollection.BuildServiceProvider();
     }

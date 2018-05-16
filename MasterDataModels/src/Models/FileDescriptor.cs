@@ -71,11 +71,6 @@ namespace VSS.MasterData.Models.Models
     /// Create instance of FileDescriptor
     /// Where the path is /{customerUid}/{projectUid}
     /// </summary>
-    /// <param name="filespaceId"></param>
-    /// <param name="customerUid"></param>
-    /// <param name="projectUid"></param>
-    /// <param name="fileName"></param>
-    /// <returns>New FileDescriptor</returns>
     public static FileDescriptor CreateFileDescriptor
     (
       string filespaceId,
@@ -84,12 +79,7 @@ namespace VSS.MasterData.Models.Models
       string fileName
     )
     {
-      return new FileDescriptor
-      {
-        filespaceId = filespaceId,
-        path = $"/{customerUid}/{projectUid}",
-        fileName = fileName
-      };
+      return CreateFileDescriptor(filespaceId, $"/{customerUid}/{projectUid}", fileName);
     }
 
     public static FileDescriptor EmptyFileDescriptor { get; } = new FileDescriptor
