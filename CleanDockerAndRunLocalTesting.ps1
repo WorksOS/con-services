@@ -1,3 +1,7 @@
+# Setting the COMPOSE_CONVERT_WINDOWS_PATHS environment variable before trying 
+# to bring up the containers seems to fix the docker-compose bug reported here: https://github.com/docker/for-win/issues/1829
+$Env:COMPOSE_CONVERT_WINDOWS_PATHS=1
+
 function WriteMsg
 {
     Param([string]$message, [string]$color = "darkgray", [bool]$noNewLine = $False)
