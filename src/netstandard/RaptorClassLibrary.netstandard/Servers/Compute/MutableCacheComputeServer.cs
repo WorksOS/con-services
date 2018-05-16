@@ -60,9 +60,9 @@ namespace VSS.TRex.Servers.Compute
       {
         PageSize = DataRegions.DEFAULT_MUTABLE_DATA_REGION_PAGE_SIZE,
 
-        StoragePath = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Persistence"),
-        WalArchivePath = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "WalArchive"),
-        WalPath = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "WalStore"),
+        StoragePath = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Mutable", "Persistence"),
+        WalArchivePath = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Mutable", "WalArchive"),
+        WalPath = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Mutable", "WalStore"),
 
         DefaultDataRegionConfiguration = new DataRegionConfiguration
         {
