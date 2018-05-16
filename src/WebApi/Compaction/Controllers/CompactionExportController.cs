@@ -102,7 +102,83 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         });
     }
     #endregion
- 
+
+    #region Schedule Machine passes Export
+
+    /// <summary>
+    /// Schedules the Machine passes export job and returns JobId.
+    /// </summary>
+    /// <param name="projectUid">The project uid.</param>
+    /// <param name="rawDataOutput"></param>
+    /// <param name="fileName">Name of the file.</param>
+    /// <param name="filterUid">The filter uid.</param>
+    /// <param name="scheduler">The scheduler.</param>
+    /// <param name="coordType"></param>
+    /// <param name="outputType"></param>
+    /// <param name="restrictOutput"></param>
+    [ProjectUidVerifier]
+    [Route("api/v2/export/machinepasses/schedulejob")]
+    [HttpGet]
+    public ScheduleResult ScheduleMachinePassesJob(
+      [FromQuery] Guid projectUid,
+      [FromQuery] int coordType,
+      [FromQuery] int outputType,
+      [FromQuery] bool restrictOutput,
+      [FromQuery] bool rawDataOutput,
+      [FromQuery] string fileName,
+      [FromQuery] Guid? filterUid,
+      [FromServices] ISchedulerProxy scheduler)
+    {
+      //TODO: Do we need to validate the parameters here as well as when the export url is called?
+
+      //The URL to get the export data is here in this controller, construct it based on this request
+      var exportDataUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/api/v2/export/machinepasses?projectUid={projectUid}&fileName={fileName}&filterUid={filterUid}" + 
+                          $"&coordType={coordType}&outputType={outputType}&restrictOutput={restrictOutput}&rawDataOutput={rawDataOutput}";
+      var request = new ScheduleJobRequest { Url = exportDataUrl, Filename = fileName };
+      return
+        WithServiceExceptionTryExecute(() => new ScheduleResult
+        {
+          JobId =
+            scheduler.ScheduleExportJob(request, Request.Headers.GetCustomHeaders(true)).Result?.JobId
+        });
+    }
+    #endregion
+
+    #region Schedule surface export
+
+    /// <summary>
+    /// Schedules the surface export job and returns JobId.
+    /// </summary>
+    /// <param name="projectUid">The project uid.</param>
+    /// <param name="fileName">Name of the file.</param>
+    /// <param name="tolerance"></param>
+    /// <param name="filterUid">The filter uid.</param>
+    /// <param name="scheduler">The scheduler.</param>
+    [ProjectUidVerifier]
+    [Route("api/v2/export/surface/schedulejob")]
+    [HttpGet]
+    public ScheduleResult ScheduleSurfaceJob(
+      [FromQuery] Guid projectUid,
+      [FromQuery] string fileName,
+      [FromQuery] double? tolerance,
+      [FromQuery] Guid? filterUid,
+      [FromServices] ISchedulerProxy scheduler)
+    {
+      //TODO: Do we need to validate the parameters here as well as when the export url is called?
+
+      var exportDataUrl =
+        $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/api/v2/export/surface?projectUid={projectUid}&fileName={fileName}&filterUid={filterUid}&tolerance={tolerance}";
+      var request = new ScheduleJobRequest { Url = exportDataUrl, Filename = fileName };
+      return
+        WithServiceExceptionTryExecute(() => new ScheduleResult
+        {
+          JobId =
+            scheduler.ScheduleExportJob(request, Request.Headers.GetCustomHeaders(true)).Result?.JobId
+        });
+    }
+    #endregion
+
+    
     #region Exports
     /// <summary>
     /// Gets an export of production data in cell grid format report for import to VETA.
