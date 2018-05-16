@@ -84,7 +84,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       //TODO: Do we need to validate the parameters here as well as when the export url is called?
 
       //The URL to get the export data is here in this controller, construct it based on this request
-      var exportDataUrl = $"{HttpContext.Request.Scheme}//{HttpContext.Request.Host}/api/v2/export/veta?projectUid={projectUid}&fileName={fileName}";
+      var exportDataUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/api/v2/export/veta?projectUid={projectUid}&fileName={fileName}";
       if (filterUid.HasValue)
       {
         exportDataUrl = $"{exportDataUrl}&filterUid={filterUid}";
