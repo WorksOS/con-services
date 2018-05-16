@@ -1,4 +1,4 @@
-﻿namespace RaptorDesignElevationsServer
+﻿namespace TRexDesignElevationsServer
 {
     partial class Form1
     {
@@ -48,7 +48,7 @@
             this.ClientSize = new System.Drawing.Size(461, 149);
             this.Controls.Add(this.label1);
             this.Name = "Form1";
-            this.Text = "Raptor Design Elevations Server";
+            this.Text = "TRex Design Elevations Server";
             this.ResumeLayout(false);
 
         }

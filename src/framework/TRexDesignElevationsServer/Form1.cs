@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using VSS.TRex.DesignProfiling.Servers.Client;
 
-namespace RaptorDesignElevationsServer
+namespace TRexDesignElevationsServer
 {
     public partial class Form1 : Form
     {

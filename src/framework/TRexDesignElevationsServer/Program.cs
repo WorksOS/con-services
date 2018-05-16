@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Windows.Forms;
+using TRexDesignElevationsServer;
 
-namespace RaptorDesignElevationsServer
+namespace TRexDesignElevationsServer
 {
     static class Program
     {
