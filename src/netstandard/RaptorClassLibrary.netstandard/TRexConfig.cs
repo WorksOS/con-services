@@ -15,12 +15,6 @@ namespace VSS.TRex
         public static int SubGridTreeNodeCellSparcityLimit() => 20;
 
         /// <summary>
-        /// The default first asset ID number used for a John Doe machine
-        /// </summary>
-        /// <returns></returns>
-        public static long JohnDoeBaseNumber() => 1000000;
-
-        /// <summary>
         /// The number of passes to increment a cell pass array by when constructing filtered cell pass arrays
         /// </summary>
         public static int VLPDPSNode_CellPassAggregationListSizeIncrement => 100;
