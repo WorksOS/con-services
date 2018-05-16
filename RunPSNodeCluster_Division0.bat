@@ -1,1 +1,0 @@
-start C:\Dev\VSS.TRex\RaptorPSNodeServer\bin\Debug\RaptorPSNodeServer.exe SpatialDivision=0

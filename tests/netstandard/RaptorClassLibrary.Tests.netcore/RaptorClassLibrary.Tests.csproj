@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B7B4C47F-1F4C-409B-A73D-159D7FADB06C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>VSS.VisionLink.Raptor.RaptorClassLibrary.Tests</RootNamespace>
+    <AssemblyName>RaptorClassLibrary.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Apache.Ignite, Version=2.4.0.27085, Culture=neutral, PublicKeyToken=6e15f083b9518446, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Apache.Ignite.2.4.0\lib\net40\Apache.Ignite.exe</HintPath>
+    </Reference>
+    <Reference Include="Apache.Ignite.Core, Version=2.4.0.27085, Culture=neutral, PublicKeyToken=a487a7ff0b2aaa4a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Apache.Ignite.2.4.0\lib\net40\Apache.Ignite.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+  <Choose>
+    <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
+          <Private>False</Private>
+        </Reference>
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+  <ItemGroup>
+    <Compile Include="AttributeValueModifierTests.cs" />
+    <Compile Include="AttributeValueRangeCalculatorTests.cs" />
+    <Compile Include="BitFieldArrayTests.cs" />
+    <Compile Include="CellPassAttributeFilterTests.cs" />
+    <Compile Include="CellPassTests.cs" />
+    <Compile Include="CellSpatialFilterTests.cs" />
+    <Compile Include="EncodedBitFieldDescriptorTests.cs" />
+    <Compile Include="Extensions\FromToBytesTests.cs" />
+    <Compile Include="Geometry\FencePointTests.cs" />
+    <Compile Include="Geometry\FenceTests.cs" />
+    <Compile Include="GPSModeTests.cs" />
+    <Compile Include="MockedClasses\GridFabric\MockedClusterServerNode.cs" />
+    <Compile Include="MutabilityConverterTests.cs" />
+    <Compile Include="RenderOverlayTileTests.cs" />
+    <Compile Include="ServerSubGridTreeLeafTests.cs" />
+    <Compile Include="Servers\Server\RaptorCacheComputeServerTests.cs" />
+    <Compile Include="StorageProxy_IgniteTests.cs" />
+    <Compile Include="Storage\Utilities\MemoryStreamCompressionTests.cs" />
+    <Compile Include="SubGridCellLatestPassDataWrapperTests.cs" />
+    <Compile Include="SubGridCellSegmentPassesDataWrapper_NonStaticTests.cs" />
+    <Compile Include="SubGridSegmentCellPassIterator_NonStaticTests.cs" />
+    <Compile Include="SubGridSegmentIteratorTests.cs" />
+    <Compile Include="SubGridTreeBitMaskTests.cs" />
+    <Compile Include="SubGridTreeLeafBitmapSubGridTests.cs" />
+    <Compile Include="SubGridTreePersistorTests.cs" />
+    <Compile Include="SubGridUtilitiesTests.cs" />
+    <Compile Include="SubGridSpatialAffinityKeyTests.cs" />
+    <Compile Include="Utility\TypesHelperTests.cs" />
+    <Compile Include="PassCountTests.cs" />
+    <Compile Include="Utility\MinMaxTests.cs" />
+    <Compile Include="Utility\MathUtilitiesTests.cs" />
+    <Compile Include="Utility\GeometryHelperTests.cs" />
+    <Compile Include="GridFabric\NodeFilterTests.cs" />
+    <Compile Include="UTMCoordPointPairTests.cs" />
+    <Compile Include="Utility\GPSTests.cs" />
+    <Compile Include="Geometry\LineIntersectionTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CellTests.cs" />
+    <Compile Include="Geometry\SimpleTriangleTests.cs" />
+    <Compile Include="SubgridCellAddressTests.cs" />
+    <Compile Include="Utility\BitFlagHelperTests.cs" />
+    <Compile Include="Utility\BitCounterHelperTests.cs" />
+    <Compile Include="SubGridTreeBitmapSubGridBitsTests.cs" />
+    <Compile Include="SubGridTests.cs" />
+    <Compile Include="SubGridTreeTests.cs" />
+    <Compile Include="SubGridFactoryTests.cs" />
+    <Compile Include="NodeSubgridTests.cs" />
+    <Compile Include="SubGridTreeUtilitiesTests.cs" />
+    <Compile Include="SubGridTreeSparseCellRecordTests.cs" />
+    <Compile Include="LeafSubgridTests.cs" />
+    <Compile Include="Utility\RangeTests.cs" />
+    <Compile Include="GenericSubGridTreeTests.cs" />
+    <Compile Include="GenericLeafSubGridTests.cs" />
+    <Compile Include="ClientLeafSubGridTests.cs" />
+    <Compile Include="ClientLeafSubGridFactoryTests.cs" />
+    <Compile Include="GenericClientLeafSubgridTests.cs" />
+    <Compile Include="HeightClientLeafSubGridTests.cs" />
+    <Compile Include="HeightAndTimeClientLeafSubgridTests.cs" />
+    <Compile Include="FilteredSinglePassInfoTests.cs" />
+    <Compile Include="TAGProcessorStateBaseTests.cs" />
+    <Compile Include="Geometry\XYZTests.cs" />
+    <Compile Include="Volumes\CutFillVolumeTests.cs" />
+    <Compile Include="Volumes\SimpleVolumesRequestTests.cs" />
+    <Compile Include="Volumes\SimpleVolumesResponseTests.cs" />
+    <Compile Include="Volumes\SimpleVolumesRequestComputeFuncTests.cs" />
+    <Compile Include="Volumes\SimpleVolumesRequestArgumentTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Raptor.Common\Raptor.Common.csproj">
+      <Project>{197081dd-40e6-42af-8a77-a3a0445042eb}</Project>
+      <Name>Raptor.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RaptorClassLibrary\RaptorClassLibrary.csproj">
+      <Project>{D900B783-706F-4845-82E1-3C93C1E06DF2}</Project>
+      <Name>RaptorClassLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSS.Velociraptor.Geometry\VSS.VisionLink.Raptor.Geometry.csproj">
+      <Project>{e1a52e73-5ccd-4aa5-bb78-561319479792}</Project>
+      <Name>VSS.VisionLink.Raptor.Geometry</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Choose>
+    <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.CodedUITestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Extension, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITesting, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+if not exist "$(TargetDir)libs" md "$(TargetDir)libs"
+xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.2.4.0\libs\*.*" "$(TargetDir)libs"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,1 @@
+start C:\Dev\VSS.TRex\src\framework\TRexIgniteTest\bin\x64\release\TRexIgniteTest.exe

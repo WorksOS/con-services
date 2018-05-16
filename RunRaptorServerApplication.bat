@@ -1,1 +1,0 @@
-start C:\Dev\VSS.TRex\RaptorServerApplication\bin\x64\debug\RaptorServerApplication.exe

@@ -1,0 +1,1 @@
+start C:\Dev\VSS.TRex\src\framework\TRexServerApplication\bin\x64\debug\TRexServerApplication.exe
