@@ -111,7 +111,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
                  (ushort)height, // PixelsY
                  new CombinedFilter(AttributeFilter, SpatialFilter), // Filter1
                  null, // filter 2
-                 (cmbDesigns.Items.Count == 0) ? long.MinValue : (cmbDesigns.SelectedValue as Design).ID// DesignDescriptor
+                 (cmbDesigns.Items.Count == 0) ? Guid.Empty : (cmbDesigns.SelectedValue as Design).ID// DesignDescriptor
                 )) as TileRenderResponse_Framework;
 
                 return response?.TileBitmap;
@@ -129,7 +129,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 
             if (siteModel != null)
             {
-                long[] SurveyedSurfaceExclusionList = (siteModel.SurveyedSurfaces == null || chkIncludeSurveyedSurfaces.Checked) ? new long[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray();
+                Guid[] SurveyedSurfaceExclusionList = (siteModel.SurveyedSurfaces == null || chkIncludeSurveyedSurfaces.Checked) ? new Guid[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray();
 
                 return ProjectExtents.ProductionDataAndSurveyedSurfaces(ID(), SurveyedSurfaceExclusionList);
             }
@@ -734,7 +734,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
         /// </summary>
         /// <param name="siteModel"></param>
         /// <returns></returns>
-        private long[] GetSurveyedSurfaceExclusionList(SiteModel siteModel) => (siteModel.SurveyedSurfaces == null || chkIncludeSurveyedSurfaces.Checked) ? new long[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray();
+        private Guid[] GetSurveyedSurfaceExclusionList(SiteModel siteModel) => (siteModel.SurveyedSurfaces == null || chkIncludeSurveyedSurfaces.Checked) ? new Guid[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray();
 
         private void btnCalculateVolumes_Click(object sender, EventArgs e)
         {
@@ -817,7 +817,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
                 //    AttributeFilter = new CellPassAttributeFilter(/*siteModel*/),
                 //    SpatialFilter = new CellSpatialFilter()
                 //},
-                DesignID = (cmbDesigns.Items.Count == 0) ? long.MinValue : (cmbDesigns.SelectedValue as Design).ID,
+                DesignID = (cmbDesigns.Items.Count == 0) ? Guid.Empty : (cmbDesigns.SelectedValue as Design).ID,
                 Offsets = offsets
             });
 
@@ -846,7 +846,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 
             MessageBox.Show($"{numPatches} patches requested in {sw.Elapsed}, {(numPatches * 1024.0) / (sw.ElapsedMilliseconds / 1000.0)} per second");
 
-            Design ttmDesign = new Design(-1, new DesignDescriptor(-1, "", "", @"C:\Temp\", "Bug36372.ttm", 0.0), extents);
+            Design ttmDesign = new Design(Guid.Empty, new DesignDescriptor(Guid.Empty, "", "", @"C:\Temp\", "Bug36372.ttm", 0.0), extents);
             sw.Reset();
             sw.Start();
 

@@ -26,7 +26,7 @@ namespace VSS.TRex.Designs
                 return true;
             }
 
-            if (filter.AttributeFilter.HasElevationRangeFilter && filter.AttributeFilter.ElevationRangeDesignID != long.MinValue)
+            if (filter.AttributeFilter.HasElevationRangeFilter && filter.AttributeFilter.ElevationRangeDesignID != Guid.Empty)
             {
                 SubGridTreeSubGridExistenceBitMask DesignExistanceMap = ExistenceMaps.ExistenceMaps.GetSingleExistenceMap
                     (siteModelID, ExistenceMaps.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, filter.AttributeFilter.ElevationRangeDesignID);

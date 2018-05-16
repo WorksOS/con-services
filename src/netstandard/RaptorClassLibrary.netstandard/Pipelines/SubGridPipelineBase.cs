@@ -77,7 +77,7 @@ namespace VSS.TRex.Pipelines
 
         public int MaxNumberOfPassesToReturn = 0;
 
-        public long CutFillDesignID { get; set; } = long.MinValue;
+        public Guid CutFillDesignID { get; set; } = Guid.Empty;
 
         // public float FNoChangeVolumeTolerance;
 

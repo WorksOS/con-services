@@ -520,7 +520,7 @@ namespace VSS.TRex.SiteModels
         /// datamodel, excepting those identitied in the SurveyedSurfaceExclusionList
         /// </summary>
         /// <returns></returns>
-        public BoundingWorldExtent3D GetAdjustedDataModelSpatialExtents(long[] SurveyedSurfaceExclusionList)
+        public BoundingWorldExtent3D GetAdjustedDataModelSpatialExtents(Guid[] SurveyedSurfaceExclusionList)
         {
             if (SurveyedSurfaces == null || SurveyedSurfaces.Count == 0)
             {

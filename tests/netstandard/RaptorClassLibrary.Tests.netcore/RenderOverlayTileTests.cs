@@ -21,7 +21,7 @@ namespace VSS.TRex.Executors.Tests
                                                              100, // PixelsY
                                                              null, // Filter1
                                                              null, // Filter2
-                                                             long.MinValue, // DesignDescriptor.Null(),
+                                                             Guid.Empty,  // DesignDescriptor.Null(),
                                                              Color.Black,
                                                              string.Empty);
 

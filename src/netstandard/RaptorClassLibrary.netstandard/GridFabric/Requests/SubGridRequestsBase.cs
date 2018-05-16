@@ -81,7 +81,7 @@ namespace VSS.TRex.GridFabric.Requests
         /// <summary>
         /// The design to be used in cases of cut/fill subgrid requests
         /// </summary>
-        public long CutFillDesignID { get; set; } = long.MinValue;
+        public Guid CutFillDesignID { get; set; } = Guid.Empty;
 
         /// <summary>
         /// No arg constructor that establishes this request as a cache compute request. 
@@ -113,7 +113,7 @@ namespace VSS.TRex.GridFabric.Requests
                                    SubGridTreeSubGridExistenceBitMask prodDataMask,
                                    SubGridTreeSubGridExistenceBitMask surveyedSurfaceOnlyMask,
                                    FilterSet filters,
-                                   long cutFillDesignID) : this()
+                                   Guid cutFillDesignID) : this()
         {
             Task = task;
             SiteModelID = siteModelID;

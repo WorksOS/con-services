@@ -127,7 +127,7 @@ namespace VSS.TRex.Filters
         /// <summary>
         /// The design to be used as the benchmark for a surface based elevation range filter
         /// </summary>
-        public long ElevationRangeDesignID = long.MinValue;
+        public Guid ElevationRangeDesignID = Guid.Empty;
         //public DesignDescriptor ElevationRangeDesign = DesignDescriptor.Null();
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace VSS.TRex.Filters
         /// <summary>
         /// The list of surveyed surface identifiers to be exluded from the filtered result
         /// </summary>
-        public long[] SurveyedSurfaceExclusionList { get; set; } = new long[0]; // note this is not saved in the database and must be set in the server
+        public Guid[] SurveyedSurfaceExclusionList { get; set; } = new Guid[0]; // note this is not saved in the database and must be set in the server
 
         //TODO add when machine sets are implemented 
         //  public something[] MachineIDSets
@@ -416,7 +416,7 @@ namespace VSS.TRex.Filters
                 return Result;
 
             if (Result == -1)  // Check the contents of the elevation range filter
-                if (ElevationRangeDesignID != long.MinValue)
+                if (ElevationRangeDesignID != Guid.Empty)
                 {
                     Result = ElevationRangeDesignID.CompareTo(AFilter.ElevationRangeDesignID);
                     if (Result == 0)
@@ -479,7 +479,7 @@ namespace VSS.TRex.Filters
             ElevationRangeLevel = Consts.NullDouble;
             ElevationRangeOffset = Consts.NullDouble;
             ElevationRangeThickness = Consts.NullDouble;
-            ElevationRangeDesignID = long.MinValue;
+            ElevationRangeDesignID = Guid.Empty;
 
             ElevationRangeIsInitialised = false;
             ElevationRangeIsLevelAndThicknessOnly = false;
@@ -665,7 +665,7 @@ FAvoidZoneUndergroundServiceZones = false;
 
         public void ClearSurveyedSurfaceExclusionList()
         {
-            SurveyedSurfaceExclusionList = new long[0];
+            SurveyedSurfaceExclusionList = new Guid[0];
         }
 
         public void ClearTime()

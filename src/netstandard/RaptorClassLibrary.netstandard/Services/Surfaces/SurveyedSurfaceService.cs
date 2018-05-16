@@ -73,12 +73,12 @@ namespace VSS.TRex.Services.Surfaces
         /// <param name="asAtDate"></param>
         /// <param name="extents"></param>
         /// <param name="SuveyedSurfaceID"></param>
-        public void AddDirect(Guid SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents, out long SuveyedSurfaceID)
+        public void AddDirect(Guid SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents, out Guid SuveyedSurfaceID)
         {
             // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
 
             NonSpatialAffinityKey cacheKey = SurveyedSurfaces.CacheKey(SiteModelID);
-            SuveyedSurfaceID = Guid.NewGuid().GetHashCode();
+            SuveyedSurfaceID = Guid.NewGuid();
 
             // Get the surveyed surfaces, creating it if it does not exist
             SurveyedSurfaces ssList = new SurveyedSurfaces();
@@ -166,7 +166,7 @@ namespace VSS.TRex.Services.Surfaces
         /// <param name="SiteModelID"></param>
         /// <param name="SurveySurfaceID"></param>
         /// <returns></returns>
-        public bool Remove(Guid SiteModelID, long SurveySurfaceID)
+        public bool Remove(Guid SiteModelID, Guid SurveySurfaceID)
         {
             try
             {
@@ -186,7 +186,7 @@ namespace VSS.TRex.Services.Surfaces
         /// <param name="SiteModelID"></param>
         /// <param name="SurveySurfaceID"></param>
         /// <returns></returns>
-        public bool RemoveDirect(Guid SiteModelID, long SurveySurfaceID)
+        public bool RemoveDirect(Guid SiteModelID, Guid SurveySurfaceID)
         {
             // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
 

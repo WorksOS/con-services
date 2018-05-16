@@ -29,8 +29,8 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
         public CombinedFilter BaseFilter = null;
         public CombinedFilter TopFilter = null;
 
-        public long BaseDesignID = long.MinValue;
-        public long TopDesignID = long.MinValue;
+        public Guid BaseDesignID = Guid.Empty;
+        public Guid TopDesignID = Guid.Empty;
 
         /// <summary>
         /// AdditionalSpatialFilter is an additional boundary specified by the user to bound the result of the query

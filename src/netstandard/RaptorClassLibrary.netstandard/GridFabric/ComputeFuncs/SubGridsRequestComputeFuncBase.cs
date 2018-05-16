@@ -229,7 +229,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
             }
 
             // Set up any required cut fill design
-            if (arg.CutFillDesignID != long.MinValue)
+            if (arg.CutFillDesignID != Guid.Empty)
             {
                 CutFillDesign = DesignsService.Instance().Find(arg.SiteModelID, arg.CutFillDesignID);
             }

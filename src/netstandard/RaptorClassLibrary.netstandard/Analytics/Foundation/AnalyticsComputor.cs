@@ -40,7 +40,7 @@ namespace VSS.TRex.Analytics
         /// <summary>
         /// Identifier for the design to be used as the basis for any required cut fill operations
         /// </summary>
-        public long CutFillDesignID { get; set; } = long.MinValue;
+        public Guid CutFillDesignID { get; set; } = Guid.Empty;
 
         /// <summary>
         /// The underlying grid data type required to satisfy the processing requirements of this analytics computor
@@ -95,7 +95,7 @@ namespace VSS.TRex.Analytics
             OverallExistenceMap.SetOp_OR(ProdDataExistenceMap);
 
             // if CutFill request there will be a design assigned so get existance map to assign
-            if (CutFillDesignID != long.MinValue)
+            if (CutFillDesignID != Guid.Empty)
             {
                 CutFillDesignExistenceMap = ExistenceMaps.ExistenceMaps.GetSingleExistenceMap(SiteModel.ID, ExistenceMaps.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, CutFillDesignID);
 
@@ -112,7 +112,7 @@ namespace VSS.TRex.Analytics
 
             if (Filter?.AttributeFilter != null)
             {
-                if (Filter.AttributeFilter.HasElevationRangeFilter && (Filter.AttributeFilter.ElevationRangeDesignID != long.MinValue))
+                if (Filter.AttributeFilter.HasElevationRangeFilter && (Filter.AttributeFilter.ElevationRangeDesignID != Guid.Empty))
                 {
                     SubGridTreeSubGridExistenceBitMask LiftDesignSubgridOverlayMap = ExistenceMaps.ExistenceMaps.GetSingleExistenceMap(SiteModel.ID, ExistenceMaps.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, Filter.AttributeFilter.ElevationRangeDesignID);
 

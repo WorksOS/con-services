@@ -117,7 +117,7 @@ namespace VSS.TRex.Filters.Tests
                 x =>
                 {
                     x.HasElevationRangeFilter = true;
-                    x.ElevationRangeDesignID = long.MinValue;
+                    x.ElevationRangeDesignID = Guid.Empty;
                     x.ElevationRangeOffset = 10;
                     x.ElevationRangeThickness = 1;
                 });
@@ -226,13 +226,13 @@ namespace VSS.TRex.Filters.Tests
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("ElevationRange Design",
                                                             x => { x.HasElevationRangeFilter = true;
-                                                                   x.ElevationRangeDesignID = 12345;
+                                                                   x.ElevationRangeDesignID = Guid.NewGuid();
                                                                    x.ElevationRangeOffset = 10;
                                                                    x.ElevationRangeThickness = 1;
                                                             },
-                                                            x => x.HasElevationRangeFilter && x.ElevationRangeDesignID != long.MinValue && x.ElevationRangeOffset == 10 && x.ElevationRangeThickness == 1,
+                                                            x => x.HasElevationRangeFilter && x.ElevationRangeDesignID != Guid.Empty && x.ElevationRangeOffset == 10 && x.ElevationRangeThickness == 1,
                                                             x => { x.ClearElevationRange(); },
-                                                            x => !x.HasElevationRangeFilter && x.ElevationRangeDesignID == long.MinValue && x.ElevationRangeOffset == Consts.NullDouble && x.ElevationRangeThickness == Consts.NullDouble);
+                                                            x => !x.HasElevationRangeFilter && x.ElevationRangeDesignID == Guid.Empty && x.ElevationRangeOffset == Consts.NullDouble && x.ElevationRangeThickness == Consts.NullDouble);
 
             Test_CellPassAttributeFilter_ClearFilter_Aspect("ElevationRange Level",
                                                             x => {

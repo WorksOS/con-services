@@ -43,13 +43,13 @@ namespace VSS.TRex.Volumes.Executors
         /// The ID of the 'base' design. This is the design forming the 'from' surface in 
         /// the volumes calculation
         /// </summary>
-        long BaseDesignID = long.MinValue;
+        Guid BaseDesignID = Guid.Empty;
 
         /// <summary>
         /// The ID of the 'to or top' design. This is the design forming the 'to or top' surface in 
         /// the volumes calculation
         /// </summary>
-        long TopDesignID = long.MinValue;
+        Guid TopDesignID = Guid.Empty;
 
         /// <summary>
         /// AdditionalSpatialFilter is an additional boundary specified by the user to bound the result of the query
@@ -105,8 +105,8 @@ namespace VSS.TRex.Volumes.Executors
 
             ComputeVolumes.UseEarliestData = BaseFilter.AttributeFilter.ReturnEarliestFilteredCellPass;
 
-            ComputeVolumes.RefOriginal = BaseDesignID == long.MinValue ? null : Services.Designs.DesignsService.Instance().Find(SiteModelID, BaseDesignID);
-            ComputeVolumes.RefDesign = TopDesignID == long.MinValue ? null : Services.Designs.DesignsService.Instance().Find(SiteModelID, TopDesignID);
+            ComputeVolumes.RefOriginal = BaseDesignID == Guid.Empty ? null : Services.Designs.DesignsService.Instance().Find(SiteModelID, BaseDesignID);
+            ComputeVolumes.RefDesign = TopDesignID == Guid.Empty ? null : Services.Designs.DesignsService.Instance().Find(SiteModelID, TopDesignID);
 
             if (ComputeVolumes.FromSelectionType == ProdReportSelectionType.Surface)
                 ComputeVolumes.ActiveDesign = ComputeVolumes.RefOriginal;
@@ -135,8 +135,8 @@ namespace VSS.TRex.Volumes.Executors
                                     VolumeComputationType volumeType,
                                     CombinedFilter baseFilter,
                                     CombinedFilter topFilter,
-                                    long baseDesignID,
-                                    long topDesignID,
+                                    Guid baseDesignID,
+                                    Guid topDesignID,
                                     CombinedFilter additionalSpatialFilter,
                                     double cutTolerance,
                                     double fillTolerance)

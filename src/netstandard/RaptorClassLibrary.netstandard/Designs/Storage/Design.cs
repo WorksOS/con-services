@@ -31,7 +31,7 @@ namespace VSS.TRex.Designs.Storage
         /// <param name="writer"></param>
         public void Write(BinaryWriter writer)
         {
-            writer.Write(ID);
+            writer.Write(ID.ToByteArray());
             FDesignDescriptor.Write(writer);
             FExtents.Write(writer);
         }
@@ -49,7 +49,9 @@ namespace VSS.TRex.Designs.Storage
         /// <param name="reader"></param>
         public void Read(BinaryReader reader)
         {
-            ID = reader.ReadInt64();
+            byte[] bytes = new byte[16];
+            reader.Read(bytes, 0, 16);
+            ID = new Guid(bytes);
             FDesignDescriptor.Read(reader);
             FExtents.Read(reader);
         }
@@ -57,7 +59,7 @@ namespace VSS.TRex.Designs.Storage
         /// <summary>
         /// The intenal identifier of the design
         /// </summary>
-        public long ID { get; private set; } = long.MinValue;
+        public Guid ID { get; private set; } = Guid.Empty;
 
         /// <summary>
         /// The full design descriptior representing the design
@@ -91,7 +93,7 @@ namespace VSS.TRex.Designs.Storage
         /// <param name="AID"></param>
         /// <param name="ADesignDescriptor"></param>
         /// <param name="AExtents"></param>
-        public Design(long AID,
+        public Design(Guid AID,
                       DesignDescriptor ADesignDescriptor,
                       BoundingWorldExtent3D AExtents)
         {

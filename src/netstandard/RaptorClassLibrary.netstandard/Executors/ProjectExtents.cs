@@ -31,7 +31,7 @@ namespace VSS.TRex.Executors
         {
             SiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID, false);
 
-            return SiteModel?.GetAdjustedDataModelSpatialExtents(new long[0]) ?? BoundingWorldExtent3D.Inverted();
+            return SiteModel?.GetAdjustedDataModelSpatialExtents(new Guid[0]) ?? BoundingWorldExtent3D.Inverted();
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace VSS.TRex.Executors
         /// <param name="ID"></param>
         /// <param name="SurveydSurfaceExclusionList"></param>
         /// <returns></returns>
-        public static BoundingWorldExtent3D ProductionDataAndSurveyedSurfaces(Guid ID, long[] SurveydSurfaceExclusionList)
+        public static BoundingWorldExtent3D ProductionDataAndSurveyedSurfaces(Guid ID, Guid[] SurveydSurfaceExclusionList)
         {
             SiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID, false);
 

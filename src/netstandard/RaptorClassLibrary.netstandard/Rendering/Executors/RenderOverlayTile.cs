@@ -59,7 +59,7 @@ namespace VSS.TRex.Rendering.Executors
         /// <summary>
         /// The identifier for the design held in the designs list ofr the project to be used to calculate cut/fill values
         /// </summary>
-        public long CutFillDesignID { get; set; }
+        public Guid CutFillDesignID { get; set; }
 
             
         // ComputeICVolumesType ReferenceVolumeType = ComputeICVolumesType.None;
@@ -94,7 +94,7 @@ namespace VSS.TRex.Rendering.Executors
                                  ushort ANPixelsY,
                                  CombinedFilter AFilter1,
                                  CombinedFilter AFilter2,
-                                 long ACutFillDesignID, //DesignDescriptor ACutFillDesign,
+                                 Guid ACutFillDesignID, //DesignDescriptor ACutFillDesign,
                                  //AReferenceVolumeType : TComputeICVolumesType;
                                  //AColourPalettes: TColourPalettes;
                                  //AICOptions: TSVOICOptions;
@@ -328,7 +328,7 @@ namespace VSS.TRex.Rendering.Executors
             // CoordConversionResult : TCoordServiceErrorStatus;
             // bool ScheduledWithGovernor = false;
             SubGridTreeSubGridExistenceBitMask DesignSubgridOverlayMap = null;
-            long[] SurveyedSurfaceExclusionList = new long[0];
+            Guid[] SurveyedSurfaceExclusionList = new Guid[0];
 
             /*
                if not Assigned(ASNodeImplInstance) or ASNodeImplInstance.ServiceStopped then
@@ -475,7 +475,7 @@ namespace VSS.TRex.Rendering.Executors
 
             if (Filter1 != null && SurveyedSurfaceExclusionList.Length > 0)
             {
-                SurveyedSurfaceExclusionList = new long[Filter1.AttributeFilter.SurveyedSurfaceExclusionList.Length];
+                SurveyedSurfaceExclusionList = new Guid[Filter1.AttributeFilter.SurveyedSurfaceExclusionList.Length];
                 Array.Copy(Filter1.AttributeFilter.SurveyedSurfaceExclusionList, SurveyedSurfaceExclusionList, SurveyedSurfaceExclusionList.Length);
             }
 

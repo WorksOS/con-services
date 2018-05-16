@@ -6,14 +6,14 @@ namespace VSS.TRex.Designs
     [Serializable]
     public struct DesignDescriptor : IEquatable<DesignDescriptor>
     {
-        public long DesignID;
+        public Guid DesignID;
         public string FileSpace;
         public string FileSpaceID;
         public string Folder;
         public string FileName;
         public double Offset;
 
-        public DesignDescriptor(long designID,
+        public DesignDescriptor(Guid designID,
                                 string fileSpace,
                                 string fileSpaceID,
                                 string folder,
@@ -28,7 +28,7 @@ namespace VSS.TRex.Designs
             Offset = offset;
         }
 
-        public void Init(long designID,
+        public void Init(Guid designID,
                          string fileSpace,
                          string fileSpaceID,
                          string folder,
@@ -65,7 +65,7 @@ namespace VSS.TRex.Designs
                    (Offset == other.Offset);
         }
 
-        public void Clear() => Init(0, "", "", "", "", 0.0);
+        public void Clear() => Init(Guid.Empty, "", "", "", "", 0.0);
 
         public static DesignDescriptor Null()
         {
@@ -76,7 +76,7 @@ namespace VSS.TRex.Designs
 
         public void Write(BinaryWriter writer)
         {
-            writer.Write(DesignID);
+            writer.Write(DesignID.ToByteArray());
             writer.Write(FileSpace);
             writer.Write(FileSpaceID);
             writer.Write(Folder);
@@ -86,13 +86,15 @@ namespace VSS.TRex.Designs
 
         public void Read(BinaryReader reader)
         {
-            DesignID = reader.ReadInt64();
+            byte[] bytes = new byte[16];
+            reader.Read(bytes, 0, 16);
+            DesignID = new Guid(bytes);
+
             FileSpace = reader.ReadString();
             FileSpaceID = reader.ReadString();
             Folder = reader.ReadString();
             FileName = reader.ReadString();
             Offset = reader.ReadDouble();
-
         }
     }
 }
