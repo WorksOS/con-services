@@ -40,10 +40,4 @@
     <ProjectReference Include="..\..\src\VSS.TCCFileAccess.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Microsoft.Extensions.DependencyInjection">
-      <HintPath>..\..\..\..\..\Users\amorgan\.nuget\packages\microsoft.extensions.dependencyinjection\1.1.1\lib\netstandard1.1\Microsoft.Extensions.DependencyInjection.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>
