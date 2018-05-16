@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
 using Moq;
+using MySql.Data.MySqlClient.Framework.NetCore10;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
@@ -21,6 +23,7 @@ using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
+using VSS.TCCFileAccess.Models;
 
 namespace VSS.MasterData.ProjectTests
 {
@@ -88,6 +91,8 @@ namespace VSS.MasterData.ProjectTests
         "New Zealand Standard Time", _boundaryLL, _businessCenterFile);
       var createProjectEvent = MapV2Models.MapCreateProjectV2RequestToEvent(request, _customerUid);
       Assert.AreEqual(_checkBoundaryString, createProjectEvent.ProjectBoundary, "Invalid ProjectBoundary in WKT");
+      var coordSystemFileContent = "Some dummy content";
+      createProjectEvent.CoordinateSystemFileContent = System.Text.Encoding.ASCII.GetBytes(coordSystemFileContent);
 
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
@@ -130,12 +135,17 @@ namespace VSS.MasterData.ProjectTests
           sp.AssociateProjectSubscription(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Dictionary<string, string>>()))
         .Returns(Task.FromResult(default(int)));
 
+      var fileRepo = new Mock<IFileRepository>();
+      fileRepo.Setup(f => f.FolderExists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
+      fileRepo.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
+        It.IsAny<Stream>(), It.IsAny<long>())).ReturnsAsync(true);
+
       var executor = RequestExecutorContainerFactory.Build<CreateProjectExecutor>
       (logger, configStore, serviceExceptionHandler,
         _customerUid, userId, null, customHeaders,
         producer.Object, kafkaTopicName,
         geofenceProxy.Object, raptorProxy.Object, subscriptionProxy.Object,
-        projectRepo.Object, subscriptionRepo.Object);
+        projectRepo.Object, subscriptionRepo.Object, fileRepo.Object);
       await executor.ProcessAsync(createProjectEvent);
     }
   }

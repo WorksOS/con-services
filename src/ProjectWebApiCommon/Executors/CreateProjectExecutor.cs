@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -63,9 +64,23 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       // now making changes, potentially needing rollback 
       createProjectEvent = await CreateProjectInDb(createProjectEvent, customerProject).ConfigureAwait(false);
-      await ProjectRequestHelper.CreateCoordSystemInRaptor(createProjectEvent.ProjectUID, createProjectEvent.ProjectID, createProjectEvent.CoordinateSystemFileName, createProjectEvent.CoordinateSystemFileContent, true,
-        log, serviceExceptionHandler, customerUid, customHeaders,
+      await ProjectRequestHelper.CreateCoordSystemInRaptor(
+        createProjectEvent.ProjectUID, createProjectEvent.ProjectID, createProjectEvent.CoordinateSystemFileName, 
+        createProjectEvent.CoordinateSystemFileContent, true, log, serviceExceptionHandler, customerUid, customHeaders,
       projectRepo, raptorProxy).ConfigureAwait(false);
+
+      var fileSpaceId = configStore.GetValueString("TCCFILESPACEID");
+      if (string.IsNullOrEmpty(fileSpaceId))
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 48);
+      }
+      using (var ms = new MemoryStream(createProjectEvent.CoordinateSystemFileContent))
+      {
+        var fileDescriptor = await ProjectRequestHelper.WriteFileToTCCRepository(
+            ms, customerUid, createProjectEvent.ProjectUID.ToString(), createProjectEvent.CoordinateSystemFileName,
+            false, null, fileSpaceId, log, serviceExceptionHandler, fileRepo)
+          .ConfigureAwait(false);
+      }
       await AssociateProjectSubscriptionInSubscriptionService(createProjectEvent).ConfigureAwait(false);
       await CreateGeofenceInGeofenceService(createProjectEvent).ConfigureAwait(false);
 

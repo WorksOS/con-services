@@ -112,60 +112,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     /// <summary>
-    /// Writes the importedFile to TCC
-    ///   returns filespaceID; path and filename which identifies it uniquely in TCC
-    ///   this may be a create or update, so ok if it already exists already
-    /// </summary>
-    /// <returns></returns>
-    protected async Task<FileDescriptor> WriteFileToTCCRepository(string customerUid, string projectUid,
-      string pathAndFileName, ImportedFileType importedFileType, DateTime? surveyedUtc)
-    {
-      var fileStream = new FileStream(pathAndFileName, FileMode.Open);
-      var tccPath = $"/{customerUid}/{projectUid}";
-      string tccFileName = Path.GetFileName(pathAndFileName);
-
-      if (importedFileType == ImportedFileType.SurveyedSurface)
-        if (surveyedUtc != null) // validation should prevent this
-          tccFileName = ImportedFileUtils.IncludeSurveyedUtcInName(tccFileName, surveyedUtc.Value);
-
-      bool ccPutFileResult = false;
-      bool folderAlreadyExists = false;
-      try
-      {
-        log.LogInformation(
-          $"WriteFileToTCCRepository: fileSpaceId {fileSpaceId} tccPath {tccPath} tccFileName {tccFileName}");
-        // check for exists first to avoid an misleading exception in our logs.
-        folderAlreadyExists = await fileRepo.FolderExists(fileSpaceId, tccPath).ConfigureAwait(false);
-        if (folderAlreadyExists == false)
-          await fileRepo.MakeFolder(fileSpaceId, tccPath).ConfigureAwait(false);
-
-        // this does an upsert
-        ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPath, tccFileName, fileStream, fileStream.Length)
-          .ConfigureAwait(false);
-      }
-      catch (Exception e)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "fileRepo.PutFile",
-          e.Message);
-      }
-      finally
-      {
-        fileStream.Dispose();
-      }
-
-
-      if (ccPutFileResult == false)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 53);
-      }
-
-      log.LogInformation(
-        $"WriteFileToTCCRepository: tccFileName {tccFileName} written to TCC. folderAlreadyExists {folderAlreadyExists}");
-      return FileDescriptor.CreateFileDescriptor(fileSpaceId, tccPath, tccFileName);
-    }
-
-
-    /// <summary>
     /// Deletes the importedFile from TCC
     /// </summary>
     /// <returns></returns>

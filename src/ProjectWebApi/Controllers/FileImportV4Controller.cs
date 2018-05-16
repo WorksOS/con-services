@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -235,9 +236,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
 
       /*** now making changes, potentially needing rollback ***/
-      var fileDescriptor = await WriteFileToTCCRepository(customerUid, projectUid.ToString(), file.path,
-          importedFileType, surveyedUtc)
-        .ConfigureAwait(false);
+      FileDescriptor fileDescriptor = null;
+      using (var fileStream = new FileStream(file.path, FileMode.Open))
+      {
+        fileDescriptor = await ProjectRequestHelper.WriteFileToTCCRepository(
+          fileStream, customerUid, projectUid.ToString(), file.path, importedFileType == ImportedFileType.SurveyedSurface, 
+          surveyedUtc, fileSpaceId, log, serviceExceptionHandler, fileRepo)
+          .ConfigureAwait(false);
+      }
 
       // need to write to Db prior to notifying raptor, as raptor needs the legacyImportedFileID 
       CreateImportedFileEvent createImportedFileEvent = await ImportedFileRequestHelper.CreateImportedFileinDb(Guid.Parse(customerUid), projectUid,
@@ -326,8 +332,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       // this also validates that this customer has access to the projectUid
       var project = await GetProject(projectUid.ToString());
 
-      var fileDescriptor = await WriteFileToTCCRepository(customerUid, projectUid.ToString(), file.path,
-          importedFileType, surveyedUtc).ConfigureAwait(false);
+      FileDescriptor fileDescriptor = null;
+      using (var fileStream = new FileStream(file.path, FileMode.Open))
+      {
+        fileDescriptor = await ProjectRequestHelper.WriteFileToTCCRepository(
+          fileStream, customerUid, projectUid.ToString(), file.path, importedFileType == ImportedFileType.SurveyedSurface, 
+          surveyedUtc, fileSpaceId, log, serviceExceptionHandler, fileRepo)
+          .ConfigureAwait(false);
+      }
 
       var importedFileUpsertEvent = ImportedFileUpsertEvent.CreateImportedFileUpsertEvent(
          project, importedFileType,
