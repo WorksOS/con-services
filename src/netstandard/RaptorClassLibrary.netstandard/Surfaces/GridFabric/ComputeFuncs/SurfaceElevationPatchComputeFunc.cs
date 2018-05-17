@@ -55,7 +55,7 @@ namespace VSS.TRex.Surfaces.GridFabric.ComputeFuncs
             catch (Exception E)
             {
                 Log.Info($"Exception: {E}");
-                return null; // Todo .....
+                return null; 
             }
         }
     }

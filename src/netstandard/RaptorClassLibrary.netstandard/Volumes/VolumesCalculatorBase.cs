@@ -201,8 +201,7 @@ namespace VSS.TRex.Volumes
                     {
                         if (ActiveDesign == null || ActiveDesign.DesignDescriptor.IsNull)
                         {
-                            // TODO Readd when logging available
-                            //SIGLogMessage.PublishNoODS(Self, Format('No design provided to prod data/design volumes calc for datamodel %d', [FDataModelID]), slmcError);
+                            Log.Error($"No design provided to prod data/design volumes calc for datamodel {SiteModel.ID}");
                             return RequestErrorStatus.NoDesignProvided;
                         }
 
