@@ -164,25 +164,6 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                             Result = HasMachinesOfInterest;
                         }
                     }
-
-                    /* TODO Machine restriction not currently implemented
-                                {$IFDEF STATIC_CELL_PASSES}
-                                if Result and HasMachineRestriction and Assigned(Segment)and Assigned(Segment.PassesData) then
-                                  begin
-                                    // Check to see if this segment has any machines that match the
-                                    // machine restriction. If not, advance to the next segment
-                                    HasMachinesOfInterest:= False;
-                                for I := Low(MachineIDSets) to High(MachineIDSets) do
-                                        begin
-                                          HasMachinesOfInterest := (MachineIDSets[I] * Segment.PassesData.MachineIDSets[I]) <> [];
-                                if HasMachinesOfInterest then
-                                  Break;
-                                end;
-
-                                Result:= HasMachinesOfInterest;
-                                end;
-                                {$ENDIF}
-                    */
                 }
             }
             while (!Result);
@@ -217,9 +198,9 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             RestrictSegmentIterationBasedOnElevationRange = (minIterationElevation != Consts.NullDouble) && (MaxIterationElevation != Consts.NullDouble);
         }
 
-        public void SetMachineRestriction()
+        public void SetMachineRestriction(BitArray machienIDSet)
         {
-            // Machine restriction not currently implemented  
+            MachineIDSet = machienIDSet;
         }
 
         public void SegmentListExtended()

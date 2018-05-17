@@ -1078,9 +1078,7 @@ namespace VSS.TRex.SubGridTrees
             SegmentIterator.Directory = _SubGridAsLeaf.Directory;
             if (Filter.AttributeFilter.HasMachineFilter)
             {
-                /* TODO Re-add when machine ID sets are implemented
-                SegmentIterator.SetMachineRestriction(PassFilter.FMachineIDSets);
-                */
+                SegmentIterator.SetMachineRestriction(Filter.AttributeFilter.MachineIDSet);
             }
 
             // Create and configure the cell pass iterator to be used

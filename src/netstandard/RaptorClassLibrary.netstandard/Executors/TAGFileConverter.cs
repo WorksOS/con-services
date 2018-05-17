@@ -80,7 +80,7 @@ namespace VSS.TRex.Executors
             // so the SiteModel constructed to contain the data processed from a TAG file does not need a 
             // storage proxy assigned to it
             SiteModel = new SiteModel(Guid.Empty);
-            Events = new ProductionEventLists(SiteModel, 0 /*TODO: Machine.ID*/);
+            Events = new ProductionEventLists(SiteModel, Machine.InternalSiteModelMachineIndex);
 
             Machine = new Machine()
             {

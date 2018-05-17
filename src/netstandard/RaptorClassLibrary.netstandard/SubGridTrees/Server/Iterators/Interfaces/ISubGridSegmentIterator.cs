@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
 
@@ -30,5 +31,6 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         void SegmentListExtended();
         void SetIteratorElevationRange(double minElevation, double maxElevation);
         void SetTimeRange(DateTime startTime, DateTime endTime);
+        void SetMachineRestriction(BitArray machineIDSet);
     }
 }

@@ -358,14 +358,12 @@ namespace VSS.TRex.Compression
 #if DEBUG
             if (Storage == null)
             {
-                // TODO readd when logging available
                 // SIGLogMessage.PublishNoODS(Nil, Format('BitFieldArray: Read request at %d of %d bits with no storage allocated', [ABitLocation, ValueBits]), slmcAssert);
                 return 0;
             }
 
             if (ABitLocation + ValueBits > NumBits)
             {
-                // TODO readd when logging available
                 // SIGLogMessage.PublishNoODS(Nil, Format('BitFieldArray: Read request at %d of %d bits will read past end of data at %d', [ABitLocation, ValueBits, FNumBits]), slmcAssert);
                 return 0;
             }
@@ -443,14 +441,12 @@ namespace VSS.TRex.Compression
 #if DEBUG
             if (Storage == null)
             {
-                // TODO read when logging available
                 // SIGLogMessage.PublishNoODS(Nil, Format('BitFieldArray: Read request at %d of %d bits with no storage allocated', [ABitLocation, AValueBits]), slmcAssert);
                 return 0;
             }
 
             if ((ABitLocation + AValueBits) > NumBits)
             {
-                // TODO read when logging available
                 // SIGLogMessage.PublishNoODS(Nil, Format('BitFieldArray: Read request at %d of %d bits will read past end of data at %d', [ABitLocation, AValueBits, FNumBits]), slmcAssert);
                 return 0;
             }

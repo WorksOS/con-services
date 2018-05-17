@@ -184,6 +184,11 @@ namespace VSS.TRex.Filters
         public Guid[] SurveyedSurfaceExclusionList { get; set; } = new Guid[0]; // note this is not saved in the database and must be set in the server
 
         /// <summary>
+        /// The machines present in the filter represented as an array of internal machine IDs specific to the site model the filtrer is being applied to
+        /// </summary>
+        public short[] MachineIDs { get; set; }
+
+        /// <summary>
         /// The machines present in the filter represented as a bitset
         /// </summary>
         public BitArray MachineIDSet { get; set; }
@@ -247,6 +252,32 @@ namespace VSS.TRex.Filters
         private static int FlagCheck2(bool Left, bool Right) => Left ? Right ? 0 : -1 : Right ? 1 : 0;
 
         /// <summary>
+        /// Compare two lists of machine IDs for ordering
+        /// </summary>
+        /// <param name="list1"></param>
+        /// <param name="list2"></param>
+        /// <returns></returns>
+        private int MachineIDListsComparison(short[] list1, short[] list2)
+        {
+            // Check list lengths
+            int result = list1.Length < list2.Length ? -1 : list1.Length == list2.Length ? 0 : 1;
+
+            // If the lengths are the same check individual items
+            if (result == 0)
+            { 
+                for (int i = 0; i < list1.Length; i++)
+                {
+                    result = list1[i] < list2[i] ? -1 : list1[i] == list2[i] ? 0 : 1;
+
+                    if (result != 0)
+                        break;
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Compare one filter with another for the purpose of ordering them in caching lists
         /// </summary>
         /// <param name="AFilter"></param>
@@ -294,9 +325,8 @@ namespace VSS.TRex.Filters
             if (Result != 0)
                 return Result;
 
-            //            /* TODO Include when machine IDs are supported
-            //            if (Result == -1)  // Check the contents of the machine filter
-            //                Result = MachineIDListsComparison(Machines, AFilter.Machines);
+            if (Result == -1)  // Check the contents of the machine filter
+               Result = MachineIDListsComparison(MachineIDs, AFilter.MachineIDs);
 
             if (Result != 0)
                 return Result;
