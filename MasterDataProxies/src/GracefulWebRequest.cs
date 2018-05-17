@@ -39,6 +39,7 @@ namespace VSS.MasterData.Proxies
       private readonly ILogger log;
       private const int BUFFER_MAX_SIZE = 1024;
       private readonly int logMaxChar;
+      private readonly int? timeout;
 
       private async Task<string> GetStringFromResponseStream(WebResponse response)
       {
@@ -110,10 +111,14 @@ namespace VSS.MasterData.Proxies
       }
 
       private async Task<WebRequest> PrepareWebRequest(string endpoint, string method,
-        IDictionary<string, string> customHeaders, string payloadData = null, Stream requestStream = null)
+        IDictionary<string, string> customHeaders, string payloadData = null, Stream requestStream = null, int? timeout=null)
       {
         var request = WebRequest.Create(endpoint);
         request.Method = method;
+        if (timeout.HasValue)
+        {
+          request.Timeout = timeout.Value;
+        }
         if (request is HttpWebRequest)
         {
           var httpRequest = request as HttpWebRequest;
@@ -178,7 +183,7 @@ namespace VSS.MasterData.Proxies
       }
 
       public RequestExecutor(string endpoint, string method, IDictionary<string, string> customHeaders,
-        string payloadData, ILogger log, int logMaxChar)
+        string payloadData, ILogger log, int logMaxChar, int? timeout)
       {
         this.endpoint = endpoint;
         this.method = method;
@@ -188,6 +193,7 @@ namespace VSS.MasterData.Proxies
         this.payloadData = payloadData;
         this.log = log;
         this.logMaxChar = logMaxChar;
+        this.timeout = timeout;
       }
 
 
@@ -232,7 +238,7 @@ namespace VSS.MasterData.Proxies
 
       public async Task<T> ExecuteActualRequest<T>(Stream requestSteam = null)
       {
-        var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData, requestSteam);
+        var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData, requestSteam, timeout);
         string responseString = null;
         WebResponse response = null;
         try
@@ -294,12 +300,13 @@ namespace VSS.MasterData.Proxies
     /// <param name="method">The method.</param>
     /// <param name="customHeaders">The custom headers.</param>
     /// <param name="payloadData">The payload data.</param>
+    /// <param name="timeout">Optional timeout in millisecs for the request</param>
     /// <param name="retries">The retries.</param>
     /// <param name="suppressExceptionLogging">if set to <c>true</c> [suppress exception logging].</param>
     /// <returns></returns>
     public async Task<T> ExecuteRequest<T>(string endpoint, string method,
-      IDictionary<string, string> customHeaders = null,
-      string payloadData = null, int retries = 3, bool suppressExceptionLogging = false)
+      IDictionary<string, string> customHeaders = null, string payloadData = null,
+      int? timeout = null, int retries = 3, bool suppressExceptionLogging = false)
     {
       log.LogDebug(
         $"ExecuteRequest() T : endpoint {endpoint} method {method}, customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders).Truncate(logMaxChar))} payloadData {payloadData.Truncate(logMaxChar)}");
@@ -310,7 +317,7 @@ namespace VSS.MasterData.Proxies
         .ExecuteAndCaptureAsync(() =>
         {
           log.LogDebug($"Trying to execute request {endpoint}");
-          var executor = new RequestExecutor(endpoint, method, customHeaders, payloadData, log, logMaxChar);
+          var executor = new RequestExecutor(endpoint, method, customHeaders, payloadData, log, logMaxChar, timeout);
           return executor.ExecuteActualRequest<T>();
         });
 
@@ -338,12 +345,13 @@ namespace VSS.MasterData.Proxies
     /// <param name="method">The method.</param>
     /// <param name="customHeaders">The custom headers.</param>
     /// <param name="payloadData">The payload data.</param>
+    /// <param name="timeout">Optional timeout in millisecs for the request</param>
     /// <param name="retries">The retries.</param>
     /// <param name="suppressExceptionLogging">if set to <c>true</c> [suppress exception logging].</param>
     /// <returns></returns>
     public async Task<Stream> ExecuteRequest(string endpoint, string method,
-      IDictionary<string, string> customHeaders = null,
-      string payloadData = null, int retries = 3, bool suppressExceptionLogging = false)
+      IDictionary<string, string> customHeaders = null, string payloadData = null, 
+      int? timeout = null, int retries = 3, bool suppressExceptionLogging = false)
     {
       log.LogDebug(
         $"ExecuteRequest() Stream: endpoint {endpoint} method {method}, customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders).Truncate(logMaxChar))} payloadData {payloadData.Truncate(logMaxChar)}");
@@ -354,7 +362,7 @@ namespace VSS.MasterData.Proxies
         .ExecuteAndCaptureAsync(async () =>
         {
           log.LogDebug($"Trying to execute request {endpoint}");
-          var executor = new RequestExecutor(endpoint, method, customHeaders, payloadData, log, logMaxChar);
+          var executor = new RequestExecutor(endpoint, method, customHeaders, payloadData, log, logMaxChar, timeout);
           return await executor.ExecuteActualStreamRequest();
         });
 
@@ -383,11 +391,13 @@ namespace VSS.MasterData.Proxies
     /// <param name="payload">The payload.</param>
     /// <param name="customHeaders">The custom headers.</param>
     /// <param name="method">The method.</param>
+    /// <param name="timeout">Optional timeout in millisecs for the request</param>
     /// <param name="retries">The retries.</param>
     /// <param name="suppressExceptionLogging">if set to <c>true</c> [suppress exception logging].</param>
     /// <returns></returns>
     public async Task<T> ExecuteRequest<T>(string endpoint, Stream payload,
-      IDictionary<string, string> customHeaders = null, string method = "POST", int retries = 3, bool suppressExceptionLogging = false)
+      IDictionary<string, string> customHeaders = null, string method = "POST",
+      int? timeout = null, int retries = 3, bool suppressExceptionLogging = false)
     {
       log.LogDebug(
         $"ExecuteRequest() T(no method) : endpoint {endpoint} customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders).Truncate(logMaxChar))}");
@@ -398,7 +408,7 @@ namespace VSS.MasterData.Proxies
         .ExecuteAndCaptureAsync(async () =>
         {
           log.LogDebug($"Trying to execute request {endpoint}");
-          var executor = new RequestExecutor(endpoint, method, customHeaders, "", log, logMaxChar);
+          var executor = new RequestExecutor(endpoint, method, customHeaders, string.Empty, log, logMaxChar, timeout);
           return await executor.ExecuteActualRequest<T>(payload);
         });
 
