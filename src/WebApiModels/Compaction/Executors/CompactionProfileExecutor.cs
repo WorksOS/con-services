@@ -308,16 +308,17 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       }
 
       //Add a last point at the intercept length of the last cell so profiles are drawn correctly
-      if (prevCell != null)
+      if (prevCell != null && prevCell.interceptLength > ProfilesHelper.ONE_MM)
       {
         var lastCell = new CompactionProfileCell(profile.results[profile.results.Count - 1])
         {
-          cellType = ProfileCellType.MidPoint,
           station = prevCell.station + prevCell.interceptLength
         };
 
         profile.results.Add(lastCell);
       }
+      profile.results[profile.results.Count-1].cellType = ProfileCellType.MidPoint;
+
 
       ms.Close();
 
@@ -538,16 +539,16 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       }
 
       //Add a last point at the intercept length of the last cell so profiles are drawn correctly
-      if (prevCell != null)
+      if (prevCell != null && prevCell.interceptLength > ProfilesHelper.ONE_MM)
       {
         var lastCell = new CompactionSummaryVolumesProfileCell(profile.results[profile.results.Count - 1])
         {
-          cellType = ProfileCellType.MidPoint,
           station = prevCell.station + prevCell.interceptLength
         };
 
         profile.results.Add(lastCell);
       }
+      profile.results[profile.results.Count-1].cellType = ProfileCellType.MidPoint;
 
       ms.Close();
 

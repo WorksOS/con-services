@@ -64,7 +64,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     {
       using (var compressedData = new MemoryStream(data))
       {
-        ZipArchive archive = new ZipArchive(compressedData);
+        var archive = new ZipArchive(compressedData);
 
         using (var decompressedData = archive.Entries[0].Open())
         using (var ms = new MemoryStream())

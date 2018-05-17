@@ -9,39 +9,54 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <RootNamespace>VSS.Productivity3D.WebApiTests</RootNamespace>
-    <DependsOnNETStandard>netstandard2.0</DependsOnNETStandard>
+    <Platforms>x64;x86</Platforms>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.3.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.3.0" />
+    <PackageReference Include="log4net.netcore" Version="3.0.*" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.2" />
+    <PackageReference Include="Moq" Version="4.8.2" />
+    <!-- References are required to support VSS.MasterData.Models.netcore for local unit testing only. -->
+    <PackageReference Include="System.Runtime" Version="4.3.0" />
+    <PackageReference Include="System.Reflection" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.4.0" />
+    <!-- END -->
+  </ItemGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugType>full</DebugType>
+    <DebugSymbols>True</DebugSymbols>
     <WarningsAsErrors />
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.2.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.2.0" />
-    <PackageReference Include="log4net.netcore" Version="3.0.*" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.0" />
-    <PackageReference Include="Moq" Version="4.7.25" />
-    <!-- References are required to support VSS.MasterData.Models.netcore for local unit testing only. -->
-    <PackageReference Include="System.Runtime" Version="4.3.0" />
-    <PackageReference Include="System.Reflection" Version="4.3.0" />
-    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
-    <!-- END -->
-  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>True</DebugSymbols>
+    <WarningsAsErrors />
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>True</DebugSymbols>
+    <WarningsAsErrors />
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net471' ">
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
-    <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="2.0.3" />
     <PackageReference Include="System.Net.Security" Version="4.3.2" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.1" />
   </ItemGroup>
@@ -57,17 +72,11 @@
     <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7</DefineConstants>
   </PropertyGroup>
 
-
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\MerinoSandbox\log4netExtensions\src\VSS.Log4NetExtensions.Local.csproj" />
     <ProjectReference Include="..\..\..\..\MerinoSandbox\MasterDataModels\src\VSS.MasterData.Models.Local.csproj" />
-    <ProjectReference Include="..\..\..\src\Common\VSS.Productivity3D.Common.Local.csproj" />
-    <ProjectReference Include="..\..\..\src\WebApiModels\VSS.Productivity3D.WebApi.Models.Local.csproj" />
+    <ProjectReference Include="..\..\..\src\ResponseCaching\src\Microsoft.AspNetCore.ResponseCaching\Microsoft.AspNetCore.ResponseCaching.csproj" />
     <ProjectReference Include="..\..\..\src\WebApi\VSS.Productivity3D.WebApi.Local.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
 
 </Project>
