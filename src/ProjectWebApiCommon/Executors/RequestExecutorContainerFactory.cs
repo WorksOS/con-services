@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
@@ -21,8 +22,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       string customerUid, string userId = null, string userEmailAddress = null, IDictionary<string, string> headers = null,
       IKafka producer = null, string kafkaTopicName = null,
       IGeofenceProxy geofenceProxy = null, IRaptorProxy raptorProxy = null, ISubscriptionProxy subscriptionProxy = null,
-      IProjectRepository projectRepo = null, ISubscriptionRepository subscriptionsRepo = null, IFileRepository fileRepo = null, 
-      ICustomerRepository customerRepo = null
+      IProjectRepository projectRepo = null, ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null, 
+      ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null
       ) 
       where TExecutor : RequestExecutorContainer, new()
     {
@@ -39,7 +40,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         customerUid, userId, userEmailAddress, headers,
         producer, kafkaTopicName,
         geofenceProxy, raptorProxy, subscriptionProxy,
-        projectRepo, subscriptionsRepo, fileRepo, customerRepo
+        projectRepo, subscriptionRepo, fileRepo, customerRepo, httpContextAccessor
         );
 
       return executor;

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -206,6 +207,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <returns></returns>
     protected async Task CreateGeofenceInGeofenceService(CreateProjectEvent project)
     {
+      // This is a temporary work-around of UserAuthorization issue with external applications.
+      //     GeofenceService contains UserAuthorization which will fail for TBC, which uses the v2 API
+      if (httpContextAccessor != null && httpContextAccessor.HttpContext.Request.Path.Value.Contains("api/v2/projects"))
+      {
+        log.LogWarning($"Skip creating a geofence for project: {project.ProjectName}, as request has come from the TBC endpoint: {httpContextAccessor.HttpContext.Request.Path.Value}.");
+        return;
+      }
+
       log.LogDebug($"Creating a geofence for project: {project.ProjectName}");
 
       try

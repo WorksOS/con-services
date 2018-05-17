@@ -45,12 +45,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="raptorProxy"></param>
     /// <param name="subscriptionProxy"></param>
     /// <param name="projectRepo"></param>
-    /// <param name="subscriptionsRepo"></param>
+    /// <param name="subscriptionRepo"></param>
     /// <param name="requestFactory"></param>
     public ProjectSettingsV4Controller(ILoggerFactory logger, IConfigurationStore configStore, 
       IServiceExceptionHandler serviceExceptionHandler, IKafka producer,
       IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ISubscriptionProxy subscriptionProxy,
-      IProjectRepository projectRepo, ISubscriptionRepository subscriptionsRepo,
+      IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
       IRequestFactory requestFactory
       )
       : base(logger.CreateLogger<ProjectSettingsV4Controller>(), configStore, serviceExceptionHandler, 

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -32,13 +33,18 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Logger factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
-    
+
+    /// <summary>
+    /// Gets or sets the httpContextAccessor.
+    /// </summary>
+    protected readonly IHttpContextAccessor httpContextAccessor;
+
     /// <summary>
     /// 
     /// </summary>
     /// <param name="producer"></param>
     /// <param name="projectRepo"></param>
-    /// <param name="subscriptionsRepo"></param>
+    /// <param name="subscriptionRepo"></param>
     /// <param name="store"></param>
     /// <param name="subscriptionProxy"></param>
     /// <param name="geofenceProxy"></param>
@@ -47,14 +53,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="logger"></param>
     /// <param name="serviceExceptionHandler">The ServiceException handler.</param>
     public ProjectV4Controller(IKafka producer, IProjectRepository projectRepo,
-      ISubscriptionRepository subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
+      ISubscriptionRepository subscriptionRepo, IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
       IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, IFileRepository fileRepo,
       ILoggerFactory logger,
-      IServiceExceptionHandler serviceExceptionHandler)
-      : base(producer, projectRepo, subscriptionsRepo, fileRepo, store, subscriptionProxy, geofenceProxy, raptorProxy,
+      IServiceExceptionHandler serviceExceptionHandler,
+      IHttpContextAccessor httpContextAccessor)
+      : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, geofenceProxy, raptorProxy,
         logger, serviceExceptionHandler, logger.CreateLogger<ProjectV4Controller>())
     {
       this.logger = logger;
+      this.httpContextAccessor = httpContextAccessor;
     }
 
     #region projects
@@ -168,7 +176,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
             geofenceProxy, raptorProxy, subscriptionProxy,
-            projectRepo, subscriptionRepo, fileRepo)
+            projectRepo, subscriptionRepo, fileRepo, null, httpContextAccessor)
           .ProcessAsync(createProjectEvent)
       );
 

@@ -32,7 +32,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     /// <param name="producer">The producer.</param>
     /// <param name="projectRepo">The project repo.</param>
-    /// <param name="subscriptionsRepo">The subscriptions repo.</param>
+    /// <param name="subscriptionRepo">The subscriptions repo.</param>
     /// <param name="store">The configStore.</param>
     /// <param name="subscriptionProxy">The subs proxy.</param>
     /// <param name="geofenceProxy">The geofence proxy.</param>
@@ -41,10 +41,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="logger">The logger.</param>
     /// <param name="serviceExceptionHandler">The ServiceException handler</param>
     public ProjectV3Controller(IKafka producer, IProjectRepository projectRepo,
-      ISubscriptionRepository subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
+      ISubscriptionRepository subscriptionRepo, IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
       IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, IFileRepository fileRepo, 
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
-      : base(producer, projectRepo, subscriptionsRepo, fileRepo, store, subscriptionProxy, geofenceProxy, raptorProxy,
+      : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, geofenceProxy, raptorProxy,
           logger, serviceExceptionHandler, logger.CreateLogger<ProjectV3Controller>())
     { }
 
