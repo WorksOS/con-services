@@ -132,7 +132,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         }
         catch (Exception e)
         {
-          log.LogDebug($"CreateCoordSystemInRaptorAndTcc failed with exception: {e.Message}");
           if (isCreate)
             await ProjectRequestHelper.DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid, log, projectRepo).ConfigureAwait(false);
 
