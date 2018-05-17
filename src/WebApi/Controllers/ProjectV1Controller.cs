@@ -16,14 +16,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
   /// <summary>
   /// Project controller.
   /// </summary>
-  public class ProjectController : BaseController
+  public class ProjectV1Controller : BaseController
   {
     private readonly ILogger log;
 
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public ProjectController(ILoggerFactory logger, IConfigurationStore configStore,
+    public ProjectV1Controller(ILoggerFactory logger, IConfigurationStore configStore,
       IRepository<IAssetEvent> assetRepository, IRepository<IDeviceEvent> deviceRepository,
       IRepository<ICustomerEvent> customerRepository, IRepository<IProjectEvent> projectRepository,
       IRepository<ISubscriptionEvent> subscriptionsRepository, IKafka producer)
@@ -31,7 +31,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
         customerRepository, projectRepository,
         subscriptionsRepository, producer)
     {
-      log = logger.CreateLogger<ProjectController>();
+      log = logger.CreateLogger<ProjectV1Controller>();
     }
     
     /// <summary>

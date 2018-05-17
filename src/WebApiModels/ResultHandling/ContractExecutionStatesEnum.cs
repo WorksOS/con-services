@@ -24,13 +24,13 @@
       DynamicAddwithOffset("TagFileProcessingErrorV2Executor: Failed to create an alert for tag file processing error", 14);
       DynamicAddwithOffset("Failed to get legacy asset id", 15);
       DynamicAddwithOffset("Failed to get project boundaries", 16);
-      DynamicAddwithOffset("tagFileUTC must have occured within last 50 years", 17);
+      DynamicAddwithOffset("TagFileUTC must have occurred within last 50 years", 17);
       DynamicAddwithOffset("Must have projectId", 18);
       DynamicAddwithOffset("Failed to get project id", 19);
       DynamicAddwithOffset("Must contain one or more of assetId or tccOrgId", 20);
       DynamicAddwithOffset("Latitude should be between -90 degrees and 90 degrees", 21);
       DynamicAddwithOffset("Longitude should be between -180 degrees and 180 degrees", 22);
-      DynamicAddwithOffset("timeOfPosition must have occured within last 50 years", 23);
+      DynamicAddwithOffset("TimeOfPosition must have occurred within last 50 years", 23);
       DynamicAddwithOffset("Must have assetId and/or projectID", 24);
       DynamicAddwithOffset("AssetId must have valid deviceType", 25);
       DynamicAddwithOffset("A manual/unknown deviceType must have a projectID", 26);
@@ -39,12 +39,15 @@
       DynamicAddwithOffset("available2", 29);
       DynamicAddwithOffset("DeviceType is invalid", 30);
       DynamicAddwithOffset("Unable to create Kafka event. Reason: {0}.", 31);
+      DynamicAddwithOffset("RadioSerial is invalid", 32);
+      DynamicAddwithOffset("Unable to identify RadioSerial in our system", 33);
+      DynamicAddwithOffset("Failed to get project uid", 34);
     }
 
     /// <summary>
     /// The execution result offset to create dynamically add custom errors
     /// </summary>
-    private const int executionResultOffset = 0;
+    private const int executionResultOffset = 3000;
 
     /// <summary>
     ///   Service request executed successfully
