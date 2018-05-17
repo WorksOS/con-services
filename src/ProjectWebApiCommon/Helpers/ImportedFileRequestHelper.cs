@@ -267,12 +267,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       try
       {
         log.LogInformation(
-          $"CopyFileWithinTccRepository: GetFileList filespaceID: {sourceFile.FileSpaceId} tccPathSource: {sourceFile.Path} sourceFile.Name: {sourceFile.Name}");
+          $"GetFileInfoFromTccRepository: GetFileList filespaceID: {sourceFile.FileSpaceId} tccPathSource: {sourceFile.Path} sourceFile.Name: {sourceFile.Name}");
 
         var dirResult = await fileRepo.GetFileList(sourceFile.FileSpaceId, sourceFile.Path, sourceFile.Name);
 
         log.LogInformation(
-          $"CopyFileWithinTccRepository: GetFileList dirResult: {JsonConvert.SerializeObject(dirResult)}");
+          $"GetFileInfoFromTccRepository: GetFileList dirResult: {JsonConvert.SerializeObject(dirResult)}");
 
 
         if (dirResult == null || dirResult.entries.Length == 0)
@@ -306,13 +306,18 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     ///   this may be a create or update, so ok if it already exists
     /// </summary>
     /// <returns></returns>
-    public static async Task<FileDescriptor> CopyFileWithinTccRepository(BusinessCenterFile sourceFile,
+    public static async Task<FileDescriptor> CopyFileWithinTccRepository(ImportedFileTbc sourceFile,
       string customerUid, string projectUid, string dstFileSpaceId,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IFileRepository fileRepo)
     {
       var srcTccPathAndFile = $"{sourceFile.Path}/{sourceFile.Name}";
       var destTccPath = $"/{customerUid}/{projectUid}";
-      var destTccPathAndFile = $"/{customerUid}/{projectUid}/{sourceFile.Name}";
+
+      string tccDestinationFileName = sourceFile.Name;
+        if (sourceFile.ImportedFileTypeId == ImportedFileType.SurveyedSurface)
+          tccDestinationFileName = ImportedFileUtils.IncludeSurveyedUtcInName(tccDestinationFileName, sourceFile.SurfaceFile.SurveyedUtc);
+        
+      var destTccPathAndFile = $"/{customerUid}/{projectUid}/{tccDestinationFileName}";
       var tccCopyFileResult = false;
 
       try
@@ -342,7 +347,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 92);
       }
 
-      var fileDescriptorTarget = FileDescriptor.CreateFileDescriptor(dstFileSpaceId, destTccPath, sourceFile.Name);
+      var fileDescriptorTarget = FileDescriptor.CreateFileDescriptor(dstFileSpaceId, destTccPath, tccDestinationFileName);
       log.LogInformation(
         $"CopyFileWithinTccRepository: fileDescriptorTarget {JsonConvert.SerializeObject(fileDescriptorTarget)}");
       return fileDescriptorTarget;

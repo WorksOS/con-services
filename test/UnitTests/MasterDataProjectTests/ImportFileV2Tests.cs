@@ -121,7 +121,7 @@ namespace VSS.MasterData.ProjectTests
       {
         FileSpaceId = _fileSpaceId,
         Path = _path,
-        Name = "TheSurfaceFile.ttm",
+        Name = "TheSurfaceFile.ttm", 
         ImportedFileTypeId = ImportedFileType.SurveyedSurface,
         CreatedUtc = _createdUtc,
         SurfaceFile = new SurfaceFile() {SurveyedUtc = DateTime.UtcNow.AddDays(-1)}
@@ -220,6 +220,16 @@ namespace VSS.MasterData.ProjectTests
 
       var nhOpName = "JB topo southern motorway_2010-11-29T153300Z.TTM";
       var expectedProjectName = "JB topo southern motorway.TTM";
+      var projectName = ImportedFileUtils.RemoveSurveyedUtcFromName(nhOpName);
+
+      Assert.AreEqual(expectedProjectName, projectName, "File name has not been converted correctly");
+    }
+
+    [TestMethod]
+    public void ImportedFileV2_RemoveSurveyedUtcFromNameWithDash()
+    {
+      var nhOpName = "Marylands Road - Marylands.ttm";
+      var expectedProjectName = "Marylands Road - Marylands.ttm";
       var projectName = ImportedFileUtils.RemoveSurveyedUtcFromName(nhOpName);
 
       Assert.AreEqual(expectedProjectName, projectName, "File name has not been converted correctly");

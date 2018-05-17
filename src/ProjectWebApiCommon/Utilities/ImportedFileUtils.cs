@@ -12,6 +12,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
     public static string IncludeSurveyedUtcInName(string name, DateTime surveyedUtc)
     {
       //Note: ':' is an invalid character for filenames in Windows so get rid of them
+      // There is a need to potentially suffix a date a 2nd time, so don't check if one exists.
       return Path.GetFileNameWithoutExtension(name) +
              "_" + surveyedUtc.ToIso8601DateTimeString().Replace(":", string.Empty) +
              Path.GetExtension(name);
@@ -21,9 +22,20 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
     {
       var shortFileName = Path.GetFileNameWithoutExtension(name);
       var format = "yyyy-MM-ddTHHmmssZ";
-      if (shortFileName.Length <= format.Length)
+      if (!DoesNameIncludeUtc(shortFileName, format))
         return name;
       return shortFileName.Substring(0, shortFileName.Length - format.Length - 1) + Path.GetExtension(name);
+    }
+
+    private static bool DoesNameIncludeUtc(string name, string format)
+    {
+      if (name.Length <= format.Length)
+        return false;
+      var endOfName = name.Substring(name.Length - format.Length);
+      var pattern = "^\\d{4}-\\d{2}-\\d{2}T\\d{6}Z$";
+      var isMatch = (System.Text.RegularExpressions.Regex.IsMatch(endOfName, pattern,
+        System.Text.RegularExpressions.RegexOptions.IgnoreCase)) ;
+      return isMatch;
     }
 
   }
