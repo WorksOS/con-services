@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Diagnostics;
 using VSS.TRex.Common;
 using VSS.TRex.SiteModels;
@@ -50,8 +51,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         public bool HasMachineRestriction = false;
 
-        // Machine retriction not implemented
-        // byte[] MachineIDSets { get; set; } = null;
+        public BitArray MachineIDSet { get; set; } = null;
 
         public SiteModel SiteModelReference { get; set; } = null;
 
@@ -67,7 +67,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         public bool NextSegment()
         {
             //{$IFDEF STATIC_CELL_PASSES}
-            //HasMachinesOfInterest: Boolean;
+            bool HasMachinesOfInterest;
             //{$ENDIF}
             SubGridCellPassesDataSegmentInfo SegmentInfo;
             bool SegmentIndexInRange;
@@ -113,7 +113,6 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                     }
                     else
                       if (SegmentInfo.Segment?.PassesData != null)
-
                     {
                         Debug.Assert(false, "Static cell pass information not yet supported");
 
@@ -144,6 +143,26 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                             Result = false;
                         }
                         */
+                    }
+
+                    if (Result && HasMachineRestriction && SegmentInfo.Segment?.PassesData != null)
+                    {
+                        // Check to see if this segment has any machines that match the
+                        // machine restriction. If not, advance to the next segment
+                        HasMachinesOfInterest = false;
+                        BitArray segmentMachineIDSet = SegmentInfo.Segment.PassesData.GetMachineIDSet();
+
+                        if (segmentMachineIDSet != null)
+                        {
+                            for (int i = 0; i < MachineIDSet.Count; i++)
+                            {
+                                HasMachinesOfInterest = MachineIDSet[i] && segmentMachineIDSet[i];
+                                if (HasMachinesOfInterest)
+                                    break;
+                            }
+
+                            Result = HasMachinesOfInterest;
+                        }
                     }
 
                     /* TODO Machine restriction not currently implemented

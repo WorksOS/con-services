@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using VSS.TRex.Cells;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -151,6 +152,13 @@ namespace VSS.TRex.SubGridTrees.Server
         {
             SegmentCellPassAdopter.AdoptCellPassesFrom(this, sourceSegment, atAndAfterTime);
         }
+
+        /// <summary>
+        /// Returns a null machine ID set for nonstatic cell pass wrappers. MachineIDSets asre an 
+        /// optimisation for read requests on compressed static cell pass representations
+        /// </summary>
+        /// <returns></returns>
+        public BitArray GetMachineIDSet() => null;
 
         public void Write(BinaryWriter writer)
         {

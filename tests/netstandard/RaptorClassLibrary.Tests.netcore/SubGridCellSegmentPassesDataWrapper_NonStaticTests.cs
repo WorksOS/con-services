@@ -286,5 +286,17 @@ namespace VSS.TRex.SubGridTrees.Server.Tests
                 Assert.True(cellPasses[x, y][0].Equals(item.Pass(x, y, 0)), $"Pass in cell {x}:{y} does not match");
             });
         }
-   }
+
+        /// <summary>
+        /// Tests that the machine ID set for an uncompressed non static cell pass wrapper is null (as expected)
+        /// </summary>
+        [Fact()]
+        public void SubGridCellSegmentPassesDataWrapper_NonStatic_NoMachineIDSet_Test()
+        {
+            ISubGridCellSegmentPassesDataWrapper item = new SubGridCellSegmentPassesDataWrapper_NonStatic();
+
+            // Uncompressed static cell pass wrappers do not provide machine ID sets
+            Assert.Equal(null, item.GetMachineIDSet());
+        }
+    }
 }

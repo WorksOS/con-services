@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using VSS.TRex.Cells;
 
@@ -178,5 +179,11 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// <param name="sourceSegment"></param>
         /// <param name="atAndAfterTime"></param>
         void AdoptCellPassesFrom(ISubGridCellSegmentPassesDataWrapper sourceSegment, DateTime atAndAfterTime);
+
+        /// <summary>
+        /// Returns any known machine ID set related to the set of passes this wrapper is responsible for
+        /// </summary>
+        /// <returns></returns>
+        BitArray GetMachineIDSet();
     }
 }

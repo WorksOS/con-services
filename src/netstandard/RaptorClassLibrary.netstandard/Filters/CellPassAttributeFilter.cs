@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Diagnostics;
+using System.Linq;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Events;
@@ -62,10 +64,10 @@ namespace VSS.TRex.Filters
         public bool OverrideTimeBoundary { get; set; }
 
         // Machine based filtering members
-        //    Machines   : TMachineDetails; // TMachineIDArray;
+        public Guid[] MachinesList { get; set; } 
 
-        // Design based filtering member
-        public long DesignNameID { get; set; } = -1; // DesignNameID :TICDesignNameID;
+        // Design based filtering member (for designs reported by name from machine via TAG files)
+        public int DesignNameID { get; set; } // DesignNameID :TICDesignNameID;
 
         // Auto Vibe state filtering member
         public VibrationState VibeState { get; set; } = VibrationState.Invalid;
@@ -181,10 +183,14 @@ namespace VSS.TRex.Filters
         /// </summary>
         public Guid[] SurveyedSurfaceExclusionList { get; set; } = new Guid[0]; // note this is not saved in the database and must be set in the server
 
-        //TODO add when machine sets are implemented 
-        //  public something[] MachineIDSets
+        /// <summary>
+        /// The machines present in the filter represented as a bitset
+        /// </summary>
+        public BitArray MachineIDSet { get; set; }
 
-        //  public CellPassAttributeFilter(SiteModel owner) : base(owner)
+        /// <summary>
+        /// Default no-arg constructor the produces a filter with all aspects set to their defaults
+        /// </summary>
         public CellPassAttributeFilter()
         {
             ClearFilter();
@@ -300,7 +306,7 @@ namespace VSS.TRex.Filters
             if (Result != 0)
                 return Result;
 
-            if (Result == -1)  // Check the contents of the machine filter
+            if (Result == -1)  // Check the contents of the machine direction filter
                 Result = MachineDirection.CompareTo(AFilter.MachineDirection); // CompareValue(Ord(MachineDirection), Ord(AFilter.MachineDirection));
 
             if (Result != 0)
@@ -336,7 +342,7 @@ namespace VSS.TRex.Filters
             if (Result != 0)
                 return Result;
 
-            if (Result == -1)  // Check the contents of the machine filter
+            if (Result == -1)  // Check the contents of the min elevation filter
                 Result = MinElevationMapping.CompareTo(AFilter.MinElevationMapping); // CompareValue(Ord(MinElevationMapping), Ord(AFilter.MinElevationMapping));
 
             if (Result != 0)
@@ -546,9 +552,8 @@ namespace VSS.TRex.Filters
             OverrideTimeBoundary = Source.OverrideTimeBoundary;
 
             // Machine based filtering members
-            // TODO Add when machines supported
-            //  Machines   = Source.Machines;
-            //  MachineIDSets = Copy(Source.MachineIDSets);
+            Array.Copy(Source.MachinesList, MachinesList, Source.MachinesList.Length);
+            MachineIDSet = new BitArray(Source.MachineIDSet);
 
             // Design based filtering member
             DesignNameID = Source.DesignNameID;
@@ -635,10 +640,7 @@ FAvoidZoneUndergroundServiceZones = false;
         public void ClearMachines()
         {
             HasMachineFilter = false;
-
-            // TODO add when machines supported
-            //  SetLength(FMachines, 0);
-            //  SetLength(FMachineIDSets, 0);
+            MachinesList = null;
         }
 
         public void ClearMinElevationMapping()
@@ -732,9 +734,8 @@ FAvoidZoneUndergroundServiceZones = false;
                 // Check the machine identified by PassValue.MachineID is in our Sitemodel Machine
                 // list based on the index of the machine in that list
 
-                // TODO Add when machines are available
-                // if not((PassValue.SiteModelMachineIndex MOD 256) in FMachineIDSets[PassValue.SiteModelMachineIndex DIV 256]) 
-                //   return false;
+                if (PassValue.InternalSiteModelMachineIndex < MachineIDSet.Count && !MachineIDSet[PassValue.InternalSiteModelMachineIndex])
+                   return false;
             }
 
             if (HasCompactionMachinesOnlyFilter)
@@ -778,8 +779,8 @@ FAvoidZoneUndergroundServiceZones = false;
             {
                 MachineGearValue = machineTargetValues.MachineGearStateEvents.GetValueAtDate(PassValue.Time, out StateChangeIndex, MachineGearValue);
 
-                if (((MachineDirection == MachineDirection.Forward && !Machines.Machine.MachineGearIsForwardGear(MachineGearValue))) ||
-                    ((MachineDirection == MachineDirection.Reverse && !Machines.Machine.MachineGearIsReverseGear(MachineGearValue))))
+                if (((MachineDirection == MachineDirection.Forward && !TRex.Machines.Machine.MachineGearIsForwardGear(MachineGearValue))) ||
+                    ((MachineDirection == MachineDirection.Reverse && !TRex.Machines.Machine.MachineGearIsReverseGear(MachineGearValue))))
                     return false;
             }
 
@@ -908,9 +909,8 @@ FAvoidZoneUndergroundServiceZones = false;
                 // Check the machine identified by PassValue.MachineID is in our Sitemodel Machine
                 // list based on the index of the machine in that list
 
-                // TODO add when machiens available
-                //if not((PassValue.FilteredPass.SiteModelMachineIndex MOD 256) in FMachineIDSets[PassValue.FilteredPass.SiteModelMachineIndex DIV 256]) 
-                // Exit;
+                if (PassValue.FilteredPass.InternalSiteModelMachineIndex < MachineIDSet.Count && !MachineIDSet[PassValue.FilteredPass.InternalSiteModelMachineIndex])
+                    return false;
             }
 
             if (HasCompactionMachinesOnlyFilter)
@@ -1183,9 +1183,8 @@ FAvoidZoneUndergroundServiceZones = false;
                 // Check the machine identified by PassValue.MachineID is in our Sitemodel Machine
                 // list based on the index of the machine in that list
 
-                // TODO Readd when machines are available 
-                // if not((PassValue.SiteModelMachineIndex MOD 256) in FMachineIDSets[PassValue.SiteModelMachineIndex DIV 256]) 
-                //  Exit;
+                if (PassValue.InternalSiteModelMachineIndex < MachineIDSet.Count && !MachineIDSet[PassValue.InternalSiteModelMachineIndex])
+                    return false;
             }
 
             if (HasCompactionMachinesOnlyFilter)
@@ -1386,24 +1385,28 @@ FAvoidZoneUndergroundServiceZones = false;
             ElevationRangeIsInitialised = true;
         }
 
+        /// <summary>
+        /// Converts an array of Guids representing machine identifiers into a BitArray encoding a bit set of
+        /// internal machine IDs relative to this sitemodel
+        /// </summary>
         public void InitialiseMachineIDsSet()
         {
-            /* TODO readd when machines supported
-           IDIndex : Integer;
+            if (siteModel == null)
+                return;
 
-           if (Owner != null)
-             return;
+            short[] internalMachineIDs = MachinesList.Where(x => siteModel.Machines.Locate(x) != null).Select(x => siteModel.Machines.Locate(x).InternalSiteModelMachineIndex).ToArray();
 
-           SetLength(FMachineIDSets, TICSiteModel(FOwner).Machines.Count DIV 256 + 1);
-           for I = Low(FMachineIDSets) to High(FMachineIDSets) do
-             FMachineIDSets[I] = [];
+            if (internalMachineIDs.Length == 0)
+            {
+                MachineIDSet = null;
+            }
+            else
+            {
+                MachineIDSet = new BitArray(internalMachineIDs.Max() + 1);
 
-           for I = Low(Machines) to High(Machines) do
-             {
-               IDIndex = TICSiteModel(FOwner).Machines.IndexOfID(Machines[I].ID);
-               Include(FMachineIDSets[IDIndex DIV 256], IDIndex Mod 256);
-         }
-         */
+                foreach (var internalID in internalMachineIDs)
+                    MachineIDSet[internalID] = true;
+            }
         }
 
         public override bool IsTimeRangeFilter() => HasTimeFilter && StartTime > DateTime.MinValue;

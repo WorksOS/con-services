@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using System.Linq;
 using VSS.TRex.Cells;
@@ -227,6 +228,13 @@ namespace VSS.TRex.SubGridTrees.Server
         {
             throw new NotImplementedException("Static cell segment passes wrappers do not support cell pass adoption");
         }
+
+        /// <summary>
+        /// Returns a null machine ID set for nonstatic cell pass wrappers. MachineIDSets are an 
+        /// optimisation for read requests on compressed static cell pass representations
+        /// </summary>
+        /// <returns></returns>
+        public BitArray GetMachineIDSet() => null;
 
         public void Write(BinaryWriter writer)
         {

@@ -34,13 +34,6 @@ namespace VSS.TRex.Filters
         {
         }
 
-/*
-        public DataPassFilter(SiteModel siteModel) : this()
-        {
-            this.siteModel = siteModel;
-        }
-*/
-
         public bool HasTimeFilter { get; set; }
         public bool HasMachineFilter { get; set; }
         public bool HasMachineDirectionFilter { get; set; }
