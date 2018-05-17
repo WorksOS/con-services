@@ -15,11 +15,11 @@ Scenario Outline: SummaryVolumes - Good Request
 	| LatestFilterToDesign                 | LatestFilterToDesign                 |
 	| DesignToEarliestFilter               | DesignToEarliestFilter               |
 	| DesignToLatestFilter                 | DesignToLatestFilter                 |
-	#| FilterToCompositeWithSurveyedSurface | FilterToCompositeWithSurveyedSurface |
+	| FilterToCompositeWithSurveyedSurface | FilterToCompositeWithSurveyedSurface |
 	| FilterToCompositeNoSurveyedSurface   | FilterToCompositeNoSurveyedSurface   |
-	#| CompositeToDesignWithSurveyedSurface | CompositeToDesignWithSurveyedSurface |
+	| CompositeToDesignWithSurveyedSurface | CompositeToDesignWithSurveyedSurface |
 	| CompositeToDesignNoSurveyedSurface   | CompositeToDesignNoSurveyedSurface   |
-	#| DesignToCompositeWithSurveyedSurface | DesignToCompositeWithSurveyedSurface |
+	| DesignToCompositeWithSurveyedSurface | DesignToCompositeWithSurveyedSurface |
 	| DesignToCompositeNoSurveyedSurface   | DesignToCompositeNoSurveyedSurface   |
 	| SummationTestLotOneOfThree           | SummationTestLotOneOfThree           |
 	| SummationTestLotTwoOfThree           | SummationTestLotTwoOfThree           |
@@ -29,15 +29,15 @@ Scenario Outline: SummaryVolumes - Good Request
 	| FilterToDesignWithCutTolerances      | FilterToDesignWithCutTolerances      |
 	| FilterToFilterWithBothTolerances     | FilterToFilterWithBothTolerances     |
 
-#@requireOldSurveyedSurface
-#Scenario Outline: SummaryVolumes - Good Request with Old SS
-#	When I request Summary Volumes supplying "<ParameterName>" paramters from the repository
-#	Then the response should match "<ResultName>" result from the repository
-#	Examples: 
-#	| ParameterName                        | ResultName                            |
-#	| FilterToCompositeWithSurveyedSurface | FilterToCompositeNoSurveyedSurfaceOld |
-#	| CompositeToDesignWithSurveyedSurface | CompositeToDesignNoSurveyedSurfaceOld |
-#	| DesignToCompositeWithSurveyedSurface | DesignToCompositeNoSurveyedSurfaceOld |
+@requireOldSurveyedSurface
+Scenario Outline: SummaryVolumes - Good Request with Old SS
+	When I request Summary Volumes supplying "<ParameterName>" paramters from the repository
+	Then the response should match "<ResultName>" result from the repository
+	Examples: 
+	| ParameterName                        | ResultName                            |
+	| FilterToCompositeWithSurveyedSurface | FilterToCompositeNoSurveyedSurfaceOld |
+	| CompositeToDesignWithSurveyedSurface | CompositeToDesignNoSurveyedSurfaceOld |
+	| DesignToCompositeWithSurveyedSurface | DesignToCompositeNoSurveyedSurfaceOld |
 
 Scenario Outline: SummaryVolumes - Bad Request
 	When I request Summary Volumes supplying "<ParameterName>" paramters from the repository expecting error http code <HttpCode>
