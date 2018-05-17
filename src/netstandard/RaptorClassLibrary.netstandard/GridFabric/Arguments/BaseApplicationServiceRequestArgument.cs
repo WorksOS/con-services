@@ -25,5 +25,7 @@ namespace VSS.TRex.GridFabric.Arguments
         /// The filter to be used for the request
         /// </summary>
         public CombinedFilter Filter { get; set; }
+
+        // TODO  LiftBuildSettings  :TICLiftBuildSettings;
     }
 }

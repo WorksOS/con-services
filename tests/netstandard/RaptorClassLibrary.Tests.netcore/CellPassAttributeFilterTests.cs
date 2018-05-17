@@ -193,8 +193,11 @@ namespace VSS.TRex.Filters.Tests
         [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_PassType()
         {
-            // TODO readd when pass type available
-            //Test_CellPassAttributeFilter_CompareTo_Aspect("PassType", x => { x.HasPassTypeFilter = true; x.PassType; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("PassType", x => { x.HasPassTypeFilter = true; x.PassTypeSet = PassTypeSet.Front; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("PassType", x => { x.HasPassTypeFilter = true; x.PassTypeSet = PassTypeSet.Rear; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("PassType", x => { x.HasPassTypeFilter = true; x.PassTypeSet = PassTypeSet.Track; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("PassType", x => { x.HasPassTypeFilter = true; x.PassTypeSet = PassTypeSet.Wheel; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("PassType", x => { x.HasPassTypeFilter = true; x.PassTypeSet = PassTypeSet.Front | PassTypeSet.Rear | PassTypeSet.Wheel | PassTypeSet.Track; });
         }
 
         [Fact()]

@@ -23,7 +23,5 @@ namespace VSS.TRex.Analytics.GridFabric.Arguments
         /// The ID of the design to compute cut fill values between it and the production data elevatoins
         /// </summary>
         public Guid DesignID { get; set; }
-
-        // TODO  LiftBuildSettings  :TICLiftBuildSettings;
     }
 }
