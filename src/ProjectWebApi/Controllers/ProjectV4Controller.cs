@@ -215,10 +215,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
       {
         var projectWithLegacyProjectId = projectRepo.GetProjectOnly(project.ProjectUID.ToString()).Result;
-        await ProjectRequestHelper.CreateCoordSystemInRaptor(project.ProjectUID, projectWithLegacyProjectId.LegacyProjectID,
+        await ProjectRequestHelper.CreateCoordSystemInRaptorAndTcc(project.ProjectUID, projectWithLegacyProjectId.LegacyProjectID,
           project.CoordinateSystemFileName, project.CoordinateSystemFileContent, false,
           log, serviceExceptionHandler, customerUid, customHeaders,
-          projectRepo, raptorProxy).ConfigureAwait(false);
+          projectRepo, raptorProxy, configStore, fileRepo).ConfigureAwait(false);
       }
 
       var isUpdated = await projectRepo.StoreEvent(project).ConfigureAwait(false);

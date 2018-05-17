@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
@@ -80,24 +81,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
 
     /// <summary>
-    /// Create CoordinateSystem in Raptor
+    /// Create CoordinateSystem in Raptor and save a copy of the file in TCC
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="legacyProjectId"></param>
-    /// <param name="coordinateSystemFileName"></param>
-    /// <param name="coordinateSystemFileContent"></param>
-    /// <param name="isCreate"></param>
-    /// <param name="log"></param>
-    /// <param name="serviceExceptionHandler"></param>
-    /// <param name="customerUid"></param>
-    /// <param name="customHeaders"></param>
-    /// <param name="projectRepo"></param>
-    /// <param name="raptorProxy"></param>
-    /// <returns></returns>
-    public static async Task CreateCoordSystemInRaptor(Guid projectUid, int legacyProjectId, string coordinateSystemFileName,
+    public static async Task CreateCoordSystemInRaptorAndTcc(Guid projectUid, int legacyProjectId, string coordinateSystemFileName,
       byte[] coordinateSystemFileContent, bool isCreate,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, string customerUid, IDictionary<string, string> customHeaders, 
-      IProjectRepository projectRepo, IRaptorProxy raptorProxy)
+      IProjectRepository projectRepo, IRaptorProxy raptorProxy, IConfigurationStore configStore, IFileRepository fileRepo)
     {
       if (!string.IsNullOrEmpty(coordinateSystemFileName))
       {
@@ -108,6 +97,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
         try
         {
+          //Pass coordinate system to Raptor
           var coordinateSystemSettingsResult = await raptorProxy
             .CoordinateSystemPost(legacyProjectId, coordinateSystemFileContent,
               coordinateSystemFileName, headers).ConfigureAwait(false);
@@ -125,6 +115,20 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
               (coordinateSystemSettingsResult?.Code ?? -1).ToString(),
               coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
           }
+          //and save copy of file in TCC
+          var fileSpaceId = configStore.GetValueString("TCCFILESPACEID");
+          if (string.IsNullOrEmpty(fileSpaceId))
+          {
+            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 48);
+          }
+          using (var ms = new MemoryStream(coordinateSystemFileContent))
+          {
+            var fileDescriptor = await ProjectRequestHelper.WriteFileToTCCRepository(
+                ms, customerUid, projectUid.ToString(), coordinateSystemFileName,
+                false, null, fileSpaceId, log, serviceExceptionHandler, fileRepo)
+              .ConfigureAwait(false);
+          }
+
         }
         catch (Exception e)
         {
