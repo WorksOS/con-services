@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Threading;
+using System.Threading.Tasks;
 using MockProjectWebApi.Utils;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
@@ -16,7 +17,7 @@ namespace MockProjectWebApi.Controllers
   {
     [Route("api/v2/mock/export/veta")]
     [HttpGet]
-    public ExportResult GetMockVetaExportData(
+    public async Task<ExportResult> GetMockVetaExportData(
       [FromQuery] Guid projectUid,
       [FromQuery] string fileName,
       [FromQuery] string machineNames,
@@ -36,7 +37,8 @@ namespace MockProjectWebApi.Controllers
           }";
           if (fileName == MockSchedulerController.TIMEOUT_JOB_ID)
           {
-            Thread.Sleep(TimeSpan.FromSeconds(105));
+            //Default http request timeout is 100 seconds so make it a bit longer
+            await Task.Delay(TimeSpan.FromSeconds(105));
           }
           return JsonConvert.DeserializeObject<ExportResult>(result);
         }
@@ -48,7 +50,6 @@ namespace MockProjectWebApi.Controllers
             "Failed to get requested export data with error: No data for export"));
         }
       }
-
       return new ExportResult { ResultCode = 0, ExportData = null };
     }
 
