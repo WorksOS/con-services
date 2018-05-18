@@ -1,12 +1,10 @@
 ﻿using Apache.Ignite.Core;
-using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Communication.Tcp;
 using Apache.Ignite.Core.Configuration;
 using Apache.Ignite.Core.Discovery.Tcp;
 using Apache.Ignite.Core.Discovery.Tcp.Static;
-using Apache.Ignite.Log4Net;
 using log4net;
 using System;
 using System.Collections.Generic;
@@ -14,7 +12,7 @@ using System.Linq;
 using System.Reflection;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Queues;
+using VSS.TRex.Logging;
 using VSS.TRex.Storage;
 
 namespace VSS.TRex.Servers.Client
@@ -88,7 +86,7 @@ namespace VSS.TRex.Servers.Client
                             LocalPort = 48100,
                         },
 
-                        Logger = new IgniteLog4NetLogger(Log),
+                        Logger = new TRexIgniteLogger(Log),
                         
                         // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
                         DataStorageConfiguration = new DataStorageConfiguration()

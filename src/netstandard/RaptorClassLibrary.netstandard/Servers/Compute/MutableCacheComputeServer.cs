@@ -5,7 +5,6 @@ using Apache.Ignite.Core.Communication.Tcp;
 using Apache.Ignite.Core.Configuration;
 using Apache.Ignite.Core.Discovery.Tcp;
 using Apache.Ignite.Core.Discovery.Tcp.Static;
-using Apache.Ignite.Log4Net;
 using log4net;
 using System;
 using System.Collections.Generic;
@@ -14,6 +13,7 @@ using System.Reflection;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Caches;
 using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.Logging;
 using VSS.TRex.Servers.Client;
 using VSS.TRex.Storage;
 using VSS.TRex.TAGFiles.Classes.Queues;
@@ -110,7 +110,7 @@ namespace VSS.TRex.Servers.Compute
         LocalPort = 48100,
       };
 
-      cfg.Logger = new IgniteLog4NetLogger(Log);
+      cfg.Logger = new TRexIgniteLogger(Log);
 
       // Set an Ignite metrics heartbeat of 10 seconds 
       cfg.MetricsLogFrequency = new TimeSpan(0, 0, 0, 10);

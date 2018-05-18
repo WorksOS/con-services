@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <PackageReference Include="Apache.Ignite" Version="2.4.0" />
-    <PackageReference Include="Apache.Ignite.Log4Net" Version="2.4.0" />
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
@@ -29,12 +28,6 @@
   <ItemGroup>
     <Folder Include="Analytics\Foundation\GridFabric\Arguments\" />
     <Folder Include="Analytics\Foundation\GridFabric\Requests\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Apache.Ignite.Log4Net">
-      <HintPath>..\..\..\packages\Apache.Ignite.Log4Net.2.4.0\lib\net40\Apache.Ignite.Log4Net.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

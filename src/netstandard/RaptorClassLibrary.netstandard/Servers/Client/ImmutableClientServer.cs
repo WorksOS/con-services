@@ -10,9 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Apache.Ignite.Log4Net;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.Logging;
 using VSS.TRex.Storage;
 
 namespace VSS.TRex.Servers.Client
@@ -86,7 +86,7 @@ namespace VSS.TRex.Servers.Client
                             LocalPort = 47100,
                         },
 
-                        Logger = new IgniteLog4NetLogger(Log),
+                        Logger = new TRexIgniteLogger(Log),
 
                         // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
                         DataStorageConfiguration = new DataStorageConfiguration
