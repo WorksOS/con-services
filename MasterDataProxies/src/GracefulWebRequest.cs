@@ -199,7 +199,7 @@ namespace VSS.MasterData.Proxies
 
       public async Task<Stream> ExecuteActualStreamRequest()
       {
-        var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData);
+        var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData, null, timeout);
 
         WebResponse response = null;
         try
