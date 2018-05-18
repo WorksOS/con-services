@@ -25,6 +25,7 @@ using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Scheduler.Common.Utilities;
 using VSS.Productivity3D.Scheduler.WebAPI;
 using VSS.Productivity3D.Scheduler.WebAPI.ExportJobs;
+using VSS.Productivity3D.Scheduler.WebAPI.Middleware;
 
 namespace VSS.Productivity3D.Scheduler.WebApi
 {
@@ -122,7 +123,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       _serviceProvider = _serviceCollection.BuildServiceProvider();
 
       app.UseCommon(SERVICE_TITLE);
-      app.UseTIDAuthentication();
+      app.UseFilterMiddleware<SchedulerAuthentication>();
       app.UseMvc();
 
       var log = loggerFactory.CreateLogger<Startup>();

@@ -43,10 +43,11 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       try
       {
         var request = new GracefulWebRequest(logger, configurationStore);
+        //Stop retries in GracefulWebRequest
         if (streamPayload != null)
-          result = await request.ExecuteRequest<T>(jobRequest.Url, streamPayload, customHeaders, method);
+          result = await request.ExecuteRequest<T>(jobRequest.Url, streamPayload, customHeaders, method, jobRequest.Timeout, 0);
         else
-          result = await request.ExecuteRequest<T>(jobRequest.Url, method, customHeaders, jobRequest.Payload);
+          result = await request.ExecuteRequest<T>(jobRequest.Url, method, customHeaders, jobRequest.Payload, jobRequest.Timeout, 0);
         log.LogDebug("Result of send request: {0}", result);
       }
       catch (Exception ex)

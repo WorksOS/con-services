@@ -46,6 +46,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.FlowJSHandler", "..\..\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TCCFileAccess.Local", "..\..\MerinoSandbox\TCCFileAccess\src\VSS.TCCFileAccess.Local.csproj", "{ED6CF686-E08D-4702-842E-9A3C7D7E7B8F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiTests.Local", "tests\WebApiTests\WebApiTests.Local.csproj", "{2D8B5C1D-BAE6-43CE-87D1-3F9C13561FA3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -100,6 +102,10 @@ Global
 		{ED6CF686-E08D-4702-842E-9A3C7D7E7B8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED6CF686-E08D-4702-842E-9A3C7D7E7B8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED6CF686-E08D-4702-842E-9A3C7D7E7B8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D8B5C1D-BAE6-43CE-87D1-3F9C13561FA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D8B5C1D-BAE6-43CE-87D1-3F9C13561FA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D8B5C1D-BAE6-43CE-87D1-3F9C13561FA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D8B5C1D-BAE6-43CE-87D1-3F9C13561FA3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -109,6 +115,7 @@ Global
 		{CABF023E-D85E-4211-9453-8FD47D0370F8} = {1464640F-AEAE-4331-BC58-52898DF893B6}
 		{6616499E-35DF-4B32-B809-1CCC5F301EEC} = {1464640F-AEAE-4331-BC58-52898DF893B6}
 		{EDA7BC32-5FA4-492A-BBB9-1248A5DAEAFA} = {1464640F-AEAE-4331-BC58-52898DF893B6}
+		{2D8B5C1D-BAE6-43CE-87D1-3F9C13561FA3} = {1464640F-AEAE-4331-BC58-52898DF893B6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {373D416E-CA46-48FF-BCC6-8DCA8CA4E7AD}

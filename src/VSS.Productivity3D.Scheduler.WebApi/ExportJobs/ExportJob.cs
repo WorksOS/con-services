@@ -48,7 +48,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       //TODO: Do we want the type returned to be generic? i.e. ExportResult passed here as T.
       //But then how do we know how to save the file to S3?
       var data = await apiClient.SendRequest<ExportResult>(request, customHeaders);
-      if (data.Code != ContractExecutionStatesEnum.ExecutedSuccessfully)
+      if (data.Code != ContractExecutionStatesEnum.ExecutedSuccessfully || data.ExportData == null)
       {
         //Make sure the job state is set to failed - match exception format from GracefulWebRequest
         throw new Exception($"{HttpStatusCode.InternalServerError} {JsonConvert.SerializeObject(data)}");
