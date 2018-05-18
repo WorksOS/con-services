@@ -34,7 +34,7 @@ namespace WebApiTests.Executors
       var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor = RequestExecutorContainer.Build<AssetIdExecutor>(loggerFactory.CreateLogger<AssetIdExecutorTests>(), configStore,
-        assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
+        assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionRepository);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -50,7 +50,7 @@ namespace WebApiTests.Executors
       var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor = RequestExecutorContainer.Build<AssetIdExecutor>(loggerFactory.CreateLogger<AssetIdExecutorTests>(), configStore,
-        assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
+        assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionRepository);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
 
       Assert.IsNotNull(result, "executor returned nothing");

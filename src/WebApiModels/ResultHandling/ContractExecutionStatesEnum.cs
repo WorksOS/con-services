@@ -17,7 +17,7 @@
       DynamicAddwithOffset("TagFileName invalid as no MachineName", 7);
       DynamicAddwithOffset("TagFileName invalid as no valid CreatedUtc", 8);
       DynamicAddwithOffset("Must have assetId", 9);
-      DynamicAddwithOffset("available1", 10);
+      DynamicAddwithOffset("Radio Serial is invalid", 10);
       DynamicAddwithOffset("TagFileProcessingErrorV1Executor: Invalid request structure", 11);
       DynamicAddwithOffset("TagFileProcessingErrorV1Executor: Failed to create an alert for tag file processing error",   12);
       DynamicAddwithOffset("TagFileProcessingErrorV2Executor: Invalid request structure", 13);
@@ -36,12 +36,13 @@
       DynamicAddwithOffset("A manual/unknown deviceType must have a projectID", 26);
       DynamicAddwithOffset("Failed to get project boundary", 27);
       DynamicAddwithOffset("A problem occurred accessing database. Exception: {0}", 28);
-      DynamicAddwithOffset("available2", 29);
+      DynamicAddwithOffset("Unable to identify any projects", 29);
       DynamicAddwithOffset("DeviceType is invalid", 30);
       DynamicAddwithOffset("Unable to create Kafka event. Reason: {0}.", 31);
-      DynamicAddwithOffset("RadioSerial is invalid", 32);
-      DynamicAddwithOffset("Unable to identify RadioSerial in our system", 33);
+      DynamicAddwithOffset("Multiple projects found", 32);
+      DynamicAddwithOffset("Unable to identify RadioSerial in the 3dPM system", 33);
       DynamicAddwithOffset("Failed to get project uid", 34);
+      DynamicAddwithOffset("GetProjectUid internal error", 35);
     }
 
     /// <summary>

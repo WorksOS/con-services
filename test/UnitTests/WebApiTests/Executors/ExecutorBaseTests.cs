@@ -22,7 +22,7 @@ namespace WebApiTests.Executors
     protected DeviceRepository deviceRepository;
     protected CustomerRepository customerRepository;
     protected ProjectRepository projectRepository;
-    protected SubscriptionRepository subscriptionsRepository;
+    protected SubscriptionRepository subscriptionRepository;
     protected static ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
     protected string kafkaTopicName;
 
@@ -57,7 +57,7 @@ namespace WebApiTests.Executors
       deviceRepository = serviceProvider.GetRequiredService<IRepository<IDeviceEvent>>() as DeviceRepository;
       customerRepository = serviceProvider.GetRequiredService<IRepository<ICustomerEvent>>() as CustomerRepository;
       projectRepository = serviceProvider.GetRequiredService<IRepository<IProjectEvent>>() as ProjectRepository;
-      subscriptionsRepository = serviceProvider.GetRequiredService<IRepository<ISubscriptionEvent>>() as SubscriptionRepository;
+      subscriptionRepository = serviceProvider.GetRequiredService<IRepository<ISubscriptionEvent>>() as SubscriptionRepository;
 
       kafkaTopicName = configStore.GetValueString("KAFKA_TOPIC_NAME_NOTIFICATIONS") +
                        configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");

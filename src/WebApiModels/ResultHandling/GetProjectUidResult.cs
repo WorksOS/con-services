@@ -23,7 +23,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
       return new GetProjectUidResult
       {
         ProjectUid = projectUid,
-        Code = ContractExecutionStatesEnum.GetErrorNumberwithOffset(uniqueCode),
+        Code = uniqueCode == 0 ? uniqueCode : ContractExecutionStatesEnum.GetErrorNumberwithOffset(uniqueCode),
         Message = uniqueCode == 0 ? DefaultMessage : string.Format(ContractExecutionStatesEnum.FirstNameWithOffset(uniqueCode))        
       };
     }

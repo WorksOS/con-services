@@ -73,7 +73,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     public void Validate()
     {
       // todo what VSS deviceTypes are these: torch, aqua, R2; 
-      //      will they come in as string or int
       var allowedDeviceTypes = new List<int>() {(int)DeviceTypeEnum.SNM940, (int)DeviceTypeEnum.SNM941};
       var isDeviceTypeValid = allowedDeviceTypes.Contains(deviceType);
 
@@ -86,7 +85,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       if (string.IsNullOrEmpty(radioSerial) )
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
-          GetProjectUidResult.CreateGetProjectUidResult("", 32));
+          GetProjectUidResult.CreateGetProjectUidResult("", 10));
       }
 
       if (latitude < -90 || latitude > 90)

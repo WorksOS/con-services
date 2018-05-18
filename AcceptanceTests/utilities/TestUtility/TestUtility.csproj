@@ -25,7 +25,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\WebApiModels\VSS.Productivity3D.TagFileAuth.WebAPI.Models.csproj" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\..\..\..\Users\jwalter\.nuget\packages\newtonsoft.json\11.0.2\lib\netstandard2.0\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

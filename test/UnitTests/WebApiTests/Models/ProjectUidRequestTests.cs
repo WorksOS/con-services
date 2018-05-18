@@ -13,7 +13,7 @@ namespace WebApiTests.Models
 
     [TestMethod]
     [DataRow(1, "rs45", 89, 179, 30)]
-    [DataRow(6, "", 89, 179, 32)]
+    [DataRow(6, "", 89, 179, 10)]
     [DataRow(6, "rs45", 91, 179, 21)]
     [DataRow(6, "rs45", 89, 181, 22)]
     public void ValidateGetProjectUidRequest_ValidationErrors(int deviceType, string radioSerial,

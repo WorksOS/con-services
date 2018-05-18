@@ -10,7 +10,7 @@ namespace WebApiTests.Models
     public void DynamicAddwithOffsetTest()
     {
       var contractExecutionStatesEnum = new ContractExecutionStatesEnum();
-      Assert.AreEqual(35, contractExecutionStatesEnum.DynamicCount);
+      Assert.AreEqual(36, contractExecutionStatesEnum.DynamicCount);
       Assert.AreEqual("AssetId, if present, must be >= -1", contractExecutionStatesEnum.FirstNameWithOffset(2));
       Assert.AreEqual("DeviceType is invalid", contractExecutionStatesEnum.FirstNameWithOffset(30));
     }
