@@ -159,9 +159,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return ScheduleJob(exportDataUrl, fileName, scheduler);
     }
 
+    /// <summary>
+    /// Schedule an export job wit the scheduler
+    /// </summary>
     private ScheduleResult ScheduleJob(string exportDataUrl, string fileName, ISchedulerProxy scheduler)
     {
       var timeout = ConfigStore.GetValueInt("SCHEDULED_JOB_TIMEOUT");
+      if (timeout == 0) timeout = 300000;//5 mins default
       var request = new ScheduleJobRequest { Url = exportDataUrl, Filename = fileName, Timeout = timeout };
       return
         WithServiceExceptionTryExecute(() => new ScheduleResult
