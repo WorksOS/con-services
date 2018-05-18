@@ -96,11 +96,13 @@ namespace VSS.TRex.Analytics.Aggregators
         /// <param name="state"></param>
         public virtual void Initialise(AggregatorBase state)
         {
+            // Todo
             // No implementation in base class yet
         }
 
         public virtual void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
         {
+            // Todo
             // Processes the given set of subgrids into this aggregator
         }
 
