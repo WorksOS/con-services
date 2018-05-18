@@ -93,13 +93,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         exportDataUrl = $"{exportDataUrl}&machineNames={machineNames}";
       }
-      var request = new ScheduleJobRequest {Url = exportDataUrl, Filename = fileName};
-      return
-        WithServiceExceptionTryExecute(() => new ScheduleResult
-        {
-          JobId =
-            scheduler.ScheduleExportJob(request, Request.Headers.GetCustomHeaders(true)).Result?.JobId
-        });
+      return ScheduleJob(exportDataUrl, fileName, scheduler);
     }
     #endregion
 
@@ -134,13 +128,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       //The URL to get the export data is here in this controller, construct it based on this request
       var exportDataUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/api/v2/export/machinepasses?projectUid={projectUid}&fileName={fileName}&filterUid={filterUid}" + 
                           $"&coordType={coordType}&outputType={outputType}&restrictOutput={restrictOutput}&rawDataOutput={rawDataOutput}";
-      var request = new ScheduleJobRequest { Url = exportDataUrl, Filename = fileName };
-      return
-        WithServiceExceptionTryExecute(() => new ScheduleResult
-        {
-          JobId =
-            scheduler.ScheduleExportJob(request, Request.Headers.GetCustomHeaders(true)).Result?.JobId
-        });
+      return ScheduleJob(exportDataUrl, fileName, scheduler);
     }
     #endregion
 
@@ -168,7 +156,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var exportDataUrl =
         $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/api/v2/export/surface?projectUid={projectUid}&fileName={fileName}&filterUid={filterUid}&tolerance={tolerance}";
-      var request = new ScheduleJobRequest { Url = exportDataUrl, Filename = fileName };
+      return ScheduleJob(exportDataUrl, fileName, scheduler);
+    }
+
+    private ScheduleResult ScheduleJob(string exportDataUrl, string fileName, ISchedulerProxy scheduler)
+    {
+      var timeout = ConfigStore.GetValueInt("SCHEDULED_JOB_TIMEOUT");
+      var request = new ScheduleJobRequest { Url = exportDataUrl, Filename = fileName, Timeout = timeout };
       return
         WithServiceExceptionTryExecute(() => new ScheduleResult
         {
@@ -178,7 +172,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
     #endregion
 
-    
+
     #region Exports
     /// <summary>
     /// Gets an export of production data in cell grid format report for import to VETA.
