@@ -60,6 +60,7 @@ namespace VSS.TRex.TAGFiles.Executors
 
                     converter.SiteModel.ID = ProjectID;
                     converter.Machine.ID = AssetID;
+                    converter.Machine.IsJohnDoeMachine = item.IsJohnDoe;
 
                     integrator.AddTaskToProcessList(converter.SiteModel, converter.Machine, converter.SiteModelGridAggregator, converter.ProcessedCellPassCount, converter.MachineTargetValueChangesAggregator);
 

@@ -60,7 +60,12 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
             Log.Info($"#Info# TFA GetId returned for {tagDetail.tagFileName} StatusCode: {apiResult}, ProjectId:{tagDetail.projectId}, AssetId:{tagDetail.assetId}");
             if (apiResult == ValidationResult.Valid)
             {
-                // Do some checks
+               // Check For JohnDoe machines
+                if (tagDetail.assetId == Guid.Empty)
+                {
+                    tagDetail.IsJohnDoe = true; // JohnDoe Machine and OK to process
+                }
+
             }
             return apiResult;
         }
@@ -70,7 +75,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         /// </summary>
         /// <param name="tagDetail"></param>
         /// <returns></returns>
-        public static ValidationResult ValidSubmission(TagfileDetail tagDetail)
+        public static ValidationResult ValidSubmission(ref TagfileDetail tagDetail)
         {
 
             ValidationResult result = ValidationResult.Unknown;
@@ -103,7 +108,10 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
             {
                 Log.Warn($"SubmitTAGFileResponse.ValidSubmission. EnableTFAService disabled. Bypassing TFS validation checks");
                 if (tagDetail.assetId != Guid.Empty && tagDetail.projectId != Guid.Empty) // do we have what we need
-                    return ValidationResult.Valid;
+                    {
+                    // they may want to    tagDetail.IsJohnDoe = false;
+                        return ValidationResult.Valid;
+                    }
                 else
                     return ValidationResult.Invalid; // cannot process with asset and project id
             }

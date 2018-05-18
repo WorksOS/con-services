@@ -76,7 +76,8 @@ namespace VSS.TRex.Client
                         new ProcessTAGFileRequestFileItem()
                         {
                             FileName = Path.GetFileName(fileName),
-                            TagFileContent = bytes
+                            TagFileContent = bytes,
+                            IsJohnDoe = false
                         }
                     }
                 };
@@ -104,7 +105,7 @@ namespace VSS.TRex.Client
                     byte[] bytes = new byte[fs.Length];
                     fs.Read(bytes, 0, bytes.Length);
 
-                    arg.TAGFiles.Add(new ProcessTAGFileRequestFileItem { FileName = Path.GetFileName(file), TagFileContent = bytes });     
+                    arg.TAGFiles.Add(new ProcessTAGFileRequestFileItem { FileName = Path.GetFileName(file), TagFileContent = bytes,IsJohnDoe = false});     
                 }
             }
 

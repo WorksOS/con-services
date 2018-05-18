@@ -65,11 +65,12 @@ namespace VSS.TRex.TAGFiles.Executors
                                                projectId = projectId,
                                                tagFileName = tagFileName,
                                                tagFileContent = tagFileContent,
-                                               tccOrgId = tccOrgId
+                                               tccOrgId = tccOrgId,
+                                               IsJohnDoe = false // default
                                        };
 
                     // Validate tagfile submission
-                    var result = TagfileValidator.ValidSubmission(td);
+                    var result = TagfileValidator.ValidSubmission(ref td);
 
                     if (result == ValidationResult.Valid) // If OK add to process queue
                     {
@@ -85,7 +86,8 @@ namespace VSS.TRex.TAGFiles.Executors
                                                                  ProjectID = projectId,
                                                                  AssetID = assetId,
                                                                  FileName = tagFileName,
-                                                                 Content = tagFileContent
+                                                                 Content = tagFileContent,
+                                                                 IsJohnDoe = td.IsJohnDoe
                                                          };
 
                         if (queue.Add(tagKey, tagItem))

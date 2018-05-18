@@ -108,6 +108,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                                 {
                                     FileName = x.FileName,
                                     TagFileContent = x.Content,
+                                    IsJohnDoe = x.IsJohnDoe
                                 }).ToList();
                         }
                         catch (Exception e)
@@ -218,6 +219,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                     {
                         FileName = x.FileName,
                         TagFileContent = x.Content,
+                        IsJohnDoe = x.IsJohnDoe
                     }).ToList();
             }
             catch (Exception e)
