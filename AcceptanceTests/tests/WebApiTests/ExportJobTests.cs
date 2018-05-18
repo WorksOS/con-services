@@ -23,8 +23,6 @@ namespace WebApiTests
     private const string FAILURE_JOB_ID = "Test_Job_2";
     private const string TIMEOUT_JOB_ID = "Test_Job_4";
 
-
-
     [TestInitialize]
     public void Initialize()
     {
@@ -36,7 +34,6 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    [Ignore]
     public void CanDoExportSuccess()
     {
       Msg.Title("Scheduler web test 1", "Schedule export job happy path");
@@ -61,7 +58,6 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    [Ignore]
     public void CanGetExportJobStatusMissingJob()
     {
       Msg.Title("Scheduler web test 2", "Get Scheduled export job status for missing job");
@@ -75,7 +71,6 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    [Ignore]
     public void CanDoExportFailure()
     {
       Msg.Title("Scheduler web test 3", "Schedule export job with 3dpm failure code");
@@ -87,10 +82,12 @@ namespace WebApiTests
       //Get the job status...
       var statusResult = WaitForExpectedStatus(jobId, "FAILED");
       Assert.IsNotNull(statusResult.FailureDetails, "Should get details on failure");
+      Assert.AreEqual(HttpStatusCode.BadRequest, statusResult.FailureDetails.Code, "Wrong http status code");
+      Assert.AreEqual(2002, statusResult.FailureDetails.Result.Code, "Wrong failure code");
+      Assert.AreEqual("Failed to get requested export data with error: No data for export", statusResult.FailureDetails.Result.Message, "Wrong failure message");
     }
 
     [TestMethod]
-    [Ignore]
     public void CanDoLongRunningExport()
     {
       Msg.Title("Scheduler web test 4", "Schedule long running export job");
@@ -116,6 +113,10 @@ namespace WebApiTests
       //Get the job status...
       var statusResult = WaitForExpectedStatus(jobId, "FAILED", 150);
       Assert.IsNotNull(statusResult.FailureDetails, "Should get details on failure");
+      Assert.AreEqual(HttpStatusCode.InternalServerError, statusResult.FailureDetails.Code, "Wrong http status code");
+      Assert.AreEqual(-3, statusResult.FailureDetails.Result.Code, "Wrong failure code");
+      Assert.AreEqual("The operation has timed out.", statusResult.FailureDetails.Result.Message, "Wrong failure message");
+
     }
 
     private string GetScheduledJobId(string filterUid, string filename, int timeoutMillisecs= 300000)//5 mins

@@ -31,7 +31,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.Middleware
     {
       //HACK allow internal connections without authn for hangfire dashboard
       return
-        context.Request.Path.Value.Equals("/hangfire") &&
+        context.Request.Path.Value.StartsWith("/hangfire") &&
         context.Request.Method == "GET" &&
         !context.Request.Headers.ContainsKey("X-Jwt-Assertion") &&
         !context.Request.Headers.ContainsKey("Authorization");
