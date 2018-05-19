@@ -14,5 +14,6 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         public string tagFileName;
         public byte[] tagFileContent;
         public string tccOrgId;
+        public bool IsJohnDoe;
     }
 }

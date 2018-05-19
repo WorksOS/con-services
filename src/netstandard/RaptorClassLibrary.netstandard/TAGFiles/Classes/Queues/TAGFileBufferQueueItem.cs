@@ -40,5 +40,11 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// UID identifier of the asset to process this TAG file into
         /// </summary>
         public Guid AssetID;
+
+        /// <summary>
+        ///   Is machine a JohnDoe. No telematic device onboard to identify machine or No AssetID in system
+        ///   JohnDoe machine are assigned a unique Guid
+        /// </summary>
+        public bool IsJohnDoe;
     }
 }
