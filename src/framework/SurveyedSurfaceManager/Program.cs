@@ -13,7 +13,7 @@ namespace SurveyedSurfaceManager
     /// </summary>
     private static void DependencyInjection()
     {
-      DIImplementation.New().ConfigureLogging().Complete();
+      DIImplementation.New().AddLogging().Complete();
     }
 
     [STAThread]

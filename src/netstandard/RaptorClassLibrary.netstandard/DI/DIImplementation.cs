@@ -23,30 +23,30 @@ namespace VSS.TRex.DI
     }
 
     /// <summary>
-    /// Constructor accepting a configuration lambda
+    /// Constructor accepting a lambda returning a service collection to add to the DI collection
     /// </summary>
-    /// <param name="configureDI"></param>
-    public DIImplementation(Action<IServiceCollection> configureDI)
+    /// <param name="addDI"></param>
+    public DIImplementation(Action<IServiceCollection> addDI)
     {
-      configureDI(ServiceCollection);
+      addDI(ServiceCollection);
     }
 
     /// <summary>
-    /// COnfigures a set of dependencies according to the supplied lambda
+    /// Adds a set of dependencies according to the supplied lambda
     /// </summary>
-    /// <param name="configureDI"></param>
+    /// <param name="addDI"></param>
     /// <returns></returns>
-    public DIImplementation Configure(Action<IServiceCollection> configureDI)
+    public DIImplementation Add(Action<IServiceCollection> addDI)
     {
-      configureDI(ServiceCollection);
+      addDI(ServiceCollection);
       return this;
     }
 
     /// <summary>
-    /// Configures the logging system
+    /// Adds logging to the DI collection
     /// </summary>
     /// <returns></returns>
-    public DIImplementation ConfigureLogging()
+    public DIImplementation AddLogging()
     {
       string loggerRepoName = "VSS";
 

@@ -14,8 +14,8 @@ namespace VSS.TRex.Server.Application
     {
       DIContext.Inject(
         DIImplementation.New()
-        .ConfigureLogging()
-        .Configure(collection =>
+        .AddLogging()
+        .Add(collection =>
         {
           // The renderer factory that allows tile rendering services access Bitmap etc platform dependent constructs
           collection.AddSingleton<IRenderingFactory>(new RenderingFactory());
