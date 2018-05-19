@@ -105,8 +105,7 @@ namespace VSS.TRex.Client
           byte[] bytes = new byte[fs.Length];
           fs.Read(bytes, 0, bytes.Length);
 
-          arg.TAGFiles.Add(
-                    arg.TAGFiles.Add(new ProcessTAGFileRequestFileItem { FileName = Path.GetFileName(file), TagFileContent = bytes });
+          arg.TAGFiles.Add(new ProcessTAGFileRequestFileItem { FileName = Path.GetFileName(file), TagFileContent = bytes, IsJohnDoe = false});
         }
       }
 
@@ -154,7 +153,7 @@ namespace VSS.TRex.Client
 
     private static void DependencyInjection()
     {
-      DIContext.Inject(DIImplementation.New().ConfigureLogging().Build());
+      DIImplementation.New().ConfigureLogging().Complete();
     }
 
     static void Main(string[] args)

@@ -8,7 +8,7 @@ namespace VSS.TRex.Server.PSNode
   {
     private static void DependencyInjection()
     {
-      DIContext.Inject(DIImplementation.New().ConfigureLogging().Build());
+      DIImplementation.New().ConfigureLogging().Complete();
     }
 
     static void Main(string[] args)

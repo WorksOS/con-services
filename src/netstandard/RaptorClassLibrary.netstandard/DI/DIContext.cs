@@ -14,6 +14,8 @@ namespace VSS.TRex.DI
 
     public static ILoggerFactory LoggerFactory { get; internal set; }
 
+    public static void Inject(DIImplementation implementation) => Inject(implementation.ServiceProvider);
+
     public static void Inject(IServiceProvider serviceProvider)
     {
       ServiceProvider = serviceProvider;

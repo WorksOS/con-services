@@ -88,10 +88,10 @@ namespace VSS.TRex.DI
     /// Builds the service provider, returning it ready for injection
     /// </summary>
     /// <returns></returns>
-    public IServiceProvider Build()
+    public DIImplementation Build()
     {
       ServiceProvider = ServiceCollection.BuildServiceProvider();
-      return ServiceProvider;
+      return this;
     }
 
     /// <summary>
@@ -99,5 +99,15 @@ namespace VSS.TRex.DI
     /// </summary>
     /// <returns></returns>
     public static DIImplementation New() => new DIImplementation();
+
+    /// <summary>
+    /// Performs the Inject operation into the DIContext as a fluent operation from the DIImplementation
+    /// </summary>
+    public void Inject() => DIContext.Inject(ServiceProvider);
+
+    /// <summary>
+    /// A handly shorthand version of .Build().Inject()
+    /// </summary>
+    public void Complete() => Build().Inject();
   }
 }

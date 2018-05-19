@@ -17,7 +17,7 @@ namespace TRex.Service.Deployer
 
       private static void DependencyInjection()
       {
-        DIContext.Inject(DIImplementation.New().ConfigureLogging().Build());
+        DIImplementation.New().ConfigureLogging().Complete();
       }
 
       static void Main(string[] args)

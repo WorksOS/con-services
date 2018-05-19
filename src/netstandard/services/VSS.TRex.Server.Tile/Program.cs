@@ -22,12 +22,6 @@ namespace VSS.TRex.Server.Application
         }).Build());
     }
 
-//    private static void DependencyInjection()
-//    {
-//      DIContext.Inject(DIImplementation.New().ConfigureLogging().Build());
-//    }
-
-
     static void Main(string[] args)
     {
       DependencyInjection();
