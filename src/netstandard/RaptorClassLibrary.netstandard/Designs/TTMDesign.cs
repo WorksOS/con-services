@@ -1,4 +1,4 @@
-﻿using log4net;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,7 +20,7 @@ namespace VSS.TRex.DesignProfiling
     /// </summary>
     public class TTMDesign : DesignBase
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         private TrimbleTINModel FData;
         private GenericSubGridTree<List<Triangle>> FSpatialIndex;
@@ -516,7 +516,7 @@ namespace VSS.TRex.DesignProfiling
                     }
                     else
                     {
-                        Log.Warn($"Triangle {Tri.Tag} failed to have intersection line calculated for it");
+                        Log.LogWarning($"Triangle {Tri.Tag} failed to have intersection line calculated for it");
                     }
                 }
                 else
@@ -579,7 +579,7 @@ namespace VSS.TRex.DesignProfiling
             // subgrid index.
             try
             {
-                Log.Info($"In: Constructing subgrid index for design containing {FData.Triangles.Count} triangles");
+                Log.LogInformation($"In: Constructing subgrid index for design containing {FData.Triangles.Count} triangles");
 
                 try
                 {
@@ -603,7 +603,7 @@ namespace VSS.TRex.DesignProfiling
             }
             catch (Exception e)
             {
-                Log.Error($"Exception in TTTMDesign.ConstructSubgridIndex: {e}");
+                Log.LogError($"Exception in TTTMDesign.ConstructSubgridIndex: {e}");
                 return false;
             }
         }
@@ -948,7 +948,7 @@ namespace VSS.TRex.DesignProfiling
             }
             catch (Exception e)
             {
-                Log.Error($"Exception {e} occurred in TTTMDesign.InterpolateHeights");
+                Log.LogError($"Exception {e} occurred in TTTMDesign.InterpolateHeights");
                 return false;
             }
         }
@@ -995,7 +995,7 @@ namespace VSS.TRex.DesignProfiling
             }
             catch (Exception e)
             {
-                Log.Error($"Exception {e} occurred in TTTMDesign.InterpolateHeights");
+                Log.LogError($"Exception {e} occurred in TTTMDesign.InterpolateHeights");
 
                 return false;
             }
@@ -1043,7 +1043,7 @@ namespace VSS.TRex.DesignProfiling
             }
             catch (Exception e)
             {
-                Log.Error($"Exception {e} occurred in TTTMDesign.InterpolateHeights");
+                Log.LogError($"Exception {e} occurred in TTTMDesign.InterpolateHeights");
                 return false;
             }
         }
@@ -1089,7 +1089,7 @@ namespace VSS.TRex.DesignProfiling
             // determine which subgrids in the index intersect it and add it to those subgrids
             try
             {
-                Log.Info($"In: Constructing subgrid index for design containing {FData.Triangles.Count} triangles");
+                Log.LogInformation($"In: Constructing subgrid index for design containing {FData.Triangles.Count} triangles");
                 try
                 {
                     // Construct a subgrid tree containing list of triangles that intersect each on-the-ground subgrid
@@ -1165,14 +1165,14 @@ namespace VSS.TRex.DesignProfiling
                         return true;
                     });
 
-                    Log.Info($"Constructed subgrid index for design containing {FData.Triangles.Count} triangles, using {sumLeafSubGrids} leaf and {sumNodeSubGrids} node subgrids, {sumTriangleLists} triangle lists and {sumTriangleReferences} triangle references");
+                    Log.LogInformation($"Constructed subgrid index for design containing {FData.Triangles.Count} triangles, using {sumLeafSubGrids} leaf and {sumNodeSubGrids} node subgrids, {sumTriangleLists} triangle lists and {sumTriangleReferences} triangle references");
                 }
 
                 return true;
             }
             catch (Exception e)
             {
-                Log.Error($"Exception {e} in TTTMDesign.ConstructSpatialIndex");
+                Log.LogError($"Exception {e} in TTTMDesign.ConstructSpatialIndex");
                 return false;
             }
         }
@@ -1188,7 +1188,7 @@ namespace VSS.TRex.DesignProfiling
             {
                 FData.LoadFromFile(fileName);
 
-                Log.Info($"Loaded TTM file {fileName} containing {FData.Header.NumberOfTriangles} triangles and {FData.Header.NumberOfVertices} vertices.");
+                Log.LogInformation($"Loaded TTM file {fileName} containing {FData.Header.NumberOfTriangles} triangles and {FData.Header.NumberOfVertices} vertices.");
 
                 FMinHeight = Consts.NullReal;
                 FMaxHeight = Consts.NullReal;
@@ -1201,19 +1201,19 @@ namespace VSS.TRex.DesignProfiling
                     return DesignLoadResult.UnableToLoadSubgridIndex;
                 }
 
-                Log.Info($"Area: ({FData.Header.MinimumEasting}, {FData.Header.MinimumNorthing}) -> ({FData.Header.MaximumEasting}, {FData.Header.MaximumNorthing}): [{FData.Header.MaximumEasting - FData.Header.MinimumEasting} x {FData.Header.MaximumNorthing - FData.Header.MinimumNorthing}]");
+                Log.LogInformation($"Area: ({FData.Header.MinimumEasting}, {FData.Header.MinimumNorthing}) -> ({FData.Header.MaximumEasting}, {FData.Header.MaximumNorthing}): [{FData.Header.MaximumEasting - FData.Header.MinimumEasting} x {FData.Header.MaximumNorthing - FData.Header.MinimumNorthing}]");
 
                 // Build the quadtree based spatial index
                 QuadTreeSpatialIndex = new TTMQuadTree();
                 QuadTreeSpatialIndex.Initialise(FData, false);
 
-                Log.Info($"Constructed quadtree spatial index using {QuadTreeSpatialIndex.BATree.Count} BTree blocks");
+                Log.LogInformation($"Constructed quadtree spatial index using {QuadTreeSpatialIndex.BATree.Count} BTree blocks");
 
                 return DesignLoadResult.Success;
             }
             catch (Exception E)
             {
-                Log.Error($"Exception {E} in LoadFromFile");
+                Log.LogError($"Exception {E} in LoadFromFile");
                 return DesignLoadResult.UnknownFailure;
             }
         }
@@ -1244,7 +1244,7 @@ namespace VSS.TRex.DesignProfiling
             }
             catch (Exception e)
             {
-                Log.Error($"Exception {e} in LoadSubgridIndex");
+                Log.LogError($"Exception {e} in LoadSubgridIndex");
 
                 return false;
             }
@@ -1257,7 +1257,7 @@ namespace VSS.TRex.DesignProfiling
         /// <returns></returns>
         protected bool LoadSubgridIndexFile(string SubgridIndexFileName)
         {
-            Log.Info($"Loading subgrid index file {SubgridIndexFileName}");
+            Log.LogInformation($"Loading subgrid index file {SubgridIndexFileName}");
 
             bool Result = LoadSubgridIndex(SubgridIndexFileName);
 
@@ -1269,16 +1269,16 @@ namespace VSS.TRex.DesignProfiling
                 {
                     if (SaveSubgridIndex(SubgridIndexFileName))
                     {
-                        Log.Info($"Saved constructed subgrid index file {SubgridIndexFileName}");
+                        Log.LogInformation($"Saved constructed subgrid index file {SubgridIndexFileName}");
                     }
                     else
                     {
-                        Log.Error($"Unable to save subgrid index file {SubgridIndexFileName} - continuing with unsaved index");
+                        Log.LogError($"Unable to save subgrid index file {SubgridIndexFileName} - continuing with unsaved index");
                     }
                 }
                 else
                 {
-                    Log.Error($"Unable to create and save subgrid index file {SubgridIndexFileName}");
+                    Log.LogError($"Unable to create and save subgrid index file {SubgridIndexFileName}");
                 }
             }
 
@@ -1332,7 +1332,7 @@ namespace VSS.TRex.DesignProfiling
             }
             catch (Exception e)
             {
-                Log.Error($"Exception {e} SaveSubgridIndex");
+                Log.LogError($"Exception {e} SaveSubgridIndex");
             }
 
             return Result;

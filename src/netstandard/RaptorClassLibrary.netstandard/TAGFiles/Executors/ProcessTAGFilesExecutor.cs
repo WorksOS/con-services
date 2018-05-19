@@ -1,4 +1,4 @@
-﻿using log4net;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,11 +20,11 @@ namespace VSS.TRex.TAGFiles.Executors
     /// </summary>
     public static class ProcessTAGFilesExecutor
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         public static ProcessTAGFileResponse Execute(Guid ProjectID, Guid AssetID, IEnumerable<ProcessTAGFileRequestFileItem> TAGFiles)
         {
-            Log.Info($"Processing {TAGFiles.Count()} TAG files into project {ProjectID}, asset {AssetID}");
+            Log.LogInformation($"Processing {TAGFiles.Count()} TAG files into project {ProjectID}, asset {AssetID}");
 
             ProcessTAGFileResponse response = new ProcessTAGFileResponse();
 
@@ -47,7 +47,7 @@ namespace VSS.TRex.TAGFiles.Executors
             {
                 try
                 {
-                    Log.Info($"Processing TAG file {item.FileName} into project {ProjectID}");
+                    Log.LogInformation($"Processing TAG file {item.FileName} into project {ProjectID}");
 
                     TAGFileConverter converter = new TAGFileConverter();
 
@@ -55,7 +55,7 @@ namespace VSS.TRex.TAGFiles.Executors
                     {
                         converter.Execute(fs);
 
-                        Log.Info($"TAG file generated {converter.ProcessedCellPassCount} cell passes from {converter.ProcessedEpochCount} epochs");
+                        Log.LogInformation($"TAG file generated {converter.ProcessedCellPassCount} cell passes from {converter.ProcessedEpochCount} epochs");
                     }
 
                     converter.SiteModel.ID = ProjectID;

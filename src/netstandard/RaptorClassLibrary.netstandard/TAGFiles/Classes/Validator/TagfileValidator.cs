@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using log4net;
+using Microsoft.Extensions.Logging;
 using VSS.TRex;
 using VSS.TRex.Events;
 using VSS.TRex.Machines;
@@ -17,7 +17,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
 {
     public static class TagfileValidator
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// Calls the TFA service to lookup assetId and projectId and validates licensing etc
@@ -53,11 +53,11 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
 
 
             TFAProxy tfa = new TFAProxy(); // Todo This can be refactored at a later stage
-            Log.Info($"#Info# Calling TFA servce to validate tagfile {tagDetail.tagFileName} ");
+            Log.LogInformation($"#Info# Calling TFA servce to validate tagfile {tagDetail.tagFileName} ");
             // use decimal degrees
             // return ValidationResult.Valid;
             var apiResult = tfa.ValidateTagfile(tagDetail.projectId, Guid.Parse(tagDetail.tccOrgId), processor.RadioSerial, radioType, processor.LLHLat * (180 / Math.PI), processor.LLHLon * (180 / Math.PI), processor.DataTime, out tagDetail.projectId, out tagDetail.assetId);
-            Log.Info($"#Info# TFA GetId returned for {tagDetail.tagFileName} StatusCode: {apiResult}, ProjectId:{tagDetail.projectId}, AssetId:{tagDetail.assetId}");
+            Log.LogInformation($"#Info# TFA GetId returned for {tagDetail.tagFileName} StatusCode: {apiResult}, ProjectId:{tagDetail.projectId}, AssetId:{tagDetail.assetId}");
             if (apiResult == ValidationResult.Valid)
             {
                 // Do some checks
@@ -101,7 +101,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
 
             if (!TRexConfig.EnableTFAService) // allows us to bypass a TFA service
             {
-                Log.Warn($"SubmitTAGFileResponse.ValidSubmission. EnableTFAService disabled. Bypassing TFS validation checks");
+                Log.LogWarning($"SubmitTAGFileResponse.ValidSubmission. EnableTFAService disabled. Bypassing TFS validation checks");
                 if (tagDetail.assetId != Guid.Empty && tagDetail.projectId != Guid.Empty) // do we have what we need
                     return ValidationResult.Valid;
                 else

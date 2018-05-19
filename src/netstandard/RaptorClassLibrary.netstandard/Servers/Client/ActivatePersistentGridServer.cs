@@ -1,5 +1,5 @@
 ﻿using Apache.Ignite.Core;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
 using System.Threading;
@@ -12,7 +12,7 @@ namespace VSS.TRex.Servers.Client
     /// </summary>
     public class ActivatePersistentGridServer 
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         private static ActivatePersistentGridServer instance;
 
@@ -49,20 +49,20 @@ namespace VSS.TRex.Servers.Client
                     {
                         ignite.GetCluster().SetActive(true);
 
-                        Log.InfoFormat("Set grid '{0}' to active.", gridName);
+                        Log.LogError($"Set grid '{gridName}' to active.");
 
                         return true;
                     }
                     else
                     {
-                        Log.InfoFormat("Grid '{0}' is not available or is already active.", gridName);
+                        Log.LogError($"Grid '{gridName}' is not available or is already active.");
 
                         return ignite != null && ignite.GetCluster().IsActive();
                     }
                 }
                 catch (Exception E)
                 {
-                    Log.ErrorFormat("SetGridActive: Exception: {0}", E);
+                    Log.LogError($"SetGridActive: Exception: {E}");
                     return false;
                 }
             }
@@ -84,20 +84,20 @@ namespace VSS.TRex.Servers.Client
                 if (ignite != null && ignite.GetCluster().IsActive())
                 {
                     ignite.GetCluster().SetActive(false);
-                    Log.InfoFormat("Set grid '{0}' to inactive.", gridName);
+                    Log.LogError($"Set grid '{gridName}' to inactive.");
 
                     return true;
                 }
                 else
                 {
-                    Log.InfoFormat("Grid '{0}' is not available or is already inactive.", gridName);
+                    Log.LogError($"Grid '{gridName}' is not available or is already inactive.");
 
                     return ignite != null && !ignite.GetCluster().IsActive();
                 }
             }
             catch (Exception E)
             {
-                Log.ErrorFormat("SetGridInActive: Exception: {0}", E);
+                Log.LogError("SetGridInActive: Exception: {E}");
                 return false;
             }
         }
@@ -112,7 +112,7 @@ namespace VSS.TRex.Servers.Client
 
             if (ignite == null)
             {
-                Log.ErrorFormat("Grid {0} not available to wait for.", gridName);
+                Log.LogError($"Grid {gridName} not available to wait for.");
                 return;
             }
 

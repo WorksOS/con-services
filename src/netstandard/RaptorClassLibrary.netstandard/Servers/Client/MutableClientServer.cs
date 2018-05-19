@@ -5,7 +5,7 @@ using Apache.Ignite.Core.Communication.Tcp;
 using Apache.Ignite.Core.Configuration;
 using Apache.Ignite.Core.Discovery.Tcp;
 using Apache.Ignite.Core.Discovery.Tcp.Static;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +23,7 @@ namespace VSS.TRex.Servers.Client
     /// </summary>
     public class MutableClientServer : IgniteServer
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// Constructor that creates a new server instance with a single role
@@ -51,7 +51,7 @@ namespace VSS.TRex.Servers.Client
 
                     TRexNodeID = Guid.NewGuid().ToString();
 
-                    Log.InfoFormat("Creating new Ignite node with Roles = {0} & TRexNodeId = {1}", roleNames, TRexNodeID);
+                    Log.LogInformation($"Creating new Ignite node with Roles = {roleNames} & TRexNodeId = {TRexNodeID}");
 
                     IgniteConfiguration cfg = new IgniteConfiguration()
                     {
@@ -86,7 +86,7 @@ namespace VSS.TRex.Servers.Client
                             LocalPort = 48100,
                         },
 
-                        Logger = new TRexIgniteLogger(Log),
+                        Logger = new TRexIgniteLogger(Logger.CreateLogger("MutableClientServer")),
                         
                         // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
                         DataStorageConfiguration = new DataStorageConfiguration()
@@ -134,11 +134,11 @@ namespace VSS.TRex.Servers.Client
                     }
                     catch (Exception e)
                     {
-                        Log.InfoFormat("Creation of new Ignite node with Role = {0} & TRexNodeId = {1} failed with exception {2}", roleNames, TRexNodeID, e);
+                        Log.LogInformation($"Creation of new Ignite node with Role = {roleNames} & TRexNodeId = {TRexNodeID} failed with exception {e}");
                     }
                     finally
                     {
-                        Log.InfoFormat("Completed creation of new Ignite node with Role = {0} & TRexNodeId = {1}", roleNames, TRexNodeID);
+                        Log.LogInformation($"Completed creation of new Ignite node with Role = {roleNames} & TRexNodeId = {TRexNodeID}");
                     }
                 }
             }

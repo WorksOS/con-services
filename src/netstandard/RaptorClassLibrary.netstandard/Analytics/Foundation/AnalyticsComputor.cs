@@ -1,4 +1,4 @@
-﻿using log4net;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
 using VSS.TRex.Common;
@@ -20,7 +20,7 @@ namespace VSS.TRex.Analytics
     /// </summary>
     public class AnalyticsComputor
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// The Aggregator to use for calculation of analytics
@@ -87,7 +87,7 @@ namespace VSS.TRex.Analytics
             PipeLine.GridDataType = RequestedGridDataType;
             PipeLine.CutFillDesignID = CutFillDesignID;
 
-            Log.Debug($"Analytics computor extents for DM={SiteModel.ID}: {Extents}");
+            Log.LogDebug($"Analytics computor extents for DM={SiteModel.ID}: {Extents}");
 
             PipeLine.WorldExtents.Assign(Extents);
 
@@ -105,7 +105,7 @@ namespace VSS.TRex.Analytics
                 }
                 else
                 {
-                    Log.Error($"Failed to request subgrid overlay index for design {CutFillDesignID} in datamodel {SiteModel.ID}");
+                    Log.LogError($"Failed to request subgrid overlay index for design {CutFillDesignID} in datamodel {SiteModel.ID}");
                     return false;
                 }
             }
@@ -249,7 +249,7 @@ namespace VSS.TRex.Analytics
             }
             catch (Exception E)
             {
-                Log.ErrorFormat("ExecutePipeline raised exception '{0}'", E);
+              Log.LogError($"ExecutePipeline raised exception '{E}'");
             }
 
             return Result;

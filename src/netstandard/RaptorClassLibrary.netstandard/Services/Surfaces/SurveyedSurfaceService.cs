@@ -2,7 +2,7 @@
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Resource;
 using Apache.Ignite.Core.Services;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -24,7 +24,7 @@ namespace VSS.TRex.Services.Surfaces
     public class SurveyedSurfaceService : BaseService, IService, ISurveyedSurfaceService
     {
         [NonSerialized]
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// Cache storing sitemodel instances
@@ -108,7 +108,7 @@ namespace VSS.TRex.Services.Surfaces
         /// </summary>
         public SurveyedSurfaces List(Guid SiteModelID)
         {
-            Log.InfoFormat($"Listing surveyed surfaces from {SurveyedSurfaces.CacheKey(SiteModelID)}");
+            Log.LogInformation($"Listing surveyed surfaces from {SurveyedSurfaces.CacheKey(SiteModelID)}");
 
             try
             {
@@ -143,7 +143,7 @@ namespace VSS.TRex.Services.Surfaces
         /// <param name="context"></param>
         public void Execute(IServiceContext context)
         {
-           Log.Info("Executing TRex Service 'SurveyedSurfaceService'");
+           Log.LogInformation("Executing TRex Service 'SurveyedSurfaceService'");
         }
 
         /// <summary>

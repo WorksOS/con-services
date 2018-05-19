@@ -1,4 +1,4 @@
-﻿using log4net;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,7 +24,7 @@ namespace VSS.TRex.GridFabric.Requests
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
         [NonSerialized]
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// Task is the business logic that will handle the response to the subgrids request
@@ -133,7 +133,7 @@ namespace VSS.TRex.GridFabric.Requests
         /// <returns></returns>
         protected void PrepareArgument()
         {
-            Log.InfoFormat("Preparing argument with TRexNodeId = {0}", TRexNodeId);
+            Log.LogInformation($"Preparing argument with TRexNodeId = {TRexNodeId}");
 
             using (MemoryStream ProdDataMS = new MemoryStream(), SurveyedSurfaceMS = new MemoryStream())
             {

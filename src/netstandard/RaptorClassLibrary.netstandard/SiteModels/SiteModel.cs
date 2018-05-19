@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using log4net;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Events;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Caches;
@@ -25,7 +25,7 @@ namespace VSS.TRex.SiteModels
     public class SiteModel : ISiteModel
     {
         [NonSerialized]
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         public const string kSiteModelXMLFileName = "ProductionDataModel.XML";
         public const string kSubGridExistanceMapFileName = "SubGridExistanceMap";
@@ -258,7 +258,7 @@ namespace VSS.TRex.SiteModels
 
             if (!(MajorVersion == kMajorVersion && MinorVersion == kMinorVersion))
             {
-                Log.Error($"Unknown version number {MajorVersion}:{MinorVersion} in Read()");
+                Log.LogError($"Unknown version number {MajorVersion}:{MinorVersion} in Read()");
                 return false;
             }
 
@@ -290,7 +290,7 @@ namespace VSS.TRex.SiteModels
             double SiteModelGridCellSize = reader.ReadDouble();
             if (SiteModelGridCellSize < 0.001)
             {
-                Log.Error($"'SiteModelGridCellSize is suspicious: {SiteModelGridCellSize} for datamodel {ID}, setting to default");
+                Log.LogError($"'SiteModelGridCellSize is suspicious: {SiteModelGridCellSize} for datamodel {ID}, setting to default");
                 SiteModelGridCellSize = SubGridTree.DefaultCellSize; // VLPDSvcLocations.VLPD_DefaultSiteModelGridCellSize;
             }
             Grid.CellSize = SiteModelGridCellSize;
@@ -341,7 +341,7 @@ namespace VSS.TRex.SiteModels
             }
             else
             {
-                Log.Error($"Failed to save site model for project {ID} to persistent store");
+                Log.LogError($"Failed to save site model for project {ID} to persistent store");
             }
 
             return Result;
@@ -370,7 +370,7 @@ namespace VSS.TRex.SiteModels
                             // is particularly useful for testing purposes where copying around projects
                             // is much quicker than reprocessing large sets of TAG files
 
-                            Log.Warn($"Site model ID read from FS file ({ID}) does not match expected ID ({SavedID}), setting to expected");
+                            Log.LogWarning($"Site model ID read from FS file ({ID}) does not match expected ID ({SavedID}), setting to expected");
                             ID = SavedID;
                         }
 
@@ -410,12 +410,12 @@ namespace VSS.TRex.SiteModels
 
                         if (Result == FileSystemErrorStatus.OK)
                         {
-                            Log.Debug($"Site model read from FS file (ID:{ID}) succeeded");
-                            Log.Debug($"Data model extents: {SiteModelExtent}, CellSize: {Grid.CellSize}");
+                            Log.LogDebug($"Site model read from FS file (ID:{ID}) succeeded");
+                            Log.LogDebug($"Data model extents: {SiteModelExtent}, CellSize: {Grid.CellSize}");
                         }
                         else
                         {
-                            Log.Warn($"Site model ID read from FS file ({ID}) failed with error {Result}");
+                            Log.LogWarning($"Site model ID read from FS file ({ID}) failed with error {Result}");
                         }
                     }
                     finally

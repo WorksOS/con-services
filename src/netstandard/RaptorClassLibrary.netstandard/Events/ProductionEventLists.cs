@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using System.Reflection;
-using log4net;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Interfaces;
 using VSS.TRex.SiteModels;
@@ -15,7 +15,7 @@ namespace VSS.TRex.Events
     public class ProductionEventLists : IProductionEventLists
 
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// The SiteModel these events relate to
@@ -299,7 +299,7 @@ namespace VSS.TRex.Events
         {
             foreach (IProductionEvents list in GetEventLists().Where(x => x.EventsChanged))
             {
-                Log.Debug(
+                Log.LogDebug(
                     $"Saving {list.EventListType} with {list.Count()} events for machine {MachineID} in project {SiteModel.ID}");
 
                 list.SaveToStore(storageProxy);

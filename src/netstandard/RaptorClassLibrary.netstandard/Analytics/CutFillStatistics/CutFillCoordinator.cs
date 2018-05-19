@@ -1,4 +1,4 @@
-﻿using log4net;
+﻿using Microsoft.Extensions.Logging;
 using System.Reflection;
 using VSS.TRex.Analytics.Aggregators;
 using VSS.TRex.Analytics.GridFabric.Arguments;
@@ -13,7 +13,7 @@ namespace VSS.TRex.Analytics.Coordinators
     /// </summary>
     public class CutFillCoordinator : BaseAnalyticsCoordinator<CutFillStatisticsArgument, CutFillStatisticsResponse>
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// Constructs the aggregator from the supplied argument to be used for the cut/fill statistics analytics request

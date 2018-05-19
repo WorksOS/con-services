@@ -1,5 +1,5 @@
 ﻿using Apache.Ignite.Core.Compute;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Drawing;
 using System.Reflection;
@@ -23,7 +23,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
     public class TileRenderRequestComputeFunc : BaseComputeFunc, IComputeFunc<TileRenderRequestArgument, TileRenderResponse>
     {
         [NonSerialized]
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// Default no-arg constructor that orients the request to the available ASNODE servers on the immutable grid projection
@@ -34,7 +34,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
 
         public TileRenderResponse Invoke(TileRenderRequestArgument arg)
         {
-            Log.Info("In TileRenderRequestComputeFunc.Invoke()");
+            Log.LogInformation("In TileRenderRequestComputeFunc.Invoke()");
 
             try
             {
@@ -42,7 +42,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
                 // subgrid results to it.
                 arg.TRexNodeID = TRexNodeID.ThisNodeID(Storage.StorageMutability.Immutable);
 
-                Log.InfoFormat("Assigned TRexNodeId from local node is {0}", arg.TRexNodeID);
+                Log.LogInformation($"Assigned TRexNodeId from local node is {arg.TRexNodeID}");
 
                 RenderOverlayTile render = new RenderOverlayTile
                     (arg.SiteModelID,
@@ -56,21 +56,21 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
                      Color.Black,
                      arg.TRexNodeID);
 
-                Log.Info("Executing render.Execute()");
+                Log.LogInformation("Executing render.Execute()");
 
                 IBitmap bmp = render.Execute();
-                Log.Info($"Render status = {render.ResultStatus}");
+                Log.LogInformation($"Render status = {render.ResultStatus}");
 
                 if (bmp == null)
                 {
-                    Log.Info("Null bitmap returned by executor");
+                    Log.LogInformation("Null bitmap returned by executor");
                 }
 
                 return DIContext.RenderingFactory.CreateTileRenderResponse(bmp?.GetBitmap()) as TileRenderResponse;
             }
             finally
             {
-                Log.Info("Exiting TileRenderRequestComputeFunc.Invoke()");
+                Log.LogInformation("Exiting TileRenderRequestComputeFunc.Invoke()");
             }
         }
     }

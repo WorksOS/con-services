@@ -1,5 +1,5 @@
 ﻿using Apache.Ignite.Core.Compute;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
 using VSS.TRex.SubGridTrees.Client;
@@ -13,7 +13,7 @@ namespace VSS.TRex.Surfaces.GridFabric.ComputeFuncs
     public class SurfaceElevationPatchComputeFunc : /*BaseComputeFunc,*/ IComputeFunc<SurfaceElevationPatchArgument, byte[] /*ClientHeightAndTimeLeafSubGrid*/>
     {
         [NonSerialized]
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// Local reference to the client subgrid factory
@@ -30,7 +30,7 @@ namespace VSS.TRex.Surfaces.GridFabric.ComputeFuncs
         {
             try
             {
-                Log.Debug($"CalculateDesignElevationPatchComputeFunc: Arg = {arg}");
+                Log.LogDebug($"CalculateDesignElevationPatchComputeFunc: Arg = {arg}");
 
                 CalculateSurfaceElevationPatch Executor = new CalculateSurfaceElevationPatch(arg);
 
@@ -54,7 +54,7 @@ namespace VSS.TRex.Surfaces.GridFabric.ComputeFuncs
             }
             catch (Exception E)
             {
-                Log.Info($"Exception: {E}");
+                Log.LogInformation($"Exception: {E}");
                 return null; 
             }
         }

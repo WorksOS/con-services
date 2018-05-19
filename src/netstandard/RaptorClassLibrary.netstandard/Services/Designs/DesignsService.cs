@@ -1,5 +1,5 @@
 ﻿using Apache.Ignite.Core.Cache;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -20,7 +20,7 @@ namespace VSS.TRex.Services.Designs
     public class DesignsService : BaseService, IDesignsService // , IService, 
     {
         [NonSerialized]
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
 
         [NonSerialized]
@@ -121,7 +121,7 @@ namespace VSS.TRex.Services.Designs
 
         public TRex.Designs.Storage.Designs List(Guid SiteModelID)
         {
-            Log.InfoFormat($"Listing designs from {TRex.Designs.Storage.Designs.CacheKey(SiteModelID)}");
+            Log.LogInformation($"Listing designs from {TRex.Designs.Storage.Designs.CacheKey(SiteModelID)}");
 
             try
             {
@@ -154,7 +154,7 @@ namespace VSS.TRex.Services.Designs
             /// <param name="context"></param>
             public void Execute(IServiceContext context)
             {
-                Log.Info($"Executing TRex Service 'Designs'");
+                Log.LogInformation($"Executing TRex Service 'Designs'");
             }
 
             /// <summary>

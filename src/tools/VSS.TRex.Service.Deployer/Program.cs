@@ -1,8 +1,7 @@
 ﻿using System;
-using System.IO;
-using System.Reflection;
-using log4net;
-using log4net.Config;
+using Microsoft.Extensions.Logging;
+using VSS.TRex.DI;
+using VSS.TRex.Logging;
 using VSS.TRex.TAGFiles.GridFabric.Services;
 using VSS.TRex.Servers.Client;
 
@@ -14,35 +13,36 @@ namespace TRex.Service.Deployer
     /// </summary>
     class Program
     {
-        private static ILog Log;
+        private static ILogger Log;
 
-        static void Main(string[] args)
+      private static void DependencyInjection()
+      {
+        DIContext.Inject(DIImplementation.New().ConfigureLogging().Build());
+      }
+
+      static void Main(string[] args)
         {
-            // Initialise the Log4Net logging system
-
-            var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
-            string s = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "log4net.xml");
-            XmlConfigurator.Configure(logRepository, new FileInfo(s));
-            Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+          DependencyInjection();
+          Log = Logger.CreateLogger<Program>();
 
             // Active local client Ignite node
             MutableClientServer deployServer = new MutableClientServer("ServiceDeployer");
 
-            Log.Info($"Obtaining proxy for TAG file buffer queue service");
+            Log.LogInformation($"Obtaining proxy for TAG file buffer queue service");
 
             // Ensure the continuous query service is installed that supports TAG file processing
             TAGFileBufferQueueServiceProxy proxy = new TAGFileBufferQueueServiceProxy();
             try
             {
-                Log.Info($"Deploying TAG file buffer queue service");
+                Log.LogInformation($"Deploying TAG file buffer queue service");
                 proxy.Deploy();
             }
             catch (Exception e)
             {
-                Log.Error($"Exception occurred deploying service: {e}");
+                Log.LogError($"Exception occurred deploying service: {e}");
             }
 
-            Log.Info($"Complected service deployment for TAG file buffer queue service");
+            Log.LogInformation($"Complected service deployment for TAG file buffer queue service");
         }
     }
 }

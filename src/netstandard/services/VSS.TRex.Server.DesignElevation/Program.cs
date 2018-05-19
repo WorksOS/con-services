@@ -1,22 +1,19 @@
 ﻿using System;
-using System.IO;
-using System.Reflection;
-using log4net;
-using log4net.Config;
 using VSS.TRex.DesignProfiling.Servers.Client;
+using VSS.TRex.DI;
 
 namespace VSS.TRex.Server.DesignElevation
 {
   class Program
   {
-    private static ILog Log;
+    private static void DependencyInjection()
+    {
+        DIContext.Inject(DIImplementation.New().ConfigureLogging().Build());
+    }
+
     static void Main(string[] args)
     {
-      // Initialise the Log4Net logging system
-      var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
-      string s = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "log4net.xml");
-      XmlConfigurator.Configure(logRepository, new FileInfo(s));
-      Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+      DependencyInjection();
 
       var server = new CalculateDesignElevationsServer();
       Console.WriteLine("Press anykey to exit");

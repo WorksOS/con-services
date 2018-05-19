@@ -1,5 +1,5 @@
 ﻿using Apache.Ignite.Core;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System.Reflection;
 
 namespace VSS.TRex.Servers.Compute
@@ -12,7 +12,7 @@ namespace VSS.TRex.Servers.Compute
     /// </summary>
     public class SubGridProcessingServer : ImmutableCacheComputeServer
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         public override void ConfigureTRexGrid(IgniteConfiguration cfg)
         {

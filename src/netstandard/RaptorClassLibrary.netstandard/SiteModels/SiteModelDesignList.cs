@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using log4net;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Geometry;
 
 namespace VSS.TRex.SiteModels
@@ -10,7 +10,7 @@ namespace VSS.TRex.SiteModels
     public class SiteModelDesignList : List<SiteModelDesign>
     {
         [NonSerialized]
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// Indexer supporting locating designs by the design name
@@ -34,7 +34,7 @@ namespace VSS.TRex.SiteModels
 
             if (index != -1)
             {
-                Log.Error($"An identical design ({name}) already exists in the designs for this site.");
+                Log.LogError($"An identical design ({name}) already exists in the designs for this site.");
                 return this[index];
             }
 

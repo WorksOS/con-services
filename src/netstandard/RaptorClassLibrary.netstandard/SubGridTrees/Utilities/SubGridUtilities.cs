@@ -1,4 +1,4 @@
-﻿using log4net;
+﻿using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Reflection;
 using VSS.TRex.Interfaces;
@@ -9,7 +9,7 @@ namespace VSS.TRex.SubGridTrees.Utilities
 {
     public static partial class SubGridUtilities
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// GetOTGLeafSubGridCellIndex determines the local in-subgrid X/Y location of a
@@ -85,7 +85,7 @@ namespace VSS.TRex.SubGridTrees.Utilities
 
                         if (SubGrid == null) // Something bad happened
                         {
-                            Log.Warn($"Failed to locate subgrid at {CellX}:{CellY}, level {Level}, data model ID:{ForSubGridTree.ID}");
+                            Log.LogWarning($"Failed to locate subgrid at {CellX}:{CellY}, level {Level}, data model ID:{ForSubGridTree.ID}");
                             return null;
                         }
 
@@ -112,7 +112,7 @@ namespace VSS.TRex.SubGridTrees.Utilities
                             else
                             {
                                 //SIGLogMessage.PublishNoODS(Nil, 'Failed to create leaf subgrid in LocateSubGridContaining (Moniker: %2)', [SubGrid.Moniker], slmcError);
-                                Log.Error($"Failed to create leaf subgrid in LocateSubGridContaining (Moniker: {SubGrid.Moniker()})");
+                                Log.LogError($"Failed to create leaf subgrid in LocateSubGridContaining (Moniker: {SubGrid.Moniker()})");
 
                                 return null;
                             }
@@ -136,7 +136,7 @@ namespace VSS.TRex.SubGridTrees.Utilities
 
                 if (SubGrid == null)  // Something bad happened
                 {
-                    Log.Error($"Subgrid request result for {CellX}:{CellY} is null for undetermined reason.");
+                    Log.LogError($"Subgrid request result for {CellX}:{CellY} is null for undetermined reason.");
                     return null;
                 }
 
@@ -147,7 +147,7 @@ namespace VSS.TRex.SubGridTrees.Utilities
 
                 if (LeafSubGrid == null)  // Something bad happened
                 {
-                    Log.Error($"Subgrid request result for {CellX}:{CellY} is not a leaf subgrid, it is a {SubGrid.GetType().Name}.");
+                    Log.LogError($"Subgrid request result for {CellX}:{CellY} is not a leaf subgrid, it is a {SubGrid.GetType().Name}.");
                     return null;
                 }
 
@@ -309,7 +309,7 @@ namespace VSS.TRex.SubGridTrees.Utilities
                         }
                         else
                         {
-                            Log.Warn($"Failed to read leaf subgrid {LeafSubGrid.Moniker()} in model {ForSubGridTree.ID}. Failed subgrid is NOT removed from the tree");
+                            Log.LogWarning($"Failed to read leaf subgrid {LeafSubGrid.Moniker()} in model {ForSubGridTree.ID}. Failed subgrid is NOT removed from the tree");
 
                             // Empty the subgrid leaf based data to encourage it to be read on a secondary attempt
                             LeafSubGrid.DeAllocateLeafFullPassStacks();

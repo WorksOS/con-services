@@ -1,6 +1,6 @@
 ﻿using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Compute;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
 using VSS.TRex.SubGridTrees.Client;
@@ -13,7 +13,7 @@ namespace VSS.TRex.Surfaces.GridFabric.Requests
 {
     public class SurfaceElevationPatchRequest : DesignProfilerRequest<SurfaceElevationPatchArgument, ClientHeightAndTimeLeafSubGrid>
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// Shared static cache of surface elevation subgrids
@@ -59,7 +59,7 @@ namespace VSS.TRex.Surfaces.GridFabric.Requests
             }
             catch (ClusterGroupEmptyException e)
             {
-                Log.Warn($"Grid error, retrying: {typeof(SurfaceElevationPatchRequest)} threw {typeof(ClusterGroupEmptyException)}\n:{e}");
+                Log.LogWarning($"Grid error, retrying: {typeof(SurfaceElevationPatchRequest)} threw {typeof(ClusterGroupEmptyException)}\n:{e}");
                 AcquireIgniteTopologyProjections();
 
                 try
@@ -68,7 +68,7 @@ namespace VSS.TRex.Surfaces.GridFabric.Requests
                 }
                 catch (ClusterGroupEmptyException e2)
                 {
-                    Log.Error($"Grid error, failing: {typeof(SurfaceElevationPatchRequest)} threw {typeof(ClusterGroupEmptyException)}\n:{e2}");
+                    Log.LogError($"Grid error, failing: {typeof(SurfaceElevationPatchRequest)} threw {typeof(ClusterGroupEmptyException)}\n:{e2}");
                 }
             }
 

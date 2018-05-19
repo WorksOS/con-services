@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.TAGFiles.Classes.Queues;
 
 namespace VSS.TRex.GridFabric.Affinity
@@ -31,7 +32,7 @@ namespace VSS.TRex.GridFabric.Affinity
                 return Math.Abs(bufferQueueyKey.ProjectID.GetHashCode()) % Partitions;
             }
 
-            Log.Info($"Unknown key type to compute non spatial affinity partition key for: {key}");
+            Log.LogInformation($"Unknown key type to compute non spatial affinity partition key for: {key}");
             throw new ArgumentException($"Unknown key type to compute non spatial affinity partition key for: {key}");
         }
     }

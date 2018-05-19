@@ -1,26 +1,34 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using VSS.Log4Net.Extensions;
 using VSS.TRex.Rendering.Abstractions;
 
 namespace VSS.TRex.DI
 {
-    public static class DIContext
+  public static class DIContext
+  {
+    private static IServiceProvider ServiceProvider { get; set; }
+
+    public static IRenderingFactory RenderingFactory { get; internal set; }
+
+    public static ILoggerFactory LoggerFactory { get; internal set; }
+
+    public static void Inject(IServiceProvider serviceProvider)
     {
-        private static IServiceProvider ServiceProvider { get; set; }
+      ServiceProvider = serviceProvider;
 
-        public static IRenderingFactory RenderingFactory { get; internal set; }
-//        public static ILoggerFactory LoggerFactory { get; internal set; }
-//        public static ILogger DefaultLogger { get; internal set; }
+      RenderingFactory = serviceProvider.GetService<IRenderingFactory>();
 
-        public static void Inject(IServiceProvider serviceProvider)
-        {
-            ServiceProvider = serviceProvider;
+      LoggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-            RenderingFactory = serviceProvider.GetService<IRenderingFactory>();
-//            LoggerFactory = serviceProvider.GetService<ILoggerFactory>();
-//            DefaultLogger = serviceProvider.GetService<ILogger>();
-        }
+      // Complete configuration of the logger factory
+//      LoggerFactory.AddConsole();
+//      LoggerFactory.AddDebug();
+      LoggerFactory.AddProvider(new Log4NetProvider(null));
+
+      // Inject the logger factory into the logging namespace for use
+      Logging.Logger.Inject(LoggerFactory);
     }
+  }
 }

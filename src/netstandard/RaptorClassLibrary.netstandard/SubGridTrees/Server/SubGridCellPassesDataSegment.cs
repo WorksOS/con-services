@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using log4net;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -14,7 +14,7 @@ namespace VSS.TRex.SubGridTrees.Server
 {
     public class SubGridCellPassesDataSegment
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// Tracks whether there are unsaved changes in this segment
@@ -134,7 +134,7 @@ namespace VSS.TRex.SubGridTrees.Server
             {
                 if (LatestPasses == null)
                 {
-                    Log.Error("Cell latest pass store not instantiated in LoadPayloadFromStream_v2p0");
+                    Log.LogError("Cell latest pass store not instantiated in LoadPayloadFromStream_v2p0");
                     return false;
                 }
 
@@ -162,7 +162,7 @@ namespace VSS.TRex.SubGridTrees.Server
             // Read the version etc from the stream
             if (!Header.IdentifierMatches(SubGridStreamHeader.kICServerSubgridLeafFileMoniker))
             {
-                Log.Error($"Subgrid segment file moniker (expected {SubGridStreamHeader.kICServerSubgridLeafFileMoniker}, found {Header.Identifier}). Stream size/position = {reader.BaseStream.Length}{reader.BaseStream.Position}");
+                Log.LogError($"Subgrid segment file moniker (expected {SubGridStreamHeader.kICServerSubgridLeafFileMoniker}, found {Header.Identifier}). Stream size/position = {reader.BaseStream.Length}{reader.BaseStream.Position}");
                 return false;
             }
 
@@ -184,13 +184,13 @@ namespace VSS.TRex.SubGridTrees.Server
                         break;
 
                     default:
-                        Log.Error($"Subgrid segment file version mismatch (expected {SubGridStreamHeader.kSubGridMajorVersion}.{SubGridStreamHeader.kSubGridMinorVersion_Latest}, found {Header.MajorVersion}.{Header.MinorVersion}). Stream size/position = {reader.BaseStream.Length}{reader.BaseStream.Position}");
+                        Log.LogError($"Subgrid segment file version mismatch (expected {SubGridStreamHeader.kSubGridMajorVersion}.{SubGridStreamHeader.kSubGridMinorVersion_Latest}, found {Header.MajorVersion}.{Header.MinorVersion}). Stream size/position = {reader.BaseStream.Length}{reader.BaseStream.Position}");
                         break;
                 }
             }
             else
             {
-                Log.Error($"Subgrid segment file version mismatch (expected {SubGridStreamHeader.kSubGridMajorVersion}.{SubGridStreamHeader.kSubGridMinorVersion_Latest}, found {Header.MajorVersion}.{Header.MinorVersion}). Stream size/position = {reader.BaseStream.Length}{reader.BaseStream.Position}");
+                Log.LogError($"Subgrid segment file version mismatch (expected {SubGridStreamHeader.kSubGridMajorVersion}.{SubGridStreamHeader.kSubGridMinorVersion_Latest}, found {Header.MajorVersion}.{Header.MinorVersion}). Stream size/position = {reader.BaseStream.Length}{reader.BaseStream.Position}");
             }
 
             return Result;
