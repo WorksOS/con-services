@@ -44,7 +44,7 @@ namespace VSS.TRex.Logging
       object obj = args == null ? message : null;
 
       _logger.Log<object>(ConvertLogLevel2(level), new EventId(0, ""), obj, ex,
-        (_state, _ex) => $"{_state}, Exception {_ex}");
+        (_state, _ex) => ex != null ? $"{_state}, Exception {_ex}" : $"{_state}");
 
       /*
           /// <summary>Writes a log entry.</summary>

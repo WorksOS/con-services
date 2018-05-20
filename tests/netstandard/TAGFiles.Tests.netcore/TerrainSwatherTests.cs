@@ -78,7 +78,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather.Tests
             // Computation of the latest pass information which aids locating cells with non-null values
             try
             {
-                IStorageProxy storageProxy = StorageProxyFactory.Storage(StorageMutability.Mutable);
+                IStorageProxy storageProxy = StorageProxy.Instance(StorageMutability.Mutable);
                 grid.Root.ScanSubGrids(grid.FullCellExtent(), x =>
                 {
                     ((IServerLeafSubGrid)x).ComputeLatestPassInformation(true, storageProxy);

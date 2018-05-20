@@ -1,6 +1,9 @@
 ﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.DI;
 using VSS.TRex.Servers.Compute;
+using VSS.TRex.Storage;
+using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.Server.MutableData
 {
@@ -8,7 +11,7 @@ namespace VSS.TRex.Server.MutableData
   {
   private static void DependencyInjection()
     {
-      DIImplementation.New().AddLogging().Complete();
+      DIImplementation.New().AddLogging().Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory())).Complete();
     }
 
     static void Main(string[] args)

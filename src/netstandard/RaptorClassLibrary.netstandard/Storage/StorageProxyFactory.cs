@@ -1,13 +1,13 @@
 ﻿using System;
-using VSS.TRex.DI;
 using VSS.TRex.Interfaces;
+using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.Storage
 {
     /// <summary>
     ///  StorageProxyFactory is a factory for the storage proxy used in TRex
     /// </summary>
-    public static class StorageProxyFactory
+    public class StorageProxyFactory : IStorageProxyFactory
     {
         /// <summary>
         /// Creates the storage proxy to be used. Currently hard wired to the Ignite storage proxy,
@@ -15,11 +15,9 @@ namespace VSS.TRex.Storage
         /// This factory method provides access to the mutable grid storage
         /// </summary>
         /// <returns></returns>
-        public static IStorageProxy MutableGridStorage()
+        public IStorageProxy MutableGridStorage()
         {
-            IStorageProxy proxy = 
-                StorageProxyDIContext.storageProxyFactory?.MutableGridStorage() ??
-                new StorageProxy_Ignite_Transactional(StorageMutability.Mutable);
+            IStorageProxy proxy = new StorageProxy_Ignite_Transactional(StorageMutability.Mutable);
 
             // Establish any available immutable storage proxy into the mutable storage proxy to allow transparnet
             // promotion of data changes in the mutable data store to the immutabvle data store.
@@ -34,10 +32,9 @@ namespace VSS.TRex.Storage
         /// This factory method provides access to the immutable grid storage
         /// </summary>
         /// <returns></returns>
-        public static IStorageProxy ImmutableGridStorage()
+        public IStorageProxy ImmutableGridStorage()
         {
-            return StorageProxyDIContext.storageProxyFactory?.ImmutableGridStorage() ??
-                   new StorageProxy_Ignite_Transactional(StorageMutability.Immutable);
+            return new StorageProxy_Ignite_Transactional(StorageMutability.Immutable);
         }
 
         /// <summary>
@@ -46,7 +43,7 @@ namespace VSS.TRex.Storage
         /// This factory method provides access to the immutable grid storage
         /// </summary>
         /// <returns></returns>
-        public static IStorageProxy Storage(StorageMutability mutability)
+        public IStorageProxy Storage(StorageMutability mutability)
         {
             switch (mutability)
             {

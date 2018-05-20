@@ -83,7 +83,14 @@ namespace VSS.TRex.DI
         ServiceCollection.AddSingleton<ILoggerProvider, Log4NetProvider>();
 
         // Make a logger factory for when a new logger is required                           
-        ServiceCollection.AddSingleton<ILoggerFactory>(new LoggerFactory());
+        ILoggerFactory loggerFactory = new LoggerFactory();
+
+        // Complete configuration of the logger factory
+        // LoggerFactory.AddConsole();
+        // LoggerFactory.AddDebug();
+        loggerFactory.AddProvider(new Log4NetProvider(null));
+
+        ServiceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
       });
     }
 

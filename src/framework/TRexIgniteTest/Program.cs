@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Windows.Forms;
+using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.DI;
+using VSS.TRex.Storage;
+using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.IgnitePOC.TestApp
 {
@@ -8,7 +11,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
   {
     private static void DependencyInjection()
     {
-      DIImplementation.New().AddLogging().Complete();
+      DIImplementation.New().AddLogging().Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory())).Complete();
     }
 
     /// <summary>

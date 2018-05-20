@@ -5,6 +5,8 @@ using VSS.TRex.DI;
 using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Implementations.Core2;
 using VSS.TRex.Servers.Client;
+using VSS.TRex.Storage;
+using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.Server.Application
 {
@@ -12,14 +14,14 @@ namespace VSS.TRex.Server.Application
   {
     private static void DependencyInjection()
     {
-      DIContext.Inject(
         DIImplementation.New()
         .AddLogging()
+        .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Add(collection =>
         {
           // The renderer factory that allows tile rendering services access Bitmap etc platform dependent constructs
           collection.AddSingleton<IRenderingFactory>(new RenderingFactory());
-        }).Build());
+        }).Complete();
     }
 
     static void Main(string[] args)
