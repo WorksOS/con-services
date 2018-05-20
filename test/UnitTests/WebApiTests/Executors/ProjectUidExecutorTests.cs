@@ -129,6 +129,7 @@ namespace WebApiTests.Executors
       Assert.AreEqual(0, result.Code, "executor returned incorrect result code");
     }
 
+
     [TestMethod]
     public async Task ProjectUidExecutor_StandardProjectAndNo3dPmSubscription()
     {
@@ -153,10 +154,6 @@ namespace WebApiTests.Executors
     public async Task ProjectUidExecutor_PMProjectAndPMSubscription()
     {
       deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(assetDeviceIds);
-
-      subscriptions[0].ServiceTypeID = (int) ServiceTypeEnum.ProjectMonitoring;
-      IEnumerable<Subscription> eSubs = (new List<Subscription>()).ToList();
-      subscriptionRepo.Setup(d => d.GetSubscriptionsByAsset(assetUid, It.IsAny<DateTime>())).ReturnsAsync(eSubs);
       
       projects[0].ProjectType = ProjectType.ProjectMonitoring;
       projectRepo.Setup(d => d.GetProjectMonitoringProject(assetOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), timeOfLocation, (int)ProjectType.ProjectMonitoring, (int)ServiceTypeEnum.ProjectMonitoring)).ReturnsAsync(projects);
@@ -173,13 +170,10 @@ namespace WebApiTests.Executors
     [TestMethod]
     public async Task ProjectUidExecutor_PMProjectAndNoPMSubscription()
     {
-     deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(assetDeviceIds);
-
-      IEnumerable<Subscription> eSubs = (new List<Subscription>()).ToList();
-      subscriptionRepo.Setup(d => d.GetSubscriptionsByAsset(assetUid, It.IsAny<DateTime>())).ReturnsAsync(eSubs);
+      deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(assetDeviceIds);
 
       projects[0].ProjectType = ProjectType.ProjectMonitoring;
-      projectRepo.Setup(d => d.GetProjectMonitoringProject(assetOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), timeOfLocation, (int)ProjectType.ProjectMonitoring, (int)ServiceTypeEnum.ProjectMonitoring)).ReturnsAsync(projects);
+      projectRepo.Setup(d => d.GetProjectMonitoringProject(assetOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), timeOfLocation, (int)ProjectType.ProjectMonitoring, (int)ServiceTypeEnum.ProjectMonitoring)).ReturnsAsync(new List<Project>());
 
       var executor = RequestExecutorContainer.Build<ProjectUidExecutor>(loggerFactory.CreateLogger<ProjectUidExecutorTests>(), configStore,
         assetRepository, deviceRepo.Object, customerRepository, projectRepo.Object, subscriptionRepo.Object);
@@ -188,6 +182,69 @@ namespace WebApiTests.Executors
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(string.Empty, result.ProjectUid, "executor returned incorrect ProjectUid");
       Assert.AreEqual(3029, result.Code, "executor returned incorrect result code");
+    }
+
+    [TestMethod]
+    public async Task ProjectUidExecutor_LandfillProjectAndSubscription()
+    {
+      deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(assetDeviceIds);
+
+      projects[0].ProjectType = ProjectType.LandFill;
+      projectRepo.Setup(d => d.GetProjectMonitoringProject(assetOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), timeOfLocation, (int)ProjectType.LandFill, (int)ServiceTypeEnum.Landfill)).ReturnsAsync(projects);
+
+      var executor = RequestExecutorContainer.Build<ProjectUidExecutor>(loggerFactory.CreateLogger<ProjectUidExecutorTests>(), configStore,
+        assetRepository, deviceRepo.Object, customerRepository, projectRepo.Object, subscriptionRepo.Object);
+      var result = await executor.ProcessAsync(projectUidRequest) as GetProjectUidResult;
+
+      Assert.IsNotNull(result, "executor returned nothing");
+      Assert.AreEqual(projectUidToBeDiscovered, result.ProjectUid, "executor returned incorrect ProjectUid");
+      Assert.AreEqual(0, result.Code, "executor returned incorrect result code");
+    }
+
+    [TestMethod]
+    public async Task ProjectUidExecutor_LandfillProjectAndNoSubscription()
+    {
+      deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(assetDeviceIds);
+
+      projects[0].ProjectType = ProjectType.LandFill;
+      projectRepo.Setup(d => d.GetProjectMonitoringProject(assetOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), timeOfLocation, (int)ProjectType.LandFill, (int)ServiceTypeEnum.Landfill)).ReturnsAsync(new List<Project>());
+
+      var executor = RequestExecutorContainer.Build<ProjectUidExecutor>(loggerFactory.CreateLogger<ProjectUidExecutorTests>(), configStore,
+        assetRepository, deviceRepo.Object, customerRepository, projectRepo.Object, subscriptionRepo.Object);
+      var result = await executor.ProcessAsync(projectUidRequest) as GetProjectUidResult;
+
+      Assert.IsNotNull(result, "executor returned nothing");
+      Assert.AreEqual(string.Empty, result.ProjectUid, "executor returned incorrect ProjectUid");
+      Assert.AreEqual(3029, result.Code, "executor returned incorrect result code");
+    }
+
+
+    [TestMethod]
+    public async Task ProjectUidExecutor_MultiProjectAndSubscription()
+    {
+      deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(assetDeviceIds);
+
+      subscriptions[0].ServiceTypeID = (int)ServiceTypeEnum.ThreeDProjectMonitoring;
+      IEnumerable<Subscription> eSubs = subscriptions.ToList();
+      subscriptionRepo.Setup(d => d.GetSubscriptionsByAsset(assetUid, It.IsAny<DateTime>())).ReturnsAsync(eSubs);
+
+      projects[0].ProjectType = ProjectType.Standard;
+      projectRepo.Setup(d => d.GetStandardProject(assetOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), timeOfLocation)).ReturnsAsync(projects);
+
+      projects[0].ProjectType = ProjectType.ProjectMonitoring;
+      projects[0].ProjectUID = Guid.NewGuid().ToString();
+      projectRepo.Setup(d => d.GetProjectMonitoringProject(assetOwningCustomerUid, It.IsAny<double>(),
+        It.IsAny<double>(), timeOfLocation, (int) ProjectType.ProjectMonitoring,
+        (int) ServiceTypeEnum.ProjectMonitoring)).ReturnsAsync(projects);
+
+      var executor = RequestExecutorContainer.Build<ProjectUidExecutor>(
+        loggerFactory.CreateLogger<ProjectUidExecutorTests>(), configStore,
+        assetRepository, deviceRepo.Object, customerRepository, projectRepo.Object, subscriptionRepo.Object);
+      var result = await executor.ProcessAsync(projectUidRequest) as GetProjectUidResult;
+
+      Assert.IsNotNull(result, "executor returned nothing");
+      Assert.AreEqual(string.Empty, result.ProjectUid, "executor returned incorrect ProjectUid");
+      Assert.AreEqual(3032, result.Code, "executor returned incorrect result code");
     }
 
   }
