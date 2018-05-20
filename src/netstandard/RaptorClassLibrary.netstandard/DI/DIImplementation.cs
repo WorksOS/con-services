@@ -48,6 +48,7 @@ namespace VSS.TRex.DI
     /// <returns></returns>
     public DIImplementation AddLogging()
     {
+      // ### Set up log 4 net related configuration prior to instantiating the logging service
       string loggerRepoName = "VSS";
 
       //Now set actual logging name
@@ -76,12 +77,14 @@ namespace VSS.TRex.DI
       
       Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4net.xml", loggerRepoName);
 
-      ServiceCollection.AddSingleton<ILoggerProvider, Log4NetProvider>();
+      // ### Add the logging related services to the collection
+      return Add(collection =>
+      {
+        ServiceCollection.AddSingleton<ILoggerProvider, Log4NetProvider>();
 
-      // Make a logger factory for when a new logger is required                           
-      ServiceCollection.AddSingleton<ILoggerFactory>(new LoggerFactory());
-
-      return this;
+        // Make a logger factory for when a new logger is required                           
+        ServiceCollection.AddSingleton<ILoggerFactory>(new LoggerFactory());
+      });
     }
 
     /// <summary>
