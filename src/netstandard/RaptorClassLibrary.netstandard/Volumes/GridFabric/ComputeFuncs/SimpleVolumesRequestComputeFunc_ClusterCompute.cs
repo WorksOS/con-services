@@ -1,5 +1,5 @@
 ﻿using Apache.Ignite.Core.Compute;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
 using VSS.TRex.GridFabric.ComputeFuncs;
@@ -18,7 +18,7 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
     public class SimpleVolumesRequestComputeFunc_ClusterCompute : BaseComputeFunc, IComputeFunc<SimpleVolumesRequestArgument, SimpleVolumesResponse>
     {
         [NonSerialized]
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// Default no-arg constructor that orients the request to the available PSNODE servers on the immutable grid projection
@@ -34,7 +34,7 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
         /// <returns></returns>
         public SimpleVolumesResponse Invoke(SimpleVolumesRequestArgument arg)
         {
-            Log.Info("In SimpleVolumesRequestComputeFunc_ClusterCompute.Invoke()");
+            Log.LogInformation("In SimpleVolumesRequestComputeFunc_ClusterCompute.Invoke()");
 
             try
             {
@@ -49,13 +49,13 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
                      arg.CutTolerance, 
                      arg.FillTolerance);
 
-                Log.Info("Executing simpleVolumes.Execute()");
+                Log.LogInformation("Executing simpleVolumes.Execute()");
 
                 return simpleVolumes.Execute();
             }
             finally
             {
-                Log.Info("Exiting SimpleVolumesRequestComputeFunc_ClusterCompute.Invoke()");
+                Log.LogInformation("Exiting SimpleVolumesRequestComputeFunc_ClusterCompute.Invoke()");
             }
         }
     }

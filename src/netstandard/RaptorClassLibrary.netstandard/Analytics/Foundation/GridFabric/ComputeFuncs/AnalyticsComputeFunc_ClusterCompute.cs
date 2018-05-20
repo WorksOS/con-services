@@ -1,5 +1,5 @@
 ﻿using Apache.Ignite.Core.Compute;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
 using VSS.TRex.Analytics.Coordinators;
@@ -19,7 +19,7 @@ namespace VSS.TRex.Analytics.GridFabric.ComputeFuncs
     {
         [NonSerialized]
         // ReSharper disable once StaticMemberInGenericType
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         public AnalyticsComputeFunc_ClusterCompute(string gridName, string role) : base(gridName, role)
         {
@@ -36,18 +36,18 @@ namespace VSS.TRex.Analytics.GridFabric.ComputeFuncs
         /// <returns></returns>
         public TResponse Invoke(TArgument arg)
         {
-            Log.Info("In AnalyticsComputeFunc_ClusterCompute.Invoke()");
+            Log.LogInformation("In AnalyticsComputeFunc_ClusterCompute.Invoke()");
 
             try
             {
-                Log.Info("Executing AnalyticsComputeFunc_ClusterCompute.Execute()");
+                Log.LogInformation("Executing AnalyticsComputeFunc_ClusterCompute.Execute()");
 
                 TCoordinator coordinator = new TCoordinator();
                 return coordinator.Execute(arg);
             }
             finally
             {
-                Log.Info("Exiting AnalyticsComputeFunc_ClusterCompute.Invoke()");
+                Log.LogInformation("Exiting AnalyticsComputeFunc_ClusterCompute.Invoke()");
             }
         }
     }

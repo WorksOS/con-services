@@ -1,4 +1,4 @@
-﻿using log4net;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,7 +6,6 @@ using System.Reflection;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Caches;
 using VSS.TRex.Interfaces;
-using VSS.TRex.Storage;
 using VSS.TRex.Storage.Utilities;
 using VSS.TRex.Types;
 
@@ -18,7 +17,7 @@ namespace VSS.TRex.Storage
     /// </summary>
     public class StorageProxy_Ignite : StorageProxy_IgniteBase, IStorageProxy
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// The reference to a storage proxy representing the immutable data store derived from a mutable data store
@@ -67,7 +66,7 @@ namespace VSS.TRex.Storage
             {
                 SubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(DataModelID, SubgridX, SubgridY, SegmentIdentifier);
 
-                // Log.Info(String.Format("Getting key:{0}", StreamName));
+                // Log.LogInformation(String.Format("Getting key:{0}", StreamName));
 
                 try
                 {
@@ -90,7 +89,7 @@ namespace VSS.TRex.Storage
             }
             catch (Exception e)
             {
-                Log.Info(string.Format("Exception occurred: {0}", e));
+                Log.LogInformation(string.Format("Exception occurred: {0}", e));
 
                 Stream = null;
                 return FileSystemErrorStatus.UnknownErrorReadingFromFS;
@@ -113,7 +112,7 @@ namespace VSS.TRex.Storage
             {
                 NonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
-                // Log.Info(String.Format("Getting key:{0}", cacheKey));
+                // Log.LogInformation(String.Format("Getting key:{0}", cacheKey));
 
                 try
                 {
@@ -132,7 +131,7 @@ namespace VSS.TRex.Storage
             }
             catch (Exception e)
             {
-                Log.Info(string.Format("Exception occurred: {0}", e));
+                Log.LogInformation(string.Format("Exception occurred: {0}", e));
 
                 Stream = null;
                 return FileSystemErrorStatus.UnknownErrorReadingFromFS;
@@ -164,7 +163,7 @@ namespace VSS.TRex.Storage
             {
                 NonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
-                Log.Info(string.Format("Removing key:{0}", cacheKey));
+                Log.LogInformation(string.Format("Removing key:{0}", cacheKey));
 
                 // Remove item from both immutable and mutable caches
                 try
@@ -209,7 +208,7 @@ namespace VSS.TRex.Storage
 
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
-                    // Log.Info($"Putting key:{cacheKey} in {spatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
+                    // Log.LogInformation($"Putting key:{cacheKey} in {spatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
 
                     spatialCache.Put(cacheKey, compressedStream.ToArray());
                 }
@@ -251,7 +250,7 @@ namespace VSS.TRex.Storage
 
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
-                    // Log.Info($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
+                    // Log.LogInformation($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
 
                     nonSpatialCache.Put(cacheKey, compressedStream.ToArray());
                 }
@@ -286,7 +285,7 @@ namespace VSS.TRex.Storage
 
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
-                    // Log.Info($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
+                    // Log.LogInformation($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
 
                     nonSpatialCache.Put(cacheKey, compressedStream.ToArray());
                 }

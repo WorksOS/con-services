@@ -1,5 +1,5 @@
 ﻿using Apache.Ignite.Core.Compute;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
 using VSS.TRex.GridFabric.ComputeFuncs;
@@ -19,23 +19,23 @@ namespace VSS.TRex.Analytics.GridFabric.ComputeFuncs
     {
         [NonSerialized]
         // ReSharper disable once StaticMemberInGenericType
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         public TResponse Invoke(TArgument arg)
         {
-            Log.Info("In AnalyticsComputeFunc_ApplicationService.Invoke()");
+            Log.LogInformation("In AnalyticsComputeFunc_ApplicationService.Invoke()");
 
             try
             {
                 TRequest request = new TRequest();
 
-                Log.Info("Executing AnalyticsComputeFunc_ApplicationService.Execute()");
+                Log.LogInformation("Executing AnalyticsComputeFunc_ApplicationService.Execute()");
 
                 return request.Execute(arg);
             }
             finally
             {
-                Log.Info("Exiting AnalyticsComputeFunc_ApplicationService.Invoke()");
+                Log.LogInformation("Exiting AnalyticsComputeFunc_ApplicationService.Invoke()");
             }
         }
     }

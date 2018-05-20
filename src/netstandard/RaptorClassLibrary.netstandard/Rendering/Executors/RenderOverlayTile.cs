@@ -1,4 +1,4 @@
-﻿using log4net;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Drawing;
 using System.Reflection;
@@ -21,7 +21,7 @@ namespace VSS.TRex.Rendering.Executors
     /// </summary>
     public class RenderOverlayTile
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// Details the error status of the bmp result returned by the renderer
@@ -338,7 +338,7 @@ namespace VSS.TRex.Rendering.Executors
                 end;
             */
 
-            Log.Info($"Performing Execute for DataModel:{DataModelID}, Mode={Mode}");
+            Log.LogInformation($"Performing Execute for DataModel:{DataModelID}, Mode={Mode}");
 
             ApplicationServiceRequestStatistics.Instance.NumMapTileRequests.Increment();
 
@@ -615,7 +615,7 @@ namespace VSS.TRex.Rendering.Executors
             {
                 /*if (CutFillDesign.IsNull)
                 {
-                    Log.Error($"No design provided to cut fill, summary volume or thickness overlay render request for datamodel {DataModelID}");
+                    Log.LogError($"No design provided to cut fill, summary volume or thickness overlay render request for datamodel {DataModelID}");
                     ResultStatus = RequestErrorStatus.NoDesignProvided;
                     return null;
                 }*/
@@ -714,7 +714,7 @@ namespace VSS.TRex.Rendering.Executors
             }
             catch (Exception e)
             {
-                Log.Error($"Exception {e} occurred");
+                Log.LogError($"Exception {e} occurred");
                 ResultStatus = RequestErrorStatus.Exception;
             }
 

@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 using System.Linq;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System.Reflection;
 using System.Diagnostics;
 using VSS.TRex.Designs.Storage;
@@ -34,7 +34,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         private const int addressBucketSize = 20;
 
         [NonSerialized]
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         [NonSerialized]
         private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
@@ -263,7 +263,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
 
                 if (result != ServerRequestResult.NoError)
                 {
-                    Log.Info(string.Format("Request for subgrid {0} request failed with code {1}", address, result));
+                    Log.LogInformation(string.Format("Request for subgrid {0} request failed with code {1}", address, result));
                 }
 
                 // Some request types require additional processing of the subgrid results prior to repatriating the answers back to the caller
@@ -306,7 +306,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
             }
             catch (Exception E)
             {
-                Log.Error("Exception in PerformSubgridRequest", E);
+                Log.LogError("Exception in PerformSubgridRequest", E);
                 throw;
             }
         }
@@ -394,7 +394,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
             // Scan through all the bitmap leaf subgrids, and for each, scan through all the subgrids as 
             // noted with the 'set' bits in the bitmask, processing only those that matter for this server
 
-            Log.Info("Scanning subgrids in request");
+            Log.LogInformation("Scanning subgrids in request");
 
             siteModel = SiteModels.SiteModels.Instance().GetSiteModel(localArg.SiteModelID);
 
@@ -457,7 +457,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         {
             TSubGridRequestsResponse result;
 
-            Log.Info("In SubGridsRequestComputeFunc.invoke()");
+            Log.LogInformation("In SubGridsRequestComputeFunc.invoke()");
 
             try
             {
@@ -467,7 +467,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
 
                     long NumSubgridsToBeExamined = ProdDataMask?.CountBits() ?? 0 + SurveyedSurfaceOnlyMask?.CountBits() ?? 0;
 
-                    Log.Info($"Num subgrids present in request = {NumSubgridsToBeExamined} [All divisions]");
+                    Log.LogInformation($"Num subgrids present in request = {NumSubgridsToBeExamined} [All divisions]");
 
                     if (!EstablishRequiredIgniteContext(out SubGridRequestsResponseResult contextEstablishmentResponse))
                     {
@@ -482,12 +482,12 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                 }
                 finally
                 {
-                    Log.Info("Out SubGridsRequestComputeFunc.invoke()");
+                    Log.LogInformation("Out SubGridsRequestComputeFunc.invoke()");
                 }
             }
             catch (Exception E)
             {
-                Log.Error($"Exception occurred:\n{E}");
+                Log.LogError($"Exception occurred:\n{E}");
 
                 return new TSubGridRequestsResponse { ResponseCode = SubGridRequestsResponseResult.Unknown };
             }

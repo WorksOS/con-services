@@ -1497,15 +1497,14 @@ FAvoidZoneUndergroundServiceZones = false;
                     {
                         EventMeetsMachineFilter = false;
 
-                        // TODO: Readd when machines are supported
-                        //for (int i = 0; i < Machines.Length; i++)
-                        //{
-                        //    if (EventList.MachineID = Machines[i].ID)
-                        //    {
-                        //        EventMeetsMachineFilter = true;
-                        //        break;
-                        //    }
-                        //}
+                        for (int i = 0; i < Machines.Length; i++)
+                        {
+                            if (EventList.MachineID = Machines[i].ID)
+                            {
+                                EventMeetsMachineFilter = true;
+                                break;
+                            }
+                        }
 
                         if (!EventMeetsMachineFilter)
                             return false;

@@ -1,4 +1,4 @@
-﻿using log4net;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
 using VSS.TRex.Designs;
@@ -25,7 +25,7 @@ namespace VSS.TRex.Volumes
     /// </summary>
     public abstract class VolumesCalculatorBase
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// The Aggregator to use for calculation volumes statistics
@@ -201,8 +201,7 @@ namespace VSS.TRex.Volumes
                     {
                         if (ActiveDesign == null || ActiveDesign.DesignDescriptor.IsNull)
                         {
-                            // TODO Readd when logging available
-                            //SIGLogMessage.PublishNoODS(Self, Format('No design provided to prod data/design volumes calc for datamodel %d', [FDataModelID]), slmcError);
+                            Log.LogError($"No design provided to prod data/design volumes calc for datamodel {SiteModel.ID}");
                             return RequestErrorStatus.NoDesignProvided;
                         }
 
@@ -340,7 +339,7 @@ namespace VSS.TRex.Volumes
                 }
                 catch (Exception E)
                 {
-                    Log.ErrorFormat("ExecutePipeline raised exception '{0}'", E);
+                    Log.LogError($"ExecutePipeline raised exception '{E}'");
                 }
 
                 return Result;

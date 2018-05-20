@@ -13,6 +13,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
 
         public byte[] TagFileContent { get; set; }
 
+        public bool IsJohnDoe { get; set; }
+
         /// <summary>
         /// Default no-arg constructor
         /// </summary>

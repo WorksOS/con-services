@@ -1,6 +1,6 @@
 ﻿using System;
 using Apache.Ignite.Core;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Reflection;
 using VSS.TRex.GridFabric.Affinity;
@@ -14,7 +14,7 @@ namespace VSS.TRex.Storage
 {
     public abstract class StorageProxy_IgniteBase
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         protected IIgnite ignite;
 
@@ -115,7 +115,7 @@ namespace VSS.TRex.Storage
             {
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(immutableStream))
                 {
-                    // Log.Info($"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}");
+                    // Log.LogInformation($"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}");
                     
                     // Place the converted immutable item into the immutable cache
                     immutableCache.Put(cacheKey, compressedStream.ToArray());
@@ -187,7 +187,7 @@ namespace VSS.TRex.Storage
             {
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(immutableStream))
                 {
-                    // Log.Info($"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}");
+                    // Log.LogInformation($"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}");
 
                     // Place the converted immutable item into the immutable cache
                     immutableCache.Put(cacheKey, compressedStream.ToArray());

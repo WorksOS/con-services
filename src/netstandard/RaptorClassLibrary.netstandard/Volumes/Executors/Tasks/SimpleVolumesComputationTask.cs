@@ -1,4 +1,4 @@
-﻿using log4net;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
 using VSS.TRex.Executors.Tasks;
@@ -14,7 +14,7 @@ namespace VSS.TRex.Volumes.Executors.Tasks
     /// </summary>
     public class SimpleVolumesComputationTask : PipelinedSubGridTask
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// The aggregator performing volumes computation operations
@@ -41,7 +41,7 @@ namespace VSS.TRex.Volumes.Executors.Tasks
 
             if (!base.TransferResponse(response))
             {
-                Log.Warn("Base TransferResponse returned false");
+                Log.LogWarning("Base TransferResponse returned false");
                 return false;
             }
 
@@ -52,7 +52,7 @@ namespace VSS.TRex.Volumes.Executors.Tasks
 
             if (!(response is IClientLeafSubGrid[][]))
             {
-                Log.Error($"response is not a IClientLeafSubGrid[][], --> {response}");
+                Log.LogError($"response is not a IClientLeafSubGrid[][], --> {response}");
                 return false;
             }
 

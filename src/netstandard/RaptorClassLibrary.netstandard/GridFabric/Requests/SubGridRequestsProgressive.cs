@@ -1,6 +1,6 @@
 ﻿using Apache.Ignite.Core.Compute;
 using Apache.Ignite.Core.Messaging;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,7 +22,7 @@ namespace VSS.TRex.GridFabric.Requests
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
         [NonSerialized]
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// The listener to which the processing mengine may send in-progress updates during processing of the overall subgrids request
@@ -84,9 +84,9 @@ namespace VSS.TRex.GridFabric.Requests
             // Construct the argument to be supplied to the compute cluster
             PrepareArgument();
 
-            Log.Info($"Prepared argument has TRexNodeId = {arg.TRexNodeID}");
-            Log.Info($"Production Data mask in argument to renderer contains {ProdDataMask.CountBits()} subgrids");
-            Log.Info($"Surveyed Surface mask in argument to renderer contains {SurveyedSurfaceOnlyMask.CountBits()} subgrids");
+            Log.LogInformation($"Prepared argument has TRexNodeId = {arg.TRexNodeID}");
+            Log.LogInformation($"Production Data mask in argument to renderer contains {ProdDataMask.CountBits()} subgrids");
+            Log.LogInformation($"Surveyed Surface mask in argument to renderer contains {SurveyedSurfaceOnlyMask.CountBits()} subgrids");
 
             Task<ICollection<TSubGridRequestsResponse>> taskResult = null;
 
@@ -109,7 +109,7 @@ namespace VSS.TRex.GridFabric.Requests
             finally
             {
                 sw.Stop();
-                Log.Info($"TaskResult {taskResult?.Status}: SubgidRequests.Execute() for DM:{Task.PipeLine.DataModelID} from node {Task.TRexNodeID} for data type {Task.GridDataType} took {sw.ElapsedMilliseconds}ms");
+                Log.LogInformation($"TaskResult {taskResult?.Status}: SubgidRequests.Execute() for DM:{Task.PipeLine.DataModelID} from node {Task.TRexNodeID} for data type {Task.GridDataType} took {sw.ElapsedMilliseconds}ms");
             }
 
             // Notify the pipline that all processing has been completed for it

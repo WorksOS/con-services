@@ -1,7 +1,7 @@
 ﻿using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -18,7 +18,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
     /// </summary>
     public class ExistenceMapServer
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// Ignite instance to be used in the server
@@ -54,7 +54,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
             
             if (ignite == null)
             {
-                Log.InfoFormat($"Failed to get Ignite reference in {this}");
+                Log.LogInformation($"Failed to get Ignite reference in {this}");
                 throw new ArgumentException("No Ignite instance available");
             }
 
@@ -69,7 +69,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
 
             if (DesignTopologyExistanceMapsCache == null)
             {
-                Log.Info($"Failed to get or create Ignite cache {TRexCaches.DesignTopologyExistenceMapsCacheName()}");
+                Log.LogInformation($"Failed to get or create Ignite cache {TRexCaches.DesignTopologyExistenceMapsCacheName()}");
                 throw new ArgumentException("Ignite cache not available");
             }
         }

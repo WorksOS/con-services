@@ -1,4 +1,4 @@
-﻿using log4net;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -12,7 +12,7 @@ namespace VSS.TRex
     /// </summary>
     public class TRexServerConfig
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         private static TRexServerConfig instance;
 
@@ -24,14 +24,14 @@ namespace VSS.TRex
         {
             if (instance == null)
             {
-                Log.Info("Creating TRexServerConfig");
+                Log.LogInformation("Creating TRexServerConfig");
 
                 string[] args = Environment.CommandLine.Split(new [] { " " }, StringSplitOptions.RemoveEmptyEntries);
 
-                Log.Info($"Number of process args provided: {args.Length}");
+                Log.LogInformation($"Number of process args provided: {args.Length}");
                 if (args.Length > 0)
                 {
-                    Log.Info($"Process args: {args.Aggregate((s1, s2) => s1 + " " + s2 + "\n")}");
+                    Log.LogInformation($"Process args: {args.Aggregate((s1, s2) => s1 + " " + s2 + "\n")}");
                 }
 
                 instance = new TRexServerConfig();

@@ -1,7 +1,7 @@
 ﻿using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Compute;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
 using Apache.Ignite.Core.Common;
@@ -12,7 +12,7 @@ namespace VSS.TRex.GridFabric
     [Serializable]
     public class BaseIgniteClass
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// Ignite instance.
@@ -70,7 +70,7 @@ namespace VSS.TRex.GridFabric
         /// </summary>
         public BaseIgniteClass()
         {
-            Log.Info("No-arg constructor BaseIgniteClass() called");
+            Log.LogInformation("No-arg constructor BaseIgniteClass() called");
             // throw new ArgumentException("No-arg constructor invalid for BaseIgniteClass, use two-arg constructor");
         }
 
@@ -87,13 +87,13 @@ namespace VSS.TRex.GridFabric
 
                 if (_ignite == null)
                 {
-                    Log.InfoFormat($"Ignite grid instance null after attempt to locate grid: '{GridName}'");
+                    Log.LogInformation($"Ignite grid instance null after attempt to locate grid: '{GridName}'");
                 }
 
             }
             catch (Exception E)
             {
-                Log.InfoFormat($"Exception: {E}");
+                Log.LogInformation($"Exception: {E}");
             }
         }
 
@@ -106,7 +106,7 @@ namespace VSS.TRex.GridFabric
             {
                 if (_ignite == null)
                 {
-                    Log.Info("Ignite reference is null in AcquireIgniteTopologyProjections");
+                    Log.LogInformation("Ignite reference is null in AcquireIgniteTopologyProjections");
                 }
 
                 //_group = _ignite?.GetCluster().ForRemotes().ForAttribute($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{Role}", "True");
@@ -114,24 +114,24 @@ namespace VSS.TRex.GridFabric
 
                 if (_group == null)
                 {
-                    Log.Info($"Cluster group reference is null in AcquireIgniteTopologyProjections for role {Role} on grid {GridName}");
+                    Log.LogInformation($"Cluster group reference is null in AcquireIgniteTopologyProjections for role {Role} on grid {GridName}");
                 }
 
                 if (_group?.GetNodes().Count == 0)
                 {
-                    Log.Info($"_group cluster topology is empty for role {Role} on grid {GridName}");
+                    Log.LogInformation($"_group cluster topology is empty for role {Role} on grid {GridName}");
                 }
 
                 _compute = _group?.GetCompute();
 
                 if (_compute == null)
                 {
-                    Log.Info($"_compute projection is null in AcquireIgniteTopologyProjections on grid {GridName}");
+                    Log.LogInformation($"_compute projection is null in AcquireIgniteTopologyProjections on grid {GridName}");
                 }
             }
             else
             {
-                Log.Info("Role name not defined when acquiring topology projection");
+                Log.LogInformation("Role name not defined when acquiring topology projection");
             }
         }
     }

@@ -1,20 +1,18 @@
 ﻿using Apache.Ignite.Core;
-using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Communication.Tcp;
 using Apache.Ignite.Core.Configuration;
 using Apache.Ignite.Core.Discovery.Tcp;
 using Apache.Ignite.Core.Discovery.Tcp.Static;
-using Apache.Ignite.Log4Net;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using VSS.TRex.Logging;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Queues;
 using VSS.TRex.Storage;
 
 namespace VSS.TRex.Servers.Client
@@ -25,7 +23,7 @@ namespace VSS.TRex.Servers.Client
     /// </summary>
     public class ImmutableClientServer : IgniteServer
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// Constructor that creates a new server instance with a single role
@@ -53,7 +51,7 @@ namespace VSS.TRex.Servers.Client
 
                     TRexNodeID = Guid.NewGuid().ToString();
 
-                    Log.InfoFormat("Creating new Ignite node with Roles = {0} & TRexNodeId = {1}", roleNames, TRexNodeID);
+                    Log.LogInformation($"Creating new Ignite node with Roles = {roleNames} & TRexNodeId = {TRexNodeID}");
 
                     IgniteConfiguration cfg = new IgniteConfiguration
                     {
@@ -88,7 +86,7 @@ namespace VSS.TRex.Servers.Client
                             LocalPort = 47100,
                         },
 
-                        Logger = new IgniteLog4NetLogger(Log),
+                        Logger = new TRexIgniteLogger(Logger.CreateLogger("ImmutableClientServer")),
 
                         // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
                         DataStorageConfiguration = new DataStorageConfiguration
@@ -123,12 +121,12 @@ namespace VSS.TRex.Servers.Client
                     }
                     catch (Exception e)
                     {
-                        Log.InfoFormat("Creation of new Ignite node with Role = {0} & TRexNodeId = {1} failed with exception {2}", roleNames, TRexNodeID, e);
+                        Log.LogInformation($"Creation of new Ignite node with Role = {roleNames} & TRexNodeId = {TRexNodeID} failed with exception {e}");
                         throw;
                     }
                     finally
                     {
-                        Log.InfoFormat("Completed creation of new Ignite node with Role = {0} & TRexNodeId = {1}", roleNames, TRexNodeID);
+                        Log.LogInformation($"Completed creation of new Ignite node with Role = {roleNames} & TRexNodeId = {TRexNodeID}");
                     }
                 }
             }

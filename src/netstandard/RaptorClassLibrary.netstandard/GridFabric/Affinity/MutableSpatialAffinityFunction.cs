@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Logging;
 
 namespace VSS.TRex.GridFabric.Affinity
 {
@@ -20,7 +21,7 @@ namespace VSS.TRex.GridFabric.Affinity
 
             if (!(key is SubGridSpatialAffinityKey))
             {
-                Log.Info($"Unknown key type to compute spatial affinity partition key for: {key}");
+                Log.LogInformation($"Unknown key type to compute spatial affinity partition key for: {key}");
                 throw new ArgumentException($"Unknown key type to compute spatial affinity partition key for: {key}");
             }
 

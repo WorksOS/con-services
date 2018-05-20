@@ -82,6 +82,8 @@ namespace VSS.TRex.Analytics.Aggregators
         /// <param name="subGrids"></param>
         public override void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
         {
+            base.ProcessSubgridResult(subGrids);
+
             // Works out the percentage each colour on the map represents
 
             if (!(subGrids[0][0] is ClientHeightLeafSubGrid SubGrid))

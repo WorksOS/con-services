@@ -1,4 +1,4 @@
-﻿using log4net;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
 using System.Reflection;
@@ -21,7 +21,7 @@ namespace VSS.TRex.SubGridTrees
 {
     public class SubGridRetriever
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         // Local state populated by the retriever constructor
         private CombinedFilter Filter;
@@ -1318,7 +1318,7 @@ namespace VSS.TRex.SubGridTrees
                                                    // subgridLockToken          : Integer;
                                                    ClientHeightLeafSubGrid designElevations)
         {
-//            Log.Info("Entering RetrieveSubGrid");
+//            Log.LogInformation("Entering RetrieveSubGrid");
 
             ServerRequestResult Result = ServerRequestResult.UnknownError;
 
@@ -1379,7 +1379,7 @@ namespace VSS.TRex.SubGridTrees
                     if (_SubGrid == null)
                     {
                         // This should never really happen, but we'll be polite about it
-                        Log.Warn($"Subgrid address (CellX={CellX}, CellY={CellY}) passed to LocateSubGridContaining() from RetrieveSubgrid() did not match an existing subgrid in the data model.' + 'Returning icsrrSubGridNotFound as response with a nil subgrid reference.");
+                        Log.LogWarning($"Subgrid address (CellX={CellX}, CellY={CellY}) passed to LocateSubGridContaining() from RetrieveSubgrid() did not match an existing subgrid in the data model.' + 'Returning icsrrSubGridNotFound as response with a nil subgrid reference.");
                         return ServerRequestResult.SubGridNotFound;
                     }
 
@@ -1388,13 +1388,13 @@ namespace VSS.TRex.SubGridTrees
 
                     if (!_SubGrid.IsLeafSubGrid()) // It's a leaf node
                     {
-                        Log.Info("Requests of node subgrids in the server subgrid are not yet supported");
+                        Log.LogInformation("Requests of node subgrids in the server subgrid are not yet supported");
                         return Result;
                     }
 
                     if (!(_SubGrid is IServerLeafSubGrid))
                     {
-                        Log.Error($"_SubGrid {_SubGrid.Moniker()} is not a server grid leaf node");
+                        Log.LogError($"_SubGrid {_SubGrid.Moniker()} is not a server grid leaf node");
                         return Result;
                     }
 
@@ -1536,11 +1536,11 @@ namespace VSS.TRex.SubGridTrees
             }
             catch (Exception e)
             {
-                Log.Error($"Exception {e} occured in RetrieveSubGrid");
+                Log.LogError($"Exception {e} occured in RetrieveSubGrid");
                 throw;
             }
 
-//            Log.Info("Exiting RetrieveSubGrid");
+//            Log.LogInformation("Exiting RetrieveSubGrid");
 
             return Result;
         }

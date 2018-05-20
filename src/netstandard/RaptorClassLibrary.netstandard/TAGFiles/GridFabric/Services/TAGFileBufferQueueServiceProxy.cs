@@ -1,6 +1,6 @@
 ﻿using Apache.Ignite.Core;
 using Apache.Ignite.Core.Services;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
 using VSS.TRex.GridFabric.Caches;
@@ -16,7 +16,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     public class TAGFileBufferQueueServiceProxy
     {
         [NonSerialized]
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// The cluster wide name of the deployed service
@@ -54,18 +54,18 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
             // Attempt to cancel any previously deployed service
             try
             {
-                Log.Info("Cancelling deployed service");
+                Log.LogInformation("Cancelling deployed service");
                 services.Cancel(ServiceName);
             }
             catch (Exception E)
             {
-                Log.Error($"Exception {E} thrown while attempting to cancel service");
+                Log.LogError($"Exception {E} thrown while attempting to cancel service");
                 throw;
             }
 
             try
             {
-                Log.Info("Deploying new service");
+                Log.LogInformation("Deploying new service");
 
                 services.Deploy(new ServiceConfiguration()
                 {
@@ -78,18 +78,18 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
             }
             catch (Exception E)
             {
-                Log.Error($"Exception {E} thrown while attempting to deploy service");
+                Log.LogError($"Exception {E} thrown while attempting to deploy service");
                 throw;
             }
 
             try
             {
-                Log.Info("Obtaining service proxy");
+                Log.LogInformation("Obtaining service proxy");
                 proxy = services.GetServiceProxy<ITAGFileBufferQueueService>(ServiceName);
             }
             catch (Exception E)
             {
-                Log.Error($"Exception {E} thrown while attempting to get service proxy");
+                Log.LogError($"Exception {E} thrown while attempting to get service proxy");
                 throw;
             }
         }

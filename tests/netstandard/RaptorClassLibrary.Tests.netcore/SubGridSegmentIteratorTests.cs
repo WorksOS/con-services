@@ -13,7 +13,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators.Tests
             ServerSubGridTree tree = new ServerSubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
             IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
 
-            SubGridSegmentIterator iterator = new SubGridSegmentIterator(leaf, leaf.Directory, StorageProxyFactory.Storage(StorageMutability.Mutable));
+            SubGridSegmentIterator iterator = new SubGridSegmentIterator(leaf, leaf.Directory, StorageProxy.Instance(StorageMutability.Mutable));
 
             Assert.True(iterator.Directory == leaf.Directory &&
                 iterator.SubGrid == leaf, "SubGrid segment iterator not correctly initialised");
@@ -25,7 +25,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators.Tests
             ServerSubGridTree tree = new ServerSubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
             IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
 
-            SubGridSegmentIterator iterator = new SubGridSegmentIterator(leaf, leaf.Directory, StorageProxyFactory.Storage(StorageMutability.Mutable));
+            SubGridSegmentIterator iterator = new SubGridSegmentIterator(leaf, leaf.Directory, StorageProxy.Instance(StorageMutability.Mutable));
 
             DateTime start = new DateTime(2000, 1, 1, 1, 1, 1);
             DateTime end = new DateTime(2000, 1, 2, 1, 1, 1);
@@ -66,7 +66,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators.Tests
             IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
 
             SubGridSegmentIterator iterator = new SubGridSegmentIterator(leaf, leaf.Directory,
-                StorageProxyFactory.Storage(StorageMutability.Mutable))
+              StorageProxy.Instance(StorageMutability.Mutable))
             {
                 IterationDirection = IterationDirection.Forwards
             };
@@ -98,7 +98,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators.Tests
             ServerSubGridTree tree = new ServerSubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
             IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
 
-            SubGridSegmentIterator iterator = new SubGridSegmentIterator(leaf, leaf.Directory, StorageProxyFactory.Storage(StorageMutability.Mutable));
+            SubGridSegmentIterator iterator = new SubGridSegmentIterator(leaf, leaf.Directory, StorageProxy.Instance(StorageMutability.Mutable));
 
             const double lowerElevation = 9.0;
             const double upperElevation = 19.0;

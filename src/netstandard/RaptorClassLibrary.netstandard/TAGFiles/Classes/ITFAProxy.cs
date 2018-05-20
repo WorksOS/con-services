@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using Apache.Ignite.Core.DataStructures;
-using log4net;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.TAGFiles.Classes.Validator;
 using VSS.TRex.TAGFiles.Models;
 

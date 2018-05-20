@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Reflection;
-using log4net;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
@@ -13,7 +13,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
     /// </summary>
     public static class SubGridSegmentCleaver
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         public static bool RecordSegmentCleavingOperationsToLog = true;
 
@@ -53,7 +53,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                         Iterator.SegmentListExtended();
 
                         if (RecordSegmentCleavingOperationsToLog)
-                            Log.Info($"Info: Performed cleave on segment ({CleavedTimeRangeStart}-{CleavedTimeRangeEnd}) of subgrid {ServerSubGridTree.GetLeafSubGridFullFileName(Origin)}");
+                            Log.LogInformation($"Info: Performed cleave on segment ({CleavedTimeRangeStart}-{CleavedTimeRangeEnd}) of subgrid {ServerSubGridTree.GetLeafSubGridFullFileName(Origin)}");
                     }
                     else
                     {
@@ -64,7 +64,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                         // it will be noted in the log.
 
                         if (RecordSegmentCleavingOperationsToLog)
-                            Log.Info($"Info: Cleave on segment ({CleavedTimeRangeStart}-{CleavedTimeRangeEnd}) of subgrid {ServerSubGridTree.GetLeafSubGridFullFileName(Origin)} failed");
+                            Log.LogInformation($"Info: Cleave on segment ({CleavedTimeRangeStart}-{CleavedTimeRangeEnd}) of subgrid {ServerSubGridTree.GetLeafSubGridFullFileName(Origin)} failed");
                     }
                 }
 
@@ -75,7 +75,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                         if (Segment.RequiresCleaving())
                         {
                             SegmentTotalPassesCalculator.CalculateTotalPasses(segment.PassesData,out uint TotalPassCount, out uint MaximumPassCount);
-                            Log.Info($"Info: Cleave on segment ({CleavedTimeRangeStart}-{CleavedTimeRangeEnd}) of subgrid {subGrid.Moniker()} failed to reduce cell pass count below maximums (max passes = {TotalPassCount}/{TRexConfig.VLPD_SubGridSegmentPassCountLimit}, per cell = {MaximumPassCount}/{TRexConfig.VLPD_SubGridMaxSegmentCellPassesLimit})");
+                            Log.LogInformation($"Info: Cleave on segment ({CleavedTimeRangeStart}-{CleavedTimeRangeEnd}) of subgrid {subGrid.Moniker()} failed to reduce cell pass count below maximums (max passes = {TotalPassCount}/{TRexConfig.VLPD_SubGridSegmentPassCountLimit}, per cell = {MaximumPassCount}/{TRexConfig.VLPD_SubGridMaxSegmentCellPassesLimit})");
                         }
                     }
                 }

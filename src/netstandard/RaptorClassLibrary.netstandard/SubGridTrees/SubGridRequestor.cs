@@ -1,4 +1,4 @@
-﻿using log4net;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
 using VSS.TRex.Common;
@@ -19,7 +19,7 @@ namespace VSS.TRex.SubGridTrees
     public class SubGridRequestor
     {
         [NonSerialized]
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         [NonSerialized]
         private SubGridRetriever retriever;
@@ -242,7 +242,7 @@ namespace VSS.TRex.SubGridTrees
             ClientHeightLeafSubGrid DesignElevations = null;
             ServerRequestResult Result = ServerRequestResult.UnknownError;
 
-            // Log.Info("Entering RequestSubGridInternal");
+            // Log.LogInformation("Entering RequestSubGridInternal");
 
             /* TODO - subgrid general result cache not supported yet
             // Determine if there is a suitable pre-calculated result present

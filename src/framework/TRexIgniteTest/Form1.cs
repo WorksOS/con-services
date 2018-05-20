@@ -16,7 +16,6 @@ using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
 using VSS.TRex.DesignProfiling;
 using VSS.TRex.Analytics.Operations;
-using VSS.TRex;
 using VSS.TRex.Analytics.GridFabric.Arguments;
 using VSS.TRex.Analytics.Models;
 using VSS.TRex.Designs;
