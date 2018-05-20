@@ -16,6 +16,6 @@
   <root>
     <level value="ALL" />
     <appender-ref ref="RollingFile" />
-    <appender-ref ref="Console" />
+    <!--appender-ref ref="Console" /-->
   </root>
 </log4net>
