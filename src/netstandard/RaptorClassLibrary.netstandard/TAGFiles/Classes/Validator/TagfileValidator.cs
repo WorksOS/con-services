@@ -1,22 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using Microsoft.Extensions.Logging;
-using VSS.TRex;
+using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Machines;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SubGridTrees.Server;
-using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Sinks;
 using VSS.TRex.TAGFiles.Types;
 
 namespace VSS.TRex.TAGFiles.Classes.Validator
 {
-    public static class TagfileValidator
-    {
+  public static class TagfileValidator
+  {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
@@ -25,7 +22,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         /// <param name="tagDetail"></param>
         /// <param name="processor"></param>
         /// <returns></returns>
-        private static ValidationResult CheckFileIsProcessible(ref TagfileDetail tagDetail, TAGProcessor processor)
+        private static ValidationResult CheckFileIsProcessible(TagfileDetail tagDetail, TAGProcessor processor)
         {
 
             /*
@@ -48,10 +45,12 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
                 return ValidationResult.Valid;
 
             // Business rule for device type conversion
+            // TODO: Resolve use of magic constance here
             int radioType = processor.RadioType == "torch" ? 6 : 0; // torch device set to type 6
 
-            TFAProxy tfa = new TFAProxy(); // Todo This can be refactored at a later stage
+            ITFAProxy tfa = DIContext.Obtain<ITFAProxy>();
             Log.LogInformation($"#Info# Calling TFA servce to validate tagfile {tagDetail.tagFileName} ");
+
             // use decimal degrees
             // return ValidationResult.Valid;
             var apiResult = tfa.ValidateTagfile(tagDetail.projectId, Guid.Parse(tagDetail.tccOrgId), processor.RadioSerial, radioType, processor.LLHLat * (180 / Math.PI), processor.LLHLon * (180 / Math.PI), processor.DataTime, out tagDetail.projectId, out tagDetail.assetId);
@@ -73,9 +72,8 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         /// </summary>
         /// <param name="tagDetail"></param>
         /// <returns></returns>
-        public static ValidationResult ValidSubmission(ref TagfileDetail tagDetail)
+        public static ValidationResult ValidSubmission(TagfileDetail tagDetail)
         {
-
             ValidationResult result = ValidationResult.Unknown;
 
             // Perform some Validation Checks
@@ -96,7 +94,8 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
             TAGValueSink sink = new TAGVisionLinkPrerequisitesValueSink(processor);
             TAGReader reader = new TAGReader(new MemoryStream(tagDetail.tagFileContent));
             TAGFile tagFile = new TAGFile();
-            TAGReadResult readResult = tagFile.Read(reader, sink);
+
+          TAGReadResult readResult = tagFile.Read(reader, sink);
             if (readResult != TAGReadResult.NoError)
                 return ValidationResult.Invalid;
 
@@ -114,7 +113,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
                     return ValidationResult.Invalid; // cannot process with asset and project id
             }
 
-            return CheckFileIsProcessible(ref tagDetail, processor);
+            return CheckFileIsProcessible(tagDetail, processor);
 
         }
     }

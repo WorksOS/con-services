@@ -56,8 +56,6 @@ namespace VSS.TRex.TAGFiles.Executors
             {
                 try
                 {
-
-
                     // wrap up details into obj
                     TagfileDetail td = new TagfileDetail()
                                        {
@@ -70,7 +68,7 @@ namespace VSS.TRex.TAGFiles.Executors
                                        };
 
                     // Validate tagfile submission
-                    var result = TagfileValidator.ValidSubmission(ref td);
+                    var result = TagfileValidator.ValidSubmission(td);
 
                     if (result == ValidationResult.Valid) // If OK add to process queue
                     {
