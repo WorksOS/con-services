@@ -2,6 +2,8 @@
 using Newtonsoft.Json;
 using System;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using MockProjectWebApi.Utils;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
@@ -15,7 +17,7 @@ namespace MockProjectWebApi.Controllers
   {
     [Route("api/v2/mock/export/veta")]
     [HttpGet]
-    public ExportResult GetMockVetaExportData(
+    public async Task<ExportResult> GetMockVetaExportData(
       [FromQuery] Guid projectUid,
       [FromQuery] string fileName,
       [FromQuery] string machineNames,
@@ -23,7 +25,7 @@ namespace MockProjectWebApi.Controllers
     {
       if (projectUid.ToString() == ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1)
       {
-        if (fileName == MockSchedulerController.SUCCESS_JOB_ID &&
+        if ((fileName == MockSchedulerController.SUCCESS_JOB_ID || fileName == MockSchedulerController.TIMEOUT_JOB_ID) &&
             string.IsNullOrEmpty(machineNames) &&
             filterUid.ToString() == "81422acc-9b0c-401c-9987-0aedbf153f1d")
         {
@@ -33,6 +35,11 @@ namespace MockProjectWebApi.Controllers
           ""Code"": 0,
           ""Message"": ""success""
           }";
+          if (fileName == MockSchedulerController.TIMEOUT_JOB_ID)
+          {
+            //Default http request timeout is 100 seconds so make it a bit longer
+            await Task.Delay(TimeSpan.FromSeconds(105));
+          }
           return JsonConvert.DeserializeObject<ExportResult>(result);
         }
         else if (fileName == MockSchedulerController.FAILURE_JOB_ID &&
@@ -41,18 +48,8 @@ namespace MockProjectWebApi.Controllers
         {
           throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(2002,
             "Failed to get requested export data with error: No data for export"));
-          /*
-          var result = @"{
-          ""exportData"": null,
-          ""resultCode"": 0,
-          ""Code"": 2002,
-          ""Message"": ""Failed to get requested export data with error: No data for export""
-          }";
-          return JsonConvert.DeserializeObject<ExportResult>(result);
-          */
         }
       }
-
       return new ExportResult { ResultCode = 0, ExportData = null };
     }
 
