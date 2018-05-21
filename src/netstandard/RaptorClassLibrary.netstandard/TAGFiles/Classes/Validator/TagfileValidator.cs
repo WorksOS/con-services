@@ -31,7 +31,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
             This is where a tagfile comes in from a known org and the system works out what Asset and Project it belongs to. Licensing is checked
 
             Type B:  Manual submission.
-            This is where the project is known and supplied as an override projectid value. The Asset is worked out(TFA) or assigned a JohnDoe id if not known. (I don’t believe there would be a situation where an AssetId is overridden but ProjectId is to be worked out)
+            This is where the project is known and supplied as an override projectid value. The Asset is worked out via TFA service or assigned a JohnDoe id if not known. 
             Licensing is checked for manual subscription
 
             Type C: Override submission.
@@ -45,24 +45,19 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
                 return ValidationResult.Valid;
 
             // Business rule for device type conversion
-            // TODO: Resolve use of magic constance here
-            int radioType = processor.RadioType == "torch" ? 6 : 0; // torch device set to type 6
+            int radioType = processor.RadioType == "torch" ? (int)DeviceType.SNM940 : (int)DeviceType.ManualDevice; // torch device set to type 6
 
             ITFAProxy tfa = DIContext.Obtain<ITFAProxy>();
-            Log.LogInformation($"#Info# Calling TFA servce to validate tagfile {tagDetail.tagFileName} ");
+            Log.LogInformation($"#Info# Calling TFA servce to validate tagfile:{tagDetail.tagFileName}");
 
-            // use decimal degrees
-            // return ValidationResult.Valid;
+            // use decimal degrees when calling API
             var apiResult = tfa.ValidateTagfile(tagDetail.projectId, Guid.Parse(tagDetail.tccOrgId), processor.RadioSerial, radioType, processor.LLHLat * (180 / Math.PI), processor.LLHLon * (180 / Math.PI), processor.DataTime, out tagDetail.projectId, out tagDetail.assetId);
             Log.LogInformation($"#Info# TFA GetId returned for {tagDetail.tagFileName} StatusCode: {apiResult}, ProjectId:{tagDetail.projectId}, AssetId:{tagDetail.assetId}");
             if (apiResult == ValidationResult.Valid)
             {
-               // Check For JohnDoe machines
+               // Check For JohnDoe machines. if you get a valid pass and no assetid it means it had a manual3dlicense
                 if (tagDetail.assetId == Guid.Empty)
-                {
                     tagDetail.IsJohnDoe = true; // JohnDoe Machine and OK to process
-                }
-
             }
             return apiResult;
         }
@@ -87,7 +82,6 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
             {
                 TargetValueChanges = new ProductionEventLists(siteModel, Machine.kNullInternalSiteModelMachineIndex)
             };
-
             var siteModelGridAggregator = new ServerSubGridTree(siteModel);
             var machineTargetValueChangesAggregator = new ProductionEventLists(siteModel, Machine.kNullInternalSiteModelMachineIndex);
             TAGProcessor processor = new TAGProcessor(siteModel, machine, siteModelGridAggregator,machineTargetValueChangesAggregator);
@@ -95,22 +89,23 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
             TAGReader reader = new TAGReader(new MemoryStream(tagDetail.tagFileContent));
             TAGFile tagFile = new TAGFile();
 
-          TAGReadResult readResult = tagFile.Read(reader, sink);
+            TAGReadResult readResult = tagFile.Read(reader, sink);
             if (readResult != TAGReadResult.NoError)
-                return ValidationResult.Invalid;
+                return ValidationResult.Invalid; //Exit if failed content validation
 
             // Tagfile contents are OK so proceed
 
             if (!TRexConfig.EnableTFAService) // allows us to bypass a TFA service
             {
                 Log.LogWarning($"SubmitTAGFileResponse.ValidSubmission. EnableTFAService disabled. Bypassing TFS validation checks");
-                if (tagDetail.assetId != Guid.Empty && tagDetail.projectId != Guid.Empty) // do we have what we need
-                    {
-                    // they may want to    tagDetail.IsJohnDoe = false;
+                if (tagDetail.projectId != Guid.Empty) // do we have what we need
+                     {
+                        if (tagDetail.assetId == Guid.Empty)
+                            tagDetail.IsJohnDoe = true;
                         return ValidationResult.Valid;
-                    }
+                     }
                 else
-                    return ValidationResult.Invalid; // cannot process with asset and project id
+                    return ValidationResult.Invalid; // cannot process without asset and project id
             }
 
             return CheckFileIsProcessible(tagDetail, processor);

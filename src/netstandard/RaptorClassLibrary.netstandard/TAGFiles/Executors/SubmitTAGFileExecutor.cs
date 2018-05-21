@@ -21,12 +21,6 @@ namespace VSS.TRex.TAGFiles.Executors
         /// </summary>
         private static TAGFileBufferQueue queue = new TAGFileBufferQueue();
 
-     // private const string URL = "https://sub.domain.com/objects.json?api_key=123";
-     // private const string DATA = @"{""object"":{""name"":""Name""}}";
-
-      // Do the TFA thing here
-
-
 
         /// <summary>
         /// Receive a TAG file to be processed, validate TAG File Authorisation for the file, and add it to the 
@@ -41,11 +35,8 @@ namespace VSS.TRex.TAGFiles.Executors
         public static SubmitTAGFileResponse Execute(Guid projectId, Guid assetId, string tagFileName,
             byte[] tagFileContent, string tccOrgId)
         {
-            // Execute TFA based business logic along with override IDs to determine final project and asset
-            // identities to be used for processing the TAG file
-            // ...
 
-            Log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into project {projectId}, asset {assetId}");
+            Log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectID:{projectId}, AssetID:{assetId}");
             SubmitTAGFileResponse response = new SubmitTAGFileResponse
                                              {
                                                      FileName = tagFileName,
@@ -69,26 +60,25 @@ namespace VSS.TRex.TAGFiles.Executors
 
                     // Validate tagfile submission
                     var result = TagfileValidator.ValidSubmission(td);
-
                     if (result == ValidationResult.Valid) // If OK add to process queue
                     {
                         // First archive the tagfile
-                        Log.LogInformation($"Archiving tagfile {tagFileName} for project {projectId}");
+                        Log.LogInformation($"Archiving tagfile:{tagFileName}, ProjectID:{td.projectId}");
                         TagfileReposity.ArchiveTagfile(td); // todo implement
 
-                        Log.LogInformation($"Pushing tagfile to TagfileBufferQueue");
+                        Log.LogInformation($"Submitting tagfile to TagfileBufferQueue. ProjectID:{td.projectId}, AssetID:{td.assetId}, Tagfile:{tagFileName}");
                         TAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(tagFileName, projectId, assetId);
                         TAGFileBufferQueueItem tagItem = new TAGFileBufferQueueItem
                                                          {
                                                                  InsertUTC = DateTime.Now,
-                                                                 ProjectID = projectId,
-                                                                 AssetID = assetId,
+                                                                 ProjectID = td.projectId,
+                                                                 AssetID = td.assetId,
                                                                  FileName = tagFileName,
                                                                  Content = tagFileContent,
                                                                  IsJohnDoe = td.IsJohnDoe
                                                          };
 
-                        if (queue.Add(tagKey, tagItem))
+                        if (queue.Add(tagKey, tagItem)) // Add tagfile to queue
                         {
                             response.Success = true;
                             response.Exception = "";
@@ -108,12 +98,12 @@ namespace VSS.TRex.TAGFiles.Executors
                 }
                 catch (Exception e) // catch all exceptions here
                 {
-                    Log.LogError($"#Exception# SubmitTAGFileResponse. Exception occured processing {tagFileName} Exception: {e}");
+                    Log.LogError($"#Exception# SubmitTAGFileResponse. Exception occured processing {tagFileName} Exception:{e}");
                 }
             }
             finally
             {
-                Log.LogInformation($"#Out# SubmitTAGFileResponse. Processed {tagFileName} Result: {response.Success}, Exception:{response.Exception}");
+                Log.LogInformation($"#Out# SubmitTAGFileResponse. Processed {tagFileName} Result: {response.Success}, ErrorMessage:{response.Exception}");
             }
             return response;
         }
