@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.IO;
+using System.Net;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System.IO;
-using System.Net;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.FileAccess.Service.Common.Interfaces;
 using VSS.Productivity3D.FileAccess.Service.Common.Models;
-using VSS.Productivity3D.FileAccess.Service.Common.ResultHandling;
 using VSS.Productivity3D.FileAccess.Service.WebAPI.Models.FileAccess.Executors;
 using VSS.Productivity3D.FileAccess.Service.WebAPI.Models.FileAccess.ResultHandling;
 using VSS.TCCFileAccess;
@@ -55,6 +54,7 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI.FileAccess.Controllers
     /// </returns>
     /// <executor>RawFileAccessExecutor</executor>
     [Route("api/v1/rawfiles")]
+    [HttpPost]
     public FileResult PostRaw([FromBody] FileDescriptor request)
     {
       log.LogInformation("Get file from TCC as an image/png: " + JsonConvert.SerializeObject(request));
