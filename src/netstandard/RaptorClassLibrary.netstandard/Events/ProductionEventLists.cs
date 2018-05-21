@@ -23,9 +23,10 @@ namespace VSS.TRex.Events
         private SiteModel SiteModel { get; set; }
 
         /// <summary>
-        /// The ID of the machine these events were recorded by
+        /// The ID of the machine these events were recorded by. The ID is the (short) internal machine ID
+        /// used within the data model, not the GUID descriptor for the machine
         /// </summary>
-        public long MachineID { get; set; }
+        public short MachineID { get; set; }
 
         public StartEndProductionEvents MachineStartupShutdownEvents;
 
@@ -282,7 +283,7 @@ namespace VSS.TRex.Events
         /// </summary>
         /// <param name="siteModel"></param>
         /// <param name="machineID"></param>
-        public ProductionEventLists(SiteModel siteModel, long machineID)
+        public ProductionEventLists(SiteModel siteModel, short machineID)
         {
             SiteModel = siteModel;
 

@@ -93,7 +93,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
             };
 
             var siteModelGridAggregator = new ServerSubGridTree(siteModel);
-            var machineTargetValueChangesAggregator = new ProductionEventLists(siteModel, long.MaxValue);
+            var machineTargetValueChangesAggregator = new ProductionEventLists(siteModel, Machine.kNullInternalSiteModelMachineIndex);
             TAGProcessor processor = new TAGProcessor(siteModel, machine, siteModelGridAggregator,machineTargetValueChangesAggregator);
             TAGValueSink sink = new TAGVisionLinkPrerequisitesValueSink(processor);
             TAGReader reader = new TAGReader(new MemoryStream(tagDetail.tagFileContent));

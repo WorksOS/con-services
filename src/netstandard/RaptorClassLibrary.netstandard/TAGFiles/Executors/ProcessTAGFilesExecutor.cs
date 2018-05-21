@@ -74,7 +74,7 @@ namespace VSS.TRex.TAGFiles.Executors
                 }
                 catch (Exception E)
                 {
-                    response.Results.Add(new ProcessTAGFileResponseItem { FileName = item.FileName, Success = false, Exception = E.Message });
+                    response.Results.Add(new ProcessTAGFileResponseItem { FileName = item.FileName, Success = false, Exception = E.ToString() });
                 }
             }
 
