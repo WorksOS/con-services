@@ -48,9 +48,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
                 return ValidationResult.Valid;
 
             // Business rule for device type conversion
-            // DeviceType radioType = processor.RadioType == "torch" ? DeviceType.SNM940 : DeviceType.ManualDevice;
-            int radioType = processor.RadioType == "torch" ? 6 : 0;
-
+            int radioType = processor.RadioType == "torch" ? 6 : 0; // torch device set to type 6
 
             TFAProxy tfa = new TFAProxy(); // Todo This can be refactored at a later stage
             Log.LogInformation($"#Info# Calling TFA servce to validate tagfile {tagDetail.tagFileName} ");
