@@ -6,7 +6,10 @@ using VSS.TRex.SubGridTrees.Utilities;
 
 namespace VSS.TRex.Analytics.SpeedStatistics
 {
-  public class SpeedAggregator : AggregatorBase
+	/// <summary>
+	/// Implements the specific business rules for calculating a Speed summary
+	/// </summary>
+	public class SpeedAggregator : AggregatorBase
   {
 	  /// <summary>
 	  /// Maximum machine speed target value.

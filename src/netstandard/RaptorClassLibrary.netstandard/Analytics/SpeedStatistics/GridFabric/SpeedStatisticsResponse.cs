@@ -12,14 +12,17 @@ namespace VSS.TRex.Analytics.SpeedStatistics.GridFabric
 		/// A value representing the count of cells that have reported machine speed values higher than a speed target.
 		/// </summary>
 		public long AboveTargetCellsCount { get; set; }
+
 		/// <summary>
 		/// A value representing the count of cells that have reported machine speed values lower than a speed target.
 		/// </summary>
 		public long BelowTargetCellsCount { get; set; }
+
 		/// <summary>
 		/// A value representing the count of cells that have reported machine speed values the same as a speed target.
 		/// </summary>
 		public long MatchTargetCellsCount { get; set; }
+
 		/// <summary>
 		/// The amount of production data the Speed statistics are requested for.
 		/// </summary>
