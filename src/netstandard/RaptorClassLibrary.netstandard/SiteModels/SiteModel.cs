@@ -351,82 +351,75 @@ namespace VSS.TRex.SiteModels
         {
             FileSystemErrorStatus Result; // = FileSystemErrorStatus.UnknownErrorReadingFromFS;
 
-            try
+            Guid SavedID = ID;
+
+            Result = StorageProxy.ReadStreamFromPersistentStoreDirect(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
+
+            if (Result == FileSystemErrorStatus.OK)
             {
-                Guid SavedID = ID;
-
-                Result = StorageProxy.ReadStreamFromPersistentStoreDirect(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
-
-                if (Result == FileSystemErrorStatus.OK)
+                try
                 {
-                    try
+                    if (SavedID != ID)
                     {
-                        if (SavedID != ID)
+                        // The SiteModelID read from the FS file does not match the ID expected.
+
+                        // RPW 31/1/11: This used to be an error with it's own error code. This is now
+                        // changed to a warning, but loading of the sitemodel is allowed. This
+                        // is particularly useful for testing purposes where copying around projects
+                        // is much quicker than reprocessing large sets of TAG files
+
+                        Log.LogWarning($"Site model ID read from FS file ({ID}) does not match expected ID ({SavedID}), setting to expected");
+                        ID = SavedID;
+                    }
+
+                    // Prior to reading the site model from the stream, ensure that we have
+                    // acquired locks to prevent access of the machine target values while the
+                    // machines list is destroyed and recreated. LockMachinesTargetValues creates
+                    // a list of items it obtains locks of and UnLockMachinesTargetValues releases
+                    // locks against that list. This is necessary as rereading the machines may cause
+                    // new machines to be created due to TAG file processing, and these new machines
+                    // will not have targets values participating in the lock.
+
+                    MS.Position = 0;
+                    using (BinaryReader reader = new BinaryReader(MS, Encoding.UTF8, true))
+                    {
+                        lock (this)
                         {
-                            // The SiteModelID read from the FS file does not match the ID expected.
+                            Read(reader);
 
-                            // RPW 31/1/11: This used to be an error with it's own error code. This is now
-                            // changed to a warning, but loading of the sitemodel is allowed. This
-                            // is particularly useful for testing purposes where copying around projects
-                            // is much quicker than reprocessing large sets of TAG files
-
-                            Log.LogWarning($"Site model ID read from FS file ({ID}) does not match expected ID ({SavedID}), setting to expected");
-                            ID = SavedID;
-                        }
-
-                        // Prior to reading the site model from the stream, ensure that we have
-                        // acquired locks to prevent access of the machine target values while the
-                        // machines list is destroyed and recreated. LockMachinesTargetValues creates
-                        // a list of items it obtains locks of and UnLockMachinesTargetValues releases
-                        // locks against that list. This is necessary as rereading the machines may cause
-                        // new machines to be created due to TAG file processing, and these new machines
-                        // will not have targets values participating in the lock.
-
-                        MS.Position = 0;
-                        using (BinaryReader reader = new BinaryReader(MS, Encoding.UTF8, true))
-                        {
-                            lock (this)
-                            {
-                                Read(reader);
-
-                                // Now read in the existance map
-                                Result = LoadProductionDataExistanceMapFromStorage(StorageProxy);
-                            }
-                        }
-
-                        /* TODO ??
-                         * This type of management is not appropriate for Ignite based cache management as
-                         *  list updates will cause Ignite level cache invalidation that can then cause messaging
-                         *  to trigger reloading of target values/event lists
-                        if (!CreateMachinesTargetValues())
-                            Result = FileSystemErrorStatus.UnknownErrorReadingFromFS;
-                        else
-                        {
-                            //Mark override lists dirty
-                            for I := 0 to MachinesTargetValues.Count - 1 do
-                                    MachinesTargetValues.Items[I].TargetValueChanges.MarkOverrideEventListsAsOutOfDate;
-                        }
-                        */
-
-                        if (Result == FileSystemErrorStatus.OK)
-                        {
-                            Log.LogDebug($"Site model read from FS file (ID:{ID}) succeeded");
-                            Log.LogDebug($"Data model extents: {SiteModelExtent}, CellSize: {Grid.CellSize}");
-                        }
-                        else
-                        {
-                            Log.LogWarning($"Site model ID read from FS file ({ID}) failed with error {Result}");
+                            // Now read in the existance map
+                            Result = LoadProductionDataExistanceMapFromStorage(StorageProxy);
                         }
                     }
-                    finally
+
+                    /* TODO ??
+                     * This type of management is not appropriate for Ignite based cache management as
+                     *  list updates will cause Ignite level cache invalidation that can then cause messaging
+                     *  to trigger reloading of target values/event lists
+                    if (!CreateMachinesTargetValues())
+                        Result = FileSystemErrorStatus.UnknownErrorReadingFromFS;
+                    else
                     {
-                        MS.Dispose();
+                        //Mark override lists dirty
+                        for I := 0 to MachinesTargetValues.Count - 1 do
+                                MachinesTargetValues.Items[I].TargetValueChanges.MarkOverrideEventListsAsOutOfDate;
+                    }
+                    */
+
+                    if (Result == FileSystemErrorStatus.OK)
+                    {
+                        Log.LogDebug($"Site model read from FS file (ID:{ID}) succeeded");
+                        Log.LogDebug($"Data model extents: {SiteModelExtent}, CellSize: {Grid.CellSize}");
+                    }
+                    else
+                    {
+                        Log.LogWarning($"Site model ID read from FS file ({ID}) failed with error {Result}");
                     }
                 }
-            }
-            catch // (Exception E)
-            {
-                throw; // TODO
+                finally
+                {
+                    MS.Dispose();
+                }
             }
 
             return Result;

@@ -85,7 +85,7 @@ namespace VSS.TRex.Executors
         // storage proxy assigned to it
         SiteModel = new SiteModel(Guid.Empty);
 
-        // Machine.InternalSiteModelMachineIndex -> Change dummy machien index number to real machine index number when integrating into the live database
+        // Machine.InternalSiteModelMachineIndex -> Change dummy machine index number to real machine index number when integrating into the live database
         Machine = new Machine()
         {
           TargetValueChanges = Events

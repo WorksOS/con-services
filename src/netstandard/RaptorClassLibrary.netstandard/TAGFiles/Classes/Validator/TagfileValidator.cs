@@ -89,7 +89,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
             var siteModel = new SiteModel(Guid.Empty);
             var machine = new Machine()
             {
-                TargetValueChanges = new ProductionEventLists(siteModel, 0)
+                TargetValueChanges = new ProductionEventLists(siteModel, Machine.kNullInternalSiteModelMachineIndex)
             };
 
             var siteModelGridAggregator = new ServerSubGridTree(siteModel);
