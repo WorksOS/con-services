@@ -14,7 +14,7 @@
   </appender>
 
   <root>
-    <level value="ALL" />
+    <level value="INFO" />
     <appender-ref ref="RollingFile" />
     <!--appender-ref ref="Console" /-->
   </root>
