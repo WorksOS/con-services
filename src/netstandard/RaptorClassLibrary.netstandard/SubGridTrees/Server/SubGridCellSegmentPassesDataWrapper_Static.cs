@@ -236,7 +236,19 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <returns></returns>
         public BitArray GetMachineIDSet() => null;
 
-        public void Write(BinaryWriter writer)
+      /// <summary>
+      /// Sets the internal machine ID for the cell pass identifid by x & y spatial location and passNumber.
+      /// </summary>
+      /// <param name="X"></param>
+      /// <param name="Y"></param>
+      /// <param name="passNumber"></param>
+      /// <param name="internalMachineID"></param>
+    public void SetInternalMachineID(uint X, uint Y, int passNumber, short internalMachineID)
+      {
+        throw new InvalidOperationException("Immutable cell pass segment.");
+      }
+
+    public void Write(BinaryWriter writer)
         {
             CalculateTotalPasses(out uint TotalPasses, out uint MaxPassCount);
 
