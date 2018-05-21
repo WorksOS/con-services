@@ -64,7 +64,7 @@ namespace TestRun
             }
             catch (Exception ex)
             {
-                Console.WriteLine("  An unexpected error occured: {0}", ex.Message);
+                Console.WriteLine("  An unexpected error occurred: {0}", ex.Message);
                 if (ex.InnerException != null)
                 {
                     Console.WriteLine("  Reason: {0}", ex.InnerException.Message);
@@ -234,7 +234,7 @@ namespace TestRun
                     var consoleOut = new StringWriter();
                     if (isStdoutCaptured)
                         { Console.SetOut(consoleOut);}          
-                    Console.WriteLine("An unexpected error occured: " + ex.Message);
+                    Console.WriteLine("An unexpected error occurred: " + ex.Message);
                     if (ex.InnerException != null)
                         { Console.WriteLine("Reason: " + ex.InnerException.Message); }
                     resultsJunit.SetTestFailedException(current, stats, ex,consoleOut);

@@ -66,6 +66,11 @@ namespace ExecutorTests
       customerRepo = serviceProvider.GetRequiredService<IRepository<ICustomerEvent>>() as CustomerRepository;
       projectRepo = serviceProvider.GetRequiredService<IRepository<IProjectEvent>>() as ProjectRepository;
       subscriptionRepo = serviceProvider.GetRequiredService<IRepository<ISubscriptionEvent>>() as SubscriptionRepository;
+
+      kafkaTopicName = "AcceptanceTestKafkaName";
+      producer = new RdKafkaDriver();
+      if (!producer.IsInitializedProducer)
+        producer.InitProducer(configStore);
     }
 
     protected bool CreateAssetDeviceAssociation(Guid assetUid, long legacyAssetId, Guid? owningCustomerUid, Guid deviceUid, string deviceSerialNumber, string deviceType)

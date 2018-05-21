@@ -58,7 +58,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="1.1.2" />
     <PackageReference Include="System.Net.Security" Version="4.3.0" />
     <PackageReference Include="NewRelic.Agent.Api" Version="6.16.178" />
-  </ItemGroup>
+  </ItemGroup>  
+
 
   <ItemGroup>
     <ProjectReference Include="..\WebApiModels\VSS.Productivity3D.TagFileAuth.WebAPI.Models.csproj" />

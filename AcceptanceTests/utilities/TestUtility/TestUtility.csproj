@@ -24,4 +24,8 @@
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\WebApiModels\VSS.Productivity3D.TagFileAuth.WebAPI.Models.csproj" />
+  </ItemGroup>
+
 </Project>
