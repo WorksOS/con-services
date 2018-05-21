@@ -3,5 +3,8 @@ choco install kubernetes-helm
 choco install kubernetes-cli
 helm init --client-only
 helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator
+mkdir $HOME\Documents\.kube\
+cp config $HOME\Documents\.kube\config
+#Sometimes it tries to use this folder. Why??
 mkdir $HOME\.kube\
 cp config $HOME\.kube\config
