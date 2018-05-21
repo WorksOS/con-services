@@ -9,6 +9,8 @@ using VSS.TRex.Machines;
 using VSS.TRex.SiteModels;
 using VSS.TRex.Storage;
 using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.TAGFiles.Types;
 
 namespace VSS.TRex.TAGFiles.Classes.Integrator
@@ -374,8 +376,25 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                             };
 
                             // Integrate the cell pass data into the main sitemodel and commit each subgrid as it is updated
-                            SubGridIntegrator subGridIntegrator = new SubGridIntegrator(Task.AggregatedCellPasses, SiteModelFromDM, SiteModelFromDM.Grid, storageProxy_Mutable);
+                            // ... first relable the passes with the machine ID
+                          Task.AggregatedCellPasses.ScanAllSubGrids(leaf =>
+                          {
+                            ServerSubGridTreeLeaf serverLeaf = (ServerSubGridTreeLeaf) leaf;
 
+                            foreach (var segment in serverLeaf.Cells.PassesData.Items)
+                            {
+                              SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+                              {
+                                uint passCount = segment.PassesData.PassCount(x, y);
+                                for (int i = 0; i < passCount; i++)
+                                  segment.PassesData.SetInternalMachineID(x, y, i, MachineFromDM.InternalSiteModelMachineIndex);
+                              });
+                            }
+                            return true;
+                          });
+
+                            // ... then integrate them
+                            SubGridIntegrator subGridIntegrator = new SubGridIntegrator(Task.AggregatedCellPasses, SiteModelFromDM, SiteModelFromDM.Grid, storageProxy_Mutable);
                             if (!subGridIntegrator.IntegrateSubGridTree(SubGridTreeIntegrationMode.SaveToPersistentStore, SubgridHasChanged))
                             {
                                 return false;

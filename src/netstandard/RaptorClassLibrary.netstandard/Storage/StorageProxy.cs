@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.DI;
 using VSS.TRex.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 
@@ -10,9 +11,8 @@ namespace VSS.TRex.Storage
   /// </summary>
   public static class StorageProxy
   {
-    private static IStorageProxyFactory Factory { get; set; }
-
-    public static void Inject(IStorageProxyFactory factory) => Factory = factory;
+    // Get the storage proxy factory from the DI context
+    private static IStorageProxyFactory Factory = DIContext.Obtain<IStorageProxyFactory>();
 
     public static IStorageProxy Instance(StorageMutability mutability)
     {

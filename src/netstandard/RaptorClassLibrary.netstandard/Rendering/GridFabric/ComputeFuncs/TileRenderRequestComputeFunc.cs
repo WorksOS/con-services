@@ -22,6 +22,9 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
     [Serializable]
     public class TileRenderRequestComputeFunc : BaseComputeFunc, IComputeFunc<TileRenderRequestArgument, TileRenderResponse>
     {
+        // Get the rendering factory from the DI context
+        private static IRenderingFactory RenderingFactory = DIContext.Obtain<IRenderingFactory>();
+
         [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
@@ -66,7 +69,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
                     Log.LogInformation("Null bitmap returned by executor");
                 }
 
-                return DIContext.RenderingFactory.CreateTileRenderResponse(bmp?.GetBitmap()) as TileRenderResponse;
+                return RenderingFactory.CreateTileRenderResponse(bmp?.GetBitmap()) as TileRenderResponse;
             }
             finally
             {

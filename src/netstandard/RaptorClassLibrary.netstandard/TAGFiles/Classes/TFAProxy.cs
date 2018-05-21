@@ -1,22 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Reflection;
-using System.Text;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.TAGFiles.Classes.Validator;
-using VSS.TRex.TAGFiles.Models;
-using VSS.TRex.DesignProfiling.Servers.Client;
-using VSS.TRex;
 
 namespace VSS.TRex.TAGFiles.Classes
 {
     public class TFAProxy : ITFAProxy
     {
-
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
+      /// <summary>
+      ///  Default no-arg constructor
+      /// </summary>
+      public TFAProxy()
+      {
+
+      }
 
         /// <summary>
         /// Calls Tagfile Auth Service to lookup project details and check assett is licensed
@@ -32,7 +33,6 @@ namespace VSS.TRex.TAGFiles.Classes
         /// <returns></returns>
         public ValidationResult ValidateTagfile(Guid submittedProjectId, Guid tccOrgId, string radioSerial, int radioType, double lat, double lon, DateTime timeOfPosition, out Guid projectId, out Guid assetId)
         {
-
             ValidationResult result = ValidationResult.Unknown;
 
             // dont waste the services time if you dont have any details
@@ -74,7 +74,16 @@ namespace VSS.TRex.TAGFiles.Classes
                 var responseObj = Newtonsoft.Json.JsonConvert.DeserializeObject<TFAReponse>(response);
                 responseReader.Close();
                 if (responseObj.ResultCode == 0)
+                {
                     result = ValidationResult.Valid;
+                    // if not overriding take TFA projectid
+                    if ((projectId == Guid.Empty) && (Guid.Parse(responseObj.projectUid) != Guid.Empty))
+                    {
+                        projectId = Guid.Parse(responseObj.projectUid);
+                    }
+                    // take what TFA gives us including a empty guid
+                    assetId = (Guid.Parse(responseObj.projectUid));
+                }
                 else
                 {
                     // Todo assigned correct values

@@ -865,14 +865,18 @@ namespace VSS.TRex.IgnitePOC.TestApp
       private void button7_Click(object sender, EventArgs e)
       {
 
-        Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
+      //  Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
 
         SubmitTAGFileRequest request = new SubmitTAGFileRequest();
         SubmitTAGFileRequestArgument arg = null;
-        string fileName =
-            "J:\\PP\\Construction\\Office software\\SiteVision Office\\Test Files\\VisionLink Data\\Southern Motorway\\TAYLORS COMP\\IgniteTestData\\0201J004SV--TAYLORS COMP--110504215856.tag";
+        string fileName = this.edtTagfile.Text;
+            //  "J:\\PP\\Construction\\Office software\\SiteVision Office\\Test Files\\VisionLink Data\\Southern Motorway\\TAYLORS COMP\\IgniteTestData\\0201J004SV--TAYLORS COMP--110504215856.tag";
 
-        string tccOrgID = new Guid().ToString(); 
+
+        Guid TheProject = Guid.Parse(this.edtProjectID.Text);
+        Guid TheAsset = Guid.Parse(this.edtAssetID.Text);
+        string TheFileName = Path.GetFileName(fileName);
+        string tccOrgID = Guid.Parse(this.edtTCCOrgID.Text).ToString();   //new Guid().ToString(); 
 
         using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
         {
@@ -881,18 +885,19 @@ namespace VSS.TRex.IgnitePOC.TestApp
 
           arg = new SubmitTAGFileRequestArgument()
                 {
-                    ProjectID = ID(),
-                    AssetID = Guid.Parse("1414327a-2b91-41ef-9390-6c1f3ccc73c9"), // machine.ID,
-                    TAGFileName = "0201J004SV--TAYLORS COMP--110504215856.tag",
+                    ProjectID = TheProject,//ID(),
+                    AssetID = TheAsset,
+                    TAGFileName = TheFileName,
                     TagFileContent = bytes,
                     TCCOrgID = tccOrgID
+                     
                 };
 
         }
         request.Execute(arg);
       }
 
-        private void button8_Click(object sender, EventArgs e)
+        private void btnCalcAll_Click(object sender, EventArgs e)
         {
             // Calculate a simple volume based on a filter to filter, earliest to latest context for the entire model
             Cursor.Current = Cursors.WaitCursor;
@@ -906,6 +911,14 @@ namespace VSS.TRex.IgnitePOC.TestApp
             Cursor.Current = Cursors.Default;
 
             MessageBox.Show($"Simple Volume Response [Model Extents]:\n{volume}");
+        }
+
+        private void btnFileOpen_Click(object sender, EventArgs e)
+        {
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                this.edtTagfile.Text = openFileDialog1.FileName;
+            }
         }
     }
 }

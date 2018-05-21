@@ -110,7 +110,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             // 'touch' them
             SegmentIterator.MarkReturnedSegmentsAsTouched = true;
 
-            TargetSubGrid.Integrate(SourceSubGrid, SegmentIterator, true);
+            TargetSubGrid.Integrate(SourceSubGrid, SegmentIterator, false);
             //    finally
             //      TargetSubGrid.CachedMemoryUpdateTrackingActive = false;
             //    end;
@@ -288,7 +288,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                 {
                     IntegrateIntoLiveGrid(SegmentIterator);
                 }
-
             }
 
             return true;

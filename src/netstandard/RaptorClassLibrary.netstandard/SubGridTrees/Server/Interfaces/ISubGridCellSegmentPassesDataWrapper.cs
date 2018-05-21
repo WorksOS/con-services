@@ -185,5 +185,14 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// </summary>
         /// <returns></returns>
         BitArray GetMachineIDSet();
+
+    /// <summary>
+    /// Sets the internal machine ID for the cell pass identifid by x & y spatial location and passNumber.
+    /// </summary>
+    /// <param name="X"></param>
+    /// <param name="Y"></param>
+    /// <param name="passNumber"></param>
+    /// <param name="internalMachineID"></param>
+    void SetInternalMachineID(uint X, uint Y, int passNumber, short internalMachineID);
     }
 }

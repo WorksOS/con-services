@@ -34,7 +34,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator.Tests
 
             // Create the site model and machine etc to aggregate the processed TAG file into
             SiteModel siteModel = new SiteModel("TestName", "TestDesc", Guid.NewGuid(), 1.0);
-            Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
+            Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), Machine.kNullInternalSiteModelMachineIndex, false);
             // ISubGridFactory factory = new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>();
             // ServerSubGridTree tree = new ServerSubGridTree(siteModel);
             // ProductionEventChanges events = new ProductionEventChanges(siteModel, machine.ID);

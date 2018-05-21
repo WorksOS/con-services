@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.DI;
 
 namespace VSS.TRex.Logging
 {
@@ -9,8 +10,9 @@ namespace VSS.TRex.Logging
   /// The TRex Logger namespace providing CreateLogger semantics. Dependency Injection seeds the logger factory into the Logger class.
   /// </summary>
     public static class Logger
-    {
-      private static ILoggerFactory Factory {get; set;}
+  {
+    // Get the logger factory from the DIContext
+      public static ILoggerFactory Factory { get; private set; }
 
       public static ILogger CreateLogger<TState>() => Factory.CreateLogger<TState>();
 

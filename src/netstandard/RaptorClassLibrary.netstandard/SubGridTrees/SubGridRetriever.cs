@@ -57,8 +57,9 @@ namespace VSS.TRex.SubGridTrees
         private double StepX, StepY;
         private double IntraGridOffsetX, IntraGridOffsetY;
 
-        // TFilteredValuePopulationControl PopulationControl = null;
-        // TICServerProfiler Profiler = null;
+        private FilteredValuePopulationControl PopulationControl = null;
+ 
+      // TICServerProfiler Profiler = null;
         private object Profiler = null; // Null place holder...
         // TICProfileCell CellProfile = null;
 
@@ -99,8 +100,9 @@ namespace VSS.TRex.SubGridTrees
                                 bool prepareGridForCacheStorageIfNoSeiving,
                                 byte treeLevel,
                                 int maxNumberOfPassesToReturn,
-                                AreaControlSet areaControlSet)
-        {
+                                AreaControlSet areaControlSet,
+                                FilteredValuePopulationControl populationControl)
+    {
             SiteModel = sitemodel;
             StorageProxy = storageProxy;
             SegmentIterator = null;
@@ -120,7 +122,9 @@ namespace VSS.TRex.SubGridTrees
             MaxNumberOfPassesToReturn = maxNumberOfPassesToReturn;
 
             AreaControlSet = areaControlSet;
-        }
+
+      PopulationControl = populationControl;
+    }
 
     private void AcquirePopulationFilterValuesInterlock()
         {
@@ -188,12 +192,9 @@ namespace VSS.TRex.SubGridTrees
         {
             while (CellPassIterator.MayHaveMoreFilterableCellPasses() && CellPassIterator.GetNextCellPass(ref CurrentPass.FilteredPass))
             {
-                /* TODO: Population of machine events is not yet supported
-                PopulateFilteredValues(SiteModel.MachinesTargetValues,
-                  GetTargetValues(CurrentPass.FilteredPass.MachineID),
+              FiltersValuePopulation.PopulateFilteredValues(SiteModel.MachinesTargetValues[CurrentPass.FilteredPass.InternalSiteModelMachineIndex],
                   PopulationControl,
-                  CurrentPass);
-                */
+                  ref CurrentPass);
 
                 if (Filter.AttributeFilter.FilterPass(ref CurrentPass, FilterOverriden))
                 {
@@ -492,11 +493,9 @@ namespace VSS.TRex.SubGridTrees
 
                             if (HaveFilteredPass)
                             {
-                                /* TODO machine event poplation is not yet supported
-                                PopulateFilteredValues(SiteModel.MachinesTargetValues,
-                                                       GetTargetValues(AssignmentContext.FilteredValue.FilteredPassData.FilteredPass.MachineID),
-                                                       PopulationControl, AssignmentContext.FilteredValue.FilteredPassData);
-                                */
+                              FiltersValuePopulation.PopulateFilteredValues(SiteModel.MachinesTargetValues[CurrentPass.FilteredPass.InternalSiteModelMachineIndex],
+                                PopulationControl,
+                                ref AssignmentContext.FilteredValue.FilteredPassData);
                             }
                         }
 
@@ -871,13 +870,11 @@ namespace VSS.TRex.SubGridTrees
 
                                 if (HaveFilteredPass)
                                 {
-                                    /* TODO machine event poplation is not yet supported
-                                    PopulateFilteredValues(SiteModel.MachinesTargetValues,
-                                                           GetTargetValues(AssignmentContext.FilteredValue.FilteredPassData.FilteredPass.MachineID),
-                                                           PopulationControl, AssignmentContext.FilteredValue.FilteredPassData);
-                                    */
+                                  FiltersValuePopulation.PopulateFilteredValues(SiteModel.MachinesTargetValues[CurrentPass.FilteredPass.InternalSiteModelMachineIndex],
+                                    PopulationControl,
+                                    ref AssignmentContext.FilteredValue.FilteredPassData);
                                 }
-                            }
+                            } 
 
                             if (!HaveFilteredPass)
                             {
