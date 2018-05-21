@@ -2,14 +2,15 @@
 using System.Windows.Forms;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Servers.Client;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System.Reflection;
+using VSS.TRex.Logging;
 
 namespace TRexGridActivator
 {
     public partial class Form1 : Form
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         public Form1()
         {
@@ -20,13 +21,13 @@ namespace TRexGridActivator
         {
             try
             {
-                Log.Info("About to call ActivatePersistentGridServer.Instance().SetGridActive() for Immutable TRex grid");
+                Log.LogInformation("About to call ActivatePersistentGridServer.Instance().SetGridActive() for Immutable TRex grid");
                 bool result1 = ActivatePersistentGridServer.Instance().SetGridActive(TRexGrids.ImmutableGridName());
-                Log.Info($"Activation process completed: Immutable = {result1}");
+                Log.LogInformation($"Activation process completed: Immutable = {result1}");
 
-                Log.Info("About to call ActivatePersistentGridServer.Instance().SetGridActive() for Mutable TRex grid");
+                Log.LogInformation("About to call ActivatePersistentGridServer.Instance().SetGridActive() for Mutable TRex grid");
                 bool result2 = ActivatePersistentGridServer.Instance().SetGridActive(TRexGrids.MutableGridName());
-                Log.Info($"Activation process completed: Mutable = {result2}");
+                Log.LogInformation($"Activation process completed: Mutable = {result2}");
 
                 MessageBox.Show($"Activation process completed: Mutable = {result1}, Immutable = {result2}");
             }

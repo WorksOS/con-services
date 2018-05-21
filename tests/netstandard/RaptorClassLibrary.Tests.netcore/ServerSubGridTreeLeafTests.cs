@@ -51,7 +51,7 @@ namespace VSS.TRex.SubGridTrees.Server.Tests
 
             CellPass pass = CreateTestCellPass();
             leaf.AddPass(0, 0, pass);
-            leaf.ComputeLatestPassInformation(true, StorageProxyFactory.Storage(StorageMutability.Mutable));
+            leaf.ComputeLatestPassInformation(true, StorageProxy.Instance(StorageMutability.Mutable));
 
             leaf.Clear();
 
@@ -202,7 +202,7 @@ namespace VSS.TRex.SubGridTrees.Server.Tests
             CellPass pass = CreateTestCellPass();
             leaf.AddPass(0, 0, pass);
 
-            leaf.ComputeLatestPassInformation(true, StorageProxyFactory.Storage(StorageMutability.Mutable));
+            leaf.ComputeLatestPassInformation(true, StorageProxy.Instance(StorageMutability.Mutable));
 
             Assert.True(leaf.CellHasValue(0, 0), "Cell does not have value");
         }
@@ -234,7 +234,7 @@ namespace VSS.TRex.SubGridTrees.Server.Tests
             pass.Time.AddMinutes(1);
             leaf.AddPass(0, 0, pass);
 
-            leaf.ComputeLatestPassInformation(true, StorageProxyFactory.Storage(StorageMutability.Mutable));
+            leaf.ComputeLatestPassInformation(true, StorageProxy.Instance(StorageMutability.Mutable));
 
             Assert.True(leaf.CellHasValue(0, 0), "Cell does not have value");
 

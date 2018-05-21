@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using VSS.TRex.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -309,7 +310,6 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         public void SetIteratorElevationRange(double minElevation, double maxElevation) => IterationState.SetIteratorElevationRange(minElevation, maxElevation);
 
-        // TODO Machine restriction not implemented
-        //public void SetMachineRestriction(const AMachineIDSets : TMachineIDSets) => IterationState.SetMachineRestriction(AMachineIDSets);
+        public void SetMachineRestriction(BitArray machineIDSet) => IterationState.SetMachineRestriction(machineIDSet);
     }
 }

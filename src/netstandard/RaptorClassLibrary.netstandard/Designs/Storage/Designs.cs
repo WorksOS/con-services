@@ -80,7 +80,7 @@ namespace VSS.TRex.Designs.Storage
         /// <param name="ADesignDescriptor"></param>
         /// <param name="AExtents"></param>
         /// <returns></returns>
-        public Design AddDesignDetails(long ADesignID,
+        public Design AddDesignDetails(Guid ADesignID,
                                        DesignDescriptor ADesignDescriptor,
                                        BoundingWorldExtent3D AExtents)
         {
@@ -102,14 +102,14 @@ namespace VSS.TRex.Designs.Storage
         /// </summary>
         /// <param name="ADesignID"></param>
         /// <returns></returns>
-        public bool RemoveDesign(long ADesignID)
+        public bool RemoveDesign(Guid ADesignID)
         {
             Design match = Find(x => x.ID == ADesignID);
 
             return match != null && Remove(match);
         }
 
-        public Design Locate(long AID) => Find(x => x.ID == AID);
+        public Design Locate(Guid AID) => Find(x => x.ID == AID);
 
         public void Assign(Designs source)
         {

@@ -3,6 +3,7 @@ using System.IO;
 using VSS.TRex.Common;
 using VSS.TRex.Events;
 using VSS.TRex.Types;
+using VSS.TRex.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.Machines
 {
@@ -25,6 +26,12 @@ namespace VSS.TRex.Machines
         public Guid ID { get; set; }
 
         public short InternalSiteModelMachineIndex { get; set; }
+
+      /// <summary>
+      /// The internal machine ID representing a machien that has not yet
+      /// been assigned as actual machine ID within the data model
+      /// </summary>
+      public const short kNullInternalSiteModelMachineIndex = -1;
 
         public string Name { get; set; } = "";
 
@@ -169,10 +176,7 @@ namespace VSS.TRex.Machines
             if (version != 1)
                 throw new Exception($"Invalid version number ({version}) reading machine, expected version (1)");
 
-            byte[] bytes = new byte[16];
-            reader.Read(bytes, 0, 16);
-            ID = new Guid(bytes);
-
+            ID = reader.ReadGuid();
             InternalSiteModelMachineIndex = reader.ReadInt16();
             Name = reader.ReadString();
             MachineType = reader.ReadByte();

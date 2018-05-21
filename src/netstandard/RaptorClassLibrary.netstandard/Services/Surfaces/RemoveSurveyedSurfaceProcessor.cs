@@ -10,9 +10,9 @@ namespace VSS.TRex.Services.Surfaces
     /// Service processor to handle removing a surveyed surface from the list for a sitemodel
     /// </summary>
     [Serializable]
-    public class RemoveSurveyedSurfaceProcessor : ICacheEntryProcessor<NonSpatialAffinityKey, byte[], long, bool>
+    public class RemoveSurveyedSurfaceProcessor : ICacheEntryProcessor<NonSpatialAffinityKey, byte[], Guid, bool>
     {
-        public bool Process(IMutableCacheEntry<NonSpatialAffinityKey, byte[]> entry, long arg)
+        public bool Process(IMutableCacheEntry<NonSpatialAffinityKey, byte[]> entry, Guid arg)
         {
             try
             {

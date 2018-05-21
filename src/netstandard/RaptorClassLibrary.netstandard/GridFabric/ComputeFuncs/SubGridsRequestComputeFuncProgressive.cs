@@ -1,7 +1,7 @@
 ﻿using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Messaging;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Reflection;
@@ -23,7 +23,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
         [NonSerialized]
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         [NonSerialized]
         private IMessaging rmtMsg;
@@ -50,7 +50,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
             MS = new MemoryStream();
             buffer = new byte[10000];
 
-            Log.InfoFormat("TRexNodeIDAsString is {0} in UnpackArgument()", tRexNodeIDAsString);
+            Log.LogInformation($"TRexNodeIDAsString is {tRexNodeIDAsString} in UnpackArgument()");
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                 return false;
             }
 
-            Log.InfoFormat("Message group has {0} members", group.GetNodes().Count);
+            Log.LogInformation($"Message group has {group.GetNodes().Count} members");
 
             rmtMsg = group.GetMessaging();
 
@@ -120,7 +120,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
             }
             catch (Exception E)
             {
-                Log.Error("Exception sending message", E);
+                Log.LogError("Exception sending message", E);
                 throw;
             }
         }

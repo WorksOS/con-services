@@ -1,22 +1,22 @@
 ﻿using System;
-using System.IO;
-using System.Reflection;
-using log4net;
-using log4net.Config;
+using Microsoft.Extensions.DependencyInjection;
+using VSS.TRex.DI;
 using VSS.TRex.Servers.Compute;
+using VSS.TRex.Storage;
+using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.Server.PSNode
 {
   class Program
   {
-    private static ILog Log;
+    private static void DependencyInjection()
+    {
+      DIImplementation.New().AddLogging().Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory())).Complete();
+    }
+
     static void Main(string[] args)
     { 
-      // Initialise the Log4Net logging system
-      var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
-      string s = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "log4net.xml");
-      XmlConfigurator.Configure(logRepository, new FileInfo(s));
-      Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+      DependencyInjection();
 
       var server = new SubGridProcessingServer();
       Console.WriteLine("Press anykey to exit");

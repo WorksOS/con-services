@@ -32,15 +32,6 @@ namespace VSS.TRex.Machines
         /// </summary>
         /// <returns></returns>
         private Guid UniqueJohnDoeID() => Guid.NewGuid();
-        /*
-        {
-            long Result = TRexConfig.JohnDoeBaseNumber() + 1;
-            
-            ForEach(x => { if (x.IsJohnDoeMachine && x.ID != Machine.kJohnDoeAssetID && x.ID >= Result) { Result++; } });
-
-            return Result;
-        }
-        */
 
         public Machine CreateNew(string name, string machineHardwareID,
                                  byte machineType,

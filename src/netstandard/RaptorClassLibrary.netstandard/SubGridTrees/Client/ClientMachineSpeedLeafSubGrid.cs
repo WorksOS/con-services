@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using VSS.TRex.Cells;
 using VSS.TRex.Filters;
 using VSS.TRex.SubGridTrees.Interfaces;

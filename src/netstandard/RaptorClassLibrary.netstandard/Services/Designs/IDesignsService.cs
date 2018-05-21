@@ -24,7 +24,7 @@ namespace VSS.TRex.Services.Designs
         /// <param name="SiteModelID"></param>
         /// <param name="designID"></param>
         /// <returns></returns>
-        Design Find(Guid SiteModelID, long designID);
+        Design Find(Guid SiteModelID, Guid designID);
 
         /// <summary>
         /// Request the list of designs from a site model
@@ -39,6 +39,6 @@ namespace VSS.TRex.Services.Designs
         /// <param name="SiteModelID"></param>
         /// <param name="DesignID"></param>
         /// <returns></returns>
-        bool Remove(Guid SiteModelID, long DesignID);
+        bool Remove(Guid SiteModelID, Guid DesignID);
     }
 }

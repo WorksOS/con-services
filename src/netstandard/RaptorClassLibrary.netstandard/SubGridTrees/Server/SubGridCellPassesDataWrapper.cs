@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using log4net;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 
@@ -9,7 +9,7 @@ namespace VSS.TRex.SubGridTrees.Server
 {
     public class SubGridCellPassesDataWrapper
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         public IServerLeafSubGrid Owner { get; set; }   // FOwner : TICServerSubGridTreeLeaf;
 
@@ -99,14 +99,14 @@ namespace VSS.TRex.SubGridTrees.Server
             // TODO: Remove until locking semntics are reviewed
             //if (!Owner.Locked)
             //{
-            //  Log.Error(
+            //  Log.LogError(
            //         $"May not perform a segment cleave operation on a subgrid ({Owner.Moniker()}) that is not locked");
             //    return false;
             //}
 
             if (!CleavingSegment.HasAllPasses)
             {
-                Log.Error($"Cannot cleave a subgrid ({Owner.Moniker()}) without its cell passes");
+                Log.LogError($"Cannot cleave a subgrid ({Owner.Moniker()}) without its cell passes");
                 return false;
             }
 

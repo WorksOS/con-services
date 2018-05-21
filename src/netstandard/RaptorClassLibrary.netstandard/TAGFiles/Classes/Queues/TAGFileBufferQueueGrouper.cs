@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using log4net;
+using Microsoft.Extensions.Logging;
 
 namespace VSS.TRex.TAGFiles.Classes.Queues
 {
@@ -14,7 +14,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     /// </summary>
     public class TAGFileBufferQueueGrouper
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// The maximum number of TAG files the grouper will permit in a bucket of TAG file before being committed to the 
@@ -155,7 +155,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 if (result.Any())
                 {
                     // Add the project to the avoid list
-                    Log.Info($"Thread {Thread.CurrentThread.ManagedThreadId}: About to add project {projectID} to [{(!avoidProjects.Any() ? "Empty" : avoidProjects.Select(x => $"{x}").Aggregate((a, b) => $"{a} + {b}"))}]");
+                    Log.LogInformation($"Thread {Thread.CurrentThread.ManagedThreadId}: About to add project {projectID} to [{(!avoidProjects.Any() ? "Empty" : avoidProjects.Select(x => $"{x}").Aggregate((a, b) => $"{a} + {b}"))}]");
                     avoidProjects.Add(projectID);
                 }
 

@@ -1,5 +1,5 @@
 ﻿using Apache.Ignite.Core.Compute;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
@@ -17,7 +17,7 @@ namespace VSS.TRex.GridFabric.Requests
         where TSubGridsRequestArgument : SubGridsRequestArgument, new()
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// Default no-arg constructor that delegates construction to the base class
@@ -37,9 +37,9 @@ namespace VSS.TRex.GridFabric.Requests
             // Construct the argument to be supplied to the compute cluster
             PrepareArgument();
 
-            Log.Info($"Prepared argument has TRexNodeId = {arg.TRexNodeID}");
-            Log.Info($"Production Data mask in argument to renderer contains {ProdDataMask.CountBits()} subgrids");
-            Log.Info($"Surveyed Surface mask in argument to renderer contains {SurveyedSurfaceOnlyMask.CountBits()} subgrids");
+            Log.LogInformation($"Prepared argument has TRexNodeId = {arg.TRexNodeID}");
+            Log.LogInformation($"Production Data mask in argument to renderer contains {ProdDataMask.CountBits()} subgrids");
+            Log.LogInformation($"Surveyed Surface mask in argument to renderer contains {SurveyedSurfaceOnlyMask.CountBits()} subgrids");
 
             TSubGridRequestsResponse taskResult = null;
 
@@ -59,9 +59,7 @@ namespace VSS.TRex.GridFabric.Requests
             finally
             {
                 sw.Stop();
-                Log.InfoFormat("TaskResult {0}: SubgidRequests.Execute() for DM:{1} from node {2} for data type {3} took {4}ms",
-                               taskResult == null ? "<NullResult>" : taskResult.ResponseCode.ToString(), 
-                               Task.PipeLine.DataModelID, Task.TRexNodeID, Task.GridDataType, sw.ElapsedMilliseconds);
+                Log.LogInformation($"TaskResult {(taskResult == null ? "<NullResult>" : taskResult.ResponseCode.ToString())}: SubgidRequests.Execute() for DM:{Task.PipeLine.DataModelID} from node {Task.TRexNodeID} for data type {Task.GridDataType} took {sw.ElapsedMilliseconds}ms");
             }
 
             // Advise the pipeline of all the subgrids that were examined in the aggregative processing

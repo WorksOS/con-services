@@ -76,7 +76,7 @@ namespace VSS.TRex.Tests
         {
             IServerLeafSubGrid subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
 
-            SubGridSegmentIterator Iterator = new SubGridSegmentIterator(subGrid, StorageProxyFactory.Storage(StorageMutability.Mutable))
+            SubGridSegmentIterator Iterator = new SubGridSegmentIterator(subGrid, StorageProxy.Instance(StorageMutability.Mutable))
             {
                 IterationDirection = IterationDirection.Forwards,
                 ReturnDirtyOnly = true,
@@ -85,7 +85,7 @@ namespace VSS.TRex.Tests
 
             Assert.True(!Iterator.MoveToFirstSubGridSegment(), "Was able to move to first segment (forwards) when requesting only dirty segments");
 
-            Iterator = new SubGridSegmentIterator(subGrid, StorageProxyFactory.Storage(StorageMutability.Mutable))
+            Iterator = new SubGridSegmentIterator(subGrid, StorageProxy.Instance(StorageMutability.Mutable))
             {
                 IterationDirection = IterationDirection.Backwards,
                 ReturnDirtyOnly = true,
@@ -94,7 +94,7 @@ namespace VSS.TRex.Tests
 
             Assert.True(!Iterator.MoveToFirstSubGridSegment(), "Was able to move to first segment (backwards) when requesting only dirty segments");
 
-            Iterator = new SubGridSegmentIterator(subGrid, StorageProxyFactory.Storage(StorageMutability.Mutable))
+            Iterator = new SubGridSegmentIterator(subGrid, StorageProxy.Instance(StorageMutability.Mutable))
             {
                 IterationDirection = IterationDirection.Forwards,
                 ReturnDirtyOnly = false,
@@ -103,7 +103,7 @@ namespace VSS.TRex.Tests
 
             Assert.True(Iterator.MoveToFirstSubGridSegment(), "Was not able to move to first segment (forwards) when requesting all segments");
 
-            Iterator = new SubGridSegmentIterator(subGrid, StorageProxyFactory.Storage(StorageMutability.Mutable))
+            Iterator = new SubGridSegmentIterator(subGrid, StorageProxy.Instance(StorageMutability.Mutable))
             {
                 IterationDirection = IterationDirection.Backwards,
                 ReturnDirtyOnly = false,
@@ -269,13 +269,13 @@ namespace VSS.TRex.Tests
                 // Set the segment to not dirty - it shoudl be ignored
                 subGrid.Cells.PassesData[0].Dirty = false;
 
-                SubGridSegmentCleaver.PerformSegmentCleaving(StorageProxyFactory.Storage(StorageMutability.Mutable), subGrid);
+                SubGridSegmentCleaver.PerformSegmentCleaving(StorageProxy.Instance(StorageMutability.Mutable), subGrid);
 
                 Assert.True(1 == subGrid.Cells.PassesData.Count, $"After cleaving with no dirty segments there are {subGrid.Cells.PassesData.Count} segments instead of the expected one segments");
 
                 // Set the segment to not dirty - it shoudl be ignored
                 subGrid.Cells.PassesData[0].Dirty = true;
-                SubGridSegmentCleaver.PerformSegmentCleaving(StorageProxyFactory.Storage(StorageMutability.Mutable), subGrid);
+                SubGridSegmentCleaver.PerformSegmentCleaving(StorageProxy.Instance(StorageMutability.Mutable), subGrid);
 
                 //Check there are now two segments in total
                 Assert.True(2 == subGrid.Cells.PassesData.Count, $"After cleaving there are {subGrid.Cells.PassesData.Count} segments instead of the expected two segments");

@@ -1,6 +1,6 @@
 ﻿using Apache.Ignite.Core.Cache.Affinity;
 using Apache.Ignite.Core.Cluster;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ namespace VSS.TRex.GridFabric.Affinity
     [Serializable]
     public class AffinityFunctionBase : IAffinityFunction
     {
-        protected static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        protected static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         // Set NumPartitions to the default number of partitions
         protected int NumPartitions = (int)TRexConfig.NumPartitionsPerDataCache;
@@ -36,14 +36,14 @@ namespace VSS.TRex.GridFabric.Affinity
 
             try
             {
-                Log.Info("Assigning partitions");
+                Log.LogInformation("Assigning partitions");
 
                 /* Debug code to dumo the attributes assigned to nodes being looked at
                 foreach (var node in context.CurrentTopologySnapshot)
                 {
-                    Log.Info($"Topology Node {node.Id}:");
+                    Log.LogInformation($"Topology Node {node.Id}:");
                     foreach (KeyValuePair<string, object> pair in node.GetAttributes())
-                        Log.Info($"Attributes Pair: {pair.Key} -> {pair.Value}");
+                        Log.LogInformation($"Attributes Pair: {pair.Key} -> {pair.Value}");
                 } */
 
                 List<IClusterNode> Nodes = context.CurrentTopologySnapshot.ToList();
@@ -53,21 +53,21 @@ namespace VSS.TRex.GridFabric.Affinity
                 {
                     /* Debug code to dumo the attributes assigned to nodes being looked at
                     foreach (var a in Nodes.First().GetAttributes())
-                        Log.Info($"Attribute: {a.ToString()}");
+                        Log.LogInformation($"Attribute: {a.ToString()}");
                     */
 
-                    Log.Info("Assigning partitions to nodes");
+                    Log.LogInformation("Assigning partitions to nodes");
                     for (int partitionIndex = 0; partitionIndex < NumPartitions; partitionIndex++)
                     {
                         result[partitionIndex].Add(Nodes[NumPartitions % Nodes.Count]);
 
-                        Log.Debug($"--> Assigned node:{Nodes[NumPartitions % Nodes.Count].ConsistentId} nodes to partition {partitionIndex}");
+                        Log.LogDebug($"--> Assigned node:{Nodes[NumPartitions % Nodes.Count].ConsistentId} nodes to partition {partitionIndex}");
                     }
                 }
             }
             catch (Exception e)
             {
-                Log.Error($"Exception: {e}");
+                Log.LogError($"Exception: {e}");
                 return new List<List<IClusterNode>>();
             }
 
@@ -92,7 +92,7 @@ namespace VSS.TRex.GridFabric.Affinity
         /// <param name="nodeId"></param>
         public void RemoveNode(Guid nodeId)
         {
-            Log.Info($" Removing node {nodeId}");
+            Log.LogInformation($" Removing node {nodeId}");
             // Don't care at this point, I think...
             // throw new NotImplementedException();
         }

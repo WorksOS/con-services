@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -7,15 +7,21 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Apache.Ignite" Version="2.4.0" />
-    <PackageReference Include="Apache.Ignite.Log4Net" Version="2.4.0" />
-    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="log4net.netcore" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.0.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.2.0" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.33.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,6 +33,15 @@
   <ItemGroup>
     <Folder Include="Analytics\Foundation\GridFabric\Arguments\" />
     <Folder Include="Analytics\Foundation\GridFabric\Requests\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.DependencyInjection">
+      <HintPath>..\..\..\packages\Microsoft.Extensions.DependencyInjection.2.0.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.Log4NetExtensions">
+      <HintPath>..\..\..\..\..\Users\rwilson\.nuget\packages\vss.log4netextensions.netcore\2.2.0\lib\netstandard2.0\VSS.Log4NetExtensions.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

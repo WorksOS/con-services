@@ -5,7 +5,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using log4net;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Interfaces;
 using VSS.TRex.Types;
@@ -21,7 +21,7 @@ namespace VSS.TRex.Events
     public class ProductionEvents<V> : IProductionEvents
     {
         [NonSerialized]
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         private const int MajorVersion = 1;
         private const int MinorVersion = 0;
@@ -243,7 +243,7 @@ namespace VSS.TRex.Events
                             //if (!Event.IsCustomEvent)
                             //    return Events[EventIndex];
 
-                            Log.Debug($"Deleting custom machine event: {Events[EventIndex]}");
+                            Log.LogDebug($"Deleting custom machine event: {Events[EventIndex]}");
                             Events.RemoveAt(EventIndex);
                         }
                         else if (Event.IsCustomEvent)

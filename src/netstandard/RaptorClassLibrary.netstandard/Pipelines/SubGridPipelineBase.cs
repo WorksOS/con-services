@@ -1,4 +1,4 @@
-﻿using log4net;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +26,7 @@ namespace VSS.TRex.Pipelines
         where TSubGridRequestor : SubGridRequestsBase<TSubGridsRequestArgument, TSubGridRequestsResponse>, new() 
     {
         // ReSharper disable once StaticMemberInGenericType
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// The event used to signal that the pipeline processing has completed, or aborted
@@ -77,7 +77,7 @@ namespace VSS.TRex.Pipelines
 
         public int MaxNumberOfPassesToReturn = 0;
 
-        public long CutFillDesignID { get; set; } = long.MinValue;
+        public Guid CutFillDesignID { get; set; } = Guid.Empty;
 
         // public float FNoChangeVolumeTolerance;
 
@@ -211,17 +211,17 @@ namespace VSS.TRex.Pipelines
 
             SubgridsRemainingToProcess = analyser.TotalNumberOfSubgridsAnalysed;
 
-            Log.InfoFormat("Request analyser counts {0} subgrids to be requested, compared to {1} subgrids in production existance map", analyser.TotalNumberOfSubgridsAnalysed, OverallExistenceMap.CountBits());
+            Log.LogInformation($"Request analyser counts {analyser.TotalNumberOfSubgridsAnalysed} subgrids to be requested, compared to {OverallExistenceMap.CountBits()} subgrids in production existance map");
 
             if (analyser.TotalNumberOfSubgridsAnalysed == 0)
             {
                 // There are no subgrids to be requested, leave quietly
-                Log.InfoFormat("No subgrids analysed from request to be submitted to processing engine");
+                Log.LogInformation("No subgrids analysed from request to be submitted to processing engine");
 
                 return false;
             }
 
-            Log.Info($"START: Request for {analyser.TotalNumberOfSubgridsAnalysed} subgrids");
+            Log.LogInformation($"START: Request for {analyser.TotalNumberOfSubgridsAnalysed} subgrids");
 
             // Send the subgrid request mask to the grid fabric layer for processing
             TSubGridRequestor gridFabricRequest = new TSubGridRequestor()
@@ -240,7 +240,7 @@ namespace VSS.TRex.Pipelines
 
             ICollection<TSubGridRequestsResponse> Responses = gridFabricRequest.Execute();
 
-            Log.Info($"COMPLETED: Request for {analyser.TotalNumberOfSubgridsAnalysed } subgrids");
+            Log.LogInformation($"COMPLETED: Request for {analyser.TotalNumberOfSubgridsAnalysed } subgrids");
 
             return Responses.All(x => x.ResponseCode == SubGridRequestsResponseResult.OK);
         }
@@ -253,12 +253,12 @@ namespace VSS.TRex.Pipelines
         {
             if (PipelineSignalEvent.WaitOne(30000)) // Don't wait for more than two minutes...
             {
-                Log.Info($"WaitForCompletion received signal with wait handle: {PipelineSignalEvent.SafeWaitHandle.GetHashCode()}");
+                Log.LogInformation($"WaitForCompletion received signal with wait handle: {PipelineSignalEvent.SafeWaitHandle.GetHashCode()}");
             }
             else
             {
                 // No signal was received, the wait timed out...
-                Log.Info($"WaitForCompletion timed out with wait handle: {PipelineSignalEvent.SafeWaitHandle.GetHashCode()} and {SubgridsRemainingToProcess} subgrids remaining to be processed");
+                Log.LogInformation($"WaitForCompletion timed out with wait handle: {PipelineSignalEvent.SafeWaitHandle.GetHashCode()} and {SubgridsRemainingToProcess} subgrids remaining to be processed");
             }
         }
     }

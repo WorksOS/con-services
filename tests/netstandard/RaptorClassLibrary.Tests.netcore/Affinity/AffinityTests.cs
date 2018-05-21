@@ -59,7 +59,7 @@ namespace VSS.TRex.Tests.netcore.Affinity
         {
             cfg.IgniteInstanceName = "MyGrid3";
 
-            cfg.BinaryConfiguration = new BinaryConfiguration(typeof(Guid));
+            //cfg.BinaryConfiguration = new BinaryConfiguration(typeof(Guid));
         }
 
         private static void EnsureServer()

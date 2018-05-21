@@ -2,14 +2,14 @@
 using Apache.Ignite.Core.Cache.Event;
 using System.Collections.Generic;
 using System.Reflection;
-using log4net;
+using Microsoft.Extensions.Logging;
 
 namespace VSS.TRex.TAGFiles.Classes.Queues
 {
     public class LocalTAGFileListener : ICacheEntryEventListener<TAGFileBufferQueueKey, TAGFileBufferQueueItem>
     {
         [NonSerialized]
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// Event called whenever there are new items in the TAG file buffer queue discovered by the continuous query
@@ -21,7 +21,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             // Add the keys for the given events into the Project/Asset mapping buckets ready for a processing context
             // to acquire them. 
 
-            // Log.Info("About to add TAG file items to the grouper");
+            // Log.LogInformation("About to add TAG file items to the grouper");
             int countOfCreatedEvents = 0;
 
             foreach (var evt in evts)
@@ -34,18 +34,18 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 try
                 {
                     TAGFileBufferQueueItemHandler.Instance().Add(evt.Key /*, evt.Value*/);
-                    Log.Info($"Added TAG file item [{evt.Key}] to the grouper");
+                    Log.LogInformation($"Added TAG file item [{evt.Key}] to the grouper");
                 }
                 catch (Exception e)
                 {
-                    Log.Error(
+                    Log.LogError(
                         $"Exception {e} occurred addign TAG file item {evt.Key} to the grouper");
                 }
             }
 
             if (countOfCreatedEvents > 0)
             {
-                Log.Info($"Added {countOfCreatedEvents} TAG file items to the grouper");
+                Log.LogInformation($"Added {countOfCreatedEvents} TAG file items to the grouper");
             }
         }
     }

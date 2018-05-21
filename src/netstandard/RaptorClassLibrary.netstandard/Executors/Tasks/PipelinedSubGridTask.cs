@@ -1,4 +1,4 @@
-﻿using log4net;
+﻿using Microsoft.Extensions.Logging;
 using System.Reflection;
 using VSS.TRex.Types;
 
@@ -9,7 +9,7 @@ namespace VSS.TRex.Executors.Tasks
     /// </summary>
     public class PipelinedSubGridTask : TaskBase 
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// Primary task constructor
@@ -34,7 +34,7 @@ namespace VSS.TRex.Executors.Tasks
                 return true;
             }
 
-            Log.InfoFormat(" WARNING: PipelinedSubGridTask.TransferSubgridResponse: No pipeline available to submit grouped result for request {0}", RequestDescriptor);
+            Log.LogInformation($" WARNING: PipelinedSubGridTask.TransferSubgridResponse: No pipeline available to submit grouped result for request {RequestDescriptor}");
             return false;
         }
 
@@ -50,7 +50,7 @@ namespace VSS.TRex.Executors.Tasks
 
             try
             {
-                Log.Debug("WARNING: Aborting pipeline due to cancellation");
+                Log.LogDebug("WARNING: Aborting pipeline due to cancellation");
                 PipeLine.Abort();
             }
             catch
@@ -61,7 +61,7 @@ namespace VSS.TRex.Executors.Tasks
             }
             finally
             {
-                Log.Info("Nulling pipeline reference");
+                Log.LogInformation("Nulling pipeline reference");
                 PipeLine = null;
             }
         }
@@ -79,7 +79,7 @@ namespace VSS.TRex.Executors.Tasks
                 return true;
             }
 
-            Log.InfoFormat(" WARNING: PipelinedSubGridTask.TransferSubgridResponse: No pipeline available to submit grouped result for request {0}", RequestDescriptor);
+            Log.LogInformation($" WARNING: PipelinedSubGridTask.TransferSubgridResponse: No pipeline available to submit grouped result for request {RequestDescriptor}");
             return false;
         }
     }

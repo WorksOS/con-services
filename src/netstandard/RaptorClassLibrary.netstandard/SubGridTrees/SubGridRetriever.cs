@@ -1,4 +1,4 @@
-﻿using log4net;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
 using System.Reflection;
@@ -21,7 +21,7 @@ namespace VSS.TRex.SubGridTrees
 {
     public class SubGridRetriever
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         // Local state populated by the retriever constructor
         private CombinedFilter Filter;
@@ -83,6 +83,7 @@ namespace VSS.TRex.SubGridTrees
         /// Constructor for the subgrid retriever helper
         /// </summary>
         /// <param name="sitemodel"></param>
+        /// <param name="storageProxy"></param>
         /// <param name="filter"></param>
         /// <param name="hasOverrideSpatialCellRestriction"></param>
         /// <param name="overrideSpatialCellRestriction"></param>
@@ -1077,9 +1078,7 @@ namespace VSS.TRex.SubGridTrees
             SegmentIterator.Directory = _SubGridAsLeaf.Directory;
             if (Filter.AttributeFilter.HasMachineFilter)
             {
-                /* TODO Re-add when machine ID sets are implemented
-                SegmentIterator.SetMachineRestriction(PassFilter.FMachineIDSets);
-                */
+                SegmentIterator.SetMachineRestriction(Filter.AttributeFilter.MachineIDSet);
             }
 
             // Create and configure the cell pass iterator to be used
@@ -1319,7 +1318,7 @@ namespace VSS.TRex.SubGridTrees
                                                    // subgridLockToken          : Integer;
                                                    ClientHeightLeafSubGrid designElevations)
         {
-//            Log.Info("Entering RetrieveSubGrid");
+//            Log.LogInformation("Entering RetrieveSubGrid");
 
             ServerRequestResult Result = ServerRequestResult.UnknownError;
 
@@ -1380,8 +1379,7 @@ namespace VSS.TRex.SubGridTrees
                     if (_SubGrid == null)
                     {
                         // This should never really happen, but we'll be polite about it
-                        // TODO Readd when logging available
-                        Log.Warn($"Subgrid address (CellX={CellX}, CellY={CellY}) passed to LocateSubGridContaining() from RetrieveSubgrid() did not match an existing subgrid in the data model.' + 'Returning icsrrSubGridNotFound as response with a nil subgrid reference.");
+                        Log.LogWarning($"Subgrid address (CellX={CellX}, CellY={CellY}) passed to LocateSubGridContaining() from RetrieveSubgrid() did not match an existing subgrid in the data model.' + 'Returning icsrrSubGridNotFound as response with a nil subgrid reference.");
                         return ServerRequestResult.SubGridNotFound;
                     }
 
@@ -1390,15 +1388,13 @@ namespace VSS.TRex.SubGridTrees
 
                     if (!_SubGrid.IsLeafSubGrid()) // It's a leaf node
                     {
-                        // TODO Readd when logging available
-                        //SIGLogMessage.PublishNoODS(Nil, 'Requests of node subgrids in the IC server subgrid are not yet supported', slmcMessage); {SKIP}
+                        Log.LogInformation("Requests of node subgrids in the server subgrid are not yet supported");
                         return Result;
                     }
 
                     if (!(_SubGrid is IServerLeafSubGrid))
                     {
-                        // TODO Readd when logging available
-                        // SIGLogMessage.PublishNoODS(Nil, Format('_SubGrid %s is not a server grid leaf node', [_Subgrid.Moniker]), slmcAssert);
+                        Log.LogError($"_SubGrid {_SubGrid.Moniker()} is not a server grid leaf node");
                         return Result;
                     }
 
@@ -1455,7 +1451,7 @@ namespace VSS.TRex.SubGridTrees
                         // prior to assignment to the client subgrid.
                         AssignmentContext = new FilteredValueAssignmentContext();
 
-                        // TODO Add when cell left build setting sna cell profiles supported
+                        // TODO Add when cell left build settings and cell profiles supported
                         // AssignmentContext.CellProfile = CellProfile;
                         // AssignmentContext.LiftBuildSettings = LiftBuildSettings;
 
@@ -1473,7 +1469,6 @@ namespace VSS.TRex.SubGridTrees
                         /* TODO 
                         if (VLPDSvcLocations.Debug_ExtremeLogSwitchC)
                         {
-                          // TODO Readd when logging available
                           // SIGLogMessage.PublishNoODS(Nil, Format('Performing stripe iteration at %dx%d', [CellX, CellY]), slmcDebug);
                         }
                         */
@@ -1539,14 +1534,13 @@ namespace VSS.TRex.SubGridTrees
                     //      SIGLogMessage.PublishNoODS(Nil, 'Completed RetrieveSubGrid operation', slmcDebug); {SKIP}
                 }
             }
-            catch
+            catch (Exception e)
             {
-                // TODO readd when logging available
-                // SIGLogMessage.PublishNoODS(Nil, Format('Exception ''%s'' occured in RetrieveSubGrid', [E.Message]), E, slmcException);
+                Log.LogError($"Exception {e} occured in RetrieveSubGrid");
                 throw;
             }
 
-//            Log.Info("Exiting RetrieveSubGrid");
+//            Log.LogInformation("Exiting RetrieveSubGrid");
 
             return Result;
         }

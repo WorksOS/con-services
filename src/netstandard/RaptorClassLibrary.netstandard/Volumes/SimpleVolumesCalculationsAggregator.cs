@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
-using log4net;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Storage;
@@ -23,7 +23,7 @@ namespace VSS.TRex.Volumes
     /// </summary>
     public class SimpleVolumesCalculationsAggregator : ISubGridRequestsAggregator, IAggregateWith<SimpleVolumesCalculationsAggregator>
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// Defines a subgrid full of null values to run through the volumes engine in cases when 
@@ -172,7 +172,7 @@ namespace VSS.TRex.Volumes
             {
                 if (ProfilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
                 {
-                    Log.Error($"Design profiler subgrid elevation request for {BaseScanSubGrid.OriginAsCellAddress()} failed with error {ProfilerRequestResult}");
+                    Log.LogError($"Design profiler subgrid elevation request for {BaseScanSubGrid.OriginAsCellAddress()} failed with error {ProfilerRequestResult}");
                     return;
                 }
             }
@@ -300,7 +300,7 @@ namespace VSS.TRex.Volumes
                                 break;
 
                             default:
-                                Log.Error($"Unknown volume type {VolumeType} in ProcessVolumeInformationForSubgrid()");
+                                Log.LogError($"Unknown volume type {VolumeType} in ProcessVolumeInformationForSubgrid()");
                                 break;
                         }
                     }
@@ -397,7 +397,7 @@ namespace VSS.TRex.Volumes
 
                     if (BaseSubGrid == null)
                     {
-                        Log.Warn("#W# .SummariseSubgridResult BaseSubGrid is null");
+                        Log.LogWarning("#W# .SummariseSubgridResult BaseSubGrid is null");
                         return;
                     }
 

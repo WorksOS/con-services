@@ -1,4 +1,4 @@
-﻿using log4net;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,7 +24,7 @@ namespace VSS.TRex.GridFabric.Requests
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
         [NonSerialized]
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// Task is the business logic that will handle the response to the subgrids request
@@ -81,7 +81,7 @@ namespace VSS.TRex.GridFabric.Requests
         /// <summary>
         /// The design to be used in cases of cut/fill subgrid requests
         /// </summary>
-        public long CutFillDesignID { get; set; } = long.MinValue;
+        public Guid CutFillDesignID { get; set; } = Guid.Empty;
 
         /// <summary>
         /// No arg constructor that establishes this request as a cache compute request. 
@@ -113,7 +113,7 @@ namespace VSS.TRex.GridFabric.Requests
                                    SubGridTreeSubGridExistenceBitMask prodDataMask,
                                    SubGridTreeSubGridExistenceBitMask surveyedSurfaceOnlyMask,
                                    FilterSet filters,
-                                   long cutFillDesignID) : this()
+                                   Guid cutFillDesignID) : this()
         {
             Task = task;
             SiteModelID = siteModelID;
@@ -133,7 +133,7 @@ namespace VSS.TRex.GridFabric.Requests
         /// <returns></returns>
         protected void PrepareArgument()
         {
-            Log.InfoFormat("Preparing argument with TRexNodeId = {0}", TRexNodeId);
+            Log.LogInformation($"Preparing argument with TRexNodeId = {TRexNodeId}");
 
             using (MemoryStream ProdDataMS = new MemoryStream(), SurveyedSurfaceMS = new MemoryStream())
             {

@@ -4,7 +4,7 @@ using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Text;
-using log4net;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.TAGFiles.Classes.Validator;
 using VSS.TRex.TAGFiles.Models;
 using VSS.TRex.DesignProfiling.Servers.Client;
@@ -15,7 +15,7 @@ namespace VSS.TRex.TAGFiles.Classes
     public class TFAProxy : ITFAProxy
     {
 
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace VSS.TRex.TAGFiles.Classes
             // dont waste the services time if you dont have any details
             //if (tccOrgId == string.Empty && radioType == string.Empty)
              //   return ValidationResult.BadRequest;
-            Log.Info($"#Info# Details passed to TFA servce. ProjectID:{projectId}, AssetId:{assetId}, TCCOrgId:{tccOrgId}, radioSerial:{radioSerial}, radioType:{radioType}, lat:{lat}, lon:{lon}, DateTime:{timeOfPosition}");
+            Log.LogInformation($"#Info# Details passed to TFA servce. ProjectID:{projectId}, AssetId:{assetId}, TCCOrgId:{tccOrgId}, radioSerial:{radioSerial}, radioType:{radioType}, lat:{lat}, lon:{lon}, DateTime:{timeOfPosition}");
 
             // Todo This code can be refactored to suit needs
             TFARequest req = new TFARequest()
@@ -86,7 +86,7 @@ namespace VSS.TRex.TAGFiles.Classes
             {
                 Console.Out.WriteLine("-----------------");
                 Console.Out.WriteLine(e.Message);
-                Log.Error($"#Exception# Unexpected exception occured calling TFA service ProjectId:{projectId}, TCCOrgId:{tccOrgId}, radioSerial:{radioSerial}, radioType:{radioType}, lat:{lat}, lon:{lon}, DateTime:{timeOfPosition} {e.Message}");
+                Log.LogError($"#Exception# Unexpected exception occured calling TFA service ProjectId:{projectId}, TCCOrgId:{tccOrgId}, radioSerial:{radioSerial}, radioType:{radioType}, lat:{lat}, lon:{lon}, DateTime:{timeOfPosition} {e.Message}");
                 return result;
             }
 

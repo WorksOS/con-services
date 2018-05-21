@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Geometry;
+﻿using System;
+using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 using VSS.TRex.SiteModels;
 using VSS.TRex.Types;
@@ -17,7 +18,7 @@ namespace VSS.TRex.Rendering.Palettes
             {
                 case DisplayMode.Height:
                     {
-                        BoundingWorldExtent3D extent = siteModel.GetAdjustedDataModelSpatialExtents(new long[0]);
+                        BoundingWorldExtent3D extent = siteModel.GetAdjustedDataModelSpatialExtents(new Guid[0]);
                         return new HeightPalette(extent.MinZ, extent.MaxZ);
                         //return new HeightPalette(spatialExtents.MinZ, spatialExtents.MaxZ);
                     }
@@ -28,7 +29,7 @@ namespace VSS.TRex.Rendering.Palettes
                 case DisplayMode.CutFill:            return new CutFillPalette();
 
                 default: // Just use the elevation palette as a default...
-                    BoundingWorldExtent3D extent2 = siteModel.GetAdjustedDataModelSpatialExtents(new long[0]);
+                    BoundingWorldExtent3D extent2 = siteModel.GetAdjustedDataModelSpatialExtents(new Guid[0]);
                     return new HeightPalette(extent2.MinZ, extent2.MaxZ);
                     //return new HeightPalette(spatialExtents.MinZ, spatialExtents.MaxZ);
             }

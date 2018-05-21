@@ -1,7 +1,7 @@
 ﻿using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +18,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     /// </summary>
     public class TAGFileBufferQueue
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// The Ignite cache reference that holds the TAG files. This cache is keyed on the TAG file name and uses the
@@ -38,7 +38,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
             if (QueueCache == null)
             {
-                Log.Info($"Failed to get Ignite cache {TRexCaches.TAGFileBufferQueueCacheName()}");
+                Log.LogInformation($"Failed to get Ignite cache {TRexCaches.TAGFileBufferQueueCacheName()}");
                 throw new ArgumentException("Ignite cache not available");
             }
         }

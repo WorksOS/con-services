@@ -5,8 +5,6 @@ using System.Linq;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Compression;
-using VSS.TRex.Machines;
-using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Utilities;
 using VSS.TRex.SubGridTrees.Utilities;
@@ -169,13 +167,13 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <summary>
         /// Mapping of Machine/Asset Guids to the internal machine index within the site model
         /// </summary>
-//        private SubgridCellSegmentMachineReference[] MachineIDs;
+        private short[] MachineIDs;
 
         /// <summary>
-        /// A bit set representing the set of machines defined in ` in an efficient structure 
+        /// A bit set representing the set of machines defined in an efficient structure 
         /// for use in filtering operations during requests
         /// </summary>
-//        private BitArray MachineIDSet;
+        private BitArray MachineIDSet;
 
         /// <summary>
         /// The end coded field descriptor for the vector of pass counts of cell passes in the segment
@@ -414,44 +412,32 @@ namespace VSS.TRex.SubGridTrees.Server
 
             EncodedFieldDescriptors.Read(reader);
 
-            /*
             int Count = reader.ReadInt32();
-            MachineIDs = new SubgridCellSegmentMachineReference[Count];
+            MachineIDs = new short[Count]; //SubgridCellSegmentMachineReference[Count];
 
             for (int i = 0; i < Count; i++)
-            {
-                MachineIDs[i].Read(reader);
-            }
-            */
+                MachineIDs[i] = reader.ReadInt16();
 
             NumBitsPerCellPass = reader.ReadInt32();
 
             PassCountEncodedFieldDescriptor.Read(reader);
 
-           // TODO: This needs to be invoked from a context that is aware of Site Models and machine lists
-           // MachineIDSet = InitialiseMachineIDsSet(MachineIDs, SiteModelReference.Machines);
+            MachineIDSet = InitialiseMachineIDsSet(MachineIDs);
         }
 
         /// <summary>
         /// Converts the machines present in this segment into a BitArray representing a set of bits where
-        /// the position os each bit is the InternalMachineID on the machines in the site model where the
+        /// the position of each bit is the InternalMachineID on the machines in the site model where the
         /// internal ID is 0..NMachineInSiteModel - 1
         /// </summary>
         /// <param name="machineIDs"></param>
-        /// <param name="machines"></param>
         /// <returns></returns>
-        private BitArray InitialiseMachineIDsSet(SubgridCellSegmentMachineReference[] machineIDs, MachinesList machines)
+        private BitArray InitialiseMachineIDsSet(short[] machineIDs)
         {
-            if (machines == null)
-                return null;
+            BitArray bits = new BitArray(machineIDs.Max() + 1);
 
-            BitArray bits = new BitArray(machines.Count);
             foreach (var machineID in machineIDs)
-            {
-                Machine machine = machines.Locate(machineID._MachineID);
-                if (machine != null)
-                   bits[machine.InternalSiteModelMachineIndex] = true;
-            }
+                bits[machineID] = true;
 
             return bits;
         }
@@ -474,15 +460,13 @@ namespace VSS.TRex.SubGridTrees.Server
 
             EncodedFieldDescriptors.Write(writer);
 
-            /*
             int count = MachineIDs.Length;
             writer.Write(count);
             
             for (int i = 0; i < count; i++)
             {
-                MachineIDs[i].Write(writer);
+                writer.Write(MachineIDs[i]);
             }
-            */
 
             writer.Write(NumBitsPerCellPass);
 
@@ -644,56 +628,14 @@ namespace VSS.TRex.SubGridTrees.Server
             // Compute the time of the earliest real cell pass within the segment
             FirstRealCellPassTime = allCellPassesArray.Length > 0 ? allCellPassesArray.Min(x => x.Time) : DateTime.MinValue;
 
+            // Inialise the MachineIDs array and the MachineIDSet that encodes it as a bit array
+            MachineIDSet = new BitArray(allCellPassesArray.Max(x => x.InternalSiteModelMachineIndex) + 1);
+            foreach (var cellPass in allCellPassesArray)
+                MachineIDSet[cellPass.InternalSiteModelMachineIndex] = true;
+            MachineIDs = Enumerable.Range(0, MachineIDSet.Length).Where(x => MachineIDSet[x]).Select(x => (short) x).ToArray();
+
             // Convert time and elevation value to offset values in the appropriate units
             // from the lowest values of those attributes. 
-
-            /* Removed for now as this conversion from internal IDs to segmet specific internal IDs will likely save
-             no more than a couple of bits per cell pass once the number of machines of a project exceeds 16 machines 
-            // Convert the list of internal machine IDs referenced in the cell passes in this segment
-            bool foundMachineID;
-            int modifiedIndex = -1;
-            int[] ModifiedMachineIDs = new int[SegmentPassCount];
-
-            SubGridUtilities.SubGridDimensionalIterator((col, row) =>
-            {
-                CellPass[] passes = cellPasses[col, row];
-
-                for (int I = 0; I < passes.Length; I++)
-                {
-                    modifiedIndex++;
-
-                    bool foundMachineID = false;
-                    for (int J = 0; J < MachineIDs.Length; J++)
-                    {
-                        if (MachineIDs[J]._MachineID == MachineID)
-                        {
-                            ModifiedMachineIDs[modifiedIndex] = J;
-                            foundMachineID = true;
-                            break;
-                        }
-                    }
-
-                    if (!foundMachineID)
-                    {
-                        SetLength(MachineIDs, MachineIDs.Length + 1);
-                        MachineIDs[MachineIDs.Length - 1]._MachineID = MachineID;
-
-                        // Determine the sitemodel relevant machine index (ie: the index in the list
-                        // of machines held in the site model) for the machine. These indexes provide rapid
-                        // location of the machine in the sitemodel machines list.
-                        if (SiteModelReference != null)
-                            MachineIDs[Length(FMachineIDs) - 1]._SiteModelMachineIndex = TICSiteModel(SiteModelReference).Machines.IndexOfID(MachineID);
-                        else
-                            MachineIDs[Length(FMachineIDs) - 1]._SiteModelMachineIndex = High(MachineIDS[MachineIDs.Length - 1]._SiteModelMachineIndex);
-
-                        ModifiedMachineIDs[modifiedIndex] = MachineIDs.Length - 1;
-                    }
-                }
-            });
-            */
-
-            // TODO not handling machines yet - call this from a context that 
-            //InitialiseMachineIDsSet(SiteModelReference);
 
             // Work out the value ranges of all the attributes and given the value range
             // for each attribute, calculate the number of bits required to store the values.
@@ -701,7 +643,6 @@ namespace VSS.TRex.SubGridTrees.Server
             // Time - based on the longword, second accurate times overriding the TDateTime times
             // Height - based on the longword, millimeter accurate elevations overriding the IEEE double elevations
 
-            //AttributeValueRangeCalculator.CalculateAttributeValueRange(ModifiedMachines, 0xffffffff, 0, false, ref EncodedFieldDescriptors.MachineIDIndex);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.InternalSiteModelMachineIndex).ToArray(), 0xffffffff, 0, false, ref EncodedFieldDescriptors.MachineIDIndex);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => AttributeValueModifiers.ModifiedTime(x.Time, FirstRealCellPassTime)).ToArray(), 0xffffffff, 0, false, ref EncodedFieldDescriptors.Time);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => AttributeValueModifiers.ModifiedHeight(x.Height)).ToArray(), 0xffffffff, 0x7fffffff, true, ref EncodedFieldDescriptors.Height);
@@ -759,9 +700,7 @@ namespace VSS.TRex.SubGridTrees.Server
             {
                 foreach (CellPass pass in allCellPassesArray)
                 {
-                    // TODO Machines are not yet supported
-                    // BF_CellPasses.StreamWrite(ModifiedMachineIDs, EncodedFieldDescriptors.MachineIDIndex);
-
+                    BF_CellPasses.StreamWrite(pass.InternalSiteModelMachineIndex, EncodedFieldDescriptors.MachineIDIndex);
                     BF_CellPasses.StreamWrite(AttributeValueModifiers.ModifiedTime(pass.Time, FirstRealCellPassTime), EncodedFieldDescriptors.Time);
                     BF_CellPasses.StreamWrite(AttributeValueModifiers.ModifiedHeight(pass.Height), EncodedFieldDescriptors.Height);
                     BF_CellPasses.StreamWrite(pass.CCV, EncodedFieldDescriptors.CCV);
@@ -865,5 +804,25 @@ namespace VSS.TRex.SubGridTrees.Server
         {
             throw new NotImplementedException("Static cell segment passes wrappers do not support cell pass adoption");
         }
+
+        /// <summary>
+        /// Returns a the machine ID set for cell pass wrappers. This set contains a bit flag per machine
+        /// present within the cell passes in this segment
+        /// </summary>
+        /// <returns></returns>
+
+        public BitArray GetMachineIDSet() => MachineIDSet;
+
+      /// <summary>
+      /// Sets the internal machine ID for the cell pass identifid by x & y spatial location and passNumber.
+      /// </summary>
+      /// <param name="X"></param>
+      /// <param name="Y"></param>
+      /// <param name="passNumber"></param>
+      /// <param name="internalMachineID"></param>
+      public void SetInternalMachineID(uint X, uint Y, int passNumber, short internalMachineID)
+      {
+        throw new InvalidOperationException("Immutable cell pass segment.");
+      }
     }
 }

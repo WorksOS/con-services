@@ -1,5 +1,5 @@
 ﻿using Apache.Ignite.Core.Services;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -21,7 +21,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     public class TAGFileBufferQueueService : IService, ITAGFileBufferQueueService
     {
         [NonSerialized]
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// The interval between epochs where the service checks to see if there is anything to do
@@ -53,7 +53,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         /// <param name="context"></param>
         public void Init(IServiceContext context)
         {
-            Log.Info($"TAGFileBufferQueueService {context.Name} initialising");
+            Log.LogInformation($"TAGFileBufferQueueService {context.Name} initialising");
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         /// <param name="context"></param>
         public void Execute(IServiceContext context)
         {
-            Log.Info($"TAGFileBufferQueueService {context.Name} starting executing");
+            Log.LogInformation($"TAGFileBufferQueueService {context.Name} starting executing");
 
             aborted = false;
             waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
@@ -75,7 +75,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
 
             if (_ignite == null)
             {
-                Log.Error("Ignite reference in service is null - aborting service execution");
+                Log.LogError("Ignite reference in service is null - aborting service execution");
                 return;
             }
 
@@ -105,7 +105,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
                 } while (!aborted);
             }
 
-            Log.Info($"TAGFileBufferQueueService {context.Name} completed executing");
+            Log.LogInformation($"TAGFileBufferQueueService {context.Name} completed executing");
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         /// <param name="context"></param>
         public void Cancel(IServiceContext context)
         {
-            Log.Info($"TAGFileBufferQueueService {context.Name} cancelling");
+            Log.LogInformation($"TAGFileBufferQueueService {context.Name} cancelling");
 
             aborted = true;
             waitHandle?.Set();

@@ -45,6 +45,6 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
         /// <param name="descriptor"></param>
         /// <param name="ID"></param>
         /// <param name="mask"></param>
-        public static void Execute(Guid siteModelID, long descriptor, long ID, SubGridTreeSubGridExistenceBitMask mask) => Execute(CacheKey(siteModelID, descriptor, ID), mask);
+        public static void Execute(Guid siteModelID, long descriptor, Guid ID, SubGridTreeSubGridExistenceBitMask mask) => Execute(CacheKey(siteModelID, descriptor, ID), mask);
     }
 }

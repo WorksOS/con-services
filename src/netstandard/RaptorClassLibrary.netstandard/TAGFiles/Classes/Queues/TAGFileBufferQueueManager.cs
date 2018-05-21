@@ -4,7 +4,7 @@ using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Query;
 using Apache.Ignite.Core.Cache.Query.Continuous;
-using log4net;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.GridFabric.Caches;
 using VSS.TRex.GridFabric.Grids;
 
@@ -16,7 +16,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     /// </summary>
     public class TAGFileBufferQueueManager : IDisposable
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// The query handle created by the continuous query. Used to get the initial scan query handle and 
@@ -35,7 +35,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// </summary>
         public TAGFileBufferQueueManager(bool runLocally)
         {
-            Log.Info("Establishing Ignite and TAG file buffer queue cache contexts");
+            Log.LogInformation("Establishing Ignite and TAG file buffer queue cache contexts");
 
             // Get the ignite grid and cache references
             ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
@@ -43,7 +43,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
             RemoteTAGFileFilter TAGFileFilter = new RemoteTAGFileFilter();
 
-            Log.Info("Creating continuous query");
+            Log.LogInformation("Creating continuous query");
 
             // Construct the continuous query machinery
             // Set the initial query to return all elements in the cache
@@ -65,11 +65,11 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             // All processing shoudl happen on the remote node in the implementation of the TAGFileFilter remote filter
             foreach (var item in queryHandle.GetInitialQueryCursor())
             {
-                Log.Error(
+                Log.LogError(
                     $"A cache entry ({item.Key}) from the TAG file buffer queue was passed back to the local scan query rather than intercepted by the remote filter");
             }
 
-            Log.Info("Completed TAG file buffer queue manager initialisation");
+            Log.LogInformation("Completed TAG file buffer queue manager initialisation");
         }
 
         public void Dispose()

@@ -77,7 +77,7 @@ namespace SurveyedSurfaceManager
                 if (DeployedSurveyedSurfaceService != null)
                 {
                     DeployedSurveyedSurfaceService.Invoke_Add(ID, 
-                                                              new DesignDescriptor(Guid.NewGuid().GetHashCode(), "", "", txtFilePath.Text, txtFileName.Text, offset),                                                          
+                                                              new DesignDescriptor(Guid.NewGuid(), "", "", txtFilePath.Text, txtFileName.Text, offset),                                                          
                                                               dateTimePicker.Value,
                                                               extents);
 
@@ -86,10 +86,10 @@ namespace SurveyedSurfaceManager
                 else
                 {
                     SurveyedSurfaceService.AddDirect(ID, 
-                                                     new DesignDescriptor(Guid.NewGuid().GetHashCode(), "", "", txtFilePath.Text, txtFileName.Text, offset),
+                                                     new DesignDescriptor(Guid.NewGuid(), "", "", txtFilePath.Text, txtFileName.Text, offset),
                                                      dateTimePicker.Value,
                                                      extents,
-                                                     out long SurveyedSurfaceID);
+                                                     out Guid SurveyedSurfaceID);
 
                     // Store the existence map for the surveyd surface for later use
                     ExistenceMaps.SetExistenceMap(ID, Consts.EXISTANCE_SURVEYED_SURFACE_DESCRIPTOR, SurveyedSurfaceID, TTM.SubgridOverlayIndex());
@@ -176,7 +176,7 @@ namespace SurveyedSurfaceManager
             }
 
             // Get the site model ID
-            if (!long.TryParse(txtSurveyedSurfaceID.Text, out long SurveydSurfaceID))
+            if (!Guid.TryParse(txtSurveyedSurfaceID.Text, out Guid SurveydSurfaceID))
             {
                 MessageBox.Show("Invalid Surveyed Surface ID");
                 return;
@@ -219,7 +219,7 @@ namespace SurveyedSurfaceManager
             }
 
             // Get the design ID
-            if (!long.TryParse(txtDesignID.Text, out long DesignID))
+            if (!Guid.TryParse(txtDesignID.Text, out Guid DesignID))
             {
                 MessageBox.Show("Invalid design ID");
                 return;
@@ -293,7 +293,7 @@ namespace SurveyedSurfaceManager
             {
                 // Load the file and extract its extents
                 TTMDesign TTM = new TTMDesign(SubGridTree.DefaultCellSize);
-                TTM.LoadFromFile(Path.Combine(new string[] { txtFilePath.Text, txtFileName.Text }));
+                TTM.LoadFromFile(Path.Combine(new [] { txtFilePath.Text, txtFileName.Text }));
 
                 BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
                 TTM.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
@@ -301,9 +301,9 @@ namespace SurveyedSurfaceManager
 
                 // Create the new design for the site model
                 DesignsService.Instance().AddDirect(ID,
-                                         new DesignDescriptor(Guid.NewGuid().GetHashCode(), "", "", txtFilePath.Text, txtFileName.Text, offset),
+                                         new DesignDescriptor(Guid.NewGuid(), "", "", txtFilePath.Text, txtFileName.Text, offset),
                                          extents,
-                                         out long DesignID);
+                                         out Guid DesignID);
 
                 // Store the existence map for the design for later use
                 ExistenceMaps.SetExistenceMap(ID, Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, DesignID, TTM.SubgridOverlayIndex());
@@ -312,6 +312,11 @@ namespace SurveyedSurfaceManager
             {
                 MessageBox.Show($"Exception: {E}");
             }
+        }
+
+        private void txtFilePath_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

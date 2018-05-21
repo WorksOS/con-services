@@ -93,7 +93,7 @@ namespace VSS.TRex.Cells
         /// <summary>
         /// Null machine speed value
         /// </summary>
-        public const ushort NullMachineSpeed = ushort.MaxValue;
+        public const ushort NullMachineSpeed = Consts.NullMachineSpeed;
 
         /// <summary>
         /// Null Caterpillar Compaction Algorithm value

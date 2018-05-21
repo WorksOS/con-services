@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System.Reflection;
 using VSS.TRex.Executors.Tasks;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -12,7 +12,7 @@ namespace VSS.TRex.Rendering.Executors.Tasks
     /// </summary>
     public class PVMRenderingTask : PipelinedSubGridTask
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// The tile renderer responsible for processing subgrid information into tile based thematic rendering
@@ -40,7 +40,7 @@ namespace VSS.TRex.Rendering.Executors.Tasks
 
             if (!base.TransferResponse(response))
             {
-                Log.Warn("Base TransferResponse returned false");
+                Log.LogWarning("Base TransferResponse returned false");
                 return false;
             }
 

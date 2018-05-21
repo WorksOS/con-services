@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using log4net;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Events.Interfaces;
 
 namespace VSS.TRex.Events
@@ -14,7 +14,7 @@ namespace VSS.TRex.Events
     [Serializable]
     public class StartEndProductionEvents : ProductionEvents<ProductionEventType>, IProductionEventPairs
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         public StartEndProductionEvents()
         {}
@@ -85,7 +85,7 @@ namespace VSS.TRex.Events
 
                 if (StartIndex == Events.Count - 1)
                 {
-                    Log.Error(
+                    Log.LogError(
                         $"FindStartEventPairAtTime located only one event (index:{StartIndex}) at search time {eventDate:6f} {eventDate:o}");
                 }
             }
@@ -192,7 +192,7 @@ namespace VSS.TRex.Events
                             {
                                 if (Event.IsCustomEvent)
                                 {
-                                    Log.Debug($"Deleting custom machine event: {Events[EventIndex]}");
+                                    Log.LogDebug($"Deleting custom machine event: {Events[EventIndex]}");
                                     Events.RemoveAt(EventIndex);
                                 }
                             }

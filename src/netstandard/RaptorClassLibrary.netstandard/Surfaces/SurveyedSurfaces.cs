@@ -90,7 +90,7 @@ namespace VSS.TRex.Surfaces
         /// <param name="AAsAtDate"></param>
         /// <param name="AExtents"></param>
         /// <returns></returns>
-        public SurveyedSurface AddSurveyedSurfaceDetails(long ASurveyedSurfaceID,
+        public SurveyedSurface AddSurveyedSurfaceDetails(Guid ASurveyedSurfaceID,
                                                        DesignDescriptor ADesignDescriptor,
                                                        DateTime AAsAtDate,
                                                        BoundingWorldExtent3D AExtents)
@@ -115,14 +115,14 @@ namespace VSS.TRex.Surfaces
         /// </summary>
         /// <param name="ASurveyedSurfaceID"></param>
         /// <returns></returns>
-        public bool RemoveSurveyedSurface(long ASurveyedSurfaceID)
+        public bool RemoveSurveyedSurface(Guid ASurveyedSurfaceID)
         {
             SurveyedSurface match = Find(x => x.ID == ASurveyedSurfaceID);
 
             return match != null && Remove(match);
         }
 
-        public SurveyedSurface Locate(long AID) => Find(x => x.ID == AID);
+        public SurveyedSurface Locate(Guid AID) => Find(x => x.ID == AID);
 
         public void Assign(SurveyedSurfaces source)
         {
@@ -265,7 +265,7 @@ namespace VSS.TRex.Surfaces
                                                  DateTime StartTime, DateTime EndTime,
                                                  bool ExcludeSurveyedSurfaces,
                                                  SurveyedSurfaces FilteredSurveyedSurfaceDetails,
-                                                 long[] ExclusionList)
+                                                 Guid[] ExclusionList)
         {
             if (ExcludeSurveyedSurfaces)
             {

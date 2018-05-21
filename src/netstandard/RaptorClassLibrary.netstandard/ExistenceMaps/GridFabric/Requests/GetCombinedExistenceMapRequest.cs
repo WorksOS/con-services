@@ -55,6 +55,6 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
         /// <param name="siteModelID"></param>
         /// <param name="IDs"></param>
         /// <returns></returns>
-        public static SubGridTreeSubGridExistenceBitMask Execute(Guid siteModelID, Tuple<long, long>[] IDs) => Execute(IDs.Select(x => CacheKey(siteModelID, x.Item1, x.Item2)).ToArray());
+        public static SubGridTreeSubGridExistenceBitMask Execute(Guid siteModelID, Tuple<long, Guid>[] IDs) => Execute(IDs.Select(x => CacheKey(siteModelID, x.Item1, x.Item2)).ToArray());
     }
 }

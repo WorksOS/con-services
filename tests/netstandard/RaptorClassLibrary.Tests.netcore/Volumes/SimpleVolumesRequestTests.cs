@@ -46,8 +46,8 @@ namespace VSS.TRex.Tests.Volumes
                     }
                 },
                 TopFilter = new CombinedFilter(),
-                BaseDesignID = long.MinValue,
-                TopDesignID = long.MinValue,
+                BaseDesignID = Guid.Empty,
+                TopDesignID = Guid.Empty,
                 CutTolerance = 0.001,
                 FillTolerance = 0.001
             };
@@ -84,8 +84,8 @@ namespace VSS.TRex.Tests.Volumes
                     }
                 },
                 TopFilter = new CombinedFilter(),
-                BaseDesignID = long.MinValue,
-                TopDesignID = long.MinValue,
+                BaseDesignID = Guid.Empty,
+                TopDesignID = Guid.Empty,
                 CutTolerance = 0.001,
                 FillTolerance = 0.001
             };

@@ -1,4 +1,4 @@
-﻿using log4net;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Drawing;
 using System.Reflection;
@@ -21,7 +21,7 @@ namespace VSS.TRex.Rendering.Executors
     /// </summary>
     public class RenderOverlayTile
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// Details the error status of the bmp result returned by the renderer
@@ -59,7 +59,7 @@ namespace VSS.TRex.Rendering.Executors
         /// <summary>
         /// The identifier for the design held in the designs list ofr the project to be used to calculate cut/fill values
         /// </summary>
-        public long CutFillDesignID { get; set; }
+        public Guid CutFillDesignID { get; set; }
 
             
         // ComputeICVolumesType ReferenceVolumeType = ComputeICVolumesType.None;
@@ -94,7 +94,7 @@ namespace VSS.TRex.Rendering.Executors
                                  ushort ANPixelsY,
                                  CombinedFilter AFilter1,
                                  CombinedFilter AFilter2,
-                                 long ACutFillDesignID, //DesignDescriptor ACutFillDesign,
+                                 Guid ACutFillDesignID, //DesignDescriptor ACutFillDesign,
                                  //AReferenceVolumeType : TComputeICVolumesType;
                                  //AColourPalettes: TColourPalettes;
                                  //AICOptions: TSVOICOptions;
@@ -328,7 +328,7 @@ namespace VSS.TRex.Rendering.Executors
             // CoordConversionResult : TCoordServiceErrorStatus;
             // bool ScheduledWithGovernor = false;
             SubGridTreeSubGridExistenceBitMask DesignSubgridOverlayMap = null;
-            long[] SurveyedSurfaceExclusionList = new long[0];
+            Guid[] SurveyedSurfaceExclusionList = new Guid[0];
 
             /*
                if not Assigned(ASNodeImplInstance) or ASNodeImplInstance.ServiceStopped then
@@ -338,7 +338,7 @@ namespace VSS.TRex.Rendering.Executors
                 end;
             */
 
-            Log.Info($"Performing Execute for DataModel:{DataModelID}, Mode={Mode}");
+            Log.LogInformation($"Performing Execute for DataModel:{DataModelID}, Mode={Mode}");
 
             ApplicationServiceRequestStatistics.Instance.NumMapTileRequests.Increment();
 
@@ -475,7 +475,7 @@ namespace VSS.TRex.Rendering.Executors
 
             if (Filter1 != null && SurveyedSurfaceExclusionList.Length > 0)
             {
-                SurveyedSurfaceExclusionList = new long[Filter1.AttributeFilter.SurveyedSurfaceExclusionList.Length];
+                SurveyedSurfaceExclusionList = new Guid[Filter1.AttributeFilter.SurveyedSurfaceExclusionList.Length];
                 Array.Copy(Filter1.AttributeFilter.SurveyedSurfaceExclusionList, SurveyedSurfaceExclusionList, SurveyedSurfaceExclusionList.Length);
             }
 
@@ -615,7 +615,7 @@ namespace VSS.TRex.Rendering.Executors
             {
                 /*if (CutFillDesign.IsNull)
                 {
-                    Log.Error($"No design provided to cut fill, summary volume or thickness overlay render request for datamodel {DataModelID}");
+                    Log.LogError($"No design provided to cut fill, summary volume or thickness overlay render request for datamodel {DataModelID}");
                     ResultStatus = RequestErrorStatus.NoDesignProvided;
                     return null;
                 }*/
@@ -714,7 +714,7 @@ namespace VSS.TRex.Rendering.Executors
             }
             catch (Exception e)
             {
-                Log.Error($"Exception {e} occurred");
+                Log.LogError($"Exception {e} occurred");
                 ResultStatus = RequestErrorStatus.Exception;
             }
 

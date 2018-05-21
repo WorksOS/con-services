@@ -70,7 +70,7 @@ namespace VSS.TRex.Services.Surfaces
             proxy.Add(SiteModelID, designDescriptor, asAtDate.Date, extents);
         }
 
-        public bool Invoke_Remove(Guid SiteModelID, long SurveyedSurfaceID)
+        public bool Invoke_Remove(Guid SiteModelID, Guid SurveyedSurfaceID)
         {
             return proxy.Remove(SiteModelID, SurveyedSurfaceID);
         }

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
-using log4net;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 
@@ -12,7 +12,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// </summary>
     public class EventIntegrator
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         private ProductionEventLists /*EfficientProductionEventChanges*/ Source;
         private ProductionEventLists /*EfficientProductionEventChanges*/ Target;
@@ -204,7 +204,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                     if (TargetList != null)
                         PerformListIntegration(SourceList, TargetList);
                     else
-                        Log.Error($"Event list {I} not available in IntegrateMachineEvents");
+                        Log.LogError($"Event list {I} not available in IntegrateMachineEvents");
                 }
             }
         }

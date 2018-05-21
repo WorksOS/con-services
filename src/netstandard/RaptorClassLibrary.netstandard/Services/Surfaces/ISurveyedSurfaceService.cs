@@ -32,6 +32,6 @@ namespace VSS.TRex.Services.Surfaces
         /// <param name="SiteModelID"></param>
         /// <param name="SurveySurfaceID"></param>
         /// <returns></returns>
-        bool Remove(Guid SiteModelID, long SurveySurfaceID);
+        bool Remove(Guid SiteModelID, Guid SurveySurfaceID);
     }
 }

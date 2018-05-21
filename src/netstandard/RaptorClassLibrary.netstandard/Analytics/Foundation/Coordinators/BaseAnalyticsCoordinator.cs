@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Reflection;
-using log4net;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Analytics.Aggregators;
 using VSS.TRex.Analytics.Foundation.Interfaces;
 using VSS.TRex.Analytics.GridFabric.Responses;
@@ -18,7 +18,7 @@ namespace VSS.TRex.Analytics.Coordinators
     public abstract class BaseAnalyticsCoordinator<TArgument, TResponse> : IBaseAnalyticsCoordinator<TArgument, TResponse> where TArgument : BaseApplicationServiceRequestArgument
         where TResponse : BaseAnalyticsResponse, new()
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// The SiteModel context for computing the result of the request
@@ -37,7 +37,7 @@ namespace VSS.TRex.Analytics.Coordinators
         /// <returns></returns>
         public TResponse Execute(TArgument arg)
         {
-            Log.Info("In: Executing Coordination logic");
+            Log.LogInformation("In: Executing Coordination logic");
 
             TResponse Response = new TResponse();
             try
@@ -74,7 +74,7 @@ namespace VSS.TRex.Analytics.Coordinators
                 Response.ResultStatus = FilterUtilities.PrepareFilterForUse(arg.Filter, arg.DataModelID);
                 if (Response.ResultStatus != RequestErrorStatus.OK)
                 {
-                    Log.Info($"PrepareFilterForUse failed: Datamodel={arg.DataModelID}");
+                    Log.LogInformation($"PrepareFilterForUse failed: Datamodel={arg.DataModelID}");
                     return Response;
                 }
 
@@ -101,10 +101,10 @@ namespace VSS.TRex.Analytics.Coordinators
             }
             catch (Exception E)
             {
-                Log.Error($"Exception {E}");
+                Log.LogError($"Exception {E}");
             }
 
-            Log.Info("Out: Executing Coordination logic");
+            Log.LogInformation("Out: Executing Coordination logic");
 
             return Response;
         }

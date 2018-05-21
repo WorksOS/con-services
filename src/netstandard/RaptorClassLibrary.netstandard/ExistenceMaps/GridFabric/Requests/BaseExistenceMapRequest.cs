@@ -15,6 +15,6 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
         /// <param name="typeDescriptor"></param>
         /// <param name="ID"></param>
         /// <returns></returns>
-        public static NonSpatialAffinityKey CacheKey(Guid siteModelID, long typeDescriptor, long ID) => new NonSpatialAffinityKey(siteModelID, $"Descriptor:{typeDescriptor}-ID:{ID}");
+        public static NonSpatialAffinityKey CacheKey(Guid siteModelID, long typeDescriptor, Guid ID) => new NonSpatialAffinityKey(siteModelID, $"Descriptor:{typeDescriptor}-ID:{ID}");
     }
 }

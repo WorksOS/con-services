@@ -1,5 +1,5 @@
 ﻿using Apache.Ignite.Core.Messaging;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Reflection;
@@ -19,7 +19,7 @@ namespace VSS.TRex.GridFabric.Listeners
     public class SubGridListener : IMessageListener<byte[]>
     {
         [NonSerialized]
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// Count of the number of responses recieved by this listener
@@ -99,8 +99,8 @@ namespace VSS.TRex.GridFabric.Listeners
                                 }
                                 else
                                 {
-                                    Log.InfoFormat("Processing response#{0} FAILED (from thread {1})",
-                                        thisResponseCount, System.Threading.Thread.CurrentThread.ManagedThreadId);
+                                  Log.LogInformation(
+                                    $"Processing response#{thisResponseCount} FAILED (from thread {System.Threading.Thread.CurrentThread.ManagedThreadId})");
                                 }
                             }
                         }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Events;
+using VSS.TRex.Logging;
 using VSS.TRex.Machines;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SubGridTrees.Server;
@@ -16,7 +18,9 @@ namespace VSS.TRex.Executors
     /// </summary>
     public class TAGFileConverter
     {
-        //private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+      private static ILogger Log = Logger.CreateLogger<TAGFileConverter>();
+
+        //private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// The overall result of processign the TAG information in the file
@@ -71,32 +75,34 @@ namespace VSS.TRex.Executors
         {
         }
 
-        private void Initialise()
+      private void Initialise()
+      {
+        ProcessedEpochCount = 0;
+        ProcessedCellPassCount = 0;
+
+        // Note: Intermediary TAG file processing contexts don't store their data to any persistence context
+        // so the SiteModel constructed to contain the data processed from a TAG file does not need a 
+        // storage proxy assigned to it
+        SiteModel = new SiteModel(Guid.Empty);
+
+        // Machine.InternalSiteModelMachineIndex -> Change dummy machine index number to real machine index number when integrating into the live database
+        Machine = new Machine()
         {
-            ProcessedEpochCount = 0;
-            ProcessedCellPassCount = 0;
+          TargetValueChanges = Events
+        };
+        Events = new ProductionEventLists(SiteModel, Machine.kNullInternalSiteModelMachineIndex);
 
-            // Note: Intermediary TAG file processing contexts don't store their data to any persistence context
-            // so the SiteModel constructed to contain the data processed from a TAG file does not need a 
-            // storage proxy assigned to it
-            SiteModel = new SiteModel(Guid.Empty);
-            Events = new ProductionEventLists(SiteModel, 0 /*TODO: Machine.ID*/);
 
-            Machine = new Machine()
-            {
-                TargetValueChanges = Events
-            };
-
-            SiteModelGridAggregator = new ServerSubGridTree(SiteModel);
-            if (SiteModel.Grid != null)
-            {
-                SiteModelGridAggregator.CellSize = SiteModel.Grid.CellSize;
-            }
-
-            MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, long.MaxValue);
+        SiteModelGridAggregator = new ServerSubGridTree(SiteModel);
+        if (SiteModel.Grid != null)
+        {
+          SiteModelGridAggregator.CellSize = SiteModel.Grid.CellSize;
         }
 
-        /// <summary>
+        MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, Machine.kNullInternalSiteModelMachineIndex);
+      }
+
+      /// <summary>
         /// Fill out the local class properties with the information wanted from the TAG file
         /// </summary>
         /// <param name="Processor"></param>
@@ -133,8 +139,9 @@ namespace VSS.TRex.Executors
 
                 SetPublishedState(Processor);
             }
-            catch //(Exception E) // make sure any exception is trapped to return correct response to caller
+            catch (Exception e) // make sure any exception is trapped to return correct response to caller
             {
+                Log.LogError($"Exception {e} occurred while converting a TAG file");
                 return false;
             }
 

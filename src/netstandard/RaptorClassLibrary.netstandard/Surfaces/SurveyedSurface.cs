@@ -2,6 +2,7 @@
 using System.IO;
 using VSS.TRex.Designs;
 using VSS.TRex.Geometry;
+using VSS.TRex.Utilities.ExtensionMethods;
 using VSS.TRex.Utilities.Interfaces;
 
 namespace VSS.TRex.Surfaces
@@ -15,7 +16,7 @@ namespace VSS.TRex.Surfaces
         /// <summary>
         /// Unique identifier for the surveyed surface
         /// </summary>
-        long FID = long.MinValue;
+        Guid FID = Guid.Empty;
 
         /// <summary>
         /// Underlying design the surveyed surface is based on
@@ -38,7 +39,7 @@ namespace VSS.TRex.Surfaces
         /// <param name="writer"></param>
         public void Write(BinaryWriter writer)
         {
-            writer.Write(FID);
+            writer.Write(FID.ToByteArray());
             FDesignDescriptor.Write(writer);
             writer.Write(FAsAtDate.ToBinary());
             FExtents.Write(writer);
@@ -57,7 +58,7 @@ namespace VSS.TRex.Surfaces
         /// <param name="reader"></param>
         public void Read(BinaryReader reader)
         {
-            FID = reader.ReadInt64();
+            FID = reader.ReadGuid();
             FDesignDescriptor.Read(reader);
             FAsAtDate = DateTime.FromBinary(reader.ReadInt64());
             FExtents.Read(reader);
@@ -66,7 +67,7 @@ namespace VSS.TRex.Surfaces
         /// <summary>
         /// Readonly property exposing the surveyed surface ID
         /// </summary>
-        public long ID { get { return FID; } }
+        public Guid ID { get => FID; }
 
         /// <summary>
         /// Readonlhy property exposing the design decriptor for the underlying topology surface
@@ -117,7 +118,7 @@ namespace VSS.TRex.Surfaces
         /// <param name="ADesignDescriptor"></param>
         /// <param name="AAsAtDate"></param>
         /// <param name="AExtents"></param>
-        public SurveyedSurface(long AID,
+        public SurveyedSurface(Guid AID,
                                DesignDescriptor ADesignDescriptor,
                                DateTime AAsAtDate,
                                BoundingWorldExtent3D AExtents)

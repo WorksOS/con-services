@@ -23,7 +23,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather.Tests
             var grid = new ServerSubGridTree(siteModel);
             var fence = new Fence();
             var SiteModelGridAggregator = new ServerSubGridTree(siteModel);
-            var MachineTargetValueChangesAggregator = new ProductionEventLists(siteModel, long.MaxValue);
+            var MachineTargetValueChangesAggregator = new ProductionEventLists(siteModel, Machine.kNullInternalSiteModelMachineIndex);
             var processor = new TAGProcessor(siteModel, machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
 
             TerrainSwather swather = new TerrainSwather(processor, MachineTargetValueChangesAggregator, siteModel, grid, machine.InternalSiteModelMachineIndex /*machine.ID*/, fence);
@@ -40,7 +40,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather.Tests
             var machine = new Machine();
             var grid = new ServerSubGridTree(siteModel);
             var SiteModelGridAggregator = new ServerSubGridTree(siteModel);
-            var MachineTargetValueChangesAggregator = new ProductionEventLists(siteModel, long.MaxValue);
+            var MachineTargetValueChangesAggregator = new ProductionEventLists(siteModel, Machine.kNullInternalSiteModelMachineIndex);
             var processor = new TAGProcessor(siteModel, machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
 
             var fence = new Fence();
@@ -78,7 +78,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather.Tests
             // Computation of the latest pass information which aids locating cells with non-null values
             try
             {
-                IStorageProxy storageProxy = StorageProxyFactory.Storage(StorageMutability.Mutable);
+                IStorageProxy storageProxy = StorageProxy.Instance(StorageMutability.Mutable);
                 grid.Root.ScanSubGrids(grid.FullCellExtent(), x =>
                 {
                     ((IServerLeafSubGrid)x).ComputeLatestPassInformation(true, storageProxy);

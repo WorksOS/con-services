@@ -1,9 +1,8 @@
 ﻿using System;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System.Reflection;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Caches;
-using VSS.TRex.Storage;
 
 namespace VSS.TRex.Storage
 {
@@ -15,7 +14,7 @@ namespace VSS.TRex.Storage
     /// </summary>
     public class StorageProxy_Ignite_Transactional : StorageProxy_Ignite
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// Constructor that obtains references to the mutable and immutable, spatial and non-spatial caches present in the grid
@@ -50,7 +49,7 @@ namespace VSS.TRex.Storage
             }
             catch ( Exception e)
             {
-                Log.Error($"Exception {e} thrown committing changes to Ignite for spatial cache");
+                Log.LogError($"Exception {e} thrown committing changes to Ignite for spatial cache");
                 throw;
             }
 
@@ -60,7 +59,7 @@ namespace VSS.TRex.Storage
             }
             catch (Exception e)
             {
-                Log.Error($"Exception {e} thrown committing changes to Ignite for non spatial cache");
+                Log.LogError($"Exception {e} thrown committing changes to Ignite for non spatial cache");
                 throw;
             }
 
@@ -78,7 +77,7 @@ namespace VSS.TRex.Storage
             }
             catch (Exception e)
             {
-                Log.Error($"Exception {e} thrown clearing changes for spatial cache");
+                Log.LogError($"Exception {e} thrown clearing changes for spatial cache");
                 throw;
             }
 
@@ -88,7 +87,7 @@ namespace VSS.TRex.Storage
             }
             catch (Exception e)
             {
-                Log.Error($"Exception {e} thrown clearing changes for non spatial cache");
+                Log.LogError($"Exception {e} thrown clearing changes for non spatial cache");
                 throw;
             }
 

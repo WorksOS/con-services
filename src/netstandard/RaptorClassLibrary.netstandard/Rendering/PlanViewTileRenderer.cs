@@ -1,4 +1,4 @@
-﻿using log4net;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
 using VSS.TRex.Executors.Tasks;
@@ -18,7 +18,7 @@ namespace VSS.TRex.Rendering
 {
     public class PlanViewTileRenderer
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// The TRex application service node performing the request
@@ -305,7 +305,7 @@ namespace VSS.TRex.Rendering
             catch (Exception E)
             {
                 
-                Log.ErrorFormat("ExecutePipeline raised exception '{0}'", E);
+                Log.LogError("ExecutePipeline raised exception '{E}'");
             }
 
             return Result;

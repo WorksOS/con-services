@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Apache.Ignite.Core.Cache;
 
 namespace VSS.TRex.Storage.Interfaces
 {

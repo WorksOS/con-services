@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using log4net;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Events;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Caches;
@@ -17,6 +17,7 @@ using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.Surfaces;
 using VSS.TRex.Types;
+using VSS.TRex.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.SiteModels
 {
@@ -24,7 +25,7 @@ namespace VSS.TRex.SiteModels
     public class SiteModel : ISiteModel
     {
         [NonSerialized]
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         public const string kSiteModelXMLFileName = "ProductionDataModel.XML";
         public const string kSubGridExistanceMapFileName = "SubGridExistanceMap";
@@ -257,7 +258,7 @@ namespace VSS.TRex.SiteModels
 
             if (!(MajorVersion == kMajorVersion && MinorVersion == kMinorVersion))
             {
-                Log.Error($"Unknown version number {MajorVersion}:{MinorVersion} in Read()");
+                Log.LogError($"Unknown version number {MajorVersion}:{MinorVersion} in Read()");
                 return false;
             }
 
@@ -267,9 +268,7 @@ namespace VSS.TRex.SiteModels
             // Read the ID of the data model from the stream.
             // If the site model already has an assigned ID then
             // use this ID in favour of the ID read from the data model.
-            byte [] bytes = new byte[16];
-            reader.Read(bytes, 0, 16);
-            Guid LocalID = new Guid(bytes);
+            Guid LocalID = reader.ReadGuid();
 
             if (ID == Guid.Empty)
             {
@@ -291,7 +290,7 @@ namespace VSS.TRex.SiteModels
             double SiteModelGridCellSize = reader.ReadDouble();
             if (SiteModelGridCellSize < 0.001)
             {
-                Log.Error($"'SiteModelGridCellSize is suspicious: {SiteModelGridCellSize} for datamodel {ID}, setting to default");
+                Log.LogError($"'SiteModelGridCellSize is suspicious: {SiteModelGridCellSize} for datamodel {ID}, setting to default");
                 SiteModelGridCellSize = SubGridTree.DefaultCellSize; // VLPDSvcLocations.VLPD_DefaultSiteModelGridCellSize;
             }
             Grid.CellSize = SiteModelGridCellSize;
@@ -342,7 +341,7 @@ namespace VSS.TRex.SiteModels
             }
             else
             {
-                Log.Error($"Failed to save site model for project {ID} to persistent store");
+                Log.LogError($"Failed to save site model for project {ID} to persistent store");
             }
 
             return Result;
@@ -352,82 +351,75 @@ namespace VSS.TRex.SiteModels
         {
             FileSystemErrorStatus Result; // = FileSystemErrorStatus.UnknownErrorReadingFromFS;
 
-            try
+            Guid SavedID = ID;
+
+            Result = StorageProxy.ReadStreamFromPersistentStoreDirect(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
+
+            if (Result == FileSystemErrorStatus.OK)
             {
-                Guid SavedID = ID;
-
-                Result = StorageProxy.ReadStreamFromPersistentStoreDirect(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
-
-                if (Result == FileSystemErrorStatus.OK)
+                try
                 {
-                    try
+                    if (SavedID != ID)
                     {
-                        if (SavedID != ID)
+                        // The SiteModelID read from the FS file does not match the ID expected.
+
+                        // RPW 31/1/11: This used to be an error with it's own error code. This is now
+                        // changed to a warning, but loading of the sitemodel is allowed. This
+                        // is particularly useful for testing purposes where copying around projects
+                        // is much quicker than reprocessing large sets of TAG files
+
+                        Log.LogWarning($"Site model ID read from FS file ({ID}) does not match expected ID ({SavedID}), setting to expected");
+                        ID = SavedID;
+                    }
+
+                    // Prior to reading the site model from the stream, ensure that we have
+                    // acquired locks to prevent access of the machine target values while the
+                    // machines list is destroyed and recreated. LockMachinesTargetValues creates
+                    // a list of items it obtains locks of and UnLockMachinesTargetValues releases
+                    // locks against that list. This is necessary as rereading the machines may cause
+                    // new machines to be created due to TAG file processing, and these new machines
+                    // will not have targets values participating in the lock.
+
+                    MS.Position = 0;
+                    using (BinaryReader reader = new BinaryReader(MS, Encoding.UTF8, true))
+                    {
+                        lock (this)
                         {
-                            // The SiteModelID read from the FS file does not match the ID expected.
+                            Read(reader);
 
-                            // RPW 31/1/11: This used to be an error with it's own error code. This is now
-                            // changed to a warning, but loading of the sitemodel is allowed. This
-                            // is particularly useful for testing purposes where copying around projects
-                            // is much quicker than reprocessing large sets of TAG files
-
-                            Log.Warn($"Site model ID read from FS file ({ID}) does not match expected ID ({SavedID}), setting to expected");
-                            ID = SavedID;
-                        }
-
-                        // Prior to reading the site model from the stream, ensure that we have
-                        // acquired locks to prevent access of the machine target values while the
-                        // machines list is destroyed and recreated. LockMachinesTargetValues creates
-                        // a list of items it obtains locks of and UnLockMachinesTargetValues releases
-                        // locks against that list. This is necessary as rereading the machines may cause
-                        // new machines to be created due to TAG file processing, and these new machines
-                        // will not have targets values participating in the lock.
-
-                        MS.Position = 0;
-                        using (BinaryReader reader = new BinaryReader(MS, Encoding.UTF8, true))
-                        {
-                            lock (this)
-                            {
-                                Read(reader);
-
-                                // Now read in the existance map
-                                Result = LoadProductionDataExistanceMapFromStorage(StorageProxy);
-                            }
-                        }
-
-                        /* TODO ??
-                         * This type of management is not appropriate for Ignite based cache management as
-                         *  list updates will cause Ignite level cache invalidation that can then cause messaging
-                         *  to trigger reloading of target values/event lists
-                        if (!CreateMachinesTargetValues())
-                            Result = FileSystemErrorStatus.UnknownErrorReadingFromFS;
-                        else
-                        {
-                            //Mark override lists dirty
-                            for I := 0 to MachinesTargetValues.Count - 1 do
-                                    MachinesTargetValues.Items[I].TargetValueChanges.MarkOverrideEventListsAsOutOfDate;
-                        }
-                        */
-
-                        if (Result == FileSystemErrorStatus.OK)
-                        {
-                            Log.Debug($"Site model read from FS file (ID:{ID}) succeeded");
-                            Log.Debug($"Data model extents: {SiteModelExtent}, CellSize: {Grid.CellSize}");
-                        }
-                        else
-                        {
-                            Log.Warn($"Site model ID read from FS file ({ID}) failed with error {Result}");
+                            // Now read in the existance map
+                            Result = LoadProductionDataExistanceMapFromStorage(StorageProxy);
                         }
                     }
-                    finally
+
+                    /* TODO ??
+                     * This type of management is not appropriate for Ignite based cache management as
+                     *  list updates will cause Ignite level cache invalidation that can then cause messaging
+                     *  to trigger reloading of target values/event lists
+                    if (!CreateMachinesTargetValues())
+                        Result = FileSystemErrorStatus.UnknownErrorReadingFromFS;
+                    else
                     {
-                        MS.Dispose();
+                        //Mark override lists dirty
+                        for I := 0 to MachinesTargetValues.Count - 1 do
+                                MachinesTargetValues.Items[I].TargetValueChanges.MarkOverrideEventListsAsOutOfDate;
+                    }
+                    */
+
+                    if (Result == FileSystemErrorStatus.OK)
+                    {
+                        Log.LogDebug($"Site model read from FS file (ID:{ID}) succeeded");
+                        Log.LogDebug($"Data model extents: {SiteModelExtent}, CellSize: {Grid.CellSize}");
+                    }
+                    else
+                    {
+                        Log.LogWarning($"Site model ID read from FS file ({ID}) failed with error {Result}");
                     }
                 }
-            }
-            catch // (Exception E)
-            {
-                throw; // TODO
+                finally
+                {
+                    MS.Dispose();
+                }
             }
 
             return Result;
@@ -520,7 +512,7 @@ namespace VSS.TRex.SiteModels
         /// datamodel, excepting those identitied in the SurveyedSurfaceExclusionList
         /// </summary>
         /// <returns></returns>
-        public BoundingWorldExtent3D GetAdjustedDataModelSpatialExtents(long[] SurveyedSurfaceExclusionList)
+        public BoundingWorldExtent3D GetAdjustedDataModelSpatialExtents(Guid[] SurveyedSurfaceExclusionList)
         {
             if (SurveyedSurfaces == null || SurveyedSurfaces.Count == 0)
             {

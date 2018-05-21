@@ -1,5 +1,5 @@
 ﻿using Apache.Ignite.Core.Cache;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -20,7 +20,7 @@ namespace VSS.TRex.Services.Designs
     public class DesignsService : BaseService, IDesignsService // , IService, 
     {
         [NonSerialized]
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
 
         [NonSerialized]
@@ -94,12 +94,12 @@ namespace VSS.TRex.Services.Designs
         /// <param name="designDescriptor"></param>
         /// <param name="extents"></param>
         /// <param name="DesignID"></param>
-        public void AddDirect(Guid SiteModelID, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents, out long DesignID)
+        public void AddDirect(Guid SiteModelID, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents, out Guid DesignID)
         {
             // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
 
             NonSpatialAffinityKey cacheKey = TRex.Designs.Storage.Designs.CacheKey(SiteModelID);
-            DesignID = Guid.NewGuid().GetHashCode();
+            DesignID = Guid.NewGuid();
 
             // Get the designs, creating it if it does not exist
             TRex.Designs.Storage.Designs designList = new TRex.Designs.Storage.Designs();
@@ -121,7 +121,7 @@ namespace VSS.TRex.Services.Designs
 
         public TRex.Designs.Storage.Designs List(Guid SiteModelID)
         {
-            Log.InfoFormat($"Listing designs from {TRex.Designs.Storage.Designs.CacheKey(SiteModelID)}");
+            Log.LogInformation($"Listing designs from {TRex.Designs.Storage.Designs.CacheKey(SiteModelID)}");
 
             try
             {
@@ -154,7 +154,7 @@ namespace VSS.TRex.Services.Designs
             /// <param name="context"></param>
             public void Execute(IServiceContext context)
             {
-                Log.Info($"Executing TRex Service 'Designs'");
+                Log.LogInformation($"Executing TRex Service 'Designs'");
             }
 
             /// <summary>
@@ -171,7 +171,7 @@ namespace VSS.TRex.Services.Designs
                 mutableNonSpatialCache = _ignite.GetCache<NonSpatialAffinityKey, Byte[]>(CacheName /*TRexCaches.MutableNonSpatialCacheName());
     */
 
-        public bool Remove(Guid SiteModelID, long DesignID) => RemoveDirect(SiteModelID, DesignID);
+        public bool Remove(Guid SiteModelID, Guid DesignID) => RemoveDirect(SiteModelID, DesignID);
         
         /*
        /// <summary>
@@ -201,7 +201,7 @@ namespace VSS.TRex.Services.Designs
         /// <param name="SiteModelID"></param>
         /// <param name="DesignID"></param>
         /// <returns></returns>
-        public bool RemoveDirect(Guid SiteModelID, long DesignID)
+        public bool RemoveDirect(Guid SiteModelID, Guid DesignID)
         {
             // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
             try
@@ -235,7 +235,7 @@ namespace VSS.TRex.Services.Designs
         /// <param name="SiteModelID"></param>
         /// <param name="DesignID"></param>
         /// <returns></returns>
-        public Design Find(Guid SiteModelID, long DesignID) => FindDirect(SiteModelID, DesignID);
+        public Design Find(Guid SiteModelID, Guid DesignID) => FindDirect(SiteModelID, DesignID);
 
         /// <summary>
         /// Finds a given design in a site model
@@ -243,7 +243,7 @@ namespace VSS.TRex.Services.Designs
         /// <param name="SiteModelID"></param>
         /// <param name="DesignID"></param>
         /// <returns></returns>
-        public Design FindDirect(Guid SiteModelID, long DesignID)
+        public Design FindDirect(Guid SiteModelID, Guid DesignID)
         {
             try
             {

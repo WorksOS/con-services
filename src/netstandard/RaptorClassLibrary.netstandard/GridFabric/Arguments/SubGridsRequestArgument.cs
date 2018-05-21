@@ -54,7 +54,7 @@ namespace VSS.TRex.GridFabric.Arguments
         /// <summary>
         /// The design to be used in cases of cut/fill subgrid requests
         /// </summary>
-        public long CutFillDesignID { get; set; } = long.MinValue;
+        public Guid CutFillDesignID { get; set; } = Guid.Empty;
 
         /// <summary>
         /// Default no-arg constructor

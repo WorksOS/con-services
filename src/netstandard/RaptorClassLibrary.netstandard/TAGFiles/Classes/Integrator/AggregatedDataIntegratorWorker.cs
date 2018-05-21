@@ -2,20 +2,22 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
-using log4net;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Events;
 using VSS.TRex.Interfaces;
 using VSS.TRex.Machines;
 using VSS.TRex.SiteModels;
 using VSS.TRex.Storage;
 using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.TAGFiles.Types;
 
 namespace VSS.TRex.TAGFiles.Classes.Integrator
 {
     public class AggregatedDataIntegratorWorker
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// A queue of the tasks this worker will process into the TRex data stores
@@ -129,7 +131,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
                     if (SiteModelFromDM == null)
                     {
-                        Log.Error($"Unable to lock SiteModel {Task.TargetSiteModelID} from the data model file");
+                        Log.LogError($"Unable to lock SiteModel {Task.TargetSiteModelID} from the data model file");
                         return false;
                     }
 
@@ -143,11 +145,11 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
                     if (!(AnyMachineEvents || AnyCellPasses))
                     {
-                        Log.Info("No machine event or cell passes in base task"); // Nothing to do
+                        Log.LogInformation("No machine event or cell passes in base task"); // Nothing to do
                         return true;
                     }
 
-                    Log.Info("Aggregation Task Process --> Filter tasks to aggregate");
+                    Log.LogInformation("Aggregation Task Process --> Filter tasks to aggregate");
 
                     // ====== STAGE 1: ASSEMBLE LIST OF TAG FILES TO AGGREGATE IN ONE OPERATION
 
@@ -188,7 +190,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                     // of building the similar tasks into a group to be processed.
                     // TODO... HandleDecapsulation(Task.AggregatedCellPasses);
 
-                    Log.Info($"Aggregation Task Process --> Integrating {ProcessedTasks.Count} TAG files for machine {Task.TargetMachineID} in project {Task.TargetSiteModelID}");
+                    Log.LogInformation($"Aggregation Task Process --> Integrating {ProcessedTasks.Count} TAG files for machine {Task.TargetMachineID} in project {Task.TargetSiteModelID}");
 
                     // ====== STAGE 2: AGGREGATE ALL EVENTS AND CELL PASSES FROM ALL TAG FILES INTO THE FIRST ONE IN THE LIST
 
@@ -206,7 +208,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                             processedTask.AggregatedMachineEvents = null; // FreeAndNil(AggregatedMachineEvents);
                         }
 
-                        //Log.Debug($"Aggregation Task Process --> Integrate {ProcessedTasks.Count} cell pass trees");
+                        //Log.LogDebug($"Aggregation Task Process --> Integrate {ProcessedTasks.Count} cell pass trees");
 
                         // Integrate the cell passes from all cell pass aggregators containing cell passes for this machine and sitemodel
                         if (AnyCellPasses && processedTask.AggregatedCellPasses != null)
@@ -340,7 +342,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                             }
                             else
                             {
-                                Log.Error("SiteModelMachineTargetValues not located in aggregate machine events integrator");
+                                Log.LogError("SiteModelMachineTargetValues not located in aggregate machine events integrator");
                                 return false;
                             }
                         }
@@ -374,8 +376,25 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                             };
 
                             // Integrate the cell pass data into the main sitemodel and commit each subgrid as it is updated
-                            SubGridIntegrator subGridIntegrator = new SubGridIntegrator(Task.AggregatedCellPasses, SiteModelFromDM, SiteModelFromDM.Grid, storageProxy_Mutable);
+                            // ... first relable the passes with the machine ID
+                          Task.AggregatedCellPasses.ScanAllSubGrids(leaf =>
+                          {
+                            ServerSubGridTreeLeaf serverLeaf = (ServerSubGridTreeLeaf) leaf;
 
+                            foreach (var segment in serverLeaf.Cells.PassesData.Items)
+                            {
+                              SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+                              {
+                                uint passCount = segment.PassesData.PassCount(x, y);
+                                for (int i = 0; i < passCount; i++)
+                                  segment.PassesData.SetInternalMachineID(x, y, i, MachineFromDM.InternalSiteModelMachineIndex);
+                              });
+                            }
+                            return true;
+                          });
+
+                            // ... then integrate them
+                            SubGridIntegrator subGridIntegrator = new SubGridIntegrator(Task.AggregatedCellPasses, SiteModelFromDM, SiteModelFromDM.Grid, storageProxy_Mutable);
                             if (!subGridIntegrator.IntegrateSubGridTree(SubGridTreeIntegrationMode.SaveToPersistentStore, SubgridHasChanged))
                             {
                                 return false;
@@ -406,15 +425,15 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                 {
                     if (!(AnyMachineEvents || AnyCellPasses))
                     {
-                        Log.Warn($"Suspicious task with no cell passes or machine events in Sitemodel {Task?.TargetSiteModelID}");
+                        Log.LogWarning($"Suspicious task with no cell passes or machine events in Sitemodel {Task?.TargetSiteModelID}");
                     }
 
-                    Log.Info($"Aggregation Task Process --> Completed integrating {ProcessedTasks.Count} TAG files for machine {Task?.TargetMachineID} in project {Task?.TargetSiteModelID}");
+                    Log.LogInformation($"Aggregation Task Process --> Completed integrating {ProcessedTasks.Count} TAG files for machine {Task?.TargetMachineID} in project {Task?.TargetSiteModelID}");
                 }
             }
             catch (Exception E)
             {
-                Log.Error($"Exception in ProcessTask: {E}");
+                Log.LogError($"Exception in ProcessTask: {E}");
                 return false;
             }
 

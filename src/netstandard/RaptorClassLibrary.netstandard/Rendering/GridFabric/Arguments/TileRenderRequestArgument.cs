@@ -29,7 +29,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
         /// <summary>
         /// The identifier for the design held in the designs list ofr the project to be used to calculate cut/fill values
         /// </summary>
-        public long CutFillDesignID { get; set; } = long.MinValue;
+        public Guid CutFillDesignID { get; set; } = Guid.Empty;
         //public DesignDescriptor CutFillDesign { get; set; }
 
         public TileRenderRequestArgument(Guid siteModelID,
@@ -40,7 +40,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
                                          ushort pixelsY,
                                          CombinedFilter filter1,
                                          CombinedFilter filter2,
-                                         long cutFillDesignID /*DesignDescriptor cutFillDesign*/)
+                                         Guid cutFillDesignID /*DesignDescriptor cutFillDesign*/)
         {
             SiteModelID = siteModelID;
             Mode = mode;

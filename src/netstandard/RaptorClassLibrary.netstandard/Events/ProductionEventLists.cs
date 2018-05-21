@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using System.Reflection;
-using log4net;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Interfaces;
 using VSS.TRex.SiteModels;
@@ -15,7 +15,7 @@ namespace VSS.TRex.Events
     public class ProductionEventLists : IProductionEventLists
 
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         /// <summary>
         /// The SiteModel these events relate to
@@ -23,9 +23,10 @@ namespace VSS.TRex.Events
         private SiteModel SiteModel { get; set; }
 
         /// <summary>
-        /// The ID of the machine these events were recorded by
+        /// The ID of the machine these events were recorded by. The ID is the (short) internal machine ID
+        /// used within the data model, not the GUID descriptor for the machine
         /// </summary>
-        public long MachineID { get; set; }
+        public short MachineID { get; set; }
 
         public StartEndProductionEvents MachineStartupShutdownEvents;
 
@@ -282,7 +283,7 @@ namespace VSS.TRex.Events
         /// </summary>
         /// <param name="siteModel"></param>
         /// <param name="machineID"></param>
-        public ProductionEventLists(SiteModel siteModel, long machineID)
+        public ProductionEventLists(SiteModel siteModel, short machineID)
         {
             SiteModel = siteModel;
 
@@ -299,7 +300,7 @@ namespace VSS.TRex.Events
         {
             foreach (IProductionEvents list in GetEventLists().Where(x => x.EventsChanged))
             {
-                Log.Debug(
+                Log.LogDebug(
                     $"Saving {list.EventListType} with {list.Count()} events for machine {MachineID} in project {SiteModel.ID}");
 
                 list.SaveToStore(storageProxy);

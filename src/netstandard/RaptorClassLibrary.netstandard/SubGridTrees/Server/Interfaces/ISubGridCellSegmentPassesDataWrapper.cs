@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using VSS.TRex.Cells;
 
@@ -178,5 +179,20 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// <param name="sourceSegment"></param>
         /// <param name="atAndAfterTime"></param>
         void AdoptCellPassesFrom(ISubGridCellSegmentPassesDataWrapper sourceSegment, DateTime atAndAfterTime);
+
+        /// <summary>
+        /// Returns any known machine ID set related to the set of passes this wrapper is responsible for
+        /// </summary>
+        /// <returns></returns>
+        BitArray GetMachineIDSet();
+
+    /// <summary>
+    /// Sets the internal machine ID for the cell pass identifid by x & y spatial location and passNumber.
+    /// </summary>
+    /// <param name="X"></param>
+    /// <param name="Y"></param>
+    /// <param name="passNumber"></param>
+    /// <param name="internalMachineID"></param>
+    void SetInternalMachineID(uint X, uint Y, int passNumber, short internalMachineID);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using System.Linq;
 using VSS.TRex.Cells;
@@ -228,7 +229,26 @@ namespace VSS.TRex.SubGridTrees.Server
             throw new NotImplementedException("Static cell segment passes wrappers do not support cell pass adoption");
         }
 
-        public void Write(BinaryWriter writer)
+        /// <summary>
+        /// Returns a null machine ID set for nonstatic cell pass wrappers. MachineIDSets are an 
+        /// optimisation for read requests on compressed static cell pass representations
+        /// </summary>
+        /// <returns></returns>
+        public BitArray GetMachineIDSet() => null;
+
+      /// <summary>
+      /// Sets the internal machine ID for the cell pass identifid by x & y spatial location and passNumber.
+      /// </summary>
+      /// <param name="X"></param>
+      /// <param name="Y"></param>
+      /// <param name="passNumber"></param>
+      /// <param name="internalMachineID"></param>
+    public void SetInternalMachineID(uint X, uint Y, int passNumber, short internalMachineID)
+      {
+        throw new InvalidOperationException("Immutable cell pass segment.");
+      }
+
+    public void Write(BinaryWriter writer)
         {
             CalculateTotalPasses(out uint TotalPasses, out uint MaxPassCount);
 

@@ -1,4 +1,6 @@
-﻿namespace VSS.TRex
+﻿using System.IO;
+
+namespace VSS.TRex
 {
     /// <summary>
     /// A class to contain a collection of TRex configuration controls.
@@ -11,12 +13,6 @@
         /// </summary>
         /// <returns></returns>
         public static int SubGridTreeNodeCellSparcityLimit() => 20;
-
-        /// <summary>
-        /// The default first asset ID number used for a John Doe machine
-        /// </summary>
-        /// <returns></returns>
-        public static long JohnDoeBaseNumber() => 1000000;
 
         /// <summary>
         /// The number of passes to increment a cell pass array by when constructing filtered cell pass arrays
@@ -37,6 +33,11 @@
         /// The number of paritions configured for caches that store spatial subgrid data
         /// </summary>
         public static uint NumPartitionsPerDataCache = 1024;
+
+        /// <summary>
+        /// The file system location in which to store Ignite persistent data
+        /// </summary>
+        public static string PersistentCacheStoreLocation = Path.Combine(Path.GetTempPath(), "TRexIgniteData");
 
 
         public static bool EnableTFAService = true;

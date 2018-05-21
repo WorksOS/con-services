@@ -1,5 +1,5 @@
 ﻿using Apache.Ignite.Core.Compute;
-using log4net;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
 using VSS.TRex.DesignProfiling.Executors;
@@ -14,14 +14,14 @@ namespace VSS.TRex.DesignProfiling.GridFabric.ComputeFuncs
     public class CalculateDesignElevationPatchComputeFunc : IComputeFunc<CalculateDesignElevationPatchArgument, byte [] /* ClientHeightLeafSubGrid */>
     {
         [NonSerialized]
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         // TODO: Ignite 2.4 has a fix for the two dimensional arrya serialisation buf that requires this result to be a byte array - this can be changed back...
         public byte[] /*ClientHeightLeafSubGrid */Invoke(CalculateDesignElevationPatchArgument arg)
         {
             try
             {
-                // Log.Info($"CalculateDesignElevationPatchComputeFunc: Arg = {arg}");
+                // Log.LogInformation($"CalculateDesignElevationPatchComputeFunc: Arg = {arg}");
 
                 CalculateDesignElevationPatch Executor = new CalculateDesignElevationPatch();
 
@@ -29,7 +29,7 @@ namespace VSS.TRex.DesignProfiling.GridFabric.ComputeFuncs
             }
             catch (Exception E)
             {
-                Log.Error($"Exception: {E}");
+                Log.LogError($"Exception: {E}");
                 return null; 
             }
         }
