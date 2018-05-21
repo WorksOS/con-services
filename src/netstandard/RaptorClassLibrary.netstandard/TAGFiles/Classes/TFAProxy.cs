@@ -11,6 +11,14 @@ namespace VSS.TRex.TAGFiles.Classes
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
+      /// <summary>
+      ///  Default no-arg constructor
+      /// </summary>
+      public TFAProxy()
+      {
+
+      }
+
         /// <summary>
         /// Calls Tagfile Auth Service to lookup project details and check assett is licensed
         /// </summary>

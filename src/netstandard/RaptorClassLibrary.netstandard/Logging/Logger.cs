@@ -12,7 +12,7 @@ namespace VSS.TRex.Logging
     public static class Logger
   {
     // Get the logger factory from the DIContext
-    private static ILoggerFactory Factory = DIContext.Obtain<ILoggerFactory>();
+      public static ILoggerFactory Factory { get; private set; }
 
       public static ILogger CreateLogger<TState>() => Factory.CreateLogger<TState>();
 
