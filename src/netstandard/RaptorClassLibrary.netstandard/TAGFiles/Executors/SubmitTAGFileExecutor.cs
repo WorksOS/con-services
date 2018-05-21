@@ -86,7 +86,7 @@ namespace VSS.TRex.TAGFiles.Executors
                         else
                         {
                             response.Success = false;
-                            response.Exception = "Failed to submit tagfile to processing queue";
+                            response.Exception = "Failed to submit tagfile to processing queue. Request already exists";
                         }
                     }
                     else
