@@ -13,6 +13,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace ExecutorTests.Internal
@@ -53,7 +54,7 @@ namespace ExecutorTests.Internal
           .AddTransient<IProjectListProxy, ProjectListProxy>()
           .AddTransient<IRaptorProxy, RaptorProxy>()
           .AddSingleton<IKafka, RdKafkaDriver>()
-          .AddTransient<IErrorCodesProvider, ErrorCodesProvider>()
+          .AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>()
           .AddMemoryCache()
         .BuildServiceProvider();
 

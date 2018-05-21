@@ -30,7 +30,7 @@
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.0.*" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.1.*" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.8.*" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.18.*" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.20.*" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

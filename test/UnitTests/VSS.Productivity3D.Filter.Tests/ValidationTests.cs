@@ -174,8 +174,8 @@ namespace VSS.Productivity3D.Filter.Tests
       var customHeaders = new Dictionary<string, string>();
       projectListProxy.Setup(ps => ps.GetProjectForCustomer(It.IsAny<string>(), projectUid, customHeaders)).ReturnsAsync(projectData);
 
-      TIDCustomPrincipal principal = new TIDCustomPrincipal(new System.Security.Claims.ClaimsIdentity(),
-        custUid, "","", projectListProxy.Object, customHeaders);
+      FilterPrincipal principal = new FilterPrincipal(new System.Security.Claims.ClaimsIdentity(),
+        custUid, string.Empty,string.Empty, false, projectListProxy.Object, customHeaders);
 
       var actual = await principal.GetProject(projectUid);
       Assert.AreEqual(projectData, actual);
@@ -190,8 +190,8 @@ namespace VSS.Productivity3D.Filter.Tests
       var customHeaders = new Dictionary<string, string>();
       projectListProxy.Setup(ps => ps.GetProjectForCustomer(It.IsAny<string>(), It.IsAny<string>(), customHeaders)).ReturnsAsync((ProjectData)null);
 
-      TIDCustomPrincipal principal = new TIDCustomPrincipal(new System.Security.Claims.ClaimsIdentity(),
-        custUid, "", "", projectListProxy.Object, customHeaders);
+      FilterPrincipal principal = new FilterPrincipal(new System.Security.Claims.ClaimsIdentity(),
+        custUid, string.Empty, string.Empty, false, projectListProxy.Object, customHeaders);
 
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(() => principal.GetProject(projectUid));
 
@@ -215,8 +215,8 @@ namespace VSS.Productivity3D.Filter.Tests
         .ReturnsAsync(new List<ProjectData>())
         .ReturnsAsync(projects);
 
-      TIDCustomPrincipal principal = new TIDCustomPrincipal(new System.Security.Claims.ClaimsIdentity(),
-        custUid, "", "", projectListProxy.Object, customHeaders);
+      FilterPrincipal principal = new FilterPrincipal(new System.Security.Claims.ClaimsIdentity(),
+        custUid, string.Empty, string.Empty, false, projectListProxy.Object, customHeaders);
 
       var actual = await principal.GetProject(projectUid);
       Assert.AreEqual(projectData, actual);

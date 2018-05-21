@@ -10,14 +10,11 @@ namespace VSS.Productivity3D.Filter.Tests
     [TestMethod] 
     public void DynamicAddwithOffsetTest()
     {
-      var contractExecutionStatesEnum = serviceProvider.GetRequiredService<IErrorCodesProvider>();
-      
-      // todo this needs to go in Models tests so that messages can be added 
-      // Assert.AreEqual(45, contractExecutionStatesEnum.DynamicCount);
-
-      Assert.AreEqual("Invalid filterUid.", contractExecutionStatesEnum.FirstNameWithOffset(2));
+      var filterErrorCodesProvider = serviceProvider.GetRequiredService<IErrorCodesProvider>();
+    
+      Assert.AreEqual("Invalid filterUid.", filterErrorCodesProvider.FirstNameWithOffset(2));
       Assert.AreEqual("UpsertFilter failed. Unable to create persistent filter.",
-        contractExecutionStatesEnum.FirstNameWithOffset(24));
+        filterErrorCodesProvider.FirstNameWithOffset(24));
     }
   }
 }

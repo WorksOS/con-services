@@ -13,7 +13,6 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
-using VSS.MasterData.Models.FIlters;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -21,8 +20,10 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
-using VSS.Productivity3D.Filter.WebAPI.Internal.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.WebApi.Common;
+using VSS.Productivity3D.Filter.Common.Filters.Authentication;
+using VSS.Productivity3D.Filter.Common.ResultHandling;
 #if NET_4_7
   using VSS.Productivity3D.Common.Filters;
 #endif
@@ -34,6 +35,13 @@ namespace VSS.Productivity3D.Filter.WebApi
   /// </summary>
   public class Startup
   {
+    /// <summary>
+    /// The name of this service for swagger etc.
+    /// </summary>
+    private const string SERVICE_TITLE = "Filter Service API";
+    /// <summary>
+    /// 
+    /// </summary>
     public const string loggerRepoName = "WebApi";
     private IServiceCollection serviceCollection;
 
@@ -70,16 +78,7 @@ namespace VSS.Productivity3D.Filter.WebApi
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddLogging();
-
-      //Configure CORS
-      services.AddCors(options =>
-      {
-        options.AddPolicy("VSS", builder => builder.AllowAnyOrigin()
-          .WithHeaders("Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization",
-            "X-VisionLink-CustomerUID", "X-VisionLink-UserUid", "X-Jwt-Assertion", "X-VisionLink-ClearCache", "Cache-Control")
-          .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE")
-	        .SetPreflightMaxAge(TimeSpan.FromSeconds(2520)));
-      });
+      services.AddCommon<Startup>(SERVICE_TITLE);
 
       // Add framework services.
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
@@ -91,44 +90,11 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddTransient<IRepository<IFilterEvent>, FilterRepository>();
       services.AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>();
       services.AddTransient<IRepository<IProjectEvent>, ProjectRepository>();
-      services.AddTransient<IErrorCodesProvider, ErrorCodesProvider>();
+      services.AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>();
       services.AddMemoryCache();
-
-      services.AddMvc(
-        config =>
-        {
-          config.Filters.Add(new ValidationFilterAttribute());
-        }
-      );
 
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-      //Configure swagger
-      services.AddSwaggerGen(c =>
-      {
-        c.SwaggerDoc("v1", new Info { Title = "Filter Service API", Version = "v1" });
-      });
-
-      services.ConfigureSwaggerGen(options =>
-      {
-        string pathToXml;
-
-        var moduleName = typeof(Startup).GetTypeInfo().Assembly.ManifestModule.Name;
-        var assemblyName = moduleName.Substring(0, moduleName.LastIndexOf('.'));
-
-        if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), assemblyName + ".xml")))
-          pathToXml = Directory.GetCurrentDirectory();
-        else if (File.Exists(Path.Combine(System.AppContext.BaseDirectory, assemblyName + ".xml")))
-          pathToXml = System.AppContext.BaseDirectory;
-        else
-        {
-          var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
-          pathToXml = Path.GetDirectoryName(pathToExe);
-        }
-        options.IncludeXmlComments(Path.Combine(pathToXml, assemblyName + ".xml"));
-        options.IgnoreObsoleteProperties();
-        options.DescribeAllEnumsAsStrings();
-      });
       serviceCollection = services;
     }
 
@@ -147,26 +113,15 @@ namespace VSS.Productivity3D.Filter.WebApi
 
       loggerFactory.AddDebug();
 
-      app.UseExceptionTrap();
 #if NET_4_7
       if (Configuration["newrelic"] == "true")
         app.UseMiddleware<NewRelicMiddleware>();
 #endif
-
-      app.UseFilterMiddleware<RequestIDMiddleware>();
-
       //Enable CORS before TID so OPTIONS works without authentication
-      app.UseCors("VSS");
-
-      app.UseSwagger();
-
-      app.UseSwaggerUI(c =>
-      {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Filter Service API V1");
-      });
-
-      app.UseTIDAuthentication();
+      app.UseCommon(SERVICE_TITLE);
+      app.UseFilterMiddleware<FilterAuthentication>();
       app.UseMvc();
+
     }
   }
 }
