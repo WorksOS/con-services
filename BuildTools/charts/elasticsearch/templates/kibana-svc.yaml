@@ -1,0 +1,22 @@
+{{- if .Values.kibana.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "fullname" . }}-kibana
+  annotations:
+    "service.beta.kubernetes.io/aws-load-balancer-internal": "0.0.0.0/0"
+  labels:
+    app: {{ template "fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    component: {{ template "fullname" . }}-kibana
+spec:
+  type: {{ .Values.common.serviceType }}
+  ports:
+  - port: {{ .Values.kibana.httpPort }}
+    targetPort: 5601
+    protocol: TCP
+  selector:
+    component: {{ template "fullname" . }}-kibana
+{{- end }}

@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: projectservice-deployment
+  labels:
+    app: projectservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: projectservice
+  template:
+    metadata:
+      labels:
+        app: projectservice
+    spec:
+      containers:
+      - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest
+        name: projectservice        
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80

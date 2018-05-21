@@ -18,9 +18,12 @@ namespace MockProjectWebApi.Controllers
         jobId = SUCCESS_JOB_ID;
       if (request.Url.Contains("Test-failed"))
         jobId = FAILURE_JOB_ID;
+      if (request.Url.Contains("Test-timeout"))
+        jobId = TIMEOUT_JOB_ID;
       return new ScheduleJobResult { JobId = jobId };
     }
 
+    //I don't think this is called. It's done through the mick veta export in MockRaptorController
     [Route("/api/v1/mock/export/{jobId}")]
     [HttpGet]
     public JobStatusResult GetMockExportJobStatus(string jobId)
@@ -51,6 +54,7 @@ namespace MockProjectWebApi.Controllers
     public static readonly string SUCCESS_JOB_ID = "Test_Job_1";
     public static readonly string FAILURE_JOB_ID = "Test_Job_2";
     private readonly string IN_PROGRESS_JOB_ID = "Test_Job_3";
+    public static readonly string TIMEOUT_JOB_ID = "Test_Job_4";
 
     private readonly string SUCCESS_STATUS = "SUCCEEDED";
     private readonly string FAILURE_STATUS = "FAILED";
