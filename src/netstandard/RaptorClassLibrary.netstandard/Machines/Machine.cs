@@ -27,6 +27,12 @@ namespace VSS.TRex.Machines
 
         public short InternalSiteModelMachineIndex { get; set; }
 
+      /// <summary>
+      /// The internal machine ID representing a machien that has not yet
+      /// been assigned as actual machine ID within the data model
+      /// </summary>
+      public const short kNullInternalSiteModelMachineIndex = -1;
+
         public string Name { get; set; } = "";
 
         public byte MachineType { get; set; } = byte.MaxValue;

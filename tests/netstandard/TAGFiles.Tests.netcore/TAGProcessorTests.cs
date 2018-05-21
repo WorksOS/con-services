@@ -18,7 +18,7 @@ namespace VSS.TRex.TAGFiles.Classes.Tests
             var SiteModel = new SiteModel();
             var Machine = new Machine();
             var SiteModelGridAggregator = new ServerSubGridTree(SiteModel);
-            var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, long.MaxValue);
+            var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, Machine.kNullInternalSiteModelMachineIndex);
 
             TAGProcessor processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
         }
@@ -29,7 +29,7 @@ namespace VSS.TRex.TAGFiles.Classes.Tests
             var SiteModel = new SiteModel();
             var Machine = new Machine();
             var SiteModelGridAggregator = new ServerSubGridTree(SiteModel);
-            var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, long.MaxValue);
+            var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, Machine.kNullInternalSiteModelMachineIndex);
 
             TAGProcessor processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
 
@@ -64,7 +64,7 @@ namespace VSS.TRex.TAGFiles.Classes.Tests
             var SiteModel = new SiteModel();
             var Machine = new Machine();
             var SiteModelGridAggregator = new ServerSubGridTree(SiteModel);
-            var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, long.MaxValue);
+            var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, Machine.kNullInternalSiteModelMachineIndex);
 
             TAGProcessor processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
 
@@ -95,7 +95,7 @@ namespace VSS.TRex.TAGFiles.Classes.Tests
             var SiteModel = new SiteModel();
             var Machine = new Machine();
             var SiteModelGridAggregator = new ServerSubGridTree(SiteModel);
-            var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, long.MaxValue);
+            var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, Machine.kNullInternalSiteModelMachineIndex);
 
             TAGProcessor processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
 
