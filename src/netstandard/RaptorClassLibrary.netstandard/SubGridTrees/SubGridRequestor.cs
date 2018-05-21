@@ -12,7 +12,6 @@ using VSS.TRex.Surfaces;
 using VSS.TRex.Surfaces.GridFabric.Arguments;
 using VSS.TRex.Surfaces.GridFabric.Requests;
 using VSS.TRex.Types;
-using VSS.TRex.Storage;
 
 namespace VSS.TRex.SubGridTrees
 {
@@ -96,8 +95,9 @@ namespace VSS.TRex.SubGridTrees
                                 BoundingIntegerExtent2D overrideSpatialCellRestriction,
                                 byte treeLevel,
                                 int maxNumberOfPassesToReturn,
-                                AreaControlSet areaControlSet)
-        {
+                                AreaControlSet areaControlSet,
+                                FilteredValuePopulationControl populationControl)
+    {
             SiteModel = sitemodel;
             StorageProxy = storageProxy;
             Filter = filter;
@@ -114,7 +114,8 @@ namespace VSS.TRex.SubGridTrees
                                              false, // Assigned(SubgridCache), //ClientGrid.SupportsAssignationFromCachedPreProcessedClientSubgrid
                                              treeLevel,
                                              maxNumberOfPassesToReturn,
-                                             areaControlSet
+                                             areaControlSet,
+                                             populationControl
                                              );
 
             ReturnEarliestFilteredCellPass = Filter.AttributeFilter.ReturnEarliestFilteredCellPass;
