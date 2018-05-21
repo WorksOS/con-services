@@ -1,3 +1,3 @@
 cd ./test/UnitTests/WebApiTests
-dotnet test -f netcoreapp1.1 
+dotnet test -f netcoreapp2.0
 

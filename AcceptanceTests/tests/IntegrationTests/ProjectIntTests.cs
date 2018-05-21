@@ -4,7 +4,6 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using TestUtility;
-using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;

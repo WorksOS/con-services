@@ -137,7 +137,7 @@ node('Ubuntu_Slave') {
                 bat "build47.bat"
             }
             
-            archiveArtifacts artifacts: 'TagFileAuthWebApiNet47.zip', fingerprint: true 
+            archiveArtifacts artifacts: 'TagFileAuthWebApiNet471.zip', fingerprint: true 
 
 	    stage ('Tag repository') {
                 bat 'git rev-parse HEAD > GIT_COMMIT'

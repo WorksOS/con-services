@@ -2,9 +2,9 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
-using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
@@ -93,6 +93,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       return result;
     }
 
+    /*
     /// the following is for AlertNotification. This will not be completed until after the June2018-all-hands-to-the-pump
     /// Please LEAVE!
     /// <summary>
@@ -103,25 +104,23 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// True for success and false for failure.
     /// </returns>
     /// <executor>TagFileProcessingErrorV2Executor</executor>
-    //[Route("api/v2/notification/tagFileProcessingError")]
-    //[HttpPost]
-    //public async Task<TagFileProcessingErrorResult> PostTagFileProcessingError([FromBody] TagFileProcessingErrorV2Request request)
-    //{
-    //  log.LogDebug("PostTagFileProcessingErrorV2: request:{0}", JsonConvert.SerializeObject(request));
-    //  request.Validate();
+    [Route("api/v2/notification/tagFileProcessingError")]
+    [HttpPost]
+    public async Task<TagFileProcessingErrorResult> PostTagFileProcessingError([FromBody] TagFileProcessingErrorV2Request request)
+    {
+      log.LogDebug("PostTagFileProcessingErrorV2: request:{0}", JsonConvert.SerializeObject(request));
+      request.Validate();
 
-    //  var executor = RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository, producer, kafkaTopicName);
-    //  var result = await executor.ProcessAsync(request) as TagFileProcessingErrorResult;
+      var executor = RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository, producer, kafkaTopicName);
+      var result = await executor.ProcessAsync(request) as TagFileProcessingErrorResult;
 
-    //  log.LogDebug("PostTagFileProcessingErrorV2: result:{0}", JsonConvert.SerializeObject(result));
-    //  return result;
-    //}
+      log.LogDebug("PostTagFileProcessingErrorV2: result:{0}", JsonConvert.SerializeObject(result));
+      return result;
+    } */
 
     /// <summary>
     /// Posts the application alarm.
     /// </summary>
-    /// <param name="request">The request.</param>
-    /// <returns></returns>
     [Route("api/v1/notification/appAlarm")]
     [HttpPost]
     public ContractExecutionResult PostAppAlarm([FromBody] AppAlarmMessage request)
