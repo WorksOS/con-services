@@ -9,6 +9,7 @@ using VSS.TRex.TAGFiles.Classes.Validator;
 using VSS.TRex.TAGFiles.Models;
 using VSS.TRex.DesignProfiling.Servers.Client;
 using VSS.TRex;
+using VSS.TRex.TAGFiles.Classes.Queues;
 
 namespace VSS.TRex.TAGFiles.Classes
 {
@@ -74,7 +75,16 @@ namespace VSS.TRex.TAGFiles.Classes
                 var responseObj = Newtonsoft.Json.JsonConvert.DeserializeObject<TFAReponse>(response);
                 responseReader.Close();
                 if (responseObj.ResultCode == 0)
+                {
                     result = ValidationResult.Valid;
+                    // if not overriding take TFA projectid
+                    if ((projectId == Guid.Empty) && (Guid.Parse(responseObj.projectUid) != Guid.Empty))
+                    {
+                        projectId = Guid.Parse(responseObj.projectUid);
+                    }
+                    // take what TFA gives us including a empty guid
+                    assetId = (Guid.Parse(responseObj.projectUid));
+                }
                 else
                 {
                     // Todo assigned correct values
