@@ -17,10 +17,10 @@ users:
 - name: k8s.vspengg.com
   user:
     as-user-extra: {}
-    password: wFilufjS5qb0iaPlS0LHylSgo04I1kDe
+    password: jMphn5nTbqrUQBx6ieI8qOtilhN45Xcv
     username: admin
 - name: k8s.vspengg.com-basic-auth
   user:
     as-user-extra: {}
-    password: wFilufjS5qb0iaPlS0LHylSgo04I1kDe
+    password: jMphn5nTbqrUQBx6ieI8qOtilhN45Xcv
     username: admin
