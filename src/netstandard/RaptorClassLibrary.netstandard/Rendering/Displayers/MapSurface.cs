@@ -262,7 +262,7 @@ namespace VSS.TRex.Rendering.Displayers
         //DrawCanvas : TCanvas; { The canvas being displayed on, screen or printer }
 
         public IBitmap BitmapCanvas;
-        public IRenderingFactory RenderingFactory = DIContext.RenderingFactory;
+        public IRenderingFactory RenderingFactory = DIContext.Obtain<IRenderingFactory>();
         public IGraphics DrawCanvas;
 
         public int ClipHeight; // Viewport height
