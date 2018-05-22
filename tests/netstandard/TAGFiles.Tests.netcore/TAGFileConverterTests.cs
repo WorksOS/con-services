@@ -1,19 +1,13 @@
-﻿using VSS.TRex.Executors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
+﻿using System.IO;
 using VSS.TRex.TAGFiles.Types;
-using VSS.TRex.TAGFiles.Tests;
+using VSS.TRex.Tests.netcore.TestFixtures;
 using VSSTests.TRex.Tests.Common;
 using Xunit;
 
 namespace VSS.TRex.Executors.Tests
 {
-        public class TAGFileConverterTests
-    {
+        public class TAGFileConverterTests : IClassFixture<DILoggingFixture>
+  {
         [Fact()]
         public void Test_TAGFileConverter_Creation()
         {

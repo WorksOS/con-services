@@ -6,13 +6,13 @@ using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Iterators;
 using VSS.TRex.SubGridTrees.Server.Utilities;
 using VSS.TRex.SubGridTrees.Utilities;
-using VSS.TRex.SubGridTrees;
+using VSS.TRex.Tests.netcore.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests
 {
-    public class SubgridSegmentCleavingTests_NonStatic
-    {
+    public class SubgridSegmentCleavingTests_NonStatic : IClassFixture<DILoggingFixture>
+  {
         private static DateTime startTime = new DateTime(2000, 1, 1, 0, 0, 0);
 
         private static IServerLeafSubGrid MakeSubgridWith10240CellPassesAtOneSecondIntervals()

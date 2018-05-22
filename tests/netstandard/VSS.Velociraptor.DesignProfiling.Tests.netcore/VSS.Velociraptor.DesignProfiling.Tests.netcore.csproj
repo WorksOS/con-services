@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\netstandard\RaptorClassLibrary.netstandard\RaptorClassLibrary.netstandard.csproj" />
+    <ProjectReference Include="..\RaptorClassLibrary.Tests.netcore\RaptorClassLibrary.Tests.netcore.csproj" />
   </ItemGroup>
 
 </Project>

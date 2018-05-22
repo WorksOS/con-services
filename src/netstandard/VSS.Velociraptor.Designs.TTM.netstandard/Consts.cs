@@ -2,9 +2,6 @@
 {
     public static class Consts
     {
-        public const float NullHeight = -3.4E38f;
-        public const double NullReal = 1E308;
-
         public const int MaxSmallIntValue = 0x7FFF;
         public const byte TTMMajorVersion = 1;
         public const byte TTMMinorVersion = 0;

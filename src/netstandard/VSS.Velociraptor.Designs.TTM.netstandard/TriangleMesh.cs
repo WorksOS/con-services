@@ -112,7 +112,7 @@ namespace VSS.TRex.Designs.TTM
 
         public Triangle GetTriangleAtPoint(double X, double Y, out double Z)
         {
-            Z = Consts.NullReal;
+            Z = Common.Consts.NullReal;
 
             for (int i = 0; i < Triangles.Count; i++)
             {

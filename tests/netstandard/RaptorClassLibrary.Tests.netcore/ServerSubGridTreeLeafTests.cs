@@ -1,19 +1,16 @@
-﻿using VSS.TRex.SubGridTrees.Server;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.TRex.Cells;
 using VSS.TRex.Storage;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Tests.netcore.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.SubGridTrees.Server.Tests
 {
-        public class ServerSubGridTreeLeafTests
-    {
+        public class ServerSubGridTreeLeafTests : IClassFixture<DILoggingFixture>
+  {
         private CellPass CreateTestCellPass()
         {
             return new CellPass()
