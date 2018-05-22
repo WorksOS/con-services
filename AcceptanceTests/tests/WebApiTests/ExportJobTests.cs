@@ -97,7 +97,7 @@ namespace WebApiTests
       var jobId = GetScheduledJobId(filterUid, TIMEOUT_JOB_ID);
 
       //Get the job status...
-      var statusResult = WaitForExpectedStatus(jobId, "SUCCEEDED", 150);
+      var statusResult = WaitForExpectedStatus(jobId, "SUCCEEDED", 180);
       Assert.IsTrue(!string.IsNullOrEmpty(statusResult.DownloadLink), "Should get a download link on success");
     }
 
