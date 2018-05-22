@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using VSS.TRex.DI;
 
 namespace VSS.TRex.Tests.netcore.TestFixtures
@@ -6,12 +7,13 @@ namespace VSS.TRex.Tests.netcore.TestFixtures
   public class DILoggingFixture : IDisposable
   {
     private static object Lock = new object();
+    private static object DI;
 
     public DILoggingFixture()
     {
       lock (Lock)
       {
-          DIBuilder.New().AddLogging().Complete();
+        DI = DI ?? DIBuilder.New().AddLogging().Complete();
       }
     }
 
