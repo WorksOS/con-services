@@ -21,11 +21,8 @@ namespace VSS.TRex.GridFabric.Arguments
         /// </summary>
         public Guid DataModelID { get; set; }
 
-        /// <summary>
-        /// The filter to be used for the request
-        /// </summary>
-        public CombinedFilter Filter { get; set; }
+        public FilterSet Filters { get; set; }
 
         // TODO  LiftBuildSettings  :TICLiftBuildSettings;
-    }
+  }
 }

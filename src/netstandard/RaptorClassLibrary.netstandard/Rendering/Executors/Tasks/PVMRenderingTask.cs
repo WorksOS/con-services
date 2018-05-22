@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System.Reflection;
 using VSS.TRex.Executors.Tasks;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -12,7 +11,7 @@ namespace VSS.TRex.Rendering.Executors.Tasks
     /// </summary>
     public class PVMRenderingTask : PipelinedSubGridTask
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// The tile renderer responsible for processing subgrid information into tile based thematic rendering
@@ -20,7 +19,7 @@ namespace VSS.TRex.Rendering.Executors.Tasks
         public PlanViewTileRenderer TileRenderer { get; set; }
 
         /// <summary>
-        /// Constructs the PVM renderer as well as an argument and request to be used if needing to request elevations to support cut/fill operations
+        /// Constructs the PVM renderering task to accept subgrids returning from the processing engine
         /// </summary>
         /// <param name="requestDescriptor"></param>
         /// <param name="tRexNodeId"></param>
@@ -46,12 +45,5 @@ namespace VSS.TRex.Rendering.Executors.Tasks
 
             return TileRenderer.Displayer.RenderSubGrid((response as IClientLeafSubGrid[])[0]);
         }
-
-        /// <summary>
-        /// Transfers a set of subgrids responses into the processing task
-        /// </summary>
-        /// <param name="responses"></param>
-        /// <returns></returns>
-        public override bool TransferResponses(object [] responses) => responses.All(TransferResponse);
     }
 }

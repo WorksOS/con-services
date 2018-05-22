@@ -20,7 +20,7 @@ namespace VSS.TRex.Analytics
     /// </summary>
     public class AnalyticsComputor
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// The Aggregator to use for calculation of analytics
@@ -64,17 +64,11 @@ namespace VSS.TRex.Analytics
 
         public long RequestDescriptor { get; set; } = -1;
 
-        public CombinedFilter Filter { get; set; }
+        public FilterSet Filters { get; set; }
 
         public bool AbortedDueToTimeout { get; set; } = false;
 
         public bool IncludeSurveyedSurfaces { get; set; }
-
-        protected void ApplyFilterAndSubsetBoundariesToExtents()
-        {
-            if (Filter != null)
-                Extents = Filter.SpatialFilter.CalculateIntersectionWithExtents(Extents);
-        }
 
         private bool ConfigurePipeline(out BoundingIntegerExtent2D CellExtents)
         {
@@ -110,11 +104,13 @@ namespace VSS.TRex.Analytics
                 }
             }
 
-            if (Filter?.AttributeFilter != null)
+          foreach (var filter in Filters.Filters)
+            if (filter?.AttributeFilter != null)
             {
-                if (Filter.AttributeFilter.HasElevationRangeFilter && (Filter.AttributeFilter.ElevationRangeDesignID != Guid.Empty))
+                if (filter.AttributeFilter.HasElevationRangeFilter && (filter.AttributeFilter.ElevationRangeDesignID != Guid.Empty))
                 {
-                    SubGridTreeSubGridExistenceBitMask LiftDesignSubgridOverlayMap = ExistenceMaps.ExistenceMaps.GetSingleExistenceMap(SiteModel.ID, ExistenceMaps.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, Filter.AttributeFilter.ElevationRangeDesignID);
+                    SubGridTreeSubGridExistenceBitMask LiftDesignSubgridOverlayMap = 
+                      ExistenceMaps.ExistenceMaps.GetSingleExistenceMap(SiteModel.ID, ExistenceMaps.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, filter.AttributeFilter.ElevationRangeDesignID);
 
                     if (LiftDesignSubgridOverlayMap != null)
                         OverallExistenceMap.SetOp_AND(LiftDesignSubgridOverlayMap);
@@ -127,7 +123,7 @@ namespace VSS.TRex.Analytics
             // TODO Readd when lift build settings are supported
             // PipeLine.LiftBuildSettings = FLiftBuildSettings;
 
-            PipeLine.FilterSet = new FilterSet(new [] { Filter });
+            PipeLine.FilterSet = Filters; //new FilterSet(new [] { Filter });
 
             return true;
         }
@@ -249,7 +245,7 @@ namespace VSS.TRex.Analytics
             }
             catch (Exception E)
             {
-              Log.LogError($"ExecutePipeline raised exception '{E}'");
+              Log.LogError($"ExecutePipeline raised exception: {E}");
             }
 
             return Result;
@@ -266,7 +262,7 @@ namespace VSS.TRex.Analytics
             Extents.SetMaximalCoverage();
 
             // Adjust the extents we have been given to encompass the spatial extent of the supplied filters (if any);
-            ApplyFilterAndSubsetBoundariesToExtents();
+            Filters.ApplyFilterAndSubsetBoundariesToExtents(ref Extents);
 
             // Compute the report as required
             return ExecutePipeline() == RequestErrorStatus.OK;

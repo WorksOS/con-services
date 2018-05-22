@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Linq;
+using Microsoft.Extensions.Logging;
 using System.Reflection;
 using VSS.TRex.Types;
 
@@ -9,7 +10,7 @@ namespace VSS.TRex.Executors.Tasks
     /// </summary>
     public class PipelinedSubGridTask : TaskBase 
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// Primary task constructor
@@ -80,7 +81,8 @@ namespace VSS.TRex.Executors.Tasks
             }
 
             Log.LogInformation($" WARNING: PipelinedSubGridTask.TransferSubgridResponse: No pipeline available to submit grouped result for request {RequestDescriptor}");
-            return false;
+
+            return responses.All(TransferResponse);
         }
     }
 }

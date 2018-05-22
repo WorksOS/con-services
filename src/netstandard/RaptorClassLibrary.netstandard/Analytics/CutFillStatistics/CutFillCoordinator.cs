@@ -13,7 +13,7 @@ namespace VSS.TRex.Analytics.Coordinators
     /// </summary>
     public class CutFillCoordinator : BaseAnalyticsCoordinator<CutFillStatisticsArgument, CutFillStatisticsResponse>
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// Constructs the aggregator from the supplied argument to be used for the cut/fill statistics analytics request
@@ -44,7 +44,7 @@ namespace VSS.TRex.Analytics.Coordinators
                 RequestDescriptor = RequestDescriptor,
                 SiteModel = SiteModel,
                 Aggregator = aggregator,
-                Filter = argument.Filter,
+                Filters = argument.Filters,
                 IncludeSurveyedSurfaces = true,
                 RequestedGridDataType = GridDataType.CutFill,
                 CutFillDesignID = argument.DesignID
