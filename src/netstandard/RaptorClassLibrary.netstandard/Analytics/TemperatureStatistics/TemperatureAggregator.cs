@@ -29,12 +29,12 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 		/// <summary>
 		/// Holds last known good minimum temperature level value.
 		/// </summary>
-		private ushort LastTempRangeMin { get; set; }
+		public ushort LastTempRangeMin { get; private set; }
 
 		/// <summary>
 		/// Holds last known good maximum temperature level value.
 		/// </summary>
-		private ushort LastTempRangeMax { get; set; }
+		public ushort LastTempRangeMax { get; private set; }
 
 		/// <summary>
 		/// Default no-arg constructor

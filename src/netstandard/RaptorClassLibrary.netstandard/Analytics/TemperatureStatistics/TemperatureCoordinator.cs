@@ -43,7 +43,7 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 			RequestDescriptor = RequestDescriptor,
 			SiteModel = SiteModel,
 			Aggregator = aggregator,
-			Filter = argument.Filter,
+			Filters = argument.Filters,
 			IncludeSurveyedSurfaces = true,
 			RequestedGridDataType = GridDataType.Temperature
 		};
@@ -55,10 +55,19 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 		/// <param name="response"></param>
 		public override void ReadOutResults(AggregatorBase aggregator, TemperatureStatisticsResponse response)
 		{
-			response.AboveTemperatureCellsCount = ((TemperatureAggregator)aggregator).CellsScannedOverTarget;
-			response.BelowTemperatureCellsCount = ((TemperatureAggregator)aggregator).CellsScannedUnderTarget;
-			response.WithinTemperatureCellsCount = ((TemperatureAggregator)aggregator).CellsScannedAtTarget;
-			response.CoverageArea = ((TemperatureAggregator)aggregator).SummaryProcessedArea;
+		  response.CellSize = ((TemperatureAggregator) aggregator).CellSize;
+      response.SummaryCellsScanned = ((TemperatureAggregator)aggregator).SummaryCellsScanned;
+
+      response.CellsScannedOverTarget = ((TemperatureAggregator)aggregator).CellsScannedOverTarget;
+			response.CellsScannedUnderTarget = ((TemperatureAggregator)aggregator).CellsScannedUnderTarget;
+			response.CellsScannedAtTarget = ((TemperatureAggregator)aggregator).CellsScannedAtTarget;
+			//response.CoverageArea = ((TemperatureAggregator)aggregator).SummaryProcessedArea;
+
+      response.IsTargetValueConstant = ((TemperatureAggregator)aggregator).IsTargetValueConstant;
+      response.MissingTargetValue = ((TemperatureAggregator)aggregator).MissingTargetValue;
+
+			response.LastTempRangeMin = ((TemperatureAggregator) aggregator).LastTempRangeMin;
+			response.LastTempRangeMax = ((TemperatureAggregator)aggregator).LastTempRangeMax;
 		}
 
 	}
