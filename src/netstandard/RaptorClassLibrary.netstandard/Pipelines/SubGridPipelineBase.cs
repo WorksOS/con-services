@@ -118,6 +118,12 @@ namespace VSS.TRex.Pipelines
         /// </summary>
         public bool AllFinished;
 
+        /// <summary>
+        /// The request anaylser to be used to identify the set of subgrids required for the request.
+        /// If no analyser is supplied then a default analyser will be created as need by the pipeline
+        /// </summary>
+        public RequestAnalyser RequestAnalyser { get; set; }
+
         private void AllSubgridsProcessed()
         {
             AllFinished = true;
@@ -200,9 +206,10 @@ namespace VSS.TRex.Pipelines
         /// </summary>
         /// <returns></returns>
         public virtual bool Initiate()
-        {            
+        {
             // First analyse the request to determine the set of subgrids that will need to be requested
-            RequestAnalyser analyser = new RequestAnalyser(this, WorldExtents);
+            RequestAnalyser analyser = RequestAnalyser ?? new RequestAnalyser(this, WorldExtents);
+
             if (!analyser.Execute())
             {
                 // Leave gracefully...

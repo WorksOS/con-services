@@ -10,7 +10,7 @@ namespace VSS.TRex.DI
   {
     private static IServiceProvider ServiceProvider { get; set; }
 
-    public static void Inject(DIImplementation implementation) => Inject(implementation.ServiceProvider);
+    public static void Inject(DIBuilder implementation) => Inject(implementation.ServiceProvider);
 
     /// <summary>
     /// Injects the service provider collection in the TRex DI context which both proactively injects components

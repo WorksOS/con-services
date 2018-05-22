@@ -11,7 +11,7 @@ namespace VSS.TRex.Server.PSNode
   {
     private static void DependencyInjection()
     {
-      DIImplementation.New().AddLogging().Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory())).Complete();
+      DIBuilder.New().AddLogging().Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory())).Complete();
     }
 
     static void Main(string[] args)

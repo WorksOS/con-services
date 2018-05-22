@@ -8,7 +8,7 @@ namespace TRexDesignElevationsServer
   {
     private static void DependencyInjection()
     {
-      DIImplementation.New().AddLogging().Complete();
+      DIBuilder.New().AddLogging().Complete();
     }
 
     /// <summary>
