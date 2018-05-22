@@ -43,13 +43,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         log.LogDebug("ProjectUidExecutor: Failed for SNM940 trying again as Device Type SNM941");
         assetDevice = await dataRepository.LoadAssetDevice(request.radioSerial, DeviceTypeEnum.SNM941.ToString());
       }
-      log.LogDebug($"ProjectUidExecutor: Loaded assetDevice? {JsonConvert.SerializeObject(assetDevice)}");
-
       if (assetDevice == null)
       {
         log.LogDebug("ProjectUidExecutor: Unable to find device-asset association.");
         return GetProjectUidResult.CreateGetProjectUidResult(projectUid, 33);
       }
+
+      log.LogDebug($"ProjectUidExecutor: Loaded assetDevice {JsonConvert.SerializeObject(assetDevice)}");
 
       // get the owningCustomer 3dpm subscriptions
       var assetSubs = await dataRepository.LoadAssetSubs(assetDevice.AssetUID, request.timeOfPosition);
