@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Apache.Ignite.Core.Deployment;
 using VSS.TRex.Logging;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
@@ -106,6 +107,8 @@ namespace VSS.TRex.Servers.Client
                         MetricsLogFrequency = new TimeSpan(0, 0, 0, 10),
 
                         PublicThreadPoolSize = 50,
+
+                        PeerAssemblyLoadingMode = PeerAssemblyLoadingMode.Disabled
 
                         // BinaryConfiguration = new BinaryConfiguration(typeof(TestQueueItem))
                     };

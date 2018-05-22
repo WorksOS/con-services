@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Apache.Ignite.Core.Deployment;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Logging;
@@ -120,7 +121,9 @@ namespace VSS.TRex.Servers.Client
 
                         PublicThreadPoolSize = 50,
 
-                        //BinaryConfiguration = new BinaryConfiguration(typeof(TestQueueItem))
+                        PeerAssemblyLoadingMode = PeerAssemblyLoadingMode.Disabled
+
+                      //BinaryConfiguration = new BinaryConfiguration(typeof(TestQueueItem))
                     };
 
                     foreach (string roleName in roles)
