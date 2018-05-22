@@ -17,7 +17,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 {
     public class AggregatedDataIntegratorWorker
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// A queue of the tasks this worker will process into the TRex data stores

@@ -22,7 +22,7 @@ namespace VSS.TRex.GridFabric.Requests
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
         [NonSerialized]
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// The listener to which the processing mengine may send in-progress updates during processing of the overall subgrids request

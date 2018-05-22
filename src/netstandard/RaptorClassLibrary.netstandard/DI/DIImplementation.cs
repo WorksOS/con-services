@@ -77,21 +77,18 @@ namespace VSS.TRex.DI
       
       Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4net.xml", loggerRepoName);
 
+      // Create the LoggerFactory instance for the service collection
+      ILoggerFactory loggerFactory = new LoggerFactory();
+      // Complete configuration of the logger factory
+      // LoggerFactory.AddConsole();
+      // LoggerFactory.AddDebug();
+      loggerFactory.AddProvider(new Log4NetProvider(null));
+
+      // Insert this immediately into the TRex.Logging namesapce to get logging available as early as possible
+      Logging.Logger.Inject(loggerFactory);
+
       // ### Add the logging related services to the collection
-      return Add(collection =>
-      {
-        ServiceCollection.AddSingleton<ILoggerProvider, Log4NetProvider>();
-
-        // Make a logger factory for when a new logger is required                           
-        ILoggerFactory loggerFactory = new LoggerFactory();
-
-        // Complete configuration of the logger factory
-        // LoggerFactory.AddConsole();
-        // LoggerFactory.AddDebug();
-        loggerFactory.AddProvider(new Log4NetProvider(null));
-
-        ServiceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
-      });
+      return Add(x => { x.AddSingleton<ILoggerFactory>(loggerFactory); });
     }
 
     /// <summary>

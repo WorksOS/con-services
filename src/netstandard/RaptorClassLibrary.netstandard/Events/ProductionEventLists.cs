@@ -15,7 +15,7 @@ namespace VSS.TRex.Events
     public class ProductionEventLists : IProductionEventLists
 
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// The SiteModel these events relate to

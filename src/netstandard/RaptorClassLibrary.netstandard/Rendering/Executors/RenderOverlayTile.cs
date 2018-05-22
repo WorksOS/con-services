@@ -21,7 +21,7 @@ namespace VSS.TRex.Rendering.Executors
     /// </summary>
     public class RenderOverlayTile
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// Details the error status of the bmp result returned by the renderer
@@ -623,8 +623,8 @@ namespace VSS.TRex.Rendering.Executors
                 DesignSubgridOverlayMap = ExistenceMaps.ExistenceMaps.GetSingleExistenceMap(DataModelID, ExistenceMaps.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, CutFillDesignID);
 
                 if (DesignSubgridOverlayMap == null)
-                {
-                    // SIGLogMessage.PublishNoODS(Self, Format('Failed to request subgrid overlay index for design %s in datamodel %d", [FDesignDescriptor.ToString, FDataModelID]), slmcError);
+                {  
+                    //Log.LogError($"Failed to request subgrid overlay index for design {CutFillDesignID} in datamodel {DataModelID}");
                     ResultStatus = RequestErrorStatus.NoDesignProvided;
                     return null;
                 }

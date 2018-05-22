@@ -23,7 +23,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
         [NonSerialized]
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         [NonSerialized]
         private IMessaging rmtMsg;

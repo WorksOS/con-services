@@ -2,6 +2,7 @@
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Query;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing.Imaging;
@@ -811,11 +812,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
             CutFillResult result = operation.Execute(new CutFillStatisticsArgument()
             {
                 DataModelID = siteModel.ID,
-                Filter = new CombinedFilter(),
-                //{
-                //    AttributeFilter = new CellPassAttributeFilter(/*siteModel*/),
-                //    SpatialFilter = new CellSpatialFilter()
-                //},
+                Filters = new FilterSet {Filters = new [] { new CombinedFilter() } },
                 DesignID = (cmbDesigns.Items.Count == 0) ? Guid.Empty : (cmbDesigns.SelectedValue as Design).ID,
                 Offsets = offsets
             });
@@ -862,37 +859,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 
     }
 
-      private void button7_Click(object sender, EventArgs e)
-      {
-
-        Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
-
-        SubmitTAGFileRequest request = new SubmitTAGFileRequest();
-        SubmitTAGFileRequestArgument arg = null;
-        string fileName =
-            "J:\\PP\\Construction\\Office software\\SiteVision Office\\Test Files\\VisionLink Data\\Southern Motorway\\TAYLORS COMP\\IgniteTestData\\0201J004SV--TAYLORS COMP--110504215856.tag";
-
-        string tccOrgID = new Guid().ToString(); 
-
-        using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
-        {
-          byte[] bytes = new byte[fs.Length];
-          fs.Read(bytes, 0, bytes.Length);
-
-          arg = new SubmitTAGFileRequestArgument()
-                {
-                    ProjectID = ID(),
-                    AssetID = Guid.Parse("1414327a-2b91-41ef-9390-6c1f3ccc73c9"), // machine.ID,
-                    TAGFileName = "0201J004SV--TAYLORS COMP--110504215856.tag",
-                    TagFileContent = bytes,
-                    TCCOrgID = tccOrgID
-                };
-
-        }
-        request.Execute(arg);
-      }
-
-        private void button8_Click(object sender, EventArgs e)
+        private void btnCalcAll_Click(object sender, EventArgs e)
         {
             // Calculate a simple volume based on a filter to filter, earliest to latest context for the entire model
             Cursor.Current = Cursors.WaitCursor;
@@ -906,6 +873,95 @@ namespace VSS.TRex.IgnitePOC.TestApp
             Cursor.Current = Cursors.Default;
 
             MessageBox.Show($"Simple Volume Response [Model Extents]:\n{volume}");
+        }
+
+        private void btnFileOpen_Click(object sender, EventArgs e)
+        {
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                this.edtTagfile.Text = openFileDialog1.FileName;
+            }
+        }
+
+        private void btnSubmitTagFile_Click(object sender, EventArgs e)
+        {
+            //  Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
+
+            if (this.edtTagfile.Text == string.Empty)
+            {
+                MessageBox.Show("Missing tagfile");
+                return;
+            }
+            try
+            {
+                SubmitTAGFileRequest request = new SubmitTAGFileRequest();
+                SubmitTAGFileRequestArgument arg = null;
+                string fileName = this.edtTagfile.Text;
+                //  "J:\\PP\\Construction\\Office software\\SiteVision Office\\Test Files\\VisionLink Data\\Southern Motorway\\TAYLORS COMP\\IgniteTestData\\0201J004SV--TAYLORS COMP--110504215856.tag";
+
+
+                Guid TheProject = (this.edtProjectID.Text == String.Empty) ? Guid.Empty : Guid.Parse(this.edtProjectID.Text);
+                Guid TheAsset = (this.edtAssetID.Text == String.Empty) ? Guid.Empty : Guid.Parse(this.edtAssetID.Text);
+                string TheFileName = Path.GetFileName(fileName);
+                string tccOrgID = this.edtTCCOrgID.Text; // maybe it could have been guid
+
+                using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+                {
+                    byte[] bytes = new byte[fs.Length];
+                    fs.Read(bytes, 0, bytes.Length);
+
+                    arg = new SubmitTAGFileRequestArgument()
+                          {
+                                  ProjectID = TheProject,//ID(),
+                                  AssetID = TheAsset,
+                                  TAGFileName = TheFileName,
+                                  TagFileContent = bytes,
+                                  TCCOrgID = tccOrgID
+
+                          };
+
+                }
+
+                var res = request.Execute(arg);
+                MessageBox.Show(String.Format("Submission Result:{0}, File:{1}, ErrorMessage:{2}", res.Success,res.FileName, res.Exception));
+
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message);
+                throw;
+            }
+
+
+        }
+
+        private void btnGenGUID_Click(object sender, EventArgs e)
+        {
+            this.edtAssetID.Text = Guid.NewGuid().ToString();
+        }
+
+        private void btnGenGuid2_Click(object sender, EventArgs e)
+        {
+            this.edtTCCOrgID.Text = Guid.NewGuid().ToString();
+
+        }
+
+        private void btnGenGuid3_Click(object sender, EventArgs e)
+        {
+            this.edtProjectID.Text = Guid.NewGuid().ToString();
+        }
+
+        private void btnCopyGuid_Click(object sender, EventArgs e)
+        {
+            this.edtProjectID.Text = this.editProjectID.Text;
+        }
+
+        private void btnCustom_Click(object sender, EventArgs e)
+        {
+            // create some empty guids to customise
+            this.edtAssetID.Text = new Guid().ToString();
+            this.edtTCCOrgID.Text = new Guid().ToString();
+            this.edtProjectID.Text = new Guid().ToString();
         }
     }
 }

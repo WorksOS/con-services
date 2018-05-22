@@ -18,7 +18,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
     /// </summary>
     public class ExistenceMapServer
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// Ignite instance to be used in the server

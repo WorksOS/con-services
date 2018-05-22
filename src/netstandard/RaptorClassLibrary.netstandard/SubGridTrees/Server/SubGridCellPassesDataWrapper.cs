@@ -9,7 +9,7 @@ namespace VSS.TRex.SubGridTrees.Server
 {
     public class SubGridCellPassesDataWrapper
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         public IServerLeafSubGrid Owner { get; set; }   // FOwner : TICServerSubGridTreeLeaf;
 

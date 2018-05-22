@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.DI;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.TAGFiles.Classes;
 
 namespace TRexMutableDataServer
 {
@@ -11,7 +12,12 @@ namespace TRexMutableDataServer
   {
     private static void DependencyInjection()
     {
-      DIImplementation.New().AddLogging().Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory())).Complete();
+      DIImplementation
+        .New()
+        .AddLogging()
+        .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
+        .Add(x => x.AddSingleton<ITFAProxy>(new TFAProxy()))        
+        .Complete();
     }
 
     /// <summary>

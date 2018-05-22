@@ -16,7 +16,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     public class TAGFileBufferQueueServiceProxy
     {
         [NonSerialized]
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// The cluster wide name of the deployed service

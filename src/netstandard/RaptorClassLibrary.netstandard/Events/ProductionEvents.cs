@@ -21,7 +21,7 @@ namespace VSS.TRex.Events
     public class ProductionEvents<V> : IProductionEvents
     {
         [NonSerialized]
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         private const int MajorVersion = 1;
         private const int MinorVersion = 0;

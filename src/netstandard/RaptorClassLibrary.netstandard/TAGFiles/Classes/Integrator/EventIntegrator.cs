@@ -12,7 +12,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// </summary>
     public class EventIntegrator
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         private ProductionEventLists /*EfficientProductionEventChanges*/ Source;
         private ProductionEventLists /*EfficientProductionEventChanges*/ Target;

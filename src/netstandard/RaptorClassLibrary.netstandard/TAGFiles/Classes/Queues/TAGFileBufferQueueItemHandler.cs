@@ -17,7 +17,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 {
     public class TAGFileBufferQueueItemHandler : IDisposable
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         private static TAGFileBufferQueueItemHandler _Instance;
 
@@ -141,7 +141,9 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                                     // TODO: - Copy to dead letter queue?
                                     // TODO: - Place in S3 bucket pending downstream handling?
                                     if (!tagFileResponse.Success)
-                                        Log.LogError($"TAG file failed to process, with exception {tagFileResponse.Exception}. WARNING: FILE REMOVED FROM QUEUE");
+                                        Log.LogInformation($"Grpr1 TAG file {tagFileResponse.FileName} successfully processed");
+                                    else
+                                        Log.LogError($"Grpr1 TAG file failed to process, with exception {tagFileResponse.Exception}. WARNING: FILE REMOVED FROM QUEUE");
 
                                     removalKey.FileName = tagFileResponse.FileName;
 
@@ -255,9 +257,10 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                         // TODO: - Leave in place?
                         // TODO: - Copy to dead letter queue?
                         // TODO: - Place in S3 bucket pending downstream handling?
-                        if (!tagFileResponse.Success)
-                            Log.LogError(
-                                $"TAG file failed to process, with exception {tagFileResponse.Exception}. WARNING: FILE REMOVED FROM QUEUE");
+                        if (tagFileResponse.Success)
+                            Log.LogInformation($"Grpr2 TAG file {tagFileResponse.FileName} successfully processed");
+                        else
+                            Log.LogError($"Grpr2 TAG file failed to process, with exception {tagFileResponse.Exception}. WARNING: FILE REMOVED FROM QUEUE");
 
                         removalKey.FileName = tagFileResponse.FileName;
 

@@ -21,7 +21,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     public class TAGFileBufferQueueService : IService, ITAGFileBufferQueueService
     {
         [NonSerialized]
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// The interval between epochs where the service checks to see if there is anything to do

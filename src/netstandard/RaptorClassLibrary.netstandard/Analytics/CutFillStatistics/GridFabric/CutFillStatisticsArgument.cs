@@ -1,5 +1,4 @@
 ﻿using System;
-using VSS.TRex.Filters;
 using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.Analytics.GridFabric.Arguments

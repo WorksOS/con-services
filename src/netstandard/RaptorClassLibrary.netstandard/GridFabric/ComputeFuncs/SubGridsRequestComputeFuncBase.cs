@@ -20,6 +20,7 @@ using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.Types;
 using VSS.TRex.Utilities;
 using VSS.TRex.DesignProfiling;
+using VSS.TRex.Filters;
 
 namespace VSS.TRex.GridFabric.ComputeFuncs
 {
@@ -34,7 +35,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         private const int addressBucketSize = 20;
 
         [NonSerialized]
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         [NonSerialized]
         private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
@@ -398,8 +399,18 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
 
             siteModel = SiteModels.SiteModels.Instance().GetSiteModel(localArg.SiteModelID);
 
-            // Construct the set of requestors to be used for the filters present in the request
-            Requestors = localArg.Filters.Filters.Select
+          FilteredValuePopulationControl PopulationControl = new FilteredValuePopulationControl();
+
+      // TODO: Use TICServerProfiler.PreparePopulationControl per Raptor to set flags appropriately.
+          // Currently all events are requested except for the unimplemented ones
+       PopulationControl.Fill();
+          PopulationControl.WantsEventMachineCompactionRMVJumpThreshold = false;
+          PopulationControl.WantsEventMapResetValues = false;
+          PopulationControl.WantsEventInAvoidZoneStateValues = false;
+        //  TICServerProfiler.PreparePopulationControl(ClientGrid.GridDataType, LiftBuildSettings, PassFilter, ClientGrid);
+
+        // Construct the set of requestors to be used for the filters present in the request
+        Requestors = localArg.Filters.Filters.Select
                 (x => new SubGridRequestor(siteModel,
                                            SiteModels.SiteModels.ImmutableStorageProxy,
                                            x,
@@ -407,7 +418,8 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                                            BoundingIntegerExtent2D.Inverted(),
                                            SubGridTree.SubGridTreeLevels,
                                            int.MaxValue, // MaxCellPasses
-                                           AreaControlSet) 
+                                           AreaControlSet,
+                                           PopulationControl)
                  ).ToArray();
 
             addresses = new SubGridCellAddress[addressBucketSize];
