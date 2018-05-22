@@ -1,5 +1,4 @@
-pipeline{
-    def result = ''
+node ('jenkinsslave-pod') {
     def branch = env.BRANCH_NAME
     def buildNumber = env.BUILD_NUMBER
     def versionPrefix = ""
@@ -23,15 +22,11 @@ pipeline{
 
     def versionNumber = versionPrefix + buildNumber
     def fullVersion = versionNumber + suffix
-    stages {
-        stage('Build Solution') {
-            agent ('jenkinsslave-pod') {
-                checkout scm
-                dir ('BuildTools/core21-test-solution') {
-                    docker.build("testsolutin:${fullVersion}")
-                }
+    stage('Build Solution') {
+            checkout scm
+            dir ('BuildTools/core21-test-solution') {
+                docker.build("testsolutin:${fullVersion}")
             }
-        }
     }
 }
 
