@@ -2,13 +2,12 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
-using VSS.TRex.Exports.Patches.GridFabric;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Rendering.Patches.Executors;
 using VSS.TRex.Servers;
 
-namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
+namespace VSS.TRex.Exports.Patches.GridFabric.ComputeFuncs
 {
     /// <summary>
     /// The grid compute function responsible for coordinating subgrids comprising a patch a server compute node in response to 

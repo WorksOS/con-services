@@ -1,7 +1,4 @@
 ﻿using VSS.TRex.Exports.Patches.GridFabric;
-using VSS.TRex.Rendering.GridFabric.Arguments;
-using VSS.TRex.Rendering.GridFabric.Requests;
-using VSS.TRex.Rendering.GridFabric.Responses;
 using VSS.TRex.Servers;
 using VSS.TRex.Servers.Client;
 
@@ -24,7 +21,7 @@ namespace VSS.TRex.Rendering.Servers.Client
         }
 
         /// <summary>
-        /// Creates a new instance of a tile rendering server. 
+        /// Creates a new instance of a Patch request server
         /// </summary>
         /// <returns></returns>
         public static PatchRequestServer NewInstance(string [] roles)
@@ -33,13 +30,13 @@ namespace VSS.TRex.Rendering.Servers.Client
         }
 
         /// <summary>
-        /// Render a thematic tile bitmap according to the given arguments
+        /// Generate a patch of subgrids given the supplied arguments
         /// </summary>
         /// <param name="argument"></param>
         /// <returns></returns>
-        public PatchRequestResponse Execute(TileRenderRequestArgument argument)
+        public PatchRequestResponse Execute(PatchRequestArgument argument)
         {
-            Pat request = new TileRenderRequest();
+            PatchRequest request = new PatchRequest();
 
             return request.Execute(argument);
         }
