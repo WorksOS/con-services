@@ -17,7 +17,6 @@ namespace VSS.Log4Net.Extensions
       _accessor = accessor;
     }
 
-
     public bool IsEnabled(LogLevel logLevel)
     {
       switch (logLevel)
