@@ -263,19 +263,6 @@ this.Tiles_Serialized("CompactionCoverage", "CompactionCoverage", ((string[])(nu
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Tiles - Serialized: VolumeCoverage")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Tiles")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "VolumeCoverage")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "VolumeCoverage")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "VolumeCoverage")]
-        public virtual void Tiles_Serialized_VolumeCoverage()
-        {
-#line 7
-this.Tiles_Serialized("VolumeCoverage", "VolumeCoverage", ((string[])(null)));
-#line hidden
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Tiles - Serialized: MDP")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Tiles")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "MDP")]
@@ -742,19 +729,6 @@ this.Tiles_PNG("PassCountSummaryRangeTarget", "PassCountSummaryRangeTarget", ((s
         {
 #line 49
 this.Tiles_PNG("CompactionCoverage", "CompactionCoverage", ((string[])(null)));
-#line hidden
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Tiles - PNG: VolumeCoverage")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Tiles")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "VolumeCoverage")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "VolumeCoverage")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "VolumeCoverage")]
-        public virtual void Tiles_PNG_VolumeCoverage()
-        {
-#line 49
-this.Tiles_PNG("VolumeCoverage", "VolumeCoverage", ((string[])(null)));
 #line hidden
         }
         
@@ -1241,20 +1215,6 @@ this.Tiles_RawPNG("PassCountSummaryRangeTarget", "PassCountSummaryRangeTarget", 
         {
 #line 91
 this.Tiles_RawPNG("CompactionCoverage", "CompactionCoverage", "False", ((string[])(null)));
-#line hidden
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Tiles - Raw PNG: VolumeCoverage")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Tiles")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "VolumeCoverage")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "VolumeCoverage")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "VolumeCoverage")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:X-Warning", "False")]
-        public virtual void Tiles_RawPNG_VolumeCoverage()
-        {
-#line 91
-this.Tiles_RawPNG("VolumeCoverage", "VolumeCoverage", "False", ((string[])(null)));
 #line hidden
         }
         

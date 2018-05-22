@@ -21,7 +21,7 @@ Scenario Outline: Tiles - Serialized
 	| PassCountSummaryConstTarget             | PassCountSummaryConstTarget             |
 	| PassCountSummaryRangeTarget             | PassCountSummaryRangeTarget             |
 	| CompactionCoverage                      | CompactionCoverage                      |
-	| VolumeCoverage                          | VolumeCoverage                          |
+	#| VolumeCoverage                          | VolumeCoverage                          |
 	| MDP                                     | MDP                                     |
 	| MDPSummary                              | MDPSummary                              |
 	| MDPPercent                              | MDPPercent                              |
@@ -63,7 +63,7 @@ Scenario Outline: Tiles - PNG
 	| PassCountSummaryConstTarget             | PassCountSummaryConstTarget             |
 	| PassCountSummaryRangeTarget             | PassCountSummaryRangeTarget             |
 	| CompactionCoverage                      | CompactionCoverage                      |
-	| VolumeCoverage                          | VolumeCoverage                          |
+	#| VolumeCoverage                          | VolumeCoverage                          |
 	| MDP                                     | MDP                                     |
 	| MDPSummary                              | MDPSummary                              |
 	| MDPPercent                              | MDPPercent                              |
@@ -107,7 +107,7 @@ Scenario Outline: Tiles - Raw PNG
 	| PassCountSummaryConstTarget             | PassCountSummaryConstTarget             | False     |
 	| PassCountSummaryRangeTarget             | PassCountSummaryRangeTarget             | False     |
 	| CompactionCoverage                      | CompactionCoverage                      | False     |
-	| VolumeCoverage                          | VolumeCoverage                          | False     |
+	#| VolumeCoverage                          | VolumeCoverage                          | False     |
 	| MDP                                     | MDP                                     | False     |
 	| MDPSummary                              | MDPSummary                              | False     |
 	| MDPPercent                              | MDPPercent                              | False     |

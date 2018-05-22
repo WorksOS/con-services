@@ -85,24 +85,26 @@ namespace ProductionDataSvc.AcceptanceTests
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Dxf Tile - Good Request")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "DxfTile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         public virtual void DxfTile_GoodRequest()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Dxf Tile - Good Request", ((string[])(null)));
-#line 4
-this.ScenarioSetup(scenarioInfo);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Dxf Tile - Good Request", new string[] {
+                        "ignore"});
 #line 5
- testRunner.Given("the Dxf Tile service URI \"/api/v2/lineworktiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+this.ScenarioSetup(scenarioInfo);
 #line 6
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.Given("the Dxf Tile service URI \"/api/v2/lineworktiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 7
+ testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 8
   testRunner.And("a bbox \"-43.5445665843636, 172.578735351563, -43.5405847948288, 172.584228515625\"" +
                     " and a width \"256\" and a height \"256\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 8
-  testRunner.And("a fileType \"linework\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 9
+  testRunner.And("a fileType \"linework\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 10
  testRunner.When("I request a Dxf Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 10
+#line 11
  testRunner.Then("the Dxf Tile result image should be match within \"1\" percent", @"{
   ""tileData"": ""iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFySURBVHhe7dRBCgQhDARAv+v/H7CjMkIIwsAeYxWI2nrtNAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIC/9d5/c71X4Ba7+IYAXMoQgMvkou/yGwBQWCz46WwIQFGx5CsYTue5xxwoIpY87lvM8xtQQC53Lvq+539AAbHgKxhy0U9/gCK+hkB8jzlQRCz5CobTee4xv0drD/arc8l8x/8cAAAAAElFTkSuQmCC"",
   ""tileOutsideProjectExtents"": false,
@@ -116,24 +118,26 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Dxf Tile - Scaled Tile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "DxfTile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         public virtual void DxfTile_ScaledTile()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Dxf Tile - Scaled Tile", ((string[])(null)));
-#line 20
-this.ScenarioSetup(scenarioInfo);
-#line 21
- testRunner.Given("the Dxf Tile service URI \"/api/v2/lineworktiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Dxf Tile - Scaled Tile", new string[] {
+                        "ignore"});
 #line 22
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+this.ScenarioSetup(scenarioInfo);
 #line 23
+ testRunner.Given("the Dxf Tile service URI \"/api/v2/lineworktiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 24
+ testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 25
   testRunner.And("a bbox \"-43.545561990655841, 172.58285522460938, -43.545064289564273, 172.5835418" +
                     "7011719\" and a width \"256\" and a height \"256\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 24
+#line 26
   testRunner.And("a fileType \"linework\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 25
+#line 27
  testRunner.When("I request a Dxf Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 26
+#line 28
  testRunner.Then("the Dxf Tile result image should be match within \"1\" percent", "{\r\n  \"tileData\": \"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QA" +
                     "AAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAC+6SURBVHhe7Z378ydFee8x0VPq0ZP" +
                     "gMalURRM9P0RgMbCRyyq3GGRhl70ALpxUYbHl7hdx+a58d7/shURhIwvWMTFeWPCGilWxggsIqDFxScC" +
@@ -351,21 +355,21 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void DxfTile_NoImportedFiles()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Dxf Tile - No Imported Files", ((string[])(null)));
-#line 36
-this.ScenarioSetup(scenarioInfo);
-#line 37
- testRunner.Given("the Dxf Tile service URI \"/api/v2/lineworktiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 38
- testRunner.And("a projectUid \"0fa94210-0d7a-4015-9eee-4d9956f4b250\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+this.ScenarioSetup(scenarioInfo);
 #line 39
+ testRunner.Given("the Dxf Tile service URI \"/api/v2/lineworktiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 40
+ testRunner.And("a projectUid \"0fa94210-0d7a-4015-9eee-4d9956f4b250\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 41
   testRunner.And("a bbox \"-43.5445665843636, 172.578735351563, -43.5405847948288, 172.584228515625\"" +
                     " and a width \"256\" and a height \"256\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 40
+#line 42
   testRunner.And("a fileType \"linework\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 41
+#line 43
  testRunner.When("I request a Dxf Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 42
+#line 44
   testRunner.Then("the Dxf Tile result should be", @"{
   ""tileData"": ""iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEVSURBVHhe7cExAQAAAMKg9U/tawggAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABODQE8AAH/Cno5AAAAAElFTkSuQmCC"",
   ""tileOutsideProjectExtents"": false,
@@ -382,20 +386,20 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void DxfTile_NoFileType()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Dxf Tile - No FileType", ((string[])(null)));
-#line 52
-this.ScenarioSetup(scenarioInfo);
-#line 53
- testRunner.Given("the Dxf Tile service URI \"/api/v2/lineworktiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 54
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+this.ScenarioSetup(scenarioInfo);
 #line 55
+ testRunner.Given("the Dxf Tile service URI \"/api/v2/lineworktiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 56
+ testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 57
   testRunner.And("a bbox \"-43.5445665843636, 172.578735351563, -43.5405847948288, 172.584228515625\"" +
                     " and a width \"256\" and a height \"256\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 56
-  testRunner.And("a fileType \"\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 57
- testRunner.When("I request a Dxf Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 58
+  testRunner.And("a fileType \"\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 59
+ testRunner.When("I request a Dxf Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 60
  testRunner.Then("I should get error code -1 and message \"Missing file type\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -407,20 +411,20 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void DxfTile_BadFileType()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Dxf Tile - Bad FileType", ((string[])(null)));
-#line 60
-this.ScenarioSetup(scenarioInfo);
-#line 61
- testRunner.Given("the Dxf Tile service URI \"/api/v2/lineworktiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 62
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+this.ScenarioSetup(scenarioInfo);
 #line 63
+ testRunner.Given("the Dxf Tile service URI \"/api/v2/lineworktiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 64
+ testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 65
   testRunner.And("a bbox \"-43.5445665843636, 172.578735351563, -43.5405847948288, 172.584228515625\"" +
                     " and a width \"256\" and a height \"256\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 64
-  testRunner.And("a fileType \"SurveyedSurface\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 65
- testRunner.When("I request a Dxf Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 66
+  testRunner.And("a fileType \"SurveyedSurface\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 67
+ testRunner.When("I request a Dxf Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 68
   testRunner.Then("I should get error code -1 and message \"Unsupported file type SurveyedSurface\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
