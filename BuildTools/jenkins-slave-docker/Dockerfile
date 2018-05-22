@@ -1,4 +1,4 @@
-FROM jenkins/slave:alpine
+FROM jenkins/jnlp-slave:alpine
 
 USER root
 
@@ -60,6 +60,13 @@ COPY dockerd-entrypoint.sh /usr/local/bin/
 
 VOLUME /var/lib/docker
 EXPOSE 2375
+
+#Install shadow for usermod tools
+RUN apk add --no-cache\
+		shadow
+
+#Add jenkins user to docker group
+RUN usermod -aG docker jenkins
 
 RUN apk add supervisor
 ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
