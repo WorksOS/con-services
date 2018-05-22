@@ -128,7 +128,7 @@ node ('Jenkins-Win2016-Raptor')
             }
 
             stage ('Build') {
-                bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\buil471.ps1 -uploadArtifact -artifactFilename ${artifactFilename}"
+                bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\build471.ps1 -uploadArtifact -artifactFilename ${artifactFilename}"
             }
           
             archiveArtifacts artifacts: artifactFilename, fingerprint: true
