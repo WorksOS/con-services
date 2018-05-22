@@ -23,7 +23,7 @@ namespace VSS.TRex.Servers.Client
     /// </summary>
     public class ImmutableClientServer : IgniteServer
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// Constructor that creates a new server instance with a single role

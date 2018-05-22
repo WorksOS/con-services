@@ -25,7 +25,7 @@ namespace VSS.TRex.SiteModels
     public class SiteModel : ISiteModel
     {
         [NonSerialized]
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         public const string kSiteModelXMLFileName = "ProductionDataModel.XML";
         public const string kSubGridExistanceMapFileName = "SubGridExistanceMap";

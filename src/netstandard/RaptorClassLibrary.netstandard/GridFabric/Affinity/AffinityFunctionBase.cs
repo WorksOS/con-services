@@ -14,7 +14,7 @@ namespace VSS.TRex.GridFabric.Affinity
     [Serializable]
     public class AffinityFunctionBase : IAffinityFunction
     {
-        protected static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        protected static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         // Set NumPartitions to the default number of partitions
         protected int NumPartitions = (int)TRexConfig.NumPartitionsPerDataCache;

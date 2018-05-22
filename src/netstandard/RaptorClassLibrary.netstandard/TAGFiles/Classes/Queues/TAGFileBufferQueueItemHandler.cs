@@ -17,7 +17,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 {
     public class TAGFileBufferQueueItemHandler : IDisposable
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         private static TAGFileBufferQueueItemHandler _Instance;
 

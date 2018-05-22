@@ -14,7 +14,7 @@ namespace VSS.TRex.Events
     [Serializable]
     public class StartEndProductionEvents : ProductionEvents<ProductionEventType>, IProductionEventPairs
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         public StartEndProductionEvents()
         {}

@@ -14,7 +14,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
 {
   public static class TagfileValidator
   {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// Calls the TFA service to lookup assetId and projectId and validates licensing etc

@@ -17,7 +17,7 @@ namespace VSS.TRex.Storage
     /// </summary>
     public class StorageProxy_Ignite : StorageProxy_IgniteBase, IStorageProxy
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// The reference to a storage proxy representing the immutable data store derived from a mutable data store

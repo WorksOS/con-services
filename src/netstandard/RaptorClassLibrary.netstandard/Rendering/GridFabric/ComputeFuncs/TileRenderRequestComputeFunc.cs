@@ -26,7 +26,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
         private static IRenderingFactory RenderingFactory = DIContext.Obtain<IRenderingFactory>();
 
         [NonSerialized]
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// Default no-arg constructor that orients the request to the available ASNODE servers on the immutable grid projection

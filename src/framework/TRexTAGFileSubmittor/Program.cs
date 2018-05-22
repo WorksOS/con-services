@@ -162,7 +162,7 @@ namespace VSS.TRex.Client
 
       DependencyInjection();
       Log = Logging.Logger.CreateLogger<Program>();
-      Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+      Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
       Log.LogInformation("Initialising TAG file processor");
 

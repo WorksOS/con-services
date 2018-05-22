@@ -24,7 +24,7 @@ namespace VSS.TRex.GridFabric.Requests
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
         [NonSerialized]
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// Task is the business logic that will handle the response to the subgrids request

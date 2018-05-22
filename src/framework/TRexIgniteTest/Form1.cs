@@ -812,11 +812,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
             CutFillResult result = operation.Execute(new CutFillStatisticsArgument()
             {
                 DataModelID = siteModel.ID,
-                Filter = new CombinedFilter(),
-                //{
-                //    AttributeFilter = new CellPassAttributeFilter(/*siteModel*/),
-                //    SpatialFilter = new CellSpatialFilter()
-                //},
+                Filters = new FilterSet {Filters = new [] { new CombinedFilter() } },
                 DesignID = (cmbDesigns.Items.Count == 0) ? Guid.Empty : (cmbDesigns.SelectedValue as Design).ID,
                 Offsets = offsets
             });

@@ -14,7 +14,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     /// </summary>
     public class TAGFileBufferQueueGrouper
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// The maximum number of TAG files the grouper will permit in a bucket of TAG file before being committed to the 

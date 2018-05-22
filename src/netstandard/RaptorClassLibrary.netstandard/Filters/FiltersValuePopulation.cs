@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Events;
-using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Filters

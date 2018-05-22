@@ -13,7 +13,7 @@ namespace VSS.TRex.Surfaces.GridFabric.ComputeFuncs
     public class SurfaceElevationPatchComputeFunc : /*BaseComputeFunc,*/ IComputeFunc<SurfaceElevationPatchArgument, byte[] /*ClientHeightAndTimeLeafSubGrid*/>
     {
         [NonSerialized]
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// Local reference to the client subgrid factory

@@ -9,7 +9,7 @@ namespace VSS.TRex.TAGFiles.Classes
 {
     public class TFAProxy : ITFAProxy
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
       /// <summary>
       ///  Default no-arg constructor

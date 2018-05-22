@@ -14,7 +14,7 @@ namespace VSS.TRex.SubGridTrees.Server
 {
     public class SubGridCellPassesDataSegment
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// Tracks whether there are unsaved changes in this segment
