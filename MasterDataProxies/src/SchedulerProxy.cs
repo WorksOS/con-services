@@ -47,7 +47,7 @@ namespace VSS.MasterData.Proxies
     public async Task<JobStatusResult> GetExportJobStatus(string jobId, IDictionary<string, string> customHeaders)
     {
       var result = await GetMasterDataItem<JobStatusResult>("SCHEDULER_EXTERNAL_EXPORT_URL",
-        customHeaders, null, $"/{jobId}");
+        customHeaders, string.Empty, $"/{jobId}");
       if (result != null)
       {
         return result;

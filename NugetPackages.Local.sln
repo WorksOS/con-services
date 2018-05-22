@@ -29,9 +29,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8AF291F2
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models.UnitTests.Local", "MasterDataModels\test\UnitTests\VSS.MasterData.Models.UnitTests.Local.csproj", "{47BD9DB9-86D3-4AF9-9408-0AD3AAB21577}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.WebApi.Common.UnitTests.Local", "WebApi\test\UnitTests\VSS.WebApi.Common.UnitTests.Local.csproj", "{662D3D8F-2924-439A-9467-C3529799FA45}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.WebApi.Common.UnitTests.Local", "WebApi.Common\test\UnitTests\VSS.WebApi.Common.UnitTests.Local.csproj", "{662D3D8F-2924-439A-9467-C3529799FA45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.WebApi.Common.Local", "WebApi\src\VSS.WebApi.Common.Local.csproj", "{4D834139-877A-4DCD-9D1C-EE698DC5341F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.WebApi.Common.Local", "WebApi.Common\src\VSS.WebApi.Common.Local.csproj", "{4D834139-877A-4DCD-9D1C-EE698DC5341F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

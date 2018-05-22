@@ -1,30 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
     <AssemblyName>VSS.MasterData.Proxies.UnitTests</AssemblyName>
     <PackageId>VSS.MasterData.Proxies.UnitTests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
-    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50;portable-net45+win8</PackageTargetFallback>
-    <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.1.18" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.1.18" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="1.1.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.3.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.3.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.2" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">
+  <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -37,7 +40,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+    <Reference Include="Microsoft.Extensions.Logging">
+      <HintPath>..\..\..\..\..\Users\amorgan\.nuget\packages\microsoft.extensions.logging\1.1.0\lib\netstandard1.1\Microsoft.Extensions.Logging.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

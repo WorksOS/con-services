@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MockProjectWebApi.Common;
 using MockProjectWebApi.Utils;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 // Mocking the Tagfile Auth Service
 // Uses json files to provide a dynamic response for testing

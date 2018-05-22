@@ -1,12 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using System.IO;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.IO;
 using VSS.Common.Exceptions;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.MasterData.Models.UnitTests
@@ -37,7 +36,7 @@ namespace VSS.MasterData.Models.UnitTests
       serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
       serviceCollection
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddTransient<IErrorCodesProvider, ErrorCodesProvider>();
+        .AddTransient<IErrorCodesProvider, FilterValidationErrorCodesProvider>();
 
       ServiceProvider = serviceCollection.BuildServiceProvider();
     }

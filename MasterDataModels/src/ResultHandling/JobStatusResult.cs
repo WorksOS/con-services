@@ -1,4 +1,6 @@
-﻿namespace VSS.MasterData.Models.ResultHandling
+﻿using Newtonsoft.Json;
+
+namespace VSS.MasterData.Models.ResultHandling
 {
   /// <summary>
   /// Result of an export job status query
@@ -9,17 +11,27 @@
     /// The S3 key where the file is stored. 
     /// This is the full path and filename of the zipped file.
     /// </summary>
-    public string key { get; set; }
+    [JsonProperty(PropertyName = "key", Required = Required.Default)]
+    public string Key { get; set; }
 
     /// <summary>
     /// The current status of the job
     /// </summary>
-    public string status { get; set; }
+    [JsonProperty(PropertyName = "status", Required = Required.Always)]
+    public string Status { get; set; }
 
     /// <summary>
     /// The redirect url for downloading on successful completion.
     /// Only set when the status is 'succeeded'.
     /// </summary>
-    public string downloadLink { get; set; }
+    [JsonProperty(PropertyName = "downloadLink", Required = Required.Default)]
+    public string DownloadLink { get; set; }
+
+    /// <summary>
+    /// The details of why the job failed
+    /// Only set when the status is 'failed'.
+    /// </summary>
+    [JsonProperty(PropertyName = "failureDetails", Required = Required.Default)]
+    public FailureDetails FailureDetails { get; set; }
   }
 }
