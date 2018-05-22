@@ -6,11 +6,16 @@ using VSS.TRex.SubGridTrees.Utilities;
 
 namespace VSS.TRex.SubGridTrees.Client
 {
-    [Serializable]
-    public class GenericClientLeafSubGrid<T> : ClientLeafSubGrid
-    {
-        public T[,] Cells;
+public interface IGenericClientLeafSubGrid<T>
+{
+  T[,] Cells { get; set; }
+}
 
+  [Serializable]
+    public class GenericClientLeafSubGrid<T> : ClientLeafSubGrid, IGenericClientLeafSubGrid<T>
+    {
+        public T[,] Cells { get; set; }
+  
         /// <summary>
         /// Main constructor. Creates the local generic Items[,] array and delegates to base(...)
         /// </summary>

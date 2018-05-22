@@ -13,7 +13,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
     /// </summary>
     public static class SubGridSegmentCleaver
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         public static bool RecordSegmentCleavingOperationsToLog = true;
 

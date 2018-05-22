@@ -16,7 +16,7 @@ namespace VSS.TRex.SubGridTrees.Client
     public class ClientHeightLeafSubGrid : GenericClientLeafSubGrid<float>
     {
         [NonSerialized]
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// First pass map records which cells hold cell pass heights that were derived

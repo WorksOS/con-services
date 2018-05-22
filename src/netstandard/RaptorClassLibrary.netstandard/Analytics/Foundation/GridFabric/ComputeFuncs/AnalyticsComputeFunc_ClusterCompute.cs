@@ -19,7 +19,7 @@ namespace VSS.TRex.Analytics.GridFabric.ComputeFuncs
     {
         [NonSerialized]
         // ReSharper disable once StaticMemberInGenericType
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         public AnalyticsComputeFunc_ClusterCompute(string gridName, string role) : base(gridName, role)
         {

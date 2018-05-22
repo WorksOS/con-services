@@ -21,7 +21,7 @@ namespace VSS.TRex.SubGridTrees
 {
     public class SubGridRetriever
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         // Local state populated by the retriever constructor
         private CombinedFilter Filter;

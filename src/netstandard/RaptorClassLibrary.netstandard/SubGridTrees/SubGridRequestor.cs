@@ -18,7 +18,7 @@ namespace VSS.TRex.SubGridTrees
     public class SubGridRequestor
     {
         [NonSerialized]
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         [NonSerialized]
         private SubGridRetriever retriever;

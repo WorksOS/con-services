@@ -20,7 +20,7 @@ namespace VSS.TRex.Executors
     {
       private static ILogger Log = Logger.CreateLogger<TAGFileConverter>();
 
-        //private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        //private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// The overall result of processign the TAG information in the file

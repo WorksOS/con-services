@@ -10,7 +10,7 @@ namespace VSS.TRex.SiteModels
     public class SiteModelDesignList : List<SiteModelDesign>
     {
         [NonSerialized]
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// Indexer supporting locating designs by the design name

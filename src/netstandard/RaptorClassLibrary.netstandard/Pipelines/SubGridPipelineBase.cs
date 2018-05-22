@@ -26,7 +26,7 @@ namespace VSS.TRex.Pipelines
         where TSubGridRequestor : SubGridRequestsBase<TSubGridsRequestArgument, TSubGridRequestsResponse>, new() 
     {
         // ReSharper disable once StaticMemberInGenericType
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// The event used to signal that the pipeline processing has completed, or aborted

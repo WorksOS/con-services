@@ -14,7 +14,7 @@ namespace VSS.TRex.DesignProfiling.GridFabric.ComputeFuncs
     public class CalculateDesignElevationPatchComputeFunc : IComputeFunc<CalculateDesignElevationPatchArgument, byte [] /* ClientHeightLeafSubGrid */>
     {
         [NonSerialized]
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         // TODO: Ignite 2.4 has a fix for the two dimensional arrya serialisation buf that requires this result to be a byte array - this can be changed back...
         public byte[] /*ClientHeightLeafSubGrid */Invoke(CalculateDesignElevationPatchArgument arg)

@@ -14,7 +14,7 @@ namespace VSS.TRex.Volumes.Executors.Tasks
     /// </summary>
     public class SimpleVolumesComputationTask : PipelinedSubGridTask
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// The aggregator performing volumes computation operations

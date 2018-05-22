@@ -12,7 +12,7 @@ namespace VSS.TRex
     /// </summary>
     public class TRexServerConfig
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         private static TRexServerConfig instance;
 

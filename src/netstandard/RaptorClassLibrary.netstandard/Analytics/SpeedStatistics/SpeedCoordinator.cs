@@ -13,7 +13,7 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 	/// </summary>
   public class SpeedCoordinator : BaseAnalyticsCoordinator<SpeedStatisticsArgument, SpeedStatisticsResponse>
 	{
-		private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+		private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
 		/// <summary>
 		/// Constructs the aggregator from the supplied argument to be used for the Speed statistics analytics request
@@ -42,7 +42,7 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 			RequestDescriptor = RequestDescriptor,
 			SiteModel = SiteModel,
 			Aggregator = aggregator,
-			Filter = argument.Filter,
+			Filters = argument.Filters,
 			IncludeSurveyedSurfaces = true,
 			RequestedGridDataType = GridDataType.MachineSpeed
 		};

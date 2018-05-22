@@ -13,7 +13,7 @@ namespace VSS.TRex.Surfaces.GridFabric.Requests
 {
     public class SurfaceElevationPatchRequest : DesignProfilerRequest<SurfaceElevationPatchArgument, ClientHeightAndTimeLeafSubGrid>
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// Shared static cache of surface elevation subgrids

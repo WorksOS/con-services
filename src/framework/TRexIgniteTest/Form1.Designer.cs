@@ -29,8 +29,10 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.editProjectID = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.btnCalcAll = new System.Windows.Forms.Button();
-            this.button7 = new System.Windows.Forms.Button();
+            this.btnSubmitTagFile = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
@@ -44,8 +46,6 @@
             this.edtNumImages = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.btnMultiThreadTest = new System.Windows.Forms.Button();
-            this.editProjectID = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.displayMode = new System.Windows.Forms.ComboBox();
             this.btnRedraw = new System.Windows.Forms.Button();
@@ -68,19 +68,24 @@
             this.label5 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.btnZoomAll = new System.Windows.Forms.Button();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.edtAssetID = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.edtTagfile = new System.Windows.Forms.TextBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.edtTCCOrgID = new System.Windows.Forms.TextBox();
-            this.edtProjectID = new System.Windows.Forms.TextBox();
-            this.label10 = new System.Windows.Forms.Label();
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.btnCustom = new System.Windows.Forms.Button();
+            this.btnCopyGuid = new System.Windows.Forms.Button();
+            this.btnGenGuid3 = new System.Windows.Forms.Button();
+            this.btnGenGuid2 = new System.Windows.Forms.Button();
+            this.btnGenGUID = new System.Windows.Forms.Button();
             this.btnFileOpen = new System.Windows.Forms.Button();
+            this.label10 = new System.Windows.Forms.Label();
+            this.edtProjectID = new System.Windows.Forms.TextBox();
+            this.edtTCCOrgID = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.edtTagfile = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.edtAssetID = new System.Windows.Forms.TextBox();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -93,8 +98,7 @@
             // 
             // panel1
             // 
-            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.Controls.Add(this.editProjectID);
             this.panel1.Controls.Add(this.label2);
@@ -102,6 +106,24 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(351, 41);
             this.panel1.TabIndex = 15;
+            // 
+            // editProjectID
+            // 
+            this.editProjectID.Location = new System.Drawing.Point(57, 10);
+            this.editProjectID.Name = "editProjectID";
+            this.editProjectID.Size = new System.Drawing.Size(248, 20);
+            this.editProjectID.TabIndex = 30;
+            this.editProjectID.Text = "F13F2458-3BB4-424F-A995-4426A00771AE";
+            this.editProjectID.TextChanged += new System.EventHandler(this.editProjectID_TextChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(11, 13);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(40, 13);
+            this.label2.TabIndex = 29;
+            this.label2.Text = "Project";
             // 
             // btnCalcAll
             // 
@@ -113,15 +135,15 @@
             this.btnCalcAll.UseVisualStyleBackColor = true;
             this.btnCalcAll.Click += new System.EventHandler(this.btnCalcAll_Click);
             // 
-            // button7
+            // btnSubmitTagFile
             // 
-            this.button7.Location = new System.Drawing.Point(20, 264);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(115, 26);
-            this.button7.TabIndex = 44;
-            this.button7.Text = "Submit tagfile";
-            this.button7.UseVisualStyleBackColor = true;
-            this.button7.Click += new System.EventHandler(this.button7_Click);
+            this.btnSubmitTagFile.Location = new System.Drawing.Point(20, 264);
+            this.btnSubmitTagFile.Name = "btnSubmitTagFile";
+            this.btnSubmitTagFile.Size = new System.Drawing.Size(115, 26);
+            this.btnSubmitTagFile.TabIndex = 44;
+            this.btnSubmitTagFile.Text = "Submit tagfile";
+            this.btnSubmitTagFile.UseVisualStyleBackColor = true;
+            this.btnSubmitTagFile.Click += new System.EventHandler(this.btnSubmitTagFile_Click);
             // 
             // button6
             // 
@@ -250,24 +272,6 @@
             this.btnMultiThreadTest.UseVisualStyleBackColor = true;
             this.btnMultiThreadTest.Click += new System.EventHandler(this.btnMultiThreadTest_Click);
             // 
-            // editProjectID
-            // 
-            this.editProjectID.Location = new System.Drawing.Point(57, 10);
-            this.editProjectID.Name = "editProjectID";
-            this.editProjectID.Size = new System.Drawing.Size(248, 20);
-            this.editProjectID.TabIndex = 30;
-            this.editProjectID.Text = "F13F2458-3BB4-424F-A995-4426A00771AE";
-            this.editProjectID.TextChanged += new System.EventHandler(this.editProjectID_TextChanged);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(11, 13);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(40, 13);
-            this.label2.TabIndex = 29;
-            this.label2.Text = "Project";
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -395,8 +399,9 @@
             // 
             // panel2
             // 
-            this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
+            this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.panel2.Controls.Add(this.pictureBox1);
             this.panel2.Location = new System.Drawing.Point(2, 58);
             this.panel2.Name = "panel2";
@@ -470,8 +475,7 @@
             // 
             // tabControl1
             // 
-            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
@@ -507,6 +511,16 @@
             this.tabPage1.Text = "Render";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // btnZoomAll
+            // 
+            this.btnZoomAll.Location = new System.Drawing.Point(122, 39);
+            this.btnZoomAll.Name = "btnZoomAll";
+            this.btnZoomAll.Size = new System.Drawing.Size(75, 23);
+            this.btnZoomAll.TabIndex = 16;
+            this.btnZoomAll.Text = "Zoom All";
+            this.btnZoomAll.UseVisualStyleBackColor = true;
+            this.btnZoomAll.Click += new System.EventHandler(this.ZoomAll_Click);
+            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.button6);
@@ -525,23 +539,18 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(343, 487);
+            this.tabPage2.Size = new System.Drawing.Size(343, 592);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Tests";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // btnZoomAll
-            // 
-            this.btnZoomAll.Location = new System.Drawing.Point(122, 39);
-            this.btnZoomAll.Name = "btnZoomAll";
-            this.btnZoomAll.Size = new System.Drawing.Size(75, 23);
-            this.btnZoomAll.TabIndex = 16;
-            this.btnZoomAll.Text = "Zoom All";
-            this.btnZoomAll.UseVisualStyleBackColor = true;
-            this.btnZoomAll.Click += new System.EventHandler(this.ZoomAll_Click);
-            // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.btnCustom);
+            this.tabPage3.Controls.Add(this.btnCopyGuid);
+            this.tabPage3.Controls.Add(this.btnGenGuid3);
+            this.tabPage3.Controls.Add(this.btnGenGuid2);
+            this.tabPage3.Controls.Add(this.btnGenGUID);
             this.tabPage3.Controls.Add(this.btnFileOpen);
             this.tabPage3.Controls.Add(this.label10);
             this.tabPage3.Controls.Add(this.edtProjectID);
@@ -551,7 +560,7 @@
             this.tabPage3.Controls.Add(this.edtTagfile);
             this.tabPage3.Controls.Add(this.label7);
             this.tabPage3.Controls.Add(this.edtAssetID);
-            this.tabPage3.Controls.Add(this.button7);
+            this.tabPage3.Controls.Add(this.btnSubmitTagFile);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
@@ -560,76 +569,55 @@
             this.tabPage3.Text = "Tagfile Processing";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
-            // edtAssetID
+            // btnCustom
             // 
-            this.edtAssetID.Location = new System.Drawing.Point(20, 106);
-            this.edtAssetID.Name = "edtAssetID";
-            this.edtAssetID.Size = new System.Drawing.Size(265, 20);
-            this.edtAssetID.TabIndex = 47;
+            this.btnCustom.Location = new System.Drawing.Point(239, 276);
+            this.btnCustom.Name = "btnCustom";
+            this.btnCustom.Size = new System.Drawing.Size(98, 23);
+            this.btnCustom.TabIndex = 58;
+            this.btnCustom.Text = "Custom Setup";
+            this.btnCustom.UseVisualStyleBackColor = true;
+            this.btnCustom.Click += new System.EventHandler(this.btnCustom_Click);
             // 
-            // label7
+            // btnCopyGuid
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(17, 90);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(47, 13);
-            this.label7.TabIndex = 46;
-            this.label7.Text = "Asset ID";
+            this.btnCopyGuid.Location = new System.Drawing.Point(290, 246);
+            this.btnCopyGuid.Name = "btnCopyGuid";
+            this.btnCopyGuid.Size = new System.Drawing.Size(44, 24);
+            this.btnCopyGuid.TabIndex = 57;
+            this.btnCopyGuid.Text = "Copy";
+            this.btnCopyGuid.UseVisualStyleBackColor = true;
+            this.btnCopyGuid.Click += new System.EventHandler(this.btnCopyGuid_Click);
             // 
-            // edtTagfile
+            // btnGenGuid3
             // 
-            this.edtTagfile.Location = new System.Drawing.Point(20, 48);
-            this.edtTagfile.Name = "edtTagfile";
-            this.edtTagfile.Size = new System.Drawing.Size(265, 20);
-            this.edtTagfile.TabIndex = 45;
+            this.btnGenGuid3.Location = new System.Drawing.Point(290, 216);
+            this.btnGenGuid3.Name = "btnGenGuid3";
+            this.btnGenGuid3.Size = new System.Drawing.Size(44, 24);
+            this.btnGenGuid3.TabIndex = 56;
+            this.btnGenGuid3.Text = "Gen";
+            this.btnGenGuid3.UseVisualStyleBackColor = true;
+            this.btnGenGuid3.Click += new System.EventHandler(this.btnGenGuid3_Click);
             // 
-            // label8
+            // btnGenGuid2
             // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(17, 32);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(42, 13);
-            this.label8.TabIndex = 48;
-            this.label8.Text = "TagFile";
+            this.btnGenGuid2.Location = new System.Drawing.Point(290, 159);
+            this.btnGenGuid2.Name = "btnGenGuid2";
+            this.btnGenGuid2.Size = new System.Drawing.Size(44, 24);
+            this.btnGenGuid2.TabIndex = 55;
+            this.btnGenGuid2.Text = "Gen";
+            this.btnGenGuid2.UseVisualStyleBackColor = true;
+            this.btnGenGuid2.Click += new System.EventHandler(this.btnGenGuid2_Click);
             // 
-            // label9
+            // btnGenGUID
             // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(17, 146);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(62, 13);
-            this.label9.TabIndex = 49;
-            this.label9.Text = "TCC Org ID";
-            // 
-            // edtTCCOrgID
-            // 
-            this.edtTCCOrgID.Location = new System.Drawing.Point(20, 162);
-            this.edtTCCOrgID.Name = "edtTCCOrgID";
-            this.edtTCCOrgID.Size = new System.Drawing.Size(265, 20);
-            this.edtTCCOrgID.TabIndex = 50;
-            // 
-            // edtProjectID
-            // 
-            this.edtProjectID.Location = new System.Drawing.Point(20, 216);
-            this.edtProjectID.Name = "edtProjectID";
-            this.edtProjectID.Size = new System.Drawing.Size(265, 20);
-            this.edtProjectID.TabIndex = 51;
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(17, 200);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(54, 13);
-            this.label10.TabIndex = 52;
-            this.label10.Text = "Project ID";
-            // 
-            // openFileDialog1
-            // 
-            this.openFileDialog1.DefaultExt = "\"tag\"";
-            this.openFileDialog1.FileName = "openFileDialog1";
-            this.openFileDialog1.InitialDirectory = "@\"c:\\\"";
-            this.openFileDialog1.RestoreDirectory = true;
+            this.btnGenGUID.Location = new System.Drawing.Point(290, 103);
+            this.btnGenGUID.Name = "btnGenGUID";
+            this.btnGenGUID.Size = new System.Drawing.Size(44, 24);
+            this.btnGenGUID.TabIndex = 54;
+            this.btnGenGUID.Text = "Gen";
+            this.btnGenGUID.UseVisualStyleBackColor = true;
+            this.btnGenGUID.Click += new System.EventHandler(this.btnGenGUID_Click);
             // 
             // btnFileOpen
             // 
@@ -640,6 +628,77 @@
             this.btnFileOpen.Text = "...";
             this.btnFileOpen.UseVisualStyleBackColor = true;
             this.btnFileOpen.Click += new System.EventHandler(this.btnFileOpen_Click);
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(17, 200);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(54, 13);
+            this.label10.TabIndex = 52;
+            this.label10.Text = "Project ID";
+            // 
+            // edtProjectID
+            // 
+            this.edtProjectID.Location = new System.Drawing.Point(20, 216);
+            this.edtProjectID.Name = "edtProjectID";
+            this.edtProjectID.Size = new System.Drawing.Size(265, 20);
+            this.edtProjectID.TabIndex = 51;
+            // 
+            // edtTCCOrgID
+            // 
+            this.edtTCCOrgID.Location = new System.Drawing.Point(20, 162);
+            this.edtTCCOrgID.Name = "edtTCCOrgID";
+            this.edtTCCOrgID.Size = new System.Drawing.Size(265, 20);
+            this.edtTCCOrgID.TabIndex = 50;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(17, 146);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(62, 13);
+            this.label9.TabIndex = 49;
+            this.label9.Text = "TCC Org ID";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(17, 32);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(42, 13);
+            this.label8.TabIndex = 48;
+            this.label8.Text = "TagFile";
+            // 
+            // edtTagfile
+            // 
+            this.edtTagfile.Location = new System.Drawing.Point(20, 48);
+            this.edtTagfile.Name = "edtTagfile";
+            this.edtTagfile.Size = new System.Drawing.Size(265, 20);
+            this.edtTagfile.TabIndex = 45;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(17, 90);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(47, 13);
+            this.label7.TabIndex = 46;
+            this.label7.Text = "Asset ID";
+            // 
+            // edtAssetID
+            // 
+            this.edtAssetID.Location = new System.Drawing.Point(20, 106);
+            this.edtAssetID.Name = "edtAssetID";
+            this.edtAssetID.Size = new System.Drawing.Size(265, 20);
+            this.edtAssetID.TabIndex = 47;
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.DefaultExt = "\"tag\"";
+            this.openFileDialog1.FileName = "openFileDialog1";
+            this.openFileDialog1.InitialDirectory = "@\"c:\\\"";
+            this.openFileDialog1.RestoreDirectory = true;
             // 
             // Form1
             // 
@@ -707,7 +766,7 @@
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button6;
-    private System.Windows.Forms.Button button7;
+    private System.Windows.Forms.Button btnSubmitTagFile;
         private System.Windows.Forms.Button btnCalcAll;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
@@ -724,6 +783,11 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox edtAssetID;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.Button btnCopyGuid;
+        private System.Windows.Forms.Button btnGenGuid3;
+        private System.Windows.Forms.Button btnGenGuid2;
+        private System.Windows.Forms.Button btnGenGUID;
+        private System.Windows.Forms.Button btnCustom;
     }
 }
 

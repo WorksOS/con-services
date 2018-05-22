@@ -18,12 +18,12 @@ namespace VSS.TRex.Rendering
 {
     public class PlanViewTileRenderer
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// The TRex application service node performing the request
         /// </summary>
-        string RequestingTRexNodeID { get; set; } = string.Empty;
+        string RequestingTRexNodeID { get; set; }
 
         public long RequestDescriptor;
         // FExternalDescriptor : TASNodeRequestDescriptor;
@@ -114,8 +114,6 @@ namespace VSS.TRex.Rendering
             CellExtents.Expand(1);
 
             PipeLine.OverrideSpatialCellRestriction = CellExtents;
-            // PipeLine.SubmissionNode.NodeDescriptor  = ASNodeImplInstance.NodeDescriptor;
-            // PipeLine.SubmissionNode.RequestDescriptor  = FRequestDescriptor;
             // PipeLine.SubmissionNode.DescriptorType  = cdtWMSTile;
 
             PipeLine.AreaControlSet = new AreaControlSet(Displayer.MapView.XPixelSize, Displayer.MapView.YPixelSize, 0, 0, 0, true);
@@ -124,31 +122,29 @@ namespace VSS.TRex.Rendering
 
             PipeLine.DataModelID = DataModelID;
 
-            // PipeLine.LiftBuildSettings  = FICOptions.GetLiftBuildSettings(FFilter1.LayerMethod);
-
-            // If summaries of compaction information (both CMV and MDP) are being displayed,
-            // and the lift build settings requires all layers to be examined (so the
-            // apropriate summarize top layer only flag is false), then instruct the layer
-            // analysis engine to apply to restriction to the number of cell passes to use
-            // to perform layer analysis (ie: all cell passes will be used).
-
-            /* TODO...
-            if (Mode == DisplayMode.CCVSummary || Mode == DisplayMode.CCVPercentSummary)
-            {
-                if (!PipeLine.LiftBuildSettings.CCVSummarizeTopLayerOnly)
-                {
-                    PipeLine.MaxNumberOfPassesToReturn = VLPDSvcLocations.VLPDASNode_MaxCellPassDepthForAllLayersCompactionSummaryAnalysis;
-                }
-            }
-
-            if (Mode == DisplayMode.MDPSummary || Mode == DisplayMode.MDPPercentSummary)
-            {
-                if (!PipeLine.LiftBuildSettings.MDPSummarizeTopLayerOnly)
-                {
-                    PipeLine.MaxNumberOfPassesToReturn = VLPDSvcLocations.VLPDASNode_MaxCellPassDepthForAllLayersCompactionSummaryAnalysis;
-                }
-            }
-            */
+           // PipeLine.LiftBuildSettings  = FICOptions.GetLiftBuildSettings(FFilter1.LayerMethod);
+           
+           // If summaries of compaction information (both CMV and MDP) are being displayed,
+           // and the lift build settings requires all layers to be examined (so the
+           // apropriate summarize top layer only flag is false), then instruct the layer
+           // analysis engine to apply to restriction to the number of cell passes to use
+           // to perform layer analysis (ie: all cell passes will be used).
+           
+           if (Mode == DisplayMode.CCVSummary || Mode == DisplayMode.CCVPercentSummary)
+           {
+             /* TODO...
+              if (!PipeLine.LiftBuildSettings.CCVSummarizeTopLayerOnly)
+                 PipeLine.MaxNumberOfPassesToReturn = VLPDSvcLocations.VLPDASNode_MaxCellPassDepthForAllLayersCompactionSummaryAnalysis;
+             */
+           }
+           
+           if (Mode == DisplayMode.MDPSummary || Mode == DisplayMode.MDPPercentSummary)
+           {
+             /* TODO...
+              if (!PipeLine.LiftBuildSettings.MDPSummarizeTopLayerOnly)
+                 PipeLine.MaxNumberOfPassesToReturn = VLPDSvcLocations.VLPDASNode_MaxCellPassDepthForAllLayersCompactionSummaryAnalysis;
+             */
+           }
 
             PipeLine.WorldExtents = RotatedTileBoundingExtents;
 
@@ -305,7 +301,7 @@ namespace VSS.TRex.Rendering
             catch (Exception E)
             {
                 
-                Log.LogError("ExecutePipeline raised exception '{E}'");
+                Log.LogError($"ExecutePipeline raised exception {E}");
             }
 
             return Result;

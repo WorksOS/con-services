@@ -12,7 +12,7 @@ namespace VSS.TRex.Servers.Compute
     /// </summary>
     public class SubGridProcessingServer : ImmutableCacheComputeServer
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         public override void ConfigureTRexGrid(IgniteConfiguration cfg)
         {

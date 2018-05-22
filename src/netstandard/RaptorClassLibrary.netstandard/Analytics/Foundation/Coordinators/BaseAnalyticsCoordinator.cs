@@ -18,7 +18,7 @@ namespace VSS.TRex.Analytics.Coordinators
     public abstract class BaseAnalyticsCoordinator<TArgument, TResponse> : IBaseAnalyticsCoordinator<TArgument, TResponse> where TArgument : BaseApplicationServiceRequestArgument
         where TResponse : BaseAnalyticsResponse, new()
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// The SiteModel context for computing the result of the request
@@ -71,14 +71,17 @@ namespace VSS.TRex.Analytics.Coordinators
 
                 SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(arg.DataModelID);
 
-                Response.ResultStatus = FilterUtilities.PrepareFilterForUse(arg.Filter, arg.DataModelID);
+              foreach (var filter in arg.Filters.Filters)
+              {
+                Response.ResultStatus = FilterUtilities.PrepareFilterForUse(filter, arg.DataModelID);
                 if (Response.ResultStatus != RequestErrorStatus.OK)
                 {
-                    Log.LogInformation($"PrepareFilterForUse failed: Datamodel={arg.DataModelID}");
-                    return Response;
+                  Log.LogInformation($"PrepareFilterForUse failed: Datamodel={arg.DataModelID}");
+                  return Response;
                 }
+              }
 
-                AggregatorBase Aggregator = ConstructAggregator(arg);
+              AggregatorBase Aggregator = ConstructAggregator(arg);
                 AnalyticsComputor Computor = ConstructComputor(arg, Aggregator);
 
                 // TODO - Need to figure out where to put this in relevant queries

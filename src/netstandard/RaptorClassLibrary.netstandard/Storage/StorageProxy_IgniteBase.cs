@@ -14,7 +14,7 @@ namespace VSS.TRex.Storage
 {
     public abstract class StorageProxy_IgniteBase
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         protected IIgnite ignite;
 

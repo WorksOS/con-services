@@ -12,7 +12,7 @@ namespace VSS.TRex.Servers.Client
     /// </summary>
     public class ActivatePersistentGridServer 
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         private static ActivatePersistentGridServer instance;
 

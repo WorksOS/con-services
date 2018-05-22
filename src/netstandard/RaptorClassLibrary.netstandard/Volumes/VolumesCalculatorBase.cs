@@ -25,7 +25,7 @@ namespace VSS.TRex.Volumes
     /// </summary>
     public abstract class VolumesCalculatorBase
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// The Aggregator to use for calculation volumes statistics
