@@ -1,0 +1,9 @@
+replicas: 1
+
+image:
+  repository: microsoft/vsts-agent
+  tag: ubuntu-16.04
+  pullPolicy: Always
+
+resources:
+  disk: "5Gi"
