@@ -24,8 +24,6 @@ node ('jenkinsslave-pod') {
     def fullVersion = versionNumber + suffix
     stage('Build Solution') {
             checkout scm
-            dir ('BuildTools/core21-test-solution') {
-                docker.build("vss.trex:${fullVersion}")
-            }
+            docker.build("vss.trex:${fullVersion}")
     }
 }
