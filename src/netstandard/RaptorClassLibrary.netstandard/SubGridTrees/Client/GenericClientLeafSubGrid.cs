@@ -1,16 +1,10 @@
 ﻿using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Utilities;
 
 namespace VSS.TRex.SubGridTrees.Client
 {
-public interface IGenericClientLeafSubGrid<T>
-{
-  T[,] Cells { get; set; }
-}
-
   [Serializable]
     public class GenericClientLeafSubGrid<T> : ClientLeafSubGrid, IGenericClientLeafSubGrid<T>
     {
