@@ -153,7 +153,7 @@ namespace VSS.TRex.Client
 
     private static void DependencyInjection()
     {
-      DIImplementation.New().AddLogging().Complete();
+      DIBuilder.New().AddLogging().Complete();
     }
 
     static void Main(string[] args)

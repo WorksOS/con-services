@@ -11,7 +11,7 @@ namespace TRexPSNodeServer
   {
     private static void DependencyInjection()
     {
-      DIImplementation.New().AddLogging().Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory())).Complete();
+      DIBuilder.New().AddLogging().Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory())).Complete();
     }
 
     /// <summary>

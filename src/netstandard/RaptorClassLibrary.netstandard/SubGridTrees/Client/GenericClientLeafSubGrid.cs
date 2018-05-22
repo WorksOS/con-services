@@ -1,16 +1,15 @@
 ﻿using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Utilities;
 
 namespace VSS.TRex.SubGridTrees.Client
 {
-    [Serializable]
-    public class GenericClientLeafSubGrid<T> : ClientLeafSubGrid
+  [Serializable]
+    public class GenericClientLeafSubGrid<T> : ClientLeafSubGrid, IGenericClientLeafSubGrid<T>
     {
-        public T[,] Cells;
-
+        public T[,] Cells { get; set; }
+  
         /// <summary>
         /// Main constructor. Creates the local generic Items[,] array and delegates to base(...)
         /// </summary>

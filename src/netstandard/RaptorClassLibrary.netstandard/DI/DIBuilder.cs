@@ -8,9 +8,9 @@ using VSS.Log4Net.Extensions;
 namespace VSS.TRex.DI
 {
   /// <summary>
-  /// Provides implementation actions for Direct Injection requirements of a service
+  /// Provides a builder for Direct Injection requirements of a service
   /// </summary>
-  public class DIImplementation
+  public class DIBuilder
   {
     public IServiceProvider ServiceProvider { get; internal set; }
     public IServiceCollection ServiceCollection = new ServiceCollection();
@@ -18,7 +18,7 @@ namespace VSS.TRex.DI
     /// <summary>
     /// Default constructor for DI implementation
     /// </summary>
-    public DIImplementation()
+    public DIBuilder()
     {
     }
 
@@ -26,7 +26,7 @@ namespace VSS.TRex.DI
     /// Constructor accepting a lambda returning a service collection to add to the DI collection
     /// </summary>
     /// <param name="addDI"></param>
-    public DIImplementation(Action<IServiceCollection> addDI)
+    public DIBuilder(Action<IServiceCollection> addDI)
     {
       addDI(ServiceCollection);
     }
@@ -36,7 +36,7 @@ namespace VSS.TRex.DI
     /// </summary>
     /// <param name="addDI"></param>
     /// <returns></returns>
-    public DIImplementation Add(Action<IServiceCollection> addDI)
+    public DIBuilder Add(Action<IServiceCollection> addDI)
     {
       addDI(ServiceCollection);
       return this;
@@ -46,7 +46,7 @@ namespace VSS.TRex.DI
     /// Adds logging to the DI collection
     /// </summary>
     /// <returns></returns>
-    public DIImplementation AddLogging()
+    public DIBuilder AddLogging()
     {
       // ### Set up log 4 net related configuration prior to instantiating the logging service
       string loggerRepoName = "VSS";
@@ -95,7 +95,7 @@ namespace VSS.TRex.DI
     /// Builds the service provider, returning it ready for injection
     /// </summary>
     /// <returns></returns>
-    public DIImplementation Build()
+    public DIBuilder Build()
     {
       ServiceProvider = ServiceCollection.BuildServiceProvider();
       return this;
@@ -105,16 +105,20 @@ namespace VSS.TRex.DI
     /// Static method to create a new DIImplementation instance
     /// </summary>
     /// <returns></returns>
-    public static DIImplementation New() => new DIImplementation();
+    public static DIBuilder New() => new DIBuilder();
 
     /// <summary>
     /// Performs the Inject operation into the DIContext as a fluent operation from the DIImplementation
     /// </summary>
-    public void Inject() => DIContext.Inject(ServiceProvider);
+    public DIBuilder Inject()
+    {
+      DIContext.Inject(ServiceProvider);
+      return this;
+    }
 
     /// <summary>
     /// A handly shorthand version of .Build().Inject()
     /// </summary>
-    public void Complete() => Build().Inject();
+    public DIBuilder Complete() => Build().Inject();
   }
 }

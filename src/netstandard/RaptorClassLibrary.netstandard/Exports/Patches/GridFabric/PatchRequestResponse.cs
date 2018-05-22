@@ -10,6 +10,12 @@ namespace VSS.TRex.Exports.Patches.GridFabric
   public class PatchRequestResponse : SubGridsPipelinedReponseBase
   {
     /// <summary>
+    /// The total number of pages of subgrids required to contain the maximum number of subgrids'
+    /// that may be retuned for the query
+    /// </summary>
+    public int TotalNumberOfPagesToCoverFilteredData { get; set; }
+  
+    /// <summary>
     /// The set of subgrids matching the filters and patch page requested
     /// </summary>
     public List<IClientLeafSubGrid> SubGrids { get; set; }
