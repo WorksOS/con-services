@@ -82,11 +82,11 @@ namespace VSS.TRex.TAGFiles.Classes
                         projectId = Guid.Parse(responseObj.projectUid);
                     }
                     // take what TFA gives us including a empty guid
-                    assetId = (Guid.Parse(responseObj.projectUid));
+                    assetId = (Guid.Parse(responseObj.assetUid));
                 }
                 else
                 {
-                    // Todo assigned correct values
+                    // Todo assigned correct values from new service once written
                     result = ValidationResult.Invalid;
                 }
                     
@@ -96,6 +96,7 @@ namespace VSS.TRex.TAGFiles.Classes
                 Console.Out.WriteLine("-----------------");
                 Console.Out.WriteLine(e.Message);
                 Log.LogError($"#Exception# Unexpected exception occured calling TFA service ProjectId:{projectId}, TCCOrgId:{tccOrgId}, radioSerial:{radioSerial}, radioType:{radioType}, lat:{lat}, lon:{lon}, DateTime:{timeOfPosition} {e.Message}");
+                //result = ValidationResult.Unknown;
                 return result;
             }
 

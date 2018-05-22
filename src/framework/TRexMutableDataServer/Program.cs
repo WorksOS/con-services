@@ -12,7 +12,7 @@ namespace TRexMutableDataServer
   {
     private static void DependencyInjection()
     {
-      DIImplementation
+      DIBuilder
         .New()
         .AddLogging()
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))

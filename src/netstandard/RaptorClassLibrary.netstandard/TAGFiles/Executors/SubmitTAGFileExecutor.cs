@@ -32,8 +32,7 @@ namespace VSS.TRex.TAGFiles.Executors
         /// <param name="tagFileContent">The content of the TAG file to be processed, expressed as a byte array</param>
         /// <param name="tccOrgId">Used by TFA service to match VL customer to TCC org when looking for project if multiple projects and/or machine ID not in tag file</param>
         /// <returns></returns>
-        public static SubmitTAGFileResponse Execute(Guid projectId, Guid assetId, string tagFileName,
-            byte[] tagFileContent, string tccOrgId)
+        public static SubmitTAGFileResponse Execute(Guid projectId, Guid assetId, string tagFileName, byte[] tagFileContent, string tccOrgId)
         {
 
             Log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectID:{projectId}, AssetID:{assetId}");
@@ -67,7 +66,7 @@ namespace VSS.TRex.TAGFiles.Executors
                         TagfileReposity.ArchiveTagfile(td); // todo implement
 
                         Log.LogInformation($"Submitting tagfile to TagfileBufferQueue. ProjectID:{td.projectId}, AssetID:{td.assetId}, Tagfile:{tagFileName}");
-                        TAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(tagFileName, projectId, assetId);
+                        TAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(tagFileName, td.projectId, td.assetId);
                         TAGFileBufferQueueItem tagItem = new TAGFileBufferQueueItem
                                                          {
                                                                  InsertUTC = DateTime.Now,
@@ -98,6 +97,7 @@ namespace VSS.TRex.TAGFiles.Executors
                 }
                 catch (Exception e) // catch all exceptions here
                 {
+                    response.Exception = e.Message;
                     Log.LogError($"#Exception# SubmitTAGFileResponse. Exception occured processing {tagFileName} Exception:{e}");
                 }
             }

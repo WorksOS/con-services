@@ -13,7 +13,7 @@ namespace TRexServerApplication
   {
     private static void DependencyInjection()
     {
-      DIImplementation.New()
+      DIBuilder.New()
         .AddLogging()
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Add(collection =>
