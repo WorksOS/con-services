@@ -40,7 +40,7 @@ IF /I "%~1"=="--delete" GOTO deletePackageFromServer
     GOTO end
   )
 
-  nuget delete %projectFile% "%~2" -Source %packageServer% -ApiKey %apiKey%
+  nuget delete VSS.Log4NetExtensions.netcore "%~2" -Source %packageServer% -ApiKey %apiKey%
 
 
 :end

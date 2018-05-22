@@ -7,38 +7,45 @@ namespace VSS.Log4Net.Extensions
 {
   public class Log4NetProvider : ILoggerProvider
   {
-    private IDictionary<string, ILogger> _loggers = new Dictionary<string, ILogger>();
-    private IHttpContextAccessor _accessor;
+    private IDictionary<string, ILogger> loggers = new Dictionary<string, ILogger>();
+    private IHttpContextAccessor accessor;
     public static string RepoName { get; set; } = "";
 
-    public Log4NetProvider(IHttpContextAccessor accessor)
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
+    /// <param name="accessor">Optionally sets the HTTP context accessor.</param>
+    public Log4NetProvider(IHttpContextAccessor accessor = null)
     {
-      _accessor = accessor;
+      this.accessor = accessor;
+
       if (string.IsNullOrEmpty(RepoName))
-      throw new ArgumentException($"You have to specify Repository name for Log4Net via {nameof(RepoName)} property");
+      {
+        throw new ArgumentException($"You have to specify Repository name for Log4Net via {nameof(RepoName)} property");
+      }
     }
 
     public ILogger CreateLogger(string name)
     {
-      lock (_loggers)
+      lock (loggers)
       {
-        if (!_loggers.ContainsKey(name))
+        if (!loggers.ContainsKey(name))
         {
           // Have to check again since another thread may have gotten the lock first
-          if (!_loggers.ContainsKey(name))
+          if (!loggers.ContainsKey(name))
           {
-            _loggers[name] = new Log4NetAdapter(RepoName, name, _accessor);
+            loggers[name] = new Log4NetAdapter(RepoName, name, accessor);
           }
         }
 
-        return _loggers[name];
+        return loggers[name];
       }
     }
 
     public void Dispose()
     {
-      _loggers.Clear();
-      _loggers = null;
+      loggers.Clear();
+      loggers = null;
     }
   }
 }
