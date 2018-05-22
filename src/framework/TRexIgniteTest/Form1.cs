@@ -923,7 +923,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
                 }
 
                 var res = request.Execute(arg);
-                MessageBox.Show(String.Format("Submission Result:{0}, ErrorMessage:{1}, File:{2}",res.Success,res.Exception,res.FileName));
+                MessageBox.Show(String.Format("Submission Result:{0}, File:{1}, ErrorMessage:{2}", res.Success,res.FileName, res.Exception));
 
             }
             catch (Exception exception)
