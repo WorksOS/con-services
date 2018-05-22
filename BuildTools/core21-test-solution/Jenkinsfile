@@ -24,13 +24,13 @@ pipeline{
     def versionNumber = versionPrefix + buildNumber
     def fullVersion = versionNumber + suffix
     stages {
-        stage('Build Solution')
-        node ('jenkinsslave-pod') {
-            checkout scm
-            dir ('BuildTools/core21-test-solution') {
-                docker.build("testsolutin:${fullVersion}")
+        stage('Build Solution') {
+            agent ('jenkinsslave-pod') {
+                checkout scm
+                dir ('BuildTools/core21-test-solution') {
+                    docker.build("testsolutin:${fullVersion}")
+                }
             }
-            
         }
     }
 }
