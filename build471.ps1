@@ -1,5 +1,7 @@
+param ([switch] $uploadArtifact = $false,
+       [string] $artifactFilename = "FileAccess_WebApi.zip")
+
 $artifactsDir = "$PSScriptRoot/artifacts/FileAccessWebApiNet471/"
-$artfifactZip = "FileAccessWebApiNet471.zip"
 
 # Tidy up old artifacts.
 Write-Host "Removing existing build artifacts..." -ForegroundColor "darkgray"
@@ -26,4 +28,10 @@ if ($LastExitCode -ne 0) {
 Write-Host "Compressing build artifacts..." -ForegroundColor "darkgray"
 
 Add-Type -assembly "system.io.compression.filesystem"
-[io.compression.zipfile]::CreateFromDirectory($artifactsDir, "$PSScriptRoot/$artfifactZip")
+[io.compression.zipfile]::CreateFromDirectory($artifactsDir, "$PSScriptRoot/$artifactFilename")
+
+# Upload build artifacts to S3.
+if ($uploadArtifact) {
+    Write-Host "Uploading build artifacts to S3..." -ForegroundColor "darkgray"
+    Invoke-Expression "aws s3 cp $artifactFilename s3://vss-merino/Productivity3D/Releases/$artifactFilename --acl public-read --profile vss-grant"
+}
