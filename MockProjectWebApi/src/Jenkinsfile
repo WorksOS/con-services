@@ -26,13 +26,15 @@ node('Ubuntu_Slave') {
 
   stage ('Checkout') {
     checkout scm
-  }
-
-  dir('./MockProjectWebApi/src') {
-    stage ('Build MockApis') {
-      sh "bash ./mockapis.sh"
     }
 
+  dir('./MockProjectWebApi/src') {
+
+    stage ('Build MockApis') {
+       sh "bash ./mockapis.sh"
+       }
+
+    
     currentBuild.result = 'SUCCESS'
  
     echo "Build result is ${currentBuild.result}"
@@ -88,7 +90,7 @@ node('Jenkins-Win2016-Raptor') {
         stage ('Build MockApis') {
           bat "./mockapis.bat"
         }
-        currentBuild.result = 'SUCCESS'
+        //currentBuild.result = 'SUCCESS'
   
         echo "Build result is ${currentBuild.result}"
         if (currentBuild.result=='SUCCESS') {

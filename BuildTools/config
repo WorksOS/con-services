@@ -1,0 +1,26 @@
+apiVersion: v1
+clusters:
+- cluster:
+    insecure-skip-tls-verify: true
+    server: https://api.k8s.vspengg.com
+  type: Keypair
+  name: k8s.vspengg.com
+contexts:
+- context:
+    cluster: k8s.vspengg.com
+    user: k8s.vspengg.com
+  name: k8s.vspengg.com
+current-context: k8s.vspengg.com
+kind: Config
+preferences: {}
+users:
+- name: k8s.vspengg.com
+  user:
+    as-user-extra: {}
+    password: wFilufjS5qb0iaPlS0LHylSgo04I1kDe
+    username: admin
+- name: k8s.vspengg.com-basic-auth
+  user:
+    as-user-extra: {}
+    password: wFilufjS5qb0iaPlS0LHylSgo04I1kDe
+    username: admin

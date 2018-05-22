@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using MockProjectWebApi.Utils;
 using System.Threading.Tasks;
+using VSS.MasterData.Models.FIlters;
 
 namespace src.Utils
 {
