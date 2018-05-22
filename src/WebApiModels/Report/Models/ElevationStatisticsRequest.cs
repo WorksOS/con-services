@@ -63,7 +63,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     {
       return new ElevationStatisticsRequest
       {
-        projectId = projectId,
+        ProjectId = projectId,
         callId = callId,
         Filter = filter,
         FilterID = filterId,

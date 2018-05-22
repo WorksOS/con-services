@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
@@ -69,7 +69,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     {
       return new SummarySpeedRequest
       {
-        projectId = projectId,
+        ProjectId = projectId,
         CallId = callId,
         LiftBuildSettings = liftBuildSettings,
         Filter = filter,

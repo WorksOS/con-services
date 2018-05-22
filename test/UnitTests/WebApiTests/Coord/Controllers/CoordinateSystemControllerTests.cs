@@ -44,7 +44,7 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
       mockRaptorClient.Setup(prj => prj.PassSelectedCoordinateSystemFile(
         new MemoryStream(request.csFileContent),
         request.csFileName,
-        request.projectId ?? -1, out csSettings)).Returns(raptorResult);
+        request.ProjectId ?? -1, out csSettings)).Returns(raptorResult);
 
       // Create an executor...
       CoordinateSystemExecutorPost executor = RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(mockLogger.Object, mockRaptorClient.Object);
@@ -77,7 +77,7 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
       mockRaptorClient.Setup(prj => prj.PassSelectedCoordinateSystemFile(
          It.IsAny<MemoryStream>(),
         request.csFileName,
-        request.projectId ?? -1, out csSettings)).Returns(raptorResult);
+        request.ProjectId ?? -1, out csSettings)).Returns(raptorResult);
 
       // Create an executor...
       CoordinateSystemExecutorPost executor = RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(mockLogger.Object, mockRaptorClient.Object);
@@ -162,7 +162,7 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
     [TestMethod]
     public void CS_CoordinateSystemControllerGetSuccessful()
     {
-      ProjectID request = ProjectID.CreateProjectID(PD_MODEL_ID);
+      ProjectID request = ProjectID.Create(PD_MODEL_ID);
 
       // Create the mock PDSClient with successful result...
       var mockRaptorClient = new Mock<IASNodeClient>();
@@ -172,7 +172,7 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
 
       TCoordinateSystemSettings csSettings;
 
-      mockRaptorClient.Setup(prj => prj.RequestCoordinateSystemDetails(request.projectId.Value, out csSettings)).Returns(raptorResult);
+      mockRaptorClient.Setup(prj => prj.RequestCoordinateSystemDetails(request.ProjectId.Value, out csSettings)).Returns(raptorResult);
 
       // Create an executor...
       CoordinateSystemExecutorGet executor = RequestExecutorContainerFactory.Build<CoordinateSystemExecutorGet>(mockLogger.Object, mockRaptorClient.Object);
@@ -191,7 +191,7 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
     [TestMethod]
     public void CS_CoordinateSystemControllerGettFailed()
     {
-      ProjectID request = ProjectID.CreateProjectID(PD_MODEL_ID);
+      ProjectID request = ProjectID.Create(PD_MODEL_ID);
 
       // Create the mock PDSClient with unsuccessful result...
       var mockRaptorClient = new Mock<IASNodeClient>();
@@ -200,7 +200,7 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
 
       TCoordinateSystemSettings csSettings;
 
-      mockRaptorClient.Setup(prj => prj.RequestCoordinateSystemDetails(request.projectId.Value, out csSettings)).Returns(raptorResult);
+      mockRaptorClient.Setup(prj => prj.RequestCoordinateSystemDetails(request.ProjectId.Value, out csSettings)).Returns(raptorResult);
 
       // Create an executor...
       CoordinateSystemExecutorGet executor = RequestExecutorContainerFactory.Build<CoordinateSystemExecutorGet>(mockLogger.Object, mockRaptorClient.Object);
@@ -235,7 +235,7 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
       TCoordPointList pointList;
 
       mockRaptorClient.Setup(prj => prj.GetGridCoordinates(
-        request.projectId ?? -1,
+        request.ProjectId ?? -1,
         It.IsAny<TWGS84FenceContainer>(),
         request.conversionType == TwoDCoordinateConversionType.LatLonToNorthEast ? TCoordConversionType.ctLLHtoNEE : TCoordConversionType.ctNEEtoLLH,
         out pointList)).Returns(raptorResult);
@@ -274,7 +274,7 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
       TCoordPointList pointList;
 
       mockRaptorClient.Setup(prj => prj.GetGridCoordinates(
-        request.projectId ?? -1,
+        request.ProjectId ?? -1,
         It.IsAny<TWGS84FenceContainer>(),
         request.conversionType == TwoDCoordinateConversionType.LatLonToNorthEast ? TCoordConversionType.ctLLHtoNEE : TCoordConversionType.ctNEEtoLLH,
         out pointList)).Returns(raptorResult);

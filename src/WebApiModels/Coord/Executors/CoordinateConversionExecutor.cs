@@ -56,7 +56,7 @@ namespace VSS.Productivity3D.WebApiModels.Coord.Executors
 
           TCoordReturnCode code = raptorClient.GetGridCoordinates
             (
-              request.projectId ?? -1, 
+              request.ProjectId ?? -1, 
               latLongs, 
               request.conversionType == TwoDCoordinateConversionType.LatLonToNorthEast ? TCoordConversionType.ctLLHtoNEE : TCoordConversionType.ctNEEtoLLH, 
               out pointList

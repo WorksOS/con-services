@@ -39,7 +39,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
               "Request item is not compatible with Station Offset request."));
         }
 
-        var filterSettings = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.projectId);
+        var filterSettings = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId);
         var cutfillDesignDescriptor = RaptorConverters.DesignDescriptor(request.DesignFile);
         var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.AlignmentFile);
         var userPreferences = ExportRequestHelper.ConvertUserPreferences(request.UserPreferences, request.ProjectTimezone);
@@ -50,7 +50,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         log.LogDebug("About to call GetReportStationOffset");
 
         var args = ASNode.StationOffsetReport.RPC.__Global.Construct_StationOffsetReport_Args(
-          request.projectId ?? -1,
+          request.ProjectId ?? -1,
           (int)CompactionReportType.StationOffset,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtProdDataReport),
           userPreferences,

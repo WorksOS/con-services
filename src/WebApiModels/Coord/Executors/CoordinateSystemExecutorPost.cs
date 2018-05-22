@@ -23,7 +23,7 @@ namespace VSS.Productivity3D.WebApiModels.Coord.Executors
         if ((item as IIsProjectIDApplicable).HasProjectID())
         {
           CoordinateSystemFile request = item as CoordinateSystemFile;
-          code = raptorClient.PassSelectedCoordinateSystemFile(new MemoryStream(request.csFileContent), request.csFileName, request.projectId ?? -1, out tempCoordSystemSettings);
+          code = raptorClient.PassSelectedCoordinateSystemFile(new MemoryStream(request.csFileContent), request.csFileName, request.ProjectId ?? -1, out tempCoordSystemSettings);
         }
         else
         {

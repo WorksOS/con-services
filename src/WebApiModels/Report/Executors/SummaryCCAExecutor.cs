@@ -39,9 +39,9 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
       {
         TCCASummary ccaSummary;
         CCARequest request = item as CCARequest;
-        TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId);
+        TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId);
 
-        bool success = raptorClient.GetCCASummary(request.projectId ?? -1,
+        bool success = raptorClient.GetCCASummary(request.ProjectId ?? -1,
                             ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0, TASNodeCancellationDescriptorType.cdtCCASummary),
                             raptorFilter,
                             RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),

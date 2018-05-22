@@ -87,12 +87,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       if (!request.undo)
       {
         //Validate against existing data edits
-        GetEditDataRequest getRequest = GetEditDataRequest.CreateGetEditDataRequest(request.projectId ?? -1,
+        GetEditDataRequest getRequest = GetEditDataRequest.CreateGetEditDataRequest(request.ProjectId ?? -1,
             request.dataEdit.assetId);
         EditDataResult editResult = PostEditDataAcquire(getRequest);
         ValidateNoOverlap(editResult.dataEdits, request.dataEdit);
         //Validate request date range within production data date range
-        ValidateDates(request.projectId ?? -1, request.dataEdit);
+        ValidateDates(request.ProjectId ?? -1, request.dataEdit);
       }
 
       return RequestExecutorContainerFactory.Build<EditDataExecutor>(logger, raptorClient, tagProcessor).Process(request);

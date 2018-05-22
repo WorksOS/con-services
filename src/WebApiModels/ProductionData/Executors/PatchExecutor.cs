@@ -35,9 +35,9 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
       try
       {
         TICFilterSettings filter1 =
-          RaptorConverters.ConvertFilter(request.filterId1, request.filter1, request.projectId);
+          RaptorConverters.ConvertFilter(request.filterId1, request.filter1, request.ProjectId);
         TICFilterSettings filter2 =
-          RaptorConverters.ConvertFilter(request.filterId2, request.filter2, request.projectId);
+          RaptorConverters.ConvertFilter(request.filterId2, request.filter2, request.ProjectId);
         TComputeICVolumesType volType = RaptorConverters.ConvertVolumesType(request.computeVolType);
 
         if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 
         MemoryStream patch;
         int numPatches;
-        TASNodeErrorStatus raptorResult = raptorClient.RequestDataPatchPage(request.projectId ?? -1,
+        TASNodeErrorStatus raptorResult = raptorClient.RequestDataPatchPage(request.ProjectId ?? -1,
                 ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0,
                         TASNodeCancellationDescriptorType.cdtDataPatches),
                 RaptorConverters.convertDisplayMode(request.mode),

@@ -119,7 +119,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     {
       return new ProfileProductionDataRequest
       {
-        projectId = projectID,
+        ProjectId = projectID,
         callId = callId,
         profileType = profileType,
         filter = filter,

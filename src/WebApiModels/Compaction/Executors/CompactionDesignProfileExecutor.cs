@@ -32,7 +32,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         ProfilesHelper.ConvertProfileEndPositions(request.gridPoints, request.wgs84Points, out TWGS84Point startPt, out TWGS84Point endPt, out bool positionsAreGrid);
         
         var designProfile = DesignProfiler.ComputeProfile.RPC.__Global.Construct_CalculateDesignProfile_Args(
-          request.projectId ?? -1,
+          request.ProjectId ?? -1,
           false,
           startPt,
           endPt,
@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           ValidationConstants.MAX_STATION,
           RaptorConverters.DesignDescriptor(request.designDescriptor),
           RaptorConverters.EmptyDesignDescriptor,
-          RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId),
+          RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId),
           positionsAreGrid);
 
         var memoryStream = this.raptorClient.GetDesignProfile(designProfile);

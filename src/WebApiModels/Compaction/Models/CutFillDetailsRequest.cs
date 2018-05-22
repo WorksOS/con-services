@@ -33,7 +33,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     {
       return new CutFillDetailsRequest
       {
-        projectId = projectId,
+        ProjectId = projectId,
         CutFillTolerances = tolerances,
         filter = filter,
         liftBuildSettings = liftBuildSettings,

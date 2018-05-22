@@ -72,7 +72,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     {
       return new CompactionProfileProductionDataRequest
       {
-        projectId = projectID,
+        ProjectId = projectID,
         callId = callId,
         profileType = profileType,
         filter = filter,

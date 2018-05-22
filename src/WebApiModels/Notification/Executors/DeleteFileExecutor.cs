@@ -56,11 +56,11 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Executors
         {
           var suffix = FileUtils.GeneratedFileSuffix(fileType);
           //Delete generated files
-          bool success = await DeleteGeneratedFile(request.projectId.Value, request.File, suffix, FileUtils.PROJECTION_FILE_EXTENSION) &&
-                         await DeleteGeneratedFile(request.projectId.Value, request.File, suffix, FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION);
+          bool success = await DeleteGeneratedFile(request.ProjectId.Value, request.File, suffix, FileUtils.PROJECTION_FILE_EXTENSION) &&
+                         await DeleteGeneratedFile(request.ProjectId.Value, request.File, suffix, FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION);
           if (fileType != ImportedFileType.Linework)
           {
-            success = success && await DeleteGeneratedFile(request.projectId.Value, request.File, suffix, FileUtils.DXF_FILE_EXTENSION);
+            success = success && await DeleteGeneratedFile(request.ProjectId.Value, request.File, suffix, FileUtils.DXF_FILE_EXTENSION);
           }
           if (!success)
           {
@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Executors
           }
           //Delete tiles 
           string generatedName = FileUtils.GeneratedFileName(request.File.fileName, suffix, FileUtils.DXF_FILE_EXTENSION);
-          await tileGenerator.DeleteDxfTiles(request.projectId.Value, generatedName, request.File).ConfigureAwait(false);
+          await tileGenerator.DeleteDxfTiles(request.ProjectId.Value, generatedName, request.File).ConfigureAwait(false);
         }
 
 
@@ -79,13 +79,13 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Executors
         {
           log.LogDebug("Discarding ground surface file in Raptor");
           bool importedFileDiscardByNextGenFileIdResult =
-            raptorClient.DiscardGroundSurfaceFileDetails(request.projectId.Value, request.FileId);
+            raptorClient.DiscardGroundSurfaceFileDetails(request.ProjectId.Value, request.FileId);
           bool importedFileDiscardByLegacyFileIdResult = true;
 
           if (request.LegacyFileId.HasValue)
           {
             importedFileDiscardByLegacyFileIdResult =
-              raptorClient.DiscardGroundSurfaceFileDetails(request.projectId.Value, request.LegacyFileId.Value);
+              raptorClient.DiscardGroundSurfaceFileDetails(request.ProjectId.Value, request.LegacyFileId.Value);
           }
 
           // one or the other should be deleted

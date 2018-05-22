@@ -93,7 +93,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     {
       return new MDPRequest
       {
-        projectId = projectID,
+        ProjectId = projectID,
         callId = callId,
         mdpSettings = mdpSettings,
         liftBuildSettings = liftBuildSettings,

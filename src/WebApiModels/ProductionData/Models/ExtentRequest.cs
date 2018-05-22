@@ -23,7 +23,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
       {
         return new ExtentRequest
         {
-          projectId = ProjectId,
+          ProjectId = ProjectId,
           excludedSurveyedSurfaceIds = ExcludedSurveyedSurfaceIds
         };
       }

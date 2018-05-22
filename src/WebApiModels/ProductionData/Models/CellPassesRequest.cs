@@ -108,7 +108,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     {
       return new CellPassesRequest
       {
-        projectId = projectId,
+        ProjectId = projectId,
         cellAddress = cellAddress,
         probePositionGrid = probePositionGrid,
         probePositionLL = probePositionLL,

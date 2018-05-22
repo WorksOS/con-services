@@ -52,7 +52,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var raptorClient = new Mock<IASNodeClient>();
 
       raptorClient
-        .Setup(x => x.GetCutFillDetails(request.projectId.Value, It.IsAny<TASNodeRequestDescriptor>(),
+        .Setup(x => x.GetCutFillDetails(request.ProjectId.Value, It.IsAny<TASNodeRequestDescriptor>(),
           It.IsAny<TCutFillSettings>(), It.IsAny<TICFilterSettings>(), It.IsAny<TICLiftBuildSettings>(),
           out details))
         .Returns(false);
@@ -72,7 +72,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var raptorClient = new Mock<IASNodeClient>();
 
       raptorClient
-        .Setup(x => x.GetCutFillDetails(request.projectId.Value, It.IsAny<TASNodeRequestDescriptor>(),
+        .Setup(x => x.GetCutFillDetails(request.ProjectId.Value, It.IsAny<TASNodeRequestDescriptor>(),
           It.IsAny<TCutFillSettings>(), It.IsAny<TICFilterSettings>(), It.IsAny<TICLiftBuildSettings>(),
           out details))
         .Returns(true);

@@ -172,7 +172,7 @@ namespace VSS.Productivity3D.Common.Models
     {
       return new TileRequest
       {
-        projectId = projectId,
+        ProjectId = projectId,
         CallId = callId,
         mode = mode,
         Palettes = palettes,

@@ -34,7 +34,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     {
       return new GetEditDataRequest
       {
-        projectId = projectId,
+        ProjectId = projectId,
         assetId = assetId
       };
     }

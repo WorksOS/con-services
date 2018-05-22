@@ -68,7 +68,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     {
       MemoryStream memoryStream;
 
-      var filter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId);
+      var filter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId);
       var designDescriptor = RaptorConverters.DesignDescriptor(request.cutFillDesignDescriptor);
       var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.alignmentDesign);
       var liftBuildSettings =
@@ -83,7 +83,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       {
         ASNode.RequestAlignmentProfile.RPC.TASNodeServiceRPCVerb_RequestAlignmentProfile_Args args
           = ASNode.RequestAlignmentProfile.RPC.__Global.Construct_RequestAlignmentProfile_Args
-          (request.projectId ?? -1,
+          (request.ProjectId ?? -1,
             ProfilesHelper.PROFILE_TYPE_NOT_REQUIRED,
             request.startStation ?? ValidationConstants.MIN_STATION,
             request.endStation ?? ValidationConstants.MIN_STATION,
@@ -99,7 +99,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       {
         ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args args
           = ASNode.RequestProfile.RPC.__Global.Construct_RequestProfile_Args
-          (request.projectId ?? -1,
+          (request.ProjectId ?? -1,
             ProfilesHelper.PROFILE_TYPE_HEIGHT,
             positionsAreGrid,
             startPt,
@@ -378,12 +378,12 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     {
       MemoryStream memoryStream;
 
-      var filter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId);
+      var filter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId);
       var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.alignmentDesign);
       var liftBuildSettings =
         RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
-      var baseFilter = RaptorConverters.ConvertFilter(null, request.baseFilter, request.projectId);
-      var topFilter = RaptorConverters.ConvertFilter(null, request.topFilter, request.projectId);
+      var baseFilter = RaptorConverters.ConvertFilter(null, request.baseFilter, request.ProjectId);
+      var topFilter = RaptorConverters.ConvertFilter(null, request.topFilter, request.ProjectId);
       var volumeDesignDescriptor = RaptorConverters.DesignDescriptor(request.volumeDesignDescriptor);
       TWGS84Point startPt, endPt;
       bool positionsAreGrid;
@@ -399,7 +399,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
             TASNodeServiceRPCVerb_RequestSummaryVolumesAlignmentProfile_Args args
               = ASNode.RequestSummaryVolumesAlignmentProfile.RPC.__Global
                 .Construct_RequestSummaryVolumesAlignmentProfile_Args
-                (request.projectId ?? -1,
+                (request.ProjectId ?? -1,
                   ProfilesHelper.PROFILE_TYPE_NOT_REQUIRED,
                   (TComputeICVolumesType)request.volumeCalcType,
                   request.startStation ?? ValidationConstants.MIN_STATION,
@@ -416,7 +416,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         {
           ASNode.RequestSummaryVolumesProfile.RPC.TASNodeServiceRPCVerb_RequestSummaryVolumesProfile_Args args
             = ASNode.RequestSummaryVolumesProfile.RPC.__Global.Construct_RequestSummaryVolumesProfile_Args(
-              (request.projectId ?? -1),
+              (request.ProjectId ?? -1),
               ProfilesHelper.PROFILE_TYPE_HEIGHT,
               (TComputeICVolumesType)request.volumeCalcType.Value,
               startPt,

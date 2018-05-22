@@ -35,10 +35,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       SummarySpeedRequest request = item as SummarySpeedRequest;
       new TASNodeSpeedSummaryResult();
 
-      bool success = this.raptorClient.GetSummarySpeed(request.projectId ?? -1,
+      bool success = this.raptorClient.GetSummarySpeed(request.ProjectId ?? -1,
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.CallId ?? Guid.NewGuid()), 0,
           TASNodeCancellationDescriptorType.cdtVolumeSummary),
-        RaptorConverters.ConvertFilter(request.FilterId, request.Filter, request.projectId, null, null,
+        RaptorConverters.ConvertFilter(request.FilterId, request.Filter, request.ProjectId, null, null,
           new List<long>()),
         RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone),
         out var result);

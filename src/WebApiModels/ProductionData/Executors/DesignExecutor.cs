@@ -53,7 +53,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 
             bool result = raptorClient.GetDesignBoundary(
               DesignProfiler.ComputeDesignBoundary.RPC.__Global.Construct_CalculateDesignBoundary_Args(
-                request.projectId ?? -1,
+                request.ProjectId ?? -1,
                 fileDescriptor.DesignDescriptor(configStore, log, 0, 0),
                 DesignProfiler.ComputeDesignBoundary.RPC.TDesignBoundaryReturnType.dbrtJson,
                 request.tolerance,

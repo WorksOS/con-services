@@ -37,10 +37,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       try
       {
         CMVRequest request = item as CMVRequest;
-        TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId,
+        TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId,
             request.overrideStartUTC, request.overrideEndUTC, request.overrideAssetIds);
 
-        bool success = raptorClient.GetCMVSummary(request.projectId ?? -1,
+        bool success = raptorClient.GetCMVSummary(request.ProjectId ?? -1,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.callId ?? Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtCMVSummary),
           ConvertSettings(request.cmvSettings),
           raptorFilter,

@@ -27,7 +27,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       ContractExecutionResult result;
       CMVRequest request = item as CMVRequest;
-      TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId,
+      TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId,
         request.overrideStartUTC, request.overrideEndUTC, request.overrideAssetIds);
 
       TASNodeRequestDescriptor externalRequestDescriptor = ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(
@@ -42,7 +42,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       if (!request.isCustomCMVTargets)
       {
         success = raptorClient.GetCMVDetails(
-          request.projectId ?? -1,
+          request.ProjectId ?? -1,
           externalRequestDescriptor,
           ConvertSettings(request.cmvSettings),
           raptorFilter,
@@ -52,7 +52,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       else
       {
         success = raptorClient.GetCMVDetailsExt(
-          request.projectId ?? -1,
+          request.ProjectId ?? -1,
           externalRequestDescriptor,
           ConvertSettingsExt((CMVSettingsEx) request.cmvSettings),
           raptorFilter,

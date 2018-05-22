@@ -39,9 +39,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       try
       {
         TemperatureRequest request = item as TemperatureRequest;
-        TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId,
+        TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId,
             request.overrideStartUTC, request.overrideEndUTC, request.overrideAssetIds);
-        bool success = raptorClient.GetTemperatureSummary(request.projectId ?? -1,
+        bool success = raptorClient.GetTemperatureSummary(request.ProjectId ?? -1,
                             ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0, TASNodeCancellationDescriptorType.cdtTemperature),
                             ConvertSettings(request.temperatureSettings),
                             raptorFilter,

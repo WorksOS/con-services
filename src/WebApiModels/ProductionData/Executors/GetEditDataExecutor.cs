@@ -30,15 +30,15 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
           GetEditDataRequest request = item as GetEditDataRequest;
           if (request.assetId == null) 
           {
-            designNames = raptorClient.GetOverriddenDesigns(request.projectId ?? -1, -1);
-            layers = raptorClient.GetOverriddenLayers(request.projectId ?? -1, -1);
+            designNames = raptorClient.GetOverriddenDesigns(request.ProjectId ?? -1, -1);
+            layers = raptorClient.GetOverriddenLayers(request.ProjectId ?? -1, -1);
             
           }
           else
           {
-            designNames = raptorClient.GetOverriddenDesigns(request.projectId ?? -1,
+            designNames = raptorClient.GetOverriddenDesigns(request.ProjectId ?? -1,
                 request.assetId <= 0 ? -1 : (long)request.assetId);
-            layers = raptorClient.GetOverriddenLayers(request.projectId ?? -1,
+            layers = raptorClient.GetOverriddenLayers(request.ProjectId ?? -1,
                 request.assetId <= 0 ? -1 : (long)request.assetId);
           }
           result = EditDataResult.CreateEditDataResult(ConvertDataEdits(designNames, layers));

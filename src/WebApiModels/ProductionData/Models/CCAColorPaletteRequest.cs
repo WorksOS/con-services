@@ -65,7 +65,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// 
     public static CCAColorPaletteRequest CreateCCAColorPaletteRequest(long projectId, long assetId, DateTime? startUtc, DateTime? endUtc, int? liftId)
     {
-      return new CCAColorPaletteRequest { projectId = projectId, assetId = assetId, startUtc = startUtc, endUtc = endUtc, liftId = liftId};
+      return new CCAColorPaletteRequest { ProjectId = projectId, assetId = assetId, startUtc = startUtc, endUtc = endUtc, liftId = liftId};
     }
     
     /// <summary>

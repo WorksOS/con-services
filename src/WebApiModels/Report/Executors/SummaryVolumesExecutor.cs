@@ -51,8 +51,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
       TASNodeSimpleVolumesResult result;
 
-      var baseFilter = RaptorConverters.ConvertFilter(request.BaseFilterId, request.BaseFilter, request.projectId);
-      var topFilter = RaptorConverters.ConvertFilter(request.TopFilterId, request.TopFilter, request.projectId);
+      var baseFilter = RaptorConverters.ConvertFilter(request.BaseFilterId, request.BaseFilter, request.ProjectId);
+      var topFilter = RaptorConverters.ConvertFilter(request.TopFilterId, request.TopFilter, request.ProjectId);
       var baseDesignDescriptor = RaptorConverters.DesignDescriptor(request.BaseDesignDescriptor);
       var topDesignDescriptor = RaptorConverters.DesignDescriptor(request.TopDesignDescriptor);
 
@@ -69,7 +69,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
       if (request.CutTolerance != null && request.FillTolerance != null)
       {
-        success = this.raptorClient.GetSummaryVolumes(request.projectId ?? -1,
+        success = this.raptorClient.GetSummaryVolumes(request.ProjectId ?? -1,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
             TASNodeCancellationDescriptorType.cdtVolumeSummary),
           volType,
@@ -78,14 +78,14 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           topFilter,
           topDesignDescriptor,
           RaptorConverters.ConvertFilter(request.AdditionalSpatialFilterId,
-            request.AdditionalSpatialFilter, request.projectId), (double)request.CutTolerance,
+            request.AdditionalSpatialFilter, request.ProjectId), (double)request.CutTolerance,
           (double)request.FillTolerance,
           RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone),
           out result);
       }
       else
       {
-        success = this.raptorClient.GetSummaryVolumes(request.projectId ?? -1,
+        success = this.raptorClient.GetSummaryVolumes(request.ProjectId ?? -1,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
             TASNodeCancellationDescriptorType.cdtVolumeSummary),
           volType,
@@ -94,7 +94,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           topFilter,
           RaptorConverters.DesignDescriptor(request.TopDesignDescriptor),
           RaptorConverters.ConvertFilter(request.AdditionalSpatialFilterId,
-            request.AdditionalSpatialFilter, request.projectId),
+            request.AdditionalSpatialFilter, request.ProjectId),
           RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone),
           out result);
       }

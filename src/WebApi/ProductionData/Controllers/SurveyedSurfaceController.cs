@@ -68,7 +68,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [Route("api/v1/projects/{projectId}/surveyedsurfaces/{surveyedsurfaceId}/delete")]
     public ContractExecutionResult GetDel([FromRoute] long projectId, [FromRoute] long surveyedSurfaceId)
     {
-      ProjectID projId = ProjectID.CreateProjectID(projectId);
+      ProjectID projId = ProjectID.Create(projectId);
       projId.Validate();
 
       DataID ssId = DataID.CreateDataID(surveyedSurfaceId);
@@ -91,7 +91,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public async Task<ContractExecutionResult> GetDel([FromRoute] Guid projectUid, [FromRoute] long surveyedSurfaceId)
     {
       long projectId = await (User as RaptorPrincipal).GetLegacyProjectId(projectUid);
-      ProjectID projId = ProjectID.CreateProjectID(projectId, projectUid);
+      ProjectID projId = ProjectID.Create(projectId, projectUid);
       projId.Validate();
 
       DataID ssId = DataID.CreateDataID(surveyedSurfaceId);
@@ -112,7 +112,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [Route("api/v1/projects/{projectId}/surveyedsurfaces")]
     public SurveyedSurfaceResult Get([FromRoute] long projectId)
     {
-      ProjectID request = ProjectID.CreateProjectID(projectId);
+      ProjectID request = ProjectID.Create(projectId);
 
       request.Validate();
       return RequestExecutorContainerFactory.Build<SurveyedSurfaceExecutorGet>(logger, raptorClient).Process(request) as SurveyedSurfaceResult;
@@ -129,7 +129,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public async Task<SurveyedSurfaceResult> Get([FromRoute] Guid projectUid)
     {
       long projectId = await (User as RaptorPrincipal).GetLegacyProjectId(projectUid);
-      ProjectID request = ProjectID.CreateProjectID(projectId, projectUid);
+      ProjectID request = ProjectID.Create(projectId, projectUid);
 
       request.Validate();
       return RequestExecutorContainerFactory.Build<SurveyedSurfaceExecutorGet>(logger, raptorClient).Process(request) as SurveyedSurfaceResult;

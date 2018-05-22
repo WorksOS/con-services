@@ -19,7 +19,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 
     public AlignmentStationRangeRequest CreateAlignmentStationRangeRequest(DesignDescriptor fileDescriptor)
     {
-      return new AlignmentStationRangeRequest{projectId = ProjectId, fileDescriptor = fileDescriptor};
+      return new AlignmentStationRangeRequest{ProjectId = ProjectId, fileDescriptor = fileDescriptor};
     }
   }
 }

@@ -71,12 +71,12 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args args
            = ASNode.RequestProfile.RPC.__Global.Construct_RequestProfile_Args
-           (request.projectId.Value,
+           (request.ProjectId.Value,
             -1, // don't care
             positionsAreGrid,
             startPt,
             endPt,
-            RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId),
+            RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId),
             RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
             RaptorConverters.DesignDescriptor(request.alignmentDesign),
             request.returnAllPassesAndLayers);
@@ -113,12 +113,12 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args args
            = ASNode.RequestProfile.RPC.__Global.Construct_RequestProfile_Args
-           (request.projectId.Value,
+           (request.ProjectId.Value,
             -1, // don't care
             positionsAreGrid,
             startPt,
             endPt,
-            RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId, null),
+            RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId, null),
             RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
             RaptorConverters.DesignDescriptor(request.alignmentDesign),
             request.returnAllPassesAndLayers);

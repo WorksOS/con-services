@@ -64,7 +64,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     {
       var request = new SummaryVolumesRequest
       {
-        projectId = projectId,
+        ProjectId = projectId,
         BaseFilter = baseFilter,
         TopFilter = topFilter,
         BaseDesignDescriptor = baseDesignDescriptor,

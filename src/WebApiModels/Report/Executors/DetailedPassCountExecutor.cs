@@ -32,9 +32,9 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
        ContractExecutionResult result = null;
       TPassCountDetails passCountDetails;
       PassCounts request = item as PassCounts;
-      TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId,
+      TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId,
         request.overrideStartUTC, request.overrideEndUTC, request.overrideAssetIds,log: log);
-      bool success = raptorClient.GetPassCountDetails(request.projectId ?? -1,
+      bool success = raptorClient.GetPassCountDetails(request.ProjectId ?? -1,
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0,
           TASNodeCancellationDescriptorType.cdtPassCountDetailed),
         request.passCountSettings != null ? ConvertSettings(request.passCountSettings) : new TPassCountSettings(),

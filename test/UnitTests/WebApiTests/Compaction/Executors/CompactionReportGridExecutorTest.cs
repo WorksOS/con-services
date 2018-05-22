@@ -55,7 +55,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var raptorClient = new Mock<IASNodeClient>();
 
       var args = ASNode.GridReport.RPC.__Global.Construct_GridReport_Args(
-        request.projectId ?? -1,
+        request.ProjectId ?? -1,
         (int)CompactionReportType.Grid,
         It.IsAny<TASNodeRequestDescriptor>(),
         It.IsAny<TVLPDDesignDescriptor>(),
@@ -98,7 +98,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var raptorClient = new Mock<IASNodeClient>();
 
       var args = ASNode.GridReport.RPC.__Global.Construct_GridReport_Args(
-        request.projectId ?? -1,
+        request.ProjectId ?? -1,
         (int)CompactionReportType.Grid,
         It.IsAny<TASNodeRequestDescriptor>(),
         It.IsAny<TVLPDDesignDescriptor>(),

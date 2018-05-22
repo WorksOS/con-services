@@ -19,7 +19,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
     {
       ContractExecutionResult result;
       ProjectID request = item as ProjectID;
-      TMachineDetail[] machines = raptorClient.GetMachineIDs(request.projectId ?? -1);
+      TMachineDetail[] machines = raptorClient.GetMachineIDs(request.ProjectId ?? -1);
       if (machines != null)
         result =
           MachineExecutionResult.CreateMachineExecutionResult(
