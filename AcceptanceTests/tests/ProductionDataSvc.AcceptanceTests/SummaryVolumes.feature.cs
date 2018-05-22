@@ -183,6 +183,20 @@ this.SummaryVolumes_GoodRequest("DesignToLatestFilter", "DesignToLatestFilter", 
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("SummaryVolumes - Good Request: FilterToCompositeWithSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "SummaryVolumes")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "FilterToCompositeWithSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "FilterToCompositeWithSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "FilterToCompositeWithSurveyedSurface")]
+        public virtual void SummaryVolumes_GoodRequest_FilterToCompositeWithSurveyedSurface()
+        {
+#line 8
+this.SummaryVolumes_GoodRequest("FilterToCompositeWithSurveyedSurface", "FilterToCompositeWithSurveyedSurface", ((string[])(null)));
+#line hidden
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("SummaryVolumes - Good Request: FilterToCompositeNoSurveyedSurface")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "SummaryVolumes")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireSurveyedSurface")]
@@ -193,6 +207,20 @@ this.SummaryVolumes_GoodRequest("DesignToLatestFilter", "DesignToLatestFilter", 
         {
 #line 8
 this.SummaryVolumes_GoodRequest("FilterToCompositeNoSurveyedSurface", "FilterToCompositeNoSurveyedSurface", ((string[])(null)));
+#line hidden
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("SummaryVolumes - Good Request: CompositeToDesignWithSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "SummaryVolumes")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "CompositeToDesignWithSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "CompositeToDesignWithSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "CompositeToDesignWithSurveyedSurface")]
+        public virtual void SummaryVolumes_GoodRequest_CompositeToDesignWithSurveyedSurface()
+        {
+#line 8
+this.SummaryVolumes_GoodRequest("CompositeToDesignWithSurveyedSurface", "CompositeToDesignWithSurveyedSurface", ((string[])(null)));
 #line hidden
         }
         
@@ -211,6 +239,20 @@ this.SummaryVolumes_GoodRequest("CompositeToDesignNoSurveyedSurface", "Composite
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("SummaryVolumes - Good Request: DesignToCompositeWithSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "SummaryVolumes")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "DesignToCompositeWithSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "DesignToCompositeWithSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "DesignToCompositeWithSurveyedSurface")]
+        public virtual void SummaryVolumes_GoodRequest_DesignToCompositeWithSurveyedSurface()
+        {
+#line 8
+this.SummaryVolumes_GoodRequest("DesignToCompositeWithSurveyedSurface", "DesignToCompositeWithSurveyedSurface", ((string[])(null)));
+#line hidden
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("SummaryVolumes - Good Request: DesignToCompositeNoSurveyedSurface")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "SummaryVolumes")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireSurveyedSurface")]
@@ -221,62 +263,6 @@ this.SummaryVolumes_GoodRequest("CompositeToDesignNoSurveyedSurface", "Composite
         {
 #line 8
 this.SummaryVolumes_GoodRequest("DesignToCompositeNoSurveyedSurface", "DesignToCompositeNoSurveyedSurface", ((string[])(null)));
-#line hidden
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("SummaryVolumes - Good Request: SummationTestLotOneOfThree")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "SummaryVolumes")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireSurveyedSurface")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "SummationTestLotOneOfThree")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "SummationTestLotOneOfThree")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "SummationTestLotOneOfThree")]
-        public virtual void SummaryVolumes_GoodRequest_SummationTestLotOneOfThree()
-        {
-#line 8
-this.SummaryVolumes_GoodRequest("SummationTestLotOneOfThree", "SummationTestLotOneOfThree", ((string[])(null)));
-#line hidden
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("SummaryVolumes - Good Request: SummationTestLotTwoOfThree")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "SummaryVolumes")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireSurveyedSurface")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "SummationTestLotTwoOfThree")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "SummationTestLotTwoOfThree")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "SummationTestLotTwoOfThree")]
-        public virtual void SummaryVolumes_GoodRequest_SummationTestLotTwoOfThree()
-        {
-#line 8
-this.SummaryVolumes_GoodRequest("SummationTestLotTwoOfThree", "SummationTestLotTwoOfThree", ((string[])(null)));
-#line hidden
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("SummaryVolumes - Good Request: SummationTestLotThreeOfThree")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "SummaryVolumes")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireSurveyedSurface")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "SummationTestLotThreeOfThree")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "SummationTestLotThreeOfThree")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "SummationTestLotThreeOfThree")]
-        public virtual void SummaryVolumes_GoodRequest_SummationTestLotThreeOfThree()
-        {
-#line 8
-this.SummaryVolumes_GoodRequest("SummationTestLotThreeOfThree", "SummationTestLotThreeOfThree", ((string[])(null)));
-#line hidden
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("SummaryVolumes - Good Request: SummationTestTheWholeLot")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "SummaryVolumes")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireSurveyedSurface")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "SummationTestTheWholeLot")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "SummationTestTheWholeLot")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "SummationTestTheWholeLot")]
-        public virtual void SummaryVolumes_GoodRequest_SummationTestTheWholeLot()
-        {
-#line 8
-this.SummaryVolumes_GoodRequest("SummationTestTheWholeLot", "SummationTestTheWholeLot", ((string[])(null)));
 #line hidden
         }
         
@@ -319,6 +305,69 @@ this.SummaryVolumes_GoodRequest("FilterToDesignWithCutTolerances", "FilterToDesi
         {
 #line 8
 this.SummaryVolumes_GoodRequest("FilterToFilterWithBothTolerances", "FilterToFilterWithBothTolerances", ((string[])(null)));
+#line hidden
+        }
+        
+        public virtual void SummaryVolumes_GoodRequestWithOldSS(string parameterName, string resultName, string[] exampleTags)
+        {
+            string[] @__tags = new string[] {
+                    "requireOldSurveyedSurface"};
+            if ((exampleTags != null))
+            {
+                @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
+            }
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("SummaryVolumes - Good Request with Old SS", @__tags);
+#line 33
+this.ScenarioSetup(scenarioInfo);
+#line 4
+this.FeatureBackground();
+#line 34
+ testRunner.When(string.Format("I request Summary Volumes supplying \"{0}\" paramters from the repository", parameterName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 35
+ testRunner.Then(string.Format("the response should match \"{0}\" result from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("SummaryVolumes - Good Request with Old SS: FilterToCompositeWithSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "SummaryVolumes")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireOldSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "FilterToCompositeWithSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "FilterToCompositeWithSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "FilterToCompositeNoSurveyedSurfaceOld")]
+        public virtual void SummaryVolumes_GoodRequestWithOldSS_FilterToCompositeWithSurveyedSurface()
+        {
+#line 33
+this.SummaryVolumes_GoodRequestWithOldSS("FilterToCompositeWithSurveyedSurface", "FilterToCompositeNoSurveyedSurfaceOld", ((string[])(null)));
+#line hidden
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("SummaryVolumes - Good Request with Old SS: CompositeToDesignWithSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "SummaryVolumes")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireOldSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "CompositeToDesignWithSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "CompositeToDesignWithSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "CompositeToDesignNoSurveyedSurfaceOld")]
+        public virtual void SummaryVolumes_GoodRequestWithOldSS_CompositeToDesignWithSurveyedSurface()
+        {
+#line 33
+this.SummaryVolumes_GoodRequestWithOldSS("CompositeToDesignWithSurveyedSurface", "CompositeToDesignNoSurveyedSurfaceOld", ((string[])(null)));
+#line hidden
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("SummaryVolumes - Good Request with Old SS: DesignToCompositeWithSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "SummaryVolumes")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireOldSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "DesignToCompositeWithSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "DesignToCompositeWithSurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "DesignToCompositeNoSurveyedSurfaceOld")]
+        public virtual void SummaryVolumes_GoodRequestWithOldSS_DesignToCompositeWithSurveyedSurface()
+        {
+#line 33
+this.SummaryVolumes_GoodRequestWithOldSS("DesignToCompositeWithSurveyedSurface", "DesignToCompositeNoSurveyedSurfaceOld", ((string[])(null)));
 #line hidden
         }
         
