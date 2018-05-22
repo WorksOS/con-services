@@ -71,6 +71,11 @@
             this.btnZoomAll = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.btnCustom = new System.Windows.Forms.Button();
+            this.btnCopyGuid = new System.Windows.Forms.Button();
+            this.btnGenGuid3 = new System.Windows.Forms.Button();
+            this.btnGenGuid2 = new System.Windows.Forms.Button();
+            this.btnGenGUID = new System.Windows.Forms.Button();
             this.btnFileOpen = new System.Windows.Forms.Button();
             this.label10 = new System.Windows.Forms.Label();
             this.edtProjectID = new System.Windows.Forms.TextBox();
@@ -81,11 +86,6 @@
             this.label7 = new System.Windows.Forms.Label();
             this.edtAssetID = new System.Windows.Forms.TextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.btnGenGUID = new System.Windows.Forms.Button();
-            this.btnGenGuid2 = new System.Windows.Forms.Button();
-            this.btnGenGuid3 = new System.Windows.Forms.Button();
-            this.btnCopyGuid = new System.Windows.Forms.Button();
-            this.btnCustom = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -569,6 +569,56 @@
             this.tabPage3.Text = "Tagfile Processing";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // btnCustom
+            // 
+            this.btnCustom.Location = new System.Drawing.Point(239, 276);
+            this.btnCustom.Name = "btnCustom";
+            this.btnCustom.Size = new System.Drawing.Size(98, 23);
+            this.btnCustom.TabIndex = 58;
+            this.btnCustom.Text = "Custom Setup";
+            this.btnCustom.UseVisualStyleBackColor = true;
+            this.btnCustom.Click += new System.EventHandler(this.btnCustom_Click);
+            // 
+            // btnCopyGuid
+            // 
+            this.btnCopyGuid.Location = new System.Drawing.Point(290, 246);
+            this.btnCopyGuid.Name = "btnCopyGuid";
+            this.btnCopyGuid.Size = new System.Drawing.Size(44, 24);
+            this.btnCopyGuid.TabIndex = 57;
+            this.btnCopyGuid.Text = "Copy";
+            this.btnCopyGuid.UseVisualStyleBackColor = true;
+            this.btnCopyGuid.Click += new System.EventHandler(this.btnCopyGuid_Click);
+            // 
+            // btnGenGuid3
+            // 
+            this.btnGenGuid3.Location = new System.Drawing.Point(290, 216);
+            this.btnGenGuid3.Name = "btnGenGuid3";
+            this.btnGenGuid3.Size = new System.Drawing.Size(44, 24);
+            this.btnGenGuid3.TabIndex = 56;
+            this.btnGenGuid3.Text = "Gen";
+            this.btnGenGuid3.UseVisualStyleBackColor = true;
+            this.btnGenGuid3.Click += new System.EventHandler(this.btnGenGuid3_Click);
+            // 
+            // btnGenGuid2
+            // 
+            this.btnGenGuid2.Location = new System.Drawing.Point(290, 159);
+            this.btnGenGuid2.Name = "btnGenGuid2";
+            this.btnGenGuid2.Size = new System.Drawing.Size(44, 24);
+            this.btnGenGuid2.TabIndex = 55;
+            this.btnGenGuid2.Text = "Gen";
+            this.btnGenGuid2.UseVisualStyleBackColor = true;
+            this.btnGenGuid2.Click += new System.EventHandler(this.btnGenGuid2_Click);
+            // 
+            // btnGenGUID
+            // 
+            this.btnGenGUID.Location = new System.Drawing.Point(290, 103);
+            this.btnGenGUID.Name = "btnGenGUID";
+            this.btnGenGUID.Size = new System.Drawing.Size(44, 24);
+            this.btnGenGUID.TabIndex = 54;
+            this.btnGenGUID.Text = "Gen";
+            this.btnGenGUID.UseVisualStyleBackColor = true;
+            this.btnGenGUID.Click += new System.EventHandler(this.btnGenGUID_Click);
+            // 
             // btnFileOpen
             // 
             this.btnFileOpen.Location = new System.Drawing.Point(290, 48);
@@ -649,56 +699,6 @@
             this.openFileDialog1.FileName = "openFileDialog1";
             this.openFileDialog1.InitialDirectory = "@\"c:\\\"";
             this.openFileDialog1.RestoreDirectory = true;
-            // 
-            // btnGenGUID
-            // 
-            this.btnGenGUID.Location = new System.Drawing.Point(290, 103);
-            this.btnGenGUID.Name = "btnGenGUID";
-            this.btnGenGUID.Size = new System.Drawing.Size(44, 24);
-            this.btnGenGUID.TabIndex = 54;
-            this.btnGenGUID.Text = "Gen";
-            this.btnGenGUID.UseVisualStyleBackColor = true;
-            this.btnGenGUID.Click += new System.EventHandler(this.btnGenGUID_Click);
-            // 
-            // btnGenGuid2
-            // 
-            this.btnGenGuid2.Location = new System.Drawing.Point(290, 159);
-            this.btnGenGuid2.Name = "btnGenGuid2";
-            this.btnGenGuid2.Size = new System.Drawing.Size(44, 24);
-            this.btnGenGuid2.TabIndex = 55;
-            this.btnGenGuid2.Text = "Gen";
-            this.btnGenGuid2.UseVisualStyleBackColor = true;
-            this.btnGenGuid2.Click += new System.EventHandler(this.btnGenGuid2_Click);
-            // 
-            // btnGenGuid3
-            // 
-            this.btnGenGuid3.Location = new System.Drawing.Point(290, 216);
-            this.btnGenGuid3.Name = "btnGenGuid3";
-            this.btnGenGuid3.Size = new System.Drawing.Size(44, 24);
-            this.btnGenGuid3.TabIndex = 56;
-            this.btnGenGuid3.Text = "Gen";
-            this.btnGenGuid3.UseVisualStyleBackColor = true;
-            this.btnGenGuid3.Click += new System.EventHandler(this.btnGenGuid3_Click);
-            // 
-            // btnCopyGuid
-            // 
-            this.btnCopyGuid.Location = new System.Drawing.Point(290, 246);
-            this.btnCopyGuid.Name = "btnCopyGuid";
-            this.btnCopyGuid.Size = new System.Drawing.Size(44, 24);
-            this.btnCopyGuid.TabIndex = 57;
-            this.btnCopyGuid.Text = "Copy";
-            this.btnCopyGuid.UseVisualStyleBackColor = true;
-            this.btnCopyGuid.Click += new System.EventHandler(this.btnCopyGuid_Click);
-            // 
-            // btnCustom
-            // 
-            this.btnCustom.Location = new System.Drawing.Point(239, 276);
-            this.btnCustom.Name = "btnCustom";
-            this.btnCustom.Size = new System.Drawing.Size(98, 23);
-            this.btnCustom.TabIndex = 58;
-            this.btnCustom.Text = "Custom Setup";
-            this.btnCustom.UseVisualStyleBackColor = true;
-            this.btnCustom.Click += new System.EventHandler(this.btnCustom_Click);
             // 
             // Form1
             // 
