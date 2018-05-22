@@ -49,7 +49,7 @@ namespace WebApiTests.Executors
         RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(
           loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), configStore, 
           assetRepository, deviceRepository,
-          customerRepo.Object, projectRepository, subscriptionsRepository, 
+          customerRepo.Object, projectRepository, subscriptionRepository, 
           producer.Object, kafkaTopicName);
       var result = await executor.ProcessAsync(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
@@ -83,7 +83,7 @@ namespace WebApiTests.Executors
         RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(
           loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), configStore, 
           assetRepository, deviceRepository,
-          customerRepo.Object, projectRepository, subscriptionsRepository, 
+          customerRepo.Object, projectRepository, subscriptionRepository, 
           producer.Object, kafkaTopicName);
       var result = await executor.ProcessAsync(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
@@ -116,7 +116,7 @@ namespace WebApiTests.Executors
         RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(
           loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), configStore, 
           assetRepository, deviceRepository,
-          customerRepository, projectRepository, subscriptionsRepository,
+          customerRepository, projectRepository, subscriptionRepository,
           producer.Object, kafkaTopicName);
 
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(() => executor.ProcessAsync(tagFileProcessingErrorRequest));
@@ -156,7 +156,7 @@ namespace WebApiTests.Executors
         RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(
           loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), configStore,
           assetRepository, deviceRepository,
-          customerRepository, projectRepo.Object, subscriptionsRepository,
+          customerRepository, projectRepo.Object, subscriptionRepository,
           producer.Object, kafkaTopicName);
       var result = await executor.ProcessAsync(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
@@ -196,7 +196,7 @@ namespace WebApiTests.Executors
         RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(
           loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), configStore,
           assetRepo.Object, deviceRepository,
-          customerRepository, projectRepository, subscriptionsRepository,
+          customerRepository, projectRepository, subscriptionRepository,
           producer.Object, kafkaTopicName);
       var result = await executor.ProcessAsync(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
@@ -245,7 +245,7 @@ namespace WebApiTests.Executors
         RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(
           loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), configStore,
           assetRepository, deviceRepo.Object,
-          customerRepo.Object, projectRepository, subscriptionsRepository,
+          customerRepo.Object, projectRepository, subscriptionRepository,
           producer.Object, kafkaTopicName);
       var result = await executor.ProcessAsync(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
@@ -283,7 +283,7 @@ namespace WebApiTests.Executors
         RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(
           loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), configStore,
           assetRepository, deviceRepository,
-          customerRepo.Object, projectRepository, subscriptionsRepository,
+          customerRepo.Object, projectRepository, subscriptionRepository,
           producer.Object, kafkaTopicName);
       var result = await executor.ProcessAsync(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 

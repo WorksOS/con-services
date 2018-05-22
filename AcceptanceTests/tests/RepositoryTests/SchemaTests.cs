@@ -23,7 +23,8 @@ namespace RepositoryTests
     {
       var serviceCollection = new ServiceCollection();
 
-      string loggerRepoName = "UnitTestLogTest";
+      const string loggerRepoName = "UnitTestLogTest";
+      Log4NetProvider.RepoName = loggerRepoName;
       var logPath = System.IO.Directory.GetCurrentDirectory();
       Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
 

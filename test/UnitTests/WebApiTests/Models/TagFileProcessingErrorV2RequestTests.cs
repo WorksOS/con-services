@@ -33,7 +33,7 @@ namespace WebApiTests.Models
 
       var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(1);
       var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
-      var exceptionMessage = string.Format(tagFilePrefix + exceptionTemplate, internalCode, errorMessage);
+      var exceptionMessage = string.Format(tagFilePrefix + RaptorExceptionTemplate, internalCode, errorMessage);
       Assert.AreEqual(exceptionMessage, ex.GetContent);
     }
 
@@ -56,7 +56,7 @@ namespace WebApiTests.Models
 
       var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(2);
       var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
-      var exceptionMessage = string.Format(tagFilePrefix + exceptionTemplate, internalCode, errorMessage);
+      var exceptionMessage = string.Format(tagFilePrefix + RaptorExceptionTemplate, internalCode, errorMessage);
       Assert.AreEqual(exceptionMessage, ex.GetContent);
     }
 
@@ -79,7 +79,7 @@ namespace WebApiTests.Models
 
       var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(3);
       var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
-      var exceptionMessage = string.Format(tagFilePrefix + exceptionTemplate, internalCode, errorMessage);
+      var exceptionMessage = string.Format(tagFilePrefix + RaptorExceptionTemplate, internalCode, errorMessage);
       Assert.AreEqual(exceptionMessage, ex.GetContent);
     }
 
@@ -102,7 +102,7 @@ namespace WebApiTests.Models
 
       var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(4);
       var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
-      var exceptionMessage = string.Format(tagFilePrefix + exceptionTemplate, internalCode, errorMessage);
+      var exceptionMessage = string.Format(tagFilePrefix + RaptorExceptionTemplate, internalCode, errorMessage);
       Assert.AreEqual(exceptionMessage, ex.GetContent);
     }
 
@@ -151,7 +151,7 @@ namespace WebApiTests.Models
 
       var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(4);
       var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
-      var exceptionMessage = string.Format(tagFilePrefix + exceptionTemplate, internalCode, errorMessage);
+      var exceptionMessage = string.Format(tagFilePrefix + RaptorExceptionTemplate, internalCode, errorMessage);
       Assert.AreEqual(exceptionMessage, ex.GetContent);
     }
 
@@ -174,7 +174,7 @@ namespace WebApiTests.Models
 
       var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(4);
       var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
-      var exceptionMessage = string.Format(tagFilePrefix + exceptionTemplate, internalCode, errorMessage);
+      var exceptionMessage = string.Format(tagFilePrefix + RaptorExceptionTemplate, internalCode, errorMessage);
       Assert.AreEqual(exceptionMessage, ex.GetContent);
     }
 
@@ -197,7 +197,7 @@ namespace WebApiTests.Models
 
       var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(5);
       var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
-      var exceptionMessage = string.Format(tagFilePrefix + exceptionTemplate, internalCode, errorMessage);
+      var exceptionMessage = string.Format(tagFilePrefix + RaptorExceptionTemplate, internalCode, errorMessage);
       Assert.AreEqual(exceptionMessage, ex.GetContent);
     }
 
@@ -220,7 +220,7 @@ namespace WebApiTests.Models
 
       var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(5);
       var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
-      var exceptionMessage = string.Format(tagFilePrefix + exceptionTemplate, internalCode, errorMessage);
+      var exceptionMessage = string.Format(tagFilePrefix + RaptorExceptionTemplate, internalCode, errorMessage);
       Assert.AreEqual(exceptionMessage, ex.GetContent);
     }
 
@@ -279,7 +279,7 @@ namespace WebApiTests.Models
 
       var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(6);
       var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
-      var exceptionMessage = string.Format(tagFilePrefix + exceptionTemplate, internalCode, errorMessage);
+      var exceptionMessage = string.Format(tagFilePrefix + RaptorExceptionTemplate, internalCode, errorMessage);
       Assert.AreEqual(exceptionMessage, ex.GetContent);
     }
 
@@ -302,7 +302,7 @@ namespace WebApiTests.Models
 
       var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(30);
       var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
-      var exceptionMessage = string.Format(tagFilePrefix + exceptionTemplate, internalCode, errorMessage);
+      var exceptionMessage = string.Format(tagFilePrefix + RaptorExceptionTemplate, internalCode, errorMessage);
       Assert.AreEqual(exceptionMessage, ex.GetContent);
     }
 
@@ -325,7 +325,7 @@ namespace WebApiTests.Models
 
       var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(7);
       var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
-      var exceptionMessage = string.Format(tagFilePrefix + exceptionTemplate, internalCode, errorMessage);
+      var exceptionMessage = string.Format(tagFilePrefix + RaptorExceptionTemplate, internalCode, errorMessage);
       Assert.AreEqual(exceptionMessage, ex.GetContent);
     }
 
@@ -348,7 +348,7 @@ namespace WebApiTests.Models
 
       var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(8);
       var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
-      var exceptionMessage = string.Format(tagFilePrefix + exceptionTemplate, internalCode, errorMessage);
+      var exceptionMessage = string.Format(tagFilePrefix + RaptorExceptionTemplate, internalCode, errorMessage);
       Assert.AreEqual(exceptionMessage, ex.GetContent);
     }
 

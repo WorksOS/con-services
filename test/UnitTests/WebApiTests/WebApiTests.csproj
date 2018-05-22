@@ -54,10 +54,6 @@
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\src\WebApiModels\VSS.Productivity3D.TagFileAuth.WebAPI.Models.csproj" />
-  </ItemGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>
@@ -67,6 +63,10 @@
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\WebApiModels\VSS.Productivity3D.TagFileAuth.WebAPI.Models.csproj" />
+  </ItemGroup>
 
 
   <ItemGroup>

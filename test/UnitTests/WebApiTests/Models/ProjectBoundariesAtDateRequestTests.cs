@@ -21,7 +21,7 @@ namespace WebApiTests.Models
 
       var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(9);
       var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
-      var exceptionMessage = string.Format(projectBoundariesPrefix + exceptionTemplate, internalCode, errorMessage);
+      var exceptionMessage = string.Format(projectBoundariesPrefix + RaptorExceptionTemplate, internalCode, errorMessage);
       Assert.AreEqual(exceptionMessage, ex.GetContent);
     }
 
@@ -34,7 +34,7 @@ namespace WebApiTests.Models
 
       var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(9);
       var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
-      var exceptionMessage = string.Format(projectBoundariesPrefix + exceptionTemplate, internalCode, errorMessage);
+      var exceptionMessage = string.Format(projectBoundariesPrefix + RaptorExceptionTemplate, internalCode, errorMessage);
       Assert.AreEqual(exceptionMessage, ex.GetContent);
     }
 
@@ -48,7 +48,7 @@ namespace WebApiTests.Models
 
       var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(17);
       var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
-      var exceptionMessage = string.Format(projectBoundariesPrefix + exceptionTemplate, internalCode, errorMessage);
+      var exceptionMessage = string.Format(projectBoundariesPrefix + RaptorExceptionTemplate, internalCode, errorMessage);
       Assert.AreEqual(exceptionMessage, ex.GetContent);
     }
 

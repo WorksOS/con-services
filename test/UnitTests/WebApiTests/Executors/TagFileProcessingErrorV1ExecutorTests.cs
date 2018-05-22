@@ -20,7 +20,7 @@ namespace WebApiTests.Executors
       ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(loggerFactory.CreateLogger<TagFileProcessingErrorV1ExecutorTests>(), configStore,
-        assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
+        assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionRepository);
       var result = executor.Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -34,7 +34,7 @@ namespace WebApiTests.Executors
       ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(loggerFactory.CreateLogger<TagFileProcessingErrorV1ExecutorTests>(), configStore,
-        assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
+        assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionRepository);
       var result = executor.Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -48,7 +48,7 @@ namespace WebApiTests.Executors
       ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(loggerFactory.CreateLogger<TagFileProcessingErrorV1ExecutorTests>(), configStore,
-        assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
+        assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionRepository);
       var result = executor.Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -62,7 +62,7 @@ namespace WebApiTests.Executors
       ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(loggerFactory.CreateLogger<TagFileProcessingErrorV1ExecutorTests>(), configStore,
-        assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
+        assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionRepository);
       var result = executor.Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -81,7 +81,7 @@ namespace WebApiTests.Executors
       ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(loggerFactory.CreateLogger<TagFileProcessingErrorV1ExecutorTests>(), configStore,
-        assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
+        assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionRepository);
       var result = executor.Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
       Assert.IsNotNull(result, "executor returned nothing");

@@ -17,34 +17,38 @@
       DynamicAddwithOffset("TagFileName invalid as no MachineName", 7);
       DynamicAddwithOffset("TagFileName invalid as no valid CreatedUtc", 8);
       DynamicAddwithOffset("Must have assetId", 9);
-      DynamicAddwithOffset("available1", 10);
+      DynamicAddwithOffset("Radio Serial is invalid", 10);
       DynamicAddwithOffset("TagFileProcessingErrorV1Executor: Invalid request structure", 11);
       DynamicAddwithOffset("TagFileProcessingErrorV1Executor: Failed to create an alert for tag file processing error",   12);
       DynamicAddwithOffset("TagFileProcessingErrorV2Executor: Invalid request structure", 13);
       DynamicAddwithOffset("TagFileProcessingErrorV2Executor: Failed to create an alert for tag file processing error", 14);
       DynamicAddwithOffset("Failed to get legacy asset id", 15);
       DynamicAddwithOffset("Failed to get project boundaries", 16);
-      DynamicAddwithOffset("tagFileUTC must have occured within last 50 years", 17);
+      DynamicAddwithOffset("TagFileUTC must have occurred within last 50 years", 17);
       DynamicAddwithOffset("Must have projectId", 18);
       DynamicAddwithOffset("Failed to get project id", 19);
       DynamicAddwithOffset("Must contain one or more of assetId or tccOrgId", 20);
       DynamicAddwithOffset("Latitude should be between -90 degrees and 90 degrees", 21);
       DynamicAddwithOffset("Longitude should be between -180 degrees and 180 degrees", 22);
-      DynamicAddwithOffset("timeOfPosition must have occured within last 50 years", 23);
+      DynamicAddwithOffset("TimeOfPosition must have occurred within last 50 years", 23);
       DynamicAddwithOffset("Must have assetId and/or projectID", 24);
       DynamicAddwithOffset("AssetId must have valid deviceType", 25);
       DynamicAddwithOffset("A manual/unknown deviceType must have a projectID", 26);
       DynamicAddwithOffset("Failed to get project boundary", 27);
       DynamicAddwithOffset("A problem occurred accessing database. Exception: {0}", 28);
-      DynamicAddwithOffset("available2", 29);
+      DynamicAddwithOffset("Unable to identify any projects", 29);
       DynamicAddwithOffset("DeviceType is invalid", 30);
       DynamicAddwithOffset("Unable to create Kafka event. Reason: {0}.", 31);
+      DynamicAddwithOffset("Multiple projects found", 32);
+      DynamicAddwithOffset("Unable to identify RadioSerial in the 3dPM system", 33);
+      DynamicAddwithOffset("Failed to get project uid", 34);
+      DynamicAddwithOffset("GetProjectUid internal error", 35);
     }
 
     /// <summary>
     /// The execution result offset to create dynamically add custom errors
     /// </summary>
-    private const int executionResultOffset = 0;
+    private const int executionResultOffset = 3000;
 
     /// <summary>
     ///   Service request executed successfully
