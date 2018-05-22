@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Common;
+﻿using VSS.TRex.Cells;
+using VSS.TRex.Common;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Types
@@ -34,7 +35,7 @@ namespace VSS.TRex.SubGridTrees.Types
 		/// </summary>
 		public void Clear()
 	  {
-		  MeasuredTemperature = Consts.NullMaterialTemperature;
+		  MeasuredTemperature = CellPass.NullMaterialTemperatureValue;
 			TemperatureLevels.Clear();
 	  }
 	}

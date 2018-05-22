@@ -196,7 +196,7 @@ namespace VSS.TRex.TAGFiles.Classes
         /// <returns></returns>
         public ushort GetMaterialTemperatureValueAtDateTime(DateTime dateTime)
         {
-            return GetValueAtDateTime(dateTime, out object value) ? (ushort)value : CellPass.NullMaterialTemp;
+            return GetValueAtDateTime(dateTime, out object value) ? (ushort)value : CellPass.NullMaterialTemperatureValue;
         }
 
         /// <summary>

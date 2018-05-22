@@ -24,19 +24,8 @@ namespace VSS.TRex.Common
     /// </summary>
     public const float NullHeight = NullSingle;
 
-		// Value representing a null machine speed encoded as an IEEE ushort
-		public const ushort NullMachineSpeed = UInt16.MaxValue;
-
-		/// <summary>
-		/// Value representing a minimum material temperature encoded as an IEEE ushort
-		/// </summary>
-		public const ushort MinMaterialTempValue = 0;
-	  /// <summary>
-	  /// Value representing a maximum material temperature encoded as an IEEE ushort
-	  /// </summary>
-	  public const ushort MaxMaterialTempValue = 4095;
-  	// Value representing a null material temperature encoded as an IEEE ushort
-		public const ushort NullMaterialTemperature = MaxMaterialTempValue + 1;
+	  // Value representing a null machine speed encoded as an IEEE ushort
+	  public const ushort NullMachineSpeed = UInt16.MaxValue;
 
 		/// <summary>
 		/// Null ID for a design reference descriptor ID

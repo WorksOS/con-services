@@ -347,7 +347,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Tests
 
             Assert.False(state.HaveSeenAnAbsoluteTemperature, "Incorrect value after assignment");
 
-            Assert.Equal((ushort) sink.ICTemperatureValues.GetLatest(), CellPass.NullMaterialTemp);
+            Assert.Equal((ushort) sink.ICTemperatureValues.GetLatest(), CellPass.NullMaterialTemperatureValue);
         }
 
         [Fact()]

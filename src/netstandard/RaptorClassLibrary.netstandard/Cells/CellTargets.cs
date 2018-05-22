@@ -67,8 +67,8 @@ namespace VSS.TRex.Cells
             TargetMDP = CellPass.NullMDP;
             TargetThickness = NullOverridingTargetLiftThicknessValue;
             TargetPassCount = NullPassCountTarget;
-            TempWarningLevelMin = CellPass.NullMaterialTemp;
-            TempWarningLevelMax = CellPass.NullMaterialTemp;
+            TempWarningLevelMin = CellPass.NullMaterialTemperatureValue;
+            TempWarningLevelMax = CellPass.NullMaterialTemperatureValue;
             TargetCCA = NullCCATarget;
         }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Apache.Ignite.Core.Lifecycle;
+using VSS.TRex.Cells;
 using VSS.TRex.Common;
 
 namespace VSS.TRex.Types
@@ -33,8 +34,8 @@ namespace VSS.TRex.Types
 		/// </summary>
 	  public void Clear()
 	  {
-		  Min = Consts.NullMaterialTemperature;
-		  Max = Consts.NullMaterialTemperature;
+		  Min = CellPass.NullMaterialTemperatureValue;
+		  Max = CellPass.NullMaterialTemperatureValue;
 		}
   }
 }

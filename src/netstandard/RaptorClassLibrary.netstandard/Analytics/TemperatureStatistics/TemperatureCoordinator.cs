@@ -55,10 +55,10 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 		/// <param name="response"></param>
 		public override void ReadOutResults(AggregatorBase aggregator, TemperatureStatisticsResponse response)
 		{
-			//response.AboveTargetCellsCount = ((TemperatureAggregator)aggregator).AboveTargetCellsCount;
-			//response.BelowTargetCellsCount = ((TemperatureAggregator)aggregator).BelowTargetCellsCount;
-			//response.MatchTargetCellsCount = ((TemperatureAggregator)aggregator).MatchTargetCellsCount;
-			//response.CoverageArea = ((TemperatureAggregator)aggregator).CoverageArea;
+			response.AboveTemperatureCellsCount = ((TemperatureAggregator)aggregator).CellsScannedOverTarget;
+			response.BelowTemperatureCellsCount = ((TemperatureAggregator)aggregator).CellsScannedUnderTarget;
+			response.WithinTemperatureCellsCount = ((TemperatureAggregator)aggregator).CellsScannedAtTarget;
+			response.CoverageArea = ((TemperatureAggregator)aggregator).SummaryProcessedArea;
 		}
 
 	}

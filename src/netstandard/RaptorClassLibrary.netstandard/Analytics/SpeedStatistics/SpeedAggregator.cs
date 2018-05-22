@@ -51,12 +51,14 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 	  /// <param name="subGrids"></param>
 	  public override void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
 	  {
-		  // Works out the percentage each colour on the map represents
+			base.ProcessSubgridResult(subGrids);
 
-		  if (!(subGrids[0][0] is ClientMachineSpeedLeafSubGrid SubGrid))
+			// Works out the percentage each colour on the map represents
+
+			if (!(subGrids[0][0] is ClientMachineSpeedLeafSubGrid SubGrid))
 			  return;
 
-		  SubGridUtilities.SubGridDimensionalIterator((I, J) =>
+			SubGridUtilities.SubGridDimensionalIterator((I, J) =>
 		  {
 			  float Value = SubGrid.Cells[I, J];
 			  if (Value != Consts.NullMachineSpeed) // is there a value to test

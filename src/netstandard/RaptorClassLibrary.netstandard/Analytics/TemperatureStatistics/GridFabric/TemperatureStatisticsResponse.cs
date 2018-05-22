@@ -33,7 +33,6 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
 		/// </summary>
 		/// <param name="other"></param>
 		/// <returns></returns>
-
 		public TemperatureStatisticsResponse AggregateWith(TemperatureStatisticsResponse other)
 		{
 			AboveTemperatureCellsCount += other.AboveTemperatureCellsCount;
