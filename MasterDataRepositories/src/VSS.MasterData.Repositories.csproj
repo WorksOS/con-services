@@ -28,10 +28,6 @@
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
-  </ItemGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>

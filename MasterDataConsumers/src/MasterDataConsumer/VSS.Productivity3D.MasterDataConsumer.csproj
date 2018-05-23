@@ -31,7 +31,7 @@
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.*" />
     <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.7.*" />
     <PackageReference Include="log4net.netcore" Version="3.0.*" />
-    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.1.*" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.*" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.0.2" />

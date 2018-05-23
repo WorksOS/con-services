@@ -156,8 +156,5 @@ namespace VSS.MasterData.Models.UnitTests
     private LocalDateTime endPreviousWeek = new LocalDateTime(2017, 1, 15, 23, 59, 59);
     private LocalDateTime startPreviousMonth = new LocalDateTime(2016, 12, 1, 0, 0, 0);
     private LocalDateTime endPreviousMonth = new LocalDateTime(2016, 12, 31, 23, 59, 59);
-
-    private string ianaTimeZone = "Pacific/Auckland";
-    private int offset = 13; //time zone offset for NZ for the 'now' datetime
   }
 }

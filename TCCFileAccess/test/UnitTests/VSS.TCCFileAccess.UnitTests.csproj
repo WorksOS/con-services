@@ -31,13 +31,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="appsettings.json;log4nettest.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\..\src\VSS.TCCFileAccess.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\VSS.TCCFileAccess.csproj" />
+    <None Update="appsettings.json;log4nettest.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
