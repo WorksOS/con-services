@@ -29,7 +29,7 @@
     <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.7.*" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.11.*" />
-    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.*" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.0.3" />
   </ItemGroup>
 

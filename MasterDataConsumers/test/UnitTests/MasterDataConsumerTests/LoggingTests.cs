@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
         File.WriteAllText(logFileFullPath, string.Empty);
       }
 
-      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml", logPath);
+      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
