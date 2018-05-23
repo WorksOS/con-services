@@ -6,7 +6,7 @@ COPY . /build/
 ####### TODO run tests
 
 # Build 
-RUN build.sh
-RUN unittests.sh
+RUN /build/build.sh
+RUN /build/unittests.sh
 RUN /build/AcceptanceTests/scripts/deploy_linux.sh
 
