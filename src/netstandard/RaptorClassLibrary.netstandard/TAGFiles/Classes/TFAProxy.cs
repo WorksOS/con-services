@@ -46,7 +46,7 @@ namespace VSS.TRex.TAGFiles.Classes
                 return ValidationResult.BadRequest;
             }
 
-            // Todo This code can be refactored to suit needs
+
             TFARequest req = new TFARequest()
                              {
                                 radioSerial = radioSerial,
