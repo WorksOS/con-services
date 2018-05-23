@@ -26,9 +26,9 @@ node ('jenkinsslave-pod') {
             checkout scm
 	    docker.build("vss.projectservice:${fullVersion}", "-f Dockerfile .") 
 	    docker.build("vss.projectservice.tests:${fullVersion}", "-f Dockerfile.tests .")
-	    def label = "mypod-${UUID.randomUUID().toString()}"
+	    def label = "projectservice-${UUID.randomUUID().toString()}"
             def template = readFile "yaml/testing-pod.yaml"
-	    podTemplate(name: "vss.projectservice:${fullVersion}", label: label, yaml: template, namespace: "testing")
+	    podTemplate(name: label, label: label, yaml: template, namespace: "testing")
 		{
 		  node (label) {
 			container ("vss.projectservice:${fullVersion}")
