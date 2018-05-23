@@ -21,9 +21,9 @@ using VSS.TRex.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.SiteModels
 {
-    [Serializable]
+  [Serializable]
     public class SiteModel : ISiteModel
-    {
+  {
         [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
@@ -33,7 +33,7 @@ namespace VSS.TRex.SiteModels
         private const int kMajorVersion = 1;
         private const int kMinorVersion = 0;
 
-        public Guid ID = Guid.Empty;
+        public Guid ID { get; set; } = Guid.Empty;
 
         DateTime LastModifiedDate { get; set; } = DateTime.MinValue;
 
@@ -56,7 +56,7 @@ namespace VSS.TRex.SiteModels
         /// <summary>
         /// SiteModelExtent records the 3D extents of the data stored in the site model
         /// </summary>
-        public BoundingWorldExtent3D SiteModelExtent = BoundingWorldExtent3D.Inverted();
+        public BoundingWorldExtent3D SiteModelExtent { get; } = BoundingWorldExtent3D.Inverted();
 
         // ProofingRuns is the set of proofing runs that have been collected in this
         // site model
@@ -66,7 +66,12 @@ namespace VSS.TRex.SiteModels
         // that record how the cofigured target CCV and pass count settings on each
         // machine has changed over time.
         [NonSerialized]
-        public /*EfficientMachinesTargetValuesList*/ MachinesProductionEventLists MachinesTargetValues;
+        private /*EfficientMachinesTargetValuesList*/ MachinesProductionEventLists machinesTargetValues;
+        public /*EfficientMachinesTargetValuesList*/ MachinesProductionEventLists MachinesTargetValues
+        {
+          get => machinesTargetValues;
+          set => machinesTargetValues = value;
+        }
 
         private SiteModelDesignList siteModelDesigns = new SiteModelDesignList();
 

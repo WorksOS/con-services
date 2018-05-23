@@ -8,7 +8,7 @@ using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Displayers;
 using VSS.TRex.RequestStatistics;
-using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.Surfaces;
 using VSS.TRex.Types;
@@ -480,10 +480,10 @@ namespace VSS.TRex.Rendering.Executors
             }
 
             // Get the SiteModel for the request
-            SiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(DataModelID);
+            ISiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(DataModelID);
             if (SiteModel == null)
             {
-                throw new ArgumentException(string.Format("Unable to acquire site model instance for ID:{0}", DataModelID));
+                throw new ArgumentException($"Unable to acquire site model instance for ID:{DataModelID}");
             }
 
             BoundingWorldExtent3D SpatialExtents = SiteModel.GetAdjustedDataModelSpatialExtents(SurveyedSurfaceExclusionList);

@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.TRex.Interfaces;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
@@ -28,7 +29,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         /// <summary>
         /// Sitemodel representing the target sub grid tree
         /// </summary>
-        private SiteModel SiteModel;
+        private ISiteModel SiteModel;
 
         /// <summary>
         /// The subgrid tree the receives the subgrid information from the source subgrid tree
@@ -57,7 +58,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         /// <param name="siteModel">The sitemodel representing the target subgrid tree</param>
         /// <param name="target">The subgrid tree into which the data from the source subgrid tree is integrated</param>
         /// <param name="storageProxy">The storage proxy providing storage semantics for persisting integration results</param>
-        public SubGridIntegrator(ServerSubGridTree source, SiteModel siteModel, ServerSubGridTree target, IStorageProxy storageProxy) : this()
+        public SubGridIntegrator(ServerSubGridTree source, ISiteModel siteModel, ServerSubGridTree target, IStorageProxy storageProxy) : this()
         {
             Source = source;
             SiteModel = siteModel;

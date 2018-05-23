@@ -37,6 +37,7 @@ using VSS.TRex.Servers.Client;
 using VSS.TRex.Services.Designs;
 using VSS.TRex.Services.Surfaces;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Surfaces;
 using VSS.TRex.TAGFiles.Classes;
@@ -79,7 +80,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
         {
             // Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
             // SiteModel siteModel = GenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
-            SiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+            ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
 
             if (siteModel == null)
             {
@@ -127,7 +128,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 
         private BoundingWorldExtent3D GetZoomAllExtents()
         {
-            SiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+            ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
 
             if (siteModel != null)
             {
@@ -677,7 +678,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
         {
             // Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
             // SiteModel siteModel = GenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
-            SiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+            ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
 
             try
             {
@@ -736,7 +737,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
         /// </summary>
         /// <param name="siteModel"></param>
         /// <returns></returns>
-        private Guid[] GetSurveyedSurfaceExclusionList(SiteModel siteModel) => (siteModel.SurveyedSurfaces == null || chkIncludeSurveyedSurfaces.Checked) ? new Guid[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray();
+        private Guid[] GetSurveyedSurfaceExclusionList(ISiteModel siteModel) => (siteModel.SurveyedSurfaces == null || chkIncludeSurveyedSurfaces.Checked) ? new Guid[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray();
 
         private void btnCalculateVolumes_Click(object sender, EventArgs e)
         {

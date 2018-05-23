@@ -31,12 +31,12 @@ namespace VSS.TRex.SiteModels
         /// <returns></returns>
         public static ISiteModels Instance() => instance;
 
-        public SiteModel GetSiteModel(Guid ID) => GetSiteModel(ImmutableStorageProxy, ID, false);
-        public SiteModel GetSiteModel(Guid ID, bool CreateIfNotExist) => GetSiteModel(ImmutableStorageProxy, ID, CreateIfNotExist);
+        public ISiteModel GetSiteModel(Guid ID) => GetSiteModel(ImmutableStorageProxy, ID, false);
+        public ISiteModel GetSiteModel(Guid ID, bool CreateIfNotExist) => GetSiteModel(ImmutableStorageProxy, ID, CreateIfNotExist);
 
-        public SiteModel GetSiteModel(IStorageProxy storageProxy, Guid ID) => GetSiteModel(storageProxy, ID, false);
+        public ISiteModel GetSiteModel(IStorageProxy storageProxy, Guid ID) => GetSiteModel(storageProxy, ID, false);
 
-        public SiteModel GetSiteModel(IStorageProxy storageProxy, Guid ID, bool CreateIfNotExist)
+        public ISiteModel GetSiteModel(IStorageProxy storageProxy, Guid ID, bool CreateIfNotExist)
         {
             SiteModel result = new SiteModel(ID);
 

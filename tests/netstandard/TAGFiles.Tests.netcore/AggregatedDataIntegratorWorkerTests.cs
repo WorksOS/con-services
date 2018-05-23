@@ -37,11 +37,13 @@ public class TAGFileTestsDIFixture : IDisposable
         moqStorageProxyFactory.Setup(mk => mk.Storage(StorageMutability.Immutable)).Returns(moqStorageProxy.Object);
         moqStorageProxyFactory.Setup(mk => mk.Storage(StorageMutability.Mutable)).Returns(moqStorageProxy.Object);
 
+        ISiteModel mockedSiteModel = new SiteModel(NewSiteModelGuid);
+
         var moqSiteModels = new Mock<ISiteModels>();
-        moqSiteModels.Setup(mk => mk.GetSiteModel(NewSiteModelGuid)).Returns(new SiteModel(NewSiteModelGuid));
+        moqSiteModels.Setup(mk => mk.GetSiteModel(NewSiteModelGuid)).Returns(mockedSiteModel);
 
         // Mock the new sitemodel creation API to return jsut a new sitemodel
-        moqSiteModels.Setup(mk => mk.GetSiteModel(moqStorageProxy.Object, NewSiteModelGuid, true)).Returns(new SiteModel(NewSiteModelGuid));
+        moqSiteModels.Setup(mk => mk.GetSiteModel(moqStorageProxy.Object, NewSiteModelGuid, true)).Returns(mockedSiteModel);
 
         DIBuilder
           .New()

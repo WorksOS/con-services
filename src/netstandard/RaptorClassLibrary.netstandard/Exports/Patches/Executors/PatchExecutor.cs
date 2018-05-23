@@ -11,6 +11,7 @@ using VSS.TRex.Pipelines;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
 using VSS.TRex.RequestStatistics;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.Surfaces; 
 using VSS.TRex.Types;
@@ -122,7 +123,7 @@ namespace VSS.TRex.Rendering.Patches.Executors
       }
 
       // Get the SiteModel for the request
-      SiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(DataModelID);
+      ISiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(DataModelID);
       if (SiteModel == null)
       {
         throw new ArgumentException($"Unable to acquire site model instance for ID:{DataModelID}");
