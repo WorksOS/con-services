@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Exceptions;
 using VSS.Log4Net.Extensions;
+using VSS.MasterData.Models.FIlters;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
@@ -28,8 +29,7 @@ namespace VSS.WebApi.Common.UnitTests
 
       string loggerRepoName = "UnitTestLogTest";
       Log4NetProvider.RepoName = loggerRepoName;
-      var logPath = Directory.GetCurrentDirectory();
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
+      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
 
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
