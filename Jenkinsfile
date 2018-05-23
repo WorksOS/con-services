@@ -26,12 +26,15 @@ node ('jenkinsslave-pod') {
             checkout scm
 	    docker.build("vss.projectservice:${fullVersion}", "-f Dockerfile .") 
 	    docker.build("vss.projectservice.tests:${fullVersion}", "-f Dockerfile.tests .")
+	    def containerName = "vss.projectservice:${fullVersion}"
+	    def testContainerName = "vss.projectservice.tests:${fullVersion}"
+
 	    def label = "projectservice-${UUID.randomUUID().toString()}"
             def template = readFile "yaml/testing-pod.yaml"
-	    podTemplate(name: label, label: label, yaml: template, namespace: "testing", containers: [containerTemplate(name: 'projectservice', image: 'vss.projectservice:${fullVersion}')])
+	    podTemplate(name: label, label: label, yaml: template, namespace: "testing", containers: [containerTemplate(name: 'projectservice', image: containerName)])
 		{
 		  node (label) {
-			container ("vss.projectservice.tests:${fullVersion}")
+			container (testContainerName)
 			{
 			 sh '/app/runtests.sh'
 			}
