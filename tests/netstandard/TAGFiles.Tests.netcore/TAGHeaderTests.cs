@@ -25,8 +25,7 @@ namespace VSS.TRex.TAGFiles.Tests
         [Fact]
         public void Test_TAGHeader_Read()
         {
-            TAGReader reader = new TAGReader(new FileStream(TAGTestConsts.TestDataFilePath() + "TAGFiles\\TestTAGFile-TAG-Header-Read.tag", FileMode.Open));
-            //TAGReader reader = new TAGReader(new FileStream(TagTestConsts.TestTAGFileName(), FileMode.Open));
+            TAGReader reader = new TAGReader(new FileStream(Path.Combine("TestData", "TAGFiles", "TestTAGFile-TAG-Header-Read.tag"), FileMode.Open));
 
             Assert.NotNull(reader);
 

@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.DI;
 using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Implementations.Framework;
+using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 
@@ -13,14 +15,16 @@ namespace TRexServerApplication
   {
     private static void DependencyInjection()
     {
-      DIBuilder.New()
+      DIBuilder
+        .New()
         .AddLogging()
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
-        .Add(collection =>
-        {
-          // The renderer factory that allows tile rendering services access Bitmap etc platform dependent constructs
-          collection.AddSingleton<IRenderingFactory>(new RenderingFactory());
-        }).Complete();
+
+        // The renderer factory that allows tile rendering services access Bitmap etc platform dependent constructs
+        .Add(x => x.AddSingleton<IRenderingFactory>(new RenderingFactory()))
+
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels()))
+        .Complete();
     }
 
     /// <summary>

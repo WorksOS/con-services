@@ -2,6 +2,8 @@
 using System.Windows.Forms;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.DI;
+using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 
@@ -11,7 +13,12 @@ namespace TRexPSNodeServer
   {
     private static void DependencyInjection()
     {
-      DIBuilder.New().AddLogging().Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory())).Complete();
+      DIBuilder
+        .New()
+        .AddLogging()
+        .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels()))
+        .Complete();
     }
 
     /// <summary>

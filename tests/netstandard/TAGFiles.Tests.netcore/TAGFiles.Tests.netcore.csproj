@@ -24,4 +24,22 @@
     <ProjectReference Include="..\Tests.Common\Tests.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="TestData\TAGFiles\TestTAGFile-TAG-Header-Read.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TAGFiles\TestTAGFile-TAGFile-Read-File.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TAGFiles\TestTAGFile-TAGFile-Read-Stream.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TAGFiles\TestTAGFile.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TAGFiles\TestTAGFile3.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -28,7 +28,7 @@ namespace VSS.TRex.Executors.Tests
         {
             TAGFileConverter converter = new TAGFileConverter();
 
-            Assert.True(converter.Execute(new FileStream(TAGTestConsts.TestDataFilePath() + "TAGFiles\\TestTAGFile.tag", FileMode.Open, FileAccess.Read)),
+            Assert.True(converter.Execute(new FileStream(Path.Combine("TestData", "TAGFiles", "TestTAGFile.tag"), FileMode.Open, FileAccess.Read)),
                 "Converter execute returned false");
 
             Assert.True(converter.Machine != null &&

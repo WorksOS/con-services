@@ -5,6 +5,7 @@ using VSS.TRex.DI;
 using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Implementations.Core2;
 using VSS.TRex.Servers.Client;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 
@@ -17,11 +18,12 @@ namespace VSS.TRex.Server.Application
         DIBuilder.New()
         .AddLogging()
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
-        .Add(collection =>
-        {
-          // The renderer factory that allows tile rendering services access Bitmap etc platform dependent constructs
-          collection.AddSingleton<IRenderingFactory>(new RenderingFactory());
-        }).Complete();
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
+
+        // The renderer factory that allows tile rendering services access Bitmap etc platform dependent constructs
+        .Add(x => x.AddSingleton<IRenderingFactory>(new RenderingFactory()))
+
+        .Complete();
     }
 
     static void Main(string[] args)

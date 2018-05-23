@@ -1,0 +1,23 @@
+﻿using System;
+using VSS.TRex.Interfaces;
+
+namespace VSS.TRex.SiteModels.Interfaces
+{
+  /// <summary>
+  /// Interface for the SiteModels class in TRex
+  /// </summary>
+  public interface ISiteModels
+  {
+    SiteModel GetSiteModel(Guid ID);
+    SiteModel GetSiteModel(Guid ID, bool CreateIfNotExist);
+    SiteModel GetSiteModel(IStorageProxy storageProxy, Guid ID);
+    SiteModel GetSiteModel(IStorageProxy storageProxy, Guid ID, bool CreateIfNotExist);
+
+    /// <summary>
+    /// Handles the situation when TAG file processing or some other activity has modified the attributes of a site model
+    /// requiring the sitemodel to be reloaded
+    /// </summary>
+    /// <param name="SiteModelID"></param>
+    void SiteModelAttributesHaveChanged(Guid SiteModelID);
+  }
+}

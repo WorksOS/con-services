@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.DI;
 using VSS.TRex.Servers.Compute;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 
@@ -11,7 +12,12 @@ namespace VSS.TRex.Server.PSNode
   {
     private static void DependencyInjection()
     {
-      DIBuilder.New().AddLogging().Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory())).Complete();
+      DIBuilder
+        .New()
+        .AddLogging()
+        .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
+        .Complete();
     }
 
     static void Main(string[] args)
