@@ -20,6 +20,7 @@ namespace VSS.TRex.Tests.netcore.TestFixtures
 
         var moqStorageProxyFactory = new Mock<IStorageProxyFactory>();
         moqStorageProxyFactory.Setup(mk => mk.Storage(StorageMutability.Immutable)).Returns(moqStorageProxy.Object);
+        moqStorageProxyFactory.Setup(mk => mk.Storage(StorageMutability.Mutable)).Returns(moqStorageProxy.Object);
 
         DIBuilder
           .New()

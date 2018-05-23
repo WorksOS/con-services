@@ -62,8 +62,11 @@ namespace VSS.TRex.TAGFiles.Executors
                     if (result == ValidationResult.Valid) // If OK add to process queue
                     {
                         // First archive the tagfile
-                        Log.LogInformation($"Archiving tagfile:{tagFileName}, ProjectID:{td.projectId}");
-                        TagfileReposity.ArchiveTagfile(td); // todo implement
+                        if (TRexConfig.EnableTagfileArchiving)
+                        {
+                            Log.LogInformation($"Archiving tagfile:{tagFileName}, ProjectID:{td.projectId}");
+                            TagfileReposity.ArchiveTagfile(td); 
+                        }
 
                         Log.LogInformation($"Submitting tagfile to TagfileBufferQueue. ProjectID:{td.projectId}, AssetID:{td.assetId}, Tagfile:{tagFileName}");
                         TAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(tagFileName, td.projectId, td.assetId);

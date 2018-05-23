@@ -11,6 +11,7 @@ using VSS.TRex.Pipelines;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
 using VSS.TRex.RequestStatistics;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.Surfaces; 
 using VSS.TRex.Types;
@@ -122,7 +123,7 @@ namespace VSS.TRex.Rendering.Patches.Executors
       }
 
       // Get the SiteModel for the request
-      SiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(DataModelID);
+      ISiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(DataModelID);
       if (SiteModel == null)
       {
         throw new ArgumentException($"Unable to acquire site model instance for ID:{DataModelID}");
@@ -137,7 +138,7 @@ namespace VSS.TRex.Rendering.Patches.Executors
       }
 
       // Get the current production data existance map from the sitemodel
-      ProdDataExistenceMap = SiteModel.GetProductionDataExistanceMap(SiteModels.SiteModels.ImmutableStorageProxy);
+      ProdDataExistenceMap = SiteModel.GetProductionDataExistanceMap(SiteModels.SiteModels.Instance().ImmutableStorageProxy);
 
       if (ProdDataExistenceMap == null)
       {
@@ -306,7 +307,7 @@ namespace VSS.TRex.Rendering.Patches.Executors
           ConfigurePipeline(/*out BoundingIntegerExtent2D CellExtents*/);
 
           // Provide the pipeline with a customised request analyser configured to return a specific page of subgrids
-          PipeLine.RequestAnalyser = new RequestAnalyser()
+          PipeLine.RequestAnalyser = new RequestAnalyser(PipeLine, SpatialExtents)
           {
             SinglePageRequestNumber = DataPatchPageNumber,
             SinglePageRequestSize = DataPatchPageSize,

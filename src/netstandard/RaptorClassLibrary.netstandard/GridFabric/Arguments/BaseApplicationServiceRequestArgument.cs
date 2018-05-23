@@ -21,8 +21,14 @@ namespace VSS.TRex.GridFabric.Arguments
     /// </summary>
     public Guid DataModelID { get; set; }
 
+    /// <summary>
+    /// The set of filters to be applied to the requested subgrids
+    /// </summary>
     public FilterSet Filters { get; set; }
 
+    /// <summary>
+    /// The design to be used in cases of cut/fill subgrid requests
+    /// </summary>
     public Guid CutFillDesignID { get; set; } = Guid.Empty;
 
     // TODO  LiftBuildSettings  :TICLiftBuildSettings;

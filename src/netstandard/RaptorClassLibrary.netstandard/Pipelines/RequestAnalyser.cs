@@ -42,7 +42,9 @@ namespace VSS.TRex.Pipelines
     public BoundingWorldExtent3D WorldExtents = BoundingWorldExtent3D.Inverted();
 
     public long TotalNumberOfSubgridsAnalysed;
+    public long TotalNumberOfSubgridsToRequest;
     public long TotalNumberOfCandidateSubgrids;
+
     protected bool ScanningFullWorldExtent;
 
     /// <summary>
@@ -92,6 +94,10 @@ namespace VSS.TRex.Pipelines
     /// </summary>
     protected void PerformScanning()
     {
+      TotalNumberOfSubgridsToRequest = 0;
+      TotalNumberOfSubgridsAnalysed = 0;
+      TotalNumberOfCandidateSubgrids = 0;
+
       BoundingWorldExtent3D FilterRestriction = new BoundingWorldExtent3D();
 
       // Compute a filter spatial restriction on the world extents of the request
@@ -289,14 +295,14 @@ namespace VSS.TRex.Pipelines
               if (CountingRequestsOnly)
                 continue;
 
-              if (SubmitSinglePageOfRequests &&
-                  ((TotalNumberOfSubgridsAnalysed - 1) / SinglePageRequestSize != SinglePageRequestNumber))
-                {
-                  if ((TotalNumberOfSubgridsAnalysed - 1) / SinglePageRequestSize > SinglePageRequestNumber)
-                    return true;
-                  else
-                    continue;
-                }
+              if (SubmitSinglePageOfRequests)
+              {
+                if ((TotalNumberOfSubgridsAnalysed - 1) / SinglePageRequestSize < SinglePageRequestNumber)
+                  continue;
+
+                if ((TotalNumberOfSubgridsAnalysed - 1) / SinglePageRequestSize > SinglePageRequestNumber)
+                  return false; // Returning false halts scanning of subgrids
+              }
 
               // Add the leaf subgrid identitied by the address below, along with the production data and surveyed surface
               // flags to the subgrid tree being used to aggregate all the subgrids that need to be queried for the request
@@ -305,6 +311,8 @@ namespace VSS.TRex.Pipelines
               //                        (CastSubGrid.OriginY + J) << SubGridTree.SubGridIndexBitsPerLevel,
               //                        Owner.ProdDataExistenceMap.GetCell(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J),
               //                        Owner.IncludeSurveyedSurfaceInformation);
+
+              TotalNumberOfSubgridsToRequest++;
 
               // Set the ProdDataMask for the production data
               if (ProdDataSubGrid != null && ProdDataSubGrid.Bits.BitSet(I, J))

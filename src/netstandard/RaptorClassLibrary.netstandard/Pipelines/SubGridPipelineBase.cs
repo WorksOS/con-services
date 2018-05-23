@@ -152,7 +152,7 @@ namespace VSS.TRex.Pipelines
         /// </summary>
         public void SubgridsProcessed(long numProcessed)
         {
-            if (Interlocked.Add(ref SubgridsRemainingToProcess, numProcessed) <= 0)
+            if (Interlocked.Add(ref SubgridsRemainingToProcess, -numProcessed) <= 0)
             {
                 AllSubgridsProcessed();
             }
@@ -216,11 +216,11 @@ namespace VSS.TRex.Pipelines
                 return false;
             }
 
-            SubgridsRemainingToProcess = analyser.TotalNumberOfSubgridsAnalysed;
+            SubgridsRemainingToProcess = analyser.TotalNumberOfSubgridsToRequest;
 
-            Log.LogInformation($"Request analyser counts {analyser.TotalNumberOfSubgridsAnalysed} subgrids to be requested, compared to {OverallExistenceMap.CountBits()} subgrids in production existance map");
+            Log.LogInformation($"Request analyser counts {analyser.TotalNumberOfSubgridsToRequest} subgrids to be requested, compared to {OverallExistenceMap.CountBits()} subgrids in production existance map");
 
-            if (analyser.TotalNumberOfSubgridsAnalysed == 0)
+            if (analyser.TotalNumberOfSubgridsToRequest == 0)
             {
                 // There are no subgrids to be requested, leave quietly
                 Log.LogInformation("No subgrids analysed from request to be submitted to processing engine");
@@ -228,7 +228,7 @@ namespace VSS.TRex.Pipelines
                 return false;
             }
 
-            Log.LogInformation($"START: Request for {analyser.TotalNumberOfSubgridsAnalysed} subgrids");
+            Log.LogInformation($"START: Request for {analyser.TotalNumberOfSubgridsToRequest} subgrids");
 
             // Send the subgrid request mask to the grid fabric layer for processing
             TSubGridRequestor gridFabricRequest = new TSubGridRequestor()
@@ -247,7 +247,7 @@ namespace VSS.TRex.Pipelines
 
             ICollection<TSubGridRequestsResponse> Responses = gridFabricRequest.Execute();
 
-            Log.LogInformation($"COMPLETED: Request for {analyser.TotalNumberOfSubgridsAnalysed } subgrids");
+            Log.LogInformation($"COMPLETED: Request for {analyser.TotalNumberOfSubgridsToRequest } subgrids");
 
             return Responses.All(x => x.ResponseCode == SubGridRequestsResponseResult.OK);
         }

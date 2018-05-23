@@ -4,6 +4,7 @@ using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Types;
 using VSS.TRex.RequestStatistics;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Utilities;
 using VSS.TRex.Volumes.GridFabric.Responses;
@@ -205,7 +206,7 @@ namespace VSS.TRex.Volumes.Executors
                         return VolumesResult;
 
                     // Obtain the site model context for the request
-                    SiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(SiteModelID);
+                    ISiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(SiteModelID);
 
                     if (SiteModel == null)
                         return VolumesResult;

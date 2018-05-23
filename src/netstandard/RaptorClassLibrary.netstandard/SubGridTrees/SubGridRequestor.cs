@@ -6,6 +6,7 @@ using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Interfaces;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Surfaces;
@@ -24,7 +25,7 @@ namespace VSS.TRex.SubGridTrees
         private SubGridRetriever retriever;
 
         [NonSerialized]
-        private SiteModel SiteModel;
+        private ISiteModel SiteModel;
 
         [NonSerialized]
         private IStorageProxy StorageProxy;
@@ -88,7 +89,7 @@ namespace VSS.TRex.SubGridTrees
         /// Constructor that accepts the common parameters around a set of subgrids the requestor will be asked to process
         /// and initialises the requestor state ready to start processing indivudla subgrid requests.
         /// </summary>
-        public SubGridRequestor(SiteModel sitemodel,
+        public SubGridRequestor(ISiteModel sitemodel,
                                 IStorageProxy storageProxy,
                                 CombinedFilter filter,
                                 bool hasOverrideSpatialCellRestriction,

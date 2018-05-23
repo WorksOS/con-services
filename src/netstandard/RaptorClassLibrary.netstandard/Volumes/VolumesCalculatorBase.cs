@@ -10,6 +10,7 @@ using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Interfaces;
 using VSS.TRex.Pipelines;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.Surfaces;
 using VSS.TRex.Types;
@@ -35,7 +36,7 @@ namespace VSS.TRex.Volumes
         /// <summary>
         /// The Sitemodel from which the volume is being calculated
         /// </summary>
-        public SiteModel SiteModel { get; set; }
+        public ISiteModel SiteModel { get; set; }
 
         /// <summary>
         /// The volume computation method to use when calculating volume information
