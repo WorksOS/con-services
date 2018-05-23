@@ -9,7 +9,6 @@ WORKDIR /build
 # Build 
 
 RUN chmod 775 *.sh
-RUN ["/bin/bash", "rm_cr.sh"]
 
 RUN ["/bin/bash", "build.sh"]
 RUN ["/bin/bash", "unittests.sh"]
