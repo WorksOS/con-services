@@ -6,7 +6,7 @@ COPY . /build/
 ####### TODO run tests
 
 # Build 
-RUN dotnet test /build/VSS.Visionlink.Project.sln -v n 
-RUN dotnet publish /build/VSS.Visionlink.Project.sln --output /artifacts -v n
+RUN build.sh
+RUN unittests.sh
 RUN /build/AcceptanceTests/scripts/deploy_linux.sh
 
