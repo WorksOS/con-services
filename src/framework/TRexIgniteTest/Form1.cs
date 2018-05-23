@@ -22,6 +22,8 @@ using VSS.TRex.Analytics.Models;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Storage;
 using VSS.TRex.Executors;
+using VSS.TRex.Exports.Patches;
+using VSS.TRex.Exports.Patches.GridFabric;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Affinity;
@@ -1005,5 +1007,27 @@ namespace VSS.TRex.IgnitePOC.TestApp
 
 
         }
+
+      /// <summary>
+      /// Test a request for patches.
+      /// 1. Make the first request to get the total number of pageas as well as the first 10 seubgrids
+      /// </summary>
+      /// <param name="sender"></param>
+      /// <param name="e"></param>
+    private void button7_Click(object sender, EventArgs e)
+    {
+      PatchRequestServer server = new PatchRequestServer();
+
+      PatchResult result = server.Execute(new PatchRequestArgument()
+      {
+        DataModelID = ID(),
+        DataPatchNumber = 0,
+        DataPatchSize = 10,
+        Mode = DisplayMode.Height,
+        Filters = new FilterSet(new [] {new CombinedFilter() })
+      });
+
+      MessageBox.Show($"Patch response: Total pages required: {result.TotalNumberOfPagesToCoverFilteredData}, PageSize: {result.MaxPatchSize}, Page number {result.PatchNumber}, Number of subgrids in patch: {result.Patch.Length}");
     }
+  }
 }

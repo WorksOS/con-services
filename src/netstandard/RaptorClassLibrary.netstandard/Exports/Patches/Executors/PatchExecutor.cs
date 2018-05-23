@@ -307,7 +307,7 @@ namespace VSS.TRex.Rendering.Patches.Executors
           ConfigurePipeline(/*out BoundingIntegerExtent2D CellExtents*/);
 
           // Provide the pipeline with a customised request analyser configured to return a specific page of subgrids
-          PipeLine.RequestAnalyser = new RequestAnalyser()
+          PipeLine.RequestAnalyser = new RequestAnalyser(PipeLine, SpatialExtents)
           {
             SinglePageRequestNumber = DataPatchPageNumber,
             SinglePageRequestSize = DataPatchPageSize,

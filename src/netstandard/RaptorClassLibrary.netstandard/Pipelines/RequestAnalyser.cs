@@ -293,7 +293,7 @@ namespace VSS.TRex.Pipelines
                   ((TotalNumberOfSubgridsAnalysed - 1) / SinglePageRequestSize != SinglePageRequestNumber))
                 {
                   if ((TotalNumberOfSubgridsAnalysed - 1) / SinglePageRequestSize > SinglePageRequestNumber)
-                    return true;
+                    return false; // Returning false halts scanning of subgrids
                   else
                     continue;
                 }

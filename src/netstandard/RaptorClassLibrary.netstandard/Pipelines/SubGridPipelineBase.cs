@@ -152,7 +152,7 @@ namespace VSS.TRex.Pipelines
         /// </summary>
         public void SubgridsProcessed(long numProcessed)
         {
-            if (Interlocked.Add(ref SubgridsRemainingToProcess, numProcessed) <= 0)
+            if (Interlocked.Add(ref SubgridsRemainingToProcess, -numProcessed) <= 0)
             {
                 AllSubgridsProcessed();
             }
