@@ -38,7 +38,13 @@ namespace VSS.TRex.TAGFiles.Classes
             // dont waste the services time if you dont have any details
             //if (tccOrgId == string.Empty && radioType == string.Empty)
              //   return ValidationResult.BadRequest;
-            Log.LogInformation($"#Info# Details passed to TFA servce. ProjectID:{projectId}, AssetId:{assetId}, TCCOrgId:{tccOrgId}, radioSerial:{radioSerial}, radioType:{radioType}, lat:{lat}, lon:{lon}, DateTime:{timeOfPosition}");
+            Log.LogInformation($"Details passed to TFA servce. ProjectID:{projectId}, AssetId:{assetId}, TCCOrgId:{tccOrgId}, radioSerial:{radioSerial}, radioType:{radioType}, lat:{lat}, lon:{lon}, DateTime:{timeOfPosition}");
+
+            if (radioSerial == String.Empty && tccOrgId == Guid.Empty && submittedProjectId == Guid.Empty)
+            {
+                Log.LogWarning($"Must have either a valid TCCOrgID or RadioSerialNo or ProjectID");
+                return ValidationResult.BadRequest;
+            }
 
             // Todo This code can be refactored to suit needs
             TFARequest req = new TFARequest()
@@ -54,7 +60,7 @@ namespace VSS.TRex.TAGFiles.Classes
 
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(req);
 
-            // Update port # in the following line.
+            // This part will need to be refactored if you want to mock it
             string URL = TRexConfig.TFAServiceURL + TRexConfig.TFAServiceGetProjectID;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URL);
             request.Method = "POST";
