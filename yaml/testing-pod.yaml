@@ -4,8 +4,6 @@ metadata:
   name: projectservice-testing
 spec:
 
-  restartPolicy: Never
-
   containers:
 
   - name: mysql-container
