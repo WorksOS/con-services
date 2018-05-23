@@ -71,7 +71,7 @@
             this.btnZoomAll = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-      		this.btnGetMetaData = new System.Windows.Forms.Button();
+      			this.btnGetMetaData = new System.Windows.Forms.Button();
             this.btnCustom = new System.Windows.Forms.Button();
             this.btnCopyGuid = new System.Windows.Forms.Button();
             this.btnGenGuid3 = new System.Windows.Forms.Button();
@@ -87,7 +87,8 @@
             this.label7 = new System.Windows.Forms.Label();
             this.edtAssetID = new System.Windows.Forms.TextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-			this.TemperatureSummaryButton = new System.Windows.Forms.Button();
+	          this.button7 = new System.Windows.Forms.Button();
+						this.TemperatureSummaryButton = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -525,8 +526,8 @@
             // 
             // tabPage2
             // 
-			this.tabPage2.Controls.Add(this.TemperatureSummaryButton);
-			this.tabPage2.Controls.Add(this.button7);
+						this.tabPage2.Controls.Add(this.TemperatureSummaryButton);
+						this.tabPage2.Controls.Add(this.button7);
             this.tabPage2.Controls.Add(this.button6);
             this.tabPage2.Controls.Add(this.btnCalcAll);
             this.tabPage2.Controls.Add(this.btnMultiThreadTest);
@@ -800,7 +801,7 @@
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button6;
-    private System.Windows.Forms.Button btnSubmitTagFile;
+				private System.Windows.Forms.Button btnSubmitTagFile;
         private System.Windows.Forms.Button btnCalcAll;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
@@ -823,7 +824,8 @@
         private System.Windows.Forms.Button btnGenGUID;
         private System.Windows.Forms.Button btnCustom;
         private System.Windows.Forms.Button btnGetMetaData;
-		private System.Windows.Forms.Button TemperatureSummaryButton;
-    }
+				private System.Windows.Forms.Button button7;
+				private System.Windows.Forms.Button TemperatureSummaryButton;
+	}
 }
 
