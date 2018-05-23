@@ -24,6 +24,7 @@ node ('jenkinsslave-pod') {
     def fullVersion = versionNumber + suffix
     stage('Build Solution') {
             checkout scm
-            docker.build("vss.projectservice:${fullVersion}")
+	    docker.build("vss.projectservice:${fullVersion}", "-f Dockerfile") 
+	    docker.build("vss.projectservice.tests:${fullVersion}", "-f Dockerfile.tests") 
     }
 }
