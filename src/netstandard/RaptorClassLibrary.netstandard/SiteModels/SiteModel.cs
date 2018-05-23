@@ -56,7 +56,7 @@ namespace VSS.TRex.SiteModels
         /// <summary>
         /// SiteModelExtent records the 3D extents of the data stored in the site model
         /// </summary>
-        public BoundingWorldExtent3D SiteModelExtent { get; set; } = BoundingWorldExtent3D.Inverted();
+        public BoundingWorldExtent3D SiteModelExtent { get; } = BoundingWorldExtent3D.Inverted();
 
         // ProofingRuns is the set of proofing runs that have been collected in this
         // site model
@@ -525,7 +525,7 @@ namespace VSS.TRex.SiteModels
             }
 
             // Start with the data model extents
-            BoundingWorldExtent3D SpatialExtents = SiteModelExtent;
+          BoundingWorldExtent3D SpatialExtents = new BoundingWorldExtent3D(SiteModelExtent);
 
             if (SurveyedSurfaceExclusionList == null || SurveyedSurfaceExclusionList.Length == 0)
             {

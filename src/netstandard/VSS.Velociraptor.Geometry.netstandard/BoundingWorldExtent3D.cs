@@ -14,7 +14,7 @@ namespace VSS.TRex.Geometry
     /// within that extent
     /// </summary>
     [Serializable]
-    public struct BoundingWorldExtent3D : IEquatable<BoundingWorldExtent3D>
+    public class BoundingWorldExtent3D : IEquatable<BoundingWorldExtent3D>
     {
         /// <summary>
         /// The Min/Max X/Y/Z values describing the 3D bounding extent
@@ -27,10 +27,22 @@ namespace VSS.TRex.Geometry
         public double Area => (MaxX - MinX) * (MaxY - MinY);
 
         /// <summary>
-        /// Assign another instance to this instance
+        /// Default no-arg constructor
         /// </summary>
-        /// <param name="source"></param>
-        public void Assign(BoundingWorldExtent3D source)
+        public BoundingWorldExtent3D()
+        {
+        }
+
+      public BoundingWorldExtent3D(BoundingWorldExtent3D source)
+      {
+        Assign(source);
+      }
+
+    /// <summary>
+    /// Assign another instance to this instance
+    /// </summary>
+    /// <param name="source"></param>
+    public void Assign(BoundingWorldExtent3D source)
         {
             MinX = source.MinX;
             MinY = source.MinY;
@@ -46,9 +58,7 @@ namespace VSS.TRex.Geometry
         /// <returns></returns>
         public override string ToString()
         {
-            return string.Format("MinX: {0}, MaxX:{1}, MinY:{2}, MaxY:{3}, MinZ: {4}, MaxZ:{5}",
-                           MinX, MaxX, MinY, MaxY, MinZ, MaxZ);
-
+            return $"MinX: {MinX}, MaxX:{MaxX}, MinY:{MinY}, MaxY:{MaxY}, MinZ: {MinZ}, MaxZ:{MaxZ}";
         }
 
         /// <summary>

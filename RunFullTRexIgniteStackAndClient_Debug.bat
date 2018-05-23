@@ -9,6 +9,6 @@ timeout 7
 start C:\Dev\VSS.TRex\src\framework\TRexIgniteTest\bin\debug\TRexIgniteTest.exe
 timeout 7
 start C:\Dev\VSS.TRex\src\framework\TRexGridActivator\bin\debug\TRexGridActivator.exe
-dotnet C:\Dev\VSS.TRex\src\tools\VSS.TRex.Service.Deployer\bin\Debug\netcoreapp2.0\VSS.TRex.Service.Deployer.dll
+rem dotnet C:\Dev\VSS.TRex\src\tools\VSS.TRex.Service.Deployer\bin\Debug\netcoreapp2.0\VSS.TRex.Service.Deployer.dll
 
  

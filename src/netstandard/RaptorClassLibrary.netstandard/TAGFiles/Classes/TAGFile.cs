@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.TAGFiles.Classes.Sinks;
 using VSS.TRex.TAGFiles.Types;
 
@@ -112,6 +113,9 @@ namespace VSS.TRex.TAGFiles.Classes
 {
     public class TAGFile
     {
+      private static ILogger Log = Logging.Logger.CreateLogger<TAGFile>();
+
+
         private TAGHeader Header = new TAGHeader();
 
         private TAGDictionary Dictionary { get; set; } = new TAGDictionary();
@@ -142,10 +146,9 @@ namespace VSS.TRex.TAGFiles.Classes
                 {
                     Header.Read(reader);
                 }
-                catch // (Exception E)
+                catch (Exception E)
                 {
-                    // TODO add when logging available
-                    // SIGLogMessage.Publish(Self, Format('Invalid tagfile. Exception in TTagFile.ReadStream - FHeader.LoadFromStream: %s', [E.Message]), slmcWarning);
+                    Log.LogWarning($"Invalid tagfile. Exception in TTagFile.ReadStream - FHeader.LoadFromStream: {E}");
                     return TAGReadResult.InvalidDictionary;
                 }
 
@@ -173,10 +176,9 @@ namespace VSS.TRex.TAGFiles.Classes
                         DataEndPos = reader.GetSize();
                     }
                 }
-                catch // (Exception E)
+                catch (Exception E)
                 {
-                    // TODO when logging is available
-                    //SIGLogMessage.Publish(Self, Format('Exception in TagFile.ReadFile: %s', [E.Message]), slmcDebug);
+                    Log.LogWarning($"Exception in TagFile.ReadFile: {E}");
                     return TAGReadResult.InvalidDictionary;
                 }
 
@@ -251,10 +253,9 @@ namespace VSS.TRex.TAGFiles.Classes
                                 break;
                         }
                     }
-                    catch // (Exception E)
+                    catch (Exception E)
                     {
-                        // TODO add when logging is available
-                        //SIGLogMessage.PublishNoODS(Self, Format('Exception in TagFile.ReadFile while reading field value: %s', [E.Message]), E, slmcException);
+                        Log.LogError($"Exception in TagFile.ReadFile while reading field value: {E}");
                         return TAGReadResult.InvalidValue;
                     }
                 }
@@ -276,8 +277,7 @@ namespace VSS.TRex.TAGFiles.Classes
             {
                 if (E is IOException)
                 {
-                    // TODO add then loggin available
-                    // SIGLogMessage.Publish(Self, Format('Exception in TagFile.ReadFile: %s', [E.Message]), slmcDebug);
+                    Log.LogDebug($"Exception in TagFile.ReadFile: {E}");
                     return TAGReadResult.CouldNotOpenFile;
                 }
 
