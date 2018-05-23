@@ -24,10 +24,10 @@ node ('jenkinsslave-pod') {
     def fullVersion = versionNumber + suffix
     stage('Build Solution') {
             checkout scm
-	    docker.build("vss.projectservice:${fullVersion}", "-f Dockerfile .") 
-	    docker.build("vss.projectservice.tests:${fullVersion}", "-f Dockerfile.tests .")
-	    def containerName = "vss.projectservice:${fullVersion}"
-	    def testContainerName = "vss.projectservice.tests:${fullVersion}"
+	    docker.build("registry-docker-registry.jenkins/vss.projectservice:${fullVersion}", "-f Dockerfile .") .push()
+	    docker.build("registry-docker-registry.jenkins/vss.projectservice.tests:${fullVersion}", "-f Dockerfile.tests .").push()
+	    def containerName = "registry-docker-registry.jenkins/vss.projectservice:${fullVersion}"
+	    def testContainerName = "registry-docker-registry.jenkins/vss.projectservice.tests:${fullVersion}"
 
 	    def label = "projectservice-${UUID.randomUUID().toString()}"
             def template = readFile "yaml/testing-pod.yaml"
