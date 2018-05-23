@@ -56,7 +56,7 @@ namespace VSS.TRex.SiteModels
         /// <summary>
         /// SiteModelExtent records the 3D extents of the data stored in the site model
         /// </summary>
-        public BoundingWorldExtent3D SiteModelExtent { get; } = BoundingWorldExtent3D.Inverted();
+        public BoundingWorldExtent3D SiteModelExtent { get; set; } = BoundingWorldExtent3D.Inverted();
 
         // ProofingRuns is the set of proofing runs that have been collected in this
         // site model

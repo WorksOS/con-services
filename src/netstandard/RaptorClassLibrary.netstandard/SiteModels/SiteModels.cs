@@ -15,21 +15,28 @@ namespace VSS.TRex.SiteModels
   {
         //  Dictionary<Guid, SiteModel> CachedModels = new Dictionary<Guid, SiteModel>()
 
-        /// <summary>
-        /// The default storage proxy for the mutable/immutable envronment this SiteModels instance is running in 
-        /// </summary>
-        private static ISiteModels instance = DIContext.Obtain<ISiteModels>();
+    /// <summary>
+    /// The default storage proxy for the mutable/immutable envronment this SiteModels instance is running in 
+    /// </summary>
+    private static ISiteModels instance;
 
         /// <summary>
         /// The default immutable storage proxy to be used for requests
         /// </summary>
         public static IStorageProxy ImmutableStorageProxy { get; } = StorageProxy.Instance(StorageMutability.Immutable);
 
-        /// <summary>
-        /// Constructs singleton instance of SiteModels
-        /// </summary>
-        /// <returns></returns>
-        public static ISiteModels Instance() => instance;
+    /// <summary>
+    /// Constructs singleton instance of SiteModels
+    /// </summary>
+    /// <returns></returns>
+    public static ISiteModels Instance() => instance ?? (instance = DIContext.Obtain<ISiteModels>());
+
+    /// <summary>
+    /// Default no-arg constructor
+    /// </summary>
+    public SiteModels()
+    {
+    }
 
         public ISiteModel GetSiteModel(Guid ID) => GetSiteModel(ImmutableStorageProxy, ID, false);
         public ISiteModel GetSiteModel(Guid ID, bool CreateIfNotExist) => GetSiteModel(ImmutableStorageProxy, ID, CreateIfNotExist);
