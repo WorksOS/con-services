@@ -10,7 +10,6 @@ using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
 using VSS.TRex.RequestStatistics;
-using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.Surfaces; 

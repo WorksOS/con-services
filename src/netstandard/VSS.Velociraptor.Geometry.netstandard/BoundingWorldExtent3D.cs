@@ -140,12 +140,23 @@ namespace VSS.TRex.Geometry
             return new BoundingWorldExtent3D(Consts.NullDouble, Consts.NullDouble, Consts.NullDouble, Consts.NullDouble, Consts.NullDouble, Consts.NullDouble);
         }
 
+      /// <summary>
+      /// Creates a new bounding extent, sets its parameters to be the largest extent possiblel and returns the result
+      /// </summary>
+      /// <returns></returns>
+      public static BoundingWorldExtent3D Full()
+      {
+        var result = new BoundingWorldExtent3D();
+        result.SetMaximalCoverage();
+        return result;
+      }
+
         /// <summary>
-        /// Expand the plan X/Y extent of the bounding box by the quantities in dx & dy. Expansion is isotropic on both axes.
-        /// </summary>
-        /// <param name="dx"></param>
-        /// <param name="dy"></param>
-        public void Expand(double dx, double dy)
+    /// Expand the plan X/Y extent of the bounding box by the quantities in dx & dy. Expansion is isotropic on both axes.
+    /// </summary>
+    /// <param name="dx"></param>
+    /// <param name="dy"></param>
+    public void Expand(double dx, double dy)
         {
             Include(MinX - dx, MinY - dy);
             Include(MaxX + dx, MaxY + dy);
