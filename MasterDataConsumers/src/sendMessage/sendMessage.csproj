@@ -5,7 +5,6 @@
     <AssemblyName>sendMessage</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>sendMessage</PackageId>
-    <RuntimeFrameworkVersion>2.0</RuntimeFrameworkVersion>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>

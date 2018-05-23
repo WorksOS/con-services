@@ -25,8 +25,7 @@ namespace RepositoryTests
     {
       string loggerRepoName = "UnitTestLogTest";
       Log4NetProvider.RepoName = loggerRepoName;
-      var logPath = System.IO.Directory.GetCurrentDirectory();
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
+      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
 
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();

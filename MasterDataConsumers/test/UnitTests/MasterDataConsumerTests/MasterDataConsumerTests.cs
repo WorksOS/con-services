@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using System.Threading;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Threading;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer;
 using VSS.KafkaConsumer.Interfaces;
@@ -11,27 +11,22 @@ using VSS.Log4Net.Extensions;
 using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
-namespace MasterDataConsumerTests
+namespace VSS.Productivity3D.MasterDataConsumer.Tests
 {
 
   [TestClass]
   public class MasterDataConsumerTests
   {
-    private IServiceProvider serviceProvider = null;
+    private IServiceProvider serviceProvider;
     private string loggerRepoName = "UnitTestLogTest";
 
     [TestInitialize]
     public void InitTest()
     {
       Log4NetProvider.RepoName = loggerRepoName;
-
-      // setup Ilogger
-      var logPath = System.IO.Directory.GetCurrentDirectory();
-  
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
+      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
 
       ILoggerFactory loggerFactory = new LoggerFactory();
-      //loggerFactory.AddConsole(Configuration.GetSection("Logging"));
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
 
@@ -59,7 +54,7 @@ namespace MasterDataConsumerTests
 
           .AddSingleton<IConfigurationStore, GenericConfiguration>()
           .AddLogging()
-          .AddSingleton<ILoggerFactory>(loggerFactory)
+          .AddSingleton(loggerFactory)
           .BuildServiceProvider();
     }
 
