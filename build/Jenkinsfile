@@ -1,29 +1,29 @@
-def branch = env.BRANCH_NAME
-def url = env.GIT_URL
-def buildNumber = env.BUILD_NUMBER
-def versionPrefix = ""
-def suffix = ""
-def branchName = ""
+node ('jenkinsslave-pod') {
+    def branch = env.BRANCH_NAME
+    def buildNumber = env.BUILD_NUMBER
+    def versionPrefix = ""
+    def suffix = ""
+    def branchName = ""
 
-if (branch.contains("release")) {
-    versionPrefix = "1.0."
-    branchName = "Release"
-} else if (branch.contains("Dev")) {
-    versionPrefix = "0.99."
-    branchName = "Dev"
-} else if (branch.contains("master")) {
-    versionPrefix = "1.0."
-    branchName = "master"
-} else {
-    branchName = branch.substring(branch.lastIndexOf("/") + 1)
-    suffix = "-" + branchName
-    versionPrefix = "0.98."
-}
+    if (branch.contains("release")) {
+        versionPrefix = "1.0."
+        branchName = "Release"
+    } else if (branch.contains("Dev")) {
+        versionPrefix = "0.99."
+        branchName = "Dev"
+    } else if (branch.contains("master")) {
+        versionPrefix = "1.0."
+        branchName = "master"
+    } else {
+        branchName = branch.substring(branch.lastIndexOf("/") + 1)
+        suffix = "-" + branchName
+        versionPrefix = "0.98."
+    }
 
-def versionNumber = versionPrefix + buildNumber
-def fullVersion = versionNumber + suffix
-
-kubernetes.pod('core21-buildpod').withImage('276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-jenkinsslave:core21').inside {
-    git ([url: url, branch: branch])
-    sh 'dotnet build'
+    def versionNumber = versionPrefix + buildNumber
+    def fullVersion = versionNumber + suffix
+    stage('Build Solution') {
+            checkout scm
+            docker.build("vss.projectservice:${fullVersion}")
+    }
 }
