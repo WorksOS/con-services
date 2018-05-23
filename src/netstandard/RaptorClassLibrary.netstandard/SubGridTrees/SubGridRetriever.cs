@@ -366,10 +366,10 @@ namespace VSS.TRex.SubGridTrees
                         if (_GlobalLatestCells.ReadCCA(CellX, CellY) == CellPass.NullCCA) { return; }
                         break;
                     case GridDataType.Temperature:
-                        if (_GlobalLatestCells.ReadTemperature(CellX, CellY) == CellPass.NullMaterialTemp) { return; }
+                        if (_GlobalLatestCells.ReadTemperature(CellX, CellY) == CellPass.NullMaterialTemperatureValue) { return; }
                         break;
                     case GridDataType.TemperatureDetail:
-                        if (_GlobalLatestCells.ReadTemperature(CellX, CellY) == CellPass.NullMaterialTemp) { return; }
+                        if (_GlobalLatestCells.ReadTemperature(CellX, CellY) == CellPass.NullMaterialTemperatureValue) { return; }
                         break;
 
         }
@@ -731,11 +731,11 @@ namespace VSS.TRex.SubGridTrees
                             { continue; }
                             break;
                         case GridDataType.Temperature:
-                            if (_GlobalLatestCells.ReadTemperature(StripeIndex, J) == CellPass.NullMaterialTemp)
+                            if (_GlobalLatestCells.ReadTemperature(StripeIndex, J) == CellPass.NullMaterialTemperatureValue)
                             { continue; }
                             break;
                         case GridDataType.TemperatureDetail:
-                          if (_GlobalLatestCells.ReadTemperature(StripeIndex, J) == CellPass.NullMaterialTemp)
+                          if (_GlobalLatestCells.ReadTemperature(StripeIndex, J) == CellPass.NullMaterialTemperatureValue)
                           { continue; }
                           break;
                         case GridDataType.CCVPercentChange:

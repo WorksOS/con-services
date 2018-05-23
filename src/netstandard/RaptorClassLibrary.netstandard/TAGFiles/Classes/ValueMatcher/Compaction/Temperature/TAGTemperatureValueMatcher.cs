@@ -20,7 +20,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.Temperature
         {
             state.HaveSeenAnAbsoluteTemperature = false;
 
-            valueSink.SetICTemperatureValue(CellPass.NullMaterialTemp);
+            valueSink.SetICTemperatureValue(CellPass.NullMaterialTemperatureValue);
 
             return true;
         }

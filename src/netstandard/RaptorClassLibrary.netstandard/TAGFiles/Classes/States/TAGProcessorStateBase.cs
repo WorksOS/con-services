@@ -47,8 +47,8 @@ namespace VSS.TRex.TAGFiles.Classes
         private byte _ICSonic3D = CellPass.Null3DSonic;
 
         private CompactionSensorType _ICSensorType = CompactionSensorType.NoSensor;
-        private ushort _ICTempWarningLevelMinValue = CellPass.NullMaterialTemp;
-        private ushort _ICTempWarningLevelMaxValue = CellPass.NullMaterialTemp;
+        private ushort _ICTempWarningLevelMinValue = CellPass.NullMaterialTemperatureValue;
+        private ushort _ICTempWarningLevelMaxValue = CellPass.NullMaterialTemperatureValue;
 
         private short _RMVJumpThreshold = CellPass.NullRMV;
 
@@ -136,7 +136,7 @@ namespace VSS.TRex.TAGFiles.Classes
             VolkelMeasureRanges.Add(DateTime.MinValue, CellPass.NullVolkelMeasRange);
             VolkelMeasureUtilRanges.Add(DateTime.MinValue, CellPass.NullVolkelMeasUtilRange);
             ICMDPValues.Add(DateTime.MinValue, CellPass.NullMDP);
-            ICTemperatureValues.Add(DateTime.MinValue, CellPass.NullMaterialTemp);
+            ICTemperatureValues.Add(DateTime.MinValue, CellPass.NullMaterialTemperatureValue);
             ICCCAValues.Add(DateTime.MinValue, CellPass.NullCCA);
             ICCCALeftFrontValues.Add(DateTime.MinValue, CellPass.NullCCA);
             ICCCARightFrontValues.Add(DateTime.MinValue, CellPass.NullCCA);
