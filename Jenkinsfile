@@ -28,10 +28,13 @@ node ('jenkinsslave-pod') {
 	    docker.build("vss.projectservice.tests:${fullVersion}", "-f Dockerfile.tests .")
 	    def label = "projectservice-${UUID.randomUUID().toString()}"
             def template = readFile "yaml/testing-pod.yaml"
-	    podTemplate(name: label, label: label, yaml: template, namespace: "testing")
+	    podTemplate(name: label, label: label, yaml: template, namespace: "testing", containers: [containerTemplate(name: 'projectservice', image: 'vss.projectservice:${fullVersion}')])
 		{
 		  node (label) {
-			container ("vss.projectservice:${fullVersion}")
+			container ("vss.projectservice.tests:${fullVersion}")
+			{
+			 sh '/app/runtests.sh'
+			}
 		  }
 		} 
     }
