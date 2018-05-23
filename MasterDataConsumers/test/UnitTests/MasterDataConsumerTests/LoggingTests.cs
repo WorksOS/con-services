@@ -20,7 +20,7 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
   [TestClass]
   public class LoggingTests
   {
-    private IServiceProvider serviceProvider = null;
+    private IServiceProvider serviceProvider;
     private string loggerRepoName = "UnitTestLogTest";
 
     [TestInitialize]
@@ -29,19 +29,18 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
       Log4NetProvider.RepoName = loggerRepoName;
     }
 
-
     [TestMethod]
     public void CanUseLog4net()
     {
       var logPath = Directory.GetCurrentDirectory();
 
-      var logFileFullPath = string.Format(string.Format("{0}/{1}.log", logPath, loggerRepoName));
+      var logFileFullPath = Path.Combine(logPath, loggerRepoName + ".log");
       if (File.Exists(logFileFullPath))
       {
         File.WriteAllText(logFileFullPath, string.Empty);
       }
 
-      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
+      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml", logPath);
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
@@ -49,7 +48,7 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
       // put logger into DI
       serviceProvider = new ServiceCollection()
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .AddSingleton<ILoggerFactory>(loggerFactory)
+        .AddSingleton(loggerFactory)
         .BuildServiceProvider();
 
       // 1) this test is logger from outside of DI
@@ -74,12 +73,10 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
           allLines.Add(sr.ReadLine());
       }
 
-      Assert.AreEqual(2, allLines.Count());
+      Assert.AreEqual(2, allLines.Count);
       Assert.AreEqual(2, Regex.Matches(allLines[0], "LoggingTests").Count);
       Assert.AreEqual(2, Regex.Matches(allLines[1], "MessageResolver").Count);
     }
-
-
 
     [TestMethod]
     public void CanConstructFromDI()
@@ -105,8 +102,6 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
       Assert.IsNotNull(subscriptionConsumer);
     }
 
-
-
     [TestMethod]
     public void CannotConstructFromDI()
     {
@@ -119,7 +114,7 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
     [TestMethod]
     public void ConstructLoggerNameFromKafkaTopic()
     {
-      string[] kafkaTopic = new string[] { "VSS.Interfaces.Events.MasterData.ICustomerEvent", "VSS.Interfaces.Events.MasterData.IAssetEvent" };
+      string[] kafkaTopic = { "VSS.Interfaces.Events.MasterData.ICustomerEvent", "VSS.Interfaces.Events.MasterData.IAssetEvent" };
 
       string eventType = kafkaTopic[0].Split('.').Last();
       string loggerRepoName = "MDC " + eventType;
@@ -128,7 +123,7 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
 
     private void CreateCollection(bool withLogging)
     {
-      string loggerRepoName = "UnitTestLogTest";
+      const string loggerRepoName = "UnitTestLogTest";
       Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
 
       ILoggerFactory loggerFactory = new LoggerFactory();
@@ -160,12 +155,10 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
       if (withLogging)
         serviceCollection
             .AddLogging()
-            .AddSingleton<ILoggerFactory>(loggerFactory);
+            .AddSingleton(loggerFactory);
 
       serviceProvider = serviceCollection
           .BuildServiceProvider();
     }
-
-
   }
 }
