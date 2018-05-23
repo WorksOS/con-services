@@ -255,9 +255,9 @@ namespace VSS.TRex.DesignProfiling
                         {
                             Z = Tri.GetHeight((I * CellSize) + HalfCellSize, Y);
 
-                            if (Z != Consts.NullReal)
+                            if (Z != Common.Consts.NullReal)
                             {
-                                if (Patch[I - PatchOriginCellIndexX, ProcessingCellYIndex] == Consts.NullHeight)
+                                if (Patch[I - PatchOriginCellIndexX, ProcessingCellYIndex] == Common.Consts.NullHeight)
                                 {
                                     ValueCount++;
                                     Patch[I - PatchOriginCellIndexX, ProcessingCellYIndex] = (float)(Z + OffSet);
@@ -549,7 +549,7 @@ namespace VSS.TRex.DesignProfiling
                 // back as Patch. Use TempMask as local var capturable by the anonymous function...
                 SubGridTreeBitmapSubGridBits TempMask = Mask;
 
-                TempMask.ForEachSetBit((x, y) => { if (Heights[x, y] == Consts.NullHeight) TempMask.ClearBit(x, y); });
+                TempMask.ForEachSetBit((x, y) => { if (Heights[x, y] == Common.Consts.NullHeight) TempMask.ClearBit(x, y); });
                 Patch = TempMask;
 
                 //{$IFDEF DEBUG}
@@ -653,7 +653,7 @@ namespace VSS.TRex.DesignProfiling
         /// <param name="z2"></param>
         public override void GetHeightRange(out double z1, out double z2)
         {
-            if (FMinHeight == Consts.NullReal || FMaxHeight == Consts.NullReal) // better calculate them
+            if (FMinHeight == Common.Consts.NullReal || FMaxHeight == Common.Consts.NullReal) // better calculate them
             {
                 FMinHeight = 1E100;
                 FMaxHeight = -1E100;
@@ -700,14 +700,14 @@ namespace VSS.TRex.DesignProfiling
         {
             if (hint == null)
             {
-                z = Consts.NullHeight;
+                z = Common.Consts.NullHeight;
                 return false;
             }
 
             Triangle hintAsTriangle = (hint as Triangle);
 
             z = hintAsTriangle.GetHeight(x, y);
-            if (z != Consts.NullReal)
+            if (z != Common.Consts.NullReal)
             {
                 z += offset;
                 return true;
@@ -719,7 +719,7 @@ namespace VSS.TRex.DesignProfiling
                 if (hintAsTriangle.Neighbours[side] != null)
                 {
                     z = (hintAsTriangle.Neighbours[side]).GetHeight(x, y);
-                    if (z != Consts.NullReal)
+                    if (z != Common.Consts.NullReal)
                     {
                         hint = hintAsTriangle.Neighbours[side];
                         z += offset;
@@ -750,7 +750,7 @@ namespace VSS.TRex.DesignProfiling
                 return true;
 
             // Search in the subgrid triangle list for this subgrid from the spatial index
-            Z = Consts.NullReal;
+            Z = Common.Consts.NullReal;
 
             FSpatialIndex.CalculateIndexOfCellContainingPosition(X, Y, out uint CellX, out uint CellY);
 
@@ -767,7 +767,7 @@ namespace VSS.TRex.DesignProfiling
             {
                 Z = tri.GetHeight(X, Y);
 
-                if (Z != Consts.NullReal)
+                if (Z != Common.Consts.NullReal)
                 {
                     Hint = tri;
                     Z += Offset;
@@ -804,7 +804,7 @@ namespace VSS.TRex.DesignProfiling
             if (arrayReference.Count == 0)
             {
                 // There are no triangles that can satisfy the query
-                Z = Consts.NullReal;
+                Z = Common.Consts.NullReal;
                 return false;
             }
 
@@ -815,7 +815,7 @@ namespace VSS.TRex.DesignProfiling
                 Triangle tri = FSpatialIndexOptimisedTriangles[i];
                 Z = tri.GetHeight(X, Y);
 
-                if (Z != Consts.NullReal)
+                if (Z != Common.Consts.NullReal)
                 {
                     Hint = tri;
                     Z += Offset;
@@ -823,7 +823,7 @@ namespace VSS.TRex.DesignProfiling
                 }
             }
 
-            Z = Consts.NullReal;
+            Z = Common.Consts.NullReal;
             return false;
         }
 
@@ -873,7 +873,7 @@ namespace VSS.TRex.DesignProfiling
                 iterationCount++;
                 Z = ((Triangle)Hint).GetHeight(X, Y);
 
-                if (Z != Consts.NullReal)
+                if (Z != Common.Consts.NullReal)
                 {
                     Z += Offset;
                     return true;
@@ -881,7 +881,7 @@ namespace VSS.TRex.DesignProfiling
             }
 
             Hint = null;
-            Z = Consts.NullReal;
+            Z = Common.Consts.NullReal;
 
             return false;
         }
@@ -940,7 +940,7 @@ namespace VSS.TRex.DesignProfiling
                     }
                     else
                     {
-                        Patch[x, y] = Consts.NullHeight;
+                        Patch[x, y] = Common.Consts.NullHeight;
                     }
                 });
 
@@ -987,7 +987,7 @@ namespace VSS.TRex.DesignProfiling
                     }
                     else
                     {
-                        Patch[x, y] = Consts.NullHeight;
+                        Patch[x, y] = Common.Consts.NullHeight;
                     }
                 });
 
@@ -1035,7 +1035,7 @@ namespace VSS.TRex.DesignProfiling
                     }
                     else
                     {
-                        Patch[x, y] = Consts.NullHeight;
+                        Patch[x, y] = Common.Consts.NullHeight;
                     }
                 });
 
@@ -1190,8 +1190,8 @@ namespace VSS.TRex.DesignProfiling
 
                 Log.LogInformation($"Loaded TTM file {fileName} containing {FData.Header.NumberOfTriangles} triangles and {FData.Header.NumberOfVertices} vertices.");
 
-                FMinHeight = Consts.NullReal;
-                FMaxHeight = Consts.NullReal;
+                FMinHeight = Common.Consts.NullReal;
+                FMaxHeight = Common.Consts.NullReal;
 
                 // Build the subgrid tree based spatial index
                 ConstructSpatialIndex();

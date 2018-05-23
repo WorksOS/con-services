@@ -2,12 +2,12 @@
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex;
+using VSS.TRex.Tests.netcore.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests
 {
-        public class SubGridFactoryTests
+        public class SubGridFactoryTests : IClassFixture<DILoggingFixture>
     {
         [Fact]
         public void Test_SubGridFactory_Creation()

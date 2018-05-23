@@ -1,10 +1,11 @@
 ﻿using System;
 using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.Tests.netcore.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests
 {
-        public class HeightClientLeafSubGridTests
+        public class HeightClientLeafSubGridTests : IClassFixture<DILoggingFixture>
     {
         [Fact(Skip = "Not Implemented")]
         public void Test_HeightClientLeafSubGridTests_Creation()

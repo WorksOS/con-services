@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using VSS.TRex.TAGFiles.Classes.Queues;
+using VSS.TRex.Tests.netcore.TestFixtures;
 using Xunit;
 
 namespace TAGFiles.Tests.netcore
 {
-    public class TAGFileBufferQueueGrouperTests
-    {
+    public class TAGFileBufferQueueGrouperTests : IClassFixture<DILoggingFixture>
+  {
         [Fact]
         public void Test_TAGFileBufferQueueGrouper_Creation()
         {

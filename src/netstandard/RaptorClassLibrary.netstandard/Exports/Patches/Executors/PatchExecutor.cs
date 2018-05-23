@@ -57,6 +57,9 @@ namespace VSS.TRex.Rendering.Patches.Executors
 
     private bool SurveyedSurfacesExludedViaTimeFiltering;
 
+    private int DataPatchPageNumber;
+    private int DataPatchPageSize;
+
     /// <summary>
     /// The identifier for the design held in the designs list ofr the project to be used to calculate cut/fill values
     /// </summary>
@@ -77,7 +80,9 @@ namespace VSS.TRex.Rendering.Patches.Executors
       Guid cutFillDesignID, //DesignDescriptor ACutFillDesign,
       //AReferenceVolumeType : TComputeICVolumesType;
       //AICOptions: TSVOICOptions;
-      string requestingTRexNodeId
+      string requestingTRexNodeId,
+      int dataPatchPageNumber,
+      int dataPatchPageSize
     )
     {
       DataModelID = dataModelID;
@@ -88,6 +93,8 @@ namespace VSS.TRex.Rendering.Patches.Executors
       //ReferenceVolumeType = AReferenceVolumeType;
       //ICOptions = AICOptions;
       RequestingTRexNodeID = requestingTRexNodeId;
+      DataPatchPageNumber = dataPatchPageNumber;
+      DataPatchPageSize = dataPatchPageSize;
     }
 
     /// <summary>
@@ -294,10 +301,24 @@ namespace VSS.TRex.Rendering.Patches.Executors
         try
         {
           PipeLine = new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(PipelinedTask);
-
           PipelinedTask.PipeLine = PipeLine;
 
           ConfigurePipeline(/*out BoundingIntegerExtent2D CellExtents*/);
+
+          // Provide the pipeline with a customised request analyser configured to return a specific page of subgrids
+          PipeLine.RequestAnalyser = new RequestAnalyser()
+          {
+            SinglePageRequestNumber = DataPatchPageNumber,
+            SinglePageRequestSize = DataPatchPageSize,
+            SubmitSinglePageOfRequests = true
+          };
+
+          // If this is the first page requested then make a count the total number of patches required for all subgrids to be returned
+          if (DataPatchPageNumber == 0)
+          {
+            PatchSubGridsResponse.TotalNumberOfPagesToCoverFilteredData =
+              (int)Math.Truncate(Math.Ceiling(PipeLine.RequestAnalyser.CountOfSubgridsThatWillBeSubmitted() / (1.0 * DataPatchPageSize)));
+          }
 
           if (PipeLine.Initiate())
             PipeLine.WaitForCompletion();

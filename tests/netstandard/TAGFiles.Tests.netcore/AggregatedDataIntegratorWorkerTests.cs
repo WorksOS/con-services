@@ -4,12 +4,13 @@ using System.IO;
 using VSS.TRex.Executors;
 using VSS.TRex.Machines;
 using VSS.TRex.SiteModels;
+using VSS.TRex.Tests.netcore.TestFixtures;
 using VSSTests.TRex.Tests.Common;
 using Xunit;
 
 namespace VSS.TRex.TAGFiles.Classes.Integrator.Tests
 {
-    public class AggregatedDataIntegratorWorkerTests
+    public class AggregatedDataIntegratorWorkerTests : IClassFixture<DILoggingFixture>
     {
         [Fact(Skip = "Not Implemented")]
         public void Test_AggregatedDataIntegratorWorker_AggregatedDataIntegratorWorkerTest()

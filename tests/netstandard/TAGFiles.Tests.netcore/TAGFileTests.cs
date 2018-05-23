@@ -1,14 +1,14 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Sinks;
 using VSS.TRex.TAGFiles.Types;
+using VSS.TRex.Tests.netcore.TestFixtures;
 using VSSTests.TRex.Tests.Common;
 using Xunit;
 
 namespace VSS.TRex.TAGFiles.Tests
 {
-        public class TAGFileTests
+        public class TAGFileTests : IClassFixture<DILoggingFixture>
     {
         [Fact]
         public void Test_TAGFile_Creation()

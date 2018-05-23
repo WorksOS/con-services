@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using VSS.TRex.SubGridTrees.Utilities;
-using VSS.TRex.Types;
+﻿using System.IO;
 using System.Text;
 using Xunit;
 

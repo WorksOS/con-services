@@ -1,11 +1,12 @@
 ﻿using System;
+using VSS.TRex.Tests.netcore.TestFixtures;
 using VSS.TRex.Volumes.GridFabric.ComputeFuncs;
 using Xunit;
 
 namespace VSS.TRex.Tests.Volumes
 {
-        public class SimpleVolumesRequestComputeFuncTests
-    {
+        public class SimpleVolumesRequestComputeFuncTests : IClassFixture<DILoggingFixture>
+  {
         [Fact]
         public void Test_SimpleVolumesRequestComputeFunc_Creation()
         {
