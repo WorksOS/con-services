@@ -8,12 +8,12 @@ WORKDIR /build
 
 # Build 
 
-RUN chmod 775 *.sh
+RUN chmod 777 *.sh
 
-RUN ["/bin/bash", "build.sh"]
-RUN ["/bin/bash", "unittests.sh"]
+RUN ["/bin/sh", "build.sh"]
+RUN ["/bin/sh", "unittests.sh"]
 
 WORKDIR /build/AcceptanceTests/scripts
-RUN chmod 775 *.sh
-RUN ["/bin/bash","deploy_linux.sh"]
+RUN chmod 777 *.sh
+RUN ["/bin/sh", "deploy_linux.sh"]
 
