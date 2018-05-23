@@ -1,6 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
+using VSS.MasterData.Models.Converters;
 using VSS.MasterData.Models.FIlters;
 
 namespace VSS.MasterData.Models.Models
@@ -10,11 +11,18 @@ namespace VSS.MasterData.Models.Models
   /// </summary>
   public class MachineDetails : IEquatable<MachineDetails>
   {
+    private const int MAX_MACHINE_NAME = 256;
+
     /// <summary>
     /// The ID of the machine/asset. This is the unique identifier, used by Raptor.
     /// </summary>
+    /// <remarks>
+    /// Previously JohnDoe machines were identified by having MAX_LONG as the assetID. There are loss of precision errors when browsers
+    /// deserialize MAX_LONG so to avoid this we return the id as a string.
+    /// </remarks>
+    [JsonConverter(typeof(FormatLongAsStringConverter))]
     [JsonProperty(PropertyName = "assetID", Required = Required.Always)]
-    public long assetID { get; protected set; }
+    public long AssetId { get; protected set; }
 
     /// <summary>
     /// The textual name of the machine. This is the human readable machine name from the machine control display, and written in tagfiles.
@@ -22,13 +30,13 @@ namespace VSS.MasterData.Models.Models
     [MaxLength(MAX_MACHINE_NAME)]
     [NameValidation]
     [JsonProperty(PropertyName = "machineName", Required = Required.Always)]
-    public string machineName { get; protected set; }
+    public string MachineName { get; protected set; }
 
     /// <summary>
     /// Is the machine not represented by a telematics device (PLxxx, SNMxxx etc)
     /// </summary>
     [JsonProperty(PropertyName = "isJohnDoe", Required = Required.Always)]
-    public bool isJohnDoe { get; protected set; }
+    public bool IsJohnDoe { get; protected set; }
 
     /// <summary>
     /// Private constructor
@@ -39,17 +47,13 @@ namespace VSS.MasterData.Models.Models
     /// <summary>
     /// Create instance of MachineDetails
     /// </summary>
-    public static MachineDetails CreateMachineDetails(
-        long assetID,
-        string machineName,
-        bool isJohnDoe
-        )
+    public static MachineDetails Create(long assetId, string machineName, bool isJohnDoe)
     {
       return new MachineDetails
       {
-        assetID = assetID,
-        machineName = machineName,
-        isJohnDoe = isJohnDoe
+        AssetId = assetId,
+        MachineName = machineName,
+        IsJohnDoe = isJohnDoe
       };
     }
 
@@ -61,30 +65,28 @@ namespace VSS.MasterData.Models.Models
       //Nothing else to validate
     }
 
-    private const int MAX_MACHINE_NAME = 256;
-
     public bool Equals(MachineDetails other)
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
-      return assetID == other.assetID && string.Equals(machineName, other.machineName) && isJohnDoe == other.isJohnDoe;
+      return AssetId == other.AssetId && string.Equals(MachineName, other.MachineName) && IsJohnDoe == other.IsJohnDoe;
     }
 
     public override bool Equals(object obj)
     {
       if (ReferenceEquals(null, obj)) return false;
       if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((MachineDetails) obj);
+      if (obj.GetType() != GetType()) return false;
+      return Equals((MachineDetails)obj);
     }
 
     public override int GetHashCode()
     {
       unchecked
       {
-        var hashCode = assetID.GetHashCode();
-        hashCode = (hashCode * 397) ^ (machineName != null ? machineName.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ isJohnDoe.GetHashCode();
+        var hashCode = AssetId.GetHashCode();
+        hashCode = (hashCode * 397) ^ (MachineName != null ? MachineName.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ IsJohnDoe.GetHashCode();
         return hashCode;
       }
     }
