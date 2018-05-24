@@ -518,7 +518,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 												}
 												catch (Exception E)
 												{
-														MessageBox.Show($"Exception occurred: {E}");
+                            writer.WriteLine($"Exception occurred: {E.Message}");
 												}
 												try
 												{
@@ -526,17 +526,17 @@ namespace VSS.TRex.IgnitePOC.TestApp
 												}
 												catch (Exception E)
 												{
-														MessageBox.Show($"Exception occurred: {E}");
+												  writer.WriteLine($"Exception occurred: {E.Message}");
 												}
-												try
+                        try
 												{
 														WriteKeysSpatial(TRexCaches.ImmutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, byte[]>(TRexCaches.ImmutableSpatialCacheName()));
 												}
 												catch (Exception E)
 												{
-														MessageBox.Show($"Exception occurred: {E}");
+												  writer.WriteLine($"Exception occurred: {E.Message}");
 												}
-										}
+                    }
 										if (mutability == StorageMutability.Mutable)
 										{
 												try
@@ -545,25 +545,25 @@ namespace VSS.TRex.IgnitePOC.TestApp
 												}
 												catch (Exception E)
 												{
-														MessageBox.Show($"Exception occurred: {E}");
+												  writer.WriteLine($"Exception occurred: {E.Message}");
 												}
-												try
+                        try
 												{
 														WriteKeysSpatial(TRexCaches.MutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, byte[]>(TRexCaches.MutableSpatialCacheName()));
 												}
 												catch (Exception E)
 												{
-														MessageBox.Show($"Exception occurred: {E}");
+												  writer.WriteLine($"Exception occurred: {E.Message}");
 												}
-												try
+                        try
 												{
 														writeTAGFileBufferQueueKeys(TRexCaches.TAGFileBufferQueueCacheName(), writer, ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName()));
 												}
 												catch (Exception E)
 												{
-														MessageBox.Show($"Exception occurred: {E}");
+												  writer.WriteLine($"Exception occurred: {E.Message}");
 												}
-										}
+                    }
 								}
 						}
 				}
