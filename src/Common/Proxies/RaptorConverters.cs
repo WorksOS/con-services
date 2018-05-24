@@ -308,8 +308,7 @@ namespace VSS.Productivity3D.Common.Proxies
     {
       foreach (TMachineDetail machineDetail in machineIDs)
         yield return
-            MachineDetails.CreateMachineDetails(machineDetail.ID, machineDetail.Name, machineDetail.IsJohnDoeMachine)
-            ;
+            MachineDetails.Create(machineDetail.ID, machineDetail.Name, machineDetail.IsJohnDoeMachine);
     }
 
     public static BoundingBox3DGrid ConvertExtents(T3DBoundingWorldExtent extents)
@@ -510,7 +509,7 @@ namespace VSS.Productivity3D.Common.Proxies
         List<TMachineDetail> machineList = null;
         if (pdf.ContributingMachines != null && pdf.ContributingMachines.Count > 0)
         {
-          machineList = (from c in pdf.ContributingMachines select new TMachineDetail { Name = c.machineName, ID = c.assetID, IsJohnDoeMachine = c.isJohnDoe }).ToList();
+          machineList = (from c in pdf.ContributingMachines select new TMachineDetail { Name = c.MachineName, ID = c.AssetId, IsJohnDoeMachine = c.IsJohnDoe }).ToList();
           if (assetList == null)
             assetList = machineList;
           else

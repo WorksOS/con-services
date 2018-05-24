@@ -38,7 +38,7 @@ namespace VSS.Productivity3D.WebApi
           .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
           .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
-      env.ConfigureLog4Net("log4net.xml", LOGGER_REPO_NAME);
+      env.ConfigureLog4Net(repoName: LOGGER_REPO_NAME, configFileRelativePath: "log4net.xml");
 
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
@@ -57,10 +57,10 @@ namespace VSS.Productivity3D.WebApi
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddCommon<Startup>(SERVICE_TITLE, "API for 3D compaction and volume data");
-   
+
       services.AddResponseCompression();
       services.AddMemoryCache();
-      services.AddCustomResponseCaching();     
+      services.AddCustomResponseCaching();
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
       ConfigureApplicationServices(services);
@@ -94,7 +94,7 @@ namespace VSS.Productivity3D.WebApi
 
       app.UseMvc();
 
-      ConfigureRaptor(serviceProvider);    
+      ConfigureRaptor(serviceProvider);
     }
 
     /// <summary>

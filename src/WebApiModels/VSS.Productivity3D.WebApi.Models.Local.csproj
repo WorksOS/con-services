@@ -8,7 +8,7 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <RootNamespace>VSS.Productivity3D.WebApiModels</RootNamespace>
-    <Platforms>x64;x86</Platforms>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
   
   <ItemGroup>
