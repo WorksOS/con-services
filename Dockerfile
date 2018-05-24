@@ -1,4 +1,4 @@
-FROM jenkins-cache-docker-registry.jenkins/dotnet:2.1-sdk-alpine as builder
+FROM microsoft/dotnet:2.1-sdk-alpine as builder
 
 COPY . /build/
 WORKDIR /build
@@ -11,7 +11,7 @@ RUN ["/bin/sh", "unittests.sh"]
 
 
 
-FROM jenkins-cache-docker-registry.jenkins/dotnet:2.1-runtime-alpine
+FROM microsoft/dotnet:2.1-runtime-alpine
 
 WORKDIR /app
 
