@@ -1,7 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
@@ -35,9 +35,9 @@ namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Models
                                 };
       DesignDescriptor desc = DesignDescriptor.CreateDesignDescriptor(1111, null, 0);
       List<MachineDetails> machines = new List<MachineDetails>
-                                                {
-                                                    MachineDetails.CreateMachineDetails(12345678, "Acme Compactor 1", false),
-                                                };
+      {
+        MachineDetails.Create(12345678, "Acme Compactor 1", false)
+      };
 
       var filter = FilterResult.CreateFilter(null, null, null, new DateTime(2014, 1, 1), new DateTime(2014, 1, 31), 1111, new List<long> { 12345678, 87654321 }, true,
           true, ElevationType.First, latLngs, gridPoints,
@@ -207,7 +207,5 @@ namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Models
       var filterResult = FilterResult.CreateFilter(filter, null, null, null, null, null, null);
       Assert.ThrowsException<ServiceException>(() => filterResult.Validate());
     }
-
-
   }
 }

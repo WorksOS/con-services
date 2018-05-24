@@ -8,24 +8,21 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <RootNamespace>VSS.Productivity3D.WebApi.Models</RootNamespace>
-    <Platforms>x64;x86</Platforms>
+    <Platforms>x64</Platforms>
     <!-- Don't remove the netstandard2.0 dependency reference; it's required for System.IO.Compression support in the ExportGridCSVExecutor. -->
     <DependsOnNETStandard>netstandard2.0</DependsOnNETStandard>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="6.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="2.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.4" />
     <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
     <PackageReference Include="Polly" Version="6.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="2.0.3" />
-    <PackageReference Include="System.Net.Security" Version="4.3.2" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.1" />
-    <PackageReference Include="AutoMapper" Version="6.2.2" />
+    <PackageReference Include="System.Net.Security" Version="4.3.2" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.22.*" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.23.*" />
     <PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.*" />
   </ItemGroup>
 

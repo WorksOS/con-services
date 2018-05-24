@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using System.Linq;
+﻿using System.Linq;
+using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
@@ -11,13 +11,13 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     public MachineStatus[] MachineStatuses { get; private set; }
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor.
     /// </summary>
     private MachineExecutionResult()
-    {}
+    { }
 
     /// <summary>
-    /// Create instance of MachineExecutionResult
+    /// Static constructor.
     /// </summary>
     public static MachineExecutionResult CreateMachineExecutionResult(MachineStatus[] machineDetails)
     {
@@ -27,10 +27,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
       };
     }
 
-
     public void FilterByMachineId(long machineId)
     {
-      MachineStatuses = MachineStatuses.Where(m => m.assetID == machineId).ToArray();
+      MachineStatuses = MachineStatuses.Where(m => m.AssetId == machineId).ToArray();
     }
   }
 }

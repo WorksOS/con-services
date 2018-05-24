@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -19,7 +19,6 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Common.Utilities;
-using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
 using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
 
@@ -192,7 +191,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       if (geofenceUid.HasValue)
       {
         //Todo this ahould be async
-        var geometryWKT = geofenceProxy.GetGeofenceBoundary((User as RaptorPrincipal).CustomerUid,  geofenceUid.ToString(), RequestUtils.GetCustomHeaders(Request.Headers)).Result;
+        var geometryWKT = geofenceProxy.GetGeofenceBoundary((User as RaptorPrincipal).CustomerUid, geofenceUid.ToString(), RequestUtils.GetCustomHeaders(Request.Headers)).Result;
 
         if (string.IsNullOrEmpty(geometryWKT))
           throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
@@ -209,7 +208,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         geometry,
         liftId.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None,
         liftId,
-        new List<MachineDetails> { MachineDetails.CreateMachineDetails(assetId, machineName, isJohnDoe) }
+        new List<MachineDetails> { MachineDetails.Create(assetId, machineName, isJohnDoe) }
        );
 
       var request = TileRequest.CreateTileRequest

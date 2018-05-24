@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -260,12 +260,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         var filteredLayers =
             layerIdsResult.LayerIdDetailsArray.Where(
                 layer =>
-                    layer.AssetId == machine.assetID &&
+                    layer.AssetId == machine.AssetId &&
                     IsDateRangeOverlapping(layer.StartDate, layer.EndDate, beginUtc, finishUtc)).ToList();
         if (filteredLayers.Count > 0)
         {
           liftDetailsList.Add(MachineLiftDetails.CreateMachineLiftDetails(
-              machine.assetID, machine.machineName, machine.isJohnDoe,
+              machine.AssetId, machine.MachineName, machine.IsJohnDoe,
               filteredLayers.Select(f => new LiftDetails { layerId = f.LayerId, endUtc = f.EndDate }).ToArray()));
         }
       }
