@@ -27,7 +27,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting Raptor production data for summary and details requests
   /// </summary>
-  [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
+  //NOTE: do not cache responses as large amount of data
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class CompactionExportController : BaseController
   {
     /// <summary>
@@ -224,11 +225,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       exportRequest.Validate();
 
-      return WithServiceExceptionTryExecute(() =>
+      var result = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
           .Build<CompactionExportExecutor>(LoggerFactory, raptorClient, null, this.ConfigStore)
           .Process(exportRequest) as ExportResult
       );
+      Log.LogInformation($"GetExportReportVeta completed: ResultCode={result.ResultCode}, ExportData size={result.ExportData.Length}");
+      return result;
     }
 
     /// <summary>
@@ -283,11 +286,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       exportRequest.Validate();
 
-      return WithServiceExceptionTryExecute(() =>
+      var result = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
           .Build<CompactionExportExecutor>(LoggerFactory, raptorClient, null, this.ConfigStore)
           .Process(exportRequest) as ExportResult
       );
+      Log.LogInformation($"GetExportReportMachinePasses completed: ResultCode={result.ResultCode}, ExportData size={result.ExportData.Length}");
+      return result;
     }
 
 
@@ -341,11 +346,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       exportRequest.Validate();
 
-      return WithServiceExceptionTryExecute(() =>
+      var result = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
           .Build<CompactionExportExecutor>(LoggerFactory, raptorClient, null, this.ConfigStore)
           .Process(exportRequest) as ExportResult
       );
+      Log.LogInformation($"GetExportReportSurface completed: ResultCode={result.ResultCode}, ExportData size={result.ExportData.Length}");
+      return result;
     }
     #endregion
 
