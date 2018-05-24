@@ -1,5 +1,5 @@
-﻿using VSS.TRex.Cells;
-using VSS.TRex.Common;
+﻿using System.IO;
+using VSS.TRex.Cells;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Types
@@ -38,5 +38,25 @@ namespace VSS.TRex.SubGridTrees.Types
 		  MeasuredTemperature = CellPass.NullMaterialTemperatureValue;
 			TemperatureLevels.Clear();
 	  }
-	}
+
+    /// <summary>
+    /// Serialises content of the cell to the writer
+    /// </summary>
+    /// <param name="writer"></param>
+    public void Write(BinaryWriter writer)
+    {
+      writer.Write(MeasuredTemperature);
+      TemperatureLevels.Write(writer);
+    }
+
+    /// <summary>
+    /// Serialises comtent of the cell from the writer
+    /// </summary>
+    /// <param name="reader"></param>
+    public void Read(BinaryReader reader)
+    {
+      MeasuredTemperature = reader.ReadUInt16();
+      TemperatureLevels.Read(reader);
+    }
+  }
 }
