@@ -1,6 +1,5 @@
 ﻿using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.Analytics.Foundation.Interfaces;
-using VSS.TRex.Analytics.GridFabric.Responses;
 using VSS.TRex.GridFabric.Requests.Interfaces;
 
 namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric

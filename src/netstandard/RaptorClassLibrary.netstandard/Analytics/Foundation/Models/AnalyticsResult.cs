@@ -1,7 +1,4 @@
 ﻿using VSS.TRex.Analytics.Foundation.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Analytics.Models

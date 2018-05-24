@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Analytics.Aggregators;
 using VSS.TRex.Analytics.Coordinators;
-using VSS.TRex.Analytics.SpeedStatistics;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
 using VSS.TRex.Types;
 

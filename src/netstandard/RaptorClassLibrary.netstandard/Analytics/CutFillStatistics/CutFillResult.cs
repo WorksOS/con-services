@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using VSS.TRex.Analytics.GridFabric.Responses;
 
 namespace VSS.TRex.Analytics.Models
 {

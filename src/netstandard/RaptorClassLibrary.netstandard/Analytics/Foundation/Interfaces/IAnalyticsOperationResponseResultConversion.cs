@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace VSS.TRex.Analytics.Foundation.Interfaces
+﻿namespace VSS.TRex.Analytics.Foundation.Interfaces
 {
   /// <summary>
   /// Defines an interface for a generic extension to an analytics response class to provide a
