@@ -91,6 +91,7 @@
       this.tabPage4 = new System.Windows.Forms.TabPage();
       this.btnKill = new System.Windows.Forms.Button();
       this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+      this.btnEmpty = new System.Windows.Forms.Button();
       this.panel1.SuspendLayout();
       this.panel2.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -106,6 +107,7 @@
       // 
       this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
+      this.panel1.Controls.Add(this.btnEmpty);
       this.panel1.Controls.Add(this.editProjectID);
       this.panel1.Controls.Add(this.label2);
       this.panel1.Location = new System.Drawing.Point(873, 2);
@@ -115,9 +117,9 @@
       // 
       // editProjectID
       // 
-      this.editProjectID.Location = new System.Drawing.Point(57, 10);
+      this.editProjectID.Location = new System.Drawing.Point(48, 10);
       this.editProjectID.Name = "editProjectID";
-      this.editProjectID.Size = new System.Drawing.Size(248, 20);
+      this.editProjectID.Size = new System.Drawing.Size(246, 20);
       this.editProjectID.TabIndex = 30;
       this.editProjectID.Text = "F13F2458-3BB4-424F-A995-4426A00771AE";
       this.editProjectID.TextChanged += new System.EventHandler(this.editProjectID_TextChanged);
@@ -761,6 +763,16 @@
       this.openFileDialog1.InitialDirectory = "@\"c:\\\"";
       this.openFileDialog1.RestoreDirectory = true;
       // 
+      // btnEmpty
+      // 
+      this.btnEmpty.Location = new System.Drawing.Point(300, 10);
+      this.btnEmpty.Name = "btnEmpty";
+      this.btnEmpty.Size = new System.Drawing.Size(47, 28);
+      this.btnEmpty.TabIndex = 31;
+      this.btnEmpty.Text = "Empty";
+      this.btnEmpty.UseVisualStyleBackColor = true;
+      this.btnEmpty.Click += new System.EventHandler(this.btnEmpty_Click);
+      // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -855,6 +867,7 @@
 				private System.Windows.Forms.Button TemperatureSummaryButton;
     private System.Windows.Forms.TabPage tabPage4;
     private System.Windows.Forms.Button btnKill;
+    private System.Windows.Forms.Button btnEmpty;
   }
 }
 

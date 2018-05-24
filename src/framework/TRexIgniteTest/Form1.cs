@@ -1089,5 +1089,10 @@ namespace VSS.TRex.IgnitePOC.TestApp
 
 
     }
+
+    private void btnEmpty_Click(object sender, EventArgs e)
+    {
+      editProjectID.Text = new Guid().ToString();
+    }
   }
 }
