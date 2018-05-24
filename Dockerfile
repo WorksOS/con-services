@@ -22,4 +22,4 @@ COPY --from=builder /build/artifacts/ProjectWebApi .
 RUN ls -la
 
 
-ENTRYPOINT ["dotnet", "VSS.MasterData.Project.WebAPI.dll"]
+ENTRYPOINT ["dotnet", "vss.masterdata.project.webapi.dll"]
