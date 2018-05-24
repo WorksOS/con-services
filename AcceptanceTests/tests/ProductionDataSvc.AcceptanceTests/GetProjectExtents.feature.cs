@@ -93,11 +93,11 @@ namespace ProductionDataSvc.AcceptanceTests
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("GetProjectExtents - Excluding Surveyed Surfaces")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "GetProjectExtents")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireDummySurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireSurveyedSurfaceLargerThanProductionData")]
         public virtual void GetProjectExtents_ExcludingSurveyedSurfaces()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("GetProjectExtents - Excluding Surveyed Surfaces", new string[] {
-                        "requireDummySurveyedSurface"});
+                        "requireSurveyedSurfaceLargerThanProductionData"});
 #line 8
 this.ScenarioSetup(scenarioInfo);
 #line 4
@@ -132,11 +132,11 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("GetProjectExtents - Including Surveyed Surfaces")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "GetProjectExtents")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireDummySurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireSurveyedSurfaceLargerThanProductionData")]
         public virtual void GetProjectExtents_IncludingSurveyedSurfaces()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("GetProjectExtents - Including Surveyed Surfaces", new string[] {
-                        "requireDummySurveyedSurface"});
+                        "requireSurveyedSurfaceLargerThanProductionData"});
 #line 17
 this.ScenarioSetup(scenarioInfo);
 #line 4

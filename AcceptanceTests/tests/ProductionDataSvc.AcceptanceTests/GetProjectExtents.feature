@@ -4,7 +4,7 @@
 Background: 
 	Given the Project Extent service URI "/api/v1/projectextents"
 
-@requireDummySurveyedSurface
+@requireSurveyedSurfaceLargerThanProductionData
 Scenario: GetProjectExtents - Excluding Surveyed Surfaces
 	Given a GetProjectExtents project id 1001158
 		And I decide to exclude any surveyed surface
@@ -13,7 +13,7 @@ Scenario: GetProjectExtents - Excluding Surveyed Surfaces
 		| maxX               | maxY    | maxZ              | minX    | minY               | minZ             |
 		| 2913.2900000000004 | 1250.69 | 624.1365966796875 | 2306.05 | 1125.2300000000002 | 591.953857421875 |
 
-@requireDummySurveyedSurface
+@requireSurveyedSurfaceLargerThanProductionData
 Scenario: GetProjectExtents - Including Surveyed Surfaces
 	Given a GetProjectExtents project id 1001158
 	When I try to get the extents
