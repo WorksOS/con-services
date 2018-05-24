@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using Common.Repository;
+﻿using Common.Repository;
 using LandfillService.Common.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -13,16 +11,9 @@ namespace LandfillDatabase.Tests
     [TestMethod]
     public void GetMachineId_Succeeds()
     {
-      int legacyCustomerId;
-      Guid customerUid;
-      Guid userUid;
-      Guid projectUid;
-      Guid projectGeofenceUid;
-      Guid landfillGeofenceUid;
-      Guid subscriptionUid;
-      var isCreatedOk = CreateAProjectWithLandfill(out legacyCustomerId,
-        out customerUid, out userUid, out projectUid, out projectGeofenceUid, out landfillGeofenceUid,
-        out subscriptionUid);
+      var isCreatedOk = CreateAProjectWithLandfill(out int legacyCustomerId,
+        out _, out _, out var projectUid, out _, out _,
+        out _);
       Assert.IsTrue(isCreatedOk, "Failed to create a project.");
 
       var machineDetails = new MachineDetails()
@@ -39,16 +30,9 @@ namespace LandfillDatabase.Tests
     [TestMethod]
     public void GetMachine_Succeeds()
     {
-      int legacyCustomerId;
-      Guid customerUid;
-      Guid userUid;
-      Guid projectUid;
-      Guid projectGeofenceUid;
-      Guid landfillGeofenceUid;
-      Guid subscriptionUid;
-      var isCreatedOk = CreateAProjectWithLandfill(out legacyCustomerId,
-        out customerUid, out userUid, out projectUid, out projectGeofenceUid, out landfillGeofenceUid,
-        out subscriptionUid);
+      var isCreatedOk = CreateAProjectWithLandfill(out _,
+        out _, out _, out var projectUid, out _, out _,
+        out _);
       Assert.IsTrue(isCreatedOk, "Failed to create a project.");
 
       var machineDetails = new MachineDetails()
@@ -64,8 +48,10 @@ namespace LandfillDatabase.Tests
       var retrievedMachineDetails = LandfillDb.GetMachine(machineId);
       Assert.IsNotNull(retrievedMachineDetails, "Failed to get the correct machine details.");
       Assert.AreEqual(machineDetails.assetId, retrievedMachineDetails.assetId, "Failed to get the correct assetId.");
-      Assert.AreEqual(machineDetails.machineName, retrievedMachineDetails.machineName, "Failed to get the correct machineName.");
-      Assert.AreEqual(machineDetails.isJohnDoe, retrievedMachineDetails.isJohnDoe, "Failed to get the correct isJohnDoe.");
+      Assert.AreEqual(machineDetails.machineName, retrievedMachineDetails.machineName,
+        "Failed to get the correct machineName.");
+      Assert.AreEqual(machineDetails.isJohnDoe, retrievedMachineDetails.isJohnDoe,
+        "Failed to get the correct isJohnDoe.");
     }
 
   }

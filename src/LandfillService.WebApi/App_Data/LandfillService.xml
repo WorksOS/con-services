@@ -598,6 +598,7 @@
             <param name="userUid">User ID</param>
             <param name="projectResponse">Project</param>
             <param name="returnEarliest">Indicates if filtering by earliest or latest cell pass</param>
+            <param name="designId"></param>
             <returns></returns>
         </member>
         <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetProjectStatisticsInBackground(System.String,LandfillService.Common.Models.ProjectResponse)">
@@ -760,7 +761,8 @@
               This method is used to get the Jwt Assertion Token string from the HTTP Request Header
             </summary>
             <param name="httpRequestHeaders">Incoming Request Headers</param>
-            <param name="jwtToken">Output parameter - Jwt Assetion Token string</param>
+            <param name="headerName"></param>
+            <param name="headerValue"></param>
             <returns>true, if Http Headers contain Jwt; false, otherwise</returns>
         </member>
     </members>

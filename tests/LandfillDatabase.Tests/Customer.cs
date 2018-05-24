@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Common.Repository;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -11,16 +10,9 @@ namespace LandfillDatabase.Tests
     [TestMethod]
     public void GetAssociatedCustomerbyUserUid_Succeeds()
     {
-      int legacyCustomerId;
-      Guid customerUid;
-      Guid userUid;
-      Guid projectUid;
-      Guid projectGeofenceUid;
-      Guid landfillGeofenceUid;
-      Guid subscriptionUid;
-      var isCreatedOk = CreateAProjectWithLandfill(out legacyCustomerId,
-        out customerUid, out userUid, out projectUid, out projectGeofenceUid, out landfillGeofenceUid,
-        out subscriptionUid);
+      var isCreatedOk = CreateAProjectWithLandfill(out _,
+        out var customerUid, out var userUid, out _, out _, out _,
+        out _);
       Assert.IsTrue(isCreatedOk, "Failed to create a project.");
 
       var customers = LandfillDb.GetAssociatedCustomerbyUserUid(userUid).ToList();
@@ -31,16 +23,9 @@ namespace LandfillDatabase.Tests
     [TestMethod]
     public void GetCustomer_Succeeds()
     {
-      int legacyCustomerId;
-      Guid customerUid;
-      Guid userUid;
-      Guid projectUid;
-      Guid projectGeofenceUid;
-      Guid landfillGeofenceUid;
-      Guid subscriptionUid;
-      var isCreatedOk = CreateAProjectWithLandfill(out legacyCustomerId,
-        out customerUid, out userUid, out projectUid, out projectGeofenceUid, out landfillGeofenceUid,
-        out subscriptionUid);
+      var isCreatedOk = CreateAProjectWithLandfill(out _,
+        out var customerUid, out _, out _, out _, out _,
+        out _);
       Assert.IsTrue(isCreatedOk, "Failed to create a project.");
 
       var customer = LandfillDb.GetCustomer(customerUid);

@@ -1,23 +1,26 @@
 ﻿using System;
 using MasterDataRepo;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace LandfillDatabase.Tests
 {
     public class TestBase
     {
-      protected readonly CustomerRepo _customerRepo;
-      protected readonly ProjectRepo _projectRepo;
-      protected readonly GeofenceRepo _geofenceRepo;
-      protected readonly SubscriptionRepo _subscriptionRepo;
+      protected readonly CustomerRepo CustomerRepo;
+      protected readonly ProjectRepo ProjectRepo;
+      protected readonly GeofenceRepo GeofenceRepo;
+      protected readonly SubscriptionRepo SubscriptionRepo;
+      protected readonly string ProjectGeofenceWkt = 
+          "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+      protected readonly string LandfillGeofenceWkt =
+          "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))";
 
-      public TestBase()
+    public TestBase()
       {
-        _customerRepo = new CustomerRepo();
-        _projectRepo = new ProjectRepo();
-        _geofenceRepo = new GeofenceRepo();
-        _subscriptionRepo = new SubscriptionRepo();
+        CustomerRepo = new CustomerRepo();
+        ProjectRepo = new ProjectRepo();
+        GeofenceRepo = new GeofenceRepo();
+        SubscriptionRepo = new SubscriptionRepo();
       }
 
       public CreateCustomerEvent CreateCustomerEvent()
@@ -41,7 +44,7 @@ namespace LandfillDatabase.Tests
         };
       }
 
-      public CreateProjectEvent CreateCreateProjectEvent(ProjectType projectType)
+      public CreateProjectEvent CreateProjectEvent(ProjectType projectType)
       {
         return new CreateProjectEvent()
         {
@@ -52,8 +55,7 @@ namespace LandfillDatabase.Tests
           ProjectType = projectType,
           ProjectStartDate = DateTime.UtcNow.AddYears(-1).AddDays(-1).Date,
           ProjectEndDate = DateTime.UtcNow.AddYears(1).AddDays(1).Date,
-          ProjectBoundary =
-            "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+          ProjectBoundary = ProjectGeofenceWkt,
           ActionUTC = DateTime.UtcNow
         };
       }
@@ -70,7 +72,7 @@ namespace LandfillDatabase.Tests
         };
       }
 
-      public CreateGeofenceEvent CreateCreateGeofenceEvent(Guid customerUid, string geofenceType)
+      public CreateGeofenceEvent CreateGeofenceEvent(Guid customerUid, string geofenceType)
       {
         // Geofence type 1 = Project, 10=Landfill
         return new CreateGeofenceEvent()
@@ -81,8 +83,7 @@ namespace LandfillDatabase.Tests
           GeofenceType = geofenceType,
           FillColor = 16744448,
           IsTransparent = true,
-          GeometryWKT =
-            "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
+          GeometryWKT = geofenceType == "Project" ? ProjectGeofenceWkt : LandfillGeofenceWkt,
           CustomerUID = customerUid,
           AreaSqMeters = 123.456
         };
@@ -98,7 +99,7 @@ namespace LandfillDatabase.Tests
         };
       }
 
-      public CreateProjectSubscriptionEvent CreateCreateProjectSubscriptionEvent(Guid customerUid, string subscriptionType)
+      public CreateProjectSubscriptionEvent CreateProjectSubscriptionEvent(Guid customerUid, string subscriptionType)
       {
         return new CreateProjectSubscriptionEvent()
         {
@@ -135,44 +136,44 @@ namespace LandfillDatabase.Tests
       customerUid = createCustomerEvent.CustomerUID;
       userUid = associateCustomerUserEvent.UserUID;
 
-      var createProjectEvent = CreateCreateProjectEvent(ProjectType.LandFill);
+      var createProjectEvent = CreateProjectEvent(ProjectType.LandFill);
       var associateProjectCustomer = CreateAssociateProjectCustomer(createCustomerEvent.CustomerUID, legacyCustomerId, createProjectEvent.ProjectUID);
       projectUid = createProjectEvent.ProjectUID;
 
-      var createGeofenceEventProject = CreateCreateGeofenceEvent(createCustomerEvent.CustomerUID, "Project");
+      var createGeofenceEventProject = CreateGeofenceEvent(createCustomerEvent.CustomerUID, "Project");
       var associateProjectGeofenceProject = CreateAssociateProjectGeofenceEvent(createProjectEvent.ProjectUID, createGeofenceEventProject.GeofenceUID);
       projectGeofenceUid = createGeofenceEventProject.GeofenceUID;
 
-      var createGeofenceEventLandfill = CreateCreateGeofenceEvent(createCustomerEvent.CustomerUID, "Landfill");
+      var createGeofenceEventLandfill = CreateGeofenceEvent(createCustomerEvent.CustomerUID, "Landfill");
       var associateProjectGeofenceLandfill = CreateAssociateProjectGeofenceEvent(createProjectEvent.ProjectUID, createGeofenceEventLandfill.GeofenceUID);
       landfillGeofenceUid = createGeofenceEventLandfill.GeofenceUID;
 
-      var createProjectSubscriptionEvent = CreateCreateProjectSubscriptionEvent(createCustomerEvent.CustomerUID, "Landfill");
+      var createProjectSubscriptionEvent = CreateProjectSubscriptionEvent(createCustomerEvent.CustomerUID, "Landfill");
       var associateProjectSubscriptionEvent = CreateAssociateProjectSubscriptionEvent(createProjectEvent.ProjectUID, createProjectSubscriptionEvent.SubscriptionUID);
       subscriptionUid = createProjectSubscriptionEvent.SubscriptionUID;
 
-      var insertCount = _customerRepo.StoreCustomer(createCustomerEvent);
+      var insertCount = CustomerRepo.StoreCustomer(createCustomerEvent);
       if (insertCount != 1) return false;
-      insertCount = _customerRepo.StoreCustomer(associateCustomerUserEvent);
-      if (insertCount != 1) return false;
-
-      insertCount = _projectRepo.StoreProject(createProjectEvent);
-      if (insertCount != 1) return false;
-      insertCount = _projectRepo.StoreProject(associateProjectCustomer);
+      insertCount = CustomerRepo.StoreCustomer(associateCustomerUserEvent);
       if (insertCount != 1) return false;
 
-      insertCount = _geofenceRepo.StoreGeofence(createGeofenceEventProject);
+      insertCount = ProjectRepo.StoreProject(createProjectEvent);
       if (insertCount != 1) return false;
-      insertCount = _projectRepo.StoreProject(associateProjectGeofenceProject);
+      insertCount = ProjectRepo.StoreProject(associateProjectCustomer);
+      if (insertCount != 1) return false;
+
+      insertCount = GeofenceRepo.StoreGeofence(createGeofenceEventProject);
+      if (insertCount != 1) return false;
+      insertCount = ProjectRepo.StoreProject(associateProjectGeofenceProject);
       if(insertCount != 1) return false;
-      insertCount = _geofenceRepo.StoreGeofence(createGeofenceEventLandfill);
+      insertCount = GeofenceRepo.StoreGeofence(createGeofenceEventLandfill);
       if (insertCount != 1) return false;
-      insertCount = _projectRepo.StoreProject(associateProjectGeofenceLandfill);
+      insertCount = ProjectRepo.StoreProject(associateProjectGeofenceLandfill);
       if (insertCount != 1) return false;
 
-      insertCount = _subscriptionRepo.StoreSubscription(createProjectSubscriptionEvent);
+      insertCount = SubscriptionRepo.StoreSubscription(createProjectSubscriptionEvent);
       if (insertCount != 1) return false;
-      insertCount = _subscriptionRepo.StoreSubscription(associateProjectSubscriptionEvent);
+      insertCount = SubscriptionRepo.StoreSubscription(associateProjectSubscriptionEvent);
       if (insertCount != 1) return false;
 
       return true;

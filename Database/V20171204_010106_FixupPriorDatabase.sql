@@ -252,6 +252,28 @@ EXECUTE stmt;
 DEALLOCATE PREPARE stmt;    
 
 
+SET SQL_SAFE_UPDATES=0;
+SET @s = (SELECT IF(
+    (SELECT COUNT(*)
+		FROM Project p  
+			JOIN ProjectGeofence pg on pg.fk_ProjectUID = p.ProjectUID
+			JOIN Geofence g on g.GeofenceUID = pg.fk_GeofenceUID
+		WHERE g.fk_GeofenceTypeID = 1 AND p.GeometryWKT IS NULL
+    ) > 0,    
+    "UPDATE Project
+		JOIN ProjectGeofence pg on pg.fk_ProjectUID = Project.ProjectUID
+        JOIN Geofence g on g.GeofenceUID = pg.fk_GeofenceUID    
+    SET Project.GeometryWKT = g.GeometryWKT 
+    WHERE g.fk_GeofenceTypeID = 1 
+		AND Project.GeometryWKT IS NULL;",
+    "SELECT 1"
+));  
+
+PREPARE stmt FROM @s;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt; 
+SET SQL_SAFE_UPDATES=1; 
+
 
 -- ********   Geofence *************
 

@@ -12,16 +12,9 @@ namespace LandfillDatabase.Tests
     [TestMethod]
     public void SaveEntries_Succeeds()
     {
-      int legacyCustomerId;
-      Guid customerUid;
-      Guid userUid;
-      Guid projectUid;
-      Guid projectGeofenceUid;
-      Guid landfillGeofenceUid;
-      Guid subscriptionUid;
-      var isCreatedOk = CreateAProjectWithLandfill(out legacyCustomerId,
-        out customerUid, out userUid, out projectUid, out projectGeofenceUid, out landfillGeofenceUid,
-        out subscriptionUid);
+      var isCreatedOk = CreateAProjectWithLandfill(out _,
+        out _, out _, out var projectUid, out var projectGeofenceUid, out _,
+        out _);
       Assert.IsTrue(isCreatedOk, "Failed to create a project.");
 
       var projects = LandfillDb.GetProject(projectUid.ToString());
@@ -37,29 +30,22 @@ namespace LandfillDatabase.Tests
       };
       LandfillDb.SaveEntry(projectResponse, projectGeofenceUid.ToString(), entry);
 
-      var retrievedEntries = LandfillDb.GetEntries(projectResponse, 
-                        projectGeofenceUid.ToString(),
-                        entry.date.AddDays(-1), entry.date).ToList();
+      var retrievedEntries = LandfillDb.GetEntries(projectResponse,
+        projectGeofenceUid.ToString(),
+        entry.date.AddDays(-1), entry.date).ToList();
       Assert.IsNotNull(retrievedEntries, "Error trying to get the created entries.");
       Assert.AreEqual(2, retrievedEntries.Count, "Failed to get the created entries.");
       Assert.AreEqual(0, retrievedEntries.ToList()[0].weight, "Failed to get the correct weight on day 1.");
       Assert.AreEqual(entry.weight, retrievedEntries.ToList()[1].weight, "Failed to get the correct weight on day 3.");
       Assert.AreEqual(0, retrievedEntries.ToList()[1].volume, "Failed to get the correct volume on day 3.");
     }
-    
+
     [TestMethod]
     public void SaveVolume_Succeeds()
     {
-      int legacyCustomerId;
-      Guid customerUid;
-      Guid userUid;
-      Guid projectUid;
-      Guid projectGeofenceUid;
-      Guid landfillGeofenceUid;
-      Guid subscriptionUid;
-      var isCreatedOk = CreateAProjectWithLandfill(out legacyCustomerId,
-        out customerUid, out userUid, out projectUid, out projectGeofenceUid, out landfillGeofenceUid,
-        out subscriptionUid);
+      var isCreatedOk = CreateAProjectWithLandfill(out _,
+        out _, out _, out var projectUid, out var projectGeofenceUid, out _,
+        out _);
       Assert.IsTrue(isCreatedOk, "Failed to create a project.");
 
       DateTime date = Convert.ToDateTime(DateTime.UtcNow.ToShortDateString());
@@ -85,22 +71,16 @@ namespace LandfillDatabase.Tests
       // note that at present the VolumeNotRetrieved is never retrieved. Very strange.
       //   I suspect this is a bug, but am not going to muck in the business logic
       //    for this task
-      int legacyCustomerId;
-      Guid customerUid;
-      Guid userUid;
-      Guid projectUid;
-      Guid projectGeofenceUid;
-      Guid landfillGeofenceUid;
-      Guid subscriptionUid;
-      var isCreatedOk = CreateAProjectWithLandfill(out legacyCustomerId,
-        out customerUid, out userUid, out projectUid, out projectGeofenceUid, out landfillGeofenceUid,
-        out subscriptionUid);
+      var isCreatedOk = CreateAProjectWithLandfill(out _,
+        out _, out _, out var projectUid, out var projectGeofenceUid, out _,
+        out _);
       Assert.IsTrue(isCreatedOk, "Failed to create a project.");
 
       DateTime date = Convert.ToDateTime(DateTime.UtcNow.ToShortDateString());
       double volume = 55.67;
       LandfillDb.SaveVolume(projectUid.ToString(), projectGeofenceUid.ToString(), date, volume);
-      LandfillDb.MarkVolumeNotRetrieved(projectUid.ToString(), projectGeofenceUid.ToString(), date); ;
+      LandfillDb.MarkVolumeNotRetrieved(projectUid.ToString(), projectGeofenceUid.ToString(), date);
+      ;
 
       var projects = LandfillDb.GetProject(projectUid.ToString());
       Assert.IsNotNull(projects, "Error trying to get the created project.");
@@ -119,22 +99,17 @@ namespace LandfillDatabase.Tests
     public void MarkVolumeNotAvailable_Succeeds()
     {
       // note that at present the VolumeNotAvailable is never retrieved. Very strange???
-      int legacyCustomerId;
-      Guid customerUid;
-      Guid userUid;
-      Guid projectUid;
-      Guid projectGeofenceUid;
-      Guid landfillGeofenceUid;
-      Guid subscriptionUid;
-      var isCreatedOk = CreateAProjectWithLandfill(out legacyCustomerId,
-        out customerUid, out userUid, out projectUid, out projectGeofenceUid, out landfillGeofenceUid,
-        out subscriptionUid);
+      var isCreatedOk = CreateAProjectWithLandfill(out var legacyCustomerId,
+        out var customerUid, out var userUid, out var projectUid, out var projectGeofenceUid,
+        out var landfillGeofenceUid,
+        out var subscriptionUid);
       Assert.IsTrue(isCreatedOk, "Failed to create a project.");
 
       DateTime date = Convert.ToDateTime(DateTime.UtcNow.ToShortDateString());
       double volume = 55.67;
       LandfillDb.SaveVolume(projectUid.ToString(), projectGeofenceUid.ToString(), date, volume);
-      LandfillDb.MarkVolumeNotAvailable(projectUid.ToString(), projectGeofenceUid.ToString(), date); ;
+      LandfillDb.MarkVolumeNotAvailable(projectUid.ToString(), projectGeofenceUid.ToString(), date);
+      ;
 
       var projects = LandfillDb.GetProject(projectUid.ToString());
       Assert.IsNotNull(projects, "Error trying to get the created project.");

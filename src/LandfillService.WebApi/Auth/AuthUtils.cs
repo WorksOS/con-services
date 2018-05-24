@@ -65,7 +65,7 @@ public class AuthUtilities
     }
     catch (Exception ex)
     {
-      errorMessage = "Can not retrieve cusomer context: Invalid token";
+      errorMessage = $"Can not retrieve cusomer context: Invalid token. Exception: {ex.Message}";
       return null;
     }
   }
@@ -76,7 +76,7 @@ public class AuthUtilities
     {
       return LandfillDb.GetLandfillProjectsForUser(userUid);
     }
-    catch (Exception ex)
+    catch (Exception)
     {
       return null;
     }
@@ -97,7 +97,8 @@ public class AuthUtilities
   ///   This method is used to get the Jwt Assertion Token string from the HTTP Request Header
   /// </summary>
   /// <param name="httpRequestHeaders">Incoming Request Headers</param>
-  /// <param name="jwtToken">Output parameter - Jwt Assetion Token string</param>
+  /// <param name="headerName"></param>
+  /// <param name="headerValue"></param>
   /// <returns>true, if Http Headers contain Jwt; false, otherwise</returns>
   private bool TryGetHeader(HttpRequestHeaders httpRequestHeaders, string headerName, out string headerValue)
   {

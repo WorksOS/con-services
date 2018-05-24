@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Common.Repository;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -12,16 +11,9 @@ namespace LandfillDatabase.Tests
     [TestMethod]
     public void GetGeofenceUidForProject_Succeeds()
     {
-      int legacyCustomerId;
-      Guid customerUid;
-      Guid userUid;
-      Guid projectUid;
-      Guid projectGeofenceUid;
-      Guid landfillGeofenceUid;
-      Guid subscriptionUid;
-      var isCreatedOk = CreateAProjectWithLandfill(out legacyCustomerId,
-        out customerUid, out userUid, out projectUid, out projectGeofenceUid, out landfillGeofenceUid,
-        out subscriptionUid);
+      var isCreatedOk = CreateAProjectWithLandfill(out _,
+        out _, out _, out var projectUid, out var projectGeofenceUid, out _,
+        out _);
       Assert.IsTrue(isCreatedOk, "Failed to create a project.");
 
       var projects = LandfillDb.GetProject(projectUid.ToString()).ToList();
@@ -34,16 +26,9 @@ namespace LandfillDatabase.Tests
     [TestMethod]
     public void GetGeofences_Succeeds()
     {
-      int legacyCustomerId;
-      Guid customerUid;
-      Guid userUid;
-      Guid projectUid;
-      Guid projectGeofenceUid;
-      Guid landfillGeofenceUid;
-      Guid subscriptionUid;
-      var isCreatedOk = CreateAProjectWithLandfill(out legacyCustomerId,
-        out customerUid, out userUid, out projectUid, out projectGeofenceUid, out landfillGeofenceUid,
-        out subscriptionUid);
+      var isCreatedOk = CreateAProjectWithLandfill(out _,
+        out _, out _, out var projectUid, out var projectGeofenceUid, out var landfillGeofenceUid,
+        out _);
       Assert.IsTrue(isCreatedOk, "Failed to create a project.");
 
       var geofences = LandfillDb.GetGeofences(projectUid.ToString()).ToList();
@@ -53,22 +38,27 @@ namespace LandfillDatabase.Tests
     }
 
     [TestMethod]
-    public void GetGeofencePoints_Succeeds()
+    public void GetProjectGeofencePoints_Succeeds()
     {
-      int legacyCustomerId;
-      Guid customerUid;
-      Guid userUid;
-      Guid projectUid;
-      Guid projectGeofenceUid;
-      Guid landfillGeofenceUid;
-      Guid subscriptionUid;
-      var isCreatedOk = CreateAProjectWithLandfill(out legacyCustomerId,
-        out customerUid, out userUid, out projectUid, out projectGeofenceUid, out landfillGeofenceUid,
-        out subscriptionUid);
+      var isCreatedOk = CreateAProjectWithLandfill(out _,
+        out _, out _, out _, out var projectGeofenceUid, out _,
+        out _);
       Assert.IsTrue(isCreatedOk, "Failed to create a project.");
 
       var points = LandfillDb.GetGeofencePoints(projectGeofenceUid.ToString()).ToList();
-      Assert.AreEqual(8, points.Count, "Failed to get the project geofence points.");
+      Assert.AreEqual(6, points.Count, "Failed to get the project geofence points.");
+    }
+
+    [TestMethod]
+    public void GetLandfillGeofencePoints_Succeeds()
+    {
+      var isCreatedOk = CreateAProjectWithLandfill(out _,
+        out _, out _, out _, out _, out var landfillGeofenceUid,
+        out _);
+      Assert.IsTrue(isCreatedOk, "Failed to create a project.");
+
+      var points = LandfillDb.GetGeofencePoints(landfillGeofenceUid.ToString()).ToList();
+      Assert.AreEqual(8, points.Count, "Failed to get the landfill geofence points.");
     }
 
   }

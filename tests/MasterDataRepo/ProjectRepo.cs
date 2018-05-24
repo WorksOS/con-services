@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Reflection;
 using Common.Models;
-using Common.Repository;
 using Dapper;
 using log4net;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -11,7 +10,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 namespace MasterDataRepo
 {
 
-  public class ProjectRepo : RepositoryBase // , IProjectService
+  public class ProjectRepo : RepositoryBase
   {
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -21,37 +20,24 @@ namespace MasterDataRepo
       if (evt is CreateProjectEvent)
       {
         var projectEvent = (CreateProjectEvent)evt;
-        var project = new Common.Models.Project();
-        project.LegacyProjectID = projectEvent.ProjectID;
-        project.Name = projectEvent.ProjectName;
-        project.ProjectTimeZone = projectEvent.ProjectTimezone;
-        project.LandfillTimeZone = TimeZone.WindowsToIana(projectEvent.ProjectTimezone);
-        project.ProjectUID = projectEvent.ProjectUID.ToString();
-        project.EndDate = projectEvent.ProjectEndDate;
-        project.LastActionedUTC = projectEvent.ActionUTC;
-        project.StartDate = projectEvent.ProjectStartDate;
-        project.ProjectType = projectEvent.ProjectType;
+
+        var project = new Common.Models.Project
+        {
+          EndDate = projectEvent.ProjectEndDate,
+          StartDate = projectEvent.ProjectStartDate,
+          ProjectTimeZone = projectEvent.ProjectTimezone,
+          LandfillTimeZone = TimeZone.WindowsToIana(projectEvent.ProjectTimezone),
+          Name = projectEvent.ProjectName,
+          Description = projectEvent.Description,
+          ProjectType = projectEvent.ProjectType,
+          GeometryWKT = projectEvent.ProjectBoundary,
+          ProjectUID = projectEvent.ProjectUID.ToString(),
+          LegacyProjectID = projectEvent.ProjectID,
+          LastActionedUTC = projectEvent.ActionUTC,
+          
+        };
         upsertedCount = UpsertProjectDetail(project, "CreateProjectEvent");
       }
-      //else if (evt is UpdateProjectEvent)
-      //{
-      //  var projectEvent = (UpdateProjectEvent)evt;
-      //  var project = new Project();
-      //  project.ProjectUID = projectEvent.ProjectUID.ToString();
-      //  project.Name = projectEvent.ProjectName;
-      //  project.EndDate = projectEvent.ProjectEndDate;
-      //  project.LastActionedUTC = projectEvent.ActionUTC;
-      //  project.ProjectType = projectEvent.ProjectType;
-      //  upsertedCount = UpsertProjectDetail(project, "UpdateProjectEvent");
-      //}
-      //else if (evt is DeleteProjectEvent)
-      //{
-      //  var projectEvent = (DeleteProjectEvent)evt;
-      //  var project = new Project();
-      //  project.ProjectUID = projectEvent.ProjectUID.ToString();
-      //  project.LastActionedUTC = projectEvent.ActionUTC;
-      //  upsertedCount = UpsertProjectDetail(project, "DeleteProjectEvent");
-      //}
       else if (evt is AssociateProjectCustomer)
       {
         var projectEvent = (AssociateProjectCustomer)evt;
@@ -93,8 +79,9 @@ namespace MasterDataRepo
 
       var existing = Connection.Query<Project>
       (@"SELECT 
-              ProjectUID, Name, LegacyProjectID, ProjectTimeZone, LandfillTimeZone, 
-              LastActionedUTC, StartDate, EndDate, fk_ProjectTypeID AS ProjectType, IsDeleted
+              ProjectUID, LegacyProjectID, Name, fk_ProjectTypeID AS ProjectType, Description, 
+              ProjectTimeZone, LandfillTimeZone, GeometryWKT,
+              StartDate, EndDate,  IsDeleted, LastActionedUTC 
             FROM Project
             WHERE ProjectUID = @projectUid", new { projectUid = project.ProjectUID }).FirstOrDefault();
 
@@ -126,9 +113,9 @@ namespace MasterDataRepo
       {
         const string insert =
           @"INSERT Project
-                (LegacyProjectID, Name, ProjectTimeZone, LandfillTimeZone, ProjectUID, LastActionedUTC, StartDate, EndDate, fk_ProjectTypeID)
+                (LegacyProjectID, Name, ProjectTimeZone, LandfillTimeZone, ProjectUID, LastActionedUTC, StartDate, EndDate, fk_ProjectTypeID, Description, GeometryWKT)
             VALUES
-                (@LegacyProjectID, @Name, @ProjectTimeZone, @LandfillTimeZone, @ProjectUID, @LastActionedUTC, @StartDate, @EndDate, @ProjectType)";
+                (@LegacyProjectID, @Name, @ProjectTimeZone, @LandfillTimeZone, @ProjectUID, @LastActionedUTC, @StartDate, @EndDate, @ProjectType, @Description, @GeometryWKT)";
         return Connection.Execute(insert, project);
       }
 
@@ -160,7 +147,9 @@ namespace MasterDataRepo
                 SET Name = @Name,
                   LastActionedUTC = @LastActionedUTC,
                   EndDate = @EndDate, 
-                  fk_ProjectTypeID = @ProjectType
+                  fk_ProjectTypeID = @ProjectType,
+                  Description = @Description, 
+                  GeometryWKT = @GeometryWKT
               WHERE ProjectUID = @ProjectUID";
         return Connection.Execute(update, project);
       }

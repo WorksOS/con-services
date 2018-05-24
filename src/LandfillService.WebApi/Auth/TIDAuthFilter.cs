@@ -24,9 +24,8 @@ namespace LandfillService.WebApi.Auth
   {
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-    public async Task AuthenticateAsync(HttpAuthenticationContext context, CancellationToken cancellationToken)
+    public Task AuthenticateAsync(HttpAuthenticationContext context, CancellationToken cancellationToken)
     {
-
       if (ConfigurationManager.AppSettings["JWT"] != "Disabled")
       {
         //Passing the WebAPI Request headers to JWTHelper function to obtain the JWT Token
@@ -64,6 +63,7 @@ namespace LandfillService.WebApi.Auth
           context.Principal = new LandfillPrincipal(projectList, userUid, Guid.Empty.ToString());
         }
       }
+      return Task.FromResult(0);
     }
 
     public Task ChallengeAsync(HttpAuthenticationChallengeContext context, CancellationToken cancellationToken)

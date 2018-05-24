@@ -402,6 +402,7 @@ namespace LandfillService.WebApi.Controllers
     /// <param name="userUid">User ID</param>
     /// <param name="projectResponse">Project</param>
     /// <param name="returnEarliest">Indicates if filtering by earliest or latest cell pass</param>
+    /// <param name="designId"></param>
     /// <returns></returns>
     private async Task<double?> GetAirspaceVolumeInBackground(string userUid, ProjectResponse projectResponse, bool returnEarliest,
       int designId)

@@ -39,33 +39,6 @@ namespace Common.Repository
       }
     }
 
-
-    ///// <summary>
-    ///// Wrapper for executing MySQL queries/statements in a DB transaction; rolls back the transaction in case of errors
-    ///// </summary>
-    ///// <param name="body">Code to execute</param>
-    ///// <returns>The result of executing body()</returns>
-    //private static T InTransaction<T>(Func<MySqlConnection, T> body)
-    //{
-    //  return WithConnection<T>((conn) =>
-    //  {
-    //    MySqlTransaction transaction = null;
-
-    //    try
-    //    {
-    //      transaction = conn.BeginTransaction();
-    //      var result = body(conn);
-    //      transaction.Commit();
-    //      return result;
-    //    }
-    //    catch (Exception)
-    //    {
-    //      transaction.Rollback();
-    //      throw;
-    //    }
-    //  });
-    //}
-
     #region (Customer)
 
     public static List<Customer> GetAssociatedCustomerbyUserUid(System.Guid userUid)
@@ -123,7 +96,6 @@ namespace Common.Repository
 
     #region(Projects)
 
-    // from customRepo
     public static IEnumerable<Project> GetLandfillProjectsForUser(string userUid)
     {
       Log.DebugFormat($"GetLandfillProjectsForUser connString {connString} userUid {userUid} ");
@@ -134,12 +106,13 @@ namespace Common.Repository
               p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, 
               cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, s.SubscriptionUID, 
               p.LastActionedUTC, p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
-              p.fk_ProjectTypeID AS ProjectType, s.EndDate AS SubEndDate
-          FROM Project p
-            JOIN ProjectSubscription ps ON p.ProjectUID = ps.fk_ProjectUID
-            JOIN Subscription s on ps.fk_SubscriptionUID = s.SubscriptionUID
-            JOIN CustomerProject cp on p.ProjectUID = cp.fk_ProjectUID
-            JOIN CustomerUser cu on cp.fk_CustomerUID = cu.fk_CustomerUID
+              p.fk_ProjectTypeID AS ProjectType, p.GeometryWKT, 
+              s.StartDate AS SubStartDate, s.EndDate AS SubEndDate
+          FROM Project p  
+              JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
+              JOIN CustomerUser cu ON cu.fk_CustomerUID = cp.fk_CustomerUID
+              JOIN ProjectSubscription ps ON ps.fk_ProjectUID = p.ProjectUID
+              JOIN Subscription s ON s.SubscriptionUID = ps.fk_SubscriptionUID
           WHERE cu.UserUID = @userUid and p.IsDeleted = 0 AND p.fk_ProjectTypeID = 1";
 
 
@@ -158,6 +131,7 @@ namespace Common.Repository
               ProjectTimeZone = reader.GetString(reader.GetOrdinal("ProjectTimeZone")),
               LegacyCustomerID = reader.GetInt64(reader.GetOrdinal("LegacyCustomerID")),
               SubscriptionEndDate = reader.GetDateTime(reader.GetOrdinal("SubEndDate")),
+              GeometryWKT = reader.GetString(reader.GetOrdinal("GeometryWKT")) == null ? string.Empty : reader.GetString(reader.GetOrdinal("GeometryWKT")),
               IsDeleted = reader.GetBoolean(reader.GetOrdinal("IsDeleted"))
             });
           }
@@ -167,13 +141,6 @@ namespace Common.Repository
       });
     }
 
-
-    /// <summary>
-    /// Retrieves a list of projects for a given user 
-    /// </summary>
-    /// <param name="userUid">User ID used to associate projects with a user</param>
-    /// <param name="customerUid">Customer ID used to associate projects with a user</param>
-    /// <returns>A list of projects</returns>
     public static IEnumerable<ProjectResponse> GetProjects(string userUid, string customerUid)
     {
       Log.DebugFormat($"GetProjects connString {connString} userUid {userUid} customerUid {customerUid}");
@@ -181,16 +148,18 @@ namespace Common.Repository
       return WithConnection((conn) =>
       {
 
-        var command = @"SELECT p.LegacyProjectID AS ProjectID, p.Name, p.LandfillTimeZone,
-                                     p.ProjectUID, p.ProjectTimeZone,
-                                     s.StartDate AS SubStartDate, s.EndDate AS SubEndDate,
-									                   cp.LegacyCustomerID
-                              FROM Project p  
-                              JOIN CustomerProject cp ON p.ProjectUID = cp.fk_ProjectUID
-                              JOIN CustomerUser cu ON cp.fk_CustomerUID = cu.fk_CustomerUID
-                              JOIN ProjectSubscription ps ON p.ProjectUID = ps.fk_ProjectUID
-                              JOIN Subscription s ON ps.fk_SubscriptionUID = s.SubscriptionUID
-                              WHERE cu.UserUID = @userUid AND cu.fk_CustomerUID = @customerUid AND p.IsDeleted = 0 AND p.fk_ProjectTypeID = 1";
+        var command = @"SELECT 
+              p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, 
+              cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, s.SubscriptionUID, 
+              p.LastActionedUTC, p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
+              p.fk_ProjectTypeID AS ProjectType, p.GeometryWKT, 
+              s.StartDate AS SubStartDate, s.EndDate AS SubEndDate
+            FROM Project p  
+              JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
+              JOIN CustomerUser cu ON cu.fk_CustomerUID = cp.fk_CustomerUID
+              JOIN ProjectSubscription ps ON ps.fk_ProjectUID = p.ProjectUID
+              JOIN Subscription s ON s.SubscriptionUID = ps.fk_SubscriptionUID
+            WHERE cu.UserUID = @userUid AND cu.fk_CustomerUID = @customerUid AND p.IsDeleted = 0 AND p.fk_ProjectTypeID = 1";
 
         var projects = new List<ProjectResponse>();
 
@@ -220,7 +189,7 @@ namespace Common.Repository
 
             projects.Add(new ProjectResponse
             {
-              id = reader.GetUInt32(reader.GetOrdinal("ProjectID")),
+              id = reader.GetUInt32(reader.GetOrdinal("LegacyProjectID")),
               projectUid = reader.GetString(reader.GetOrdinal("ProjectUID")),
               name = reader.GetString(reader.GetOrdinal("Name")),
               timeZoneName = reader.GetString(reader.GetOrdinal("LandfillTimeZone")),
@@ -242,13 +211,15 @@ namespace Common.Repository
       return WithConnection((conn) =>
       {
         var command =
-          @"SELECT DISTINCT prj.LegacyProjectID AS ProjectID, prj.LandfillTimeZone as TimeZone, prj.ProjectUID, prj.Name, cp.LegacyCustomerID
-                          FROM Project prj 
-                          JOIN CustomerProject cp on prj.ProjectUID = cp.fk_ProjectUID
-						              JOIN CustomerUser cu ON cp.fk_CustomerUID = cu.fk_CustomerUID
-                          JOIN ProjectSubscription ps ON prj.ProjectUID = ps.fk_ProjectUID
-                          JOIN Subscription s ON ps.fk_SubscriptionUID = s.SubscriptionUID
-                          WHERE prj.fk_ProjectTypeID = 1 AND prj.IsDeleted = 0";
+          @"SELECT DISTINCT p.ProjectUID,  p.Name, p.LegacyProjectID AS ProjectID, 
+                p.LandfillTimeZone as TimeZone,
+                cp.LegacyCustomerID
+              FROM Project p  
+                JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
+                JOIN CustomerUser cu ON cu.fk_CustomerUID = cp.fk_CustomerUID
+                JOIN ProjectSubscription ps ON ps.fk_ProjectUID = p.ProjectUID
+                JOIN Subscription s ON s.SubscriptionUID = ps.fk_SubscriptionUID
+              WHERE p.fk_ProjectTypeID = 1 AND p.IsDeleted = 0";
         using (var reader = MySqlHelper.ExecuteReader(conn, command))
         {
           var projects = new List<ProjectResponse>();
@@ -274,10 +245,10 @@ namespace Common.Repository
 
       return WithConnection((conn) =>
       {
-        var command = @"SELECT LegacyProjectID AS ProjectID, Name, LandfillTimeZone,
-                                     ProjectUID, ProjectTimeZone
-                              FROM Project
-                              WHERE ProjectUID = @projectUid";
+        var command = @"SELECT ProjectUID, LegacyProjectID AS ProjectID, Name, 
+                             ProjectTimeZone, LandfillTimeZone
+                          FROM Project
+                          WHERE ProjectUID = @projectUid";
 
         var projects = new List<ProjectResponse>();
 
