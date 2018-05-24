@@ -1,4 +1,5 @@
 ﻿using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
+using VSS.TRex.Analytics.Foundation.Interfaces;
 using VSS.TRex.Analytics.GridFabric.Responses;
 using VSS.TRex.GridFabric.Requests.Interfaces;
 
@@ -7,8 +8,10 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
 	/// <summary>
 	/// The response state returned from a Temperature statistics request
 	/// </summary>
-	public class TemperatureStatisticsResponse : SummaryAnalyticsResponse, IAggregateWith<TemperatureStatisticsResponse>
-	{
+	public class TemperatureStatisticsResponse : SummaryAnalyticsResponse, 
+	  IAggregateWith<TemperatureStatisticsResponse>, 
+	  IAnalyticsOperationResponseResultConversion<TemperatureResult>
+  {
 		/// <summary>
 		/// Holds last known good minimum temperature level value.
 		/// </summary>
@@ -59,5 +62,27 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
 
       return this;
 		}
-	}
+
+    public TemperatureResult ConstructResult()
+    {
+      return new TemperatureResult
+      {
+        MinimumTemperature = LastTempRangeMin,
+        MaximumTemperature = LastTempRangeMax,
+        IsTargetTemperatureConstant = IsTargetValueConstant,
+        BelowTemperaturePercent = ValueUnderTargetPercent,
+        WithinTemperaturePercent = ValueAtTargetPercent,
+        AboveTemperaturePercent = ValueOverTargetPercent,
+        TotalAreaCoveredSqMeters = SummaryProcessedArea,
+
+        // 0 : No problems due to missing target data could still be no data however... 
+        // 1 : No result due to missing target data...
+        // 2 : Partial result due to missing target data...
+
+        ReturnCode = MissingTargetValue ? SummaryCellsScanned == 0 ? (short)1 : (short)2 : (short)0,
+
+        ResultStatus = ResultStatus
+      };
+    }
+  }
 }
