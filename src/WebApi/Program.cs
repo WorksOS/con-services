@@ -44,7 +44,10 @@ namespace VSS.Productivity3D.WebApi
       var libuvConfigured = int.TryParse(Environment.GetEnvironmentVariable(LIBUV_THREAD_COUNT), out var libuvThreads);
       var host = new WebHostBuilder()
         .UseConfiguration(config)
-        .UseKestrel()
+        .UseKestrel(opts =>
+        {
+          opts.Limits.MaxResponseBufferSize = 131072;//128K for large exports (default is 64K)
+        })
         //.UseUrls("http://127.0.0.1:5002") //DO NOT REMOVE (used for local debugging of long running veta exports)
         .UseLibuv(opts =>
         {
