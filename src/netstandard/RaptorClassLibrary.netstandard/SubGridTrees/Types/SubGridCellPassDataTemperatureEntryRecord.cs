@@ -7,17 +7,17 @@ namespace VSS.TRex.SubGridTrees.Types
 	/// <summary>
 	/// Contains measured temperature value as well as minimum and maximum temperature warning level values.
 	/// </summary>
-	public class SubGridCellPassDataTemperatureEntryRecord
+	public struct SubGridCellPassDataTemperatureEntryRecord
   {
 	  /// <summary>
 	  /// Minimum machine speed value.
 	  /// </summary>
 	  public ushort MeasuredTemperature { get; set; }
 
-	  /// <summary>
-	  /// Maximum machine speed value.
-	  /// </summary>
-	  public TemperatureWarningLevelsRecord TemperatureLevels{ get; set; }
+    /// <summary>
+    /// Maximum machine speed value.
+    /// </summary>
+    public TemperatureWarningLevelsRecord TemperatureLevels;
 
 		/// <summary>
 		/// /// Constractor with arguments.

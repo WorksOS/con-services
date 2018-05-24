@@ -58,7 +58,7 @@ namespace VSS.TRex.SubGridTrees.Client
         /// <param name="cellX"></param>
         /// <param name="cellY"></param>
         /// <returns></returns>
-        public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY] != null && Cells[cellX, cellY].MeasuredTemperature != CellPass.NullMaterialTemperatureValue;
+        public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY].MeasuredTemperature != CellPass.NullMaterialTemperatureValue;
 
         /// <summary>
         /// Sets all cell heights to null and clears the first pass and sureyed surface pass maps
@@ -70,7 +70,6 @@ namespace VSS.TRex.SubGridTrees.Client
 	        // TODO: Optimisation: Use PassData_MachineSpeed_Null assignment as in current gen;
 					ForEach((x, y) =>
           {
-	          if (Cells[x, y] != null)
 							Cells[x, y].MeasuredTemperature = CellPass.NullMaterialTemperatureValue;
           }); 
 	        

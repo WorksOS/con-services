@@ -7,7 +7,7 @@ using VSS.TRex.Common;
 
 namespace VSS.TRex.Types
 {
-  public class TemperatureWarningLevelsRecord
+  public struct TemperatureWarningLevelsRecord
   {
 		/// <summary>
 		/// Minimum temperature warning levels value.
