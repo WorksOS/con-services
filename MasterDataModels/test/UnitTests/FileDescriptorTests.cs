@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 
 namespace VSS.MasterData.Models.UnitTests
 {
-
   [TestClass]
   public class FileDescriptorTests
   {
@@ -44,6 +40,5 @@ namespace VSS.MasterData.Models.UnitTests
       var desc = FileDescriptor.CreateFileDescriptor("1", null, "3");
       desc.Validate();
     }
-
   }
 }

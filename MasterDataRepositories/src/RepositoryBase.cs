@@ -1,18 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Threading.Tasks;
-using Dapper;
+﻿using Dapper;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
 using Polly;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Threading.Tasks;
 using VSS.ConfigurationStore;
 
 namespace VSS.MasterData.Repositories
 {
   public abstract class RepositoryBase
   {
-    protected const int Nil_Upserts = 0;
     protected ILogger log;
 
     // this is used by the unit tests only 

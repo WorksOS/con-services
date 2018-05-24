@@ -133,30 +133,9 @@ namespace VSS.Productivity3D.MasterDataConsumer
         .Split(new[] { "," }, StringSplitOptions.None);
 
       string loggerRepoName = "MDC " + kafkaTopics[0].Split('.').Last();
-      //Now set actual logging name
+
       Log4NetProvider.RepoName = loggerRepoName;
-
-      string logPath;
-
-      if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "log4net.xml")))
-      {
-        logPath = Directory.GetCurrentDirectory();
-        Console.WriteLine($"Setting GetCurrentDirectory path for the config file {logPath}");
-      }
-      else if (File.Exists(Path.Combine(AppContext.BaseDirectory, "log4net.xml")))
-      {
-        logPath = Path.Combine(AppContext.BaseDirectory);
-        Console.WriteLine($"Setting BaseDirectory path for the config file {logPath}");
-      }
-      else
-      {
-        var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
-        logPath = Path.GetDirectoryName(pathToExe);
-        Console.WriteLine($"Setting alternative path for the config file {logPath}");
-      }
-
-      Console.WriteLine("Log path:" + logPath);
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4net.xml", loggerRepoName);
+      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName);
 
       var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
       loggerFactory.AddConsole(configStore.GetLoggingConfig());

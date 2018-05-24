@@ -23,7 +23,7 @@ namespace VSS.Log4Net.Extensions
     
     public static void ConfigureLog4Net(string repoName, string configFileRelativePath = "log4net.xml", string currentDir = null)
     {
-      currentDir = currentDir ?? GetExecutablePath();
+      currentDir = currentDir ?? GetExecutablePath(configFileRelativePath);
 
       var fullName = Path.Combine(currentDir, configFileRelativePath);
       var configFile = new FileInfo(fullName);
@@ -50,16 +50,16 @@ namespace VSS.Log4Net.Extensions
     /// <summary>
     /// Gets the full path to the log4net configuration file which may vary depending on execution context and/or project configuration.
     /// </summary>
-    private static string GetExecutablePath()
+    private static string GetExecutablePath(string configFilename)
     {
       string logPath;
 
-      if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "log4net.xml")))
+      if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), configFilename)))
       {
         logPath = Directory.GetCurrentDirectory();
         Console.WriteLine($"Setting GetCurrentDirectory path for the config file {logPath}");
       }
-      else if (File.Exists(Path.Combine(AppContext.BaseDirectory, "log4net.xml")))
+      else if (File.Exists(Path.Combine(AppContext.BaseDirectory, configFilename)))
       {
         logPath = Path.Combine(AppContext.BaseDirectory);
         Console.WriteLine($"Setting BaseDirectory path for the config file {logPath}");

@@ -29,6 +29,10 @@
     <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.33.*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
+  </ItemGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>

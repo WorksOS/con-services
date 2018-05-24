@@ -15,7 +15,9 @@ namespace VSS.MasterData.Repositories
 {
   public class ProjectRepository : RepositoryBase, IRepository<IProjectEvent>, IProjectRepository
   {
-    public ProjectRepository(IConfigurationStore _connectionString, ILoggerFactory logger) : base(_connectionString,
+    private const int LegacyProjectIdCutoff = 2000000;
+
+    public ProjectRepository(IConfigurationStore connectionString, ILoggerFactory logger) : base(connectionString,
       logger)
     {
       log = logger.CreateLogger<ProjectRepository>();
@@ -25,7 +27,6 @@ namespace VSS.MasterData.Repositories
 
     public async Task<int> StoreEvent(IProjectEvent evt)
     {
-      const string polygonStr = "POLYGON";
       var upsertedCount = 0;
       if (evt == null)
       {
@@ -57,21 +58,9 @@ namespace VSS.MasterData.Repositories
           project.CoordinateSystemLastActionedUTC = projectEvent.ActionUTC;
         }
 
-        //Don't write if there is no boundary defined
-        if (!string.IsNullOrEmpty(projectEvent.ProjectBoundary))
+        project.GeometryWKT = GetPolygonWKT(projectEvent.ProjectBoundary);
+        if (!string.IsNullOrEmpty(project.GeometryWKT))
         {
-          // Check whether the ProjectBoundary is in WKT format. Convert to the WKT format if it is not. 
-          if (!projectEvent.ProjectBoundary.Contains(polygonStr))
-          {
-            projectEvent.ProjectBoundary =
-              projectEvent.ProjectBoundary.Replace(",", " ").Replace(";", ",").TrimEnd(',');
-            projectEvent.ProjectBoundary =
-              string.Concat(polygonStr + "((", projectEvent.ProjectBoundary, "))");
-          }
-          //Polygon must start and end with the same point
-
-          project.GeometryWKT = projectEvent.ProjectBoundary.ParseGeometryData().ClosePolygonIfRequired()
-            .ToPolygonWKT();
           upsertedCount = await UpsertProjectDetail(project, "CreateProjectEvent");
         }
       }
@@ -96,6 +85,9 @@ namespace VSS.MasterData.Repositories
           project.CoordinateSystemFileName = projectEvent.CoordinateSystemFileName;
           project.CoordinateSystemLastActionedUTC = projectEvent.ActionUTC;
         }
+
+        project.GeometryWKT = GetPolygonWKT(projectEvent.ProjectBoundary);
+
         upsertedCount = await UpsertProjectDetail(project, "UpdateProjectEvent");
       }
       else if (evt is DeleteProjectEvent)
@@ -195,7 +187,7 @@ namespace VSS.MasterData.Repositories
       }
       else if (evt is UndeleteImportedFileEvent)
       {
-        var projectEvent = (UndeleteImportedFileEvent)evt;
+        var projectEvent = (UndeleteImportedFileEvent) evt;
         var importedFile = new ImportedFile
         {
           ProjectUid = projectEvent.ProjectUID.ToString(),
@@ -206,7 +198,7 @@ namespace VSS.MasterData.Repositories
       }
       else if (evt is UpdateProjectSettingsEvent)
       {
-        var projectEvent = (UpdateProjectSettingsEvent)evt;
+        var projectEvent = (UpdateProjectSettingsEvent) evt;
         var projectSettings = new ProjectSettings
         {
           ProjectUid = projectEvent.ProjectUID.ToString(),
@@ -217,6 +209,7 @@ namespace VSS.MasterData.Repositories
         };
         upsertedCount = await UpsertProjectSettings(projectSettings);
       }
+
       return upsertedCount;
     }
 
@@ -224,6 +217,30 @@ namespace VSS.MasterData.Repositories
 
 
     #region project
+
+    private string GetPolygonWKT(string boundary)
+    {
+      const string polygonStr = "POLYGON";
+      var boundaryWkt = string.Empty;
+
+      if (!string.IsNullOrEmpty(boundary))
+      {
+        // Check whether the ProjectBoundary is in WKT format. Convert to the WKT format if it is not. 
+        if (!boundary.Contains(polygonStr))
+        {
+          boundary =
+            boundary.Replace(",", " ").Replace(";", ",").TrimEnd(',');
+          boundary =
+            string.Concat(polygonStr + "((", boundary, "))");
+        }
+        //Polygon must start and end with the same point
+
+        boundaryWkt = boundary.ParseGeometryData().ClosePolygonIfRequired()
+          .ToPolygonWKT();
+      }
+
+      return boundaryWkt;
+    }
 
     /// <summary>
     ///     All detail-related columns can be inserted,
@@ -276,6 +293,12 @@ namespace VSS.MasterData.Repositories
 
         upsertedCount = await ExecuteWithAsyncPolicy(insert, project);
         log.LogDebug($"ProjectRepository/CreateProject: (insert): inserted {upsertedCount} rows");
+
+        if (upsertedCount > 0)
+        {
+          upsertedCount = await InsertProjectHistory(project);
+        }
+
         return upsertedCount;
       }
 
@@ -284,26 +307,38 @@ namespace VSS.MasterData.Repositories
       if ((existing.LastActionedUTC >= project.LastActionedUTC) && existing.IsDeleted == true)
       {
         project.IsDeleted = true;
-        const string update =
-          @"UPDATE Project
-                SET LegacyProjectID = @LegacyProjectID,
-                  Name = @Name,
-                  Description = @Description,
-                  fk_ProjectTypeID = @ProjectType,
-                  IsDeleted = @IsDeleted,
-                  ProjectTimeZone = @ProjectTimeZone,
-                  LandfillTimeZone = @LandfillTimeZone,
-                  StartDate = @StartDate,
-                  EndDate = @EndDate,                  
-                  GeometryWKT = @GeometryWKT,
-                  CoordinateSystemFileName = @CoordinateSystemFileName,
-                  CoordinateSystemLastActionedUTC = @CoordinateSystemLastActionedUTC
-                WHERE ProjectUID = @ProjectUID";
-          log.LogDebug("ProjectRepository/CreateProject: going to update a dummy project");
 
-          upsertedCount = await ExecuteWithAsyncPolicy(update, project);
-          log.LogDebug($"ProjectRepository/CreateProject: (update): updated {upsertedCount} rows ");
-          return upsertedCount;
+        // this create could have the legit legacyProjectId
+        project.LegacyProjectID =
+          project.LegacyProjectID > 0 && project.LegacyProjectID < LegacyProjectIdCutoff ? project.LegacyProjectID : existing.LegacyProjectID;
+
+        // leave more recent values
+        project.Name = string.IsNullOrEmpty(existing.Name) ? project.Name : existing.Name;
+        project.Description = string.IsNullOrEmpty(existing.Description) ? project.Description : existing.Description;
+        project.ProjectTimeZone = string.IsNullOrEmpty(existing.ProjectTimeZone) ? project.ProjectTimeZone : existing.ProjectTimeZone;
+        project.LandfillTimeZone = string.IsNullOrEmpty(existing.LandfillTimeZone) ? project.LandfillTimeZone : existing.LandfillTimeZone;
+        project.StartDate = existing.StartDate == DateTime.MinValue ? project.StartDate : existing.StartDate;
+        project.EndDate = existing.EndDate == DateTime.MinValue ? project.EndDate : existing.EndDate;
+        project.LastActionedUTC = existing.LastActionedUTC;
+
+        if (!string.IsNullOrEmpty(existing.CoordinateSystemFileName))
+        {
+          project.CoordinateSystemFileName = existing.CoordinateSystemFileName;
+          project.CoordinateSystemLastActionedUTC = existing.CoordinateSystemLastActionedUTC;
+        }
+        project.GeometryWKT = string.IsNullOrEmpty(existing.GeometryWKT) ? project.GeometryWKT : existing.GeometryWKT;
+        
+        string update = BuildProjectUpdateString(project);
+        log.LogDebug("ProjectRepository/CreateProject: going to update a dummy project");
+
+        upsertedCount = await ExecuteWithAsyncPolicy(update, project);
+        if (upsertedCount > 0)
+        {
+          upsertedCount = await InsertProjectHistory(project);
+        }
+
+        log.LogDebug($"ProjectRepository/CreateProject: (update): updated {upsertedCount} rows ");
+        return upsertedCount;
       }
 
       // an update was processed before the create, even though it's actionUTC is later (due to kafka partioning issue)
@@ -312,30 +347,36 @@ namespace VSS.MasterData.Repositories
       {
         log.LogDebug("ProjectRepository/CreateProject: create arrived after an update so updating project");
 
-        // a more recent cs exists, leave it
+        // this create could have the legit legacyProjectId
+        project.LegacyProjectID =
+          project.LegacyProjectID > 0 && project.LegacyProjectID < LegacyProjectIdCutoff ? project.LegacyProjectID : existing.LegacyProjectID;
+
+        // leave more recent values
+        project.Name = string.IsNullOrEmpty(existing.Name) ? project.Name : existing.Name;
+        project.Description = string.IsNullOrEmpty(existing.Description) ? project.Description : existing.Description;
+        project.ProjectTimeZone = string.IsNullOrEmpty(existing.ProjectTimeZone) ? project.ProjectTimeZone : existing.ProjectTimeZone;
+        project.LandfillTimeZone = string.IsNullOrEmpty(existing.LandfillTimeZone) ? project.LandfillTimeZone : existing.LandfillTimeZone;
+        project.StartDate = existing.StartDate == DateTime.MinValue ? project.StartDate : existing.StartDate;
+        project.EndDate = existing.EndDate == DateTime.MinValue ? project.EndDate : existing.EndDate;
+        project.LastActionedUTC = existing.LastActionedUTC;
+
         if (!string.IsNullOrEmpty(existing.CoordinateSystemFileName))
         {
           project.CoordinateSystemFileName = existing.CoordinateSystemFileName;
           project.CoordinateSystemLastActionedUTC = existing.CoordinateSystemLastActionedUTC;
         }
+        project.GeometryWKT = string.IsNullOrEmpty(existing.GeometryWKT) ? project.GeometryWKT : existing.GeometryWKT;
 
-        const string update =
-          @"UPDATE Project
-                SET LegacyProjectID = @LegacyProjectID,
-                  ProjectTimeZone = @ProjectTimeZone,
-                  LandfillTimeZone = @LandfillTimeZone,
-                  StartDate = @StartDate,
-                  GeometryWKT = @GeometryWKT,
-                  CoordinateSystemFileName = @CoordinateSystemFileName,
-                  CoordinateSystemLastActionedUTC = @CoordinateSystemLastActionedUTC
-                WHERE ProjectUID = @ProjectUID";
+        string update = BuildProjectUpdateString(project);
+        upsertedCount = await ExecuteWithAsyncPolicy(update, project);
+        log.LogDebug($"ProjectRepository/CreateProject: (updateExisting): updated {upsertedCount} rows");
 
+        if (upsertedCount > 0)
         {
-          upsertedCount = await ExecuteWithAsyncPolicy(update, project);
-          log.LogDebug($"ProjectRepository/CreateProject: (updateExisting): updated {upsertedCount} rows");
-
-          return upsertedCount;
+          upsertedCount = await InsertProjectHistory(project);
         }
+
+        return upsertedCount;
       }
 
       log.LogDebug("ProjectRepository/CreateProject: No action as project already exists.");
@@ -358,40 +399,35 @@ namespace VSS.MasterData.Repositories
 
         if (project.LastActionedUTC >= existing.LastActionedUTC)
         {
-          project.Name = project.Name ?? existing.Name;
-          project.Description = project.Description ?? existing.Description;
-          project.ProjectTimeZone = project.ProjectTimeZone ?? existing.ProjectTimeZone;
-          project.LandfillTimeZone = project.ProjectTimeZone ?? existing.LandfillTimeZone;
+          project.LegacyProjectID = existing.LegacyProjectID;
+          project.Name = string.IsNullOrEmpty(project.Name) ? existing.Name : project.Name;
+          project.Description = string.IsNullOrEmpty(project.Description) ? existing.Description : project.Description;
+          project.ProjectTimeZone = string.IsNullOrEmpty(project.ProjectTimeZone) ? existing.ProjectTimeZone : project.ProjectTimeZone;
+          project.LandfillTimeZone = string.IsNullOrEmpty(project.LandfillTimeZone) ? existing.LandfillTimeZone : project.LandfillTimeZone;
+          project.StartDate = project.StartDate == DateTime.MinValue ? existing.StartDate : project.StartDate;
 
           if (string.IsNullOrEmpty(project.CoordinateSystemFileName))
           {
             project.CoordinateSystemFileName = existing.CoordinateSystemFileName;
             project.CoordinateSystemLastActionedUTC = existing.CoordinateSystemLastActionedUTC;
           }
+          project.GeometryWKT = string.IsNullOrEmpty(project.GeometryWKT) ? existing.GeometryWKT : project.GeometryWKT;
+
           log.LogDebug($"ProjectRepository/UpdateProject: updating project={project.ProjectUID}");
 
-          const string update =
-            @"UPDATE Project
-                SET Name = @Name,
-                  Description = @Description,
-                  LastActionedUTC = @LastActionedUTC,
-                  EndDate = @EndDate, 
-                  fk_ProjectTypeID = @ProjectType,
-                  CoordinateSystemFileName = @CoordinateSystemFileName,
-                  CoordinateSystemLastActionedUTC = @CoordinateSystemLastActionedUTC
-                WHERE ProjectUID = @ProjectUID";
+          string update = BuildProjectUpdateString(project);
+          upsertedCount = await ExecuteWithAsyncPolicy(update, project);
+          log.LogDebug(
+            $"ProjectRepository/UpdateProject: upserted {upsertedCount} rows for: projectUid:{project.ProjectUID}");
 
+          if (upsertedCount > 0)
           {
-            upsertedCount = await ExecuteWithAsyncPolicy(update, project);
-            log.LogDebug(
-              $"ProjectRepository/UpdateProject: upserted {upsertedCount} rows for: projectUid:{project.ProjectUID}");
-            return upsertedCount;
+            upsertedCount = await InsertProjectHistory(project);
           }
+          return upsertedCount;
         }
-        else
-        {
-          log.LogDebug($"ProjectRepository/UpdateProject: old update event ignored project={project.ProjectUID}");
-        }
+
+        log.LogDebug($"ProjectRepository/UpdateProject: old update event ignored project={project.ProjectUID}");
       }
       else
       {
@@ -400,12 +436,19 @@ namespace VSS.MasterData.Repositories
           $"ProjectRepository/UpdateProject: project doesn't already exist, creating one. project={project.ProjectUID}");
         if (String.IsNullOrEmpty(project.ProjectTimeZone))
           project.ProjectTimeZone = "";
+        
         string insert = BuildProjectInsertString(project);
-
         upsertedCount = await ExecuteWithAsyncPolicy(insert, project);
         log.LogDebug($"ProjectRepository/UpdateProject: (insert): inserted {upsertedCount} rows");
+
+        if (upsertedCount > 0)
+        {
+          upsertedCount = await InsertProjectHistory(project);
+        }
+
         return upsertedCount;
       }
+
       return upsertedCount;
     }
 
@@ -419,6 +462,7 @@ namespace VSS.MasterData.Repositories
       {
         if (project.LastActionedUTC >= existing.LastActionedUTC)
         {
+          // this is for internal use only to roll-back after failed series of steps
           if (isDeletePermanently)
           {
             log.LogDebug(
@@ -429,6 +473,7 @@ namespace VSS.MasterData.Repositories
             upsertedCount = await ExecuteWithAsyncPolicy(delete, project);
             log.LogDebug(
               $"ProjectRepository/DeleteProject: deleted {upsertedCount} rows for: projectUid:{project.ProjectUID}");
+
             return upsertedCount;
           }
           else
@@ -443,6 +488,11 @@ namespace VSS.MasterData.Repositories
             upsertedCount = await ExecuteWithAsyncPolicy(update, project);
             log.LogDebug(
               $"ProjectRepository/DeleteProject: upserted {upsertedCount} rows for: projectUid:{project.ProjectUID}");
+
+            if (upsertedCount > 0)
+            {
+              upsertedCount = await InsertProjectHistory(project);
+            }
             return upsertedCount;
           }
         }
@@ -466,8 +516,14 @@ namespace VSS.MasterData.Repositories
         upsertedCount = await ExecuteWithAsyncPolicy(delete, project);
         log.LogDebug(
           $"ProjectRepository/DeleteProject: inserted {upsertedCount} rows for: projectUid:{project.ProjectUID}");
+
+        if (upsertedCount > 0)
+        {
+          upsertedCount = await InsertProjectHistory(project);
+        }
         return upsertedCount;
       }
+
       return upsertedCount;
     }
 
@@ -494,6 +550,46 @@ namespace VSS.MasterData.Repositories
           "    (@ProjectUID, @LegacyProjectID, @Name, @Description, @ProjectType, @IsDeleted, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate, @GeometryWKT, {0}, @CoordinateSystemFileName, @CoordinateSystemLastActionedUTC)"
           , formattedPolygon ?? "null");
       return insert;
+    }
+
+    private string BuildProjectUpdateString(Project project)
+    {
+      string formattedPolygon = string.Format($"ST_GeomFromText('{project.GeometryWKT}')");
+
+      string update = null;
+      if (project.LegacyProjectID <= 0) // allow db autoincrement on legacyProjectID
+      {
+        update = string.Format(
+          @"UPDATE Project
+                SET 
+                  Name = @Name, Description = @Description, fk_ProjectTypeID = @ProjectType,
+                  IsDeleted = @IsDeleted,
+                  ProjectTimeZone = @ProjectTimeZone, LandfillTimeZone = @LandfillTimeZone,
+                  LastActionedUTC = @LastActionedUTC,
+                  StartDate = @StartDate, EndDate = @EndDate,   
+                  CoordinateSystemFileName = @CoordinateSystemFileName,
+                  CoordinateSystemLastActionedUTC = @CoordinateSystemLastActionedUTC,
+                  GeometryWKT = '{0}', PolygonST = {1}
+                WHERE ProjectUID = @ProjectUID"
+          , project.GeometryWKT, formattedPolygon ?? "null");
+      }
+      else
+      {
+        update = string.Format(
+          @"UPDATE Project
+                SET LegacyProjectID = @LegacyProjectID, 
+                  Name = @Name, Description = @Description, fk_ProjectTypeID = @ProjectType,
+                  IsDeleted = @IsDeleted,
+                  ProjectTimeZone = @ProjectTimeZone, LandfillTimeZone = @LandfillTimeZone,
+                  LastActionedUTC = @LastActionedUTC,
+                  StartDate = @StartDate, EndDate = @EndDate,   
+                  CoordinateSystemFileName = @CoordinateSystemFileName,
+                  CoordinateSystemLastActionedUTC = @CoordinateSystemLastActionedUTC,
+                  GeometryWKT = '{0}', PolygonST = {1}
+                WHERE ProjectUID = @ProjectUID"
+          , project.GeometryWKT, formattedPolygon ?? "null");
+      }
+      return update;
     }
 
     #endregion project
@@ -572,6 +668,7 @@ namespace VSS.MasterData.Repositories
       {
         log.LogDebug("CustomerRepository/DissociateProjectCustomer: can't delete as none existing");
       }
+
       return upsertedCount;
     }
 
@@ -778,6 +875,29 @@ namespace VSS.MasterData.Repositories
       return DateTime.Parse(dateTime.ToString("yyyy-MM-dd HH:mm:ss"));
     }
 
+    private async Task<int> InsertProjectHistory(Project project)
+    {
+      var insertedCount = 0;
+      var insert = string.Format(
+        @"INSERT INTO ProjectHistory
+              (ProjectUID, LegacyProjectID, Name, Description, fk_ProjectTypeID,
+                IsDeleted, ProjectTimeZone, LandfillTimeZone, StartDate, EndDate,
+                GeometryWKT, PolygonST,
+                CoordinateSystemFileName, CoordinateSystemLastActionedUTC,
+                LastActionedUTC)
+              SELECT 
+                  ProjectUID, LegacyProjectID, Name, Description, fk_ProjectTypeID,
+                  IsDeleted, ProjectTimeZone, LandfillTimeZone, StartDate, EndDate,
+                  GeometryWKT, PolygonST,
+                  CoordinateSystemFileName, CoordinateSystemLastActionedUTC,
+                  LastActionedUTC
+                FROM Project
+                WHERE ProjectUID = @ProjectUID;");
+      insertedCount = await ExecuteWithAsyncPolicy(insert, project);
+      log.LogDebug($"ProjectRepository/CreateProjectHistory: inserted {insertedCount} rows");
+      return insertedCount;
+    }
+
     private async Task<int> UpsertImportedFileHistory(ImportedFile importedFile)
     {
       var insertedCount = 0;
@@ -786,7 +906,7 @@ namespace VSS.MasterData.Repositories
             fk_ImportedFileUID AS ImportedFileUid, FileCreatedUTC, FileUpdatedUTC, ImportedBy
           FROM ImportedFileHistory
             WHERE fk_ImportedFileUID = @importedFileUid",
-        new { importedFileUid = importedFile.ImportedFileUid, fileUpdatedUtc = importedFile.FileCreatedUtc }
+        new {importedFileUid = importedFile.ImportedFileUid, fileUpdatedUtc = importedFile.FileCreatedUtc}
       )).ToList();
 
       bool alreadyExists = false;
@@ -797,8 +917,8 @@ namespace VSS.MasterData.Repositories
         var newUpdatedUtcRounded = RoundDateTimeToSeconds(importedFile.FileUpdatedUtc);
 
         alreadyExists = importedFileHistoryExisting
-                .Any(h => RoundDateTimeToSeconds(h.FileCreatedUtc) == newCreatedUtcRounded &&
-                          RoundDateTimeToSeconds(h.FileUpdatedUtc) == newUpdatedUtcRounded);
+          .Any(h => RoundDateTimeToSeconds(h.FileCreatedUtc) == newCreatedUtcRounded &&
+                    RoundDateTimeToSeconds(h.FileUpdatedUtc) == newUpdatedUtcRounded);
       }
 
       if (!alreadyExists)
@@ -819,10 +939,12 @@ namespace VSS.MasterData.Repositories
         log.LogDebug(
           $"ProjectRepository/UpsertImportedFileHistory: History already exists ImportedFileUid:{importedFile.ImportedFileUid} FileCreatedUTC: {importedFile.FileCreatedUtc} FileUpdatedUTC: {importedFile.FileUpdatedUtc}");
       }
+
       return insertedCount;
     }
 
-    private async Task<int> DeleteImportedFile(ImportedFile importedFile, ImportedFile existing, bool isDeletePermanently)
+    private async Task<int> DeleteImportedFile(ImportedFile importedFile, ImportedFile existing,
+      bool isDeletePermanently)
     {
       log.LogDebug(
         $"ProjectRepository/DeleteImportedFile: deleting importedFile: {JsonConvert.SerializeObject(importedFile)} permanent flag:{isDeletePermanently}");
@@ -865,13 +987,15 @@ namespace VSS.MasterData.Repositories
         log.LogDebug(
           $"ProjectRepository/DeleteImportedFile: can't delete as none existing, ignored. importedFile={importedFile.ImportedFileUid}. Can't create one as don't have enough info e.g.customerUID / type.");
       }
+
       return upsertedCount;
     }
 
     private async Task<int> UndeleteImportedFile(ImportedFile importedFile, ImportedFile existing)
     {
       // this is an interfaces extension model used solely by ProjectMDM to allow a rollback of a DeleteImportedFile
-      log.LogDebug($"ProjectRepository/UndeleteImportedFile: undeleting importedFile: {JsonConvert.SerializeObject(importedFile)}.");
+      log.LogDebug(
+        $"ProjectRepository/UndeleteImportedFile: undeleting importedFile: {JsonConvert.SerializeObject(importedFile)}.");
       var upsertedCount = 0;
 
       if (existing != null)
@@ -911,7 +1035,7 @@ namespace VSS.MasterData.Repositories
     {
       log.LogDebug(
         $"ProjectRepository/UpsertProjectSettings: projectSettings={JsonConvert.SerializeObject(projectSettings)}))')");
-      
+
       const string upsert =
         @"INSERT ProjectSettings
                  (fk_ProjectUID, fk_ProjectSettingsTypeID, Settings, UserID, LastActionedUTC)
@@ -934,7 +1058,7 @@ namespace VSS.MasterData.Repositories
     #endregion projectSettings
 
 
-    #region getters
+    #region gettersProject
 
     /// <summary>
     ///     There may be 0 or n subscriptions for this project. None/many may be current.
@@ -1012,6 +1136,25 @@ namespace VSS.MasterData.Repositories
 
 
       return projectSubList;
+    }
+
+    /// <summary>
+    ///     There should be 1 or more per ProjectUID
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <returns></returns>
+    public async Task<IEnumerable<Project>> GetProjectHistory(string projectUid)
+    {
+      var projectList = await QueryWithAsyncPolicy<Project>(@"SELECT 
+                ProjectUID, LegacyProjectID, Name, Description, fk_ProjectTypeID as ProjectType, 
+                IsDeleted, ProjectTimeZone, LandfillTimeZone, StartDate, EndDate, 
+                GeometryWKT,
+                CoordinateSystemFileName, CoordinateSystemLastActionedUTC,
+                LastActionedUTC 
+              FROM ProjectHistory             
+              WHERE ProjectUID = @projectUid",
+        new { projectUid });
+      return projectList;
     }
 
     /// <summary>
@@ -1234,10 +1377,14 @@ namespace VSS.MasterData.Repositories
                 fk_GeofenceUID AS GeofenceUID, fk_ProjectUID AS ProjectUID, LastActionedUTC
               FROM ProjectGeofence 
               WHERE fk_ProjectUID = @projectUid",
-        new { projectUid }
+        new {projectUid}
       );
     }
 
+    #endregion gettersProject
+
+
+    #region gettersProjectSettings
 
     /// <summary>
     /// At this stage 2 types
@@ -1246,7 +1393,8 @@ namespace VSS.MasterData.Repositories
     /// <param name="userId"></param>
     /// <param name="projectSettingsType"></param>
     /// <returns></returns>
-    public async Task<ProjectSettings> GetProjectSettings(string projectUid, string userId, ProjectSettingsType projectSettingsType)
+    public async Task<ProjectSettings> GetProjectSettings(string projectUid, string userId,
+      ProjectSettingsType projectSettingsType)
     {
       var projectSettings = (await QueryWithAsyncPolicy<ProjectSettings>(@"SELECT 
                 fk_ProjectUID AS ProjectUid, fk_ProjectSettingsTypeID AS ProjectSettingsType, Settings, UserID, LastActionedUTC
@@ -1255,7 +1403,7 @@ namespace VSS.MasterData.Repositories
                 AND UserID = @userId
                 AND fk_ProjectSettingsTypeID = @projectSettingsType
               ORDER BY fk_ProjectUID, UserID, fk_ProjectSettingsTypeID",
-        new { projectUid, userId, projectSettingsType })).FirstOrDefault();
+        new {projectUid, userId, projectSettingsType})).FirstOrDefault();
       return projectSettings;
     }
 
@@ -1268,24 +1416,24 @@ namespace VSS.MasterData.Repositories
     public async Task<IEnumerable<ProjectSettings>> GetProjectSettings(string projectUid, string userId)
     {
       var projectSettingsList = await QueryWithAsyncPolicy<ProjectSettings>
-        (@"SELECT 
+      (@"SELECT 
                 fk_ProjectUID AS ProjectUid, fk_ProjectSettingsTypeID AS ProjectSettingsType, Settings, UserID, LastActionedUTC
               FROM ProjectSettings
               WHERE fk_ProjectUID = @projectUid
                 AND UserID = @userId",
-        new { projectUid, userId }
-        );
+        new {projectUid, userId}
+      );
       return projectSettingsList;
     }
 
-    #endregion getters
+    #endregion gettersProjectSettings
 
 
     #region gettersImportedFiles
 
     public async Task<IEnumerable<ImportedFile>> GetImportedFiles(string projectUid)
     {
-      var importedFileList = ( await QueryWithAsyncPolicy<ImportedFile>
+      var importedFileList = (await QueryWithAsyncPolicy<ImportedFile>
       (@"SELECT 
             fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, LegacyImportedFileID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
             Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID as DxfUnitsType,
@@ -1329,10 +1477,12 @@ namespace VSS.MasterData.Repositories
           importedFile.ImportedFileHistory = new ImportedFileHistory(historyAllFiles);
         }
       }
+
       return importedFile;
     }
 
-    private async Task<List<ImportedFileHistoryItem>> GetImportedFileHistory(string projectUid, string importedFileUid = null)
+    private async Task<List<ImportedFileHistoryItem>> GetImportedFileHistory(string projectUid,
+      string importedFileUid = null)
     {
       return (await QueryWithAsyncPolicy<ImportedFileHistoryItem>
       (@"SELECT 
@@ -1343,7 +1493,7 @@ namespace VSS.MasterData.Repositories
               AND IsDeleted = 0
               AND (@importedFileUid IS NULL OR ImportedFileUID = @importedFileUid)
             ORDER BY ImportedFileUID, ifh.FileUpdatedUTC",
-        new { projectUid, importedFileUid }
+        new {projectUid, importedFileUid}
       )).ToList();
     }
 
@@ -1499,6 +1649,7 @@ namespace VSS.MasterData.Repositories
       var source = (Point) obj;
       return (source.X == X) && (source.Y == Y);
     }
+
     public override int GetHashCode()
     {
       return 0;

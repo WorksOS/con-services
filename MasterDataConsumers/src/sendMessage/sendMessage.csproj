@@ -5,7 +5,6 @@
     <AssemblyName>sendMessage</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>sendMessage</PackageId>
-    <RuntimeFrameworkVersion>2.0</RuntimeFrameworkVersion>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
@@ -14,9 +13,9 @@
 
   <ItemGroup>
     <PackageReference Include="log4net.netcore" Version="3.0.*" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="RdKafka" Version="0.9.2-ci-170" />
-    <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.1" />
   </ItemGroup>
 
 </Project>
