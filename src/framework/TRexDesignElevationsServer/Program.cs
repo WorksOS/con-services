@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Windows.Forms;
+using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.DI;
+using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Interfaces;
 
 namespace TRexDesignElevationsServer
 {
@@ -8,7 +11,11 @@ namespace TRexDesignElevationsServer
   {
     private static void DependencyInjection()
     {
-      DIBuilder.New().AddLogging().Complete();
+      DIBuilder
+        .New()
+        .AddLogging()
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels()))
+        .Complete();
     }
 
     /// <summary>

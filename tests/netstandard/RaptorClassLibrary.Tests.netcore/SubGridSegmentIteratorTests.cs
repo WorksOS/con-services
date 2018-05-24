@@ -1,11 +1,12 @@
 ﻿using System;
 using VSS.TRex.Storage;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Tests.netcore.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.SubGridTrees.Server.Iterators.Tests
 {
-        public class SubGridSegmentIteratorTests
+  public class SubGridSegmentIteratorTests : IClassFixture<DILoggingAndStorgeProxyFixture>
     {
         [Fact()]
         public void Test_SubGridSegmentIterator_SubGridSegmentIterator()

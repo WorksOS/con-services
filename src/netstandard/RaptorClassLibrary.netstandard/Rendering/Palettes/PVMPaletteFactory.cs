@@ -2,6 +2,7 @@
 using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering.Palettes
@@ -12,7 +13,7 @@ namespace VSS.TRex.Rendering.Palettes
     /// </summary>
     public static class PVMPaletteFactory
     {
-        public static IPlanViewPalette GetPallete(SiteModel siteModel, DisplayMode mode, BoundingWorldExtent3D spatialExtents)
+        public static IPlanViewPalette GetPallete(ISiteModel siteModel, DisplayMode mode, BoundingWorldExtent3D spatialExtents)
         {
             switch (mode)
             {

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Interfaces;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Events
@@ -20,7 +21,7 @@ namespace VSS.TRex.Events
         /// <summary>
         /// The SiteModel these events relate to
         /// </summary>
-        private SiteModel SiteModel { get; set; }
+        private ISiteModel SiteModel { get; set; }
 
         /// <summary>
         /// The ID of the machine these events were recorded by. The ID is the (short) internal machine ID
@@ -283,7 +284,7 @@ namespace VSS.TRex.Events
         /// </summary>
         /// <param name="siteModel"></param>
         /// <param name="machineID"></param>
-        public ProductionEventLists(SiteModel siteModel, short machineID)
+        public ProductionEventLists(ISiteModel siteModel, short machineID)
         {
             SiteModel = siteModel;
 

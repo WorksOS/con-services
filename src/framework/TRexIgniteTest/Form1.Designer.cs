@@ -86,6 +86,7 @@
             this.label7 = new System.Windows.Forms.Label();
             this.edtAssetID = new System.Windows.Forms.TextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.btnGetMetaData = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -546,6 +547,7 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.btnGetMetaData);
             this.tabPage3.Controls.Add(this.btnCustom);
             this.tabPage3.Controls.Add(this.btnCopyGuid);
             this.tabPage3.Controls.Add(this.btnGenGuid3);
@@ -700,6 +702,16 @@
             this.openFileDialog1.InitialDirectory = "@\"c:\\\"";
             this.openFileDialog1.RestoreDirectory = true;
             // 
+            // btnGetMetaData
+            // 
+            this.btnGetMetaData.Location = new System.Drawing.Point(20, 314);
+            this.btnGetMetaData.Name = "btnGetMetaData";
+            this.btnGetMetaData.Size = new System.Drawing.Size(186, 23);
+            this.btnGetMetaData.TabIndex = 59;
+            this.btnGetMetaData.Text = "Get Archived Tagfile MetaData";
+            this.btnGetMetaData.UseVisualStyleBackColor = true;
+            this.btnGetMetaData.Click += new System.EventHandler(this.btnGetMetaData_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -788,6 +800,7 @@
         private System.Windows.Forms.Button btnGenGuid2;
         private System.Windows.Forms.Button btnGenGUID;
         private System.Windows.Forms.Button btnCustom;
+        private System.Windows.Forms.Button btnGetMetaData;
     }
 }
 

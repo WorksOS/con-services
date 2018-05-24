@@ -20,7 +20,26 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\netstandard\Raptor.Common.netstandard\Raptor.Common.netstandard.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\RaptorClassLibrary.netstandard\RaptorClassLibrary.netstandard.csproj" />
+    <ProjectReference Include="..\RaptorClassLibrary.Tests.netcore\RaptorClassLibrary.Tests.netcore.csproj" />
     <ProjectReference Include="..\Tests.Common\Tests.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="TestData\TAGFiles\TestTAGFile-TAG-Header-Read.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TAGFiles\TestTAGFile-TAGFile-Read-File.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TAGFiles\TestTAGFile-TAGFile-Read-Stream.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TAGFiles\TestTAGFile.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TAGFiles\TestTAGFile3.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

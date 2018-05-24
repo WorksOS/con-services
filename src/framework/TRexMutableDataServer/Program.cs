@@ -2,6 +2,8 @@
 using System.Windows.Forms;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.DI;
+using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.TAGFiles.Classes;
@@ -16,6 +18,7 @@ namespace TRexMutableDataServer
         .New()
         .AddLogging()
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels()))
         .Add(x => x.AddSingleton<ITFAProxy>(new TFAProxy()))        
         .Complete();
     }

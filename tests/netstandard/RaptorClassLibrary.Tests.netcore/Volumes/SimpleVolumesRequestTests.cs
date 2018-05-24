@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
+using VSS.TRex.Tests.netcore.TestFixtures;
 using VSS.TRex.Volumes;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Volumes.GridFabric.Requests;
@@ -9,8 +10,8 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Volumes
 {
-    public class SimpleVolumesRequestTests
-    {
+    public class SimpleVolumesRequestTests : IClassFixture<DILoggingFixture>
+  {
         // [Fact(Skip = "Not running tests requiring Ignite nodes")]
         // SimpleVolumesServer Server = SimpleVolumesServer.NewInstance();
 

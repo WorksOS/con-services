@@ -1,30 +1,24 @@
-﻿using VSS.TRex.DesignProfiling;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.TRex;
-using VSS.TRex.Designs.TTM;
+﻿using System;
 using VSS.TRex.Designs;
+using VSS.TRex.Tests.netcore.TestFixtures;
 using Xunit;
-using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.DesignProfiling.Tests
 {
-    public class TTMDesignTests
-    {
-        private static TTMDesign design = LoadTheDesign();
+  public class TTMDesignTests : IClassFixture<DILoggingFixture>
+  {
+        private static TTMDesign design;
 
-        private static TTMDesign LoadTheDesign()
+        private void LoadTheDesign()
         {
+          lock (this)
+          {
             if (design == null)
             {
-                design = new TTMDesign(SubGridTree.DefaultCellSize);
-                design.LoadFromFile(@"C:\Temp\Bug36372.ttm");
+              design = new TTMDesign(SubGridTree.DefaultCellSize);
+              design.LoadFromFile(@"C:\Temp\Bug36372.ttm");
             }
-
-            return design;
+          }
         }
 
         [Fact(Skip = "not implemented")]
@@ -42,9 +36,9 @@ namespace VSS.TRex.DesignProfiling.Tests
         {
             try
             {
-                TTMDesign design = new TTMDesign(SubGridTree.DefaultCellSize);
+                TTMDesign localDesign = new TTMDesign(SubGridTree.DefaultCellSize);
 
-                Assert.NotNull(design);
+                Assert.NotNull(localDesign);
             }
             catch (Exception)
             {
@@ -55,24 +49,25 @@ namespace VSS.TRex.DesignProfiling.Tests
         [Fact()]
         public void GetExtentsTest()
         {
+            LoadTheDesign();
 
             design.GetExtents(out double x1, out double y1, out double x2, out double y2);
 
-            Assert.NotEqual(x1, Consts.NullReal);
-            Assert.NotEqual(y1, Consts.NullReal);
-            Assert.NotEqual(x2, Consts.NullReal);
-            Assert.NotEqual(y2, Consts.NullReal);
+            Assert.NotEqual(x1, Common.Consts.NullReal);
+            Assert.NotEqual(y1, Common.Consts.NullReal);
+            Assert.NotEqual(x2, Common.Consts.NullReal);
+            Assert.NotEqual(y2, Common.Consts.NullReal);
         }
 
         [Fact()]
         public void GetHeightRangeTest()
         {
-//            TTMDesign design = LoadTheDesign();
+            LoadTheDesign();
 
             design.GetHeightRange(out double z1, out double z2);
 
-            Assert.NotEqual(z1, Consts.NullReal);
-            Assert.NotEqual(z2, Consts.NullReal);
+            Assert.NotEqual(z1, Common.Consts.NullReal);
+            Assert.NotEqual(z2, Common.Consts.NullReal);
             Assert.True(z2 >= z1, "Z2 is below Z1");
         }
 
@@ -100,6 +95,8 @@ namespace VSS.TRex.DesignProfiling.Tests
         [InlineData(247500.0, 193350.0, 29.875899875665258)]
         public void InterpolateHeightTest(double probeX, double probeY, double expectedZ)
         {
+            LoadTheDesign();
+
             object Hint = null;
 
             bool result = design.InterpolateHeight(ref Hint, probeX, probeY, 0, out double Z);
@@ -113,6 +110,7 @@ namespace VSS.TRex.DesignProfiling.Tests
         [InlineData(247500.0, 193350.0, 29.875899875665258)]
         public void InterpolateHeightTest1(double probeX, double probeY, double expectedZ)
         {
+            LoadTheDesign();
             object Hint = null;
 
             TriangleQuadTree.Tsearch_state_rec SearchState = TriangleQuadTree.Tsearch_state_rec.Init();
@@ -128,7 +126,8 @@ namespace VSS.TRex.DesignProfiling.Tests
         [InlineData(247500.0, 193350.0)]
         public void InterpolateHeightTestPerf1(double probeX, double probeY)
         {
-            object Hint = null;
+            LoadTheDesign();
+          object Hint;
 
             TriangleQuadTree.Tsearch_state_rec SearchState = TriangleQuadTree.Tsearch_state_rec.Init();
             for (int i = 0; i < 1000000; i++)
@@ -145,6 +144,7 @@ namespace VSS.TRex.DesignProfiling.Tests
         [InlineData(247500.0, 193350.0, 29.875899875665258)]
         public void InterpolateHeightTest2(double probeX, double probeY, double expectedZ)
         {
+            LoadTheDesign();
             object Hint = null;
             bool result = design.InterpolateHeight2(ref Hint, probeX, probeY, 0, out double Z);
 
@@ -157,11 +157,12 @@ namespace VSS.TRex.DesignProfiling.Tests
         [InlineData(247500.0, 193350.0)]
         public void InterpolateHeightTest2Perf(double probeX, double probeY)
         {
-            object Hint = null;
+            LoadTheDesign();
+          object Hint;
             for (int i = 0; i < 10000000; i++)
             {
                 Hint = null;
-                bool result = design.InterpolateHeight2(ref Hint, probeX, probeY, 0, out double Z);
+                design.InterpolateHeight2(ref Hint, probeX, probeY, 0, out double Z);
             }
 
             Assert.False(true,"Perf Test");
@@ -170,12 +171,13 @@ namespace VSS.TRex.DesignProfiling.Tests
         [Theory(Skip = "Performance Test")]
         [InlineData(247500.0, 193350.0)]
         public void InterpolateHeightTest3Perf(double probeX, double probeY)
-        {
-            object Hint = null;
+        { 
+            LoadTheDesign();
+          object Hint;
             for (int i = 0; i < 10000000; i++)
             {
                 Hint = null;
-                bool result = design.InterpolateHeight3(ref Hint, probeX, probeY, 0, out double Z);
+                design.InterpolateHeight3(ref Hint, probeX, probeY, 0, out double Z);
             }
 
             Assert.False(true, "Perf Test");
@@ -185,6 +187,7 @@ namespace VSS.TRex.DesignProfiling.Tests
         [InlineData(247500.0, 193350.0)]
         public void InterpolateHeightsTest(double probeX, double probeY)
         {
+            LoadTheDesign();
             float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
 
             bool result = design.InterpolateHeights(Patch, probeX, probeY, SubGridTree.DefaultCellSize, 0);
@@ -196,12 +199,13 @@ namespace VSS.TRex.DesignProfiling.Tests
         [InlineData(247500.0, 193350.0)]
         public void InterpolateHeightsTestPerf(double probeX, double probeY)
         {
+            LoadTheDesign();
 
             float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
             
             for (int i = 0; i < 10000; i++)
             {
-                bool result = design.InterpolateHeights(Patch, probeX, probeY, SubGridTree.DefaultCellSize, 0);
+                design.InterpolateHeights(Patch, probeX, probeY, SubGridTree.DefaultCellSize, 0);
             }
 
             Assert.False(true, "Perf Test");
@@ -211,12 +215,13 @@ namespace VSS.TRex.DesignProfiling.Tests
         [InlineData(247500.0, 193350.0)]
         public void InterpolateHeightsTest2Perf(double probeX, double probeY)
         {
+            LoadTheDesign();
 
             float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
 
             for (int i = 0; i < 10000; i++)
             {
-                bool result = design.InterpolateHeights2(Patch, probeX, probeY, SubGridTree.DefaultCellSize, 0);
+                design.InterpolateHeights2(Patch, probeX, probeY, SubGridTree.DefaultCellSize, 0);
             }
 
             Assert.False(true, "Perf Test");
@@ -226,12 +231,13 @@ namespace VSS.TRex.DesignProfiling.Tests
         [InlineData(247500.0, 193350.0)]
         public void InterpolateHeightsTest3Perf(double probeX, double probeY)
         {
+            LoadTheDesign();
 
             float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
 
             for (int i = 0; i < 10000; i++)
             {
-                bool result = design.InterpolateHeights3(Patch, probeX, probeY, SubGridTree.DefaultCellSize, 0);
+                design.InterpolateHeights3(Patch, probeX, probeY, SubGridTree.DefaultCellSize, 0);
             }
 
             Assert.False(true, "Perf Test");
@@ -240,6 +246,8 @@ namespace VSS.TRex.DesignProfiling.Tests
         [Fact()]
         public void LoadFromFileTest()
         {
+            LoadTheDesign();
+
             Assert.True(design.Data.Triangles.Count > 0, "No triangles present in loaded TTM file.");
             Assert.True(design.Data.Vertices.Count > 0, "No vertices present in loaded TTM file.");
         }
@@ -247,6 +255,8 @@ namespace VSS.TRex.DesignProfiling.Tests
         [Fact()]
         public void SubgridOverlayIndexTest()
         {
+            LoadTheDesign();
+
             Assert.NotNull(design.SubgridOverlayIndex());
         }
     }

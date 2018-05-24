@@ -30,7 +30,7 @@ namespace VSS.TRex.Executors.Tests
         {
             TAGFilePreScan preScan = new TAGFilePreScan();
 
-            Assert.True(preScan.Execute(new FileStream(TAGTestConsts.TestDataFilePath() + "TAGFiles\\TestTAGFile.tag", FileMode.Open, FileAccess.Read)),
+            Assert.True(preScan.Execute(new FileStream(Path.Combine("TestData", "TAGFiles", "TestTAGFile.tag"), FileMode.Open, FileAccess.Read)),
                 "Prescan execute returned false");
 
             Assert.True(preScan.ProcessedEpochCount == 1478 &&

@@ -7,6 +7,7 @@ using VSS.TRex.Events;
 using VSS.TRex.Interfaces;
 using VSS.TRex.Machines;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Server;
@@ -127,7 +128,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                     // Note: This request for the SiteModel specifically asks for the mutable grid Sitemodel,
                     // and also explicitly provides the transactional storage proxy being used for processig the
                     // data from TAG files into the model
-                    SiteModel SiteModelFromDM = SiteModels.SiteModels.Instance().GetSiteModel(storageProxy_Mutable, Task.TargetSiteModelID, true);
+                    ISiteModel SiteModelFromDM = SiteModels.SiteModels.Instance().GetSiteModel(storageProxy_Mutable, Task.TargetSiteModelID, true);
 
                     if (SiteModelFromDM == null)
                     {

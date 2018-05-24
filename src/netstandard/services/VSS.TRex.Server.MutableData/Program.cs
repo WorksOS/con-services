@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.DI;
 using VSS.TRex.Servers.Compute;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.TAGFiles.Classes;
@@ -17,6 +18,7 @@ namespace VSS.TRex.Server.MutableData
         .AddLogging()
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Add(x => x.AddSingleton<ITFAProxy>(new TFAProxy()))
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
         .Complete();
     }
 

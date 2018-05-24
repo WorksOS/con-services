@@ -1,12 +1,13 @@
 ﻿using System;
 using VSS.TRex.Common;
+using VSS.TRex.Tests.netcore.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Filters.Tests
 {
-        public class CellPassAttributeFilterTests
-    {
+        public class CellPassAttributeFilterTests : IClassFixture<DILoggingFixture>
+  {
         [Fact()]
         public void Test_CellPassAttributeFilter_CellPassAttributeFilter()
         {

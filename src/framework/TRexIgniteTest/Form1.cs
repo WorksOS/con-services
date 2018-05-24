@@ -37,8 +37,11 @@ using VSS.TRex.Servers.Client;
 using VSS.TRex.Services.Designs;
 using VSS.TRex.Services.Surfaces;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Surfaces;
+using VSS.TRex.TAGFiles.Classes;
+using VSS.TRex.TAGFiles.Classes.Validator;
 using VSS.TRex.Types;
 using VSS.TRex.Volumes;
 using VSS.TRex.Volumes.GridFabric.Arguments;
@@ -77,7 +80,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
         {
             // Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
             // SiteModel siteModel = GenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
-            SiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+            ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
 
             if (siteModel == null)
             {
@@ -125,7 +128,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 
         private BoundingWorldExtent3D GetZoomAllExtents()
         {
-            SiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+            ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
 
             if (siteModel != null)
             {
@@ -675,7 +678,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
         {
             // Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
             // SiteModel siteModel = GenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
-            SiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+            ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
 
             try
             {
@@ -734,7 +737,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
         /// </summary>
         /// <param name="siteModel"></param>
         /// <returns></returns>
-        private Guid[] GetSurveyedSurfaceExclusionList(SiteModel siteModel) => (siteModel.SurveyedSurfaces == null || chkIncludeSurveyedSurfaces.Checked) ? new Guid[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray();
+        private Guid[] GetSurveyedSurfaceExclusionList(ISiteModel siteModel) => (siteModel.SurveyedSurfaces == null || chkIncludeSurveyedSurfaces.Checked) ? new Guid[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray();
 
         private void btnCalculateVolumes_Click(object sender, EventArgs e)
         {
@@ -962,6 +965,45 @@ namespace VSS.TRex.IgnitePOC.TestApp
             this.edtAssetID.Text = new Guid().ToString();
             this.edtTCCOrgID.Text = new Guid().ToString();
             this.edtProjectID.Text = new Guid().ToString();
+        }
+
+        private void btnGetMetaData_Click(object sender, EventArgs e)
+        {
+
+
+            if (this.edtTagfile.Text == string.Empty)
+            {
+                MessageBox.Show("Missing tagfile");
+                return;
+            }
+            try
+            {
+                string fileName = this.edtTagfile.Text;
+                Guid TheProject = (this.edtProjectID.Text == String.Empty) ? Guid.Empty : Guid.Parse(this.edtProjectID.Text);
+                Guid TheAsset = (this.edtAssetID.Text == String.Empty) ? Guid.Empty : Guid.Parse(this.edtAssetID.Text);
+                string TheFileName = Path.GetFileName(fileName);
+
+                TagfileDetail td = new TagfileDetail()
+                                   {
+                                           projectId = TheProject,
+                                           assetId = TheAsset,
+                                           tagFileName = TheFileName,
+                                           tccOrgId = "",
+                                           tagFileContent = new byte[0]
+                                  };
+
+                td = TagfileReposity.GetTagfile(td);
+                MessageBox.Show(String.Format("ProjectID:{0}, Asset:{1}, TCCOrg:{2},IsJohnDoe:{3}, FileLenght:{4}",
+                        td.projectId, td.assetId,td.tccOrgId,td.IsJohnDoe,td.tagFileContent.Length));
+
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message);
+                throw;
+            }
+
+
         }
     }
 }

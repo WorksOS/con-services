@@ -1,22 +1,24 @@
 ﻿using System;
+using VSS.TRex.DI;
 using VSS.TRex.Interfaces;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SiteModels
 {
-    /// <summary>
+  /// <summary>
     /// SiteModels contains a map of site model/data model identifiers (long) and SiteModel instances. 
     /// It may receive messages from the Ignite layer regarding invalidation of cache items...
     /// </summary>
-    public class SiteModels 
-    {
+    public class SiteModels : ISiteModels
+  {
         //  Dictionary<Guid, SiteModel> CachedModels = new Dictionary<Guid, SiteModel>()
 
         /// <summary>
         /// The default storage proxy for the mutable/immutable envronment this SiteModels instance is running in 
         /// </summary>
-        private static SiteModels instance;
+        private static ISiteModels instance = DIContext.Obtain<ISiteModels>();
 
         /// <summary>
         /// The default immutable storage proxy to be used for requests
@@ -27,17 +29,14 @@ namespace VSS.TRex.SiteModels
         /// Constructs singleton instance of SiteModels
         /// </summary>
         /// <returns></returns>
-        public static SiteModels Instance()
-        {
-            return instance ?? (instance = new SiteModels());
-        }
+        public static ISiteModels Instance() => instance;
 
-        public SiteModel GetSiteModel(Guid ID) => GetSiteModel(ImmutableStorageProxy, ID, false);
-        public SiteModel GetSiteModel(Guid ID, bool CreateIfNotExist) => GetSiteModel(ImmutableStorageProxy, ID, CreateIfNotExist);
+        public ISiteModel GetSiteModel(Guid ID) => GetSiteModel(ImmutableStorageProxy, ID, false);
+        public ISiteModel GetSiteModel(Guid ID, bool CreateIfNotExist) => GetSiteModel(ImmutableStorageProxy, ID, CreateIfNotExist);
 
-        public SiteModel GetSiteModel(IStorageProxy storageProxy, Guid ID) => GetSiteModel(storageProxy, ID, false);
+        public ISiteModel GetSiteModel(IStorageProxy storageProxy, Guid ID) => GetSiteModel(storageProxy, ID, false);
 
-        public SiteModel GetSiteModel(IStorageProxy storageProxy, Guid ID, bool CreateIfNotExist)
+        public ISiteModel GetSiteModel(IStorageProxy storageProxy, Guid ID, bool CreateIfNotExist)
         {
             SiteModel result = new SiteModel(ID);
 

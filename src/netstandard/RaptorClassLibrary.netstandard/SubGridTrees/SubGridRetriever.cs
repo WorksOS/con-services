@@ -8,6 +8,7 @@ using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Interfaces;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
@@ -25,7 +26,7 @@ namespace VSS.TRex.SubGridTrees
 
         // Local state populated by the retriever constructor
         private CombinedFilter Filter;
-        private SiteModel SiteModel;
+        private ISiteModel SiteModel;
         private IStorageProxy StorageProxy;
         private bool CanUseGlobalLatestCells;
         private bool HasOverrideSpatialCellRestriction;
@@ -92,7 +93,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="treeLevel"></param>
         /// <param name="maxNumberOfPassesToReturn"></param>
         /// <param name="areaControlSet"></param>
-        public SubGridRetriever(SiteModel sitemodel,
+        public SubGridRetriever(ISiteModel sitemodel,
                                 IStorageProxy storageProxy,
                                 CombinedFilter filter,
                                 bool hasOverrideSpatialCellRestriction,

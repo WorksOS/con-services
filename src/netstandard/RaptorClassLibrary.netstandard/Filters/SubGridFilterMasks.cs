@@ -1,5 +1,6 @@
 ﻿using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
@@ -13,7 +14,7 @@ namespace VSS.TRex.Filters
     public static class SubGridFilterMasks
     {
         public static void ConstructSubgridSpatialAndPositionalMask(ILeafSubGrid SubGridAsLeaf,
-                                                                    SiteModel SiteModel,
+                                                                    ISiteModel SiteModel,
                                                                     CombinedFilter Filter,
                                                                     bool AHasOverrideSpatialCellRestriction,
                                                                     BoundingIntegerExtent2D AOverrideSpatialCellRestriction,
@@ -117,7 +118,7 @@ namespace VSS.TRex.Filters
 
 
         public static bool ConstructSubgridCellFilterMask(ILeafSubGrid SubGridAsLeaf,
-                                        SiteModel SiteModel,
+                                        ISiteModel SiteModel,
                                         CombinedFilter Filter,
                                         SubGridTreeBitmapSubGridBits CellOverrideMask,
                                         bool AHasOverrideSpatialCellRestriction,

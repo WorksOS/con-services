@@ -21,6 +21,7 @@ using VSS.TRex.Types;
 using VSS.TRex.Utilities;
 using VSS.TRex.DesignProfiling;
 using VSS.TRex.Filters;
+using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.GridFabric.ComputeFuncs
 {
@@ -64,7 +65,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         protected SubGridsRequestArgument localArg;
 
         [NonSerialized]
-        private SiteModel siteModel;
+        private ISiteModel siteModel;
 
         [NonSerialized]
         private IClientLeafSubGrid[][] clientGrids;

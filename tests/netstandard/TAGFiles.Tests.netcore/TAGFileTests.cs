@@ -1,14 +1,14 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Sinks;
 using VSS.TRex.TAGFiles.Types;
+using VSS.TRex.Tests.netcore.TestFixtures;
 using VSSTests.TRex.Tests.Common;
 using Xunit;
 
 namespace VSS.TRex.TAGFiles.Tests
 {
-        public class TAGFileTests
+        public class TAGFileTests : IClassFixture<DILoggingFixture>
     {
         [Fact]
         public void Test_TAGFile_Creation()
@@ -23,7 +23,7 @@ namespace VSS.TRex.TAGFiles.Tests
         {
             // Create the TAG file and reader classes
             TAGFile file = new TAGFile();
-            TAGReader reader = new TAGReader(new FileStream(TAGTestConsts.TestDataFilePath() + "TAGFiles\\TestTAGFile-TAGFile-Read-Stream.tag", FileMode.Open, FileAccess.Read));
+            TAGReader reader = new TAGReader(new FileStream(Path.Combine("TestData", "TAGFiles", "TestTAGFile-TAGFile-Read-Stream.tag"), FileMode.Open, FileAccess.Read));
 
             // Create the state and sink
             TAGProcessorStateBase stateBase = new TAGProcessorStateBase(); // Derivatives to construct later
@@ -46,7 +46,7 @@ namespace VSS.TRex.TAGFiles.Tests
             TAGValueSink sink = new TAGValueSink(stateBase);
 
             //Read the TAG file
-            TAGReadResult result = file.Read(TAGTestConsts.TestDataFilePath() + "TAGFiles\\TestTAGFile-TAGFile-Read-File.tag", sink);
+            TAGReadResult result = file.Read(Path.Combine("TestData", "TAGFiles", "TestTAGFile-TAGFile-Read-File.tag"), sink);
 
             Assert.Equal(TAGReadResult.NoError, result);
         }

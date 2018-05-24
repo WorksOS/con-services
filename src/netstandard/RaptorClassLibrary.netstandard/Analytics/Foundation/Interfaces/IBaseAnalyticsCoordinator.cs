@@ -2,6 +2,7 @@
 using VSS.TRex.Analytics.GridFabric.Responses;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Analytics.Foundation.Interfaces
 {
@@ -12,7 +13,7 @@ namespace VSS.TRex.Analytics.Foundation.Interfaces
         /// <summary>
         /// The SiteModel context for computing the result of the request
         /// </summary>
-        SiteModel SiteModel { get; set; }
+        ISiteModel SiteModel { get; set; }
 
         /// <summary>
         /// Request descriptor used to track this request in different parts of the cluster compute
