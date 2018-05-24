@@ -28,6 +28,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// Controller for getting Raptor production data for summary and details requests
   /// </summary>
   //NOTE: do not cache responses as large amount of data
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class CompactionExportController : BaseController
   {
     /// <summary>
