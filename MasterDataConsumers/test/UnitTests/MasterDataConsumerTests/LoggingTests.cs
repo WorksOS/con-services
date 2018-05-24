@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer;
 using VSS.KafkaConsumer.Interfaces;
@@ -14,13 +14,13 @@ using VSS.Log4Net.Extensions;
 using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
-namespace MasterDataConsumer.Tests
+namespace VSS.Productivity3D.MasterDataConsumer.Tests
 {
 
   [TestClass]
   public class LoggingTests
   {
-    private IServiceProvider serviceProvider = null;
+    private IServiceProvider serviceProvider;
     private string loggerRepoName = "UnitTestLogTest";
 
     [TestInitialize]
@@ -29,27 +29,26 @@ namespace MasterDataConsumer.Tests
       Log4NetProvider.RepoName = loggerRepoName;
     }
 
-
     [TestMethod]
     public void CanUseLog4net()
     {
       var logPath = Directory.GetCurrentDirectory();
 
-      var logFileFullPath = string.Format(string.Format("{0}/{1}.log", logPath, loggerRepoName));
+      var logFileFullPath = Path.Combine(logPath, loggerRepoName + ".log");
       if (File.Exists(logFileFullPath))
       {
         File.WriteAllText(logFileFullPath, string.Empty);
       }
 
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
-      ILoggerFactory loggerFactory = new LoggerFactory();     
+      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
+      ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
-     
+
       // put logger into DI
       serviceProvider = new ServiceCollection()
-        .AddSingleton<IConfigurationStore, GenericConfiguration>()      
-        .AddSingleton<ILoggerFactory>(loggerFactory)
+        .AddSingleton<IConfigurationStore, GenericConfiguration>()
+        .AddSingleton(loggerFactory)
         .BuildServiceProvider();
 
       // 1) this test is logger from outside of DI
@@ -74,13 +73,11 @@ namespace MasterDataConsumer.Tests
           allLines.Add(sr.ReadLine());
       }
 
-      Assert.AreEqual(2, allLines.Count());
+      Assert.AreEqual(2, allLines.Count);
       Assert.AreEqual(2, Regex.Matches(allLines[0], "LoggingTests").Count);
       Assert.AreEqual(2, Regex.Matches(allLines[1], "MessageResolver").Count);
     }
 
-
-    
     [TestMethod]
     public void CanConstructFromDI()
     {
@@ -105,8 +102,6 @@ namespace MasterDataConsumer.Tests
       Assert.IsNotNull(subscriptionConsumer);
     }
 
-    
-
     [TestMethod]
     public void CannotConstructFromDI()
     {
@@ -119,7 +114,7 @@ namespace MasterDataConsumer.Tests
     [TestMethod]
     public void ConstructLoggerNameFromKafkaTopic()
     {
-      string[] kafkaTopic = new string[] { "VSS.Interfaces.Events.MasterData.ICustomerEvent", "VSS.Interfaces.Events.MasterData.IAssetEvent" };
+      string[] kafkaTopic = { "VSS.Interfaces.Events.MasterData.ICustomerEvent", "VSS.Interfaces.Events.MasterData.IAssetEvent" };
 
       string eventType = kafkaTopic[0].Split('.').Last();
       string loggerRepoName = "MDC " + eventType;
@@ -128,9 +123,8 @@ namespace MasterDataConsumer.Tests
 
     private void CreateCollection(bool withLogging)
     {
-      string loggerRepoName = "UnitTestLogTest";
-      var logPath = System.IO.Directory.GetCurrentDirectory();
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
+      const string loggerRepoName = "UnitTestLogTest";
+      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
 
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
@@ -147,8 +141,8 @@ namespace MasterDataConsumer.Tests
           .AddTransient<IKafkaConsumer<ISubscriptionEvent>, KafkaConsumer<ISubscriptionEvent>>()
           .AddTransient<IKafkaConsumer<IFilterEvent>, KafkaConsumer<IFilterEvent>>()
           .AddTransient<IMessageTypeResolver, MessageResolver>()
-          .AddTransient<IRepositoryFactory, RepositoryFactory>()          
-          
+          .AddTransient<IRepositoryFactory, RepositoryFactory>()
+
           .AddTransient<IRepository<IAssetEvent>, AssetRepository>()
           .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
           .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
@@ -161,12 +155,10 @@ namespace MasterDataConsumer.Tests
       if (withLogging)
         serviceCollection
             .AddLogging()
-            .AddSingleton<ILoggerFactory>(loggerFactory);
+            .AddSingleton(loggerFactory);
 
       serviceProvider = serviceCollection
           .BuildServiceProvider();
     }
-
-
   }
 }

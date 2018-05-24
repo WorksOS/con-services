@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;

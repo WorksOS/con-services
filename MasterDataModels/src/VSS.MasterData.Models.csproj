@@ -6,7 +6,7 @@
     <Company>VSS</Company>
     <Product>VSS.MasterData.Models.netcore</Product>
     <Description>Shared models for 3D Productivity</Description>
-    <VersionPrefix>2.22.1</VersionPrefix>
+    <VersionPrefix>2.23.0</VersionPrefix>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>VSS.MasterData.Models</AssemblyName>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -29,7 +29,7 @@
     <PackageReference Include="Microsoft.AspNetCore.MVC.Core" Version="2.0.4" />
     <PackageReference Include="System.Net.Security" Version="4.3.2" />
     <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.1.0" />
-    <PackageReference Include="NodaTime" Version="2.2.6" />
+    <PackageReference Include="NodaTime" Version="2.3.0" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
