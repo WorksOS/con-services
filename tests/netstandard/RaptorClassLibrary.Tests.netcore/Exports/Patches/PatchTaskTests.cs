@@ -1,0 +1,32 @@
+﻿using VSS.TRex.Exports.Patches.Executors.Tasks;
+using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.Types;
+using Xunit;
+
+namespace RaptorClassLibrary.Tests.netcore.Exports.Patches
+{
+    public class PatchTaskTests
+    {
+      [Fact]
+      public void Test_PatchTask_Creation()
+      {
+        PatchTask task = new PatchTask(0, "", GridDataType.All);
+
+        Assert.NotNull(task);
+        Assert.NotNull(task.PatchSubgrids);
+        Assert.True(0 == task.PatchSubgrids.Count, "Patched subgrid count not 0 after creation");
+      }
+
+    [Fact]
+      public void Test_PatchTask_TransferResponse()
+      {
+        PatchTask task = new PatchTask(0, "", GridDataType.All);
+        ClientHeightLeafSubGrid transferSubgrid = new ClientHeightLeafSubGrid(null, null, 0, 1, 0);
+
+        task.TransferResponse(transferSubgrid);
+
+        Assert.True(task.PatchSubgrids.Count == 1, $"Count of transferred subgrids not 1 as expected (= {task.PatchSubgrids.Count}");
+        Assert.True(task.PatchSubgrids[0] == transferSubgrid, $"Transferred subgrid is not the same as the one passed into the task.");
+      }
+  }
+}
