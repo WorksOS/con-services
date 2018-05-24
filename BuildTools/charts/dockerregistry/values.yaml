@@ -19,7 +19,7 @@ service:
   name: registry
   type: ClusterIP
   # clusterIP:
-  port: 80
+  port: 5000
   # nodePort:
   annotations: {}
   # foo.io/bar: "true"
@@ -92,7 +92,7 @@ configData:
     cache:
       blobdescriptor: inmemory
   http:
-    addr: :80
+    addr: :5000
     headers:
       X-Content-Type-Options: [nosniff]
   health:
