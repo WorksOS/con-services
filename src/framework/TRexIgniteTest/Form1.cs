@@ -2,7 +2,6 @@
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Query;
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing.Imaging;
@@ -33,14 +32,12 @@ using VSS.TRex.GridFabric.Caches;
 using VSS.TRex.GridFabric.Events;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Queues;
-using VSS.TRex.Machines;
 using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.Servers.Client;
 using VSS.TRex.Servers;
 using VSS.TRex.Servers.Client;
 using VSS.TRex.Services.Designs;
 using VSS.TRex.Services.Surfaces;
-using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Surfaces;
@@ -518,7 +515,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 												}
 												catch (Exception E)
 												{
-														MessageBox.Show($"Exception occurred: {E}");
+                            writer.WriteLine($"Exception occurred: {E.Message}");
 												}
 												try
 												{
@@ -526,17 +523,17 @@ namespace VSS.TRex.IgnitePOC.TestApp
 												}
 												catch (Exception E)
 												{
-														MessageBox.Show($"Exception occurred: {E}");
+												  writer.WriteLine($"Exception occurred: {E.Message}");
 												}
-												try
+                        try
 												{
 														WriteKeysSpatial(TRexCaches.ImmutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, byte[]>(TRexCaches.ImmutableSpatialCacheName()));
 												}
 												catch (Exception E)
 												{
-														MessageBox.Show($"Exception occurred: {E}");
+												  writer.WriteLine($"Exception occurred: {E.Message}");
 												}
-										}
+                    }
 										if (mutability == StorageMutability.Mutable)
 										{
 												try
@@ -545,25 +542,25 @@ namespace VSS.TRex.IgnitePOC.TestApp
 												}
 												catch (Exception E)
 												{
-														MessageBox.Show($"Exception occurred: {E}");
+												  writer.WriteLine($"Exception occurred: {E.Message}");
 												}
-												try
+                        try
 												{
 														WriteKeysSpatial(TRexCaches.MutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, byte[]>(TRexCaches.MutableSpatialCacheName()));
 												}
 												catch (Exception E)
 												{
-														MessageBox.Show($"Exception occurred: {E}");
+												  writer.WriteLine($"Exception occurred: {E.Message}");
 												}
-												try
+                        try
 												{
 														writeTAGFileBufferQueueKeys(TRexCaches.TAGFileBufferQueueCacheName(), writer, ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName()));
 												}
 												catch (Exception E)
 												{
-														MessageBox.Show($"Exception occurred: {E}");
+												  writer.WriteLine($"Exception occurred: {E.Message}");
 												}
-										}
+                    }
 								}
 						}
 				}

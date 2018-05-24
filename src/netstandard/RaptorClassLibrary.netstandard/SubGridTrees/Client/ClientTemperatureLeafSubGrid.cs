@@ -4,6 +4,7 @@ using VSS.TRex.Cells;
 using VSS.TRex.Filters;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
+using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Client
@@ -145,10 +146,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
             FirstPassMap.Write(writer, buffer);
 
-            Buffer.BlockCopy(Cells, 0, buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(ushort));
-            writer.Write(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(ushort));
-
-            //SubGridUtilities.SubGridDimensionalIterator((x, y) => writer.Write(Cells[x, y]));
+            SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Write(writer));
         }
 
         /// <summary>
@@ -164,10 +162,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
             FirstPassMap.Read(reader, buffer);
 
-            reader.Read(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(ushort));
-            Buffer.BlockCopy(buffer, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(ushort));
-
-            //SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y] = reader.ReadUInt16());
+            SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Read(reader));
         }
     }
 }
