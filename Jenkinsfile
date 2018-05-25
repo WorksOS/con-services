@@ -22,8 +22,13 @@ node ('jenkinsslave-pod') {
 
     def versionNumber = versionPrefix + buildNumber
     def fullVersion = versionNumber + suffix
-    stage('Build Solution') {
+    stage('Test Solution') {
             checkout scm
-            docker.build("vss.trex:${fullVersion}")
+            mkdir(dir:"TestResults")
+            def building = docker.build("vss.trex:${fullVersion}", "-f DockerBuild")
+            building.inside("-v ./TestResults:/TestResults"){
+                sh 'dotnet test --test-adapter-path:. --logger:"xunit;LogFilePath=/TestResults/RaptorClassLibraryTestResults.xml" \
+                     /build/tests/netstandard/RaptorClassLibrary.Tests.netcore/RaptorClassLibrary.Tests.netcore.csproj'
+            }
     }
 }
