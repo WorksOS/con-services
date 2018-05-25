@@ -1062,5 +1062,37 @@ namespace VSS.TRex.IgnitePOC.TestApp
 
       MessageBox.Show($"Patch response: Total pages required: {result.TotalNumberOfPagesToCoverFilteredData}, PageSize: {result.MaxPatchSize}, Page number {result.PatchNumber}, Number of subgrids in patch: {result.Patch.Length}");
 	}
+
+    private void btnKill_Click(object sender, EventArgs e)
+    {
+      foreach (var process in Process.GetProcessesByName("TRexTileServer"))
+      {
+        process.Kill();
+      }
+
+      foreach (var process in Process.GetProcessesByName("TRexGridActivator"))
+      {
+        process.Kill();
+      }
+      foreach (var process in Process.GetProcessesByName("TRexDesignElevationsServer"))
+      {
+        process.Kill();
+      }
+      foreach (var process in Process.GetProcessesByName("TRexImmutableDataServer"))
+      {
+        process.Kill();
+      }
+      foreach (var process in Process.GetProcessesByName("TRexMutableDataServer"))
+      {
+        process.Kill();
+      }
+
+
+    }
+
+    private void btnEmpty_Click(object sender, EventArgs e)
+    {
+      editProjectID.Text = new Guid().ToString();
+    }
   }
 }
