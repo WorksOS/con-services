@@ -212,6 +212,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
               new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(17),
                 projectErrorCodesProvider.FirstNameWithOffset(17)));
           }
+          if (!string.IsNullOrEmpty(updateEvent.ProjectBoundary))
+          {
+            ProjectBoundaryValidator.ValidateWKT(updateEvent.ProjectBoundary);
+          }
         }
         //Nothing else to check for DeleteProjectEvent
       }

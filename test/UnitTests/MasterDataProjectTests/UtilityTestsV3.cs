@@ -63,7 +63,7 @@ namespace VSS.MasterData.ProjectTests
     {
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
       (Guid.NewGuid(), ProjectType.Standard, "projectName", "this is the description",
-        new DateTime(2017, 02, 15), "csName", new byte[] { 1, 2, 3 });
+        new DateTime(2017, 02, 15), "csName", new byte[] { 1, 2, 3 }, null);
 
       var kafkaEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
       Assert.AreEqual(request.ProjectUid, kafkaEvent.ProjectUID, "ProjectUID has not been mapped correctly");

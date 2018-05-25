@@ -1423,7 +1423,7 @@ namespace TestUtility
             updateProjectRequest.Description = eventObject.Description;
           }
           var request = UpdateProjectRequest.CreateUpdateProjectRequest(updateProjectRequest.ProjectUID, updateProjectRequest.ProjectType, updateProjectRequest.ProjectName, updateProjectRequest.Description,
-                                              updateProjectRequest.ProjectEndDate, updateProjectRequest.CoordinateSystemFileName, updateProjectRequest.CoordinateSystemFileContent);
+                                              updateProjectRequest.ProjectEndDate, updateProjectRequest.CoordinateSystemFileName, updateProjectRequest.CoordinateSystemFileContent, null);
           jsonString = JsonConvert.SerializeObject(request, JsonSettings);
           break;
         case "DeleteProjectEvent":

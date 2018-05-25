@@ -6,7 +6,6 @@ using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Moq;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 
@@ -19,10 +18,18 @@ namespace VSS.MasterData.ProjectTests
     private static List<Point> _boundaryLL;
     private static BusinessCenterFile _businessCenterFile;
     private static string _checkBoundaryString;
+    private readonly string _validBoundary;
+    private readonly string _invalidBoundary;
 
     private static string _customerUid;
 
-    [ClassInitialize]
+    public ProjectValidationTests()
+    {
+      _validBoundary =  "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))";
+      _invalidBoundary = "POLYGON((172.595831670724 -43.5427038560109))";
+    }
+
+  [ClassInitialize]
     public static void ClassInitialize(TestContext testContext)
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
@@ -116,5 +123,54 @@ namespace VSS.MasterData.ProjectTests
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2082", StringComparison.Ordinal));
 
     }
+
+    [TestMethod]
+    public void ValidateUpsertProjectV1Request_GoodBoundary()
+    {
+      var request = UpdateProjectRequest.CreateUpdateProjectRequest
+      (Guid.NewGuid(), ProjectType.Standard, "the projectName", "the project description",
+        new DateTime(2017, 01, 20), null, null, _validBoundary);
+
+      var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
+      updateProjectEvent.ActionUTC = DateTime.UtcNow;
+
+      var projectRepo = new Mock<IProjectRepository>();
+      projectRepo.Setup(ps => ps.ProjectExists(It.IsAny<string>())).ReturnsAsync(true);
+      projectRepo.Setup(ps => ps.GetProjectOnly(It.IsAny<string>())).ReturnsAsync(new Repositories.DBModels.Project()
+      {
+        ProjectUID = updateProjectEvent.ProjectUID.ToString(),
+        StartDate = updateProjectEvent.ProjectEndDate.AddDays(-2),
+        ProjectTimeZone = updateProjectEvent.ProjectTimezone
+
+      });
+
+      ProjectDataValidator.Validate(updateProjectEvent, projectRepo.Object);
+    }
+
+    [TestMethod]
+    public void ValidateUpsertProjectV1Request_InvalidBoundary()
+    {
+      var request = UpdateProjectRequest.CreateUpdateProjectRequest
+      (Guid.NewGuid(), ProjectType.Standard, "the projectName", "the project description",
+        new DateTime(2017, 01, 20), null, null, _invalidBoundary);
+
+      var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
+      updateProjectEvent.ActionUTC = DateTime.UtcNow;
+
+      var projectRepo = new Mock<IProjectRepository>();
+      projectRepo.Setup(ps => ps.ProjectExists(It.IsAny<string>())).ReturnsAsync(true);
+      projectRepo.Setup(ps => ps.GetProjectOnly(It.IsAny<string>())).ReturnsAsync(new Repositories.DBModels.Project()
+      {
+        ProjectUID = updateProjectEvent.ProjectUID.ToString(),
+        StartDate = updateProjectEvent.ProjectEndDate.AddDays(-2),
+        ProjectTimeZone = updateProjectEvent.ProjectTimezone
+
+      });
+
+      var ex = Assert.ThrowsException<ServiceException>(
+        () => ProjectDataValidator.Validate(updateProjectEvent, projectRepo.Object));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2025", StringComparison.Ordinal), "Expected error number 2025");
+    }
+
   }
 }
