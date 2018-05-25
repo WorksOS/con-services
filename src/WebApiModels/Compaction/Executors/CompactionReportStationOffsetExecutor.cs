@@ -107,13 +107,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
             for (var j = 0; j < station.NumberOfOffsets; j++)
             {
-              var stationOffsetRow = StationOffsetRow.CreateRow(station.Offsets[j]);
-
-              stationOffsetRow.SetReportFlags(request);
-              stationRow.Offsets[j] = stationOffsetRow;
+              stationRow.Offsets[j] = StationOffsetRow.CreateRow(station.Offsets[j], request);
             }
-
-            stationRow.SetStatisticsReportFlags();
 
             stationRows[i] = stationRow;
           }

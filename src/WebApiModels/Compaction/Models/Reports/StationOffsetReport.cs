@@ -54,25 +54,5 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
 
       return report;
     }
-
-    /// <summary>
-    /// Sets flags that indicates which of the reported values present in the report.
-    /// </summary> 
-    public void SetReportFlags(
-      bool reportElevation,
-      bool reportCutFill,
-      bool reportCmv,
-      bool reportMdp,
-      bool reportPassCount,
-      bool reportTemperature
-    )
-    {
-      ElevationReport = reportElevation;
-      CutFillReport = reportCutFill;
-      this.CmvReport = reportCmv;
-      this.MdpReport = reportMdp;
-      PassCountReport = reportPassCount;
-      TemperatureReport = reportTemperature;
-    }
   }
 }

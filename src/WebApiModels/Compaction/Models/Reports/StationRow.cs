@@ -14,64 +14,15 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     {
       var offsetCount = station.NumberOfOffsets;
 
-      return new StationRow
+      var row = new StationRow
       {
         Station = station.Station,
         Offsets = new StationOffsetRow[offsetCount],
-        Maximum = OffsetStatistics.Create(OffsetStatisticType.Maximum, station),
-        Minimum = OffsetStatistics.Create(OffsetStatisticType.Minimum, station),
-        Average = OffsetStatistics.Create(OffsetStatisticType.Average, station)
+        Maximum = OffsetStatistics.Create(OffsetStatisticType.Maximum, station, request),
+        Minimum = OffsetStatistics.Create(OffsetStatisticType.Minimum, station, request),
+        Average = OffsetStatistics.Create(OffsetStatisticType.Average, station, request)
       };
-    }
-
-    /// <summary>
-    /// Sets flag indicating whether the property should be serialized into the response.
-    /// </summary>
-    public void SetStatisticsReportFlags()
-    {
-      var reportElevation = false;
-      var reportCutFill = false;
-      var reportCmv = false;
-      var reportMdp = false;
-      var reportPassCount = false;
-      var reportTemperature = false;
-
-      foreach (var offset in Offsets)
-      {
-        if (!reportElevation && offset.ShouldSerializeElevation())
-        {
-          reportElevation = true;
-        }
-
-        if (!reportCutFill && offset.ShouldSerializeCutFill())
-        {
-          reportCutFill = true;
-        }
-
-        if (!reportCmv && offset.ShouldSerializeCMV())
-        {
-          reportCmv = true;
-        }
-
-        if (!reportMdp && offset.ShouldSerializeMDP())
-        {
-          reportMdp = true;
-        }
-
-        if (!reportPassCount && offset.ShouldSerializePassCount())
-        {
-          reportPassCount = true;
-        }
-
-        if (!reportTemperature && offset.ShouldSerializeTemperature())
-        {
-          reportTemperature = true;
-        }
-      }
-
-      Minimum.SetReportFlags(reportElevation, reportCutFill, reportCmv, reportMdp, reportPassCount, reportTemperature);
-      Maximum.SetReportFlags(reportElevation, reportCutFill, reportCmv, reportMdp, reportPassCount, reportTemperature);
-      Average.SetReportFlags(reportElevation, reportCutFill, reportCmv, reportMdp, reportPassCount, reportTemperature);
+      return row;
     }
   }
 }

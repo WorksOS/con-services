@@ -98,8 +98,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             //foreach (TGridRow row in reportPackager.GridReport.Rows)
             for (var i = 0; i < reportPackager.GridReport.NumberOfRows; i++)
             {
-              gridRows[i] = GridRow.CreateRow(reportPackager.GridReport.Rows[i]);
-              gridRows[i].SetReportFlags(request);
+              gridRows[i] = GridRow.CreateRow(reportPackager.GridReport.Rows[i], request);
             }
 
             var startTime = request.Filter != null && request.Filter.StartUtc.HasValue ? request.Filter.StartUtc.Value : DateTime.Now;

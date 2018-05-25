@@ -11,21 +11,16 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     /// Static constructor for the <see cref="StationOffsetRow"/> type.
     /// </summary>
     /// <returns>Returns an instance of <see cref="StationOffsetRow"/> populated from the supplied <see cref="TStationOffset"/> object.</returns>
-    public static StationOffsetRow CreateRow(TStationOffset offset)
+    public static StationOffsetRow CreateRow(TStationOffset offset, CompactionReportRequest request)
     {
-      return new StationOffsetRow
+      var row = new StationOffsetRow
       {
-        CMV = offset.CMV,
-        CutFill = offset.CutFill,
-        Easting = offset.Easting,
-        Elevation = offset.Elevation,
-        MDP = offset.MDP,
-        PassCount = offset.PassCount,
-        Northing = offset.Northing,
         Offset = offset.Position,
         Station = offset.Station,
-        Temperature = offset.Temperature
       };
+      row.SetValues(offset.Northing, offset.Easting, offset.Elevation, offset.CutFill, offset.CMV, offset.MDP, offset.PassCount, offset.Temperature);
+      row.SetReportFlags(request);
+      return row;      
     }
   }
 }
