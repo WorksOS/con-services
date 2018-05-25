@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Moq;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Filters;
