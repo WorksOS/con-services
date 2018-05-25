@@ -61,7 +61,7 @@ namespace VSS.TRex.Cells
     /// <summary>
     /// NUll height (NEE Elevation) value. This is an IEEE Single (Float) value
     /// </summary>
-    public const float NullHeight = Consts.NullFloat;
+    public const float NullHeight = Consts.NullHeight;
 
     /// <summary>
     /// Null CCV value
@@ -83,7 +83,7 @@ namespace VSS.TRex.Cells
     /// </summary>
     public const ushort NullFrequency = ushort.MaxValue;
 
-    /// <summary>
+    /// <summary>cca
     /// Null vibratory drum amplitude value
     /// </summary>
     public const ushort NullAmplitude = ushort.MaxValue;

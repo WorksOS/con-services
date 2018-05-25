@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Runtime.Serialization.Formatters.Binary;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -143,26 +142,9 @@ namespace VSS.TRex.SubGridTrees.Client
             return false;
         }
 
-        public virtual bool WantsTargetCCVValues() => false;
-        public virtual bool WantsTargetMDPValues() => false;
-        public virtual bool WantsTargetCCAValues() => false;
-        public virtual bool WantsTargetPassCountValues() => false;
-        public virtual bool WantsTargetThicknessValues() => false;
+      public PopulationControlFlags EventPopulationFlags { get; set; } = PopulationControlFlags.None;
+
         public virtual bool WantsLiftProcessingResults() => false;
-        public virtual bool WantsEventDesignNameValues() => false;
-        public virtual bool WantsEventGPSModeValues() => false;
-        public virtual bool WantsEventVibrationStateValues() => false;
-        public virtual bool WantsEventAutoVibrationStateValues() => false;
-        public virtual bool WantsEventICFlagsValues() => false;
-        public virtual bool WantsEventMachineGearValues() => false;
-        public virtual bool WantsEventMachineCompactionRMVJumpThreshold() => false;
-        public virtual bool WantsEventMachineAutomaticsValues() => false;
-        public virtual bool WantsMinElevMappingValues() => false;
-        public virtual bool WantsInAvoidZoneStateValues() => false;
-        public virtual bool WantsGPSAccuracyValues() => false;
-        public virtual bool WantsPositioningTechValues() => false;
-        public virtual bool WantsTempWarningLevelMinValues() => false;
-        public virtual bool WantsTempWarningLevelMaxValues() => false;
 
         /// <summary>
         /// Calculate the world origin coordinate location for this client leaf sub grid.
