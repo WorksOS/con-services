@@ -67,7 +67,6 @@ namespace VSS.Productivity3D.Common.Proxies
     {
       var copy = new TICFilterSettings();
       copy.Assign(baseFilter);
-      copy.OverrideTimeBoundary = true;
       copy.EndTime = baseFilter.StartTime;
       copy.StartTime = PDS_MIN_DATE;
       copy.ReturnEarliestFilteredCellPass = false;
