@@ -27,7 +27,7 @@ node ('jenkinsslave-pod') {
                 checkout scm
                 dir("/TestResults") {}
                 def building = docker.build("vss.trex:${fullVersion}", "-f DockerfileBuild .")
-                building.inside("-v /TestResults:/TestResults"){
+                building.inside("-v ${env.WORKSPACE}/TestResults:/TestResults"){
                     sh 'dotnet test --test-adapter-path:. --logger:"xunit;LogFilePath=/TestResults/RaptorClassLibraryTestResults.xml" \
                         /build/tests/netstandard/RaptorClassLibrary.Tests.netcore/RaptorClassLibrary.Tests.netcore.csproj'
                 }
