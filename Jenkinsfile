@@ -35,7 +35,9 @@ node ('jenkinsslave-pod') {
     }
     finally {
         stage('Publish Results'){
-
+            step([$class: 'XUnitBuilder',
+                thresholds: [[$class: 'FailedThreshold', unstableThreshold: '10']],
+                tools: [[$class: 'JUnitType', pattern: '/TestResults/**']]])
         }
     }
 }
