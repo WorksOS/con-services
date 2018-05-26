@@ -8,7 +8,7 @@ controller:
     tag: "0.14.0"
     pullPolicy: IfNotPresent
 
-  config: {}
+  config: { proxy-body-size: 500m }
   # Will add custom header to Nginx https://github.com/kubernetes/ingress-nginx/tree/master/docs/examples/customization/custom-headers
   headers: {}
 

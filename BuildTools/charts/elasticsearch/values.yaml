@@ -15,7 +15,7 @@ image:
 common:
   # Defines the service type for all outward-facing (non-discovery) services.
   # For minikube use NodePort otherwise use LoadBalancer
-  serviceType: LoadBalancer
+  serviceType: ClusterIP
 
   env:
     CLUSTER_NAME: "myesdb"
@@ -164,12 +164,12 @@ kibana:
     # XPACK_REPORTING_ENABLED: "false"
     # XPACK_SECURITY_ENABLED: "false"
   ingress:
-    enabled: false
+    enabled: true
     # Used to create an Ingress record.
     hosts:
-      # - kibana.local
+      - kibana.k8s.vspengg.com
     annotations:
-      # kubernetes.io/ingress.class: nginx
+      kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
     tls:
       # Secrets must be manually created in the namespace.

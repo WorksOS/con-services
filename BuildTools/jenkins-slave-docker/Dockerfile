@@ -71,7 +71,7 @@ RUN usermod -aG docker jenkins
 RUN apk add supervisor
 ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-RUN mkdir /etc/docker && echo  '{ "insecure-registries":["registry.k8s.vspengg.com"] }' > /etc/docker/daemon.json
+RUN mkdir /etc/docker && echo  '{ "insecure-registries":["registry.k8s.vspengg.com:80"] }' > /etc/docker/daemon.json
 RUN tail /etc/docker/daemon.json
 
 #Try this out
