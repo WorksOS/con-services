@@ -1,8 +1,0 @@
-image:
-  repository: k8s.gcr.io/kube-registry-proxy
-  tag: 0.4
-  pullPolicy: IfNotPresent
-
-registry:
-  host: "internal-a85a4724b5f0811e8818202825cf8724-1914646761.us-west-2.elb.amazonaws.com"
-  port: "5000"

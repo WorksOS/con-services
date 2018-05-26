@@ -38,13 +38,12 @@ Master:
   ServicePort: 8080
   # For minikube, set this to NodePort, elsewhere use LoadBalancer
   # Use ClusterIP if your setup includes ingress controller
-  ServiceType: LoadBalancer
+  ServiceType: ClusterIP
   # Master Service annotations
   ServiceAnnotations: { service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0 }
   #   service.beta.kubernetes.io/aws-load-balancer-backend-protocol: https
   # Used to create Ingress record (should used with ServiceType: ClusterIP)
-  # HostName: jenkins.cluster.local
-  # NodePort: <to set explicitly, choose port between 30000-32767
+  HostName: ci.k8s.vspengg.com
   ContainerPort: 8080
   # Enable Kubernetes Liveness and Readiness Probes
   HealthProbes: true
