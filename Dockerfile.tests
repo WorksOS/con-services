@@ -8,25 +8,22 @@ RUN ["/bin/sh", "deploy_linux.sh"]
 
 FROM microsoft/dotnet:2.1-runtime-alpine
 
-#install AWS CLI
-RUN set -x \
-    && apk add git bash curl openssh-server wget unzip python
-
-RUN wget "s3.amazonaws.com/aws-cli/awscli-bundle.zip" -O "awscli-bundle.zip" && \
-    unzip awscli-bundle.zip && \
-    ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws && \
-    rm awscli-bundle.zip && \
-    rm -rf awscli-bundle
+RUN \
+	mkdir -p /aws && \
+	apk -Uuv add groff less python py-pip && \
+	pip install awscli && \
+	apk --purge -v del py-pip && \
+	rm /var/cache/apk/*
 
 WORKDIR /app
 COPY --from=builder /build/AcceptanceTests/deploy .
 
 RUN sed -i 's/\r$//' rm_cr.sh
 RUN chmod 775 rm_cr.sh
-RUN ["/bin/bash", "rm_cr.sh"]
+RUN ["/bin/sh", "rm_cr.sh"]
 
 VOLUME testresults
 
-CMD ["/bin/bash", "runtests.sh"]
+CMD ["/bin/sh", "runtests.sh"]
 
 

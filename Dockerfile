@@ -9,8 +9,6 @@ RUN ["/bin/sh", "build.sh"]
 RUN ["/bin/sh", "unittests.sh"]
 
 
-
-
 FROM microsoft/dotnet:2.1-runtime-alpine
 
 WORKDIR /app
