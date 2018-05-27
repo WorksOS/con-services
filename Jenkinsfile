@@ -35,6 +35,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: projectservice-testing
+  namespace: testing
 spec:
 
   containers:
