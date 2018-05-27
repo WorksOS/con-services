@@ -66,19 +66,13 @@ spec:
     - configMapRef:
         name: projectservice-testing
 
-  - name: test-container
-    image: ${testContainer}
-    envFrom:
-    - configMapRef:
-        name: projectservice-testing
-
-"""
+""", containers: [containerTemplate(name: "jnlp", image: testContainer, ttyEnabled: true)]
 ) {
 	node (label) {
-		container(test-container) {
-			sh "/runtests.sh"
-		}
-	}
+dir ("/app") {
+sh "runtests.sh"
+}
+  	}
   }
 		
 		

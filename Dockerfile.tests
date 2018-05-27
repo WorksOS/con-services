@@ -6,7 +6,7 @@ WORKDIR /build/AcceptanceTests/scripts
 RUN chmod 777 *.sh
 RUN ["/bin/sh", "deploy_linux.sh"]
 
-FROM microsoft/dotnet:2.1-runtime-alpine
+FROM 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-jenkinsslave:core21
 
 WORKDIR /app
 COPY --from=builder /build/AcceptanceTests/deploy .
@@ -16,7 +16,5 @@ RUN chmod 775 rm_cr.sh
 RUN ["/bin/sh", "rm_cr.sh"]
 
 VOLUME testresults
-
-CMD ["/bin/sh", "runtests.sh"]
 
 
