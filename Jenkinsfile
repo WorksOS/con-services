@@ -24,10 +24,10 @@ node ('jenkinsslave-pod') {
     def fullVersion = versionNumber + suffix
     stage('Build Solution') {
             checkout scm
-	    docker.build("registry.k8s.vspengg.com:80/vss.projectservice:${versionPrefix}", "-f Dockerfile .") .push()
-	    docker.build("registry.k8s.vspengg.com:80/vss.projectservice.tests:${versionPrefix}", "-f Dockerfile.tests .").push()
-	    def containerName = "registry.k8s.vspengg.com:80/vss.projectservice:${versionPrefix}"
-	    def testContainerName = "registry.k8s.vspengg.com:80/vss.projectservice.tests:${versionPrefix}"
+	    docker.build("registry.k8s.vspengg.com:80/vss.projectservice:${versionNumber}", "-f Dockerfile .") .push()
+	    docker.build("registry.k8s.vspengg.com:80/vss.projectservice.tests:${versionNumber}", "-f Dockerfile.tests .").push()
+	    def containerName = "registry.k8s.vspengg.com:80/vss.projectservice:${versionNumber}"
+	    def testContainerName = "registry.k8s.vspengg.com:80/vss.projectservice.tests:${versionNumber}"
 
 	    def nestedLabel = "projectservice-${UUID.randomUUID().toString()}"
 	    def label = "projectservice-${UUID.randomUUID().toString()}"
