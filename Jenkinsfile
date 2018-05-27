@@ -24,18 +24,22 @@ node ('jenkinsslave-pod') {
     def fullVersion = versionNumber + suffix
     stage('Build Solution') {
             checkout scm
-	    docker.build("registry.k8s.vspengg.com:80/vss.projectservice:${versionNumber}", "-f Dockerfile .") .push()
-	    docker.build("registry.k8s.vspengg.com:80/vss.projectservice.tests:${versionNumber}", "-f Dockerfile.tests .").push()
-	    def containerName = "registry.k8s.vspengg.com:80/vss.projectservice:${versionNumber}"
-	    def testContainerName = "registry.k8s.vspengg.com:80/vss.projectservice.tests:${versionNumber}"
+	    docker.build("registry.k8s.vspengg.com:80/vss.projectservice:${fullVersion}", "-f Dockerfile .") .push()
+	    docker.build("registry.k8s.vspengg.com:80/vss.projectservice.tests:${fullVersion}", "-f Dockerfile.tests .").push()
+	    def container = "registry.k8s.vspengg.com:80/vss.projectservice:${fullVersion}"
+	    def testContainer = "registry.k8s.vspengg.com:80/vss.projectservice.tests:${fullVersion}"
+
+	    def containerName = "${fullVersion}"
+	    def testContainerName = "testing-{fullVersion}"
+
 
 	    def nestedLabel = "projectservice-${UUID.randomUUID().toString()}"
 	    def label = "projectservice-${UUID.randomUUID().toString()}"
             def template = readFile "yaml/testing-pod.yaml"
  	    
 		podTemplate(label: nestedLabel, yaml: template, namespace: "testing") {
-                podTemplate(label: label, containers: [containerTemplate(name: containerName, image: containerName, ttyEnabled: true), 
-						       containerTemplate(name: testContainerName, image: testContainerName, ttyEnabled: true)]) {
+                podTemplate(label: label, containers: [containerTemplate(name: containerName, image: container, ttyEnabled: true), 
+						       containerTemplate(name: testContainerName, image: testContainer, ttyEnabled: true)]) {
 		  node (label) {
 			container (testContainerName)
 			{
