@@ -29,10 +29,11 @@ node ('jenkinsslave-pod') {
 	    def containerName = "registry.k8s.vspengg.com:80/vss.projectservice:${fullVersion}"
 	    def testContainerName = "registry.k8s.vspengg.com:80/vss.projectservice.tests:${fullVersion}"
 
+	    def nestedLabel = "projectservice-${UUID.randomUUID().toString()}"
 	    def label = "projectservice-${UUID.randomUUID().toString()}"
-        def template = readFile "yaml/testing-pod.yaml"
+            def template = readFile "yaml/testing-pod.yaml"
  	    
-		podTemplate(label: label, yaml: template, namespace: "testing") {
+		podTemplate(label: nestedLabel, yaml: template, namespace: "testing") {
                 podTemplate(label: label, containers: [containerTemplate(name: containerName, image: containerName, ttyEnabled: true), 
 						       containerTemplate(name: testContainerName, image: testContainerName, ttyEnabled: true)]) {
 		  node (label) {
