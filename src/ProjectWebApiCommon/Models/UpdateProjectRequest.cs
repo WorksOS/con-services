@@ -58,7 +58,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// <summary>
     /// The boundary of the project. This is now mutable.
     /// </summary>
-    [JsonProperty(PropertyName = "ProjectBoundary", Required = Required.Always)]
+    [JsonProperty(PropertyName = "ProjectBoundary", Required = Required.Default)]
     public string ProjectBoundary { get; set; }
 
     /// <summary>
