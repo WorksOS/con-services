@@ -70,6 +70,7 @@ spec:
 ) {
 	node (label) {
 dir ("/app") {
+sh "ls -la"
 sh "runtests.sh"
 }
   	}
