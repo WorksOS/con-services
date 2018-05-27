@@ -27,10 +27,12 @@ node ('jenkinsslave-pod') {
                 checkout scm
                 dir("/TestResults") {}
                 def building = docker.build("vss.trex:${fullVersion}", "-f DockerfileBuild .")
-                building.inside("-v ${env.WORKSPACE}/TestResults:/TestResults"){
-                    sh 'dotnet test --test-adapter-path:. --logger:"xunit;LogFilePath=/TestResults/RaptorClassLibraryTestResults.xml" \
-                        /build/tests/netstandard/RaptorClassLibrary.Tests.netcore/RaptorClassLibrary.Tests.netcore.csproj'
-                }
+                sh 'docker run -v ${env.WORKSPACE}/TestResults:/TestResults ${building.id} dotnet test --test-adapter-path:. --logger:"xunit;LogFilePath=/TestResults/RaptorClassLibraryTestResults.xml" \
+                    /build/tests/netstandard/RaptorClassLibrary.Tests.netcore/RaptorClassLibrary.Tests.netcore.csproj'
+                // building.inside("-v ${env.WORKSPACE}/TestResults:/TestResults"){
+                //     sh 'dotnet test --test-adapter-path:. --logger:"xunit;LogFilePath=/TestResults/RaptorClassLibraryTestResults.xml" \
+                //         /build/tests/netstandard/RaptorClassLibrary.Tests.netcore/RaptorClassLibrary.Tests.netcore.csproj'
+                // }
         }
     }
     finally {
