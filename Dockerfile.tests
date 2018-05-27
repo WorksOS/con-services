@@ -6,7 +6,17 @@ WORKDIR /build/AcceptanceTests/scripts
 RUN chmod 777 *.sh
 RUN ["/bin/sh", "deploy_linux.sh"]
 
-FROM microsoft/dotnet:2-runtime-jessie
+FROM microsoft/dotnet:2.1-runtime-alpine
+
+#install AWS CLI
+RUN set -x \
+    && apk add git bash curl openssh-server wget unzip python
+
+RUN wget "s3.amazonaws.com/aws-cli/awscli-bundle.zip" -O "awscli-bundle.zip" && \
+    unzip awscli-bundle.zip && \
+    ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws && \
+    rm awscli-bundle.zip && \
+    rm -rf awscli-bundle
 
 WORKDIR /app
 COPY --from=builder /build/AcceptanceTests/deploy .
@@ -17,6 +27,6 @@ RUN ["/bin/bash", "rm_cr.sh"]
 
 VOLUME testresults
 
-ENTRYPOINT ["/bin/bash", "runtests.sh"]
+CMD ["/bin/bash", "runtests.sh"]
 
 

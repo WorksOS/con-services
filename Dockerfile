@@ -19,7 +19,5 @@ ENV ASPNETCORE_URLS http://*:80
 EXPOSE 80
 
 COPY --from=builder /build/artifacts/ProjectWebApi .
-RUN ls -la
-
 
 ENTRYPOINT ["dotnet", "VSS.MasterData.Project.WebAPI.dll"]
