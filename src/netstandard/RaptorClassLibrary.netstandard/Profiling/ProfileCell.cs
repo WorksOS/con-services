@@ -36,12 +36,12 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// OTGCellX, OTGCellY is the on the ground index of the this particular grid cell
     /// </summary>
-    public int OTGCellX;
+    public uint OTGCellX;
 
     /// <summary>
     /// OTGCellX, OTGCellY is the on the ground index of the this particular grid cell
     /// </summary>
-    public int OTGCellY;
+    public uint OTGCellY;
 
     public float CellLowestElev;
     public float CellHighestElev;
@@ -128,7 +128,7 @@ namespace VSS.TRex.Profiling
     /// <param name="interceptLength"></param>
     /// <param name="includesProductionData"></param>
     public ProfileCell(FilteredMultiplePassInfo filteredPassInfo,
-      int oTGX, int oTGY,
+      uint oTGX, uint oTGY,
       double station, double interceptLength,
       bool includesProductionData = true) : this()
     {
@@ -222,6 +222,9 @@ namespace VSS.TRex.Profiling
 
   }
 
+  //procedure ReadFromStream(const Stream : TStream; APassesPackager : TICFilteredMultiplePassInfoPackager);
+  //procedure WriteToStream(const Stream : TStream; const WriteCellPassesAndLayers : Boolean; APassesPackager : TICFilteredMultiplePassInfoPackager);
+
   /*
     TICProfileCell = {$IFDEF PRISM} public {$ENDIF} class(TObject)
     public
@@ -231,14 +234,6 @@ namespace VSS.TRex.Profiling
                        const AOTGX, AOTGY: Integer;
                        const AStation, AInterceptLength: Double); Overload;
       procedure Assign(const Source : TICProfileCell); Overload;
-
-      function RequestNewLayer(var LayerRecycledIndex : Integer) : TICProfileLayer;
-
-      procedure ReadFromStream(const Stream : TStream;
-                               APassesPackager : TICFilteredMultiplePassInfoPackager);
-      procedure WriteToStream(const Stream : TStream;
-                              const WriteCellPassesAndLayers : Boolean;
-                              APassesPackager : TICFilteredMultiplePassInfoPackager);
 
       procedure ClearLayers;
       procedure GetNotSupersededLayers(NotSupersededLayers :TICProfileLayers);

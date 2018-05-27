@@ -11,7 +11,7 @@ namespace VSS.TRex.Filters
   {
     public bool WantsTargetCCVValues { get; set; }
     public bool WantsTargetPassCountValues { get; set; }
-    public bool WantsTargetThicknessValues { get; set; }
+    public bool WantsTargetLiftThicknessValues { get; set; }
     public bool WantsEventDesignNameValues { get; set; }
     public bool WantsEventVibrationStateValues { get; set; }
     public bool WantsEventAutoVibrationStateValues { get; set; }
@@ -31,11 +31,15 @@ namespace VSS.TRex.Filters
     public bool WantsLayerIDValues { get; set; }
     public bool WantsTargetCCAValues { get; set; }
 
+    /// <summary>
+    /// Determines if any of the population flags are set
+    /// </summary>
+    /// <returns></returns>
     public bool AnySet()
     {
       return WantsTargetCCVValues ||
              WantsTargetPassCountValues ||
-             WantsTargetThicknessValues ||
+             WantsTargetLiftThicknessValues ||
              WantsEventDesignNameValues ||
              WantsEventVibrationStateValues ||
              WantsEventAutoVibrationStateValues ||
@@ -56,11 +60,14 @@ namespace VSS.TRex.Filters
              WantsTargetCCAValues;
     }
 
+    /// <summary>
+    /// Sets all event population flags to false
+    /// </summary>
     public void Clear()
     {
       WantsTargetCCVValues = false;
       WantsTargetPassCountValues = false;
-      WantsTargetThicknessValues = false;
+      WantsTargetLiftThicknessValues = false;
       WantsEventDesignNameValues = false;
       WantsEventVibrationStateValues = false;
       WantsEventAutoVibrationStateValues = false;
@@ -81,11 +88,14 @@ namespace VSS.TRex.Filters
       WantsTargetCCAValues = false;
     }
 
+    /// <summary>
+    /// Sets all event population flags to true
+    /// </summary>
     public void Fill()
     {
       WantsTargetCCVValues = true;
       WantsTargetPassCountValues = true;
-      WantsTargetThicknessValues = true;
+      WantsTargetLiftThicknessValues = true;
       WantsEventDesignNameValues = true;
       WantsEventVibrationStateValues = true;
       WantsEventAutoVibrationStateValues = true;
@@ -106,11 +116,15 @@ namespace VSS.TRex.Filters
       WantsTargetCCAValues = true;
     }
 
+    /// <summary>
+    /// Converts the set of event population flags into a bit-flagged integer
+    /// </summary>
+    /// <returns></returns>
     public Int32 GetFlags()
     {
       return ((WantsTargetCCVValues ? 1 : 0) * 0x1) |
              ((WantsTargetPassCountValues ? 1 : 0) * 0x2) |
-             ((WantsTargetThicknessValues ? 1 : 0) * 0x4) |
+             ((WantsTargetLiftThicknessValues ? 1 : 0) * 0x4) |
              ((WantsEventDesignNameValues ? 1 : 0) * 0x8) |
              ((WantsEventVibrationStateValues ? 1 : 0) * 0x10) |
              ((WantsEventAutoVibrationStateValues ? 1 : 0) * 0x20) |
@@ -131,11 +145,15 @@ namespace VSS.TRex.Filters
              ((WantsTargetCCAValues ? 1 : 0) * 0x100000);
     }
 
+    /// <summary>
+    /// Converts a bit-flagged integer into the set of event population flags
+    /// </summary>
+    /// <param name="flags"></param>
     public void SetFromFlags(UInt32 flags)
     {
       WantsTargetCCVValues = (flags & 0x1) != 0;
       WantsTargetPassCountValues = (flags & 0x2) != 0;
-      WantsTargetThicknessValues = (flags & 0x4) != 0;
+      WantsTargetLiftThicknessValues = (flags & 0x4) != 0;
       WantsEventDesignNameValues = (flags & 0x8) != 0;
       WantsEventVibrationStateValues = (flags & 0x10) != 0;
       WantsEventAutoVibrationStateValues = (flags & 0x20) != 0;
@@ -156,6 +174,13 @@ namespace VSS.TRex.Filters
       WantsTargetCCAValues = (flags & 0x100000) != 0;
     }
 
+    /// <summary>
+    /// Calculates the a set of lift build setting flags from the required data type and other lift build settings
+    /// </summary>
+    /// <param name="ProfileTypeRequired"></param>
+    /// <param name="CompactionSummaryInLiftBuildSettings"></param>
+    /// <param name="WorkInProgressSummaryInLiftBuildSettings"></param>
+    /// <param name="ThicknessInProgressInLiftBuildSettings"></param>
     public static void CalculateFlags(GridDataType ProfileTypeRequired,
       //todo const LiftBuildSettings: TICLiftBuildSettings;
       out bool CompactionSummaryInLiftBuildSettings,
@@ -192,6 +217,13 @@ namespace VSS.TRex.Filters
       }
     }
 
+    /// <summary>
+    /// Prepares the set of event population control flags depending on the requested data type, filter, client grid
+    /// and lift build related settings
+    /// </summary>
+    /// <param name="profileTypeRequired"></param>
+    /// <param name="passFilter"></param>
+    /// <param name="clientGrid"></param>
     public void PreparePopulationControl(GridDataType profileTypeRequired,
       // todo const LiftBuildSettings: TICLiftBuildSettings;
       CellPassAttributeFilter passFilter,
@@ -233,11 +265,10 @@ namespace VSS.TRex.Filters
       WantsTargetCCAValues = (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsTargetCCAValues) != 0 ||
                              CompactionSummaryInLiftBuildSettings ||
                              WorkInProgressSummaryInLiftBuildSettings;
-      WantsTargetThicknessValues =
+      WantsTargetLiftThicknessValues =
         (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsTargetThicknessValues) !=
         0 || ThicknessInProgressInLiftBuildSettings
-          ||
-          WorkInProgressSummaryInLiftBuildSettings; // todo || (LiftBuildSettings.LiftDetectionType in [icldtAutomatic, icldtAutoMapReset]);
+          || WorkInProgressSummaryInLiftBuildSettings; // todo || (LiftBuildSettings.LiftDetectionType in [icldtAutomatic, icldtAutoMapReset]);
       WantsEventVibrationStateValues =
         (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsEventVibrationStateValues) != 0 ||
         passFilter.HasVibeStateFilter ||
@@ -265,6 +296,11 @@ namespace VSS.TRex.Filters
         false; // Todo (LiftBuildSettings.LiftDetectionType = icldtTagfile) || passFilter.HasLayerIDFilter || (LiftBuildSettings.LiftDetectionType in[icldtMapReset, icldtAutoMapReset]);
     }
 
+    /// <summary>
+    /// Prepares the set of event population control flags depending on the requested data type and filter
+    /// </summary>
+    /// <param name="profileTypeRequired"></param>
+    /// <param name="passFilter"></param>
     public void PreparePopulationControl(GridDataType profileTypeRequired,
       // todo const LiftBuildSettings: TICLiftBuildSettings;
       CellPassAttributeFilter passFilter)
@@ -289,7 +325,7 @@ namespace VSS.TRex.Filters
       WantsTargetMDPValues = CompactionSummaryInLiftBuildSettings || WorkInProgressSummaryInLiftBuildSettings;
       WantsTargetCCAValues = CompactionSummaryInLiftBuildSettings || WorkInProgressSummaryInLiftBuildSettings;
 
-      WantsTargetThicknessValues =
+      WantsTargetLiftThicknessValues =
         false; // todo ThicknessInProgressInLiftBuildSettings || WorkInProgressSummaryInLiftBuildSettings ||
       // todo (LiftBuildSettings.LiftDetectionType in [icldtAutomatic, icldtAutoMapReset]);
 

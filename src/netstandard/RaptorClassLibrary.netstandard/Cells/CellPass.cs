@@ -83,7 +83,7 @@ namespace VSS.TRex.Cells
     /// </summary>
     public const ushort NullFrequency = ushort.MaxValue;
 
-    /// <summary>cca
+    /// <summary>
     /// Null vibratory drum amplitude value
     /// </summary>
     public const ushort NullAmplitude = ushort.MaxValue;

@@ -59,9 +59,7 @@ namespace VSS.TRex.Filters
                         for (byte J = 0; J < SubGridTree.SubGridTreeDimension; J++)
                         {
                             if (!AOverrideSpatialCellRestriction.Includes(originX + I, originY + J))
-                            {
                                 FilterMask.ClearBit(I, J);
-                            }
                         }
                     }
                 }

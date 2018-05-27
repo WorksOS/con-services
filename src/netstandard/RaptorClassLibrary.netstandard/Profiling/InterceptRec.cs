@@ -7,12 +7,12 @@ namespace VSS.TRex.Profiling
     /// </summary>
     public struct InterceptRec : IEquatable<InterceptRec>
     {
-      public float OriginX;
-      public float OriginY;
-      public float MidPointX;
-      public float MidPointY;
-      public float ProfileItemIndex;
-      public float InterceptLength;
+      public double OriginX;
+      public double OriginY;
+      public double MidPointX;
+      public double MidPointY;
+      public double ProfileItemIndex;
+      public double InterceptLength;
 
       /// <summary>
       /// Constructs a full specified intercept rec
@@ -23,7 +23,7 @@ namespace VSS.TRex.Profiling
       /// <param name="midPointY"></param>
       /// <param name="profileItemIndex"></param>
       /// <param name="interceptLength"></param>
-      public InterceptRec(float originX, float originY, float midPointX, float midPointY, float profileItemIndex, float interceptLength)
+      public InterceptRec(double originX, double originY, double midPointX, double midPointY, double profileItemIndex, double interceptLength)
       {
         OriginX = originX;
         OriginY = originY;
@@ -40,7 +40,7 @@ namespace VSS.TRex.Profiling
       /// <param name="y"></param>
       /// <param name="ind"></param>
       /// <returns></returns>
-      public bool Equals(float x, float y, float ind)
+      public bool Equals(double x, double y, double ind)
       {
         const double Epsilon = 0.0001;
 

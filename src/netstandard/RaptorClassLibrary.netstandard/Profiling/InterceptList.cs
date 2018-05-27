@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Utilities;
 
 namespace VSS.TRex.Profiling
 {
@@ -27,7 +28,7 @@ namespace VSS.TRex.Profiling
     /// <param name="x"></param>
     /// <param name="y"></param>
     /// <param name="ind"></param>
-    public void AddPoint(float x, float y, float ind)
+    public void AddPoint(double x, double y, double ind)
     {
       if (Count > 0 && Items[Count - 1].Equals(x, y, ind))
         return;
@@ -71,8 +72,8 @@ namespace VSS.TRex.Profiling
       if (Count == 0)
         return;
 
-      float FirstOriginX = 0; // X-axis offset of first intercept in pair from start point of requested profile
-      float IntLength = 0;
+      double FirstOriginX = 0; // X-axis offset of first intercept in pair from start point of requested profile
+      double IntLength = 0;
 
       for (int i = 0; i < Count - 2; i++)
       {
@@ -85,10 +86,9 @@ namespace VSS.TRex.Profiling
         // the length of the previous intercept line
         FirstOriginX = i == 0 ? 0 : FirstOriginX + IntLength;
 
-        IntLength = (float) Math.Sqrt(Math.Pow(InterceptB.OriginX - InterceptA.OriginX, 2) +
-                                      Math.Pow(InterceptB.OriginY - InterceptA.OriginY, 2));
+        IntLength = MathUtilities.Hypot(InterceptB.OriginX - InterceptA.OriginX, InterceptB.OriginY - InterceptA.OriginY);
 
-        float MPX, MPY; // Mid-point of line between a pair of intercepts
+        double MPX, MPY; // Mid-point of line between a pair of intercepts
 
         // Calculate the midpoint of the line between the pair of intercepts
         if (InterceptA.OriginX < InterceptB.OriginX)
