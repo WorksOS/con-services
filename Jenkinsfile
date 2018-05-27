@@ -29,8 +29,8 @@ node ('jenkinsslave-pod') {
 	    def container = "registry.k8s.vspengg.com:80/vss.projectservice:${fullVersion}"
 	    def testContainer = "registry.k8s.vspengg.com:80/vss.projectservice.tests:${fullVersion}"
 
-	    def containerName = "${fullVersion}"
-	    def testContainerName = "testing-{fullVersion}"
+	    def containerName = "service"
+	    def testContainerName = "testing-service"
 
 
 	    def nestedLabel = "projectservice-${UUID.randomUUID().toString()}"
