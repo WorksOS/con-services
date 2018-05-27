@@ -29,25 +29,59 @@ node ('jenkinsslave-pod') {
 	    def container = "registry.k8s.vspengg.com:80/vss.projectservice:${fullVersion}"
 	    def testContainer = "registry.k8s.vspengg.com:80/vss.projectservice.tests:${fullVersion}"
 
-	    def containerName = "service"
-	    def testContainerName = "testing-service"
+def label = "mypod-${UUID.randomUUID().toString()}"
+podTemplate(label: label, yaml: """
+apiVersion: v1
+kind: Pod
+metadata:
+  name: projectservice-testing
+spec:
 
+  containers:
 
-	    def nestedLabel = "projectservice-${UUID.randomUUID().toString()}"
-	    def label = "projectservice-${UUID.randomUUID().toString()}"
-            def template = readFile "yaml/testing-pod.yaml"
- 	    
-		podTemplate(label: nestedLabel, yaml: template, namespace: "testing") {
-                podTemplate(label: label, containers: [containerTemplate(name: containerName, image: container, ttyEnabled: true), 
-						       containerTemplate(name: testContainerName, image: testContainer, ttyEnabled: true)]) {
-		  node (label) {
-			container (testContainerName)
-			{
-			 sh '/app/runtests.sh'
-			}
-		  }
-		 }
-		}
+  - name: mysql-container
+    image: mysql/mysql-server:5.7.15 
+    envFrom:
+    - configMapRef:
+        name: projectservice-testing
+
+  - name: zookeeper-container
+    image: wurstmeister/zookeeper:3.4.6
+
+  - name: kafka-container
+    image: wurstmeister/kafka:0.11.0.1
+    envFrom:
+    - configMapRef:
+        name: projectservice-testing
+
+  - name: mockapi-container
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux
+    envFrom:
+    - configMapRef:
+        name: projectservice-testing
 		
-    }
+  - name: service-container
+    image: ${container}
+    envFrom:
+    - configMapRef:
+        name: projectservice-testing
+
+  - name: test-container
+    image: ${testContainer}
+    envFrom:
+    - configMapRef:
+        name: projectservice-testing		
+		
+"""
+) {
+	node (label) {
+		container(test-container) {
+			sh "/runtests.sh"
+		}
+	}
+  }
+		
+		
+		
+		}
 }
