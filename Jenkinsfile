@@ -40,37 +40,69 @@ spec:
   containers:
 
   - name: mysql-container
-    image: mysql/mysql-server:5.7.15 
+    image: mysql/mysql-server:5.7.15
+    ports:
+    - containerPort: 3306
+    livenessProbe:
+      tcpSocket:
+        port: 3306
+    readinessProbe:
+      tcpSocket:
+        port: 3306
     envFrom:
     - configMapRef:
         name: projectservice-testing
 
   - name: zookeeper-container
     image: wurstmeister/zookeeper:3.4.6
+    - containerPort: 2181
+    livenessProbe:
+      tcpSocket:
+        port: 2181
+    readinessProbe:
+      tcpSocket:
+        port: 2181
 
   - name: kafka-container
     image: wurstmeister/kafka:0.11.0.1
+    - containerPort: 9092
+    livenessProbe:
+      tcpSocket:
+        port: 9092
+    readinessProbe:
+      tcpSocket:
+        port: 9092
     envFrom:
     - configMapRef:
         name: projectservice-testing
 
   - name: mockapi-container
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux
+    - containerPort: 5001
+    livenessProbe:
+      tcpSocket:
+        port: 5001
+    readinessProbe:
+      tcpSocket:
+        port: 5001
+    tty: true
     envFrom:
     - configMapRef:
         name: projectservice-testing
 
   - name: service-container
     image: ${container}
+    tty: true
     envFrom:
     - configMapRef:
         name: projectservice-testing
 
-""", containers: [containerTemplate(name: "jnlp", image: testContainer, ttyEnabled: true)]
+""", containers: [containerTemplate(name: "jnlp", image: testContainer, ttyEnabled: true,  envVars: [
+            envVar(key: 'MYSQL_ALLOW_EMPTY_PASSWORD', value: 'true'),
+        ])]
 ) {
 	node (label) {
 dir ("/app") {
-sh "ls -la"
 sh "/bin/sh runtests.sh"
 }
   	}
