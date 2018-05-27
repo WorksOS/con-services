@@ -30,12 +30,11 @@ node ('jenkinsslave-pod') {
 	    def testContainer = "registry.k8s.vspengg.com:80/vss.projectservice.tests:${fullVersion}"
 
 def label = "mypod-${UUID.randomUUID().toString()}"
-podTemplate(label: label, yaml: """
+podTemplate(label: label, namespace: "testing", yaml: """
 apiVersion: v1
 kind: Pod
 metadata:
   name: projectservice-testing
-  namespace: testing
 spec:
 
   containers:
