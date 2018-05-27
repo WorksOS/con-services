@@ -59,7 +59,7 @@ spec:
     envFrom:
     - configMapRef:
         name: projectservice-testing
-		
+
   - name: service-container
     image: ${container}
     envFrom:
@@ -70,8 +70,8 @@ spec:
     image: ${testContainer}
     envFrom:
     - configMapRef:
-        name: projectservice-testing		
-		
+        name: projectservice-testing
+
 """
 ) {
 	node (label) {
