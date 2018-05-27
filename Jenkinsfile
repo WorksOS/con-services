@@ -30,15 +30,19 @@ node ('jenkinsslave-pod') {
 	    def testContainerName = "registry.k8s.vspengg.com:80/vss.projectservice.tests:${fullVersion}"
 
 	    def label = "projectservice-${UUID.randomUUID().toString()}"
-            def template = readFile "yaml/testing-pod.yaml"
- 	    podTemplate(name: label, label: label, yaml: template, namespace: "testing", containers: [containerTemplate(name: 'projectservice', image: containerName)])
-		{
+        def template = readFile "yaml/testing-pod.yaml"
+ 	    
+		podTemplate(yaml: template, namespace: "testing")) {
+                podTemplate(label: label, containers: [containerTemplate(name: containerName, image: containerName, ttyEnabled: true), 
+										  containerTemplate(name: testContainerName, image: testContainerName, ttyEnabled: true)]) {
 		  node (label) {
 			container (testContainerName)
 			{
 			 sh '/app/runtests.sh'
 			}
 		  }
-		}     
+		 }
+		}
+		
     }
 }
