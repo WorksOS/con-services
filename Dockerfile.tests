@@ -6,7 +6,7 @@ WORKDIR /build/AcceptanceTests/scripts
 RUN chmod 777 *.sh
 RUN ["/bin/sh", "deploy_linux.sh"]
 
-FROM 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-jenkinsslave:core21
+FROM registry.k8s.vspengg.com:80/vss-jenkinsslave:core21
 
 WORKDIR /app
 COPY --from=builder /build/AcceptanceTests/deploy .
