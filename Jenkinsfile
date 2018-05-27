@@ -32,9 +32,9 @@ node ('jenkinsslave-pod') {
 	    def label = "projectservice-${UUID.randomUUID().toString()}"
         def template = readFile "yaml/testing-pod.yaml"
  	    
-		podTemplate(yaml: template, namespace: "testing") {
+		podTemplate(label: label, yaml: template, namespace: "testing") {
                 podTemplate(label: label, containers: [containerTemplate(name: containerName, image: containerName, ttyEnabled: true), 
-										  containerTemplate(name: testContainerName, image: testContainerName, ttyEnabled: true)]) {
+						       containerTemplate(name: testContainerName, image: testContainerName, ttyEnabled: true)]) {
 		  node (label) {
 			container (testContainerName)
 			{
