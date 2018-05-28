@@ -37,6 +37,8 @@ node ('jenkinsslave-pod') {
 			vars.add(envVar(key: key, value: value))
 		}
 	
+		sh "/bin/sh ls -la"
+	
 		def file = new File('./yaml/pod.yaml')
 		def yaml = file.text.replace('!container!', '${container}')
 
