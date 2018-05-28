@@ -50,6 +50,12 @@ node ('jenkinsslave-pod') {
                 thresholds: [[$class: 'FailedThreshold', unstableThreshold: '10']],
                 tools: [[$class: 'XUnitDotNetTestType', pattern: 'TestResults/*']]])
         
+        //http://javadoc.jenkins-ci.org/tfs/index.html?hudson/plugins/tfs/model/TeamResultType.html
+        step([$class: 'TeamCollectResultsPostBuildAction', 
+            requestedResults: [
+                [includes: 'TestResults/*.xml', teamResultType: 'XUNIT']
+            ]
+        ])
         }
     }
 }
