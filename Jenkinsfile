@@ -37,7 +37,7 @@ node ('jenkinsslave-pod') {
 			vars.add(envVar(key: key, value: value))
 		}
 		
-		def yaml = readFile("yaml/pod.yaml")
+		def yaml = readFile("yaml/pod.yaml").getText('UTF-8') 
 		yaml = yaml.replaceAll('${container}',container)
 
 		def label = "testingpod-${UUID.randomUUID().toString()}"
