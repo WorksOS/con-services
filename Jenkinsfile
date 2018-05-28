@@ -28,7 +28,7 @@ node ('jenkinsslave-pod') {
 	    def container = "registry.k8s.vspengg.com:80/${prjname}:${fullVersion}"
 	    def testContainer = "registry.k8s.vspengg.com:80/${prjname}.tests:${fullVersion}"
 		
-		def testingEnvVars = def lines = file.readLines(${WORKSPACE}/yaml/testingvars.env)
+		def testingEnvVars = file.readLines(${WORKSPACE}/yaml/testingvars.env)
 		def vars = [:]
 		testingEnvVars.each { String line ->
 			def (key, value) = line.tokenize( ':' )
