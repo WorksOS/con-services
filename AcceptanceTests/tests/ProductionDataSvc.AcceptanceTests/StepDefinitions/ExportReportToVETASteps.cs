@@ -1,9 +1,11 @@
 ﻿using System;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
 using System.Net;
 using System.Text;
+using RestAPICoreTestFramework.Utils.Common;
 using TechTalk.SpecFlow;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
@@ -12,6 +14,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
   public sealed class ExportReportToVETASteps
   {
     private string url;
+    private byte[] fileContents;
 
     private Getter<ExportReportResult> exportReportRequester;
 
@@ -51,7 +54,15 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [When(@"I request an Export Report To VETA")]
     public void WhenIRequestAnExportReportToVETA()
     {
-      exportReportRequester.DoValidRequest(url);
+      if (exportReportRequester.QueryString != null)
+      {
+        url += exportReportRequester.BuildQueryString();
+      }
+ 
+      HttpWebResponse httpResponse = RaptorServicesClientUtil.DoHttpRequest(url,
+        "GET", "application/json", "application/zip", null);
+
+      fileContents = RaptorServicesClientUtil.GetStreamContentsFromResponse(httpResponse);
     }
 
     [When(@"I request an Export Report To VETA expecting BadRequest")]
@@ -72,18 +83,10 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       exportReportRequester.DoInvalidRequest(url, HttpStatusCode.NoContent);
     }
 
-    //[Then(@"the report result should match the ""(.*)"" from the repository")]
-    //public void ThenTheReportResultShouldMatchTheFromTheRepository(string resultName)
-    //{
-    //  Assert.AreEqual(exportReportRequester.ResponseRepo[resultName], exportReportRequester.CurrentResponse);
-    //}
-
     [Then(@"the report result csv should match the ""(.*)"" from the repository")]
     public void ThenTheReportResultCsvShouldMatchTheFromTheRepository(string resultName)
     {
-      Assert.AreEqual(0, exportReportRequester.CurrentResponse.Code);
-      Assert.AreEqual("success", exportReportRequester.CurrentResponse.Message);
-      var actualResult = Encoding.Default.GetString(Common.Decompress(exportReportRequester.CurrentResponse.ExportData));
+      string actualResult = Encoding.Default.GetString(Common.Decompress(fileContents));
       var expectedResult = Encoding.Default.GetString(Common.Decompress(exportReportRequester.ResponseRepo[resultName].ExportData));
       var expSorted = Common.SortCsvFileIntoString(expectedResult.Substring(3));
       var actSorted = Common.SortCsvFileIntoString(actualResult.Substring(3));
