@@ -1,9 +1,7 @@
 ﻿using VSS.TRex.Geometry;
-using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SubGridTrees.Server;
 
 namespace VSS.TRex.Filters
 {
@@ -59,9 +57,7 @@ namespace VSS.TRex.Filters
                         for (byte J = 0; J < SubGridTree.SubGridTreeDimension; J++)
                         {
                             if (!AOverrideSpatialCellRestriction.Includes(originX + I, originY + J))
-                            {
                                 FilterMask.ClearBit(I, J);
-                            }
                         }
                     }
                 }

@@ -394,5 +394,21 @@ namespace VSS.TRex.SubGridTrees.Server
         /// </summary>
         /// <returns></returns>
         public override bool IsImmutable() => true;
+
+      public bool HasCCVData() => !EncodedFieldDescriptors.CCV.AllValuesAreNull;
+
+      public bool HasRMVData() => !EncodedFieldDescriptors.RMV.AllValuesAreNull;
+
+      public bool HasFrequencyData() => false;
+
+      public bool HasAmplitudeData() => false;
+
+      public bool HasGPSModeData() => false;
+
+      public bool HasTemperatureData() => !EncodedFieldDescriptors.MaterialTemperature.AllValuesAreNull;
+
+      public bool HasMDPData() => !EncodedFieldDescriptors.MDP.AllValuesAreNull;
+
+      public bool HasCCAData() => !EncodedFieldDescriptors.CCA.AllValuesAreNull;
     }
 }

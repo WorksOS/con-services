@@ -420,7 +420,8 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                                            SubGridTree.SubGridTreeLevels,
                                            int.MaxValue, // MaxCellPasses
                                            AreaControlSet,
-                                           PopulationControl)
+                                           PopulationControl,
+                                           ProdDataMask)
                  ).ToArray();
 
             addresses = new SubGridCellAddress[addressBucketSize];

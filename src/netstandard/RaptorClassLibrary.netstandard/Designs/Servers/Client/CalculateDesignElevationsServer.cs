@@ -25,7 +25,7 @@ namespace VSS.TRex.DesignProfiling.Servers.Client
         /// </summary>
         /// <param name="argument"></param>
         /// <returns></returns>
-        public ClientHeightLeafSubGrid ComputeDesignElvations(CalculateDesignElevationPatchArgument argument)
+        public ClientHeightLeafSubGrid ComputeDesignElevations(CalculateDesignElevationPatchArgument argument)
         {
             DesignElevationPatchRequest request = new DesignElevationPatchRequest();
 

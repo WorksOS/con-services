@@ -2,7 +2,6 @@
 using System;
 using System.IO;
 using System.Reflection;
-using System.Runtime.Serialization.Formatters.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Filters;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -42,7 +41,6 @@ namespace VSS.TRex.SubGridTrees.Client
         {
             _gridDataType = TRex.Types.GridDataType.Height;
         }
-
         
         /// <summary>
         /// Assign contents of another height client lead sub grid to this one

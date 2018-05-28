@@ -5,6 +5,7 @@ using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Utilities;
 
 namespace VSS.TRex.Pipelines
 {
@@ -256,10 +257,8 @@ namespace VSS.TRex.Pipelines
                   CastSubGrid.Owner.GetCellCenterPosition(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J,
                     out double centerX, out double centerY);
 
-                  SubgridSatisfiesFilter =
-                    Math.Sqrt(Math.Pow(spatialFilter.PositionX - centerX, 2) +
-                              Math.Pow(spatialFilter.PositionY - centerY, 2)) <
-                    (spatialFilter.PositionRadius + (Math.Sqrt(2) * CastSubGrid.Owner.CellSize) / 2);
+                  SubgridSatisfiesFilter = MathUtilities.Hypot(spatialFilter.PositionX - centerX, spatialFilter.PositionY - centerY) <
+                    spatialFilter.PositionRadius + (Math.Sqrt(2) * CastSubGrid.Owner.CellSize) / 2;
                 }
               }
 

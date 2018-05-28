@@ -136,13 +136,13 @@ namespace VSS.TRex.SiteModels
             // FCreationDate:= Now;
             // FMarkedForRemoval:= False;
 
-            MachinesTargetValues = new MachinesProductionEventLists(this); //EfficientMachinesTargetValuesList(this);
-
             // FName:= Format('SiteModel-%d', [AID]);
             // FDescription:= '';
             // FActive:= True;
 
             Machines = new MachinesList(id);
+
+            MachinesTargetValues = new MachinesProductionEventLists(this); //EfficientMachinesTargetValuesList(this);
 
             LastModifiedDate = DateTime.MinValue;
 

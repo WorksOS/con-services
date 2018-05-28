@@ -3,18 +3,23 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Interfaces
 {
-    /// <summary>
-    /// Interface for ClientLeafSubgrid derivations based on ClientLeafSubGrid
-    /// </summary>
-    public interface IClientLeafSubGrid : ILeafSubGrid
-    {
-        double CellSize { set; get; }
+  /// <summary>
+  /// Interface for ClientLeafSubgrid derivations based on ClientLeafSubGrid
+  /// </summary>
+  public interface IClientLeafSubGrid : ILeafSubGrid
+  {
+    double CellSize { set; get; }
 
-        GridDataType GridDataType { get; }
+    GridDataType GridDataType { get; }
 
-        bool WantsLiftProcessingResults();
+    PopulationControlFlags EventPopulationFlags { get; set; }
 
-        bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue);
-        void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext Context);
-    }
+    bool WantsLiftProcessingResults();
+
+    bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue);
+
+    void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext Context);
+
+    bool TopLayerOnly { get; set; }
+  }
 }
