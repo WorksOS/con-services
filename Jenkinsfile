@@ -29,17 +29,15 @@ node ('jenkinsslave-pod') {
 	    def testContainer = "registry.k8s.vspengg.com:80/${prjname}.tests:${fullVersion}"
 	}
 	
-	stage ('Run acceptance tests')
-	{
-
-		def testingEnvVars = file.readLines(${WORKSPACE}/yaml/testingvars.env)
+	stage ('Run acceptance tests') {
+		def testingEnvVars = file.readLines("yaml/testingvars.env")
 		def vars = [:]
 		testingEnvVars.each { String line ->
 			def (key, value) = line.tokenize( ':' )
 			vars.add(envVar(key: key, value: value))
 		}
 		
-		def yaml = readFile("${WORKSPACE}/yaml/pod.yaml")
+		def yaml = readFile("yaml/pod.yaml")
 		yaml = yaml.replaceAll('${container}',container)
 
 		def label = "testingpod-${UUID.randomUUID().toString()}"
