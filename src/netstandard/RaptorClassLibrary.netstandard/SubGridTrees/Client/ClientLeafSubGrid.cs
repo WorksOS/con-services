@@ -42,7 +42,7 @@ namespace VSS.TRex.SubGridTrees.Client
         public uint IndexOriginOffset { get; set; }
 
         /// <summary>
-        /// Is data extraction limited to the top identitied layer of materials in each cell
+        /// Is data extraction limited to the top identified layer of materials in each cell
         /// </summary>
         public bool TopLayerOnly { get; set; }
 

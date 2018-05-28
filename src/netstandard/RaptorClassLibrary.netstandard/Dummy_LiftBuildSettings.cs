@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using VSS.TRex.Cells;
+using VSS.TRex.Common;
 using VSS.TRex.Types;
 
 namespace VSS.TRex
@@ -14,21 +16,21 @@ namespace VSS.TRex
   {
     public static bool OverrideMachineThickness = false;
     public static LiftThicknessType LiftThicknessType = LiftThicknessType.Compacted;
-    public static double OverridingLiftThickness = 0.0;
+    public static double OverridingLiftThickness = CellTargets.NullOverridingTargetLiftThicknessValue;
     public static bool OverrideMachineCCV = false;
     public static short OverridingMachineCCV = 0;
     public static CCVRangePercentage CCVRange = new CCVRangePercentage();
     public static byte CCVSummaryTypes = 0;
     public static bool CCVSummarizeTopLayerOnly = false;
-    public static double FirstPassThickness = 0.0;
+    public static float FirstPassThickness = 0.0f;
 
     public static bool OverrideMachineMDP= false;
     public static short OverridingMachineMDP = 0;
     public static MDPRangePercentage MDPRange = new MDPRangePercentage();
-    public static byte MDPsummaryTypes = 0;
+    public static byte MDPSummaryTypes = 0;
     public static bool MDPSummarizeTopLayerOnly = false;
 
-    public static LayerMethod LiftDetectionType = LayerMethod.AutoMapReset;
+    public static LiftDetectionType LiftDetectionType = LiftDetectionType.None;
     public static TargetPassCountRange OverridingTargetPassCountRange = new TargetPassCountRange();
     public static bool OverrideTargetPassCount = false;
     public static TemperatureWarningLevelsRecord OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord();

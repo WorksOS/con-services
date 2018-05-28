@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
@@ -14,15 +13,13 @@ using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.Surfaces;
-using VSS.TRex.Surfaces.GridFabric.Arguments;
-using VSS.TRex.Surfaces.GridFabric.Requests;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Profiling
 {
-  public class LiftProfileBuilder
+  public class ProfileLiftBuilder
   {
-    private static ILogger Log = Logging.Logger.CreateLogger<LiftProfileBuilder>();
+    private static ILogger Log = Logging.Logger.CreateLogger<ProfileLiftBuilder>();
 
     private int TopMostLayerPassCount;
     private int TopMostLayerCompactionHalfPassCount;
@@ -54,7 +51,6 @@ namespace VSS.TRex.Profiling
     private List<ProfileCell> ProfileCells;
     private SubGridTreeBitMask PDExistenceMap;
 
-    private ISubGridSegmentCellPassIterator CellPassIterator;
     private SurveyedSurfaces FilteredSurveyedSurfaces;
 
     /* TODO: Profile patch requests not implemented yet...
@@ -68,19 +64,18 @@ private SurfaceElevationPatchRequest SurfaceElevationPatchRequest;
     /// </summary>
     private Design CellPassFilter_ElevationRangeDesign;
 
-    public LiftProfileBuilder()
+    public ProfileLiftBuilder()
     {
     }
 
-    public LiftProfileBuilder(ISiteModel siteModel,
+    public ProfileLiftBuilder(ISiteModel siteModel,
       SubGridTreeBitMask pDExistenceMap,
       FilteredMultiplePassInfo passes,
       CellPassAttributeFilter passFilter,
       CellSpatialFilter cellFilter,
       FilteredValuePopulationControl populationControl,
       List<ProfileCell> profileCells,
-      Design cellPassFilter_ElevationRangeDesign,
-      ISubGridSegmentCellPassIterator cellPassIterator)
+      Design cellPassFilter_ElevationRangeDesign)
     {
       SiteModel = siteModel;
       PDExistenceMap = pDExistenceMap;
@@ -91,7 +86,6 @@ private SurfaceElevationPatchRequest SurfaceElevationPatchRequest;
       PopulationControl_AnySet = PopulationControl.AnySet();
       ProfileCells = profileCells;
       CellPassFilter_ElevationRangeDesign = cellPassFilter_ElevationRangeDesign;
-      CellPassIterator = cellPassIterator;
 
       if (SiteModel.SurveyedSurfaces?.Count > 0)
       {
@@ -453,7 +447,7 @@ private SurfaceElevationPatchRequest SurfaceElevationPatchRequest;
     }
 
 
-    public bool BuildLiftProfileFromInitialLayer()
+    public bool BuildLiftProfileFromInitialLayer(ISubGridSegmentCellPassIterator cellPassIterator)
     {
 //{$IFDEF DEBUG}
 //SIGLogMessage.PublishNoODS(Self, Format('BuildLiftProfileFromInitialLayer: Processing %d cells', [FProfileCells.Count]), slmcDebug);
@@ -505,8 +499,8 @@ private SurfaceElevationPatchRequest SurfaceElevationPatchRequest;
               if (SubGrid != null)
               {
                 _SubGridAsLeaf = SubGrid as ServerSubGridTreeLeaf;
-                CellPassIterator.SegmentIterator.SubGrid = _SubGridAsLeaf;
-                CellPassIterator.SegmentIterator.Directory = _SubGridAsLeaf.Directory;
+                cellPassIterator.SegmentIterator.SubGrid = _SubGridAsLeaf;
+                cellPassIterator.SegmentIterator.Directory = _SubGridAsLeaf.Directory;
               }
 
               CompositeHeightsGrid.SetAbsoluteOriginPosition(
@@ -580,10 +574,10 @@ private SurfaceElevationPatchRequest SurfaceElevationPatchRequest;
               }
 
               // get cell address relative to subgrid and SetCellCoordinatesInSubgrid
-              CellPassIterator.SetCellCoordinatesInSubgrid(
+              cellPassIterator.SetCellCoordinatesInSubgrid(
                 (byte) (ProfileCells[I].OTGCellX & SubGridTree.SubGridLocalKeyMask),
                 (byte) (ProfileCells[I].OTGCellY & SubGridTree.SubGridLocalKeyMask));
-              PassFilter.InitaliaseFilteringForCell(CellPassIterator.CellX, CellPassIterator.CellY);
+              PassFilter.InitaliaseFilteringForCell(cellPassIterator.CellX, cellPassIterator.CellY);
 
               /* TODO ... not supporting layer/lift analysis at this time
               // if (BuildLiftsForCell(cidBuildLiftProfileFromInitialLayer,

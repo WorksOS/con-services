@@ -19,5 +19,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
     bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue);
 
     void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext Context);
+
+    bool TopLayerOnly { get; set; }
   }
 }

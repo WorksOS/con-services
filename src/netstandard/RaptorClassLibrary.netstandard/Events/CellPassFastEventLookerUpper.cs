@@ -95,7 +95,7 @@ namespace VSS.TRex.Events
     end;
      */
 
-    public void PopulateFilteredValues(ref FilteredPassData[] passes,
+    public void PopulateFilteredValues(FilteredPassData[] passes,
       int firstPassIndex, int lastPassIndex,
       FilteredValuePopulationControl populationControl,
       bool ignoreBussinessRulesRules)

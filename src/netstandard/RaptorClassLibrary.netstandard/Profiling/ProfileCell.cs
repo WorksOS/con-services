@@ -1,7 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Filters;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Profiling
 {
@@ -279,7 +281,139 @@ namespace VSS.TRex.Profiling
         }
       }
     }
+
     public void ClearLayers() => Layers.Clear();
+
+    /// <summary>
+    /// Checks to see if compaction as measured by CCV/MDP or CCA has met or not the compaction metrics
+    /// </summary>
+    /// <param name="layer"></param>
+    /// <param name="gridDataType"></param>
+    public void CheckLiftCompaction(ProfileLayer layer, /*todo const LiftBuildSettings :TICLiftBuildSettings; */
+      GridDataType gridDataType)
+    {
+      short ATargetCCV;
+      short ATargetMDP;
+
+      // CCA tracking vars
+      int Tolerance = Dummy_LiftBuildSettings.CCATolerance;
+      bool TargetMeet = false;
+      int ValidCCAPasses = 0;
+
+      // TOdo Assert(GridDataType in [icdtAll, icdtCCV, icdtCCVPercent, icdtMDP, icdtMDPPercent, icdtCCA, icdtCCAPercent], 'GridDataType is not related to CCV or MDP!');
+
+      bool IsCCV = gridDataType == GridDataType.CCV || gridDataType == GridDataType.CCVPercent;
+      bool IsMDP = gridDataType == GridDataType.MDP || gridDataType == GridDataType.MDPPercent;
+      bool IsCCA = gridDataType == GridDataType.CCA || gridDataType == GridDataType.CCAPercent;
+
+      ATargetCCV = Dummy_LiftBuildSettings.OverrideMachineCCV
+        ? Dummy_LiftBuildSettings.OverridingMachineCCV
+        : CellPass.NullCCV;
+      ATargetMDP = Dummy_LiftBuildSettings.OverrideMachineMDP
+        ? Dummy_LiftBuildSettings.OverridingMachineMDP
+        : CellPass.NullMDP;
+
+//  with Layer do
+      for (int I = layer.EndCellPassIdx; I >= layer.StartCellPassIdx; I--)
+        //with Passes.FilteredPassData[I] do
+      {
+        if (Passes.FilteredPassData[I].FilteredPass.CCV == CellPass.NullCCV &&
+            Passes.FilteredPassData[I].FilteredPass.MDP == CellPass.NullMDP &&
+            Passes.FilteredPassData[I].FilteredPass.CCA == CellPass.NullCCA)
+          continue;
+
+        if (!FilteredPassFlags[I])
+          continue;
+
+        // If gridType = icdtAll then only one type should have a non null value
+
+        if (IsCCV || (gridDataType == GridDataType.All))
+        {
+          if (Passes.FilteredPassData[I].FilteredPass.CCV != CellPass.NullCCV)
+          {
+            if (!Dummy_LiftBuildSettings.OverrideMachineCCV)
+              ATargetCCV = Passes.FilteredPassData[I].TargetValues.TargetCCV;
+
+            if (ATargetCCV == CellPass.NullCCV)
+              continue;
+
+            if (Passes.FilteredPassData[I].FilteredPass.CCV < ATargetCCV * Dummy_LiftBuildSettings.CCVRange.Min / 100)
+              layer.Status |= LayerStatus.Undercompacted;
+            else if (Passes.FilteredPassData[I].FilteredPass.CCV >
+                     ATargetCCV * Dummy_LiftBuildSettings.CCVRange.Max / 100)
+              layer.Status |= LayerStatus.Overcompacted;
+          }
+        }
+
+        if (IsMDP || (gridDataType == GridDataType.All))
+        {
+          if (Passes.FilteredPassData[I].FilteredPass.MDP != CellPass.NullMDP)
+          {
+            if (!Dummy_LiftBuildSettings.OverrideMachineMDP)
+              ATargetMDP = Passes.FilteredPassData[I].TargetValues.TargetMDP;
+
+            if (ATargetMDP == CellPass.NullMDP)
+              continue;
+
+            if (Passes.FilteredPassData[I].FilteredPass.MDP < ATargetMDP * Dummy_LiftBuildSettings.MDPRange.Min / 100)
+              layer.Status |= LayerStatus.Undercompacted;
+            else if (Passes.FilteredPassData[I].FilteredPass.MDP >
+                     ATargetMDP * Dummy_LiftBuildSettings.MDPRange.Max / 100)
+              layer.Status |= LayerStatus.Overcompacted;
+          }
+        }
+
+        // For CCA it will always be for one machine we are looking at
+        // Also compaction logic is different to above compaction types
+        if (IsCCA || (gridDataType == GridDataType.All))
+        {
+          if (Passes.FilteredPassData[I].TargetValues.TargetCCA == CellPass.NullCCA)
+            continue;
+
+          if (Passes.FilteredPassData[I].FilteredPass.CCA != CellPass.NullCCA)
+          {
+            ValidCCAPasses++; // Last valid CCA pass is the most important to state
+            if ((Passes.FilteredPassData[I].FilteredPass.CCA / 2) >= Passes.FilteredPassData[I].TargetValues.TargetCCA
+            ) // is target meet
+            {
+              if (TargetMeet) // has happened before
+              {
+                if ((ValidCCAPasses - 1) > Tolerance)
+                {
+                  // They have done too much work
+                  layer.Status |= LayerStatus.Overcompacted;
+                  break;
+                }
+              }
+              else
+                TargetMeet = true; // Next check to see if previous pass also meet target
+            }
+            else
+            {
+              // Target not meet
+              layer.Status |= TargetMeet ? LayerStatus.Complete : LayerStatus.Undercompacted;
+              break;
+            }
+          }
+
+          if (I == layer.StartCellPassIdx) // if no more passes to check
+            layer.Status |= TargetMeet ? LayerStatus.Complete : LayerStatus.Undercompacted;
+
+          continue; // Continue until satisfied checking for overcompacted or at end of layer
+        }
+
+        break;
+      }
+    }
+
+    public void AnalyzeSpeedTargets(ushort speed)
+    {
+      if (CellMinSpeed > speed)
+        CellMinSpeed = speed;
+      if (CellMaxSpeed < speed)
+        CellMaxSpeed = speed;
+    }
+
   }
 
   //procedure ReadFromStream(const Stream : TStream; APassesPackager : TICFilteredMultiplePassInfoPackager);
@@ -322,7 +456,6 @@ namespace VSS.TRex.Profiling
       function  TopPassTargetMDPByCompactor      (const Layer :TICProfileLayer) :TICMDPValue;
       function  TopPassTargetCCAByCompactor      (const Layer :TICProfileLayer) :TICCCAMinPassesValue;
       function  TopPassTargetThicknessByCompactor(const Layer :TICProfileLayer) :TICLiftThickness;
-      procedure CheckLiftCompaction     (const Layer :TICProfileLayer; const LiftBuildSettings :TICLiftBuildSettings; GridDataType :TICGridDataType);
 
       procedure NormalizeLayersMaxThickness(const FirstPassThickness :TICCellHeight);
 
@@ -333,8 +466,6 @@ namespace VSS.TRex.Profiling
       procedure SetLayersStatus(const LiftBuildSettings :TICLiftBuildSettings; GridDataType :TICGridDataType);
 
       Function ToString : String; Override;
-
-      Procedure AnalyzeSpeedTargets( const Speed : TICMachineSpeed ); inLine;
     end;
    */
 
