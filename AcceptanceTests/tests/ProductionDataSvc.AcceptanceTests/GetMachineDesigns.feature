@@ -2,7 +2,7 @@
 	I should be able to get on-machine designs.
 
 Background: 
-	Given the Machine Design service URI "/api/v1/projects/{0}/machinedesigns"
+	Given the Machine Design service URI "/api/v1/projects/{0}/machinedesigndetails" and the result file "GetMachineDesignsResponse.json"
 
 Scenario: GetMachineDesigns - Good Request
 	Given a project Id 1001158
@@ -59,6 +59,17 @@ Scenario: GetMachineDesigns - Good Request
 	| 26       | Trimble Road 29 10 2012                |
 	| 47       | Trimble Road with Ref Surfaces v2      |
 	| 49       | we love u juarne                       |
+
+Scenario Outline: GetMachineDesigns For Date Range - Good Request
+	Given a projectUid "<ProjectUID>"
+  And startUTC "<startUTC>" 
+  And endUTC "<endUTC>"
+	When I request machine designs
+	Then the result should match the "<ResultName>" from the repository
+Examples: 
+	| RequestName     | ProjectUID                         | startUTC | endUTC | ResultName    |
+	| NoDateRange   | ff91dd40-1569-4765-a2bc-014321f76ace |          |        | NoDateRange   |
+	| WithDateRange | ff91dd40-1569-4765-a2bc-014321f76ace |          |        | WithDateRange |
 
 #Scenario: GetMachineDesigns - Bad Request (Invalid Project ID)
 #	Given a project Id 0

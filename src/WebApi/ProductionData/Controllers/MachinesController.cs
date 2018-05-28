@@ -153,12 +153,14 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// Gets On Machine designs by machine and date range for the selected project
     /// </summary>
     /// <param name="projectUid">The project unique identifier.</param>
+    /// <param name="startUtc">The start date/time in UTC.</param>
+    /// <param name="endUtc">The end date/time in UTC.</param>
     /// <returns>List with all available OnMachine designs in the selected project as reported to Raptor via tag files.</returns>
     /// <executor>GetMachineDesignsExecutor</executor> 
     [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v2/projects/{projectUid}/machinedesigndetails")]
     [HttpGet]
-    public async Task<MachineDesignDetailsExecutionResult> GetMachineDesignDetails([FromRoute] Guid projectUid, string startUtc, string endUtc)
+    public async Task<MachineDesignDetailsExecutionResult> GetMachineDesignDetails([FromRoute] Guid projectUid, [FromQuery]string startUtc, [FromQuery]string endUtc)
     {
       var projectId = await (User as RaptorPrincipal).GetLegacyProjectId(projectUid);
       var id = ProjectID.Create(projectId, projectUid);
