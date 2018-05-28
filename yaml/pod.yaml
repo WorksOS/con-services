@@ -58,7 +58,7 @@ spec:
         name: projectservice-testing
 
   - name: service-container
-    image: {container}
+    image: !container!
     tty: true
     envFrom:
     - configMapRef:
