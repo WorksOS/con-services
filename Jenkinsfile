@@ -30,7 +30,7 @@ node ('jenkinsslave-pod') {
 	}
 	
 	stage ('Run acceptance tests') {
-		def testingEnvVars = file.readLines("yaml/testingvars.env")
+		def testingEnvVars = readFile("yaml/testingvars.env")
 		def vars = [:]
 		testingEnvVars.each { String line ->
 			def (key, value) = line.tokenize( ':' )
