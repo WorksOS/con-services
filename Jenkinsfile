@@ -30,16 +30,17 @@ node ('jenkinsslave-pod') {
 	}
 	
 	stage ('Run acceptance tests') {
-		def testingEnvVars = readFile("./yaml/testingvars.env")
-		def vars = []
-		testingEnvVars.each { String line ->
-			def (key, value) = line.tokenize( ':' )
-			vars.add(envVar(key: key, value: value))
+		dir ("yaml") {
+			def testingEnvVars = readFile("testingvars.env")
+			def vars = []
+			testingEnvVars.each { String line ->
+				def (key, value) = line.tokenize( ':' )
+				vars.add(envVar(key: key, value: value))
+			}
+			sh 'ls -la'
+			def file = new File("pod.yaml")
+			def yaml = file.text.replace('!container!', "${container}")
 		}
-	
-		sh 'ls -la'
-		def file = new File("${WORKSPACE}/yaml/pod.yaml")
-		def yaml = file.text.replace('!container!', "${container}")
 
 		def label = "testingpod-${UUID.randomUUID().toString()}"
 		podTemplate(label: label, namespace: "testing", yaml: yaml, containers: [containerTemplate(name: "jnlp", image: testContainer, ttyEnabled: true,  envVars: vars)])
