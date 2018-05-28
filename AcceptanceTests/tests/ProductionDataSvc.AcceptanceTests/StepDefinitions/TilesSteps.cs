@@ -65,6 +65,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 
             pngTile = RaptorServicesClientUtil.GetStreamContentsFromResponse(httpResponse);
             header = httpResponse.Headers;
+            responseString = Encoding.Default.GetString(pngTile);
         }
 
         [Then(@"the PNG Tiles response should match ""(.*)"" result from the repository")]
