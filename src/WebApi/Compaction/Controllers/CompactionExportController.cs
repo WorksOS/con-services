@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
@@ -190,7 +191,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/export/veta")]
     [HttpGet]
-    public async Task<ExportResult> GetExportReportVeta(
+    public async Task<FileResult> GetExportReportVeta(
       [FromQuery] Guid projectUid,
       [FromQuery] string fileName,
       [FromQuery] string machineNames,
@@ -231,7 +232,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Process(exportRequest) as ExportResult
       );
       Log.LogInformation($"GetExportReportVeta completed: ResultCode={result.ResultCode}, ExportData size={result.ExportData.Length}");
-      return result;
+
+      return new FileStreamResult(new MemoryStream(result.ExportData), "application/zip");
     }
 
     /// <summary>
@@ -248,7 +250,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/export/machinepasses")]
     [HttpGet]
-    public async Task<ExportResult> GetExportReportMachinePasses(
+    public async Task<FileResult> GetExportReportMachinePasses(
       [FromQuery] Guid projectUid,
       [FromQuery] int coordType,
       [FromQuery] int outputType,
@@ -292,7 +294,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Process(exportRequest) as ExportResult
       );
       Log.LogInformation($"GetExportReportMachinePasses completed: ResultCode={result.ResultCode}, ExportData size={result.ExportData.Length}");
-      return result;
+      return new FileStreamResult(new MemoryStream(result.ExportData), "application/zip");
     }
 
 
@@ -307,7 +309,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/export/surface")]
     [HttpGet]
-    public async Task<ExportResult> GetExportReportSurface(
+    public async Task<FileResult> GetExportReportSurface(
       [FromQuery] Guid projectUid,
       [FromQuery] string fileName,
       [FromQuery] double? tolerance,
@@ -352,7 +354,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Process(exportRequest) as ExportResult
       );
       Log.LogInformation($"GetExportReportSurface completed: ResultCode={result.ResultCode}, ExportData size={result.ExportData.Length}");
-      return result;
+      return new FileStreamResult(new MemoryStream(result.ExportData), "application/zip");
     }
     #endregion
 

@@ -25,26 +25,29 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     /// <param name="payloadData">This is the actual data to be used within an HTTP PUT or HTTP POST</param>
     /// <returns>HttpWebResponse</returns>
     public static HttpWebResponse DoHttpRequest(string resourceUri, string httpMethod,
-        string contentType, string acceptType, string payloadData)
+      string contentType, string acceptType, string payloadData)
     {
       Stream writeStream = null;
       HttpWebResponse httpResponse = null;
 
       //Initialize the Http Request
       Console.WriteLine("resourceURL:" + resourceUri);
-      HttpWebRequest request = (HttpWebRequest)WebRequest.Create(resourceUri);
+      HttpWebRequest request = (HttpWebRequest) WebRequest.Create(resourceUri);
       Console.WriteLine("After HttpWebRequest request");
       request.Headers = Auth.HeaderWithAuth;
-      request.KeepAlive = true;  // Somehow need to set this as false to avoid Server Protocol Violation excpetion
+      request.KeepAlive = true; // Somehow need to set this as false to avoid Server Protocol Violation excpetion
       request.Method = httpMethod;
       request.Accept = acceptType;
 
       // Logging
       Logger.Info(resourceUri, Logger.ContentType.URI);
       Logger.Info(httpMethod, Logger.ContentType.HttpMethod);
-      Logger.Info(string.IsNullOrEmpty(request.Headers.ToString()) ? request.Headers.ToString() :
-          request.Headers.ToString().Replace(Environment.NewLine, ","), Logger.ContentType.RequestHeader);
-      Logger.Info(string.IsNullOrEmpty(payloadData) ? payloadData : payloadData.Replace(Environment.NewLine, ","), Logger.ContentType.Request);
+      Logger.Info(
+        string.IsNullOrEmpty(request.Headers.ToString())
+          ? request.Headers.ToString()
+          : request.Headers.ToString().Replace(Environment.NewLine, ","), Logger.ContentType.RequestHeader);
+      Logger.Info(string.IsNullOrEmpty(payloadData) ? payloadData : payloadData.Replace(Environment.NewLine, ","),
+        Logger.ContentType.Request);
 
       //Perform the PUT or POST request with the payload
       if (payloadData != null)
@@ -60,14 +63,14 @@ namespace RaptorSvcAcceptTestsCommon.Utils
       try
       {
         WebResponse response = request.GetResponse();
-        httpResponse = (HttpWebResponse)response;
+        httpResponse = (HttpWebResponse) response;
       }
       catch (WebException e)
       {
         WebResponse response = e.Response;
 
         if (response != null)
-          httpResponse = (HttpWebResponse)response;
+          httpResponse = (HttpWebResponse) response;
         else
           Logger.Error(e.Message, Logger.ContentType.Error);
       }
@@ -95,7 +98,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     /// <param name="payloadData">This is the actual data to be used within an HTTP PUT or HTTP POST</param>
     /// <returns>ServiceResponse(Response http status code - 200, 400 etc. + response body string)</returns>
     public static ServiceResponse DoHttpRequest(string resourceUri, string httpMethod,
-        string mediaType, string payloadData)
+      string mediaType, string payloadData)
     {
       var httpResponse = DoHttpRequest(resourceUri, httpMethod, mediaType, mediaType, payloadData);
 
@@ -110,8 +113,10 @@ namespace RaptorSvcAcceptTestsCommon.Utils
           responseString = streamReader.ReadToEnd();
 
         // Logging
-        Logger.Info(string.IsNullOrEmpty(responseHeader.ToString()) ? responseHeader.ToString() :
-            responseHeader.ToString().Replace(Environment.NewLine, ","), Logger.ContentType.ResponseHeader);
+        Logger.Info(
+          string.IsNullOrEmpty(responseHeader.ToString())
+            ? responseHeader.ToString()
+            : responseHeader.ToString().Replace(Environment.NewLine, ","), Logger.ContentType.ResponseHeader);
         Logger.Info(httpResponse.StatusCode.ToString(), Logger.ContentType.HttpCode);
         Logger.Info(responseString, Logger.ContentType.Response);
 
@@ -126,6 +131,36 @@ namespace RaptorSvcAcceptTestsCommon.Utils
       }
 
       return null;
+    }
+
+    public static byte[] GetStreamContentsFromResponse(HttpWebResponse httpResponse)
+    {
+      byte[] fileContents = null;
+      if (httpResponse != null)
+      {
+        Assert.AreEqual(HttpStatusCode.OK, httpResponse.StatusCode,
+          String.Format("Expected {0}, but got {1} instead.", HttpStatusCode.OK, httpResponse.StatusCode));
+
+        byte[] buffer = new byte[1024];
+        using (Stream responseStream = httpResponse.GetResponseStream())
+        {
+          using (MemoryStream memoryStream = new MemoryStream())
+          {
+            int count = 0;
+            do
+            {
+              count = responseStream.Read(buffer, 0, buffer.Length);
+              memoryStream.Write(buffer, 0, count);
+
+            } while (count != 0);
+
+            fileContents = memoryStream.ToArray();
+          }
+        }
+
+        httpResponse.Close();
+      }
+      return fileContents;
     }
   }
 
@@ -492,7 +527,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
       return default(TResponse);
     }
 
-    private string BuildQueryString()
+    public string BuildQueryString()
     {
       StringBuilder queryString = new StringBuilder();
       bool firstparam = true;

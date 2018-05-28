@@ -15,7 +15,6 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
   public class FileAccessSteps
   {
     private Poster<FileDescriptor, RawFileAccessResult> fileContentRequester;
-    private WebHeaderCollection header;
     private byte[] fileContents;
 
 
@@ -37,32 +36,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       HttpWebResponse httpResponse = RaptorServicesClientUtil.DoHttpRequest(fileContentRequester.Uri,
            "POST", "application/json", "image/png", requestBodyString);
 
-      if (httpResponse != null)
-      {
-        Assert.AreEqual(HttpStatusCode.OK, httpResponse.StatusCode,
-            String.Format("Expected {0}, but got {1} instead.", HttpStatusCode.OK, httpResponse.StatusCode));
-
-        header = httpResponse.Headers;
-
-        byte[] buffer = new byte[1024];
-        using (Stream responseStream = httpResponse.GetResponseStream())
-        {
-          using (MemoryStream memoryStream = new MemoryStream())
-          {
-            int count = 0;
-            do
-            {
-              count = responseStream.Read(buffer, 0, buffer.Length);
-              memoryStream.Write(buffer, 0, count);
-
-            } while (count != 0);
-
-            fileContents = memoryStream.ToArray();
-          }
-        }
-
-        httpResponse.Close();
-      }
+      fileContents = RaptorServicesClientUtil.GetStreamContentsFromResponse(httpResponse);
     }
 
     [Then(@"the file contents should be present")]
