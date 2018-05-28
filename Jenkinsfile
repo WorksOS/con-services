@@ -49,7 +49,7 @@ node ('jenkinsslave-pod') {
         //http://javadoc.jenkins-ci.org/tfs/index.html?hudson/plugins/tfs/model/TeamResultType.html
         step([$class: 'TeamCollectResultsPostBuildAction', 
             requestedResults: [
-                [includes: '**/TestResults/*.xml', teamResultType: 'XUNIT']
+                [includes: 'TestResults/*.xml', teamResultType: 'XUNIT']
             ]
         ])
         }
