@@ -29,7 +29,7 @@ node ('jenkinsslave-pod') {
 	    def testContainer = "registry.k8s.vspengg.com:80/${prjname}.tests:${fullVersion}"
 	}
 	
-	stage {'Run acceptance tests')
+	stage ('Run acceptance tests')
 	{
 
 		def testingEnvVars = file.readLines(${WORKSPACE}/yaml/testingvars.env)
