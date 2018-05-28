@@ -3,6 +3,7 @@ using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Events;
 using VSS.TRex.Filters;
+using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
@@ -14,7 +15,7 @@ namespace VSS.TRex.Profiling
   /// <summary>
   ///  Responsible for the business logic relating to constructing a series of layers/lifts from a stack of cell passes measured for a cell
   /// </summary>
-  public class CellLiftBuilder
+  public class CellLiftBuilder : ICellLiftBuilder
   {
     private int CurrentPassIndex;
     private ProfileLayer CurrentLayer;
@@ -660,6 +661,7 @@ namespace VSS.TRex.Profiling
         case ElevationType.Lowest:
           TempHeight = Consts.NullHeight;
           break;
+        default: break;
       }
 
       int FirstPassIdx = -1;
@@ -764,7 +766,7 @@ namespace VSS.TRex.Profiling
             Cell.Passes.FilteredPassData[TempIndex].FilteredPass.InternalSiteModelMachineIndex;
           Cell.Layers[LayerIndex].MaterialTemperature_Time = Cell.Passes.FilteredPassData[TempIndex].FilteredPass.Time;
 
-          // if profiling does other data tpes in future you probably will need to update those types here as well
+          // if profiling does other data types in future you probably will need to update those types here as well
         }
       }
 
@@ -852,13 +854,11 @@ namespace VSS.TRex.Profiling
           break;
     }
 
-    public bool BuildLiftsForCell( //const CallerID : TCallerIDs; // allows us to identfy caller
-      ProfileCell cell,
-      bool returnPasses,
+    public bool Build(ProfileCell cell,
       // todo const LiftBuildSettings: TICLiftBuildSettings;
       IClientLeafSubGrid ClientGrid,
-      FilteredValueAssignmentContext AssignmentContext, // : TICSubGridFilteredValueAssignmentContext;
-      ISubGridSegmentCellPassIterator cellPassIterator, //CellPassIterator : TSubGridSegmentCellPassIterator;
+      FilteredValueAssignmentContext AssignmentContext, 
+      ISubGridSegmentCellPassIterator cellPassIterator,
       ref int filteredPassCountOfTopMostLayer,
 
       // FilteredHalfCellPassCountOfTopMostLayer tracks 'half cell passes'.
@@ -1310,4 +1310,3 @@ namespace VSS.TRex.Profiling
     }
   }
 }
-

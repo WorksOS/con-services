@@ -75,8 +75,6 @@ namespace VSS.TRex.Profiling
     public ushort CellMaxSpeed;
     public ushort CellMinSpeed;
 
-    // public
-
     /// <summary>
     // Passes contains the entire list of passes that all the layers in the layer collection refer to
     /// </summary>

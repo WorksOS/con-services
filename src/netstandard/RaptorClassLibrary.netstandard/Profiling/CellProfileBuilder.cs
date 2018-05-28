@@ -5,6 +5,7 @@ using VSS.TRex.DesignProfiling;
 using VSS.TRex.Designs.Storage;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
+using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
@@ -15,7 +16,7 @@ namespace VSS.TRex.Profiling
   /// <summary>
   /// Contains the business logic to construct a vector of cells containing the infomation calculated for a profile along a vecotr of points
   /// </summary>
-  public class CellProfileBuilder
+  public class CellProfileBuilder : ICellProfileBuilder
   {
     public const int kMaxHzVtGridInterceptsToCalculate = 8000;
 
@@ -43,21 +44,14 @@ namespace VSS.TRex.Profiling
     private double Distance;
 
     private ClientHeightLeafSubGrid DesignElevations;
-    DesignProfilerRequestResult DesignResult;
+    private DesignProfilerRequestResult DesignResult;
 
-    public List<ProfileCell> ProfileCells { get; set; }
-    public XYZ[] NEECoords { get; set; }
-    public CellSpatialFilter CellFilter { get; set; }
-    public Design Design { get; set; }
+    private List<ProfileCell> ProfileCells;
+    private XYZ[] NEECoords;
+    private CellSpatialFilter CellFilter;
+    private Design Design;
 
     public double GridDistanceBetweenProfilePoints;
-
-    /// <summary>
-    /// Default no-args constructor
-    /// </summary>
-    public CellProfileBuilder()
-    {
-    }
 
     /// <summary>
     /// Creates a CellProfile builder given a list of coordinates defining the path to profile and a container to place the resulting cells into
