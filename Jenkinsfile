@@ -30,14 +30,14 @@ node ('jenkinsslave-pod') {
 	}
 	
 	stage ('Run acceptance tests') {
-		def testingEnvVars = readFile("yaml/testingvars.env")
+		def testingEnvVars = readFile("./yaml/testingvars.env")
 		def vars = []
 		testingEnvVars.each { String line ->
 			def (key, value) = line.tokenize( ':' )
 			vars.add(envVar(key: key, value: value))
 		}
 	
-		def file = new File('yaml/pod.yaml')
+		def file = new File('./yaml/pod.yaml')
 		def yaml = file.text.replace('!container!', '${container}')
 
 		def label = "testingpod-${UUID.randomUUID().toString()}"
