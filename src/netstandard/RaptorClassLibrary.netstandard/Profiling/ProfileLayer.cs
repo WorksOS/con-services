@@ -39,7 +39,7 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// ID of the machine who made the pass.  Not relevant if the layer does not relate to a pass over a cell
     /// </summary>
-    public Guid MachineID;
+    public short MachineID;
 
     /// <summary>
     /// the time, in seconds(based on a Unix/Linux date time encoding (i.e.since 1 Jan 1970)) or as a TDateTime. Use PSTimeToDateTime to convert to a TDateTime
@@ -49,20 +49,20 @@ namespace VSS.TRex.Profiling
 
     public short CCV; // The compaction value recorded for this layer
     public DateTime CCV_Time; // Transient - no persistence - used for calculation of TargetCCV
-    public Guid CCV_MachineID; // Transient - no persistence - used for calculation of TargetCCV
+    public short CCV_MachineID; // Transient - no persistence - used for calculation of TargetCCV
     public float CCV_Elev; // The height of the cell pass from which the CCV came from
     public short TargetCCV; // The target compaction value recorded for this layer
     public int CCV_CellPassIdx; // Used to calculate previous values for CCV\MDP
 
     public short MDP; // The mdp compaction value recorded for this layer
     public DateTime MDP_Time; // Transient - no persistence - used for calculation of TargetMDP
-    public Guid MDP_MachineID; // Transient - no persistence - used for calculation of TargetMDP
+    public short MDP_MachineID; // Transient - no persistence - used for calculation of TargetMDP
     public float MDP_Elev; // The height of the cell pass from which the MDP came from
     public short TargetMDP; // The target mdp compaction value recorded for this layer
 
     public byte CCA; // The cca compaction value recorded for this layer
     public DateTime CCA_Time; // Transient - no persistence - used for calculation of TargetCCA
-    public Guid CCA_MachineID; // Transient - no persistence - used for calculation of TargetCCA
+    public short CCA_MachineID; // Transient - no persistence - used for calculation of TargetCCA
     public float CCA_Elev; // The height of the cell pass from which the CCA came from
     public short TargetCCA; // The target cca compaction value recorded for this layer
 
@@ -76,7 +76,7 @@ namespace VSS.TRex.Profiling
     public ushort Amplitude;
     public ushort MaterialTemperature;
     public DateTime MaterialTemperature_Time;
-    public Guid MaterialTemperature_MachineID;
+    public short MaterialTemperature_MachineID;
     public float MaterialTemperature_Elev; // The height of the cell pass from which the Temperature came from
     public LayerStatus Status; // The status of the layer; complete, undercompacted, etc.
 
@@ -108,7 +108,7 @@ namespace VSS.TRex.Profiling
       StartCellPassIdx = -1;
       EndCellPassIdx = -1;
 
-      MachineID = Guid.Empty;
+      MachineID = -1;
       LastLayerPassTime = DateTime.MinValue;
 
       CCV = CellPass.NullCCV;

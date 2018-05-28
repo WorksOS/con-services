@@ -1,9 +1,7 @@
 ﻿using VSS.TRex.Geometry;
-using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SubGridTrees.Server;
 
 namespace VSS.TRex.Filters
 {

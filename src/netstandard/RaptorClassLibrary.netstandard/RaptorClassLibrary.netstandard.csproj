@@ -39,6 +39,9 @@
     <Reference Include="Microsoft.Extensions.DependencyInjection">
       <HintPath>..\..\..\packages\Microsoft.Extensions.DependencyInjection.2.0.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions">
+      <HintPath>..\..\..\packages\Microsoft.Extensions.Logging.Abstractions.2.0.2\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
     <Reference Include="VSS.Log4NetExtensions">
       <HintPath>..\..\..\..\..\Users\rwilson\.nuget\packages\vss.log4netextensions.netcore\2.2.0\lib\netstandard2.0\VSS.Log4NetExtensions.dll</HintPath>
     </Reference>

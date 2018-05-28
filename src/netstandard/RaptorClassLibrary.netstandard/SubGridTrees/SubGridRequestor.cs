@@ -5,7 +5,6 @@ using VSS.TRex.Common;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Interfaces;
-using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -97,7 +96,8 @@ namespace VSS.TRex.SubGridTrees
                                 byte treeLevel,
                                 int maxNumberOfPassesToReturn,
                                 AreaControlSet areaControlSet,
-                                FilteredValuePopulationControl populationControl)
+                                FilteredValuePopulationControl populationControl,
+                                SubGridTreeBitMask PDExistenceMap)
     {
             SiteModel = sitemodel;
             StorageProxy = storageProxy;
@@ -116,7 +116,8 @@ namespace VSS.TRex.SubGridTrees
                                              treeLevel,
                                              maxNumberOfPassesToReturn,
                                              areaControlSet,
-                                             populationControl
+                                             populationControl,
+                                             PDExistenceMap
                                              );
 
             ReturnEarliestFilteredCellPass = Filter.AttributeFilter.ReturnEarliestFilteredCellPass;

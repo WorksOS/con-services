@@ -72,6 +72,8 @@ namespace VSS.TRex.SubGridTrees
 
     private CellPassFastEventLookerUpper CellPassFastEventLookerUpper = null;
 
+    private SubGridTreeBitMask PDExistenceMap;
+
     // ProductionEventChanges MachineTargetValues = null;
 
     // long LastGetTargetValues_MachineID = -1;
@@ -104,7 +106,8 @@ namespace VSS.TRex.SubGridTrees
       byte treeLevel,
       int maxNumberOfPassesToReturn,
       AreaControlSet areaControlSet,
-      FilteredValuePopulationControl populationControl)
+      FilteredValuePopulationControl populationControl,
+      SubGridTreeBitMask pDExistenceMap)
     {
       SiteModel = sitemodel;
       StorageProxy = storageProxy;
@@ -127,6 +130,7 @@ namespace VSS.TRex.SubGridTrees
       AreaControlSet = areaControlSet;
 
       PopulationControl = populationControl;
+      PDExistenceMap = pDExistenceMap;
     }
 
     private void AcquirePopulationFilterValuesInterlock()
@@ -1050,23 +1054,19 @@ namespace VSS.TRex.SubGridTrees
             }
 */
 
-      // Obtain a reference to the base class from the interfaces implementation to access the flags below
-      SubGridCellLatestPassDataWrapperBase baseGlobalLatestCells =
-        (SubGridCellLatestPassDataWrapperBase) _GlobalLatestCells;
-
       // Check the subgrid global attribute presence flags that are tracked for optional
       // attribute values to see if there is anything at all that needs to be done here
       switch (_GridDataType)
       {
-        case GridDataType.CCV: return !baseGlobalLatestCells.HasCCVData;
-        case GridDataType.RMV: return !baseGlobalLatestCells.HasRMVData;
-        case GridDataType.Frequency: return !baseGlobalLatestCells.HasFrequencyData;
-        case GridDataType.Amplitude: return !baseGlobalLatestCells.HasAmplitudeData;
-        case GridDataType.GPSMode: return !baseGlobalLatestCells.HasGPSModeData;
-        case GridDataType.Temperature: return !baseGlobalLatestCells.HasTemperatureData;
-        case GridDataType.MDP: return !baseGlobalLatestCells.HasMDPData;
-        case GridDataType.CCA: return !baseGlobalLatestCells.HasCCAData;
-        case GridDataType.TemperatureDetail: return !baseGlobalLatestCells.HasTemperatureData;
+        case GridDataType.CCV: return !_GlobalLatestCells.HasCCVData();
+        case GridDataType.RMV: return !_GlobalLatestCells.HasRMVData();
+        case GridDataType.Frequency: return !_GlobalLatestCells.HasFrequencyData();
+        case GridDataType.Amplitude: return !_GlobalLatestCells.HasAmplitudeData();
+        case GridDataType.GPSMode: return !_GlobalLatestCells.HasGPSModeData();
+        case GridDataType.Temperature: return !_GlobalLatestCells.HasTemperatureData();
+        case GridDataType.MDP: return !_GlobalLatestCells.HasMDPData();
+        case GridDataType.CCA: return !_GlobalLatestCells.HasCCAData();
+        case GridDataType.TemperatureDetail: return !_GlobalLatestCells.HasTemperatureData();
         default: return false;
       }
     }
@@ -1430,7 +1430,7 @@ namespace VSS.TRex.SubGridTrees
             // appropriate cell pass containing the filtered value required.
             if (ClientGrid.WantsLiftProcessingResults())
             {
-              Profiler = new ProductionDataProfiler(SiteModel, SiteModel.Grid, ClientGrid.GridDataType, PopulationControl);
+              Profiler = new ProductionDataProfiler(SiteModel, SiteModel.Grid, ClientGrid.GridDataType, PopulationControl, PDExistenceMap);
 
               CellPassFastEventLookerUpper = new CellPassFastEventLookerUpper(SiteModel);
               
@@ -1470,7 +1470,6 @@ namespace VSS.TRex.SubGridTrees
             if (VLPDSvcLocations.Debug_ExtremeLogSwitchC)
               // SIGLogMessage.PublishNoODS(Nil, Format('Performing stripe iteration at %dx%d', [CellX, CellY]), slmcDebug);
             */
-
 /*
            // Compute a mask of the cells that should be visited for this subgrid retrieval operation
            if (SeiveFilterInUse)

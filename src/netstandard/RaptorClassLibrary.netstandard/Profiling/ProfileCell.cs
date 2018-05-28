@@ -70,8 +70,8 @@ namespace VSS.TRex.Profiling
     public ushort TopLayerPassCountTargetRangeMin;
     public ushort TopLayerPassCountTargetRangeMax;
 
-    public ushort MaxSpeed;
-    public ushort MinSpeed;
+    public ushort CellMaxSpeed;
+    public ushort CellMinSpeed;
 
     // public
 
@@ -111,8 +111,8 @@ namespace VSS.TRex.Profiling
 
       AttributeExistenceFlags = ProfileCellAttributeExistenceFlags.None;
 
-      MaxSpeed = 0;
-      MinSpeed = CellPass.NullMachineSpeed;
+      CellMaxSpeed = 0;
+      CellMinSpeed = CellPass.NullMachineSpeed;
 
       CellPreviousMeasuredCCV = CellPass.NullCCV;
       CellPreviousMeasuredTargetCCV = CellPass.NullCCV;
@@ -219,7 +219,67 @@ namespace VSS.TRex.Profiling
       return result;
     }
 
+    public void SetFirstLastHighestLowestElevations(bool hasElevationTypeFilter, Types.ElevationType elevationType)
+    {
+      for (int j = 0; j < Layers.Count(); j++) // from oldest to newest
+        //with FLayers[j] do
+      {
+        if (FilteredPassCount > 0)
+        {
+          if ((LayerStatus.Superseded & Layers[j].Status) != 0)
+            continue;
 
+          if (Layers[j].LastPassHeight != Consts.NullHeight)
+            CellLastElev = Layers[j].LastPassHeight; // keep updating to last layer
+          if (CellFirstElev == Consts.NullHeight)
+            CellFirstElev = Layers[j].FirstPassHeight; // record if not yet set for first value
+
+          if (((Layers[j].MaximumPassHeight != Consts.NullHeight) && (Layers[j].MaximumPassHeight > CellHighestElev)) ||
+              (CellHighestElev == Consts.NullHeight))
+            CellHighestElev = Layers[j].MaximumPassHeight;
+          if (((Layers[j].MinimumPassHeight != Consts.NullHeight) && (Layers[j].MinimumPassHeight < CellLowestElev)) ||
+              (CellLowestElev == Consts.NullHeight))
+            CellLowestElev = Layers[j].MinimumPassHeight;
+        }
+      }
+
+      if (hasElevationTypeFilter
+      ) // this means we are only interested in one pass so other results should match elev type selected
+      {
+        switch (elevationType)
+        {
+          case Types.ElevationType.Last:
+          {
+            CellLowestElev = CellLastElev;
+            CellHighestElev = CellLastElev;
+            CellFirstElev = CellLastElev;
+            break;
+          }
+          case Types.ElevationType.First:
+          {
+            CellLowestElev = CellFirstElev;
+            CellHighestElev = CellFirstElev;
+            CellLastElev = CellFirstElev;
+            break;
+          }
+          case Types.ElevationType.Highest:
+          {
+            CellLowestElev = CellHighestElev;
+            CellFirstElev = CellHighestElev;
+            CellLastElev = CellHighestElev;
+            break;
+          }
+          case Types.ElevationType.Lowest:
+          {
+            CellHighestElev = CellLowestElev;
+            CellFirstElev = CellLowestElev;
+            CellLastElev = CellLowestElev;
+            break;
+          }
+        }
+      }
+    }
+    public void ClearLayers() => Layers.Clear();
   }
 
   //procedure ReadFromStream(const Stream : TStream; APassesPackager : TICFilteredMultiplePassInfoPackager);
@@ -235,10 +295,9 @@ namespace VSS.TRex.Profiling
                        const AStation, AInterceptLength: Double); Overload;
       procedure Assign(const Source : TICProfileCell); Overload;
 
-      procedure ClearLayers;
       procedure GetNotSupersededLayers(NotSupersededLayers :TICProfileLayers);
 
-      function  GetNearestValidLayerHeight(const LayerIndex :Integer) :TICCellHeight;
+      function  GetNearestValdLayerHeight(const LayerIndex :Integer) :TICCellHeight;
 
       function  MaxNumberOfPasses  (const IncludeSupersededLayers :Boolean = False) :Integer;
       function  TotalNumberOfHalfPasses(const IncludeSupersededLayers :Boolean = False) :Integer;
@@ -273,12 +332,10 @@ namespace VSS.TRex.Profiling
 
       procedure SetLayersStatus(const LiftBuildSettings :TICLiftBuildSettings; GridDataType :TICGridDataType);
 
-      procedure SetFirstLastHighestLowestElevations(const HasElevationTypeFilter : Boolean; const ElevationType : TICElevationType);
-
       Function ToString : String; Override;
 
       Procedure AnalyzeSpeedTargets( const Speed : TICMachineSpeed ); inLine;
     end;
    */
-  
+
 }
