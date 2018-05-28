@@ -37,8 +37,8 @@ node ('jenkinsslave-pod') {
 			vars.add(envVar(key: key, value: value))
 		}
 		
-		def yaml = readFile("yaml/pod.yaml").getText('UTF-8') 
-		yaml = yaml.replaceAll('${container}',container)
+		def yaml = readFile("yaml/pod.yaml")
+		yaml = yaml.replaceAll('{container}',container)
 
 		def label = "testingpod-${UUID.randomUUID().toString()}"
 		podTemplate(label: label, namespace: "testing", yaml: yaml, containers: [containerTemplate(name: "jnlp", image: testContainer, ttyEnabled: true,  envVars: vars)])
