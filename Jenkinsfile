@@ -40,10 +40,16 @@ node ('jenkinsslave-pod') {
         }
     }
     finally {
+        //See https://jenkins.io/doc/pipeline/steps/xunit/#xunit-publish-xunit-test-result-report for DSL Guide
+        // stage('Publish Results'){
+        //     step([$class: 'XUnitBuilder',
+        //         thresholds: [[$class: 'FailedThreshold', unstableThreshold: '10']],
+        //         tools: [[$class: 'XUnitDotNetTestType', pattern: '/TestResults/*']]])
         stage('Publish Results'){
             step([$class: 'XUnitBuilder',
                 thresholds: [[$class: 'FailedThreshold', unstableThreshold: '10']],
-                tools: [[$class: 'XUnitDotNetTestType', pattern: '/TestResults/**']]])
+                tools: [[$class: 'XUnitDotNetTestType', pattern: 'TestResults/*']]])
+        
         }
     }
 }
