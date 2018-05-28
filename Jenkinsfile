@@ -32,7 +32,7 @@ node ('jenkinsslave-pod') {
 		def vars = [:]
 		testingEnvVars.each { String line ->
 			def (key, value) = line.tokenize( ':' )
-			vars.add(envVar(key: key, value: value)
+			vars.add(envVar(key: key, value: value))
 		}
 		
 		def yaml = readFile("${WORKSPACE}/yaml/pod.yaml")
