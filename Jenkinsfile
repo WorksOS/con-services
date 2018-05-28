@@ -4,7 +4,7 @@ node ('jenkinsslave-pod') {
     def versionPrefix = ""
     def suffix = ""
     def branchName = ""
-	def prjname = env.JOB_NAME 
+	def prjname = env.JOB_NAME.ToLowerCase() 
 
     if (branch.contains("release")) {
         versionPrefix = "1.0."
@@ -22,12 +22,16 @@ node ('jenkinsslave-pod') {
     def fullVersion = versionNumber + suffix
 	
     stage('Build Solution') {
-            checkout scm
+        checkout scm
 	    docker.build("registry.k8s.vspengg.com:80/${prjname}:${fullVersion}", "-f Dockerfile .") .push()
 	    docker.build("registry.k8s.vspengg.com:80/${prjname}.tests:${fullVersion}", "-f Dockerfile.tests .").push()
 	    def container = "registry.k8s.vspengg.com:80/${prjname}:${fullVersion}"
 	    def testContainer = "registry.k8s.vspengg.com:80/${prjname}.tests:${fullVersion}"
-		
+	}
+	
+	stage {'Run acceptance tests')
+	{
+
 		def testingEnvVars = file.readLines(${WORKSPACE}/yaml/testingvars.env)
 		def vars = [:]
 		testingEnvVars.each { String line ->
