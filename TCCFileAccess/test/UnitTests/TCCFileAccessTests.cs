@@ -22,9 +22,8 @@ namespace VSS.TCCFileAccess.UnitTests
     {
       var serviceCollection = new ServiceCollection();
 
-      string loggerRepoName = "UnitTestLogTest";
+      const string loggerRepoName = "UnitTestLogTest";
       Log4NetProvider.RepoName = loggerRepoName;
-      var logPath = Directory.GetCurrentDirectory();
       Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
 
       ILoggerFactory loggerFactory = new LoggerFactory();
@@ -33,7 +32,7 @@ namespace VSS.TCCFileAccess.UnitTests
 
 
       serviceCollection.AddLogging();
-      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
+      serviceCollection.AddSingleton(loggerFactory);
       serviceCollection.AddSingleton<IConfigurationStore, GenericConfiguration>();
       serviceCollection.AddTransient<IFileRepository, FileRepository>();
       ServiceProvider = serviceCollection.BuildServiceProvider();
@@ -52,7 +51,7 @@ namespace VSS.TCCFileAccess.UnitTests
       loggerFactory.AddLog4Net(loggerRepoName);
 
       serviceCollection.AddLogging();
-      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
+      serviceCollection.AddSingleton(loggerFactory);
       serviceCollection.AddSingleton<IConfigurationStore, GenericConfiguration>();
       serviceCollection.AddTransient<IFileRepository, FileRepository>();
       ServiceProvider = serviceCollection.BuildServiceProvider();
@@ -63,7 +62,7 @@ namespace VSS.TCCFileAccess.UnitTests
       var orgs = await fileaccess.ListOrganizations();
       var org = (from o in orgs where o.shortName == orgName select o).First();
       fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
-      var folders = await fileaccess.GetFolders(org, DateTime.MinValue, "/");
+      _ = await fileaccess.GetFolders(org, DateTime.MinValue, "/");
     }
 
     [TestMethod]
@@ -142,7 +141,7 @@ namespace VSS.TCCFileAccess.UnitTests
       var exists = await fileaccess.FolderExists(org.filespaceId, folderName);
       if (!exists)
       {
-        var success = await fileaccess.MakeFolder(org.filespaceId, folderName);
+        _ = await fileaccess.MakeFolder(org.filespaceId, folderName);
       }
       using (FileStream fileStream = File.Open("appsettings.json", FileMode.Open))
       {
