@@ -216,10 +216,13 @@ namespace VSS.MasterData.Proxies
           log.LogDebug($"ExecuteRequest() T: InWebException");
           using (WebResponse exResponse = ex.Response)
           {
-            HttpWebResponse httpResponse = (HttpWebResponse) exResponse;
+            if (exResponse == null) throw;
+            log.LogDebug("ExecuteRequestException() T: going to read stream");
+            var responseString = await GetStringFromResponseStream(exResponse);
+            HttpWebResponse httpResponse = (HttpWebResponse)exResponse;
             log.LogDebug(
-              $"ExecuteRequestException() T: errorCode: {httpResponse.StatusCode}");
-            throw new Exception($"{httpResponse.StatusCode}");
+              $"ExecuteRequestException() T: errorCode: {httpResponse.StatusCode} responseString: {responseString.Truncate(logMaxChar)}");
+            throw new Exception($"{httpResponse.StatusCode} {responseString}");
           }
         }
         catch (Exception ex)

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
+using System.IO;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace MockProjectWebApi.Controllers
   {
     [Route("api/v2/mock/export/veta")]
     [HttpGet]
-    public async Task<ExportResult> GetMockVetaExportData(
+    public async Task<FileResult> GetMockVetaExportData(
       [FromQuery] Guid projectUid,
       [FromQuery] string fileName,
       [FromQuery] string machineNames,
@@ -40,7 +41,8 @@ namespace MockProjectWebApi.Controllers
             //Default http request timeout is 100 seconds so make it a bit longer
             await Task.Delay(TimeSpan.FromSeconds(105));
           }
-          return JsonConvert.DeserializeObject<ExportResult>(result);
+          var exportResult = JsonConvert.DeserializeObject<ExportResult>(result);
+          return new FileStreamResult(new MemoryStream(exportResult.ExportData), "application/zip");
         }
         else if (fileName == MockSchedulerController.FAILURE_JOB_ID &&
               string.IsNullOrEmpty(machineNames) &&
@@ -50,7 +52,9 @@ namespace MockProjectWebApi.Controllers
             "Failed to get requested export data with error: No data for export"));
         }
       }
-      return new ExportResult { ResultCode = 0, ExportData = null };
+      throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+        "Unknown project or file for mock export data"));
+
     }
 
     /// <summary>
