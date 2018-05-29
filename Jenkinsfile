@@ -47,6 +47,8 @@ node ('jenkinsslave-pod') {
                 tools: [[$class: 'XUnitDotNetTestType', pattern: 'TestResults/*']]])
         
         //http://javadoc.jenkins-ci.org/tfs/index.html?hudson/plugins/tfs/model/TeamResultType.html
+        //Details of the agent -> https://docs.microsoft.com/en-us/vsts/build-release/task
+        //Agent Variables -> https://docs.microsoft.com/en-us/vsts/build-release/concepts/definitions/build/variables?view=vsts&tabs=batch
         step([$class: 'TeamCollectResultsPostBuildAction', 
             requestedResults: [
                 [includes: 'TestResults/*.xml', teamResultType: 'XUNIT']
