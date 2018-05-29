@@ -82,28 +82,19 @@ namespace ProductionDataSvc.AcceptanceTests
             testRunner.CollectScenarioErrors();
         }
         
-        public virtual void FeatureBackground()
-        {
-#line 4
-#line 5
- testRunner.Given("the Machine Design service URI \"/api/v1/projects/{0}/machinedesigndetails\" and th" +
-                    "e result file \"GetMachineDesignsResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line hidden
-        }
-        
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("GetMachineDesigns - Good Request")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "GetMachineDesigns")]
         public virtual void GetMachineDesigns_GoodRequest()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("GetMachineDesigns - Good Request", ((string[])(null)));
-#line 7
-this.ScenarioSetup(scenarioInfo);
 #line 4
-this.FeatureBackground();
-#line 8
- testRunner.Given("a project Id 1001158", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 9
+this.ScenarioSetup(scenarioInfo);
+#line 5
+  testRunner.Given("the Machine Design service URI \"/api/v1/projects/{0}/machinedesigns\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 6
+ testRunner.And("a project Id 1001158", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 7
  testRunner.When("I request machine designs", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
             TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
@@ -259,31 +250,49 @@ this.FeatureBackground();
             table1.AddRow(new string[] {
                         "49",
                         "we love u juarne"});
-#line 10
+#line 8
  testRunner.Then("the following machine designs should be returned", ((string)(null)), table1, "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
         
-        public virtual void GetMachineDesignsForDateRange_GoodRequest(string requestName, string projectUID, string startUTC, string endUTC, string resultName, string[] exampleTags)
+        public virtual void GetMachineDesignsForDateRange_GoodRequest(string requestName, string projectUID, string route, string startUTC, string endUTC, string resultName, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("GetMachineDesigns For Date Range - Good Request", exampleTags);
-#line 63
+#line 61
 this.ScenarioSetup(scenarioInfo);
-#line 4
-this.FeatureBackground();
+#line 62
+  testRunner.Given("the Machine Design Details service URI \"/api/v2/projects/{0}/{1}\" and the result " +
+                    "file \"GetMachineDesignsResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 63
+ testRunner.And(string.Format("a projectUid \"{0}\" and route \"{1}\"", projectUID, route), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 64
- testRunner.Given(string.Format("a projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 65
   testRunner.And(string.Format("startUTC \"{0}\"", startUTC), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 66
+#line 65
   testRunner.And(string.Format("endUTC \"{0}\"", endUTC), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 67
+#line 66
  testRunner.When("I request machine designs", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 68
+#line 67
  testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("GetMachineDesigns For Date Range - Good Request: NoFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "GetMachineDesigns")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "NoFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "NoFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Route", "machinedesigns")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:startUTC", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endUTC", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoFilter")]
+        public virtual void GetMachineDesignsForDateRange_GoodRequest_NoFilter()
+        {
+#line 61
+this.GetMachineDesignsForDateRange_GoodRequest("NoFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "machinedesigns", "", "", "NoFilter", ((string[])(null)));
+#line hidden
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -291,14 +300,15 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "GetMachineDesigns")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "NoDateRange")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "NoDateRange")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Route", "machinedesigndetails")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:startUTC", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endUTC", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDateRange")]
         public virtual void GetMachineDesignsForDateRange_GoodRequest_NoDateRange()
         {
-#line 63
-this.GetMachineDesignsForDateRange_GoodRequest("NoDateRange", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "", "NoDateRange", ((string[])(null)));
+#line 61
+this.GetMachineDesignsForDateRange_GoodRequest("NoDateRange", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "machinedesigndetails", "", "", "NoDateRange", ((string[])(null)));
 #line hidden
         }
         
@@ -308,13 +318,14 @@ this.GetMachineDesignsForDateRange_GoodRequest("NoDateRange", "ff91dd40-1569-476
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "WithDateRange")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "WithDateRange")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Route", "machinedesigndetails")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:startUTC", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:endUTC", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "WithDateRange")]
         public virtual void GetMachineDesignsForDateRange_GoodRequest_WithDateRange()
         {
-#line 63
-this.GetMachineDesignsForDateRange_GoodRequest("WithDateRange", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "", "WithDateRange", ((string[])(null)));
+#line 61
+this.GetMachineDesignsForDateRange_GoodRequest("WithDateRange", "ff91dd40-1569-4765-a2bc-014321f76ace", "machinedesigndetails", "", "", "WithDateRange", ((string[])(null)));
 #line hidden
         }
     }
