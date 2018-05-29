@@ -10,7 +10,8 @@ namespace VSS.MasterData.Repositories
   public interface IProjectRepository
   {
     Task<bool> CustomerProjectExists(string projectUid);
-    Task<bool> DoesPolygonOverlap(string customerUID, string geometryWKT, DateTime startDate, DateTime endDate);
+    Task<bool> DoesPolygonOverlap(string customerUid, string geometryWkt, DateTime startDate,
+      DateTime endDate, string excludeProjectUid = "");
     Task<ImportedFile> GetImportedFile(string importedFileUid);
     Task<IEnumerable<ImportedFile>> GetImportedFiles(string projectUid);
     Task<Project> GetProject(long legacyProjectID);

@@ -395,7 +395,7 @@ namespace RepositoryTests
     ///   Project legacyCustomerID updated and ActionUTC is later
     /// </summary>
     [TestMethod]
-    public void AssociateProjectWithGeofence_HappyPath()
+    public void GetGeofencesForCustomer_HappyPath()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var customerUid = Guid.NewGuid();
