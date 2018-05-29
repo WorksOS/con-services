@@ -1,12 +1,13 @@
 ﻿using System;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
+using VSS.TRex.Tests.netcore.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace RaptorClassLibrary.Tests.netcore.Analytics.TemperatureStatistics.GridFabric
 {
-	public class TemperatureResponseTests
-	{
+	public class TemperatureResponseTests : IClassFixture<DILoggingFixture>
+  {
 		private const double CELL_SIZE = 0.34;
 		private const int CELLS_OVER_TARGET = 25;
 		private const int CELLS_AT_TARGET = 45;
@@ -31,7 +32,7 @@ namespace RaptorClassLibrary.Tests.netcore.Analytics.TemperatureStatistics.GridF
 	  {
       var response = new TemperatureStatisticsResponse();
 
-	    Assert.True(response.ResultStatus == RequestErrorStatus.OK, "ResultStatus invalid after creation.");
+	    Assert.True(response.ResultStatus == RequestErrorStatus.Unknown, "ResultStatus invalid after creation.");
       Assert.True(response.CellSize < TOLERANCE, "CellSize invalid after creation.");
 	    Assert.True(response.SummaryCellsScanned == 0, "Invalid initial value for SummaryCellsScanned.");
 	    Assert.True(response.LastTempRangeMax < TOLERANCE, "Invalid initial value for LastTempRangeMax.");
@@ -39,8 +40,8 @@ namespace RaptorClassLibrary.Tests.netcore.Analytics.TemperatureStatistics.GridF
 	    Assert.True(response.CellsScannedOverTarget < TOLERANCE, "Invalid initial value for CellsScannedOverTarget.");
 	    Assert.True(response.CellsScannedAtTarget < TOLERANCE, "Invalid initial value for CellsScannedAtTarget.");
 	    Assert.True(response.CellsScannedUnderTarget < TOLERANCE, "Invalid initial value for CellsScannedUnderTarget.");
-	    Assert.True(response.IsTargetValueConstant == false, "Invalid initial value for IsTargetValueConstant.");
-	    Assert.True(response.MissingTargetValue == false, "Invalid initial value for MissingTargetValue.");
+	    Assert.True(response.IsTargetValueConstant, "Invalid initial value for IsTargetValueConstant.");
+	    Assert.True(!response.MissingTargetValue, "Invalid initial value for MissingTargetValue.");
     }
 
     [Fact]

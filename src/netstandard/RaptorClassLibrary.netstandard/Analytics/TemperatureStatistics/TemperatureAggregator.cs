@@ -20,24 +20,24 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 		/// <summary>
 		/// User overriding temperature warning level values.
 		/// </summary>
-		public TemperatureWarningLevelsRecord OverridingTemperatureWarningLevels { get; set; }
+		public TemperatureWarningLevelsRecord OverridingTemperatureWarningLevels;
 
 		/// <summary>
 		/// Holds last known good minimum temperature level value.
 		/// </summary>
-		public ushort LastTempRangeMin { get; private set; }
+		public ushort LastTempRangeMin { get; private set; } = CellPass.NullMaterialTemperatureValue;
 
 		/// <summary>
 		/// Holds last known good maximum temperature level value.
 		/// </summary>
-		public ushort LastTempRangeMax { get; private set; }
+		public ushort LastTempRangeMax { get; private set; } = CellPass.NullMaterialTemperatureValue;
 
 		/// <summary>
 		/// Default no-arg constructor
 		/// </summary>
 		public TemperatureAggregator()
 		{
-			// ...
+			OverridingTemperatureWarningLevels.Clear();
 		}
 
 		protected override void DataCheck(AggregatorBase other)

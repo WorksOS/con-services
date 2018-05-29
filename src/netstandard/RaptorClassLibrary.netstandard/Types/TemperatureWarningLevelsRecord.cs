@@ -14,12 +14,12 @@ namespace VSS.TRex.Types
 		/// </summary>
 		public ushort Max { get; set; }
 
-	  /// <summary>
-	  /// Constractor with arguments.
-	  /// </summary>
-	  /// <param name="min"></param>
-	  /// <param name="max"></param>
-	  public TemperatureWarningLevelsRecord(ushort min, ushort max)
+		/// <summary>
+		/// Constractor with arguments.
+		/// </summary>
+		/// <param name="min"></param>
+		/// <param name="max"></param>
+		public TemperatureWarningLevelsRecord(ushort min, ushort max)
 	  {
 		  Min = min;
 		  Max = max;
