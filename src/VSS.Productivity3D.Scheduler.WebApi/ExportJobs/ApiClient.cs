@@ -31,24 +31,19 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     /// <summary>
     /// Send an HTTP request to the requested URL
     /// </summary>
-    /// <typeparam name="T">The type of data returned by the HTTP request</typeparam>
     /// <param name="jobRequest">Details of the job request</param>
     /// <param name="customHeaders">Custom HTTP headers for the HTTP request</param>
-    /// <param name="streamPayload">Optional payload for POST requests</param>
-    /// <returns>The result of the HTTP request as an istance of type T</returns>
-    public async Task<T> SendRequest<T>(ScheduleJobRequest jobRequest, IDictionary<string, string> customHeaders, Stream streamPayload = null)
+    /// <returns>The result of the HTTP request as a stream</returns>
+    public async Task<Stream> SendRequest(ScheduleJobRequest jobRequest, IDictionary<string, string> customHeaders)
     {
+      Stream result = null;
       var method = jobRequest.Method ?? "GET";
-      var result = default(T);
       try
       {
         var request = new GracefulWebRequest(logger, configurationStore);
         //Stop retries in GracefulWebRequest
-        if (streamPayload != null)
-          result = await request.ExecuteRequest<T>(jobRequest.Url, streamPayload, customHeaders, method, jobRequest.Timeout, 0);
-        else
-          result = await request.ExecuteRequest<T>(jobRequest.Url, method, customHeaders, jobRequest.Payload, jobRequest.Timeout, 0);
-        log.LogDebug("Result of send request: {0}", result);
+        result = await request.ExecuteRequest(jobRequest.Url, method, customHeaders, jobRequest.Payload, jobRequest.Timeout, 0);
+        log.LogDebug("Result of send request: Stream length={0}", result.Length);
       }
       catch (Exception ex)
       {
