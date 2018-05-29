@@ -48,8 +48,7 @@ namespace VSS.TRex.Events
     /// </summary>
     /// <param name="MachineID"></param>
     /// <returns></returns>
-    public ProductionEventLists this[short machineID] =>
-      machineID > MachineIDMap.Length ? null : MachineIDMap[machineID];
+    public ProductionEventLists this[short machineID] => machineID >= MachineIDMap.Length ? null : MachineIDMap[machineID];
 
     /// <summary>
     /// Overrides the base List T Add() method to add the item to the local machine ID map dictionary as well as add it to the list
@@ -58,7 +57,7 @@ namespace VSS.TRex.Events
     public void Add(ProductionEventLists events)
     {
       if (events.MachineID >= MachineIDMap.Length)
-        Array.Resize(ref MachineIDMap, events.MachineID);
+        Array.Resize(ref MachineIDMap, events.MachineID + 1);
 
       MachineIDMap[events.MachineID] = events;
     }
