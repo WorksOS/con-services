@@ -3,7 +3,6 @@ using System.Reflection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Interfaces;
-using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 
@@ -105,7 +104,7 @@ namespace VSS.TRex.Events
         /// <summary>
         /// Records the target CCA value configured on the machine control system
         /// </summary>
-        public ProductionEvents<short> TargetCCAStateEvents;
+        public ProductionEvents<byte> TargetCCAStateEvents;
 
         /// <summary>
         /// Records the target MDP value configured on the machine control system
@@ -130,7 +129,7 @@ namespace VSS.TRex.Events
         /// <summary>
         /// Records the target lift thickness value configured on the machine control system
         /// </summary>
-        public ProductionEvents<float> TargetLiftThickness;
+        public ProductionEvents<float> TargetLiftThicknessStateEvents;
 
         /// <summary>
         /// Records the Resonance Meter Value jump threshold configured on the machine control system
@@ -215,9 +214,9 @@ namespace VSS.TRex.Events
                 ProductionEventType.TargetCCV,
                 (w, s) => w.Write(s), r => r.ReadInt16());
 
-            TargetCCAStateEvents = new ProductionEvents<short>(this, MachineID, SiteModel.ID,
+            TargetCCAStateEvents = new ProductionEvents<byte>(this, MachineID, SiteModel.ID,
                 ProductionEventType.TargetCCA,
-                (w, s) => w.Write(s), r => r.ReadInt16());
+                (w, s) => w.Write(s), r => r.ReadByte());
 
             TargetMDPStateEvents = new ProductionEvents<short>(this, MachineID, SiteModel.ID,
                 ProductionEventType.TargetMDP,
@@ -235,7 +234,7 @@ namespace VSS.TRex.Events
                 ProductionEventType.TempWarningLevelMaxChange,
                 (w, s) => w.Write(s), r => r.ReadUInt16());
 
-            TargetLiftThickness = new ProductionEvents<float>(this, MachineID, SiteModel.ID,
+            TargetLiftThicknessStateEvents = new ProductionEvents<float>(this, MachineID, SiteModel.ID,
                 ProductionEventType.TargetLiftThickness,
                 (w, s) => w.Write(s), r => r.ReadSingle());
 
@@ -274,7 +273,7 @@ namespace VSS.TRex.Events
                 TargetPassCountStateEvents,
                 TargetMinMaterialTemperature,
                 TargetMaxMaterialTemperature,
-                TargetLiftThickness,
+                TargetLiftThicknessStateEvents,
                 RMVJumpThresholdEvents
             };
         }
@@ -333,7 +332,7 @@ namespace VSS.TRex.Events
             TargetPassCountStateEvents.LoadFromStore(storageProxy);
             TargetMinMaterialTemperature.LoadFromStore(storageProxy);
             TargetMaxMaterialTemperature.LoadFromStore(storageProxy);
-            TargetLiftThickness.LoadFromStore(storageProxy);
+            TargetLiftThicknessStateEvents.LoadFromStore(storageProxy);
 
             RMVJumpThresholdEvents.LoadFromStore(storageProxy);
 

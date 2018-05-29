@@ -5,12 +5,13 @@ using VSS.TRex.Geometry;
 using VSS.TRex.Machines;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.Tests.netcore.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.TAGFiles.Classes.Tests
 {
-        public class TAGProcessorTests
+        public class TAGProcessorTests : IClassFixture<DILoggingFixture>
     {
         [Fact()]
         public void Test_TAGProcessor_Creation()

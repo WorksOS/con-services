@@ -2,6 +2,7 @@
 using VSS.TRex.Common;
 using VSS.TRex.Geometry;
 using VSS.TRex.Interfaces;
+using VSS.TRex.Utilities;
 
 namespace VSS.TRex.Filters
 {
@@ -267,7 +268,7 @@ namespace VSS.TRex.Filters
                               (CellCenterY > (PositionY + PositionRadius))));
                 }
 
-                double Distance = Math.Sqrt(Math.Pow(CellCenterX - PositionX, 2) + Math.Pow(CellCenterY - PositionY, 2));
+                double Distance = MathUtilities.Hypot(CellCenterX - PositionX, CellCenterY - PositionY);
                 return Distance < PositionRadius;
             }
 

@@ -561,7 +561,7 @@ namespace VSS.TRex.Filters
         public void ClearLayerID()
         {
             HasLayerIDFilter = false;
-            LayerID = 0;
+            LayerID = CellEvents.NullLayerID;
         }
 
         public void ClearLayerState()

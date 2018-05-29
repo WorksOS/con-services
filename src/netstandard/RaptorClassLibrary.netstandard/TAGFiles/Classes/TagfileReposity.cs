@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Xml.Serialization;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.TAGFiles.Classes.Validator;
 
 namespace VSS.TRex.TAGFiles.Classes
@@ -28,6 +30,9 @@ namespace VSS.TRex.TAGFiles.Classes
 
     public static class TagfileReposity
     {
+
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+
 
         private static string MakePath(TagfileDetail td)
         {
@@ -61,6 +66,8 @@ namespace VSS.TRex.TAGFiles.Classes
                 {
                     file.Write(tagDetail.tagFileContent, 0, tagDetail.tagFileContent.Length);
                 }
+
+                Log.LogDebug($"Tagfile archived to {ArchiveTagfilePath}");
 
 
                 if (TRexConfig.EnableTagfileArchivingMetaData)
@@ -97,8 +104,7 @@ namespace VSS.TRex.TAGFiles.Classes
 
             catch (System.Exception e)
             {
-                // todo our logger 
-                Console.WriteLine(String.Format("Exception occured saving tagfile {0}",e.Message));
+                Log.LogWarning(String.Format("Exception occured saving tagfile {0}", e.Message));
                 return false;
             }
         }

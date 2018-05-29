@@ -26,12 +26,15 @@ namespace VSS.TRex.Exports.Patches.Executors.Tasks
     /// <param name="requestDescriptor"></param>
     /// <param name="tRexNodeId"></param>
     /// <param name="gridDataType"></param>
-    public PatchTask(long requestDescriptor,
-      string tRexNodeId,
-      GridDataType gridDataType) : base(requestDescriptor, tRexNodeId, gridDataType)
+    public PatchTask(long requestDescriptor, string tRexNodeId, GridDataType gridDataType) : base(requestDescriptor, tRexNodeId, gridDataType)
     {
     }
 
+    /// <summary>
+    /// Accept a subgrid response from the processing engine and incorporate into the result for the request.
+    /// </summary>
+    /// <param name="response"></param>
+    /// <returns></returns>
     public override bool TransferResponse(object response)
     {
       // Log.InfoFormat("Received a SubGrid to be processed: {0}", (response as IClientLeafSubGrid).Moniker());

@@ -33,6 +33,12 @@ namespace VSS.TRex.Exports.Patches
       IGenericClientLeafSubGrid<float> elevSubGrid = (IGenericClientLeafSubGrid<float>)subGrid;
       float[,] elevations = elevSubGrid.Cells;
 
+      if (null == elevSubGrid.Cells)
+      {
+        IsNull = true;
+        return;
+      }
+
       // Determine the minimum non-null elevation in the subgrid
       float MinElevation = CellPass.NullHeight;
 
@@ -48,8 +54,10 @@ namespace VSS.TRex.Exports.Patches
         return;
 
       // Set the appropriate values into the result
+      Data = new ushort[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
       IsNull = false;
       ElevationOrigin = MinElevation;
+
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
         float value = elevations[x, y];

@@ -1,13 +1,8 @@
-﻿using VSS.TRex.SubGridTrees.Interfaces;
+﻿using VSS.TRex.Exports.Patches.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Exports.Patches
 {
-  public interface ISubgridDataPatchRecord
-  {
-    void Populate(IClientLeafSubGrid subGrid);
-  }
-
-
   /// <summary>
   /// Base class for representing a subgrid result of a data patch request
   /// CellOriginX, CellOriginY are world space cell indices relative to the world centered

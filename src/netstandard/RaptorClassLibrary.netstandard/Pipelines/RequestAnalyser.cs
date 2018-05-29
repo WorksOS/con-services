@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Utilities;
 
 namespace VSS.TRex.Pipelines
 {
@@ -42,13 +42,15 @@ namespace VSS.TRex.Pipelines
     public BoundingWorldExtent3D WorldExtents = BoundingWorldExtent3D.Inverted();
 
     public long TotalNumberOfSubgridsAnalysed;
+    public long TotalNumberOfSubgridsToRequest;
     public long TotalNumberOfCandidateSubgrids;
+
     protected bool ScanningFullWorldExtent;
 
     /// <summary>
     /// Indicates if the request analyser is only counting the subgrid requests that will be made
     /// </summary>
-    public bool CountingRequestsOnly { get; set; } = false;
+    private bool CountingRequestsOnly { get; set; } = false;
 
     /// <summary>
     /// Indicates if only a single page of subgrid requests will be processed
@@ -70,6 +72,8 @@ namespace VSS.TRex.Pipelines
     /// </summary>
     public RequestAnalyser()
     {
+      ProdDataMask = new SubGridTreeSubGridExistenceBitMask();
+      SurveydSurfaceOnlyMask = new SubGridTreeSubGridExistenceBitMask();
     }
 
     /// <summary>
@@ -82,8 +86,6 @@ namespace VSS.TRex.Pipelines
       BoundingWorldExtent3D worldExtents) : this()
     {
       Owner = owner;
-      ProdDataMask = new SubGridTreeSubGridExistenceBitMask();
-      SurveydSurfaceOnlyMask = new SubGridTreeSubGridExistenceBitMask();
       WorldExtents = worldExtents;
     }
 
@@ -92,24 +94,22 @@ namespace VSS.TRex.Pipelines
     /// </summary>
     protected void PerformScanning()
     {
+      TotalNumberOfSubgridsToRequest = 0;
+      TotalNumberOfSubgridsAnalysed = 0;
+      TotalNumberOfCandidateSubgrids = 0;
+
       BoundingWorldExtent3D FilterRestriction = new BoundingWorldExtent3D();
 
       // Compute a filter spatial restriction on the world extents of the request
       if (WorldExtents.IsValidPlanExtent)
-      {
         FilterRestriction.Assign(WorldExtents);
-      }
       else
-      {
         FilterRestriction.SetMaximalCoverage();
-      }
 
       foreach (CombinedFilter filter in Owner.FilterSet.Filters)
       {
         if (filter != null)
-        {
           FilterRestriction = filter.SpatialFilter.CalculateIntersectionWithExtents(FilterRestriction);
-        }
       }
 
       // TODO: Complete when design filter existance map is available
@@ -128,13 +128,9 @@ namespace VSS.TRex.Pipelines
       ScanningFullWorldExtent = !WorldExtents.IsValidPlanExtent || WorldExtents.IsMaximalPlanConverage;
 
       if (ScanningFullWorldExtent)
-      {
         Owner.OverallExistenceMap.ScanSubGrids(Owner.OverallExistenceMap.FullCellExtent(), SubGridEvent);
-      }
       else
-      {
         Owner.OverallExistenceMap.ScanSubGrids(FilterRestriction, SubGridEvent);
-      }
     }
 
     /// <summary>
@@ -143,17 +139,18 @@ namespace VSS.TRex.Pipelines
     /// <returns></returns>
     public bool Execute()
     {
-      try
-      {
-        PerformScanning();
+      if (Owner == null)
+        throw new ArgumentException("No owning pipeline", "Owner");
 
-        return true;
-      }
-      catch (Exception E)
-      {
-        Log.LogError($"Exception: {E}");
-        return false;
-      }
+      if (Owner.FilterSet == null)
+        throw new ArgumentException("No filters in pipeline", "Filters");
+
+      if (Owner.ProdDataExistenceMap == null)
+        throw new ArgumentException("Production Data Existance Map should have been specified", "ProdDataExistenceMap");
+
+      PerformScanning();
+
+      return true;
     }
 
     /// <summary>
@@ -234,13 +231,8 @@ namespace VSS.TRex.Pipelines
             if (Owner.DesignSubgridOverlayMap != null)
             {
               if (!Owner.DesignSubgridOverlayMap.GetCell(SubGrid.OriginX + I, SubGrid.OriginY + J))
-              {
                 continue;
-              }
             }
-
-            Debug.Assert(Owner.ProdDataExistenceMap != null,
-              "Production Data Existance Map should have been specified");
 
             // If there is a spatial filter in play then determine if the subgrid about to be requested intersects the spatial filter extent
 
@@ -248,9 +240,7 @@ namespace VSS.TRex.Pipelines
             foreach (CombinedFilter filter in Owner.FilterSet.Filters)
             {
               if (filter == null)
-              {
                 continue;
-              }
 
               CellSpatialFilter spatialFilter = filter.SpatialFilter;
 
@@ -267,36 +257,27 @@ namespace VSS.TRex.Pipelines
                   CastSubGrid.Owner.GetCellCenterPosition(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J,
                     out double centerX, out double centerY);
 
-                  SubgridSatisfiesFilter =
-                    Math.Sqrt(Math.Pow(spatialFilter.PositionX - centerX, 2) +
-                              Math.Pow(spatialFilter.PositionY - centerY, 2)) <
-                    (spatialFilter.PositionRadius + (Math.Sqrt(2) * CastSubGrid.Owner.CellSize) / 2);
+                  SubgridSatisfiesFilter = MathUtilities.Hypot(spatialFilter.PositionX - centerX, spatialFilter.PositionY - centerY) <
+                    spatialFilter.PositionRadius + (Math.Sqrt(2) * CastSubGrid.Owner.CellSize) / 2;
                 }
               }
 
               if (!SubgridSatisfiesFilter)
-              {
                 break;
-              }
             }
 
             if (SubgridSatisfiesFilter)
             {
               TotalNumberOfSubgridsAnalysed++;
 
-              // If a single page of subgrids is being requested determine if the subgrid in question is a 
-              // part of the page, and if the page has been filled yet.
-              if (CountingRequestsOnly)
-                continue;
+              if (SubmitSinglePageOfRequests)
+              {
+                if ((TotalNumberOfSubgridsAnalysed - 1) / SinglePageRequestSize < SinglePageRequestNumber)
+                  continue;
 
-              if (SubmitSinglePageOfRequests &&
-                  ((TotalNumberOfSubgridsAnalysed - 1) / SinglePageRequestSize != SinglePageRequestNumber))
-                {
-                  if ((TotalNumberOfSubgridsAnalysed - 1) / SinglePageRequestSize > SinglePageRequestNumber)
-                    return true;
-                  else
-                    continue;
-                }
+                if ((TotalNumberOfSubgridsAnalysed - 1) / SinglePageRequestSize > SinglePageRequestNumber)
+                  return false; // Returning false halts scanning of subgrids
+              }
 
               // Add the leaf subgrid identitied by the address below, along with the production data and surveyed surface
               // flags to the subgrid tree being used to aggregate all the subgrids that need to be queried for the request
@@ -305,6 +286,13 @@ namespace VSS.TRex.Pipelines
               //                        (CastSubGrid.OriginY + J) << SubGridTree.SubGridIndexBitsPerLevel,
               //                        Owner.ProdDataExistenceMap.GetCell(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J),
               //                        Owner.IncludeSurveyedSurfaceInformation);
+
+              TotalNumberOfSubgridsToRequest++;
+
+              // If a single page of subgrids is being requested determine if the subgrid in question is a 
+              // part of the page, and if the page has been filled yet.
+              if (CountingRequestsOnly)
+                continue;
 
               // Set the ProdDataMask for the production data
               if (ProdDataSubGrid != null && ProdDataSubGrid.Bits.BitSet(I, J))
@@ -334,28 +322,14 @@ namespace VSS.TRex.Pipelines
     {
       try
       {
-        try
-        {
-          //Aborted = false;
-          CountingRequestsOnly = true;
+        CountingRequestsOnly = true;
 
-          return Execute() ? TotalNumberOfSubgridsAnalysed : -1;
-        }
-        finally
-        {
-          //Aborted = true;
-          CountingRequestsOnly = false;
-
-          TotalNumberOfSubgridsAnalysed = 0;
-          TotalNumberOfCandidateSubgrids = 0;
-        }
+        return Execute() ? TotalNumberOfSubgridsToRequest : -1;
       }
-      catch (Exception E)
+      finally
       {
-        Log.LogError($"Exception: {E}");
+        CountingRequestsOnly = false;
       }
-
-      return -1;
     }
   }
 }

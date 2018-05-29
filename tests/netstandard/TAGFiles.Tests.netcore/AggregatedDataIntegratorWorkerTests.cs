@@ -49,7 +49,7 @@ public class TAGFileTestsDIFixture : IDisposable
           .New()
           .AddLogging()
           .Add(x => x.AddSingleton<IStorageProxyFactory>(moqStorageProxyFactory.Object))
-          .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
+          .Add(x => x.AddSingleton<ISiteModels>(moqSiteModels.Object))
           .Complete();
       }
     }
@@ -82,9 +82,6 @@ public class TAGFileTestsDIFixture : IDisposable
             // Create the site model and machine etc to aggregate the processed TAG file into
             SiteModel siteModel = new SiteModel("TestName", "TestDesc", TAGFileTestsDIFixture.NewSiteModelGuid, 1.0);
             Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), Machine.kNullInternalSiteModelMachineIndex, false);
-            // ISubGridFactory factory = new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>();
-            // ServerSubGridTree tree = new ServerSubGridTree(siteModel);
-            // ProductionEventChanges events = new ProductionEventChanges(siteModel, machine.ID);
 
             // Create the integrator and add the processed TAG file to its processing list
             AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();

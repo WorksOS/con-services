@@ -299,7 +299,7 @@ namespace VSS.TRex.SubGridTrees.Server
                         break;
 
                     case GridDataType.Temperature:
-                        if (CellPasses[I].MaterialTemperature != CellPass.NullMaterialTemp)
+                        if (CellPasses[I].MaterialTemperature != CellPass.NullMaterialTemperatureValue)
                         {
                             LatestData.MaterialTemperature = CellPasses[I].MaterialTemperature;
                             ValueFromLatestCellPass = I == LastPassIndex;

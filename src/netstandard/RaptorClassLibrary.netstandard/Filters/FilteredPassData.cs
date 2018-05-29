@@ -8,6 +8,9 @@ namespace VSS.TRex.Filters
     /// </summary>
     public struct FilteredPassData
     {
+      /// <summary>
+      /// The type of the machine (eg: dozer, grader, compactor, etc) that collected the pass represented here.
+      /// </summary>
         public byte MachineType;   // Derived from the machine ID in the FilteredPass record
 
         public CellPass FilteredPass;

@@ -26,7 +26,6 @@ namespace VSS.TRex.Analytics.Operations
             var request = new CutFillStatisticsRequest_ApplicationService();
 
             CutFillResult result = new CutFillResult();
-            result.PopulateFromClusterComputeResponse(request.Execute(arg));
 
             return result;
         }

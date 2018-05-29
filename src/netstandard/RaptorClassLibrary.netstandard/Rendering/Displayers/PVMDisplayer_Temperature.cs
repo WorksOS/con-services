@@ -27,9 +27,9 @@ namespace VSS.TRex.Rendering.Displayers
 
         protected override Color DoGetDisplayColour()
         {
-            ushort value = SubGrid.Cells[east_col, north_row];
+            ushort value = SubGrid.Cells[east_col, north_row].MeasuredTemperature;
 
-            return value == CellPass.NullMaterialTemp ? Color.Empty : Palette.ChooseColour(value);
+            return value == CellPass.NullMaterialTemperatureValue ? Color.Empty : Palette.ChooseColour(value);
         }
     }
 }

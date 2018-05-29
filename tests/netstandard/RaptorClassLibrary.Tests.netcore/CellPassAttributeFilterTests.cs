@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Tests.netcore.TestFixtures;
 using VSS.TRex.Types;
@@ -298,7 +299,7 @@ namespace VSS.TRex.Filters.Tests
                                                             x => { x.HasLayerIDFilter = true; x.LayerID = 42; },
                                                             x => x.HasLayerIDFilter && x.LayerID == 42,
                                                             x => { x.ClearLayerID(); },
-                                                            x => !x.HasLayerIDFilter && x.LayerID == 0);
+                                                            x => !x.HasLayerIDFilter && x.LayerID == CellEvents.NullLayerID);
         }
 
         [Fact()]

@@ -166,7 +166,7 @@ namespace VSS.TRex.SubGridTrees.Server
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.CCV).ToArray(), 0xffffffff, Cells.CellPass.NullCCV, true, ref EncodedFieldDescriptors.CCV);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.RMV).ToArray(), 0xffffffff, Cells.CellPass.NullRMV, true, ref EncodedFieldDescriptors.RMV);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.MDP).ToArray(), 0xffffffff, Cells.CellPass.NullMDP, true, ref EncodedFieldDescriptors.MDP);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.MaterialTemperature).ToArray(), 0xffffffff, Cells.CellPass.NullMaterialTemp, true, ref EncodedFieldDescriptors.MaterialTemperature);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.MaterialTemperature).ToArray(), 0xffffffff, Cells.CellPass.NullMaterialTemperatureValue, true, ref EncodedFieldDescriptors.MaterialTemperature);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.CCA).ToArray(), 0xff, Cells.CellPass.NullCCA, true, ref EncodedFieldDescriptors.CCA);
 
             // Calculate the offset bit locations for the cell pass attributes
@@ -394,5 +394,21 @@ namespace VSS.TRex.SubGridTrees.Server
         /// </summary>
         /// <returns></returns>
         public override bool IsImmutable() => true;
+
+      public bool HasCCVData() => !EncodedFieldDescriptors.CCV.AllValuesAreNull;
+
+      public bool HasRMVData() => !EncodedFieldDescriptors.RMV.AllValuesAreNull;
+
+      public bool HasFrequencyData() => false;
+
+      public bool HasAmplitudeData() => false;
+
+      public bool HasGPSModeData() => false;
+
+      public bool HasTemperatureData() => !EncodedFieldDescriptors.MaterialTemperature.AllValuesAreNull;
+
+      public bool HasMDPData() => !EncodedFieldDescriptors.MDP.AllValuesAreNull;
+
+      public bool HasCCAData() => !EncodedFieldDescriptors.CCA.AllValuesAreNull;
     }
 }

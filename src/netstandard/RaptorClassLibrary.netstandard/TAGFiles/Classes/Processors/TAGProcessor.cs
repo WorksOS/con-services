@@ -464,7 +464,7 @@ namespace VSS.TRex.TAGFiles.Classes
             base.SetICTargetLiftThickness(Value);
 
             if (DataTime != DateTime.MinValue)
-                MachineTargetValueChangesAggregator.TargetLiftThickness.PutValueAtDate(DataTime, Value);
+                MachineTargetValueChangesAggregator.TargetLiftThicknessStateEvents.PutValueAtDate(DataTime, Value);
             else
             {
                 //{$IFDEF DENSE_TAG_FILE_LOGGING}

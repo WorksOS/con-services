@@ -8,12 +8,13 @@ using VSS.TRex.Storage;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.TAGFiles.Types;
+using VSS.TRex.Tests.netcore.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.TAGFiles.Classes.Swather.Tests
 {
-    public class TerrainSwatherTests
+    public class TerrainSwatherTests : IClassFixture<DILoggingFixture>
     {
         [Fact()]
         public void Test_TerrainSwather_Creation()

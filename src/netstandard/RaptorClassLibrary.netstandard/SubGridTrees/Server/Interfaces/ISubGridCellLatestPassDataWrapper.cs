@@ -48,5 +48,14 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         bool IsImmutable();
 
         void ClearPasses();
+
+      bool HasCCVData();
+      bool HasRMVData();
+      bool HasFrequencyData();
+      bool HasAmplitudeData();
+      bool HasGPSModeData();
+      bool HasTemperatureData();
+      bool HasMDPData();
+      bool HasCCAData();
     }
 }

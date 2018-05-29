@@ -76,7 +76,7 @@ namespace VSS.TRex.Surfaces.GridFabric.Arguments
             ProcessingMap = processingMap;
             IncludedSurveyedSurfaces = includedSurveyedSurfaces;
 
-            // Prepare the list of surveyed surfaces for use by all invocations usign this argument
+            // Prepare the list of surveyed surfaces for use by all invocations using this argument
             IncludedSurveyedSurfaces.SortChronologically(EarliestSurface);
         }
 

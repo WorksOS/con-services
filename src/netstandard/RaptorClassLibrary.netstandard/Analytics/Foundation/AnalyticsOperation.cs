@@ -6,8 +6,8 @@ namespace VSS.TRex.Analytics.Foundation
 {
     public class AnalyticsOperation<TRequest_ApplicationService, TArgument, TResponse, TResult> : IAnalyticsOperation<TArgument, TResult>
         where TRequest_ApplicationService : IGenericASNodeRequest<TArgument, TResponse>, new()
-        where TResponse : class, new()
-        where TResult : AnalyticsResult<TResponse>, new()
+        where TResponse : class, IAnalyticsOperationResponseResultConversion<TResult>, new()
+        where TResult : AnalyticsResult, new()
     {
         /// <summary>
         /// Execute the analytics operation with the supplied argument
@@ -18,11 +18,7 @@ namespace VSS.TRex.Analytics.Foundation
         {
             var request = new TRequest_ApplicationService();
 
-            TResult result = new TResult();
-
-            result.PopulateFromClusterComputeResponse(request.Execute(arg));
-
-            return result;
+            return request.Execute(arg).ConstructResult();
         }
     }
 }

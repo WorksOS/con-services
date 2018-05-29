@@ -40,7 +40,7 @@ namespace VSS.TRex.Pipelines.Interfaces
         void SubgridsProcessed(long numProcessed);
 
         /// <summary>
-        /// The set of filtere the pipeline requestas are operating under
+        /// The set of filter the pipeline requestas are operating under
         /// </summary>
         FilterSet FilterSet { get; set; }
 

@@ -36,12 +36,6 @@ namespace VSS.TRex.GridFabric.Arguments
         public byte[] SurveyedSurfaceOnlyMaskBytes { get; set; }
 
         /// <summary>
-        /// The set of filters to be applied to the requested subgrids
-        /// </summary>
-        /// 
-        public FilterSet Filters { get; set; }
-
-        /// <summary>
         /// The name of the message topic that subgrid responses should be sent to
         /// </summary>
         public string MessageTopic { get; set; } = string.Empty;
@@ -50,11 +44,6 @@ namespace VSS.TRex.GridFabric.Arguments
         /// Denotes whether results of these requests should include any surveyed surfaces in the site model
         /// </summary>
         public bool IncludeSurveyedSurfaceInformation { get; set; }
-
-        /// <summary>
-        /// The design to be used in cases of cut/fill subgrid requests
-        /// </summary>
-        public Guid CutFillDesignID { get; set; } = Guid.Empty;
 
         /// <summary>
         /// Default no-arg constructor

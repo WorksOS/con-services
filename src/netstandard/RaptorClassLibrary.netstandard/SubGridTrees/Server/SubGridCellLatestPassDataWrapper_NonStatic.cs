@@ -42,7 +42,23 @@ namespace VSS.TRex.SubGridTrees.Server
             SubGridUtilities.SubGridDimensionalIterator((x, y) => PassData[x, y].Clear());
         }
 
-        public override void Read(BinaryReader reader, byte [] buffer)
+    public bool HasCCVData() => true;
+
+      public bool HasRMVData() => true;
+
+      public bool HasFrequencyData() => true;
+
+      public bool HasAmplitudeData() => true;
+
+      public bool HasGPSModeData() => true;
+
+      public bool HasTemperatureData() => true;
+
+      public bool HasMDPData() => true;
+
+      public bool HasCCAData() => true;
+
+      public override void Read(BinaryReader reader, byte [] buffer)
         {
             base.Read(reader, buffer);
 
