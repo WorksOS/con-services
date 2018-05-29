@@ -35,11 +35,11 @@ namespace RaptorClassLibrary.Tests.netcore.Analytics.TemperatureStatistics.GridF
 	    Assert.True(response.ResultStatus == RequestErrorStatus.Unknown, "ResultStatus invalid after creation.");
       Assert.True(response.CellSize < TOLERANCE, "CellSize invalid after creation.");
 	    Assert.True(response.SummaryCellsScanned == 0, "Invalid initial value for SummaryCellsScanned.");
-	    Assert.True(response.LastTempRangeMax < TOLERANCE, "Invalid initial value for LastTempRangeMax.");
-	    Assert.True(response.LastTempRangeMin < TOLERANCE, "Invalid initial value for LastTempRangeMin.");
-	    Assert.True(response.CellsScannedOverTarget < TOLERANCE, "Invalid initial value for CellsScannedOverTarget.");
-	    Assert.True(response.CellsScannedAtTarget < TOLERANCE, "Invalid initial value for CellsScannedAtTarget.");
-	    Assert.True(response.CellsScannedUnderTarget < TOLERANCE, "Invalid initial value for CellsScannedUnderTarget.");
+	    Assert.True(response.LastTempRangeMax == 0, "Invalid initial value for LastTempRangeMax.");
+	    Assert.True(response.LastTempRangeMin == 0, "Invalid initial value for LastTempRangeMin.");
+	    Assert.True(response.CellsScannedOverTarget == 0, "Invalid initial value for CellsScannedOverTarget.");
+	    Assert.True(response.CellsScannedAtTarget == 0, "Invalid initial value for CellsScannedAtTarget.");
+	    Assert.True(response.CellsScannedUnderTarget == 0, "Invalid initial value for CellsScannedUnderTarget.");
 	    Assert.True(response.IsTargetValueConstant, "Invalid initial value for IsTargetValueConstant.");
 	    Assert.True(!response.MissingTargetValue, "Invalid initial value for MissingTargetValue.");
     }
@@ -82,11 +82,11 @@ namespace RaptorClassLibrary.Tests.netcore.Analytics.TemperatureStatistics.GridF
 
 	    Assert.True(Math.Abs(response.CellSize - _response.CellSize) < TOLERANCE, "CellSize invalid after aggregation.");
 	    Assert.True(response.SummaryCellsScanned == _response.SummaryCellsScanned * 2, "Invalid aggregated value for SummaryCellsScanned.");
-      Assert.True(Math.Abs(response.LastTempRangeMax - _response.LastTempRangeMax) < TOLERANCE, "Invalid aggregated value for LastTempRangeMax.");
-	    Assert.True(Math.Abs(response.LastTempRangeMin - _response.LastTempRangeMin) < TOLERANCE, "Invalid aggregated value for LastTempRangeMin.");
-	    Assert.True(Math.Abs(response.CellsScannedOverTarget - _response.CellsScannedOverTarget * 2) < TOLERANCE, "Invalid aggregated value for CellsScannedOverTarget.");
-      Assert.True(Math.Abs(response.CellsScannedAtTarget - _response.CellsScannedAtTarget * 2) < TOLERANCE, "Invalid aggregated value for CellsScannedAtTarget.");
-	    Assert.True(Math.Abs(response.CellsScannedUnderTarget - _response.CellsScannedUnderTarget * 2) < TOLERANCE, "Invalid aggregated value for CellsScannedUnderTarget.");
+      Assert.True(response.LastTempRangeMax ==_response.LastTempRangeMax, "Invalid aggregated value for LastTempRangeMax.");
+	    Assert.True(response.LastTempRangeMin ==_response.LastTempRangeMin, "Invalid aggregated value for LastTempRangeMin.");
+	    Assert.True(response.CellsScannedOverTarget ==_response.CellsScannedOverTarget * 2, "Invalid aggregated value for CellsScannedOverTarget.");
+      Assert.True(response.CellsScannedAtTarget ==_response.CellsScannedAtTarget * 2, "Invalid aggregated value for CellsScannedAtTarget.");
+	    Assert.True(response.CellsScannedUnderTarget ==_response.CellsScannedUnderTarget * 2, "Invalid aggregated value for CellsScannedUnderTarget.");
 	    Assert.True(response.IsTargetValueConstant == _response.IsTargetValueConstant, "Invalid aggregated value for IsTargetValueConstant.");
 	    Assert.True(response.MissingTargetValue == _response.MissingTargetValue, "Invalid aggregated value for MissingTargetValue.");
 
