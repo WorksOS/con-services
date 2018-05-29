@@ -6,7 +6,7 @@
     <Company>VSS</Company>
     <Product>VSS.WebApi.Common.netcore</Product>
     <Description>Shared configuration for 3D Web APIs</Description>
-    <VersionPrefix>1.1.0</VersionPrefix>
+    <VersionPrefix>1.1.1</VersionPrefix>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>VSS.WebApi.Common</AssemblyName>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -29,6 +29,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="2.4.0" />
+    <PackageReference Include="VSS.Authentication.JWT" Version="1.2.1" />
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.22.*" />
     <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.33.*" />
   </ItemGroup>
