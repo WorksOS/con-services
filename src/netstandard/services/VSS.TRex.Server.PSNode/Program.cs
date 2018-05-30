@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.DI;
+using VSS.TRex.Profiling.Factories;
+using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Servers.Compute;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
@@ -17,6 +19,7 @@ namespace VSS.TRex.Server.PSNode
         .AddLogging()
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
+        .Add(x => x.AddSingleton<IProfilerBuilderFactory>(new ProfilerBuilderFactory()))
         .Complete();
     }
 
