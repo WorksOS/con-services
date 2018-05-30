@@ -36,7 +36,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         CompactionReportGridRequest request = item as CompactionReportGridRequest;
 
         TICFilterSettings raptorFilter =
-          RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.projectId);
+          RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId);
 
         var options = RaptorConverters.convertOptions(null, request.LiftBuildSettings, 0,
           request.Filter?.LayerType ?? FilterLayerMethod.None, DisplayMode.Height, false);
@@ -44,7 +44,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         log.LogDebug("About to call GetReportGrid");
 
         var args = ASNode.GridReport.RPC.__Global.Construct_GridReport_Args(
-          request.projectId ?? -1,
+          request.ProjectId ?? -1,
           (int)CompactionReportType.Grid,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0,
             TASNodeCancellationDescriptorType.cdtProdDataReport),
@@ -98,8 +98,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             //foreach (TGridRow row in reportPackager.GridReport.Rows)
             for (var i = 0; i < reportPackager.GridReport.NumberOfRows; i++)
             {
-              gridRows[i] = GridRow.CreateRow(reportPackager.GridReport.Rows[i]);
-              gridRows[i].SetReportFlags(request);
+              gridRows[i] = GridRow.CreateRow(reportPackager.GridReport.Rows[i], request);
             }
 
             var startTime = request.Filter != null && request.Filter.StartUtc.HasValue ? request.Filter.StartUtc.Value : DateTime.Now;

@@ -267,62 +267,6 @@ this.SummaryVolumes_GoodRequest("DesignToCompositeNoSurveyedSurface", "DesignToC
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("SummaryVolumes - Good Request: SummationTestLotOneOfThree")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "SummaryVolumes")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireSurveyedSurface")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "SummationTestLotOneOfThree")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "SummationTestLotOneOfThree")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "SummationTestLotOneOfThree")]
-        public virtual void SummaryVolumes_GoodRequest_SummationTestLotOneOfThree()
-        {
-#line 8
-this.SummaryVolumes_GoodRequest("SummationTestLotOneOfThree", "SummationTestLotOneOfThree", ((string[])(null)));
-#line hidden
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("SummaryVolumes - Good Request: SummationTestLotTwoOfThree")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "SummaryVolumes")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireSurveyedSurface")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "SummationTestLotTwoOfThree")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "SummationTestLotTwoOfThree")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "SummationTestLotTwoOfThree")]
-        public virtual void SummaryVolumes_GoodRequest_SummationTestLotTwoOfThree()
-        {
-#line 8
-this.SummaryVolumes_GoodRequest("SummationTestLotTwoOfThree", "SummationTestLotTwoOfThree", ((string[])(null)));
-#line hidden
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("SummaryVolumes - Good Request: SummationTestLotThreeOfThree")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "SummaryVolumes")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireSurveyedSurface")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "SummationTestLotThreeOfThree")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "SummationTestLotThreeOfThree")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "SummationTestLotThreeOfThree")]
-        public virtual void SummaryVolumes_GoodRequest_SummationTestLotThreeOfThree()
-        {
-#line 8
-this.SummaryVolumes_GoodRequest("SummationTestLotThreeOfThree", "SummationTestLotThreeOfThree", ((string[])(null)));
-#line hidden
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("SummaryVolumes - Good Request: SummationTestTheWholeLot")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "SummaryVolumes")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireSurveyedSurface")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "SummationTestTheWholeLot")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "SummationTestTheWholeLot")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "SummationTestTheWholeLot")]
-        public virtual void SummaryVolumes_GoodRequest_SummationTestTheWholeLot()
-        {
-#line 8
-this.SummaryVolumes_GoodRequest("SummationTestTheWholeLot", "SummationTestTheWholeLot", ((string[])(null)));
-#line hidden
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("SummaryVolumes - Good Request: FilterToDesignWithFillTolerances")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "SummaryVolumes")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireSurveyedSurface")]

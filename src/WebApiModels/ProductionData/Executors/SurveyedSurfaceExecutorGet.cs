@@ -24,7 +24,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
     {
       ProjectID request = item as ProjectID;
 
-      return raptorClient.GetKnownGroundSurfaceFileDetails(request.projectId ?? -1, out surveyedSurfaces);
+      return raptorClient.GetKnownGroundSurfaceFileDetails(request.ProjectId ?? -1, out surveyedSurfaces);
     }
 
     /// <summary>

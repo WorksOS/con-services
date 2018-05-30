@@ -146,7 +146,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     {
       return new ExportReport
              {
-                 projectId = projectId,
+                 ProjectId = projectId,
                  liftBuildSettings = liftBuildSettings,
                  filter = filter,
                  filterID = filterID,

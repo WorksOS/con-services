@@ -64,9 +64,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     {
       return new MachineStatus
       {
-        assetID = assetID,
-        machineName = machineName,
-        isJohnDoe = isJohnDoe,
+        AssetId = assetID,
+        MachineName = machineName,
+        IsJohnDoe = isJohnDoe,
         lastKnownDesignName = lastKnownDesignName,
         lastKnownLayerId = lastKnownLayerId,
         lastKnownTimeStamp = lastKnownTimeStamp,
@@ -74,7 +74,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
         lastKnownLongitude = lastKnownLongitude,
         lastKnownX = lastKnownX,
         lastKnownY = lastKnownY
-
       };
     }
   }

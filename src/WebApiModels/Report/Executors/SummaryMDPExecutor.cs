@@ -50,9 +50,9 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
 
         string fileSpaceName = FileDescriptorExtensions.GetFileSpaceId(configStore, log);
 
-        TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId,
+        TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId,
             request.overrideStartUTC, request.overrideEndUTC, request.overrideAssetIds, fileSpaceName);
-        bool success = raptorClient.GetMDPSummary(request.projectId ?? -1,
+        bool success = raptorClient.GetMDPSummary(request.ProjectId ?? -1,
                             ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0, TASNodeCancellationDescriptorType.cdtMDPSummary),
                             ConvertSettings(request.mdpSettings),
                             raptorFilter,

@@ -39,8 +39,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         RaptorConverters.convertGridOrLLBoundingBox(request.BoundBoxGrid, request.BoundBoxLatLon, out var bottomLeftPoint, out var topRightPoint,
           out bool coordsAreGrid);
 
-        var baseFilter = RaptorConverters.ConvertFilter(request.FilterId1, request.Filter1, request.projectId);
-        var topFilter = RaptorConverters.ConvertFilter(request.FilterId2, request.Filter2, request.projectId);
+        var baseFilter = RaptorConverters.ConvertFilter(request.FilterId1, request.Filter1, request.ProjectId);
+        var topFilter = RaptorConverters.ConvertFilter(request.FilterId2, request.Filter2, request.ProjectId);
         var designDescriptor = RaptorConverters.DesignDescriptor(request.DesignDescriptor);
         var volType = RaptorConverters.ConvertVolumesType(request.ComputeVolumesType);
 
@@ -58,7 +58,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         }
 
         TASNodeErrorStatus raptorResult = raptorClient.GetRenderedMapTileWithRepresentColor
-        (request.projectId ?? -1,
+        (request.ProjectId ?? -1,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
             TASNodeCancellationDescriptorType.cdtWMSTile),
           RaptorConverters.convertDisplayMode(request.mode),

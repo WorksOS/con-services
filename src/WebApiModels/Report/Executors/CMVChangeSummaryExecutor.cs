@@ -36,11 +36,11 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
 
       TASNodeCMVChangeSettings settings = new TASNodeCMVChangeSettings(request.CMVChangeSummaryValues);
 
-      bool success = raptorClient.GetCMVChangeSummary(request.projectId ?? -1,
+      bool success = raptorClient.GetCMVChangeSummary(request.ProjectId ?? -1,
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0,
           TASNodeCancellationDescriptorType.cdtCMVChange),
         settings,
-        RaptorConverters.ConvertFilter(request.filterId, request.filter, request.projectId, null, null,
+        RaptorConverters.ConvertFilter(request.filterId, request.filter, request.ProjectId, null, null,
           new List<long>()),
         RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
         out result);

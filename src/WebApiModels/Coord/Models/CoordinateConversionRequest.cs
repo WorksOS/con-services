@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.WebApiModels.Coord.Models
     {
       CoordinateConversionRequest request = new CoordinateConversionRequest
                                             {
-                                                projectId = projectId,
+                                                ProjectId = projectId,
                                                 conversionType = conversionType,
                                                 conversionCoordinates = conversionCoordinates
                                             };

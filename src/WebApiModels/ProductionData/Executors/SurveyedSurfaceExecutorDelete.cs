@@ -26,7 +26,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
       ProjectID projectId = (item as Tuple<ProjectID, DataID>).Item1;
       DataID surveyedSurfaceId= (item as Tuple<ProjectID, DataID>).Item2;
 
-      return raptorClient.DiscardGroundSurfaceFileDetails(projectId.projectId ?? -1, surveyedSurfaceId.dataId);
+      return raptorClient.DiscardGroundSurfaceFileDetails(projectId.ProjectId ?? -1, surveyedSurfaceId.dataId);
     }
 
     /// <summary>

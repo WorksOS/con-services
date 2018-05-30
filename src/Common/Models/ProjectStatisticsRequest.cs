@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.Common.Models
     {
       return new ProjectStatisticsRequest
       { 
-                 projectId = ProjectId, 
+                 ProjectId = ProjectId, 
                  excludedSurveyedSurfaceIds = ExcludedSurveyedSurfaceIds
              };
     }

@@ -33,7 +33,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
         // get request parameters
         ExtentRequest request = item as ExtentRequest;
 
-        bool success = raptorClient.GetDataModelExtents(request.projectId ?? -1,
+        bool success = raptorClient.GetDataModelExtents(request.ProjectId ?? -1,
               RaptorConverters.convertSurveyedSurfaceExlusionList(request.excludedSurveyedSurfaceIds),
               out extents);
 

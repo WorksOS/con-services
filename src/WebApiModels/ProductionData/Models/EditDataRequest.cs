@@ -49,7 +49,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     {
       return new EditDataRequest
              {
-                 projectId = projectId,
+                 ProjectId = projectId,
                  undo = undo,
                  dataEdit = dataEdit
              };

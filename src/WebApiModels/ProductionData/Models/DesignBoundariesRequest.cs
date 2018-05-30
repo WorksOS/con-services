@@ -23,7 +23,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     {
       return new DesignBoundariesRequest
       {
-        projectId = projectId,
+        ProjectId = projectId,
         tolerance = tolerance
       };
     }

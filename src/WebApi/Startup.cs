@@ -1,16 +1,15 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System;
 using VSS.Log4Net.Extensions;
 using VSS.Productivity3D.Common.Filters;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.WebApi
@@ -21,6 +20,7 @@ namespace VSS.Productivity3D.WebApi
     /// The name of this service for swagger etc.
     /// </summary>
     private const string SERVICE_TITLE = "3dpm Service API";
+
     /// <summary>
     /// Log4net repository logger name.
     /// </summary>
@@ -38,7 +38,7 @@ namespace VSS.Productivity3D.WebApi
           .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
           .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
-      env.ConfigureLog4Net("log4net.xml", LOGGER_REPO_NAME);
+      env.ConfigureLog4Net(repoName: LOGGER_REPO_NAME, configFileRelativePath: "log4net.xml");
 
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
@@ -57,10 +57,10 @@ namespace VSS.Productivity3D.WebApi
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddCommon<Startup>(SERVICE_TITLE, "API for 3D compaction and volume data");
-   
+
       services.AddResponseCompression();
       services.AddMemoryCache();
-      services.AddCustomResponseCaching();     
+      services.AddCustomResponseCaching();
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
       ConfigureApplicationServices(services);
@@ -94,7 +94,7 @@ namespace VSS.Productivity3D.WebApi
 
       app.UseMvc();
 
-      ConfigureRaptor(serviceProvider);    
+      ConfigureRaptor(serviceProvider);
     }
 
     /// <summary>

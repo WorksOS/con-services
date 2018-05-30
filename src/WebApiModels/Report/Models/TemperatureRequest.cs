@@ -92,7 +92,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     {
       return new TemperatureRequest
       {
-        projectId = projectID,
+        ProjectId = projectID,
         callId = callId,
         temperatureSettings = temperatureSettings,
         liftBuildSettings = liftBuildSettings,

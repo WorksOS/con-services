@@ -145,7 +145,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     {
       return new PatchRequest
       {
-        projectId = projectId,
+        ProjectId = projectId,
         callId = callId,
         mode = mode,
         palettes = palettes,

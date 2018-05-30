@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
           palettes.Transitions = new TColourPalette[0];
 
           //if (pdsClient.GetMachineCCAColourPalettes(projectId.projectId, assetId.dataId, out palettes))
-          if (raptorClient.GetMachineCCAColourPalettes(request.projectId ?? -1, request.assetId, request.startUtc, request.endUtc, request.liftId, out palettes))
+          if (raptorClient.GetMachineCCAColourPalettes(request.ProjectId ?? -1, request.assetId, request.startUtc, request.endUtc, request.liftId, out palettes))
           {
             if (palettes.Transitions.Length == 0)
             {

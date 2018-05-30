@@ -73,7 +73,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Models
     {
       return new CompactionTileRequest
       {
-        projectId = projectId,
+        ProjectId = projectId,
         mode = mode,
         filter = filter,
         boundBoxLL = boundingBoxLatLon,

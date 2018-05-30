@@ -7,8 +7,8 @@ namespace ProductionDataSvc.AcceptanceTests.Helpers
   [Binding]
     public class BeforeAndAfter
     {
-        [BeforeScenario("requireDummySurveyedSurface")]
-        public static void CreateDummySurveyedSurface()
+        [BeforeScenario("requireSurveyedSurfaceLargerThanProductionData")]
+        public static void CreateSurveyedSurfaceLargerThanProductionData()
         {
             RaptorServicesClientUtil.DoHttpRequest(RaptorClientConfig.ProdSvcBaseUri + "/api/v1/surveyedsurfaces",
                 "POST", RestClientConfig.JsonMediaType,
@@ -19,7 +19,7 @@ namespace ProductionDataSvc.AcceptanceTests.Helpers
                         ""file"": {
                           ""filespaceId"": ""u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01"",
                           ""path"": ""/77561/1158"",
-                          ""fileName"": ""Dummy.ttm""
+                          ""fileName"": ""Original Ground Survey - Dimensions 2012.ttm""
                         },
                         ""offset"": 0.0
                       },
@@ -67,17 +67,9 @@ namespace ProductionDataSvc.AcceptanceTests.Helpers
             }");
         }
 
-      
-        [AfterScenario("requireDummySurveyedSurface")]
-        public static void DeleteDummySurveyedSurface()
-        {
-            RaptorServicesClientUtil.DoHttpRequest(RaptorClientConfig.ProdSvcBaseUri + "/api/v1/projects/1001158/surveyedsurfaces/111/delete",
-                "GET", RestClientConfig.JsonMediaType, null);
-        }
-
         [AfterScenario("requireSurveyedSurface")]
         [AfterScenario("requireOldSurveyedSurface")]
-        [AfterScenario("requireDummySurveyedSurface")]
+        [AfterScenario("requireSurveyedSurfaceLargerThanProductionData")]
         public static void DeleteSurveyedSurface()
         {
             RaptorServicesClientUtil.DoHttpRequest(RaptorClientConfig.ProdSvcBaseUri + "/api/v1/projects/1001158/surveyedsurfaces/111/delete",

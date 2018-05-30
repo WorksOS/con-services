@@ -1,4 +1,4 @@
-using DesignProfilerDecls;
+﻿using DesignProfilerDecls;
 using System.Net;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -13,7 +13,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
     {
       DesignNameRequest request = item as DesignNameRequest;
 
-      var result = raptorClient.UpdateCacheWithDesign(request.projectId ?? -1, request.DesignFilename, 0, true);
+      var result = raptorClient.UpdateCacheWithDesign(request.ProjectId ?? -1, request.DesignFilename, 0, true);
       if (result == TDesignProfilerRequestResult.dppiOK)
       {
         return new ContractExecutionResult();

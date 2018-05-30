@@ -66,7 +66,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
         {
           log.LogDebug("Updating Raptor design cache");
 
-          var result1 = raptorClient.UpdateCacheWithDesign(request.projectId.Value, request.File.fileName, 0, false);
+          var result1 = raptorClient.UpdateCacheWithDesign(request.ProjectId.Value, request.File.fileName, 0, false);
           if (result1 != TDesignProfilerRequestResult.dppiOK)
           {
             throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
@@ -87,7 +87,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
             ? (TVLPDDistanceUnits)request.DXFUnitsType
             : TVLPDDistanceUnits.vduMeters; //always metric for design surface and alignment as we generate the DXF file.
 
-          var result2 = raptorClient.GetCoordinateSystemProjectionFile(request.projectId.Value,
+          var result2 = raptorClient.GetCoordinateSystemProjectionFile(request.ProjectId.Value,
             dxfUnitsType, out string prjFile);
           if (result2 != TASNodeErrorStatus.asneOK)
           {
@@ -105,13 +105,13 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
 
           }
           //Note: Cannot have async void therefore bool result from method. However, failure handled inside method so ignore return value here.
-          await CreateTransformFile(request.projectId.Value, request.File, prjFile, suffix, FileUtils.PROJECTION_FILE_EXTENSION);
+          await CreateTransformFile(request.ProjectId.Value, request.File, prjFile, suffix, FileUtils.PROJECTION_FILE_EXTENSION);
 
           //Get GM_XFORM file contents from Raptor
           log.LogDebug("Getting horizontal adjustment file from Raptor");
 
           var result3 = raptorClient.GetCoordinateSystemHorizontalAdjustmentFile(request.CoordSystemFileName,
-            request.projectId.Value, dxfUnitsType, out string haFile);
+            request.ProjectId.Value, dxfUnitsType, out string haFile);
           if (result3 != TASNodeErrorStatus.asneOK)
           {
             log.LogWarning(string.Format(
@@ -129,14 +129,14 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
           //An empty string means there is no horizontal adjustment in coordinate system so no file to create
           if (haFile != string.Empty)
           {
-            await CreateTransformFile(request.projectId.Value, request.File, haFile, suffix,
+            await CreateTransformFile(request.ProjectId.Value, request.File, haFile, suffix,
               FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION);
           }
 
           if (fileType != ImportedFileType.Linework)
           {
             //Get alignment or surface boundary as DXF file from Raptor
-            if (!await CreateDxfFile(request.projectId.Value, request.File, suffix, request.DXFUnitsType))
+            if (!await CreateDxfFile(request.ProjectId.Value, request.File, suffix, request.DXFUnitsType))
             {
               //We need gracefully fail here as the file may be imported to an empty datamodel
               log.LogWarning("Failed to get requested " + FileUtils.DXF_FILE_EXTENSION);
@@ -150,7 +150,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
           var fullGeneratedName = string.Format("{0}/{1}", request.File.path, generatedName);
           zoomResult = await tileGenerator.CalculateTileZoomRange(request.File.filespaceId, fullGeneratedName).ConfigureAwait(false); 
           //Generate DXF tiles
-          await tileGenerator.CreateDxfTiles(request.projectId.Value, request.File, suffix, zoomResult, false).ConfigureAwait(false);
+          await tileGenerator.CreateDxfTiles(request.ProjectId.Value, request.File, suffix, zoomResult, false).ConfigureAwait(false);
         }
 
         else if (fileType == ImportedFileType.SurveyedSurface)
@@ -159,7 +159,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
           DesignDescriptor dd = DesignDescriptor.CreateDesignDescriptor(request.FileId, request.File, 0.0);
           ASNode.GroundSurface.RPC.TASNodeServiceRPCVerb_GroundSurface_Args args = ASNode.GroundSurface.RPC.__Global
             .Construct_GroundSurface_Args(
-              request.projectId.Value,
+              request.ProjectId.Value,
               request.FileId,
               FileUtils.SurveyedSurfaceUtc(request.File.fileName).Value,
               RaptorConverters.DesignDescriptor(dd)

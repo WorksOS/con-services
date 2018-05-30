@@ -48,9 +48,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         }
 
         TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter,
-          request.projectId);
+          request.ProjectId);
 
-        bool success = raptorClient.GetProductionDataExport(request.projectId ?? -1,
+        bool success = raptorClient.GetProductionDataExport(request.ProjectId ?? -1,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.callId ?? Guid.NewGuid(), 0,
             TASNodeCancellationDescriptorType.cdtProdDataExport),
           request.userPrefs, (int) request.exportType, request.callerId, raptorFilter,
@@ -67,7 +67,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           try
           {
             result = ExportResult.Create(
-              File.ReadAllBytes(BuildFilePath(request.projectId ?? -1, request.callerId, request.filename, true)),
+              File.ReadAllBytes(BuildFilePath(request.ProjectId ?? -1, request.callerId, request.filename, true)),
               dataexport.ReturnCode);
           }
           catch (Exception ex)

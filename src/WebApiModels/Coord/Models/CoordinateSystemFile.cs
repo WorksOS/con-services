@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.WebApiModels.Coord.Models
         {
           var tempCS = new CoordinateSystemFile
           {
-            projectId = projectId,
+            ProjectId = projectId,
             csFileName = csFileName,
             csFileContent = csFileContent
           };

@@ -34,12 +34,12 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       if (request.IsAlignmentDesign)
       {
         var args = ASNode.RequestAlignmentProfile.RPC.__Global.Construct_RequestAlignmentProfile_Args(
-          request.projectId ?? -1,
+          request.ProjectId ?? -1,
           ProfilesHelper.PROFILE_TYPE_NOT_REQUIRED,
           request.startStation ?? ValidationConstants.MIN_STATION,
           request.endStation ?? ValidationConstants.MIN_STATION,
           RaptorConverters.DesignDescriptor(request.alignmentDesign),
-          RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId),
+          RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId),
           RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
           RaptorConverters.DesignDescriptor(request.alignmentDesign),
           request.returnAllPassesAndLayers);
@@ -56,12 +56,12 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           out bool positionsAreGrid);
 
         var args = ASNode.RequestProfile.RPC.__Global.Construct_RequestProfile_Args(
-          request.projectId ?? -1,
+          request.ProjectId ?? -1,
           ProfilesHelper.PROFILE_TYPE_NOT_REQUIRED,
           positionsAreGrid,
           startPt,
           endPt,
-          RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId),
+          RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId),
           RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
           RaptorConverters.DesignDescriptor(request.alignmentDesign),
           request.returnAllPassesAndLayers);

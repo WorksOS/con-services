@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using Newtonsoft.Json;
 using VSS.Productivity3D.WebApi.Models.Common;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
@@ -46,7 +46,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     /// Pass Count value
     /// </summary>
     [JsonProperty(Required = Required.Default)]
-    public int PassCount { get; protected set; }
+    public double PassCount { get; protected set; }//double needed for pass count average for station & offset
 
     /// <summary>
     /// Temperature value
@@ -89,6 +89,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     [JsonIgnore]
     public bool TemperatureReport { get; protected set; }
 
+    public virtual bool ShouldSerializeNorthing()
+    {
+      return true;
+    }
+    public virtual bool ShouldSerializeEasting()
+    {
+      return true;
+    }
     public bool ShouldSerializeElevation() => ElevationReport && Math.Abs(Elevation - VelociraptorConstants.NULL_SINGLE) > 0.001;
     public bool ShouldSerializeCutFill() => CutFillReport && Math.Abs(CutFill - VelociraptorConstants.NULL_SINGLE) > 0.001;
     public bool ShouldSerializeCMV() => CMVReport && CMV != VelociraptorConstants.NO_CCV;
@@ -107,6 +115,23 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
       MDPReport = request.ReportMDP;
       PassCountReport = request.ReportPassCount;
       TemperatureReport = request.ReportTemperature;
+    }
+
+    /// <summary>
+    /// Converts the raw values from Raptor to values to return.
+    /// </summary>
+    public void SetValues(double northing, double easting, double elevation, double cutFill, double cmv, double mdp, double passCount, double temperature)
+    {
+      Northing = northing;
+      Easting = easting;
+      Elevation = elevation != VelociraptorConstants.NULL_SINGLE ? elevation : VelociraptorConstants.NULL_SINGLE;
+      CutFill = cutFill != VelociraptorConstants.NULL_SINGLE ? cutFill : VelociraptorConstants.NULL_SINGLE;
+      CMV = cmv != VelociraptorConstants.NO_CCV ? (double)cmv / 10 : VelociraptorConstants.NO_CCV;
+      MDP = mdp != VelociraptorConstants.NO_MDP ? (double)mdp / 10 : VelociraptorConstants.NO_MDP;
+      PassCount = passCount != VelociraptorConstants.NO_PASSCOUNT ? passCount : VelociraptorConstants.NO_PASSCOUNT;
+      Temperature = temperature != VelociraptorConstants.NO_TEMPERATURE
+        ? (double)temperature / 10
+        : VelociraptorConstants.NO_TEMPERATURE;
     }
   }
 }

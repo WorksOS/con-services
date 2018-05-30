@@ -25,7 +25,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       }
 
       // Gett grid coordinates...
-      TCoordPointList pointList = GetGridCoordinates(request.projectId ?? -1, request.llPoint);
+      TCoordPointList pointList = GetGridCoordinates(request.ProjectId ?? -1, request.llPoint);
 
 
       _northing = pointList.Points.Coords[0].Y;

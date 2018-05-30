@@ -15,7 +15,7 @@ namespace VSS.Productivity3D.WebApiModels.Coord.Executors
       TCoordinateSystemSettings tempCoordSystemSettings;
 
       ProjectID request = item as ProjectID;
-      TASNodeErrorStatus code = raptorClient.RequestCoordinateSystemDetails(request.projectId ?? -1, out tempCoordSystemSettings);
+      TASNodeErrorStatus code = raptorClient.RequestCoordinateSystemDetails(request.ProjectId ?? -1, out tempCoordSystemSettings);
 
       if (code == TASNodeErrorStatus.asneOK)
       {

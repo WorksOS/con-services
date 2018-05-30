@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
@@ -87,7 +87,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     {
       return new CMVChangeSummaryRequest
       {
-        projectId = projectID,
+        ProjectId = projectID,
         callId = callId,
         liftBuildSettings = liftBuildSettings,
         filter = filter,

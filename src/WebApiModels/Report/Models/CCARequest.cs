@@ -55,7 +55,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     {
       return new CCARequest
       {
-        projectId = projectID,
+        ProjectId = projectID,
         callId = callId,
         liftBuildSettings = liftBuildSettings,
         filter = filter,

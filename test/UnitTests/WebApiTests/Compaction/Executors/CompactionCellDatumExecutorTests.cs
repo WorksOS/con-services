@@ -51,7 +51,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var raptorClient = new Mock<IASNodeClient>();
 
       raptorClient.Setup(x => x.GetCellProductionData(
-          request.projectId.Value,
+          request.ProjectId.Value,
           (int) RaptorConverters.convertDisplayMode(request.displayMode),
           request.gridPoint != null ? request.gridPoint.x : 0.0,
           request.gridPoint != null ? request.gridPoint.y : 0.0,
@@ -84,7 +84,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var raptorClient = new Mock<IASNodeClient>();
 
       raptorClient.Setup(x => x.GetCellProductionData(
-          request.projectId.Value,
+          request.ProjectId.Value,
           (int)RaptorConverters.convertDisplayMode(request.displayMode),
           request.gridPoint != null ? request.gridPoint.x : 0.0,
           request.gridPoint != null ? request.gridPoint.y : 0.0,

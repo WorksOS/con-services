@@ -14,7 +14,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
     {
       ContractExecutionResult result;
       ProjectID request = item as ProjectID;
-      TDesignName[] designs = raptorClient.GetOnMachineDesigns(request.projectId ?? -1);
+      TDesignName[] designs = raptorClient.GetOnMachineDesigns(request.ProjectId ?? -1);
       if (designs != null)
         result =
           MachineDesignsExecutionResult.CreateMachineExecutionResult(designs);

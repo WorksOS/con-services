@@ -58,20 +58,20 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
           {
             if (request.dataEdit == null)
             {
-              returnResult = tagClient.SubmitOverrideDesignRemove(request.projectId ?? -1, -1, new TDateTime());
+              returnResult = tagClient.SubmitOverrideDesignRemove(request.ProjectId ?? -1, -1, new TDateTime());
               if (returnResult == TTAGProcServerProcessResult.tpsprOK)
-                returnResult = tagClient.SubmitOverrideLayerRemove(request.projectId ?? -1, -1, new TDateTime());
+                returnResult = tagClient.SubmitOverrideLayerRemove(request.ProjectId ?? -1, -1, new TDateTime());
             }
             else
             {
               if (!string.IsNullOrEmpty(request.dataEdit.onMachineDesignName))
               {
-                returnResult = tagClient.SubmitOverrideDesignRemove(request.projectId ?? -1, request.dataEdit.assetId,
+                returnResult = tagClient.SubmitOverrideDesignRemove(request.ProjectId ?? -1, request.dataEdit.assetId,
                     startTime);
               }
               if (request.dataEdit.liftNumber.HasValue && returnResult == TTAGProcServerProcessResult.tpsprOK)
               {
-                returnResult = tagClient.SubmitOverrideLayerRemove(request.projectId ?? -1, request.dataEdit.assetId,
+                returnResult = tagClient.SubmitOverrideLayerRemove(request.ProjectId ?? -1, request.dataEdit.assetId,
                     startTime);
               }
             }
@@ -82,14 +82,14 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
             {
               //Machine design
               returnResult = tagClient.SubmitDesignToOverride(
-                  request.projectId ?? -1, request.dataEdit.assetId, request.dataEdit.onMachineDesignName, startTime,
+                  request.ProjectId ?? -1, request.dataEdit.assetId, request.dataEdit.onMachineDesignName, startTime,
                   endTime);
             }
             if (request.dataEdit.liftNumber.HasValue && returnResult == TTAGProcServerProcessResult.tpsprOK)
             {
               //Lift number
               returnResult = tagClient.SubmitLayerToOverride(
-                  request.projectId ?? -1, request.dataEdit.assetId, request.dataEdit.liftNumber.Value, startTime, endTime);
+                  request.ProjectId ?? -1, request.dataEdit.assetId, request.dataEdit.liftNumber.Value, startTime, endTime);
             }
           }
           if (returnResult == TTAGProcServerProcessResult.tpsprOK)

@@ -27,12 +27,11 @@ namespace VSS.Productivity3D.WebApi
 
 
     /// <summary>
-    /// 
+    /// Default program entry point.
     /// </summary>
-    /// <param name="args"></param>
     public static void Main(string[] args)
     {
-      bool isService = args.Contains("--service");
+      var isService = args.Contains("--service");
 
       var config = new ConfigurationBuilder()
         .AddCommandLine(args)
@@ -42,10 +41,13 @@ namespace VSS.Productivity3D.WebApi
       var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
       var pathToContentRoot = Path.GetDirectoryName(pathToExe);
 
-      bool libuvConfigured = Int32.TryParse(Environment.GetEnvironmentVariable(LIBUV_THREAD_COUNT), out int libuvThreads);
+      var libuvConfigured = int.TryParse(Environment.GetEnvironmentVariable(LIBUV_THREAD_COUNT), out var libuvThreads);
       var host = new WebHostBuilder()
         .UseConfiguration(config)
-        .UseKestrel()
+        .UseKestrel(opts =>
+        {
+          opts.Limits.MaxResponseBufferSize = 131072;//128K for large exports (default is 64K)
+        })
         //.UseUrls("http://127.0.0.1:5002") //DO NOT REMOVE (used for local debugging of long running veta exports)
         .UseLibuv(opts =>
         {
@@ -53,7 +55,7 @@ namespace VSS.Productivity3D.WebApi
           {
             opts.ThreadCount = libuvThreads;
           }
-          
+
         })
         .UseContentRoot(pathToContentRoot)
         .ConfigureLogging(builder =>
@@ -69,10 +71,8 @@ namespace VSS.Productivity3D.WebApi
       log.LogInformation("Productivity3D service starting");
       log.LogInformation($"Num Libuv Threads = {(libuvConfigured ? libuvThreads.ToString() : "Default")}");
       
-
-
-      if (Int32.TryParse(Environment.GetEnvironmentVariable(MAX_WORKER_THREADS), out int maxWorkers) &&
-          Int32.TryParse(Environment.GetEnvironmentVariable(MAX_IO_THREADS), out int maxIo))
+      if (int.TryParse(Environment.GetEnvironmentVariable(MAX_WORKER_THREADS), out var maxWorkers) &&
+          int.TryParse(Environment.GetEnvironmentVariable(MAX_IO_THREADS), out var maxIo))
       {
         ThreadPool.SetMaxThreads(maxWorkers, maxIo);
         log.LogInformation($"Max Worker Threads = {maxWorkers}");
@@ -84,8 +84,8 @@ namespace VSS.Productivity3D.WebApi
         log.LogInformation($"Max IO Threads = Default");
       }
 
-      if (Int32.TryParse(Environment.GetEnvironmentVariable(MIN_WORKER_THREADS), out int minWorkers) &&
-          Int32.TryParse(Environment.GetEnvironmentVariable(MIN_IO_THREADS), out int minIo))
+      if (int.TryParse(Environment.GetEnvironmentVariable(MIN_WORKER_THREADS), out var minWorkers) &&
+          int.TryParse(Environment.GetEnvironmentVariable(MIN_IO_THREADS), out var minIo))
       {
         ThreadPool.SetMinThreads(minWorkers, minIo);
         log.LogInformation($"Min Worker Threads = {minWorkers}");
@@ -96,9 +96,8 @@ namespace VSS.Productivity3D.WebApi
         log.LogInformation($"Min Worker Threads = Default");
         log.LogInformation($"Min IO Threads = Default");
       }
-             
 
-      if (Int32.TryParse(Environment.GetEnvironmentVariable(DEFAULT_CONNECTION_LIMIT), out int connectionLimit))
+      if (int.TryParse(Environment.GetEnvironmentVariable(DEFAULT_CONNECTION_LIMIT), out var connectionLimit))
       {
         //Check how many requests we can execute
         ServicePointManager.DefaultConnectionLimit = connectionLimit;

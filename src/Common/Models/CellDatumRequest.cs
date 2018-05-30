@@ -75,7 +75,7 @@ namespace VSS.Productivity3D.Common.Models
       {
         return new CellDatumRequest
         {
-            projectId = projectId,
+            ProjectId = projectId,
             displayMode = displayMode,
             llPoint = llPoint,
             gridPoint = gridPoint,

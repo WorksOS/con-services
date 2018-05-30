@@ -100,7 +100,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     {
       return new CMVRequest
       {
-        projectId = projectID,
+        ProjectId = projectID,
         callId = callId,
         cmvSettings = cmvSettings,
         liftBuildSettings = liftBuildSettings,

@@ -10,6 +10,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
   public sealed class ExportReportToSurfaceSteps
   {
     private string url;
+    private byte[] fileContents;
 
     private Getter<ExportReportResult> exportReportRequester;
 
@@ -44,16 +45,18 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       exportReportRequester.QueryString.Add("filterUid", filterUid);
     }
 
-    [When(@"I request an Export Report Machine Passes expecting NoContent")]
-    public void WhenIRequestAnExportReportMachinePassesExpectingNoContent()
-    {
-      exportReportRequester.DoInvalidRequest(url, HttpStatusCode.NoContent);
-    }
-
     [When(@"I request an Export Report To Surface")]
     public void WhenIRequestAnExportReportToSurface()
     {
-      exportReportRequester.DoValidRequest(url);
+      if (exportReportRequester.QueryString != null)
+      {
+        url += exportReportRequester.BuildQueryString();
+      }
+
+      HttpWebResponse httpResponse = RaptorServicesClientUtil.DoHttpRequest(url,
+        "GET", "application/json", "application/zip", null);
+
+      fileContents = RaptorServicesClientUtil.GetStreamContentsFromResponse(httpResponse);
     }
 
     [When(@"I request an Export Report To Surface expecting BadRequest")]
@@ -74,12 +77,6 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       exportReportRequester.DoInvalidRequest(url, HttpStatusCode.NoContent);
     }
 
-    [Then(@"the report result should match the ""(.*)"" from the repository")]
-    public void ThenTheReportResultShouldMatchTheFromTheRepository(string resultName)
-    {
-      Assert.AreEqual(exportReportRequester.ResponseRepo[resultName], exportReportRequester.CurrentResponse);
-    }
-
     [Then(@"the report result should contain error code (.*) and error message ""(.*)""")]
     public void ThenTheReportResultShouldContainErrorCodeAndErrorMessage(int errorCode, string errorMessage)
     {
@@ -91,9 +88,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [Then(@"the export result should successful")]
     public void ThenTheExportResultShouldSuccessful()
     {
-      Assert.AreEqual(0, exportReportRequester.CurrentResponse.Code, " Code should be 0");
-      Assert.AreEqual("success", exportReportRequester.CurrentResponse.Message, " Message should be success");
-      Assert.IsTrue(exportReportRequester.CurrentResponse.ExportData.Length > 100, " length of response should be > 100");
+      Assert.IsTrue(fileContents.Length > 100, " length of response should be > 100");
     }
   }
 }

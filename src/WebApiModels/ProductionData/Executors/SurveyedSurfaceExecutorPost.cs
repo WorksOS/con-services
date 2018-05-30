@@ -27,7 +27,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 
       ASNode.GroundSurface.RPC.TASNodeServiceRPCVerb_GroundSurface_Args args = ASNode.GroundSurface.RPC.__Global
         .Construct_GroundSurface_Args(
-          request.projectId ?? -1,
+          request.ProjectId ?? -1,
           request.SurveyedSurface.id,
           request.SurveyedUtc,
           RaptorConverters.DesignDescriptor(request.SurveyedSurface)

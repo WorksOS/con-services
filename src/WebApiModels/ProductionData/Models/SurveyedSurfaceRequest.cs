@@ -53,7 +53,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     {
       return new SurveyedSurfaceRequest
       { 
-                projectId = projectId,
+                ProjectId = projectId,
                 SurveyedSurface = surveyedSurface,
                 SurveyedUtc = surveyedUtc
               };

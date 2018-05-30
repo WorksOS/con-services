@@ -12,6 +12,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
   public sealed class ExportReportMachinePassesSteps
   {
     private string url;
+    private byte[] fileContents;
 
     private Getter<ExportReportResult> exportReportRequester;
 
@@ -67,7 +68,15 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [When(@"I request an Export Report Machine Passes")]
     public void WhenIRequestAnExportReportMachinePasses()
     {
-      exportReportRequester.DoValidRequest(url);
+      if (exportReportRequester.QueryString != null)
+      {
+        url += exportReportRequester.BuildQueryString();
+      }
+
+      HttpWebResponse httpResponse = RaptorServicesClientUtil.DoHttpRequest(url,
+        "GET", "application/json", "application/zip", null);
+
+      fileContents = RaptorServicesClientUtil.GetStreamContentsFromResponse(httpResponse);
     }
 
     [When(@"I request an Export Report Machine Passes expecting BadRequest")]
@@ -87,12 +96,6 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       exportReportRequester.DoInvalidRequest(url, HttpStatusCode.NoContent);
     }
 
-    [Then(@"the report result should match the ""(.*)"" from the repository")]
-    public void ThenTheReportResultShouldMatchTheFromTheRepository(string resultName)
-    {
-      Assert.AreEqual(exportReportRequester.ResponseRepo[resultName], exportReportRequester.CurrentResponse);
-    }
-
     /// <summary>
     /// This method unzips the csv file. It then sorts it by date time and lat/long or northing then compares to expected 
     /// </summary>
@@ -100,10 +103,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [Then(@"the report result csv should match the ""(.*)"" from the repository")]
     public void ThenTheReportResultCsvShouldMatchTheFromTheRepository(string resultName)
     {
-      Assert.AreEqual(0, exportReportRequester.CurrentResponse.Code);
-      Assert.AreEqual("success", exportReportRequester.CurrentResponse.Message);
-
-      var actualResult = Encoding.Default.GetString(Common.Decompress(exportReportRequester.CurrentResponse.ExportData));
+      string actualResult = Encoding.Default.GetString(Common.Decompress(fileContents));
       var expectedResult = Encoding.Default.GetString(Common.Decompress(exportReportRequester.ResponseRepo[resultName].ExportData));
       var expSorted = Common.SortCsvFileIntoString(expectedResult.Substring(3));
       var actSorted = Common.SortCsvFileIntoString(actualResult.Substring(3));

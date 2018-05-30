@@ -76,8 +76,8 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Models
     {
       return new ProjectFileDescriptor
       {
-        projectId = projectId,
-        projectUid = projectUId,
+        ProjectId = projectId,
+        ProjectUid = projectUId,
         File = file,
         CoordSystemFileName = coordSystemFileName,
         DXFUnitsType = dxfUnitsType,

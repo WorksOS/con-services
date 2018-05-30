@@ -48,13 +48,13 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       SummaryParametersBase request = item as SummaryParametersBase;
       TASNodeThicknessSummaryResult result = new TASNodeThicknessSummaryResult();
 
-      bool success = raptorClient.GetSummaryThickness(request.projectId ?? -1,
+      bool success = raptorClient.GetSummaryThickness(request.ProjectId ?? -1,
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.CallId ?? Guid.NewGuid()), 0,
           TASNodeCancellationDescriptorType.cdtVolumeSummary),
-        RaptorConverters.ConvertFilter(request.BaseFilterId, request.BaseFilter, request.projectId, null, null),
-        RaptorConverters.ConvertFilter(request.TopFilterId, request.TopFilter, request.projectId, null, null),
+        RaptorConverters.ConvertFilter(request.BaseFilterId, request.BaseFilter, request.ProjectId, null, null),
+        RaptorConverters.ConvertFilter(request.TopFilterId, request.TopFilter, request.ProjectId, null, null),
         RaptorConverters.ConvertFilter(request.AdditionalSpatialFilterId,
-          request.AdditionalSpatialFilter, request.projectId, null, null),
+          request.AdditionalSpatialFilter, request.ProjectId, null, null),
         RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmAutomatic),
         out result);
       if (success)

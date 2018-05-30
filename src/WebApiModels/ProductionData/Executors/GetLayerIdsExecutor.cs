@@ -15,7 +15,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
           ContractExecutionResult result;
           ProjectID request = item as ProjectID;
           TDesignLayer[] layerlist;
-          if (raptorClient.GetOnMachineLayers(request.projectId ?? -1, out layerlist) >= 0 && layerlist != null)
+          if (raptorClient.GetOnMachineLayers(request.ProjectId ?? -1, out layerlist) >= 0 && layerlist != null)
             result = LayerIdsExecutionResult.CreateLayerIdsExecutionResult(layerlist);
           else
             throw new ServiceException(HttpStatusCode.BadRequest,

@@ -38,7 +38,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         ExportGridCSV request = item as ExportGridCSV;
 
         TICFilterSettings raptorFilter =
-          RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId);
+          RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId);
         MemoryStream outputStream = null;
 
         Stream writerStream = null;
@@ -49,7 +49,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         log.LogDebug("About to call GetGriddedOrAlignmentCSVExport");
 
         int Result = raptorClient.GetGriddedOrAlignmentCSVExport
-        (request.projectId ?? -1,
+        (request.ProjectId ?? -1,
           (int) request.reportType,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid) (request.callId ?? Guid.NewGuid()), 0,
             TASNodeCancellationDescriptorType.cdtProdDataExport),

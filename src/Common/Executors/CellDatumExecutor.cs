@@ -31,10 +31,10 @@ namespace VSS.Productivity3D.Common.Executors
 
     protected virtual bool GetCellDatumData(CellDatumRequest request, out TCellProductionData data)
     {
-      TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterId, request.filter, request.projectId);
+      TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterId, request.filter, request.ProjectId);
 
       return raptorClient.GetCellProductionData
-      (request.projectId ?? -1,
+      (request.ProjectId ?? -1,
         (int)RaptorConverters.convertDisplayMode(request.displayMode),
         request.gridPoint?.x ?? 0,
         request.gridPoint?.y ?? 0,

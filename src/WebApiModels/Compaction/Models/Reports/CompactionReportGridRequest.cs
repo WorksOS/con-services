@@ -83,7 +83,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     {
       return new CompactionReportGridRequest
       {
-        projectId = projectId,
+        ProjectId = projectId,
         Filter = filter,
         FilterID = filterId,
         LiftBuildSettings = liftBuildSettings,

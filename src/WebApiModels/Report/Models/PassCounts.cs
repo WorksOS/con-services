@@ -88,7 +88,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     {
       return new PassCounts
              {
-                 projectId = projectId,
+                 ProjectId = projectId,
                  passCountSettings = passCountSettings,
                  liftBuildSettings = liftBuildSettings,
                  filter = filter,

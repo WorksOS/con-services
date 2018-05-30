@@ -22,12 +22,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       ContractExecutionResult result;
       CutFillDetailsRequest request = item as CutFillDetailsRequest;
 
-      var filter = RaptorConverters.ConvertFilter(null, request.filter, request.projectId);
+      var filter = RaptorConverters.ConvertFilter(null, request.filter, request.ProjectId);
       var designDescriptor = RaptorConverters.DesignDescriptor(request.designDescriptor);
       var liftBuildSettings =
         RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
 
-      bool success = raptorClient.GetCutFillDetails(request.projectId ?? -1,
+      bool success = raptorClient.GetCutFillDetails(request.ProjectId ?? -1,
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtCutfillDetailed),
         new TCutFillSettings
         {

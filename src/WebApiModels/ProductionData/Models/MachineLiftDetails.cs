@@ -8,20 +8,15 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     public LiftDetails[] lifts { get; private set; }
 
     /// <summary>
-    /// Create instance of MachineLiftDetails
+    /// Static constructor.
     /// </summary>
-    public static MachineLiftDetails CreateMachineLiftDetails(
-        long assetId,
-        string machineName,
-        bool isJohnDoe,
-        LiftDetails[] lifts
-        )
+    public static MachineLiftDetails CreateMachineLiftDetails(long assetId, string machineName, bool isJohnDoe, LiftDetails[] lifts)
     {
       return new MachineLiftDetails
       {
-        assetID = assetId,
-        machineName = machineName,
-        isJohnDoe = isJohnDoe,
+        AssetId = assetId,
+        MachineName = machineName,
+        IsJohnDoe = isJohnDoe,
         lifts = lifts
       };
     }

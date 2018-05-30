@@ -10,7 +10,7 @@ namespace VSS.Productivity3D.WebApiTests.Report.Models
     [TestMethod]
     public void Constructor_should_return_fully_populated_object()
     {
-      var stationOffset = new TGridRow
+      var gridRow = new TGridRow
       {
         Northing = 12.34,
         Easting = 56.78,
@@ -22,16 +22,24 @@ namespace VSS.Productivity3D.WebApiTests.Report.Models
         Temperature = 21
       };
 
-      var result = GridRow.CreateRow(stationOffset);
+      var request = CompactionReportGridRequest.CreateCompactionReportGridRequest(0, null, 0, null, true, true, true, true, true, true, null, null, GridReportOption.Unused, 0, 0, 0, 0, 0);
+      var result = GridRow.CreateRow(gridRow, request);
 
-      Assert.AreEqual(stationOffset.Northing, result.Northing);
-      Assert.AreEqual(stationOffset.Easting, result.Easting);
-      Assert.AreEqual(stationOffset.Elevation, result.Elevation);
-      Assert.AreEqual(stationOffset.CutFill, result.CutFill);
-      Assert.AreEqual((double)stationOffset.CMV / 10, result.CMV);
-      Assert.AreEqual((double)stationOffset.MDP / 10, result.MDP);
-      Assert.AreEqual(stationOffset.PassCount, result.PassCount);
-      Assert.AreEqual((double)stationOffset.Temperature / 10, result.Temperature);
+      Assert.AreEqual(gridRow.Northing, result.Northing);
+      Assert.AreEqual(gridRow.Easting, result.Easting);
+      Assert.AreEqual(gridRow.Elevation, result.Elevation);
+      Assert.AreEqual(gridRow.CutFill, result.CutFill);
+      Assert.AreEqual((double)gridRow.CMV / 10, result.CMV);
+      Assert.AreEqual((double)gridRow.MDP / 10, result.MDP);
+      Assert.AreEqual(gridRow.PassCount, result.PassCount);
+      Assert.AreEqual((double)gridRow.Temperature / 10, result.Temperature);
+
+      Assert.IsTrue(result.ElevationReport);
+      Assert.IsTrue(result.CutFillReport);
+      Assert.IsTrue(result.CMVReport);
+      Assert.IsTrue(result.MDPReport);
+      Assert.IsTrue(result.PassCountReport);
+      Assert.IsTrue(result.TemperatureReport);
     }
   }
 }

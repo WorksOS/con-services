@@ -63,33 +63,9 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
             var httpResponse = RaptorServicesClientUtil.DoHttpRequest(tileRequester.Uri,
                  "POST", "application/json", "image/png", requestBodyString);
 
-            if(httpResponse != null)
-            {
-                Assert.AreEqual(HttpStatusCode.OK, httpResponse.StatusCode,
-                    String.Format("Expected {0}, but got {1} instead.", HttpStatusCode.OK, httpResponse.StatusCode));
-
-                header = httpResponse.Headers;
-
-                byte[] buffer = new byte[1024];
-                using (Stream responseStream = httpResponse.GetResponseStream())
-                {
-                    using (MemoryStream memoryStream = new MemoryStream())
-                    {
-                        int count = 0;
-                        do
-                        {
-                            count = responseStream.Read(buffer, 0, buffer.Length);
-                            memoryStream.Write(buffer, 0, count);
-
-                        } while (count != 0);
-                        
-                        pngTile = memoryStream.ToArray();
-                        responseString = Encoding.Default.GetString(pngTile);
-                    }
-                }
-
-                httpResponse.Close();
-            }
+            pngTile = RaptorServicesClientUtil.GetStreamContentsFromResponse(httpResponse);
+            header = httpResponse.Headers;
+            responseString = Encoding.Default.GetString(pngTile);
         }
 
         [Then(@"the PNG Tiles response should match ""(.*)"" result from the repository")]

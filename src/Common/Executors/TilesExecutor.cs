@@ -41,9 +41,9 @@ namespace VSS.Productivity3D.Common.Executors
         RaptorConverters.convertGridOrLLBoundingBox(request.BoundBoxGrid, request.BoundBoxLatLon, out TWGS84Point bl, out TWGS84Point tr,
   out bool coordsAreGrid);
         TICFilterSettings filter1 =
-          RaptorConverters.ConvertFilter(request.FilterId1, request.Filter1, request.projectId);
+          RaptorConverters.ConvertFilter(request.FilterId1, request.Filter1, request.ProjectId);
         TICFilterSettings filter2 =
-          RaptorConverters.ConvertFilter(request.FilterId2, request.Filter2, request.projectId);
+          RaptorConverters.ConvertFilter(request.FilterId2, request.Filter2, request.ProjectId);
         TComputeICVolumesType volType = RaptorConverters.ConvertVolumesType(request.ComputeVolumesType);
         if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
           RaptorConverters.AdjustFilterToFilter(ref filter1, filter2);
@@ -51,7 +51,7 @@ namespace VSS.Productivity3D.Common.Executors
         RaptorConverters.reconcileTopFilterAndVolumeComputationMode(ref filter1, ref filter2, request.mode, request.ComputeVolumesType);
 
         TASNodeErrorStatus raptorResult = raptorClient.GetRenderedMapTileWithRepresentColor
-(request.projectId ?? -1,
+(request.ProjectId ?? -1,
   ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.CallId ?? Guid.NewGuid()), 0,
     TASNodeCancellationDescriptorType.cdtWMSTile),
   RaptorConverters.convertDisplayMode(request.mode),

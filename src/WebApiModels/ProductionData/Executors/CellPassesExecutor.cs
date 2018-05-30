@@ -32,10 +32,10 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
           double probeX = isGridCoord ? request.probePositionGrid.x : (isLatLgCoord ? request.probePositionLL.Lon : 0);
           double probeY = isGridCoord ? request.probePositionGrid.y : (isLatLgCoord ? request.probePositionLL.Lat : 0);
 
-          TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterId, request.filter, request.projectId, null, null,
+          TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterId, request.filter, request.ProjectId, null, null,
             new List<long>());
           int code = raptorClient.RequestCellProfile
-          (request.projectId ?? -1,
+          (request.ProjectId ?? -1,
             RaptorConverters.convertCellAddress(request.cellAddress ?? new CellAddress()),
             probeX, probeY,
             isGridCoord,

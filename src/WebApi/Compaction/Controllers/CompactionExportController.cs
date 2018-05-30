@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
@@ -27,7 +28,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting Raptor production data for summary and details requests
   /// </summary>
-  [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
+  //NOTE: do not cache responses as large amount of data
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class CompactionExportController : BaseController
   {
     /// <summary>
@@ -93,13 +95,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         exportDataUrl = $"{exportDataUrl}&machineNames={machineNames}";
       }
-      var request = new ScheduleJobRequest {Url = exportDataUrl, Filename = fileName};
-      return
-        WithServiceExceptionTryExecute(() => new ScheduleResult
-        {
-          JobId =
-            scheduler.ScheduleExportJob(request, Request.Headers.GetCustomHeaders(true)).Result?.JobId
-        });
+      return ScheduleJob(exportDataUrl, fileName, scheduler);
     }
     #endregion
 
@@ -134,13 +130,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       //The URL to get the export data is here in this controller, construct it based on this request
       var exportDataUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/api/v2/export/machinepasses?projectUid={projectUid}&fileName={fileName}&filterUid={filterUid}" + 
                           $"&coordType={coordType}&outputType={outputType}&restrictOutput={restrictOutput}&rawDataOutput={rawDataOutput}";
-      var request = new ScheduleJobRequest { Url = exportDataUrl, Filename = fileName };
-      return
-        WithServiceExceptionTryExecute(() => new ScheduleResult
-        {
-          JobId =
-            scheduler.ScheduleExportJob(request, Request.Headers.GetCustomHeaders(true)).Result?.JobId
-        });
+      return ScheduleJob(exportDataUrl, fileName, scheduler);
     }
     #endregion
 
@@ -168,7 +158,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var exportDataUrl =
         $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/api/v2/export/surface?projectUid={projectUid}&fileName={fileName}&filterUid={filterUid}&tolerance={tolerance}";
-      var request = new ScheduleJobRequest { Url = exportDataUrl, Filename = fileName };
+      return ScheduleJob(exportDataUrl, fileName, scheduler);
+    }
+
+    /// <summary>
+    /// Schedule an export job wit the scheduler
+    /// </summary>
+    private ScheduleResult ScheduleJob(string exportDataUrl, string fileName, ISchedulerProxy scheduler)
+    {
+      var timeout = ConfigStore.GetValueInt("SCHEDULED_JOB_TIMEOUT");
+      if (timeout == 0) timeout = 300000;//5 mins default
+      var request = new ScheduleJobRequest { Url = exportDataUrl, Filename = fileName, Timeout = timeout };
       return
         WithServiceExceptionTryExecute(() => new ScheduleResult
         {
@@ -178,7 +178,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
     #endregion
 
-    
+
     #region Exports
     /// <summary>
     /// Gets an export of production data in cell grid format report for import to VETA.
@@ -191,7 +191,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/export/veta")]
     [HttpGet]
-    public async Task<ExportResult> GetExportReportVeta(
+    public async Task<FileResult> GetExportReportVeta(
       [FromQuery] Guid projectUid,
       [FromQuery] string fileName,
       [FromQuery] string machineNames,
@@ -226,11 +226,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       exportRequest.Validate();
 
-      return WithServiceExceptionTryExecute(() =>
+      var result = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
           .Build<CompactionExportExecutor>(LoggerFactory, raptorClient, null, this.ConfigStore)
           .Process(exportRequest) as ExportResult
       );
+      Log.LogInformation($"GetExportReportVeta completed: ResultCode={result.ResultCode}, ExportData size={result.ExportData.Length}");
+
+      return new FileStreamResult(new MemoryStream(result.ExportData), "application/zip");
     }
 
     /// <summary>
@@ -247,7 +250,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/export/machinepasses")]
     [HttpGet]
-    public async Task<ExportResult> GetExportReportMachinePasses(
+    public async Task<FileResult> GetExportReportMachinePasses(
       [FromQuery] Guid projectUid,
       [FromQuery] int coordType,
       [FromQuery] int outputType,
@@ -285,11 +288,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       exportRequest.Validate();
 
-      return WithServiceExceptionTryExecute(() =>
+      var result = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
           .Build<CompactionExportExecutor>(LoggerFactory, raptorClient, null, this.ConfigStore)
           .Process(exportRequest) as ExportResult
       );
+      Log.LogInformation($"GetExportReportMachinePasses completed: ResultCode={result.ResultCode}, ExportData size={result.ExportData.Length}");
+      return new FileStreamResult(new MemoryStream(result.ExportData), "application/zip");
     }
 
 
@@ -304,7 +309,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/export/surface")]
     [HttpGet]
-    public async Task<ExportResult> GetExportReportSurface(
+    public async Task<FileResult> GetExportReportSurface(
       [FromQuery] Guid projectUid,
       [FromQuery] string fileName,
       [FromQuery] double? tolerance,
@@ -343,11 +348,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       exportRequest.Validate();
 
-      return WithServiceExceptionTryExecute(() =>
+      var result = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
           .Build<CompactionExportExecutor>(LoggerFactory, raptorClient, null, this.ConfigStore)
           .Process(exportRequest) as ExportResult
       );
+      Log.LogInformation($"GetExportReportSurface completed: ResultCode={result.ResultCode}, ExportData size={result.ExportData.Length}");
+      return new FileStreamResult(new MemoryStream(result.ExportData), "application/zip");
     }
     #endregion
 
