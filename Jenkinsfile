@@ -39,7 +39,7 @@ node ('jenkinsslave-pod') {
 		dir ("yaml") {
 			def testingEnvVars = readFile("testingvars.env")
 				testingEnvVars.each { String line ->
-				def (key, value) = line..split('=')
+				def (key, value) = line.split('=')
 				vars.add(envVar(key: key, value: value))
 			}
 			file = readFile("pod.yaml")
