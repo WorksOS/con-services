@@ -2,10 +2,10 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
@@ -60,23 +60,44 @@ namespace VSS.MasterData.Proxies
         string geofenceType, string geometryWKT, int fillColor, bool isTransparent, Guid userUid, double areaSqMeters,
         IDictionary<string, string> customHeaders = null)
     {
-        var geofenceGuid = Guid.NewGuid();
-        var payLoadToSend = new GeofenceData()
-        {
-            CustomerUID = customerGuid,
-            GeofenceName = geofenceName,
-            Description = description,
-            GeofenceType = geofenceType,
-            GeometryWKT = geometryWKT,
-            FillColor = fillColor,
-            IsTransparent = isTransparent,
-            GeofenceUID = geofenceGuid,
-            UserUID = userUid,
-            AreaSqMeters = areaSqMeters
-        };
-        await SendRequest<GeofenceData>("CREATEGEOFENCE_API_URL", JsonConvert.SerializeObject(payLoadToSend),
-            customHeaders,String.Empty, "POST", String.Empty);
-        return geofenceGuid;
+      var geofenceGuid = Guid.NewGuid();
+      geofenceGuid = await UpsertGeofence(geofenceGuid, customerGuid, geofenceName, description,
+        geofenceType, geometryWKT, fillColor, isTransparent, userUid, areaSqMeters,
+        "POST", customHeaders);
+      return geofenceGuid;
+    }
+
+    public async Task<Guid> UpdateGeofence(Guid geofenceGuid, Guid customerGuid, string geofenceName, string description,
+      string geofenceType, string geometryWKT, int fillColor, bool isTransparent, Guid userUid, double areaSqMeters,
+      IDictionary<string, string> customHeaders = null)
+    {
+      geofenceGuid = await UpsertGeofence(geofenceGuid, customerGuid, geofenceName, description,
+      geofenceType, geometryWKT, fillColor, isTransparent, userUid, areaSqMeters,
+      "PUT", customHeaders);
+
+      return geofenceGuid;
+    }
+
+    private async Task<Guid> UpsertGeofence(Guid geofenceGuid, Guid customerGuid, string geofenceName, string description,
+      string geofenceType, string geometryWKT, int fillColor, bool isTransparent, Guid userUid, double areaSqMeters,
+      string method = "POST", IDictionary<string, string> customHeaders = null)
+    {
+      var payLoadToSend = new GeofenceData()
+      {
+        CustomerUID = customerGuid,
+        GeofenceName = geofenceName,
+        Description = description,
+        GeofenceType = geofenceType,
+        GeometryWKT = geometryWKT,
+        FillColor = fillColor,
+        IsTransparent = isTransparent,
+        GeofenceUID = geofenceGuid,
+        UserUID = userUid,
+        AreaSqMeters = areaSqMeters
+      };
+      await SendRequest<OkResult>("GEOFENCE_API_URL", JsonConvert.SerializeObject(payLoadToSend),
+        customHeaders, String.Empty, method, String.Empty);
+      return geofenceGuid;
     }
 
     /// <summary>
@@ -84,7 +105,7 @@ namespace VSS.MasterData.Proxies
     /// </summary>
     /// <param name="geofenceUid">The geofenceUid of the item to remove from the cache</param>
     /// <param name="userId">The user ID</param>
-    public void ClearCacheItem(string geofenceUid, string userId=null)
+    public void ClearCacheItem(string geofenceUid, string userId = null)
     {
       ClearCacheItem<GeofenceData>(geofenceUid, userId);
     }

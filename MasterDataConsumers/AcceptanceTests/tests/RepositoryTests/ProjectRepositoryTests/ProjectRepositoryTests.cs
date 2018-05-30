@@ -16,6 +16,7 @@ namespace RepositoryTests.ProjectRepositoryTests
   {
     CustomerRepository _customerContext;
     ProjectRepository _projectContext;
+    GeofenceRepository _geofenceContext;
 
     [TestInitialize]
     public void Init()
@@ -24,6 +25,7 @@ namespace RepositoryTests.ProjectRepositoryTests
 
       _customerContext = new CustomerRepository(ServiceProvider.GetService<IConfigurationStore>(), ServiceProvider.GetService<ILoggerFactory>());
       _projectContext = new ProjectRepository(ServiceProvider.GetService<IConfigurationStore>(), ServiceProvider.GetService<ILoggerFactory>());
+      _geofenceContext = new GeofenceRepository(ServiceProvider.GetService<IConfigurationStore>(), ServiceProvider.GetService<ILoggerFactory>());
       new SubscriptionRepository(ServiceProvider.GetService<IConfigurationStore>(), ServiceProvider.GetService<ILoggerFactory>());
     }
 
@@ -1649,6 +1651,82 @@ namespace RepositoryTests.ProjectRepositoryTests
 
     #endregion
 
+    #region AssociateProjectWithGeofence
+
+    /// <summary>
+    /// Associate Project with Geofence - Happy Path
+    /// </summary>
+    [TestMethod]
+    public void AssociateProjectWithGeofence_HappyPath()
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var customerUid = Guid.NewGuid();
+      var boundary =
+        "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))";
+
+      var createProjectEvent = new CreateProjectEvent
+      {
+        ProjectUID = Guid.NewGuid(),
+        ProjectID = new Random().Next(1, 1999999),
+        ProjectName = "The Project Name",
+        ProjectType = ProjectType.LandFill,
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
+
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2017, 02, 01),
+        ProjectBoundary = boundary,
+        ActionUTC = actionUtc
+      };
+
+      var createGeofenceEvent = new CreateGeofenceEvent()
+      {
+        GeofenceUID = Guid.NewGuid(),
+        GeofenceName = "Test Geofence",
+        Description = "Testing 123",
+        GeofenceType = GeofenceType.Project.ToString(),
+        FillColor = 16744448,
+        IsTransparent = true,
+        GeometryWKT = boundary,
+        CustomerUID = customerUid,
+        UserUID = Guid.NewGuid(),
+        AreaSqMeters = 123.456,
+        ActionUTC = actionUtc
+      };
+
+      var associateProjectGeofence = new AssociateProjectGeofence
+      {
+        ProjectUID = createProjectEvent.ProjectUID,
+        GeofenceUID = createGeofenceEvent.GeofenceUID,
+        ReceivedUTC = actionUtc,
+        ActionUTC = actionUtc
+      };
+
+      var geo = _geofenceContext.StoreEvent(createGeofenceEvent);
+      geo.Wait();
+      Assert.AreEqual(1, geo.Result, "Unable to store geofence");
+
+
+      var p = _projectContext.StoreEvent(createProjectEvent);
+      p.Wait();
+      Assert.AreEqual(1, p.Result, "Project event not written");
+
+      var pg = _projectContext.StoreEvent(associateProjectGeofence);
+      pg.Wait();
+      Assert.AreEqual(1, pg.Result, "ProjectGeofence event not written");
+      
+      var g = _projectContext.GetAssociatedGeofences(createProjectEvent.ProjectUID.ToString());
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve ProjectGeofence from ProjectRepo");
+      Assert.AreEqual(1, g.Result.Count(), "Invalid ProjectGeofence Count");
+      var retrievedPg = g.Result.FirstOrDefault();
+      Assert.IsNotNull(retrievedPg, "List is missing from ProjectGeofence");
+      Assert.AreEqual(createProjectEvent.ProjectUID.ToString(), retrievedPg.ProjectUID, "ProjectUid is incorrect from ProjectGeofence");
+      Assert.AreEqual(createGeofenceEvent.GeofenceUID.ToString(), retrievedPg.GeofenceUID, "GeofenceUID is incorrect from ProjectGeofence");
+      Assert.AreEqual(createGeofenceEvent.GeofenceType, retrievedPg.GeofenceType.ToString(), "GeofenceType is incorrect from ProjectGeofence");
+    }
+
+    #endregion AssociateProjectWithGeofence
+    
 
     #region private
     private void CheckProjectHistoryCount(string projectUid, int expectedCount)

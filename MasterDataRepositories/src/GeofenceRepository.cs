@@ -58,11 +58,8 @@ namespace VSS.MasterData.Repositories
       else if (evt is UpdateGeofenceEvent)
       {
         var geofenceEvent = (UpdateGeofenceEvent)evt;
-        geofence.GeofenceUID = geofenceEvent.GeofenceUID.ToString(); //Select existing with this
+        geofence.GeofenceUID = geofenceEvent.GeofenceUID.ToString();
         geofence.Name = geofenceEvent.GeofenceName;
-        //cannot update GeometryWKT in update event,
-        //  may be used to create geofence if it doesn't exist 
-        //  as we update is received before the create
         geofence.GeofenceType = geofenceType;
         geofence.GeometryWKT = geofenceEvent.GeometryWKT;
 

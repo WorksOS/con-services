@@ -6,7 +6,7 @@
     <Company>VSS</Company>
     <Product>VSS.MasterData.Proxies.netcore</Product>
     <Description>Shared library providing access to MasterData services through WebApis</Description>
-    <VersionPrefix>2.33.3</VersionPrefix>
+    <VersionPrefix>2.33.4</VersionPrefix>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>VSS.MasterData.Proxies</AssemblyName>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -20,7 +20,6 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Polly" Version="6.0.1" />
-    <!-- <PackageReference Include="System.Buffers" Version="4.4.0" /> -->
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.*" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.22.*" />
