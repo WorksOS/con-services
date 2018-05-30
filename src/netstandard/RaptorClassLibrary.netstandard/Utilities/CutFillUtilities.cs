@@ -62,13 +62,9 @@ namespace VSS.TRex.Utilities
                 if (subgrid1.Cells[I, J] != Consts.NullHeight)
                 {
                     if (subgrid2.Cells[I, J] != Consts.NullHeight)
-                    {
                         subgrid1.Cells[I, J] = subgrid1.Cells[I, J] - subgrid2.Cells[I, J];
-                    }
                     else
-                    {
                         subgrid1.Cells[I, J] = Consts.NullHeight;
-                    }
                 }
             });
         }

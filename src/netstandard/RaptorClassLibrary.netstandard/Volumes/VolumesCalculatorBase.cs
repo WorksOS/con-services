@@ -9,7 +9,6 @@ using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Interfaces;
 using VSS.TRex.Pipelines;
-using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.Surfaces;
@@ -72,6 +71,31 @@ namespace VSS.TRex.Volumes
         /// </summary>
         public CombinedFilter BaseFilter { get; set; }
         public CombinedFilter TopFilter { get; set; }
+
+        /// FIntermediary filter is used to assist calculation of the volumetric work
+        /// done between two points in time. Conceptually, the from surface is defined
+        /// as a combination of the surface data using the latest available information
+        /// for an AsAt time filter, ['from', representing the start of the time period] and combining
+        /// it with the surface data using the earliest available information for a
+        /// time range filter defined as starting at the AsAt data of the from filter and
+        /// [representing work started after the AsAt data of the 'from' filter]
+        /// terminating at the end date of the 'To'. This combined surface is then
+        /// compared to a surface constructed from the latest available information
+        /// for the supplied To Filter.
+        ///
+        /// The intermediary filter is derived from the 'To' filter and is altered to be
+        /// an 'earliest' filter with all other attributes remaining unchanged and is
+        /// used to calculate the additional elevation information to be combined with
+        /// the 'AsAt'/latest surface information from the 'From' filter.
+        ///
+        /// The conditions for using the intermedairy filter are then:
+        /// 1. A summary volume requested between two filters
+        /// 2. The 'from' filter is defined as an 'As-At' filter, with latest data selected
+        /// 3. The 'to' filter is defined either as an 'As-At' or a time range filter,
+        ///    with latest data selected
+        ///
+        /// Note: No 'look forward' behaviour shoudl be undertaken.
+        CombinedFilter IntermediaryFilter { get; set; }
 
         /// <summary>
         /// RefOriginal references a subset that may be used in the volumes calculations
@@ -165,9 +189,27 @@ namespace VSS.TRex.Volumes
             // Construct and assign the filter set into the pipeline
             FilterSet FilterSet;
 
-            if (VolumeType == VolumeComputationType.Between2Filters)
-                FilterSet = new FilterSet(new [] { BaseFilter, TopFilter });
-            else if (VolumeType == VolumeComputationType.BetweenDesignAndFilter)
+          if (VolumeType == VolumeComputationType.Between2Filters)
+          {
+            // Determine if intermediary filter/surface behaviour is required to
+            // support summary volumes
+            if (BaseFilter.AttributeFilter.HasTimeFilter && BaseFilter.AttributeFilter.StartTime == DateTime.MinValue // 'From' has As-At Time filter
+            && !BaseFilter.AttributeFilter.ReturnEarliestFilteredCellPass // Want latest cell pass in 'from'
+            && TopFilter.AttributeFilter.HasTimeFilter && TopFilter.AttributeFilter.StartTime != DateTime.MinValue // 'To' has time-range filter with latest
+            && !TopFilter.AttributeFilter.ReturnEarliestFilteredCellPass) // Want latest cell pass in 'to'
+            {
+              // Create and use the intermediary filter. The intermediary filter
+              // is create from the Top filter, with the return earliest flag set to true
+              IntermediaryFilter = new CombinedFilter();
+              IntermediaryFilter.AttributeFilter.Assign(TopFilter.AttributeFilter);
+              IntermediaryFilter.AttributeFilter.ReturnEarliestFilteredCellPass = true;
+
+              FilterSet = new FilterSet(new[] {BaseFilter, IntermediaryFilter, TopFilter});
+            }
+            else
+            FilterSet = new FilterSet(new[] {BaseFilter, TopFilter});
+          }
+          else if (VolumeType == VolumeComputationType.BetweenDesignAndFilter)
                 FilterSet = new FilterSet(new [] { TopFilter });
             else
                 FilterSet = new FilterSet(new [] { BaseFilter });
