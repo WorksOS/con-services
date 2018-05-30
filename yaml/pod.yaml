@@ -24,6 +24,7 @@ spec:
     envFrom:
     - configMapRef:
         name: projectservice-testing
+    tty: true
     env:
     - name: KAFKA_TOPICS
       value: "VSS.Interfaces.Events.MasterData.ICustomerEvent"
@@ -32,6 +33,7 @@ spec:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     env_file:
      - docker-compose.env
+    tty: true
     env:
     - name: KAFKA_TOPICS
       value: "VSS.Interfaces.Events.MasterData.IProjectEvent"
@@ -41,6 +43,7 @@ spec:
     envFrom:
     - configMapRef:
         name: projectservice-testing
+    tty: true
     env:
     - name: KAFKA_TOPICS
       value: "VSS.Interfaces.Events.MasterData.IGeofenceEvent"
@@ -50,27 +53,31 @@ spec:
     envFrom:
     - configMapRef:
         name: projectservice-testing
+    tty: true
     env:
     - name: KAFKA_TOPICS
       value: "VSS.Interfaces.Events.MasterData.ISubscriptionEvent"
 
   - name: masterdataschema
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest    
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
+    tty: true
     envFrom:
     - configMapRef:
         name: projectservice-testing
      
   - name: projectschema
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest    
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
     envFrom:
     - configMapRef:
         name: projectservice-testing
+    tty: true
     env:
     - name: MYSQL_DATABASE_NAME
       value: "VSS-MasterData-Project-Only"
 
   - name: zookeeper-container
     image: wurstmeister/zookeeper:3.4.6
+    ports:
     - containerPort: 2181
     livenessProbe:
       tcpSocket:
@@ -81,6 +88,7 @@ spec:
 
   - name: kafka-container
     image: wurstmeister/kafka:0.11.0.1
+    ports:
     - containerPort: 9092
     livenessProbe:
       tcpSocket:
@@ -94,6 +102,7 @@ spec:
 
   - name: mockapi-container
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux
+    ports:
     - containerPort: 5001
     livenessProbe:
       tcpSocket:
@@ -108,6 +117,8 @@ spec:
 
   - name: service-container
     image: !container!
+    ports:
+    - containerPort: 80
     tty: true
     envFrom:
     - configMapRef:
