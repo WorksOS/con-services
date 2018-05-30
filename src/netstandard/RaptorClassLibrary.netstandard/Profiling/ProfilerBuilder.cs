@@ -12,7 +12,6 @@ namespace VSS.TRex.Profiling
   /// Primary class responsible for computing profile information based on cell based production data. It constructs builder instances
   /// for the primary activities of collation of profile cells for a profile line, processing of those cells as a whole with respect to
   /// filtering and other parameters, and per-cell processing for layer analysis and other statistics
-  /// to 
   /// </summary>
   public class ProfilerBuilder : IProfilerBuilder
   {
