@@ -37,7 +37,7 @@ node ('jenkinsslave-pod') {
 	
 	stage ('Run acceptance tests') {
 		dir ("yaml") {
-			def testingEnvVars = new File("${WORKSPACE}/yaml/testingvars.env").readLines()
+			def testingEnvVars = readFile("testingvars.env").split("\n")
 				testingEnvVars.each { String line ->
 				println line
 				def (key, value) = line.split('=')
