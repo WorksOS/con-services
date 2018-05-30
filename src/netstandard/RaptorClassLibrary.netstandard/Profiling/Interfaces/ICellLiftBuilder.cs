@@ -10,6 +10,7 @@ namespace VSS.TRex.Profiling.Interfaces
       IClientLeafSubGrid ClientGrid,
       FilteredValueAssignmentContext AssignmentContext,
       ISubGridSegmentCellPassIterator cellPassIterator,
+      bool returnIndividualFilteredValueSelection,
       ref int filteredPassCountOfTopMostLayer,
 
       // FilteredHalfCellPassCountOfTopMostLayer tracks 'half cell passes'.

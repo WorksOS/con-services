@@ -21,7 +21,6 @@ namespace VSS.TRex.Profiling
     private ProfileLayer CurrentLayer;
     private int CurrentLayerRecycledIndex;
 
-    private ProfileLayer LastCreatedLayer;
     private FilteredPassData CurrentPass;
 
     private float LastPassElev;
@@ -103,37 +102,25 @@ namespace VSS.TRex.Profiling
     private bool MainValueAquired;
 
     private ISiteModel SiteModel;
-    private ProfileCell Cell = null;
+    private ProfileCell Cell;
     private GridDataType ProfileTypeRequired;
     private FilteredValuePopulationControl PopulationControl;
-    private bool PopulationControl_AnySet;
     private CellPassAttributeFilter PassFilter;
     private CellPassFastEventLookerUpper CellPassFastEventLookerUpper;
     private ISubGridSegmentCellPassIterator CellPassIterator;
-    private bool ReturnIndividualFilteredValueSelection;
-
-    /// <summary>
-    ///  Default no-arg constructor
-    /// </summary>
-    public CellLiftBuilder()
-    {
-    }
 
     public CellLiftBuilder(ISiteModel siteModel,
       GridDataType profileTypeRequired,
       FilteredValuePopulationControl populationControl,
       CellPassAttributeFilter passFilter,
-      CellPassFastEventLookerUpper cellPassFastEventLookerUpper,
-      bool returnIndividualFilteredValueSelection
+      CellPassFastEventLookerUpper cellPassFastEventLookerUpper
     )
     {
       SiteModel = siteModel;
       ProfileTypeRequired = profileTypeRequired;
       PopulationControl = populationControl;
-      PopulationControl_AnySet = PopulationControl.AnySet();
       PassFilter = passFilter;
       CellPassFastEventLookerUpper = cellPassFastEventLookerUpper;
-      ReturnIndividualFilteredValueSelection = returnIndividualFilteredValueSelection;
     }
 
     private ProductionEventLists GetTargetValues(short forMachineID) =>
@@ -170,68 +157,10 @@ namespace VSS.TRex.Profiling
       CurrentLayerMinElev = 1E10f;
       CurrentLayer = null;
       CurrentLayerRecycledIndex = -1;
-      LastCreatedLayer = null;
       LastMRDesignNameID = Consts.kNoDesignNameID;
       LastMRDate = DateTime.MinValue;
       LastLayerID = 0;
       ElevationOfLastProcessedCellPass = Consts.NullHeight;
-    }
-
-    private void ddFinishedLayer()
-    {
-      CurrentLayer.Height = LastPassElev;
-      CurrentLayer.Thickness = LastPassElev - LastPassInPreviousLayerElev;
-
-      CurrentLayer.CCV = LastPassCCV;
-      CurrentLayer.CCV_Time = LastPassCCVTime;
-      CurrentLayer.CCV_MachineID = LastPassCCVMachine;
-      CurrentLayer.CCV_Elev = LastPassCCVElev;
-      CurrentLayer.CCV_CellPassIdx = LastPassCCVIdx;
-
-      CurrentLayer.RMV = LastPassRMV;
-      CurrentLayer.Frequency = LastPassFrequency;
-      CurrentLayer.Amplitude = LastPassAmplitude;
-
-      CurrentLayer.RadioLatency = LastPassRadioLatency;
-      CurrentLayer.LastLayerPassTime = LastPassTime;
-
-      CurrentLayer.MDP = LastPassMDP;
-      CurrentLayer.MDP_Time = LastPassMDPTime;
-      CurrentLayer.MDP_MachineID = LastPassMDPMachine;
-      CurrentLayer.MDP_Elev = LastPassMDPElev;
-
-      CurrentLayer.CCA = LastPassCCA;
-      CurrentLayer.CCA_Time = LastPassCCATime;
-      CurrentLayer.CCA_MachineID = LastPassCCAMachine;
-      CurrentLayer.CCA_Elev = LastPassCCAElev;
-
-      CurrentLayer.MaterialTemperature = LastPassMaterialTemperature;
-      CurrentLayer.MaterialTemperature_Time = LastPassMaterialTemperature_Time;
-      CurrentLayer.MaterialTemperature_MachineID = LastPassMaterialTemperature_Machine;
-      CurrentLayer.MaterialTemperature_Elev = LastPassMaterialTemperature_Elev;
-
-      CurrentLayer.Status = LayerStatus.None;
-      CurrentLayer.MaxThickness = CurrentLayerMaxElev - LastPassInPreviousLayerElev;
-
-      CurrentLayer.FilteredPassCount = FilteredPassCountForLayer;
-      CurrentLayer.FilteredHalfPassCount = FilteredHalfPassCountForLayer;
-
-      Cell.AddLayer(CurrentLayer, CurrentLayerRecycledIndex);
-      LastCreatedLayer = CurrentLayer;
-
-      CurrentLayer = null;
-      CurrentLayerRecycledIndex = -1;
-
-      NewLayer = true;
-      PassCountForLayer = 0;
-      FilteredPassCountForLayer = 0;
-      FilteredHalfPassCountForLayer = 0;
-      CurrentLayerMaxElev = 0;
-      CurrentLayerMinElev = 1E10f;
-
-      InitLastValueVars();
-
-      CurrentLayerNotAddedToCell = false;
     }
 
     private void CheckProfileCellLiftCompaction(ProfileLayer lift)
@@ -413,7 +342,6 @@ namespace VSS.TRex.Profiling
       CurrentLayer.FilteredHalfPassCount = FilteredHalfPassCountForLayer;
 
       Cell.AddLayer(CurrentLayer, CurrentLayerRecycledIndex);
-      LastCreatedLayer = CurrentLayer;
 
       CurrentLayer = null;
       CurrentLayerRecycledIndex = -1;
@@ -859,6 +787,7 @@ namespace VSS.TRex.Profiling
       IClientLeafSubGrid ClientGrid,
       FilteredValueAssignmentContext AssignmentContext, 
       ISubGridSegmentCellPassIterator cellPassIterator,
+      bool returnIndividualFilteredValueSelection,
       ref int filteredPassCountOfTopMostLayer,
 
       // FilteredHalfCellPassCountOfTopMostLayer tracks 'half cell passes'.
@@ -1101,7 +1030,7 @@ namespace VSS.TRex.Profiling
 
       // Check to see if we still need to select a filtered pass... Skip back through the
       // layers avoiding superceded layers for value selection
-      if (!Result && ReturnIndividualFilteredValueSelection && ClientGrid != null)
+      if (!Result && returnIndividualFilteredValueSelection && ClientGrid != null)
         if (ValidPassesExist && Cell.Layers.Count() > 0 && AssignmentContext != null)
         {
           AssignmentContext.FilteredValue.FilteredPassData.Clear();
@@ -1227,7 +1156,7 @@ namespace VSS.TRex.Profiling
       if (!Result)
         Result = ValidPassesExist &&
                  ((ProfileTypeRequired == GridDataType.All || ProfileTypeRequired == GridDataType.PassCount) ||
-                  !ReturnIndividualFilteredValueSelection);
+                  !returnIndividualFilteredValueSelection);
 
       if (Result)
       {
@@ -1265,6 +1194,7 @@ namespace VSS.TRex.Profiling
            ProfileTypeRequired == GridDataType.CellPasses))
       {
         if (Cell.Layers.Count() > 0)
+        {
           if (FilterAppliedToCellPasses || PassFilter == null)
           {
             filteredPassCountOfTopMostLayer = Cell.Layers.Last().FilteredPassCount;
@@ -1289,6 +1219,7 @@ namespace VSS.TRex.Profiling
             Cell.Layers.Last().FilteredPassCount = filteredPassCountOfTopMostLayer;
             Cell.Layers.Last().FilteredHalfPassCount = FilteredHalfCellPassCountOfTopMostLayer;
           }
+        }
       }
 
       /* todo ...

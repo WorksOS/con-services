@@ -46,7 +46,17 @@ namespace VSS.TRex.Events
     private int Stamp;
 
     private SiteModelMachineTargetValuesTrackingState[] MachinesValuesTrackingState;
-    public ISiteModel SiteModel { get; set; }
+
+    private ISiteModel _SiteModel;
+
+    public ISiteModel SiteModel { get => _SiteModel;
+      set
+      {
+        _SiteModel = value;
+        MachinesValuesTrackingState = new SiteModelMachineTargetValuesTrackingState[_SiteModel?.Machines.Count ?? 0];
+      }
+    }
+
 // todo    private int NumFullEventLookups;
 
     private short LastMachineID;
@@ -56,11 +66,12 @@ namespace VSS.TRex.Events
 
     protected void IncrementStamp() => Stamp++;
 
-    public CellPassFastEventLookerUpper(ISiteModel SiteModel)
+    public CellPassFastEventLookerUpper(ISiteModel siteModel)
     {
+      SiteModel = siteModel;
       Stamp = 0;
 // todo      NumFullEventLookups = 0;
-      MachinesValuesTrackingState = new SiteModelMachineTargetValuesTrackingState[SiteModel.Machines.Count];
+
       ClearLastValues();
     }
 
