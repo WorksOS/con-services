@@ -13,7 +13,6 @@ using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
-using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
@@ -32,12 +31,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Logger factory for use by executor
     /// </summary>
-    private readonly ILoggerFactory logger;
+    private readonly ILoggerFactory _logger;
 
     /// <summary>
     /// Gets or sets the httpContextAccessor.
     /// </summary>
-    protected readonly IHttpContextAccessor httpContextAccessor;
+    protected readonly IHttpContextAccessor HttpContextAccessor;
 
     /// <summary>
     /// 
@@ -62,8 +61,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, geofenceProxy, raptorProxy,
         logger, serviceExceptionHandler, logger.CreateLogger<ProjectV4Controller>())
     {
-      this.logger = logger;
-      this.httpContextAccessor = httpContextAccessor;
+      this._logger = logger;
+      this.HttpContextAccessor = httpContextAccessor;
     }
 
     #region projects
@@ -173,11 +172,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
-          .Build<CreateProjectExecutor>(logger, configStore, serviceExceptionHandler,
+          .Build<CreateProjectExecutor>(_logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
             geofenceProxy, raptorProxy, subscriptionProxy,
-            projectRepo, subscriptionRepo, fileRepo, null, httpContextAccessor)
+            projectRepo, subscriptionRepo, fileRepo, null, HttpContextAccessor)
           .ProcessAsync(createProjectEvent)
       );
 
@@ -217,29 +216,15 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       // validation includes check that project must exist - otherwise there will be a null legacyID.
       ProjectDataValidator.Validate(project, projectRepo);
       
-      await ProjectRequestHelper.ValidateCoordSystemInRaptor(project,
-        serviceExceptionHandler, customHeaders, raptorProxy).ConfigureAwait(false);
-
-      /*** now making changes, potentially needing rollback ***/
-      if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
-      {
-        var projectWithLegacyProjectId = projectRepo.GetProjectOnly(project.ProjectUID.ToString()).Result;
-        await ProjectRequestHelper.CreateCoordSystemInRaptorAndTcc(project.ProjectUID, projectWithLegacyProjectId.LegacyProjectID,
-          project.CoordinateSystemFileName, project.CoordinateSystemFileContent, false,
-          log, serviceExceptionHandler, customerUid, customHeaders,
-          projectRepo, raptorProxy, configStore, fileRepo).ConfigureAwait(false);
-      }
-
-      var isUpdated = await projectRepo.StoreEvent(project).ConfigureAwait(false);
-      if (isUpdated == 0)
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 62);
-
-      var messagePayload = JsonConvert.SerializeObject(new { UpdateProjectEvent = project });
-      producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>
-        {
-          new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
-        });
+      await WithServiceExceptionTryExecuteAsync(() =>
+        RequestExecutorContainerFactory
+          .Build<UpdateProjectExecutor>(_logger, configStore, serviceExceptionHandler,
+            customerUid, userId, null, customHeaders,
+            producer, kafkaTopicName,
+            geofenceProxy, raptorProxy, subscriptionProxy,
+            projectRepo, subscriptionRepo, fileRepo, null, HttpContextAccessor)
+          .ProcessAsync(project)
+      );
 
       log.LogInformation("UpdateProjectV4. Completed successfully");
       return new ProjectV4DescriptorsSingleResult(
@@ -312,7 +297,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     #endregion subscriptions
-
-
+    
   }
 }

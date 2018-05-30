@@ -3,6 +3,8 @@ using System.Net;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestUtility;
+using VSS.Common.Exceptions;
+using VSS.MasterData.Repositories.DBModels;
 
 namespace WebApiTests
 {
@@ -705,6 +707,8 @@ namespace WebApiTests
     public void CreateStandardProjectThenUpdateCoordinateSystem()
     {
       msg.Title("Project v4 test 22", "Create standard project and customer then update coordinate system");
+
+      var mysql = new MySqlHelper();
       var ts = new TestSupport();
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
@@ -729,18 +733,24 @@ namespace WebApiTests
        "| EventType          | EventDate   | ProjectUID   | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | Description                  |",
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | Boundary Test 22 | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | Boundary Test 22 description |"};
       ts.PublishEventCollection(projectEventArray);
-      //Thread.Sleep(3000);
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
+      var geofenceUid = mysql.VerifyProjectGeofence(projectUid, 1);
+      var geofenceEventArray = new[] {
+         "| TableName  | EventType           | EventDate   | fk_CustomerUID | Description | FillColor | GeofenceName | fk_GeofenceTypeID            | GeofenceUID    | GeometryWKT   | IsTransparent | Name | UserUID        | IsDeleted | LastActionedUTC |",
+        $"| Geofence   | CreateGeofenceEvent | 0d+09:00:00 | {customerUid}  | Fence       | 1         | Trump        | {(int) GeofenceType.Project} | {geofenceUid}  | {geometryWkt} | {false}       | Blah | {customerUid}  | {false}   | 0d+09:00:00     |"};
+      ts.IsPublishToWebApi = false;
+      ts.PublishEventCollection(geofenceEventArray);
 
       var projectEventArray2 = new[] {
        "| EventType            | EventDate   | ProjectUID   | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description        |",
       $"| UpdateProjectRequest | 0d+09:00:00 | {projectUid} | Boundary Test 22 | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc | Change description |"};
       var response = ts.PublishEventToWebApi(projectEventArray2);
-      //Thread.Sleep(3000);
+
       Assert.IsTrue(response == "success", "Response is unexpected. Should be a success. Response: " + response);
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray2, true);
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray2, true);
+      mysql.VerifyProjectGeofence(projectUid, 1);
     }
 
     [TestMethod]
@@ -771,7 +781,6 @@ namespace WebApiTests
        "| EventType          | EventDate   | ProjectUID   | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived |",
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | Boundary Test 23 | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} | false      |"};
       ts.PublishEventCollection(projectEventArray);
-      //Thread.Sleep(2000);
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
 
@@ -779,7 +788,6 @@ namespace WebApiTests
        "| EventType            | EventDate   | ProjectUID   | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
       $"| UpdateProjectRequest | 1d+09:00:00 | {projectUid} | Boundary Test 23 | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | description |" };
       ts.PublishEventToWebApi(projectEventArray2);
-      //Thread.Sleep(2000);
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray2, true);
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray2, true);
 
@@ -789,10 +797,115 @@ namespace WebApiTests
        "| EventType          | EventDate   | ProjectUID   | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | ",
       $"| DeleteProjectEvent | 1d+09:00:00 | {projectUid} | Boundary Test 23 | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} | true       | BootCampDimensions.dc |" };
       var response = ts.PublishEventToWebApi(projectEventArray3);
-      //Thread.Sleep(2000);
       Assert.IsTrue(response == "success", "Response is unexpected. Should be a success. Response: " + response);
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray3, true);
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray3, true);
+    }
+
+    [TestMethod]
+    public void CreateStandardProjectThenUpdateProjectBoundary()
+    {
+      msg.Title("Project v4 test 22", "Create standard project then update projectBoundary");
+      var mysql = new MySqlHelper();
+      var ts = new TestSupport();
+      var legacyProjectId = ts.SetLegacyProjectId();
+      var projectUid = Guid.NewGuid().ToString();
+      var customerUid = Guid.NewGuid();
+      var tccOrg = Guid.NewGuid();
+      var subscriptionUid = Guid.NewGuid();
+      var startDateTime = ts.FirstEventDate;
+      var endDateTime = new DateTime(9999, 12, 31);
+      var endDateTime2 = DateTime.Now.Date.AddYears(2);
+      var startDate = startDateTime.ToString("yyyy-MM-dd");
+      var endDate = endDateTime.ToString("yyyy-MM-dd");
+      const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+      var eventsArray = new[] {
+       "| TableName           | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
+      $"| Customer            | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                   |                |                  |             |                |               |          |                    |",
+      $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |           |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
+      $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
+      $"| ProjectSubscription | 0d+09:20:00 |               |           |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
+      ts.PublishEventCollection(eventsArray);
+      ts.IsPublishToWebApi = true;
+      var projectEventArray = new[] {
+       "| EventType          | EventDate   | ProjectUID   | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | Description                  |",
+      $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | Boundary Test 22 | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | Boundary Test 22 description |"};
+      ts.PublishEventCollection(projectEventArray);
+      ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
+      ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
+      var geofenceUid = mysql.VerifyProjectGeofence(projectUid, 1);
+      var geofenceEventArray = new[] {
+         "| TableName  | EventType           | EventDate   | fk_CustomerUID | Description | FillColor | GeofenceName | fk_GeofenceTypeID            | GeofenceUID    | GeometryWKT   | IsTransparent | Name | UserUID        | IsDeleted | LastActionedUTC |",
+        $"| Geofence   | CreateGeofenceEvent | 0d+09:00:00 | {customerUid}  | Fence       | 1         | Trump        | {(int) GeofenceType.Project} | {geofenceUid}  | {geometryWkt} | {false}       | Blah | {customerUid}  | {false}   | 0d+09:00:00     |"};
+      ts.IsPublishToWebApi = false;
+      ts.PublishEventCollection(geofenceEventArray);
+
+      const string updatedGeometryWkt = "POLYGON((-122 39,-122.3 39.8,-122.3 39.8,-122.34 39.83,-122.8 39.4,-122 39))";
+      var projectEventArray2 = new[] {
+       "| EventType            | EventDate   | ProjectUID   | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description        |",
+      $"| UpdateProjectRequest | 0d+09:00:00 | {projectUid} | Boundary Test 22 | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {updatedGeometryWkt}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc | Change description |"};
+      var response = ts.PublishEventToWebApi(projectEventArray2);
+
+      Assert.IsTrue(response == "success", "Response is unexpected. Should be a success. Response: " + response);
+      ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray2, true);
+      ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray2, true);
+      mysql.VerifyProjectGeofence(projectUid, 1);
+    }
+
+    [TestMethod]
+    public void CreateStandardProjectThenUpdateProjectBoundary_Overlapping()
+    {
+      msg.Title("Project v4 test 23", "Create 2standard projects, 2nd with boundary to be updated then update 1st projectBoundary");
+      var mysql = new MySqlHelper();
+      var ts = new TestSupport();
+      var legacyProjectId = ts.SetLegacyProjectId();
+      var projectUid = Guid.NewGuid().ToString();
+      var projectUid2 = Guid.NewGuid().ToString();
+      var customerUid = Guid.NewGuid();
+      var tccOrg = Guid.NewGuid();
+      var subscriptionUid = Guid.NewGuid();
+      var startDateTime = ts.FirstEventDate;
+      var startDateTime2 = startDateTime.AddDays(1);
+      var endDateTime = new DateTime(9999, 12, 31);
+      var endDateTime2 = endDateTime;
+      var startDate = startDateTime.ToString("yyyy-MM-dd");
+      var endDate = endDateTime.ToString("yyyy-MM-dd");
+      const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+      const string updatedGeometryWkt = "POLYGON((-12 3,-12.3 3,-12.3 4,-12.3 4,-12.8 4,-12 3))";
+      var eventsArray = new[] {
+       "| TableName           | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
+      $"| Customer            | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                   |                |                  |             |                |               |          |                    |",
+      $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |           |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
+      $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
+      $"| ProjectSubscription | 0d+09:20:00 |               |           |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
+      ts.PublishEventCollection(eventsArray);
+      ts.IsPublishToWebApi = true;
+      var projectEventArray = new[] {
+       "| EventType          | EventDate   | ProjectUID    | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                             | ProjectEndDate                              | ProjectBoundary        | CustomerUID   | CustomerID        |IsArchived | Description                  |",
+      $"| CreateProjectEvent | 0d+09:00:00 | {projectUid}  | Boundary Test 22 | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}   | {geometryWkt}          | {customerUid} | {legacyProjectId} |false      | Boundary Test 22 description |",
+      $"| CreateProjectEvent | 0d+09:00:00 | {projectUid2} | Boundary Test 23 | Standard    | New Zealand Standard Time | {startDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {updatedGeometryWkt}   | {customerUid} | {legacyProjectId} |false      | Boundary Test 22 description |"};
+
+      ts.PublishEventCollection(projectEventArray);
+      ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
+      var geofenceUid = mysql.VerifyProjectGeofence(projectUid, 1);
+      var geofenceEventArray = new[] {
+         "| TableName  | EventType           | EventDate   | fk_CustomerUID | Description | FillColor | GeofenceName | fk_GeofenceTypeID            | GeofenceUID    | GeometryWKT   | IsTransparent | Name | UserUID        | IsDeleted | LastActionedUTC |",
+        $"| Geofence   | CreateGeofenceEvent | 0d+09:00:00 | {customerUid}  | Fence       | 1         | Trump        | {(int) GeofenceType.Project} | {geofenceUid}  | {geometryWkt} | {false}       | Blah | {customerUid}  | {false}   | 0d+09:00:00     |"};
+      ts.IsPublishToWebApi = false;
+      ts.PublishEventCollection(geofenceEventArray);
+      var geofenceUid2 = mysql.VerifyProjectGeofence(projectUid2, 1);
+      var geofenceEventArray2 = new[] {
+         "| TableName  | EventType           | EventDate   | fk_CustomerUID | Description | FillColor | GeofenceName | fk_GeofenceTypeID            | GeofenceUID     | GeometryWKT          | IsTransparent | Name | UserUID        | IsDeleted | LastActionedUTC |",
+        $"| Geofence   | CreateGeofenceEvent | 0d+09:00:00 | {customerUid}  | Fence       | 1         | Trump        | {(int) GeofenceType.Project} | {geofenceUid2}  | {updatedGeometryWkt} | {false}       | Blah | {customerUid}  | {false}   | 0d+09:00:00     |"};
+      ts.IsPublishToWebApi = false;
+      ts.PublishEventCollection(geofenceEventArray2);
+
+      var projectEventArray2 = new[] {
+       "| EventType            | EventDate   | ProjectUID   | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description        |",
+      $"| UpdateProjectRequest | 0d+09:00:00 | {projectUid} | Boundary Test 22 | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {updatedGeometryWkt}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc | Change description |"};
+      var response = ts.PublishEventToWebApi(projectEventArray2);
+
+      Assert.IsTrue(response == "Project boundary overlaps another project, for this customer and time span.", "Response is unexpected. Should fail with overlap. Response: " + response);
     }
 
     [TestMethod]

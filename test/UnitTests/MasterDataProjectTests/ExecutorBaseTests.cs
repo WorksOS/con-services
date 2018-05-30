@@ -19,7 +19,7 @@ namespace VSS.MasterData.ProjectTests
   [TestClass]
   public class ExecutorBaseTests
   {
-    public IServiceProvider ServiceProvider;
+    public static IServiceProvider ServiceProvider;
     protected string KafkaTopicName;
     private readonly string loggerRepoName = "UnitTestLogTest";
 

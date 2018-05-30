@@ -104,7 +104,7 @@ namespace VSS.MasterData.ProjectTests
       projectRepo.Setup(pr => pr.GetProjectOnly(It.IsAny<string>()))
         .ReturnsAsync(new Repositories.DBModels.Project() {LegacyProjectID = 999});
       projectRepo.Setup(pr =>
-          pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+          pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>()))
         .ReturnsAsync(false);
       var subscriptionRepo = new Mock<ISubscriptionRepository>();
       subscriptionRepo.Setup(sr =>
@@ -176,10 +176,11 @@ namespace VSS.MasterData.ProjectTests
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<CreateProjectEvent>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectCustomer>())).ReturnsAsync(1);
+      projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectGeofence>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.GetProjectOnly(It.IsAny<string>()))
         .ReturnsAsync(new Repositories.DBModels.Project() { LegacyProjectID = 999 });
       projectRepo.Setup(pr =>
-          pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+          pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>()))
         .ReturnsAsync(false);
       var subscriptionRepo = new Mock<ISubscriptionRepository>();
       subscriptionRepo.Setup(sr =>

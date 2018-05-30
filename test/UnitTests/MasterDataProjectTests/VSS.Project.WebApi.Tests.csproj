@@ -27,6 +27,7 @@
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.*" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.11.*" />
     <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.7.*" />
+    <PackageReference Include="VSS.Authentication.JWT" Version="1.2.*" />
     <!-- We use Confluent.Kafka 0.11.3 but this is required for Moq to work. Should be ok since only unit tests with mocking -->
     <PackageReference Include="Confluent.Kafka" Version="0.11.4" />
   </ItemGroup>
@@ -44,6 +45,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\ProjectWebApiCommon\VSS.Project.WebApi.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="VSS.Authentication.JWT">
+      <HintPath>..\..\..\..\..\..\Users\jwalter\.nuget\packages\vss.authentication.jwt\1.2.1\lib\netstandard1.6\VSS.Authentication.JWT.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

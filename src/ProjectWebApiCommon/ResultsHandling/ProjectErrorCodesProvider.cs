@@ -102,6 +102,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       this.DynamicAddwithOffset("CopyTccImportedFile: Unable to read file {0}.", 93);
       this.DynamicAddwithOffset("CopyTccImportedFile: Unable to obtain file properties {0}.", 94);
       this.DynamicAddwithOffset("UpsertImportedFileV2: Alignment type is missing detail parameter.", 95);
+      this.DynamicAddwithOffset("UpdateGeofenceInGeofenceService: Unable to find the project-geofence association.", 96);
+      this.DynamicAddwithOffset("UpdateGeofenceInGeofenceService: Unable to find the projects Geofence.", 97);
+      this.DynamicAddwithOffset("UpdateGeofenceInGeofenceService: Unable to find the projects Geofence. Exception: {0}", 98);
+      this.DynamicAddwithOffset("UpdateGeofenceInGeofenceService: Unable update the projects Geofence.", 99);
+      this.DynamicAddwithOffset("UpdateGeofenceInGeofenceService: Unable update the projects Geofence. Exception: {0}", 100);
+      this.DynamicAddwithOffset("UpdateGeofenceInGeofenceService: Unable to find a project-geofence association for the project.", 101);
     }
   }
 }

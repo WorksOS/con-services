@@ -73,7 +73,6 @@
     <ProjectReference Include="..\..\..\MerinoSandbox\MasterDataProxies\src\VSS.MasterData.Proxies.Local.csproj" />
     <ProjectReference Include="..\..\..\MerinoSandbox\MasterDataRepositories\src\VSS.MasterData.Repositories.Local.csproj" />
     <ProjectReference Include="..\..\..\MerinoSandbox\WebApi.Common\src\VSS.WebApi.Common.Local.csproj" />
-    <ProjectReference Include="..\..\..\MerinoSandbox\WebApi\src\VSS.WebApi.Common.Local.csproj" />
     <ProjectReference Include="..\ProjectWebApiCommon\VSS.Project.WebApi.Common.Local.csproj" />
   </ItemGroup>
 
