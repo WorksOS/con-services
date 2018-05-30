@@ -94,7 +94,7 @@ namespace VSS.TRex.Volumes
         /// 3. The 'to' filter is defined either as an 'As-At' or a time range filter,
         ///    with latest data selected
         ///
-        /// Note: No 'look forward' behaviour shoudl be undertaken.
+        /// Note: No 'look forward' behaviour should be undertaken.
         CombinedFilter IntermediaryFilter { get; set; }
 
         /// <summary>
