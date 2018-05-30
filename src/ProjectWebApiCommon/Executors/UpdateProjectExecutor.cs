@@ -39,7 +39,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       
       log.LogDebug($"Testing if there are overlapping projects for project {updateProjectEvent.ProjectName}");
       var existing = await projectRepo.GetProject(updateProjectEvent.ProjectUID.ToString());
-      if (String.Compare(existing.GeometryWKT, updateProjectEvent.ProjectBoundary, StringComparison.OrdinalIgnoreCase) != 0)
+      if (!string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary) && String.Compare(existing.GeometryWKT, updateProjectEvent.ProjectBoundary, StringComparison.OrdinalIgnoreCase) != 0)
       {
         await ProjectRequestHelper.DoesProjectOverlap(existing.CustomerUID, updateProjectEvent.ProjectUID.ToString(),
           existing.StartDate, updateProjectEvent.ProjectEndDate, updateProjectEvent.ProjectBoundary,
@@ -60,8 +60,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       if (isUpdated == 0)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 62);
 
-      if (String.Compare(existing.GeometryWKT, updateProjectEvent.ProjectBoundary,
-            StringComparison.OrdinalIgnoreCase) != 0)
+      if (!string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary) && String.Compare(existing.GeometryWKT, updateProjectEvent.ProjectBoundary, StringComparison.OrdinalIgnoreCase) != 0)
       {
         await UpdateGeofenceInGeofenceService(updateProjectEvent);
       }
