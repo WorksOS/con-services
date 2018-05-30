@@ -34,6 +34,9 @@ spec:
     env_file:
      - docker-compose.env
     tty: true
+    envFrom:
+    - configMapRef:
+        name: projectservice-testing    
     env:
     - name: KAFKA_TOPICS
       value: "VSS.Interfaces.Events.MasterData.IProjectEvent"
