@@ -30,6 +30,7 @@ node ('jenkinsslave-pod') {
 	
     stage('Build Solution') {
         checkout scm
+		// TODO use dockerfile with ENTRYPOINT instead of CMD as it is insecure
 	    def building = docker.build(container, "-f Dockerfile .")
 
         // Currently we need to execute the tests like this, because the pipeline docker plugin being aware of DIND, and attempting to map
