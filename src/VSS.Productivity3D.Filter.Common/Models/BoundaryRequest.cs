@@ -2,6 +2,7 @@
 using System.Net;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Utilities;
 
 namespace VSS.Productivity3D.Filter.Common.Models
 {
@@ -53,9 +54,23 @@ namespace VSS.Productivity3D.Filter.Common.Models
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 3);
       }
 
-      if (string.IsNullOrEmpty(BoundaryPolygonWKT))
+      var result = GeofenceValidation.ValidateWKT(BoundaryPolygonWKT);
+      if (String.CompareOrdinal(result, GeofenceValidation.ValidationOk) != 0)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 63);
+        if (String.CompareOrdinal(result, GeofenceValidation.ValidationNoBoundary) == 0)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 69);
+        }
+
+        if (String.CompareOrdinal(result, GeofenceValidation.ValidationLessThan3Points) == 0)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 70);
+        }
+
+        if (String.CompareOrdinal(result, GeofenceValidation.ValidationInvalidFormat) == 0)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 71);
+        }
       }
     }
   }
