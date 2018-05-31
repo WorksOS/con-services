@@ -1,4 +1,6 @@
 ﻿using VSS.TRex.Analytics.Aggregators;
+using VSS.TRex.Analytics.Foundation.Aggregators;
+using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -9,32 +11,17 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 	/// <summary>
 	/// Implements the specific business rules for calculating a Speed summary
 	/// </summary>
-	public class SpeedAggregator : AggregatorBase
+	public class SpeedAggregator : SummaryAggregator
   {
 	  /// <summary>
 	  /// Maximum machine speed target value.
 	  /// </summary>
 	  public ushort TargetMaxMachineSpeed { get; set; }
+
 	  /// <summary>
 	  /// Minimum machine speed target value.
 	  /// </summary>
 	  public ushort TargetMinMachineSpeed { get; set; }
-	  /// <summary>
-	  /// A value representing the count of cells that have reported machine speed values higher than a speed target.
-	  /// </summary>
-	  public long AboveTargetCellsCount { get; set; }
-	  /// <summary>
-	  /// A value representing the count of cells that have reported machine speed values lower than a speed target.
-	  /// </summary>
-	  public long BelowTargetCellsCount { get; set; }
-	  /// <summary>
-	  /// A value representing the count of cells that have reported machine speed values the same as a speed target.
-	  /// </summary>
-	  public long MatchTargetCellsCount { get; set; }
-	  /// <summary>
-	  /// The amount of production data the Speed statistics are requested for.
-	  /// </summary>
-	  public double CoverageArea { get; set; } // Area in sq/m...-
 
 	  /// <summary>
 	  /// Default no-arg constructor
@@ -61,15 +48,15 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 			SubGridUtilities.SubGridDimensionalIterator((I, J) =>
 		  {
 			  float Value = SubGrid.Cells[I, J];
-			  if (Value != Consts.NullMachineSpeed) // is there a value to test
+			  if (Value != CellPass.NullMachineSpeed) // is there a value to test
 			  {
 				  SummaryCellsScanned++;
 				  if (Value > TargetMaxMachineSpeed)
-					  AboveTargetCellsCount++;
+					  CellsScannedOverTarget++;
 				  else if (Value < TargetMinMachineSpeed)
-					  BelowTargetCellsCount++;
+					  CellsScannedUnderTarget++;
 					else
-						MatchTargetCellsCount++;
+						CellsScannedAtTarget++;
 				}
 			});
 	  }

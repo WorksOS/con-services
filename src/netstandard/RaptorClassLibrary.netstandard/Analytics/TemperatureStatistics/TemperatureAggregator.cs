@@ -1,4 +1,5 @@
 ﻿using VSS.TRex.Analytics.Aggregators;
+using VSS.TRex.Analytics.Foundation.Aggregators;
 using VSS.TRex.Cells;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -10,7 +11,7 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 	/// <summary>
 	/// Implements the specific business rules for calculating a Temperature summary
 	/// </summary>
-	public class TemperatureAggregator : AggregatorBase
+	public class TemperatureAggregator : SummaryAggregator
 	{
 		/// <summary>
 		/// The flag is to indicate wehther or not the temperature warning levels to be user overrides.
@@ -40,7 +41,7 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 			OverridingTemperatureWarningLevels.Clear();
 		}
 
-		protected override void DataCheck(AggregatorBase other)
+		protected override void DataCheck(SummaryAggregator other)
 		{
 			var aggregator = (TemperatureAggregator) other;
 

@@ -847,9 +847,9 @@ namespace VSS.TRex.IgnitePOC.TestApp
 					MessageBox.Show($"Temperature Summary Results (in {sw.Elapsed}) :\n " +
 					                $"Minimum Temperature: {result.MinimumTemperature} \n " +
 					                $"Maximum Temperature: {result.MaximumTemperature} \n " +
-													$"Above Temperature Percentage: {result.AboveTemperaturePercent} \n " +
-													$"Within Temperature Percentage Range: {result.WithinTemperaturePercent} \n " +
-													$"Below Temperature Percentage: {result.BelowTemperaturePercent} \n " +
+													$"Above Temperature Percentage: {result.AboveTargetPercent} \n " +
+													$"Within Temperature Percentage Range: {result.WithinTargetPercent} \n " +
+													$"Below Temperature Percentage: {result.BelowTargetPercent} \n " +
 													$"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters} \n " +
 													$"Is Target Temperature Constant: {result.IsTargetTemperatureConstant}");
 			}
