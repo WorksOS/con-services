@@ -6,7 +6,7 @@
     <Company>VSS</Company>
     <Product>VSS.TCCFileAccess.netcore</Product>
     <Description>Shared library to access TCC</Description>
-    <VersionPrefix>2.10.0</VersionPrefix>
+    <VersionPrefix>2.10.1</VersionPrefix>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>VSS.TCCFileAccess</AssemblyName>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
