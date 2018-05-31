@@ -13,20 +13,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
     <PackageReference Include="Moq" Version="4.7.63" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.2.0" />
     <PackageReference Include="MSTest.TestFramework" Version="1.2.0" />
-    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.1.*" />
-    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.8.*" />
-    <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.5.*" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.*" />
+    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.11.*" />
+    <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.7.*" />
+    <PackageReference Include="VSS.Authentication.JWT" Version="1.2.*" />
     <!-- We use Confluent.Kafka 0.11.3 but this is required for Moq to work. Should be ok since only unit tests with mocking -->
     <PackageReference Include="Confluent.Kafka" Version="0.11.4" />
   </ItemGroup>
@@ -44,6 +45,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\ProjectWebApiCommon\VSS.Project.WebApi.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="VSS.Authentication.JWT">
+      <HintPath>..\..\..\..\..\..\Users\jwalter\.nuget\packages\vss.authentication.jwt\1.2.1\lib\netstandard1.6\VSS.Authentication.JWT.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

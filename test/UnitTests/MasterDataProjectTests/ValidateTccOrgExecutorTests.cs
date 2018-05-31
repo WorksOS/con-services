@@ -53,9 +53,9 @@ namespace VSS.MasterData.ProjectTests
       var customHeaders = new Dictionary<string, string>();
 
       var request = ValidateTccAuthorizationRequest.CreateValidateTccAuthorizationRequest("tccTnzOrg");
-      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+      var configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
 
       // 1) there must be an org with the shortName from the request
       // 2) the customer from TID must have that orgs orgId in our database 

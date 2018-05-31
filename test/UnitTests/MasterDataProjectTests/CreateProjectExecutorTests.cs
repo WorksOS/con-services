@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
 using Moq;
-using MySql.Data.MySqlClient.Framework.NetCore10;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
@@ -18,14 +15,12 @@ using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.MasterData.Models.ResultHandling;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.TCCFileAccess;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
-using VSS.TCCFileAccess.Models;
 
 namespace VSS.MasterData.ProjectTests
 {
@@ -67,8 +62,8 @@ namespace VSS.MasterData.ProjectTests
     [TestMethod]
     public async Task CreateProjectV2Executor_GetTCCFile()
     {
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
 
       var fileRepo = new Mock<IFileRepository>();
       fileRepo.Setup(fr => fr.FolderExists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
@@ -96,9 +91,9 @@ namespace VSS.MasterData.ProjectTests
       var coordSystemFileContent = "Some dummy content";
       createProjectEvent.CoordinateSystemFileContent = System.Text.Encoding.ASCII.GetBytes(coordSystemFileContent);
 
-      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+      var configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
       var producer = new Mock<IKafka>();
       producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
       producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
@@ -109,7 +104,7 @@ namespace VSS.MasterData.ProjectTests
       projectRepo.Setup(pr => pr.GetProjectOnly(It.IsAny<string>()))
         .ReturnsAsync(new Repositories.DBModels.Project() {LegacyProjectID = 999});
       projectRepo.Setup(pr =>
-          pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+          pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>()))
         .ReturnsAsync(false);
       var subscriptionRepo = new Mock<ISubscriptionRepository>();
       subscriptionRepo.Setup(sr =>
@@ -149,7 +144,7 @@ namespace VSS.MasterData.ProjectTests
       var executor = RequestExecutorContainerFactory.Build<CreateProjectExecutor>
       (logger, configStore, serviceExceptionHandler,
         _customerUid, userId, null, customHeaders,
-        producer.Object, kafkaTopicName,
+        producer.Object, KafkaTopicName,
         null, raptorProxy.Object, subscriptionProxy.Object,
         projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor);
       await executor.ProcessAsync(createProjectEvent);
@@ -171,9 +166,9 @@ namespace VSS.MasterData.ProjectTests
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(request);
       createProjectEvent.ActionUTC = createProjectEvent.ReceivedUTC = DateTime.UtcNow;
 
-      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+      var configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
       var producer = new Mock<IKafka>();
       producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
       producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
@@ -181,10 +176,11 @@ namespace VSS.MasterData.ProjectTests
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<CreateProjectEvent>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectCustomer>())).ReturnsAsync(1);
+      projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectGeofence>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.GetProjectOnly(It.IsAny<string>()))
         .ReturnsAsync(new Repositories.DBModels.Project() { LegacyProjectID = 999 });
       projectRepo.Setup(pr =>
-          pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+          pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>()))
         .ReturnsAsync(false);
       var subscriptionRepo = new Mock<ISubscriptionRepository>();
       subscriptionRepo.Setup(sr =>
@@ -223,7 +219,7 @@ namespace VSS.MasterData.ProjectTests
       var executor = RequestExecutorContainerFactory.Build<CreateProjectExecutor>
       (logger, configStore, serviceExceptionHandler,
         _customerUid, userId, null, customHeaders,
-        producer.Object, kafkaTopicName,
+        producer.Object, KafkaTopicName,
         geofenceProxy.Object, raptorProxy.Object, subscriptionProxy.Object,
         projectRepo.Object, subscriptionRepo.Object,  fileRepo.Object, null, httpContextAccessor);
       await executor.ProcessAsync(createProjectEvent);

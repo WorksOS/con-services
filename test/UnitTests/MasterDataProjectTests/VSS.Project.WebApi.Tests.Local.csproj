@@ -17,15 +17,15 @@
     <PackageReference Include="MSTest.TestAdapter" Version="1.1.18" />
     <PackageReference Include="MSTest.TestFramework" Version="1.1.18" />
     <PackageReference Include="OpenCover" Version="4.6.519" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.2" />
     <PackageReference Include="log4net.netcore" Version="3.0.0" />
     <PackageReference Include="Moq" Version="4.7.63" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.1" />
   </ItemGroup>
 

@@ -55,6 +55,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     [JsonProperty(PropertyName = "CoordinateSystemFileContent", Required = Required.Default)]
     public byte[] CoordinateSystemFileContent { get; set; } = null;
 
+    /// <summary>
+    /// The boundary of the project. This is now mutable.
+    /// </summary>
+    [JsonProperty(PropertyName = "ProjectBoundary", Required = Required.Default)]
+    public string ProjectBoundary { get; set; }
 
     /// <summary>
     /// Private constructor
@@ -68,7 +73,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     public static UpdateProjectRequest CreateUpdateProjectRequest(Guid projectUid, 
       ProjectType projectType, string projectName, string description,
       DateTime projectEndDate, 
-      string coordinateSystemFileName, byte[] coordinateSystemFileContent
+      string coordinateSystemFileName, byte[] coordinateSystemFileContent, string projectBoundary
       )
     {
       return new UpdateProjectRequest
@@ -79,7 +84,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
         Description = description,
         ProjectEndDate = projectEndDate,
         CoordinateSystemFileName = coordinateSystemFileName,
-        CoordinateSystemFileContent = coordinateSystemFileContent
+        CoordinateSystemFileContent = coordinateSystemFileContent,
+        ProjectBoundary = projectBoundary
       };
     }
   }

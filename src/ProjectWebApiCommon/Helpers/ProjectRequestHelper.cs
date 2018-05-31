@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using VSS.ConfigurationStore;
+using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
@@ -79,6 +81,18 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       return true;
     }
 
+    public static async Task<bool> DoesProjectOverlap(string customerUid, string projectUid, DateTime projectStartDate, DateTime projectEndDate, string databaseProjectBoundary,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
+    {
+      var overlaps =
+        await projectRepo.DoesPolygonOverlap(customerUid, databaseProjectBoundary,
+          projectStartDate, projectEndDate).ConfigureAwait(false);
+      if (overlaps)
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 43);
+
+      log.LogDebug($"No overlapping projects for: {projectUid}");
+      return overlaps;
+    }
 
     /// <summary>
     /// Create CoordinateSystem in Raptor and save a copy of the file in TCC

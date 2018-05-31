@@ -44,8 +44,8 @@ namespace VSS.MasterData.ProjectTests
     [TestMethod]
     public async Task UpsertImportedFileExecutorTests_CopyTCCFile()
     {
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
 
       var importedFileTbc = new ImportedFileTbc
       {
@@ -83,9 +83,9 @@ namespace VSS.MasterData.ProjectTests
        FileDescriptor.CreateFileDescriptor("u3bdc38d-1afe-470e-8c1c-fc241d4c5e01", "/BC Data/Sites/Chch Test Site", "CTCTSITECAL.dc")
       );
 
-      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+      var configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
       var producer = new Mock<IKafka>();
       producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
       producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
@@ -107,7 +107,7 @@ namespace VSS.MasterData.ProjectTests
       var executor = RequestExecutorContainerFactory
         .Build<UpsertImportedFileExecutor>(logger, configStore, serviceExceptionHandler,
           _customerUid, _userId, _userEmailAddress, customHeaders,
-          producer.Object, kafkaTopicName,
+          producer.Object, KafkaTopicName,
           null, raptorProxy.Object, null,
           projectRepo.Object, null, fileRepo.Object);
       await executor.ProcessAsync(importedFileUpsertEvent);
