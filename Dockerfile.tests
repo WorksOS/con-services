@@ -1,9 +1,9 @@
 FROM microsoft/dotnet:2.1-sdk-alpine as builder
 
 COPY . /build/
+WORKDIR /build
 
-WORKDIR /build/AcceptanceTests
-#RUN chmod 777 *.sh
+RUN chmod 777 *.sh
 #RUN ["/bin/sh", "deploy_linux.sh"]
 
 FROM registry.k8s.vspengg.com:80/vss-jenkinsslave:core21
@@ -11,10 +11,5 @@ FROM registry.k8s.vspengg.com:80/vss-jenkinsslave:core21
 WORKDIR /app
 COPY --from=builder /build/AcceptanceTests .
 
-#RUN sed -i 's/\r$//' rm_cr.sh
-#RUN chmod 775 rm_cr.sh
-#RUN ["/bin/sh", "rm_cr.sh"]
-
 VOLUME testresults
-
 
