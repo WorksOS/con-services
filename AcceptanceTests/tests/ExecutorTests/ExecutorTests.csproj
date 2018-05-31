@@ -22,6 +22,7 @@
     <PackageReference Include="MSTest.TestFramework" Version="1.2.0" />
     <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.30.*" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.1.*" />
+    <PackageReference Include="XunitXml.TestLogger" Version="2.0.0" />	
   </ItemGroup>
 
   <ItemGroup>
