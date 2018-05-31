@@ -6,8 +6,6 @@ WORKDIR /build
 RUN chmod 777 *.sh
 
 RUN ["/bin/sh", "build.sh"]
-RUN ["/bin/sh", "unittests.sh"]
-
 
 FROM microsoft/dotnet:2.1-runtime-alpine
 
@@ -18,4 +16,4 @@ EXPOSE 80
 
 COPY --from=builder /build/artifacts/ProjectWebApi .
 
-CMD ["dotnet", "VSS.MasterData.Project.WebAPI.dll"]
+ENTRYPOINT ["dotnet", "VSS.MasterData.Project.WebAPI.dll"]

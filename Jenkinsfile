@@ -31,7 +31,7 @@ node ('jenkinsslave-pod') {
     stage('Build Solution') {
         checkout scm
 		// TODO use dockerfile with ENTRYPOINT instead of CMD as it is insecure
-	    def building = docker.build(container, "-f Dockerfile .")
+	    def building = docker.build(container, "-f Dockerfile.build .")
 
         // Currently we need to execute the tests like this, because the pipeline docker plugin being aware of DIND, and attempting to map
         // the volume to the bare metal host
@@ -51,8 +51,10 @@ node ('jenkinsslave-pod') {
                 [includes: 'TestResults/*.xml', teamResultType: 'XUNIT']
             ]
         ])
-		
-		building.push()
+	}
+	
+	stage('Prepairing runtime image') {
+		docker.build(container, "-f Dockerfile .").push()
 	}
 	
     stage('Build Acceptance tests') {	
