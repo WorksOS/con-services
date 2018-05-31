@@ -37,7 +37,7 @@ namespace WebApiTests
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
     }
 
-    [TestMethod] [Ignore]
+    [TestMethod] 
     public void CreateLandfillProjectAndSubscriptionThenGetProjectListV4()
     {
       msg.Title("Project v4 test 2", "Create landfill project and customer then read the project list");
@@ -56,8 +56,7 @@ namespace WebApiTests
        "| TableName           | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
       $"| Customer            | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                   |                |                  |             |                |               |          |                    |",
       $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |           |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
-      $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
-      $"| ProjectSubscription | 0d+09:20:00 |               |           |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
+      $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |"};
       ts.PublishEventCollection(eventsArray);
 
       ts.IsPublishToWebApi = true;
@@ -65,7 +64,6 @@ namespace WebApiTests
        "| EventType          | EventDate   | ProjectUID   | ProjectName     | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description                 |",
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | Boundary Test 2 | LandFill    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc | Boundary Test 2 Description |"};
       ts.PublishEventCollection(projectEventArray);
-      //Thread.Sleep(3000);
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
     }
@@ -126,8 +124,8 @@ namespace WebApiTests
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
     }
 
-    [TestMethod] [Ignore]
-    public void Create2SubscriptionsFoLandfillAndCreateProjects()
+    [TestMethod] 
+    public void Create2SubscriptionsForLandfillAndCreateProjects()
     {
       msg.Title("Project v4 test 6", "Create landfill project and customer then read the project list");
       var ts = new TestSupport();
@@ -150,9 +148,7 @@ namespace WebApiTests
       $"| Customer            | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                    |                |                  |             |                |               |          |                     |",
       $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |           |                   |                    |                |                  |             |                |               | {tccOrg} |                     |",
       $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid1} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                     |",
-      $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid2} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                     |",
-      $"| ProjectSubscription | 0d+09:20:00 |               |           |                   |                    |                |                  | {startDate} |                | {projectUid1} |          | {subscriptionUid1}  |",
-      $"| ProjectSubscription | 0d+09:20:00 |               |           |                   |                    |                |                  | {startDate} |                | {projectUid2} |          | {subscriptionUid2}  |"};
+      $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid2} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                     |"};
 
       ts.PublishEventCollection(eventsArray);
 
@@ -203,7 +199,7 @@ namespace WebApiTests
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
     }
 
-    [TestMethod] [Ignore]
+    [TestMethod]
     public void Create2SubscriptionsForProjectMonitoringAndTryToCreateALandfillProjects()
     {
       msg.Title("Project v4 test 8", "Create 2 subscriptions for project monitoring and try to create a landfill project");
@@ -357,7 +353,7 @@ namespace WebApiTests
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid2, projectEventArray2, true);
     }
 
-    [TestMethod] [Ignore]
+    [TestMethod] 
     public void TryCreateLandfillProjectWithNoSubscription()
     {
       msg.Title("Project v4 test 12", "Try to create landfill project with no subscription");
@@ -411,7 +407,7 @@ namespace WebApiTests
       Assert.IsTrue(response1 == "There are no available subscriptions for the selected customer.", "Response is unexpected. Should be There are no available subscriptions for the selected customer. Response: " + response1);
     }
 
-   [TestMethod] [Ignore]
+   [TestMethod] 
     public void Create2LandfillProjectsWithOverLappingBoundarys()
     {
       msg.Title("Project v4 test 14", "Create standard project and customer with overlapping boundarys");
@@ -435,9 +431,7 @@ namespace WebApiTests
       $"| Customer            | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                    |                |                  |             |                |               |          |                     |",
       $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |           |                   |                    |                |                  |             |                |               | {tccOrg} |                     |",
       $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid1} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                     |",
-      $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid2} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                     |",
-      $"| ProjectSubscription | 0d+09:20:00 |               |           |                   |                    |                |                  | {startDate} |                | {projectUid1} |          | {subscriptionUid1}  |",
-      $"| ProjectSubscription | 0d+09:20:00 |               |           |                   |                    |                |                  | {startDate} |                | {projectUid2} |          | {subscriptionUid2}  |"};
+      $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid2} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                     |"};
 
       ts.PublishEventCollection(eventsArray);
       ts.IsPublishToWebApi = true;
@@ -456,7 +450,7 @@ namespace WebApiTests
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid1, projectEventArray1, true);
     }
 
-    [TestMethod] [Ignore]
+    [TestMethod]
     public void CreateLandfillProjectThenUpdateEndDate()
     {
       msg.Title("Project v4 test 15", "Create landfill project and customer then update end date");
@@ -476,8 +470,7 @@ namespace WebApiTests
        "| TableName           | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
       $"| Customer            | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                   |                |                  |             |                |               |          |                    |",
       $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |           |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
-      $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
-      $"| ProjectSubscription | 0d+09:20:00 |               |           |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
+      $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |"};
       ts.PublishEventCollection(eventsArray);
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
@@ -497,7 +490,7 @@ namespace WebApiTests
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray2, true);
     }
 
-    [TestMethod] [Ignore]
+    [TestMethod] 
     public void CreateLandfillProjectThenUpdateProjectNameEndDateAndDescription()
     {
       msg.Title("Project v4 test 16", "Create landfill project and customer then try and update project name, end date and description");
@@ -517,8 +510,7 @@ namespace WebApiTests
        "| TableName           | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
       $"| Customer            | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                   |                |                  |             |                |               |          |                    |",
       $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |           |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
-      $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
-      $"| ProjectSubscription | 0d+09:20:00 |               |           |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
+      $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |"};
       ts.PublishEventCollection(eventsArray);
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
@@ -538,7 +530,7 @@ namespace WebApiTests
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray2, true);
     }
 
-    [TestMethod] [Ignore]
+    [TestMethod] 
     public void CreateLandfillProjectThenUpdateProjectTypeAndCorordinateFile()
     {
       msg.Title("Project v4 test 17", "Create landfill project and customer then update project type and cordinate system file");
@@ -558,8 +550,7 @@ namespace WebApiTests
        "| TableName           | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
       $"| Customer            | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                   |                |                  |             |                |               |          |                    |",
       $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |           |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
-      $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
-      $"| ProjectSubscription | 0d+09:20:00 |               |           |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
+      $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |"};
       ts.PublishEventCollection(eventsArray);
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
@@ -605,7 +596,7 @@ namespace WebApiTests
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
     }
 
-    [TestMethod] [Ignore]
+    [TestMethod] 
     public void CreateLandfillProjectWithCoordinateSystemAndSubscriptionThenGetProjectListV4()
     {
       msg.Title("Project v4 test 19", "Create landfill project With CoordinateSystem and customer then read the project list");
@@ -624,9 +615,7 @@ namespace WebApiTests
        "| TableName           | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
       $"| Customer            | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                   |                |                  |             |                |               |          |                    |",
       $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |           |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
-      $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
-      $"| ProjectSubscription | 0d+09:20:00 |               |           |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"
-      };
+      $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |"};
 
       ts.PublishEventCollection(eventsArray);
 
@@ -672,7 +661,8 @@ namespace WebApiTests
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
     }
-    [TestMethod] [Ignore]
+
+    [TestMethod]
     public void TryCreateLandfillProjectWithoutCoordinateSystem()
     {
       msg.Title("Project v4 test 21", "Try to create landfill project without a corordinate system");

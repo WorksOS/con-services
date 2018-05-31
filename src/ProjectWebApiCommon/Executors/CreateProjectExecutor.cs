@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Repositories.DBModels;
@@ -43,7 +44,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
       }
       
-      ProjectBoundaryValidator.ValidateWKT(createProjectEvent.ProjectBoundary);
+      ProjectRequestHelper.ValidateGeofence(createProjectEvent.ProjectBoundary, serviceExceptionHandler);
       await ProjectRequestHelper.ValidateCoordSystemInRaptor(createProjectEvent,
         serviceExceptionHandler, customHeaders, raptorProxy).ConfigureAwait(false);
 
@@ -61,7 +62,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         ActionUTC = createProjectEvent.ActionUTC,
         ReceivedUTC = createProjectEvent.ReceivedUTC
       };
-      ProjectDataValidator.Validate(customerProject, projectRepo);
+      ProjectDataValidator.Validate(customerProject, projectRepo, serviceExceptionHandler);
 
       // now making changes, potentially needing rollback 
       createProjectEvent = await CreateProjectInDb(createProjectEvent, customerProject).ConfigureAwait(false);
@@ -151,7 +152,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         subscriptionUidAssigned = Guid.Parse((await GetFreeSubs(customerUid, project.ProjectType, project.ProjectUID))
           .First().SubscriptionUID);
         log.LogDebug($"Received {subscriptionUidAssigned} subscription");
-        //Assign a new project to a subscription
+        
+        //Assign the new project to a subscription
         try
         {
           // rethrows any exception
@@ -212,7 +214,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       try
       {
-        var area = ProjectBoundaryValidator.CalculateAreaSqMeters(project.ProjectBoundary);
+        var area = GeofenceValidation.CalculateAreaSqMeters(project.ProjectBoundary);
 
         geofenceUidCreated = await geofenceProxy.CreateGeofence(project.CustomerUID, project.ProjectName, "", "Project",
           project.ProjectBoundary,
@@ -247,7 +249,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <returns></returns>
     protected async Task AssociateProjectGeofence(AssociateProjectGeofence projectGeofence)
     {
-      ProjectDataValidator.Validate(projectGeofence, projectRepo);
+      ProjectDataValidator.Validate(projectGeofence, projectRepo, serviceExceptionHandler);
       projectGeofence.ReceivedUTC = DateTime.UtcNow;
 
       var isUpdated = await projectRepo.StoreEvent(projectGeofence).ConfigureAwait(false);
@@ -269,7 +271,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       // Convert to old format for Kafka for consistency on kakfa queue
       string kafkaBoundary = project.ProjectBoundary
-        .Replace(ProjectBoundaryValidator.POLYGON_WKT, string.Empty)
+        .Replace(GeofenceValidation.POLYGON_WKT, string.Empty)
         .Replace("))", string.Empty)
         .Replace(',', ';')
         .Replace(' ', ',');

@@ -103,7 +103,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var createProjectEvent = MapV2Models.MapCreateProjectV2RequestToEvent(projectRequest, customerUid);
 
-      ProjectDataValidator.Validate(createProjectEvent, projectRepo);
+      ProjectDataValidator.Validate(createProjectEvent, projectRepo, serviceExceptionHandler);
       if (createProjectEvent.ProjectType != ProjectType.ProjectMonitoring)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 85);

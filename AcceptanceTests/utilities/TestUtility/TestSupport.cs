@@ -1,7 +1,4 @@
-﻿using Microsoft.CSharp.RuntimeBinder;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -9,13 +6,14 @@ using System.Dynamic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.CSharp.RuntimeBinder;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
+using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -454,7 +452,7 @@ namespace TestUtility
     {
       var createProjectV2Request = CreateProjectV2Request.CreateACreateProjectV2Request(
       projectType, startDate, endDate, name, timezone,
-        ProjectBoundaryValidator.ParseGeometryDataPointLL(boundary).ToList(),
+        GeofenceValidation.ParseGeometryDataPointLL(boundary).ToList(),
         new BusinessCenterFile() { FileSpaceId = "u3bdc38d-1afe-470e-8c1c-fc241d4c5e01", Name = "CTCTSITECAL.dc", Path = "/BC Data/Sites/Chch Test Site" }
       );
       string requestJson;

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
@@ -12,7 +14,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 namespace VSS.MasterData.ProjectTests
 {
   [TestClass]
-  public class ProjectValidationTests
+  public class ProjectValidationTests :ExecutorBaseTests
   {
     protected ProjectErrorCodesProvider projectErrorCodesProvider = new ProjectErrorCodesProvider();
     private static List<Point> _boundaryLL;
@@ -20,13 +22,13 @@ namespace VSS.MasterData.ProjectTests
     private static string _checkBoundaryString;
     private readonly string _validBoundary;
     private readonly string _invalidBoundary;
-
     private static string _customerUid;
+    
 
     public ProjectValidationTests()
     {
       _validBoundary =  "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))";
-      _invalidBoundary = "POLYGON((172.595831670724 -43.5427038560109))";
+      _invalidBoundary = "blah";
     }
 
   [ClassInitialize]
@@ -66,12 +68,12 @@ namespace VSS.MasterData.ProjectTests
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(ps => ps.ProjectExists(It.IsAny<string>())).ReturnsAsync(false);
 
-      ProjectDataValidator.Validate(createProjectEvent, projectRepo.Object);
+      ProjectDataValidator.Validate(createProjectEvent, projectRepo.Object, ServiceExceptionHandler);
       request.CoordinateSystem = ProjectDataValidator.ValidateBusinessCentreFile(request.CoordinateSystem);
     }
 
     [TestMethod]
-    public void ValidateCreateProjectV2Request_InvalidBoundary()
+    public void ValidateCreateProjectV2Request_BoundaryTooFewPoints()
     {
       var invalidBoundaryLL = new List<Point>()
       {
@@ -87,8 +89,8 @@ namespace VSS.MasterData.ProjectTests
       projectRepo.Setup(ps => ps.ProjectExists(It.IsAny<string>())).ReturnsAsync(false);
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => ProjectDataValidator.Validate(createProjectEvent, projectRepo.Object));
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2025", StringComparison.Ordinal), "Expected error number 2025");
+        () => ProjectDataValidator.Validate(createProjectEvent, projectRepo.Object, ServiceExceptionHandler));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2024", StringComparison.Ordinal), "Expected error number 2024");
     }
 
     [TestMethod]
@@ -144,7 +146,7 @@ namespace VSS.MasterData.ProjectTests
 
       });
 
-      ProjectDataValidator.Validate(updateProjectEvent, projectRepo.Object);
+      ProjectDataValidator.Validate(updateProjectEvent, projectRepo.Object, ServiceExceptionHandler);
     }
 
     [TestMethod]
@@ -168,7 +170,7 @@ namespace VSS.MasterData.ProjectTests
       });
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => ProjectDataValidator.Validate(updateProjectEvent, projectRepo.Object));
+        () => ProjectDataValidator.Validate(updateProjectEvent, projectRepo.Object, ServiceExceptionHandler));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2025", StringComparison.Ordinal), "Expected error number 2025");
     }
 
