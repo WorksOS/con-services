@@ -13,9 +13,9 @@ using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
+using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.TCCFileAccess;
@@ -69,40 +69,22 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
     /// <summary>
     /// Gets a list of projects for a customer. The list includes projects of all project types,
-    /// except of Landfill projects, and both active and archived projects.
+    ///    and both active and archived projects.
     /// </summary>
-    /// <param name="includeLandfill">Determines whether to include or exclude Landfill projects.</param>
+    /// <param name="includeLandfill">Obsolete</param>
     /// <returns>A list of projects</returns>
     [Route("api/v4/project")]
     [HttpGet]
     public async Task<ProjectV4DescriptorsListResult> GetProjectsV4([FromQuery] bool? includeLandfill)
     {
-      log.LogInformation("GetProjectsV4");
+      // Note: includeLandfill is obsolete, but not worth the grief up creating a new endpoint.
 
-      ImmutableList<Repositories.DBModels.Project> projects;
-
-      if (!includeLandfill.HasValue || !includeLandfill.Value)
-      {
-        //exclude Landfill Projects for now
-        projects = (await GetProjectList().ConfigureAwait(false))
-          .Where(prj => prj.ProjectType != ProjectType.LandFill).ToImmutableList();
-      }
-      else
-      {
-        projects = (await GetProjectList().ConfigureAwait(false)).ToImmutableList();
-      }
-
-      return new ProjectV4DescriptorsListResult
-      {
-        ProjectDescriptors = projects.Select(project =>
-            AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(project))
-          .ToImmutableList()
-      };
+      return await GetAllProjectsV4();
     }
 
     /// <summary>
     /// Gets a list of projects for a customer. The list includes projects of all project types
-    /// and both active and archived projects.
+    ///        and both active and archived projects.
     /// </summary>
     /// <returns>A list of projects</returns>
     [Route("api/v4/project/all")]
@@ -111,7 +93,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       log.LogInformation("GetAllProjectsV4");
 
-      //exclude Landfill Projects for now
       var projects = (await GetProjectList().ConfigureAwait(false)).ToImmutableList();
 
       return new ProjectV4DescriptorsListResult
@@ -131,6 +112,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<ProjectV4DescriptorsSingleResult> GetProjectV4(string projectUid)
     {
       log.LogInformation("GetProjectV4");
+
       var project = await GetProject(projectUid).ConfigureAwait(false);
       return new ProjectV4DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(project));
     }
@@ -152,10 +134,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 39);
       }
-
-      //Landfill projects are not supported till l&s goes live
-      if (projectRequest?.ProjectType == ProjectType.LandFill)
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 73);
       
       log.LogInformation("CreateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
 
@@ -164,7 +142,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
       createProjectEvent.ReceivedUTC = createProjectEvent.ActionUTC = DateTime.UtcNow;
-      ProjectDataValidator.Validate(createProjectEvent, projectRepo);
+      ProjectDataValidator.Validate(createProjectEvent, projectRepo, serviceExceptionHandler);
       if (createProjectEvent.CustomerUID.ToString() != customerUid)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 18);
@@ -205,16 +183,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 40);
       }
 
-      //Landfill projects are not supported till l&s goes live
-      if (projectRequest?.ProjectType == ProjectType.LandFill)
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 73);
-
       log.LogInformation("UpdateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
       var project = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(projectRequest);
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
 
       // validation includes check that project must exist - otherwise there will be a null legacyID.
-      ProjectDataValidator.Validate(project, projectRepo);
+      ProjectDataValidator.Validate(project, projectRepo, serviceExceptionHandler);
       
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
@@ -253,7 +227,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
       };
-      ProjectDataValidator.Validate(project, projectRepo);
+      ProjectDataValidator.Validate(project, projectRepo, serviceExceptionHandler);
 
       var messagePayload = JsonConvert.SerializeObject(new {DeleteProjectEvent = project});
       var isDeleted = await projectRepo.StoreEvent(project).ConfigureAwait(false);

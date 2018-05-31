@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -22,6 +21,8 @@ namespace VSS.MasterData.ProjectTests
     public static IServiceProvider ServiceProvider;
     protected string KafkaTopicName;
     private readonly string loggerRepoName = "UnitTestLogTest";
+    protected IErrorCodesProvider ProjectErrorCodesProvider;
+    protected IServiceExceptionHandler ServiceExceptionHandler;
 
     [TestInitialize]
     public virtual void InitTest()
@@ -47,6 +48,8 @@ namespace VSS.MasterData.ProjectTests
       ServiceProvider = serviceCollection.BuildServiceProvider();
       KafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
                        ServiceProvider.GetRequiredService<IConfigurationStore>().GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+      ProjectErrorCodesProvider = ServiceProvider.GetRequiredService<IErrorCodesProvider>();
+      ServiceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
     }
   }
 }

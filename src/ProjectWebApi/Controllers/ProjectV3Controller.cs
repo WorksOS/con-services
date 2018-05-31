@@ -11,12 +11,14 @@ using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Repositories;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.MasterData.Proxies.Interfaces;
-using VSS.TCCFileAccess;
+using VSS.MasterData.Models.Utilities;
+using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.MasterData.Proxies.Interfaces;
+using VSS.MasterData.Repositories;
+using VSS.TCCFileAccess;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -95,12 +97,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task CreateProjectV3([FromBody] CreateProjectEvent project)
     {
       log.LogInformation("CreateProjectV3. project: {0}", JsonConvert.SerializeObject(project));
-      ProjectBoundaryValidator.ValidateWKT(project.ProjectBoundary);
+      ProjectRequestHelper.ValidateGeofence(project.ProjectBoundary, serviceExceptionHandler);
       string wktBoundary = project.ProjectBoundary;
 
       //Convert to old format for Kafka for consistency on kakfa queue
       string kafkaBoundary = project.ProjectBoundary
-        .Replace(ProjectBoundaryValidator.POLYGON_WKT, string.Empty)
+        .Replace(GeofenceValidation.POLYGON_WKT, string.Empty)
         .Replace("))", string.Empty)
         .Replace(',', ';')
         .Replace(' ', ',');
@@ -144,7 +146,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
       };
-      ProjectDataValidator.Validate(project, projectRepo);
+      ProjectDataValidator.Validate(project, projectRepo, serviceExceptionHandler);
 
       await DeleteProject(project);
     }
@@ -206,7 +208,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     private async Task CreateProject(CreateProjectEvent project, string kafkaProjectBoundary, string databaseProjectBoundary)
     {
-      ProjectDataValidator.Validate(project, projectRepo);
+      ProjectDataValidator.Validate(project, projectRepo, serviceExceptionHandler);
       if (project.ProjectID <= 0)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 44);
 
@@ -232,7 +234,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     private async Task UpdateProject(UpdateProjectEvent project)
     {
-      ProjectDataValidator.Validate(project, projectRepo);
+      ProjectDataValidator.Validate(project, projectRepo, serviceExceptionHandler);
       project.ReceivedUTC = DateTime.UtcNow;
 
       var isUpdated = await projectRepo.StoreEvent(project).ConfigureAwait(false);
@@ -254,7 +256,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     private async Task AssociateProjectCustomer(AssociateProjectCustomer customerProject)
     {
-      ProjectDataValidator.Validate(customerProject, projectRepo);
+      ProjectDataValidator.Validate(customerProject, projectRepo, serviceExceptionHandler);
       customerProject.ReceivedUTC = DateTime.UtcNow;
 
       var isUpdated = await projectRepo.StoreEvent(customerProject).ConfigureAwait(false);
@@ -276,7 +278,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     private async Task DissociateProjectCustomer(DissociateProjectCustomer customerProject)
     {
-      ProjectDataValidator.Validate(customerProject, projectRepo);
+      ProjectDataValidator.Validate(customerProject, projectRepo, serviceExceptionHandler);
       customerProject.ReceivedUTC = DateTime.UtcNow;
 
       var isUpdated = await projectRepo.StoreEvent(customerProject).ConfigureAwait(false);
@@ -298,7 +300,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     private async Task AssociateGeofenceProject(AssociateProjectGeofence geofenceProject)
     {
-      ProjectDataValidator.Validate(geofenceProject, projectRepo);
+      ProjectDataValidator.Validate(geofenceProject, projectRepo, serviceExceptionHandler);
       geofenceProject.ReceivedUTC = DateTime.UtcNow;
 
       var isUpdated = await projectRepo.StoreEvent(geofenceProject).ConfigureAwait(false);
@@ -320,7 +322,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     private async Task DeleteProject(DeleteProjectEvent project)
     {
-      ProjectDataValidator.Validate(project, projectRepo);
+      ProjectDataValidator.Validate(project, projectRepo, serviceExceptionHandler);
       project.ReceivedUTC = DateTime.UtcNow;
 
       var isDeleted = await projectRepo.StoreEvent(project).ConfigureAwait(false);

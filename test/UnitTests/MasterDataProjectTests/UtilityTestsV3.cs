@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using VSS.Authentication.JWT;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Repositories.DBModels;
@@ -220,7 +221,7 @@ namespace VSS.MasterData.ProjectTests
     public void CanCalculateProjectBoundaryArea()
     {
       var geometryWKT = "POLYGON((-115.025723657623 36.2101347890754,-115.026281557098 36.2056332151707,-115.018041811005 36.205460072542,-115.017698488251 36.2102040420362, -115.025723657623 36.2101347890754))";
-      var area = ProjectBoundaryValidator.CalculateAreaSqMeters(geometryWKT);
+      var area = GeofenceValidation.CalculateAreaSqMeters(geometryWKT);
       Assert.AreEqual(375300.594251673, area, 0.00001);
     }
   }

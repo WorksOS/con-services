@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 

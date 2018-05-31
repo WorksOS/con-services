@@ -1,16 +1,18 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
@@ -79,6 +81,28 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       }
 
       return true;
+    }
+
+    public static void ValidateGeofence(string projectBoundary, IServiceExceptionHandler serviceExceptionHandler)
+    {
+      var result = GeofenceValidation.ValidateWKT(projectBoundary);
+      if (String.CompareOrdinal(result, GeofenceValidation.ValidationOk) != 0)
+      {
+        if (String.CompareOrdinal(result, GeofenceValidation.ValidationNoBoundary) == 0)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 23);
+        }
+
+        if (String.CompareOrdinal(result, GeofenceValidation.ValidationLessThan3Points) == 0)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 24);
+        }
+
+        if (String.CompareOrdinal(result, GeofenceValidation.ValidationInvalidFormat) == 0)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 25);
+        }
+      }
     }
 
     public static async Task<bool> DoesProjectOverlap(string customerUid, string projectUid, DateTime projectStartDate, DateTime projectEndDate, string databaseProjectBoundary,

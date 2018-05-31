@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -11,14 +11,14 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Project.WebAPI.Common.Executors;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies.Interfaces;
-using VSS.MasterData.Project.WebAPI.Common.Executors;
-using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 
 namespace VSS.MasterData.ProjectTests
 {

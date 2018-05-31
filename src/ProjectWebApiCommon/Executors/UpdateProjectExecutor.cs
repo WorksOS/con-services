@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Repositories.DBModels;
@@ -33,7 +34,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
       }
 
-      ProjectBoundaryValidator.ValidateWKT(updateProjectEvent.ProjectBoundary);
+      ProjectRequestHelper.ValidateGeofence(updateProjectEvent.ProjectBoundary, serviceExceptionHandler);
       await ProjectRequestHelper.ValidateCoordSystemInRaptor(updateProjectEvent,
         serviceExceptionHandler, customHeaders, raptorProxy).ConfigureAwait(false);
       
@@ -118,7 +119,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       Guid geofenceUidUpdated = Guid.Empty;
       try
       {
-        var area = ProjectBoundaryValidator.CalculateAreaSqMeters(project.ProjectBoundary);
+        var area = GeofenceValidation.CalculateAreaSqMeters(project.ProjectBoundary);
         geofenceUidUpdated = await geofenceProxy.UpdateGeofence(geofence.GeofenceUID, Guid.Parse(customerUid), geofence.GeofenceName,
           geofence.Description, geofence.GeofenceType,
           project.ProjectBoundary,
