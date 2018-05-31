@@ -1,5 +1,7 @@
 #!/bin/bash
 echo "Project AcceptanceTests are starting .... "
+rm -rf testresults
+mkdir testresults
 echo "List out files in current directory"
 ls
 
@@ -13,7 +15,9 @@ echo "Check the database and kafka to see if port is available"
 #sleep 20s
 
 echo "Run the AcceptanceTests solution"
-(cd AcceptanceTests && dotnet test VSS.Visionlink.Project.AcceptanceTests.sln --logger:\"xunit;LogFilePath=/TestResults/TestResults.xml\")
+(cd AcceptanceTests && dotnet test VSS.Visionlink.Project.AcceptanceTests.sln --logger:\"xunit;LogFilePath=/testresults/actestresults.xml\")
+
+ls /testresults
 echo " "
 echo " All acceptance tests completed"
 echo " "
