@@ -55,19 +55,19 @@ namespace VSS.Productivity3D.Filter.Common.Models
       }
 
       var result = GeofenceValidation.ValidateWKT(BoundaryPolygonWKT);
-      if (String.CompareOrdinal(result, GeofenceValidation.ValidationOk) != 0)
+      if (string.CompareOrdinal(result, GeofenceValidation.ValidationOk) != 0)
       {
-        if (String.CompareOrdinal(result, GeofenceValidation.ValidationNoBoundary) == 0)
+        if (string.CompareOrdinal(result, GeofenceValidation.ValidationNoBoundary) == 0)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 69);
         }
 
-        if (String.CompareOrdinal(result, GeofenceValidation.ValidationLessThan3Points) == 0)
+        if (string.CompareOrdinal(result, GeofenceValidation.ValidationLessThan3Points) == 0)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 70);
         }
 
-        if (String.CompareOrdinal(result, GeofenceValidation.ValidationInvalidFormat) == 0)
+        if (string.CompareOrdinal(result, GeofenceValidation.ValidationInvalidFormat) == 0)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 71);
         }

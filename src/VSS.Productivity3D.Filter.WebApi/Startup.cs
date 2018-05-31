@@ -50,7 +50,7 @@ namespace VSS.Productivity3D.Filter.WebApi
         .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
         .AddEnvironmentVariables();
 
-      env.ConfigureLog4Net("log4net.xml", loggerRepoName);
+      env.ConfigureLog4Net(repoName: loggerRepoName, configFileRelativePath: "log4net.xml");
 
       Configuration = builder.Build();
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();

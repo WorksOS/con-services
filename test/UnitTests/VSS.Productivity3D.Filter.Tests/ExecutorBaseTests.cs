@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       serviceProvider = serviceCollection.BuildServiceProvider();
 
-      this.serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+      serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
     }
   }
 }
