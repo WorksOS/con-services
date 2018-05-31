@@ -9,7 +9,7 @@ RUN chmod 777 *.sh
 FROM registry.k8s.vspengg.com:80/vss-jenkinsslave:core21
 
 WORKDIR /app
-COPY --from=builder /build/AcceptanceTests .
+COPY --from=builder /build .
 
 VOLUME testresults
 
