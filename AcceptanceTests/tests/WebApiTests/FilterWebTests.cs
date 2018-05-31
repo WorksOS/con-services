@@ -1,7 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using TestUtility;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Filter.Common.Models;
@@ -286,7 +286,7 @@ namespace WebApiTests
                                     List<WGSPoint> polygonPoints = null)
     {
       var listMachines = new List<MachineDetails>();
-      var machine = MachineDetails.CreateMachineDetails(123456789, "TheMachineName", false);
+      var machine = MachineDetails.Create(123456789, "TheMachineName", false);
       listMachines.Add(machine);
       var filter = Filter.CreateFilter(startUtc, endUtc, null, listMachines, onMachineDesignId,
                                        elevation, vibestate, polygonPoints, forward, layerNo, polygonUid, polygonName);
