@@ -18,4 +18,4 @@ EXPOSE 80
 
 COPY --from=builder /build/artifacts/ProjectWebApi .
 
-ENTRYPOINT ["dotnet", "VSS.MasterData.Project.WebAPI.dll"]
+CMD ["dotnet", "VSS.MasterData.Project.WebAPI.dll"]
