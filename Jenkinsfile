@@ -30,7 +30,7 @@ node ('jenkinsslave-pod') {
 	
     stage('Build Solution') {
         checkout scm
-	    docker.build(container, "-f Dockerfile .") .push()
+	    def building = docker.build(container, "-f Dockerfile .")
 
         // Currently we need to execute the tests like this, because the pipeline docker plugin being aware of DIND, and attempting to map
         // the volume to the bare metal host
@@ -50,6 +50,8 @@ node ('jenkinsslave-pod') {
                 [includes: 'TestResults/*.xml', teamResultType: 'XUNIT']
             ]
         ])
+		
+		building.push()
 	}
 	
     stage('Build Acceptance tests') {	
