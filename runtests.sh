@@ -15,9 +15,11 @@ echo "Check the database and kafka to see if port is available"
 #sleep 20s
 
 echo "Run the AcceptanceTests solution"
-(cd AcceptanceTests && dotnet test VSS.Visionlink.Project.AcceptanceTests.sln --logger:\"xunit;LogFilePath=/testresults/actestresults.xml\")
+cd AcceptanceTests
 
-ls /testresults
+dotnet restore --no-cache VSS.Visionlink.Project.AcceptanceTests.sln
+dotnet test VSS.Visionlink.Project.AcceptanceTests.sln --logger \"xunit;LogFileName=acceptancetestresults.xml\"
+
 echo " "
 echo " All acceptance tests completed"
 echo " "
