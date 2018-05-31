@@ -476,14 +476,14 @@ namespace RepositoryTests
     [TestMethod]
     public void PolygonIntersection_InternalBoundaryInternalTime()
     {
-      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
 
       var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
         CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = actionUTC
+        ActionUTC = actionUtc
       };
 
       var createProjectEvent = new CreateProjectEvent
@@ -495,7 +495,7 @@ namespace RepositoryTests
         ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-        ActionUTC = actionUTC,
+        ActionUTC = actionUtc,
         ProjectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))"
       };
 
@@ -505,7 +505,7 @@ namespace RepositoryTests
         ProjectUID = createProjectEvent.ProjectUID,
         LegacyCustomerID = 1234,
         RelationType = RelationType.Customer,
-        ActionUTC = actionUTC
+        ActionUTC = actionUtc
       };
 
       projectContext.StoreEvent(createProjectEvent).Wait();
@@ -795,14 +795,14 @@ namespace RepositoryTests
     [TestMethod]
     public void PolygonIntersection_InternalBoundaryInternalTimeDifferentCustomer()
     {
-      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
 
       var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
         CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = actionUTC
+        ActionUTC = actionUtc
       };
 
       var createProjectEvent = new CreateProjectEvent
@@ -814,7 +814,72 @@ namespace RepositoryTests
         ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-        ActionUTC = actionUTC,
+        ActionUTC = actionUtc,
+        ProjectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))"
+      };
+
+      var updateProjectEvent = new UpdateProjectEvent
+      {
+        ProjectUID = createProjectEvent.ProjectUID,
+        ProjectName = "The NEW Project Name",
+        ProjectType = createProjectEvent.ProjectType,
+        ProjectTimezone = createProjectEvent.ProjectTimezone,
+
+        ProjectEndDate = createProjectEvent.ProjectEndDate.AddDays(6),
+        CoordinateSystemFileName = "thatLocation\\that.cs",
+        ProjectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))",
+        ActionUTC = actionUtc.AddHours(1)
+      };
+
+      var associateCustomerProjectEvent = new AssociateProjectCustomer
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        LegacyCustomerID = 1234,
+        RelationType = RelationType.Customer,
+        ActionUTC = actionUtc
+      };
+
+      projectContext.StoreEvent(createProjectEvent).Wait();
+      customerContext.StoreEvent(createCustomerEvent).Wait();
+      projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
+
+      var testBoundary = "POLYGON((175 15, 185 15, 185 35, 175 35, 175 15))";
+      var testCustomerUid = Guid.NewGuid();
+      var testStartDate = createProjectEvent.ProjectStartDate.AddDays(1);
+      var testEndDate = createProjectEvent.ProjectStartDate.AddDays(3);
+
+      var g = projectContext.DoesPolygonOverlap(testCustomerUid.ToString(), testBoundary, testStartDate, testEndDate); g.Wait();
+      Assert.IsFalse(g.Result, "Should be no overlappingProjects retrieved from ProjectRepo");
+    }
+
+    /// <summary>
+    /// When updating a project, 
+    ///     shouldn't see the this nominated project as overlapping
+    /// </summary>
+    [TestMethod]
+    public void PolygonIntersection_UpdateProjectBoundary()
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+
+      var createCustomerEvent = new CreateCustomerEvent
+      {
+        CustomerUID = Guid.NewGuid(),
+        CustomerName = "The Customer Name",
+        CustomerType = CustomerType.Customer.ToString(),
+        ActionUTC = actionUtc
+      };
+
+      var createProjectEvent = new CreateProjectEvent
+      {
+        ProjectUID = Guid.NewGuid(),
+        ProjectID = new Random().Next(1, 1999999),
+        ProjectName = "The Project Name",
+        ProjectType = ProjectType.Standard,
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2017, 02, 01),
+        ActionUTC = actionUtc,
         ProjectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))"
       };
 
@@ -824,21 +889,21 @@ namespace RepositoryTests
         ProjectUID = createProjectEvent.ProjectUID,
         LegacyCustomerID = 1234,
         RelationType = RelationType.Customer,
-        ActionUTC = actionUTC
+        ActionUTC = actionUtc
       };
 
-      projectContext.StoreEvent(createProjectEvent).Wait();
       customerContext.StoreEvent(createCustomerEvent).Wait();
       projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
 
-      var testBoundary = "POLYGON((175 15, 185 15, 185 35, 175 35, 175 15))";
-      var testCustomerUID = Guid.NewGuid();
-      var testStartDate = createProjectEvent.ProjectStartDate.AddDays(1);
-      var testEndDate = createProjectEvent.ProjectStartDate.AddDays(3);
-
-      var g = projectContext.DoesPolygonOverlap(testCustomerUID.ToString(), testBoundary, testStartDate, testEndDate); g.Wait();
-      var projects = g.Result;
+      var g = projectContext.DoesPolygonOverlap(createCustomerEvent.CustomerUID.ToString(), createProjectEvent.ProjectBoundary, createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate); g.Wait();
       Assert.IsFalse(g.Result, "Should be no overlappingProjects retrieved from ProjectRepo");
+
+      projectContext.StoreEvent(createProjectEvent).Wait();
+      g = projectContext.DoesPolygonOverlap(createCustomerEvent.CustomerUID.ToString(), createProjectEvent.ProjectBoundary, createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate, createProjectEvent.ProjectUID.ToString()); g.Wait();
+      Assert.IsFalse(g.Result, "Should ignore the nominated ProjectUid");
+
+      g = projectContext.DoesPolygonOverlap(createCustomerEvent.CustomerUID.ToString(), createProjectEvent.ProjectBoundary, createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate); g.Wait();
+      Assert.IsTrue(g.Result, "Should recognize the project as not nominated ProjectUid");
     }
   }
 }

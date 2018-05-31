@@ -13,6 +13,9 @@
       DynamicAddwithOffset("Invalid alignment filter. Left or right offset are invalid.", 66);
       DynamicAddwithOffset("Invalid alignment filter. Parameters are incomplete.", 67);
       DynamicAddwithOffset("Invalid Date Filter. Either EndUTC or DateRangeType must be provided for an as-at date filter.", 68);
+      DynamicAddwithOffset("Invalid boundary polygon WKT. Should not be null.", 69);
+      DynamicAddwithOffset("Invalid boundary polygon WKT. Should be > 3 points.", 70);
+      DynamicAddwithOffset("Invalid boundary polygon WKT. Invalid format.", 71);
     }
   }
 }

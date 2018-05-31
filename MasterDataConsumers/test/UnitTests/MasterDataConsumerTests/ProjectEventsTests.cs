@@ -1,10 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace MasterDataConsumerTests
+namespace VSS.Productivity3D.MasterDataConsumer.Tests
 {
   [TestClass]
   public class ProjectEventsTests

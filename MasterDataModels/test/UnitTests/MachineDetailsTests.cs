@@ -15,5 +15,16 @@ namespace VSS.MasterData.Models.UnitTests
 
       Assert.AreEqual("{\"assetID\":\"123\",\"machineName\":\"machine name\",\"isJohnDoe\":false}", jsonResult);
     }
+
+
+    [TestMethod]
+    [DataRow("{\"assetID\":123,\"machineName\":\"machine name\",\"isJohnDoe\":false}")]
+    [DataRow("{\"assetID\":\"123\",\"machineName\":\"machine name\",\"isJohnDoe\":false}")]
+    public void AssetId_Should_deserialize_to_long(string json)
+    {
+      var machineDetails = JsonConvert.DeserializeObject<MachineDetails>(json);
+
+      Assert.AreEqual(123, machineDetails.AssetId);
+    }
   }
 }

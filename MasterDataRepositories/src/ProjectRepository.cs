@@ -87,7 +87,6 @@ namespace VSS.MasterData.Repositories
         }
 
         project.GeometryWKT = GetPolygonWKT(projectEvent.ProjectBoundary);
-
         upsertedCount = await UpsertProjectDetail(project, "UpdateProjectEvent");
       }
       else if (evt is DeleteProjectEvent)
@@ -530,11 +529,11 @@ namespace VSS.MasterData.Repositories
 
     private string BuildProjectInsertString(Project project)
     {
-      string insert = null;
       string formattedPolygon = null;
       if (!string.IsNullOrEmpty(project.GeometryWKT))
-        formattedPolygon = string.Format("ST_GeomFromText('{0}')", project.GeometryWKT);
+        formattedPolygon = $"ST_GeomFromText('{project.GeometryWKT}')";
 
+      string insert = null;
       if (project.LegacyProjectID <= 0) // allow db autoincrement on legacyProjectID
         insert = string.Format(
           "INSERT Project " +
@@ -554,7 +553,9 @@ namespace VSS.MasterData.Repositories
 
     private string BuildProjectUpdateString(Project project)
     {
-      string formattedPolygon = string.Format($"ST_GeomFromText('{project.GeometryWKT}')");
+      string formattedPolygon = null;
+      if (!string.IsNullOrEmpty(project.GeometryWKT))
+        formattedPolygon = $"ST_GeomFromText('{project.GeometryWKT}')";
 
       string update = null;
       if (project.LegacyProjectID <= 0) // allow db autoincrement on legacyProjectID
@@ -1374,8 +1375,9 @@ namespace VSS.MasterData.Repositories
     {
       return await QueryWithAsyncPolicy<ProjectGeofence>
       (@"SELECT 
-                fk_GeofenceUID AS GeofenceUID, fk_ProjectUID AS ProjectUID, LastActionedUTC
-              FROM ProjectGeofence 
+                fk_GeofenceUID AS GeofenceUID, fk_ProjectUID AS ProjectUID, pg.LastActionedUTC, g.fk_GeofenceTypeID AS GeofenceType 
+              FROM ProjectGeofence pg
+                LEFT OUTER JOIN Geofence g on g.GeofenceUID = pg.fk_GeofenceUID
               WHERE fk_ProjectUID = @projectUid",
         new {projectUid}
       );
@@ -1583,35 +1585,36 @@ namespace VSS.MasterData.Repositories
     ///     1) for this Customer
     ///     2) is active at the time
     ///     3) the lat/long is within,
+    ///     4) but ignore the project if it's an update
     /// </summary>
-    /// <param name="customerUID"></param>
-    /// <param name="geometryWKT"></param>
-    /// <param name="timeOfPosition"></param>
+    /// <param name="customerUid"></param>
+    /// <param name="geometryWkt"></param>
+    /// <param name="startDate"></param>
+    /// <param name="endDate"></param>
+    /// <param name="excludeProjectUid"></param>
     /// <returns>The project</returns>
-    public async Task<bool> DoesPolygonOverlap(string customerUID, string geometryWKT, DateTime startDate,
-      DateTime endDate)
+    public async Task<bool> DoesPolygonOverlap(string customerUid, string geometryWkt, DateTime startDate,
+      DateTime endDate, string excludeProjectUid = "")
     {
-      var polygonToCheck = string.Format("ST_GeomFromText('{0}')", geometryWKT);
-      var select = string.Format(
-        "SELECT DISTINCT " +
-        "        p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, " +
-        "        p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT, " +
-        "        p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC, " +
-        "        cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID " +
-        "      FROM Project p " +
-        "        INNER JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID " +
-        "      WHERE p.IsDeleted = 0 " +
-        "        AND @startDate <= p.EndDate " +
-        "       AND @endDate >= p.StartDate " +
-        "        AND cp.fk_CustomerUID = @customerUID " +
-        "        AND st_Intersects({0}, PolygonST) = 1"
-        , polygonToCheck);
+      var polygonToCheck = $"ST_GeomFromText('{geometryWkt}')";
+      var select = $@"SELECT DISTINCT
+                          p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
+                          p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
+                          p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
+                          cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID
+                        FROM Project p 
+                          INNER JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
+                        WHERE p.IsDeleted = 0
+                          AND @startDate <= p.EndDate
+                          AND @endDate >= p.StartDate
+                          AND cp.fk_CustomerUID = @customerUID
+                          AND p.ProjectUid != @excludeProjectUid
+                          AND st_Intersects({ polygonToCheck}, PolygonST) = 1";
 
       var projects = await QueryWithAsyncPolicy<Project>(select,
-        new {customerUID, startDate = startDate.Date, endDate = endDate.Date});
+        new {customerUID = customerUid, startDate = startDate.Date, endDate = endDate.Date, excludeProjectUid });
 
-
-      return projects.Count() > 0;
+      return projects.Any();
     }
 
     public async Task<IEnumerable<Project>> GetProjects_UnitTests()
