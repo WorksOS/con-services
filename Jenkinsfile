@@ -31,9 +31,32 @@ node ('jenkinsslave-pod') {
     stage('Build Solution') {
         checkout scm
 	    docker.build(container, "-f Dockerfile .") .push()
-	    docker.build(testContainer, "-f Dockerfile.tests .").push()
 
+        // Currently we need to execute the tests like this, because the pipeline docker plugin being aware of DIND, and attempting to map
+        // the volume to the bare metal host
+        sh "docker run -v ${env.WORKSPACE}/TestResults:/TestResults ${building.id} /build/unittest.sh"
+        sh "ls ${env.WORKSPACE}/TestResults"
+		
+		 //See https://jenkins.io/doc/pipeline/steps/xunit/#xunit-publish-xunit-test-result-report for DSL Guide
+        step([$class: 'XUnitBuilder',
+                thresholds: [[$class: 'FailedThreshold', unstableThreshold: '10']],
+                tools: [[$class: 'XUnitDotNetTestType', pattern: 'TestResults/*']]])
+				
+		//http://javadoc.jenkins-ci.org/tfs/index.html?hudson/plugins/tfs/model/TeamResultType.html
+        //Details of the agent -> https://docs.microsoft.com/en-us/vsts/build-release/task
+        //Agent Variables -> https://docs.microsoft.com/en-us/vsts/build-release/concepts/definitions/build/variables?view=vsts&tabs=batch
+        step([$class: 'TeamCollectResultsPostBuildAction', 
+            requestedResults: [
+                [includes: 'TestResults/*.xml', teamResultType: 'XUNIT']
+            ]
+        ])
 	}
+	
+    stage('Build Acceptance tests') {	
+	    docker.build(testContainer, "-f Dockerfile.tests .").push()
+	}
+
+	
 	
 	stage ('Run acceptance tests') {
 		dir ("yaml") {
