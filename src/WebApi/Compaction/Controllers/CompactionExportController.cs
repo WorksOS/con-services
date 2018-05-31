@@ -200,13 +200,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetExportReportVeta: " + Request.QueryString);
 
-      if (string.IsNullOrEmpty(fileName))
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "Missing export file name"));
-      }
-
       var project = await (User as RaptorPrincipal).GetProject(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
@@ -270,13 +263,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetExportReportMachinePasses: " + Request.QueryString);
 
-      if (string.IsNullOrEmpty(fileName))
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "Missing export file name"));
-      }
-
       var project = await (User as RaptorPrincipal).GetProject(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
@@ -334,13 +320,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? filterUid)
     {
       const double surfaceExportTollerance = 0.05;
-
-      if (string.IsNullOrEmpty(fileName))
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "Missing export file name"));
-      }
 
       Log.LogInformation("GetExportReportSurface: " + Request.QueryString);
 

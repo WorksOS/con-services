@@ -257,6 +257,14 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
           Preferences.DefaultTemperatureUnit,
           Preferences.DefaultAssetLabelTypeId);
       }
+
+      if (string.IsNullOrEmpty(filename))
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Missing export file name"));
+      }
+
     }
   }
 }
