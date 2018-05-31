@@ -81,17 +81,18 @@ Examples:
 |             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | d15e65e0-3cb1-476f-8fc6-08507a14a269 | 1         | 1          | false          | false         | Test     | NELastPassFilterRaw |
 | FilterArea  | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | a37f3008-65e5-44a8-b406-9a078ec62ece | 1         | 1          | false          | false         | Test     | FilterBoundary      |
 
-Scenario Outline: ExportReportMachinePasses - No Content - NoFileName
+Scenario Outline: ExportReportMachinePasses - Bad Request - NoFileName
 And projectUid "<ProjectUID>"
 And filterUid "<FilterUID>"
 And coordType "<CoordType>" 
 And outputType "<OutputType>"
 And restrictOutput "<RestrictOutput>"
 And rawDataOutput "<RawDataOutput>"
-When I request an Export Report Machine Passes expecting NoContent
+When I request an Export Report Machine Passes expecting BadRequest
+Then the report result should contain error code <ErrorCode> and error message "<ErrorMessage>"
 Examples:
-| RequestName | ProjectUID                           | FilterUID                            | CoordType | OutputType | RestrictOutput | RawDataOutput |
-|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | d15e65e0-3cb1-476f-8fc6-08507a14a269 | 0         | 0          | false          | false         |
+| RequestName | ProjectUID                           | FilterUID                            | CoordType | OutputType | RestrictOutput | RawDataOutput | ErrorCode | ErrorMessage             |
+|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | d15e65e0-3cb1-476f-8fc6-08507a14a269 | 0         | 0          | false          | false         | -1        | Missing export file name |
 
 Scenario Outline: ExportReportMachinePasses - Bad Request
 And projectUid "<ProjectUID>"

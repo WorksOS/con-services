@@ -213,9 +213,9 @@ this.ExportReportToSurface_BadRequest_NoProjectUID("", "0.05", "Test", "-5", "Mi
 #line hidden
         }
         
-        public virtual void ExportReportToSurface_NoContent_NoFileName(string requestName, string projectUID, string tolerance, string[] exampleTags)
+        public virtual void ExportReportToSurface_BadRequest_NoFileName(string requestName, string projectUID, string tolerance, string errorCode, string errorMessage, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportToSurface - No Content - NoFileName", exampleTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportToSurface - Bad Request - NoFileName", exampleTags);
 #line 36
 this.ScenarioSetup(scenarioInfo);
 #line 4
@@ -225,42 +225,46 @@ this.FeatureBackground();
 #line 38
  testRunner.And(string.Format("tolerance \"{0}\"", tolerance), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 39
- testRunner.When("I request an Export Report To Surface expecting NoContent", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("I request an Export Report To Surface expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 40
+  testRunner.Then(string.Format("the report result should contain error code {0} and error message \"{1}\"", errorCode, errorMessage), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportToSurface - No Content - NoFileName: ")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportToSurface - Bad Request - NoFileName: ")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportReportToSurface")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Tolerance", "0.05")]
-        public virtual void ExportReportToSurface_NoContent_NoFileName_()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Missing export file name")]
+        public virtual void ExportReportToSurface_BadRequest_NoFileName_()
         {
 #line 36
-this.ExportReportToSurface_NoContent_NoFileName("", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "0.05", ((string[])(null)));
+this.ExportReportToSurface_BadRequest_NoFileName("", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "0.05", "-1", "Missing export file name", ((string[])(null)));
 #line hidden
         }
         
         public virtual void ExportReportToSurface_GoodRequestWithFilter(string requestName, string projectUID, string filterUID, string tolerance, string fileName, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportToSurface - Good Request with Filter", exampleTags);
-#line 44
+#line 45
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 45
-  testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 46
-  testRunner.And(string.Format("tolerance \"{0}\"", tolerance), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 47
- testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And(string.Format("tolerance \"{0}\"", tolerance), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 48
-  testRunner.And(string.Format("fileName is \"{0}\"", fileName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 49
- testRunner.When("I request an Export Report To Surface", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+  testRunner.And(string.Format("fileName is \"{0}\"", fileName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 50
+ testRunner.When("I request an Export Report To Surface", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 51
  testRunner.Then("the export result should successful", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -276,7 +280,7 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FileName", "SurfanceWithTolerance")]
         public virtual void ExportReportToSurface_GoodRequestWithFilter_()
         {
-#line 44
+#line 45
 this.ExportReportToSurface_GoodRequestWithFilter("", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "d7cb424d-b012-4618-b3bc-e526ca84bbd6", "0.05", "SurfanceWithTolerance", ((string[])(null)));
 #line hidden
         }

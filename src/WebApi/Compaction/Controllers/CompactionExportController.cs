@@ -18,6 +18,7 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
+using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
@@ -229,11 +230,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var result = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
           .Build<CompactionExportExecutor>(LoggerFactory, raptorClient, null, this.ConfigStore)
-          .Process(exportRequest) as ExportResult
+          .Process(exportRequest) as CompactionExportResult
       );
-      Log.LogInformation($"GetExportReportVeta completed: ResultCode={result.ResultCode}, ExportData size={result.ExportData.Length}");
 
-      return new FileStreamResult(new MemoryStream(result.ExportData), "application/zip");
+      var fileStream = new FileStream(result.FullFileName, FileMode.Open);
+      Log.LogInformation($"GetExportReportVeta completed: ExportData size={fileStream.Length}");
+      return new FileStreamResult(fileStream, "application/zip");
     }
 
     /// <summary>
@@ -291,10 +293,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var result = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
           .Build<CompactionExportExecutor>(LoggerFactory, raptorClient, null, this.ConfigStore)
-          .Process(exportRequest) as ExportResult
+          .Process(exportRequest) as CompactionExportResult
       );
-      Log.LogInformation($"GetExportReportMachinePasses completed: ResultCode={result.ResultCode}, ExportData size={result.ExportData.Length}");
-      return new FileStreamResult(new MemoryStream(result.ExportData), "application/zip");
+
+      var fileStream = new FileStream(result.FullFileName, FileMode.Open);
+      Log.LogInformation($"GetExportReportMachinePasses completed: ExportData size={fileStream.Length}");
+      return new FileStreamResult(fileStream, "application/zip");
     }
 
 
@@ -351,10 +355,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var result = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
           .Build<CompactionExportExecutor>(LoggerFactory, raptorClient, null, this.ConfigStore)
-          .Process(exportRequest) as ExportResult
+          .Process(exportRequest) as CompactionExportResult
       );
-      Log.LogInformation($"GetExportReportSurface completed: ResultCode={result.ResultCode}, ExportData size={result.ExportData.Length}");
-      return new FileStreamResult(new MemoryStream(result.ExportData), "application/zip");
+
+      var fileStream = new FileStream(result.FullFileName, FileMode.Open);
+      Log.LogInformation($"GetExportReportSurface completed: ExportData size={fileStream.Length}");
+      return new FileStreamResult(fileStream, "application/zip");
     }
     #endregion
 
