@@ -68,9 +68,9 @@ namespace VSS.Productivity3D.Filter.Common.ResultHandling
       DynamicAddwithOffset("Missing boundary parameters.", 60);
       DynamicAddwithOffset("UpsertBoundary. Update not supported", 61);
       DynamicAddwithOffset("Duplicate boundary name", 62);
-      DynamicAddwithOffset("Invalid boundary polygon WKT. Should not be null.", 63);
-      //64: FilterValidationErrorCodesProvider
-      //65: FilterValidationErrorCodesProvider
+      //DynamicAddwithOffset("Invalid boundary polygon WKT. Should not be null.", 63);
+      //DynamicAddwithOffset("Invalid boundary polygon WKT. Should be > 3 points.", 64);
+      //DynamicAddwithOffset("Invalid boundary polygon WKT. Invalid format.", 65);
       //66: FilterValidationErrorCodesProvider
       //67: FilterValidationErrorCodesProvider
       //68: FilterValidationErrorCodesProvider
