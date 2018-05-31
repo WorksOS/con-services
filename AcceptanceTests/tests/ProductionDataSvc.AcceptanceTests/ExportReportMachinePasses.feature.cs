@@ -470,9 +470,9 @@ this.ExportReportMachinePasses_GoodRequestWithFilter("FilterArea", "7925f179-013
 #line hidden
         }
         
-        public virtual void ExportReportMachinePasses_NoContent_NoFileName(string requestName, string projectUID, string filterUID, string coordType, string outputType, string restrictOutput, string rawDataOutput, string[] exampleTags)
+        public virtual void ExportReportMachinePasses_BadRequest_NoFileName(string requestName, string projectUID, string filterUID, string coordType, string outputType, string restrictOutput, string rawDataOutput, string errorCode, string errorMessage, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportMachinePasses - No Content - NoFileName", exampleTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportMachinePasses - Bad Request - NoFileName", exampleTags);
 #line 84
 this.ScenarioSetup(scenarioInfo);
 #line 4
@@ -490,13 +490,15 @@ testRunner.And(string.Format("restrictOutput \"{0}\"", restrictOutput), ((string
 #line 90
 testRunner.And(string.Format("rawDataOutput \"{0}\"", rawDataOutput), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 91
-testRunner.When("I request an Export Report Machine Passes expecting NoContent", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+testRunner.When("I request an Export Report Machine Passes expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 92
+testRunner.Then(string.Format("the report result should contain error code {0} and error message \"{1}\"", errorCode, errorMessage), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportMachinePasses - No Content - NoFileName: ")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportMachinePasses - Bad Request - NoFileName: ")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportReportMachinePasses")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
@@ -505,35 +507,37 @@ testRunner.When("I request an Export Report Machine Passes expecting NoContent",
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:OutputType", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RestrictOutput", "false")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RawDataOutput", "false")]
-        public virtual void ExportReportMachinePasses_NoContent_NoFileName_()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Missing export file name")]
+        public virtual void ExportReportMachinePasses_BadRequest_NoFileName_()
         {
 #line 84
-this.ExportReportMachinePasses_NoContent_NoFileName("", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "d15e65e0-3cb1-476f-8fc6-08507a14a269", "0", "0", "false", "false", ((string[])(null)));
+this.ExportReportMachinePasses_BadRequest_NoFileName("", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "d15e65e0-3cb1-476f-8fc6-08507a14a269", "0", "0", "false", "false", "-1", "Missing export file name", ((string[])(null)));
 #line hidden
         }
         
         public virtual void ExportReportMachinePasses_BadRequest(string requestName, string projectUID, string filterUID, string coordType, string outputType, string restrictOutput, string rawDataOutput, string errorCode, string errorMessage, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportMachinePasses - Bad Request", exampleTags);
-#line 96
+#line 97
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 97
-testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 98
-testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 99
-testRunner.And(string.Format("coordType \"{0}\"", coordType), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 100
-testRunner.And(string.Format("outputType \"{0}\"", outputType), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And(string.Format("coordType \"{0}\"", coordType), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 101
-testRunner.And(string.Format("restrictOutput \"{0}\"", restrictOutput), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And(string.Format("outputType \"{0}\"", outputType), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 102
-testRunner.And(string.Format("rawDataOutput \"{0}\"", rawDataOutput), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And(string.Format("restrictOutput \"{0}\"", restrictOutput), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 103
-testRunner.When("I request an Export Report Machine Passes expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+testRunner.And(string.Format("rawDataOutput \"{0}\"", rawDataOutput), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 104
+testRunner.When("I request an Export Report Machine Passes expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 105
 testRunner.Then(string.Format("the report result should contain error code {0} and error message \"{1}\"", errorCode, errorMessage), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -554,7 +558,7 @@ testRunner.Then(string.Format("the report result should contain error code {0} a
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Invalid coordinates type for export report")]
         public virtual void ExportReportMachinePasses_BadRequest_InvalidCoordType()
         {
-#line 96
+#line 97
 this.ExportReportMachinePasses_BadRequest("InvalidCoordType", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "d15e65e0-3cb1-476f-8fc6-08507a14a269", "2", "0", "false", "false", "-1", "Invalid coordinates type for export report", ((string[])(null)));
 #line hidden
         }
@@ -574,7 +578,7 @@ this.ExportReportMachinePasses_BadRequest("InvalidCoordType", "7925f179-013d-4aa
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Invalid output type for export report")]
         public virtual void ExportReportMachinePasses_BadRequest_InvalidOutputType()
         {
-#line 96
+#line 97
 this.ExportReportMachinePasses_BadRequest("InvalidOutputType", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "d15e65e0-3cb1-476f-8fc6-08507a14a269", "0", "5", "false", "false", "-1", "Invalid output type for export report", ((string[])(null)));
 #line hidden
         }
@@ -594,7 +598,7 @@ this.ExportReportMachinePasses_BadRequest("InvalidOutputType", "7925f179-013d-4a
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Invalid output type for machine passes export report")]
         public virtual void ExportReportMachinePasses_BadRequest_InvalidOutputTypeForMachinePasses()
         {
-#line 96
+#line 97
 this.ExportReportMachinePasses_BadRequest("InvalidOutputTypeForMachinePasses", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "d15e65e0-3cb1-476f-8fc6-08507a14a269", "0", "2", "false", "false", "-1", "Invalid output type for machine passes export report", ((string[])(null)));
 #line hidden
         }

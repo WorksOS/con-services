@@ -46,14 +46,15 @@ Examples:
 | RequestName | ProjectUID                           | MachineNames | FileName | ResultName  |
 |             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | All          | Test     | NoDateRange |
 
-Scenario Outline: ExportReportToVETA - No Content - NoFileName
+Scenario Outline: ExportReportToVETA - Bad Request - NoFileName
 And projectUid "<ProjectUID>"
 And filterUid "<FilterUID>"
 And machineNames "<MachineNames>"
-When I request an Export Report To VETA expecting NoContent
+When I request an Export Report To VETA expecting BadRequest
+Then the report result should contain error code <ErrorCode> and error message "<ErrorMessage>"
 Examples:
-| RequestName | ProjectUID                           | FilterUID                            | MachineNames |
-|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | d15e65e0-3cb1-476f-8fc6-08507a14a269 | All          |
+| RequestName | ProjectUID                           | FilterUID                            | MachineNames | ErrorCode | ErrorMessage             |
+|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | d15e65e0-3cb1-476f-8fc6-08507a14a269 | All          | -1        | Missing export file name |
 
 Scenario Outline: ExportReportToVETA - Bad Request with Filter - No Machines
 And projectUid "<ProjectUID>"
