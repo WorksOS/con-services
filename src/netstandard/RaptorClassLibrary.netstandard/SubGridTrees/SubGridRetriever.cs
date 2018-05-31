@@ -211,7 +211,7 @@ namespace VSS.TRex.SubGridTrees
     }
     */
 
-    private void ProcessCellPasses(bool FilterOverriden = false)
+    private void ProcessCellPasses()
     {
       while (CellPassIterator.MayHaveMoreFilterableCellPasses() &&
              CellPassIterator.GetNextCellPass(ref CurrentPass.FilteredPass))
@@ -220,7 +220,7 @@ namespace VSS.TRex.SubGridTrees
           SiteModel.MachinesTargetValues[CurrentPass.FilteredPass.InternalSiteModelMachineIndex],
           PopulationControl, ref CurrentPass);
 
-        if (Filter.AttributeFilter.FilterPass(ref CurrentPass, FilterOverriden))
+        if (Filter.AttributeFilter.FilterPass(ref CurrentPass))
         {
           if (Filter.AttributeFilter.HasElevationTypeFilter)
             AssignmentContext.FilteredValue.PassCount = 1;
@@ -591,27 +591,6 @@ namespace VSS.TRex.SubGridTrees
 
             ProcessCellPasses();
 
-            // If we have no passes in current selection and want to search further up we handle it here.
-            // It is used for the summary volumes request - see bug 31677.
-            if (!HaveFilteredPass && Filter.AttributeFilter.HasTimeFilter &&
-                Filter.AttributeFilter.OverrideTimeBoundary &&
-                !Filter.AttributeFilter.ReturnEarliestFilteredCellPass)
-            {
-              PreviousIterationDirection = CellPassIterator.SegmentIterator.IterationDirection;
-
-              // set date range from begining of time to end of time and find first cell pass by searching forward
-              CellPassIterator.SetTimeRange(Filter.AttributeFilter.HasTimeFilter, Filter.AttributeFilter.StartTime,
-                DateTime.MaxValue); // Note this also sets the attached segment iterator daterange
-              CellPassIterator.SegmentIterator.IterationDirection = IterationDirection.Forwards;
-              CellPassIterator.Initialise();
-
-              ProcessCellPasses(
-                true); // now search forward for first cell pass given we did not find it in the first pass b4 startdate
-
-              CellPassIterator.SetTimeRange(Filter.AttributeFilter.HasTimeFilter, Filter.AttributeFilter.StartTime, Filter.AttributeFilter.EndTime);
-              CellPassIterator.SegmentIterator.IterationDirection = PreviousIterationDirection;
-            }
-
             if (HaveFilteredPass &&
                 (Filter.AttributeFilter.HasMinElevMappingFilter ||
                  (Filter.AttributeFilter.HasElevationTypeFilter &&
@@ -981,28 +960,6 @@ namespace VSS.TRex.SubGridTrees
               CellPassIterator.Initialise();
 
               ProcessCellPasses();
-
-              // If we have no passes in current selection and want to search further up we handle it here.
-              // It is used for the summary volumes request - see bug 31677.
-              if (!HaveFilteredPass && Filter.AttributeFilter.HasTimeFilter &&
-                  Filter.AttributeFilter.OverrideTimeBoundary &&
-                  !Filter.AttributeFilter.ReturnEarliestFilteredCellPass)
-              {
-                PreviousIterationDirection = CellPassIterator.SegmentIterator.IterationDirection;
-
-                // set date range from begining of time to end of time and find first cell pass by searching forward
-                CellPassIterator.SetTimeRange(Filter.AttributeFilter.HasTimeFilter, Filter.AttributeFilter.StartTime,
-                  DateTime.MaxValue); // Note this also sets the attached segment iterator daterange
-                CellPassIterator.SegmentIterator.IterationDirection = IterationDirection.Forwards;
-                CellPassIterator.Initialise();
-
-                ProcessCellPasses(
-                  true); // now search forward for first cell pass given we did not find it in the first pass b4 startdate
-
-                CellPassIterator.SetTimeRange(Filter.AttributeFilter.HasTimeFilter, Filter.AttributeFilter.StartTime,
-                  Filter.AttributeFilter.EndTime);
-                CellPassIterator.SegmentIterator.IterationDirection = PreviousIterationDirection;
-              }
 
               if (HaveFilteredPass &&
                   (Filter.AttributeFilter.HasMinElevMappingFilter ||

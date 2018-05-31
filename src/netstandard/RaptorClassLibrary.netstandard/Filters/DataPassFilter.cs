@@ -28,7 +28,7 @@ namespace VSS.TRex.Filters
         public GridDataType RequestedGridDataType { get; set; } = GridDataType.All;
 
         public abstract bool FilterPass(ref CellPass passValue);
-        public abstract bool FilterPass(ref FilteredPassData passValue, bool timeBoundaryIsOverride = false);
+        public abstract bool FilterPass(ref FilteredPassData passValue);
 
         public DataPassFilter()
         {
