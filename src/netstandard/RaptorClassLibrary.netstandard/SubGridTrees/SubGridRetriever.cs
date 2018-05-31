@@ -12,7 +12,6 @@ using VSS.TRex.Profiling;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
 using VSS.TRex.SubGridTrees.Utilities;
@@ -67,7 +66,8 @@ namespace VSS.TRex.SubGridTrees
 
     private FilteredValuePopulationControl PopulationControl = null;
 
-    private ProductionDataProfiler Profiler = null;
+    //private ProductionDataProfiler Profiler = null;
+    private ProfilerBuilder Profiler = null;
     private ProfileCell CellProfile = null;
 
     private CellPassFastEventLookerUpper CellPassFastEventLookerUpper = null;
@@ -131,6 +131,28 @@ namespace VSS.TRex.SubGridTrees
 
       PopulationControl = populationControl;
       PDExistenceMap = pDExistenceMap;
+
+      // Some display types require lift processing to be able to select the
+      // appropriate cell pass containing the filtered value required.
+      if (ClientGrid.WantsLiftProcessingResults())
+      {
+        Profiler = new ProfilerBuilder(SiteModel, PDExistenceMap, ClientGrid.GridDataType, Filter.AttributeFilter, Filter.SpatialFilter, 
+          null, null, populationControl, CellPassFastEventLookerUpper);
+        CellProfile = new ProfileCell();
+
+        //new ProductionDataProfiler(SiteModel, SiteModel.Grid, ClientGrid.GridDataType, PopulationControl, PDExistenceMap);
+
+        //CellPassFastEventLookerUpper = new CellPassFastEventLookerUpper(SiteModel);
+        //Profiler.CellPassFastEventLookerUpper = CellPassFastEventLookerUpper;
+      }
+
+      // Create and configure the assignment context which is used to contain
+      // a filtered pass and its attendant machine events and target values
+      // prior to assignment to the client subgrid.
+      AssignmentContext = new FilteredValueAssignmentContext
+      {
+        CellProfile = CellProfile
+      };
     }
 
     private void AcquirePopulationFilterValuesInterlock()
@@ -1429,26 +1451,10 @@ namespace VSS.TRex.SubGridTrees
             // Some display types require lift processing to be able to select the
             // appropriate cell pass containing the filtered value required.
             if (ClientGrid.WantsLiftProcessingResults())
-            {
-              Profiler = new ProductionDataProfiler(SiteModel, SiteModel.Grid, ClientGrid.GridDataType, PopulationControl, PDExistenceMap);
-
-              CellPassFastEventLookerUpper = new CellPassFastEventLookerUpper(SiteModel);
-              
-              Profiler.CellPassFastEventLookerUpper = CellPassFastEventLookerUpper;
-              CellProfile = new ProfileCell();
+            {            
               SegmentIterator.IterationDirection = IterationDirection.Forwards;
-
-              CellPassIterator.MaxNumberOfPassesToReturn =
-                MaxNumberOfPassesToReturn; //VLPDSvcLocations.VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary;
+              CellPassIterator.MaxNumberOfPassesToReturn = MaxNumberOfPassesToReturn; //VLPDSvcLocations.VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary;
             }
-
-            // Create and configure teh assignment context which is used to contain
-            // a filtered pass and its attendant machine events and target values
-            // prior to assignment to the client subgrid.
-            AssignmentContext = new FilteredValueAssignmentContext
-            {
-              CellProfile = CellProfile
-            };
 
             // TODO Add when cell left build settingssupported
             // AssignmentContext.LiftBuildSettings = LiftBuildSettings;
