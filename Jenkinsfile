@@ -34,7 +34,8 @@ node ('jenkinsslave-pod') {
 	    def building = docker.build(container, "-f Dockerfile.build .")
 
         // Currently we need to execute the tests like this, because the pipeline docker plugin being aware of DIND, and attempting to map
-        // the volume to the bare metal host
+        // the volume to the bare metal host        
+		sh "docker run -v ${env.WORKSPACE}/TestResults:/TestResults ${building.id} ls -la /build"
         sh "docker run -v ${env.WORKSPACE}/TestResults:/TestResults ${building.id} /bin/sh /build/unittest.sh"
         sh "ls ${env.WORKSPACE}/TestResults"
 		
