@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Moq;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Repositories;
+using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.MasterData.Repositories;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.ProjectTests
 {

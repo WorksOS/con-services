@@ -1,6 +1,4 @@
-﻿using System;
-using VSS.MasterData.Models.Models;
-using VSS.MasterData.Project.WebAPI.Common.Models;
+﻿using VSS.MasterData.Models.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
