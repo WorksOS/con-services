@@ -61,8 +61,6 @@ namespace VSS.TRex.Filters
         /// </summary>
         public DateTime EndTime { get; set; } = DateTime.MaxValue;
 
-        public bool OverrideTimeBoundary { get; set; }
-
         // Machine based filtering members
         public Guid[] MachinesList { get; set; } 
 
@@ -303,10 +301,6 @@ namespace VSS.TRex.Filters
             }
 
             if (Result != 0)
-                return Result;
-
-            // OverrideTimeBoundary
-            if (OverrideTimeBoundary != AFilter.OverrideTimeBoundary)
                 return Result;
 
             // Designs
@@ -579,7 +573,6 @@ namespace VSS.TRex.Filters
             // Time based filtering members
             StartTime = Source.StartTime;
             EndTime = Source.EndTime;
-            OverrideTimeBoundary = Source.OverrideTimeBoundary;
 
             // Machine based filtering members
             Array.Copy(Source.MachinesList, MachinesList, Source.MachinesList.Length);
@@ -705,7 +698,6 @@ FAvoidZoneUndergroundServiceZones = false;
 
             StartTime = DateTime.MinValue;
             EndTime = DateTime.MaxValue;
-            OverrideTimeBoundary = false;
         }
 
         // Returns true if the specified pass meets the set filter (if any)
@@ -899,7 +891,7 @@ FAvoidZoneUndergroundServiceZones = false;
             return true;
         }
 
-        public override bool FilterPass(ref FilteredPassData PassValue, bool TimeBoundaryIsOverriden = false)
+        public override bool FilterPass(ref FilteredPassData PassValue)
         {
             /* SPR 10733: AZ filters should only apply to AZ transgression events
             AZ2DResult : Boolean;
@@ -926,7 +918,7 @@ FAvoidZoneUndergroundServiceZones = false;
 
             if (HasTimeFilter)
             {
-                if (!FilterPassUsingTimeOnly(ref PassValue.FilteredPass, TimeBoundaryIsOverriden))
+                if (!FilterPassUsingTimeOnly(ref PassValue.FilteredPass))
                     return false;
             }
 
@@ -1046,7 +1038,7 @@ FAvoidZoneUndergroundServiceZones = false;
                    Range.InRange(PassValue.Height, ElevationRangeBottomElevationForCell, ElevationRangeTopElevationForCell);
         }
 
-        public bool FilterPassUsingTimeOnly(ref CellPass PassValue, bool TimeBoundaryIsOverriden = false)
+        public bool FilterPassUsingTimeOnly(ref CellPass PassValue)
         {
             // TODO readd when ifopt c+ is understoof
             /*  {$IFOPT C+}
@@ -1061,12 +1053,12 @@ FAvoidZoneUndergroundServiceZones = false;
             if (StartTime == DateTime.MinValue)
             {
                 // It's an End/As At time filter
-                if (PassValue.Time > EndTime && !TimeBoundaryIsOverriden && !OverrideTimeBoundary)
+                if (PassValue.Time > EndTime)
                   return false;
             }
 
             // In that case it's a time range filter
-            if (PassValue.Time < StartTime || (PassValue.Time > EndTime && !TimeBoundaryIsOverriden && !OverrideTimeBoundary))
+            if (PassValue.Time < StartTime || PassValue.Time > EndTime)
                 return false;
 
             // The pass made it past the filtering criteria, accept it
@@ -1272,7 +1264,6 @@ FAvoidZoneUndergroundServiceZones = false;
 
     Settings.StartTime    = FStartTime;
       Settings.EndTime      = FEndTime;
-      Settings.OverrideTimeBoundary = FOverrideTimeBoundary;
       Settings.Machines     = FMachines;
       Settings.DesignNameID = FDesignNameID;
       Settings.VibeState    = FVibeState;
@@ -1339,7 +1330,6 @@ FAvoidZoneUndergroundServiceZones = false;
 
     FStartTime                            = Settings.StartTime;
       FEndTime                              = Settings.EndTime;
-      FOverrideTimeBoundary                 = Settings.OverrideTimeBoundary;
 
       FMachines                             = Settings.Machines;
       InitialiseMachineIDsSet;
