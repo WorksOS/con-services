@@ -32,6 +32,12 @@ namespace VSS.TRex.SubGridTrees.Client
         }
 
         /// <summary>
+        /// Speed target subgrids require lift processing...
+        /// </summary>
+        /// <returns></returns>
+        public override bool WantsLiftProcessingResults() => true;
+
+        /// <summary>
         /// Determine if a filtered machine speed is valid (not null)
         /// </summary>
         /// <param name="filteredValue"></param>

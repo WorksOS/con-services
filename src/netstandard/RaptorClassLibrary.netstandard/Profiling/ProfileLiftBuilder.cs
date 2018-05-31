@@ -38,18 +38,12 @@ namespace VSS.TRex.Profiling
     private SubGridTreeBitmapSubGridBits FilterMask =
       new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-    private ClientHeightLeafSubGrid FilterDesignElevations;
-    private DesignProfilerRequestResult FilterDesignErrorCode;
     private bool IgnoreSubgrid;
 
     private ISiteModel SiteModel;
-    private FilteredMultiplePassInfo Passes;
     private CellPassAttributeFilter PassFilter;
 
-    private bool PopulationControl_AnySet;
-    private FilteredValuePopulationControl PopulationControl;
     private CellSpatialFilter CellFilter;
-    private List<ProfileCell> ProfileCells;
     private SubGridTreeBitMask PDExistenceMap;
     private ICellLiftBuilder CellLiftBuilder;
 
@@ -67,26 +61,19 @@ namespace VSS.TRex.Profiling
 
     public ProfileLiftBuilder(ISiteModel siteModel,
       SubGridTreeBitMask pDExistenceMap,
-      FilteredMultiplePassInfo passes,
       CellPassAttributeFilter passFilter,
       CellSpatialFilter cellFilter,
-      FilteredValuePopulationControl populationControl,
-      List<ProfileCell> profileCells,
       Design cellPassFilter_ElevationRangeDesign,
-      CellLiftBuilder cellLiftBuilder)
+      ICellLiftBuilder cellLiftBuilder)
     {
       SiteModel = siteModel;
       PDExistenceMap = pDExistenceMap;
-      Passes = passes;
       PassFilter = passFilter;
       CellFilter = cellFilter;
-      PopulationControl = populationControl;
-      PopulationControl_AnySet = PopulationControl.AnySet();
-      ProfileCells = profileCells;
       CellPassFilter_ElevationRangeDesign = cellPassFilter_ElevationRangeDesign;
       CellLiftBuilder = cellLiftBuilder;
 
-      if (SiteModel.SurveyedSurfaces?.Count > 0)
+      if (SiteModel?.SurveyedSurfaces?.Count > 0)
       {
 // Filter out any surveyed surfaces which don't match current filter (if any) - realistically, this is time filters we're thinking of here
 
@@ -142,15 +129,7 @@ namespace VSS.TRex.Profiling
 
     private void CalculateSummaryCellAttributeData()
     {
-      bool DataStillRequiredForCCV;
-      bool DataStillRequiredForMDP;
-      bool DataStillRequiredForCCA;
-      bool DataStillRequiredForTMP;
-      bool HaveCompositeSurfaceForCell;
-      uint CellX, CellY;
       TargetPassCountRange PassCountTargetRange = new TargetPassCountRange();
-      ushort TempPassCountTarget;
-      int PassSearchIdx;
 
 //with ProfileCell, LiftBuildSettings do
       {
@@ -195,10 +174,10 @@ namespace VSS.TRex.Profiling
                 PassIndex < ProfileCell.Layers[I].EndCellPassIdx;
                 PassIndex++)
               {
-                if (Passes.FilteredPassData[PassIndex].FilteredPass.MachineSpeed < ProfileCell.CellMinSpeed)
-                  ProfileCell.CellMinSpeed = Passes.FilteredPassData[PassIndex].FilteredPass.MachineSpeed;
-                if (Passes.FilteredPassData[PassIndex].FilteredPass.MachineSpeed > ProfileCell.CellMaxSpeed)
-                  ProfileCell.CellMaxSpeed = Passes.FilteredPassData[PassIndex].FilteredPass.MachineSpeed;
+                if (ProfileCell.Passes.FilteredPassData[PassIndex].FilteredPass.MachineSpeed < ProfileCell.CellMinSpeed)
+                  ProfileCell.CellMinSpeed = ProfileCell.Passes.FilteredPassData[PassIndex].FilteredPass.MachineSpeed;
+                if (ProfileCell.Passes.FilteredPassData[PassIndex].FilteredPass.MachineSpeed > ProfileCell.CellMaxSpeed)
+                  ProfileCell.CellMaxSpeed = ProfileCell.Passes.FilteredPassData[PassIndex].FilteredPass.MachineSpeed;
               }
             }
           }
@@ -225,11 +204,11 @@ namespace VSS.TRex.Profiling
               {
                 //with Passes.FilteredPassData[EndCellPassIdx].FilteredPass do
                 //  {
-                TempPassCountTarget =
+                ushort TempPassCountTarget =
                   GetTargetPassCount(
-                    Passes.FilteredPassData[ProfileCell.Layers[I].EndCellPassIdx].FilteredPass
+                    ProfileCell.Passes.FilteredPassData[ProfileCell.Layers[I].EndCellPassIdx].FilteredPass
                       .InternalSiteModelMachineIndex,
-                    Passes.FilteredPassData[ProfileCell.Layers[I].EndCellPassIdx].FilteredPass.Time);
+                    ProfileCell.Passes.FilteredPassData[ProfileCell.Layers[I].EndCellPassIdx].FilteredPass.Time);
                 PassCountTargetRange.SetMinMax(TempPassCountTarget, TempPassCountTarget);
                 ProfileCell.TopLayerPassCountTargetRangeMin = PassCountTargetRange.Min;
                 ProfileCell.TopLayerPassCountTargetRangeMax = PassCountTargetRange.Max;
@@ -246,13 +225,13 @@ namespace VSS.TRex.Profiling
               break; // we have top layer
             }
 
-        DataStillRequiredForCCV =
+        bool DataStillRequiredForCCV =
           (ProfileCell.AttributeExistenceFlags & ProfileCellAttributeExistenceFlags.HasCCAData) != 0;
-        DataStillRequiredForMDP =
+        bool DataStillRequiredForMDP =
           (ProfileCell.AttributeExistenceFlags & ProfileCellAttributeExistenceFlags.HasMDPData) != 0;
-        DataStillRequiredForCCA =
+        bool DataStillRequiredForCCA =
           (ProfileCell.AttributeExistenceFlags & ProfileCellAttributeExistenceFlags.HasCCAData) != 0;
-        DataStillRequiredForTMP =
+        bool DataStillRequiredForTMP =
           (ProfileCell.AttributeExistenceFlags & ProfileCellAttributeExistenceFlags.HasTemperatureData) != 0;
 
         for (int I = ProfileCell.Layers.Count() - 1; I >= 0; I--)
@@ -269,7 +248,7 @@ namespace VSS.TRex.Profiling
               ProfileCell.CellCCV = ProfileCell.Layers[I].CCV;
               ProfileCell.CellCCVElev = ProfileCell.Layers[I].CCV_Elev;
 
-              PassSearchIdx = ProfileCell.Layers[I].CCV_CellPassIdx - 1;
+              int PassSearchIdx = ProfileCell.Layers[I].CCV_CellPassIdx - 1;
               while (PassSearchIdx >= 0)
               {
                 if (Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly &&
@@ -391,9 +370,9 @@ namespace VSS.TRex.Profiling
         ProfileCell.SetFirstLastHighestLowestElevations(PassFilter.HasElevationTypeFilter, PassFilter.ElevationType);
 
 // are coords set right?
-        CellX = ProfileCell.OTGCellX & SubGridTree.SubGridLocalKeyMask;
-        CellY = ProfileCell.OTGCellY & SubGridTree.SubGridLocalKeyMask;
-        HaveCompositeSurfaceForCell = CompositeHeightsGrid.ProdDataMap.BitSet(CellX, CellY);
+        uint CellX = ProfileCell.OTGCellX & SubGridTree.SubGridLocalKeyMask;
+        uint CellY = ProfileCell.OTGCellY & SubGridTree.SubGridLocalKeyMask;
+        bool HaveCompositeSurfaceForCell = CompositeHeightsGrid.ProdDataMap.BitSet(CellX, CellY);
 
         if (HaveCompositeSurfaceForCell)
         {
@@ -446,7 +425,7 @@ namespace VSS.TRex.Profiling
     }
 
 
-    public bool Build(ISubGridSegmentCellPassIterator cellPassIterator)
+    public bool Build(List<ProfileCell> ProfileCells, ISubGridSegmentCellPassIterator cellPassIterator)
     {
 //{$IFDEF DEBUG}
 //SIGLogMessage.PublishNoODS(Self, Format('BuildLiftProfileFromInitialLayer: Processing %d cells', [FProfileCells.Count]), slmcDebug);
@@ -456,7 +435,7 @@ namespace VSS.TRex.Profiling
       SubGrid = null;
       _SubGridAsLeaf = null;
       ProfileCell = null;
-      FilterDesignElevations = null;
+//      FilterDesignElevations = null;
       IgnoreSubgrid = false;
 
 //FLockTokenName = kProfilerLockToken + IntToStr(GetCurrentThreadID);
@@ -499,7 +478,7 @@ namespace VSS.TRex.Profiling
               {
                 _SubGridAsLeaf = SubGrid as ServerSubGridTreeLeaf;
                 cellPassIterator.SegmentIterator.SubGrid = _SubGridAsLeaf;
-                cellPassIterator.SegmentIterator.Directory = _SubGridAsLeaf.Directory;
+                cellPassIterator.SegmentIterator.Directory = _SubGridAsLeaf?.Directory;
               }
 
               CompositeHeightsGrid.SetAbsoluteOriginPosition(
@@ -543,13 +522,13 @@ namespace VSS.TRex.Profiling
               }
 
               if (!LiftFilterMask.InitialiseFilterContext(SiteModel, PassFilter, ProfileCell,
-                CellPassFilter_ElevationRangeDesign))
+                CellPassFilter_ElevationRangeDesign, out DesignProfilerRequestResult FilterDesignErrorCode))
               {
                 if (FilterDesignErrorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
                   IgnoreSubgrid = true;
                 else
                   Log.LogError(
-                    "Call to RequestDesignElevationPatch in TICServerProfiler for filter failed to return a elevation patch.");
+                    "Call to RequestDesignElevationPatch in TICServerProfiler for filter failed to return an elevation patch.");
                 continue;
               }
             }
@@ -577,26 +556,16 @@ namespace VSS.TRex.Profiling
                 (byte) (ProfileCells[I].OTGCellY & SubGridTree.SubGridLocalKeyMask));
               PassFilter.InitaliaseFilteringForCell(cellPassIterator.CellX, cellPassIterator.CellY);
 
-               if (CellLiftBuilder.Build(ProfileCell,
-                // todo Dummy_LiftBuildSettings,
-                null, null, cellPassIterator,
-                ref TopMostLayerPassCount, ref TopMostLayerCompactionHalfPassCount))
-              {
-                PopulationControl_AnySet = true;
+              if (CellLiftBuilder.Build(ProfileCell, // todo Dummy_LiftBuildSettings,
+                null, null, cellPassIterator, false, ref TopMostLayerPassCount, ref TopMostLayerCompactionHalfPassCount))
                 ProfileCell.IncludesProductionData = true;
-                CalculateSummaryCellAttributeData();
-              } 
               else
-              {
                 ProfileCell.ClearLayers();
-                CalculateSummaryCellAttributeData();
-              }
             }
             else
-            {
               ProfileCell.ClearLayers();
-              CalculateSummaryCellAttributeData();
-            }
+
+            CalculateSummaryCellAttributeData();
           }
         }
         finally

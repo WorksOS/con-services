@@ -1,5 +1,6 @@
 ﻿using VSS.TRex.DesignProfiling.GridFabric.Arguments;
 using VSS.TRex.DesignProfiling.GridFabric.Requests;
+using VSS.TRex.Servers;
 using VSS.TRex.Servers.Client;
 using VSS.TRex.SubGridTrees.Client;
 
@@ -7,7 +8,7 @@ namespace VSS.TRex.DesignProfiling.Servers.Client
 {
     public class CalculateDesignElevationsServer : ImmutableClientServer
     {
-        public CalculateDesignElevationsServer() : base("DesignProfiler")
+        public CalculateDesignElevationsServer() : base(ServerRoles.DESIGN_PROFILER)
         {
         }
 

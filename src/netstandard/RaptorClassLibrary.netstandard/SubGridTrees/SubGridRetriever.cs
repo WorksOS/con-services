@@ -12,7 +12,6 @@ using VSS.TRex.Profiling;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
 using VSS.TRex.SubGridTrees.Utilities;
@@ -67,7 +66,7 @@ namespace VSS.TRex.SubGridTrees
 
     private FilteredValuePopulationControl PopulationControl = null;
 
-    private ProductionDataProfiler Profiler = null;
+    private ProfilerBuilder Profiler = null;
     private ProfileCell CellProfile = null;
 
     private CellPassFastEventLookerUpper CellPassFastEventLookerUpper = null;
@@ -97,6 +96,8 @@ namespace VSS.TRex.SubGridTrees
     /// <param name="treeLevel"></param>
     /// <param name="maxNumberOfPassesToReturn"></param>
     /// <param name="areaControlSet"></param>
+    /// <param name="populationControl"></param>
+    /// <param name="pDExistenceMap"></param>
     public SubGridRetriever(ISiteModel sitemodel,
       IStorageProxy storageProxy,
       CombinedFilter filter,
@@ -131,6 +132,11 @@ namespace VSS.TRex.SubGridTrees
 
       PopulationControl = populationControl;
       PDExistenceMap = pDExistenceMap;
+
+      // Create and configure the assignment context which is used to contain
+      // a filtered pass and its attendant machine events and target values
+      // prior to assignment to the client subgrid.
+      AssignmentContext = new FilteredValueAssignmentContext();
     }
 
     private void AcquirePopulationFilterValuesInterlock()
@@ -303,7 +309,7 @@ namespace VSS.TRex.SubGridTrees
     /// <returns></returns>
     public void RetrieveSubGridCell(byte CellX, byte CellY)
     {
-      // int TopMostLayerPassCount = 0;
+      int TopMostLayerPassCount = 0;
       int TopMostLayerCompactionHalfPassCount = 0;
       bool FilteredValueIsFromLatestCellPass;
 
@@ -531,23 +537,19 @@ namespace VSS.TRex.SubGridTrees
                   SIGLogMessage.PublishNoODS(Nil, Format('At %dx%d: Calling BuildLiftsForCell', [CellX, CellY]), slmcDebug);
               */
 
-              /* TODO Cell Profiling not yet supported
-              if (Profiler.BuildLiftsForCell(cidRetrieveSubGridStripe, CellProfile,
-                                             false, LiftBuildSettings, ClientGrid,
-                                             // This subgrid wants filtered values form the cell passes being processed
-                                             AssignmentContext, // Place a filtered value into this assignment context
-                                             CellPassIterator,  // Iterate over the cells using this cell pass iterator
-                                             true, // Return an individual filtered value
-                                                   // Selection of a filtered value should occur in forwards time order
-                                             Filter.AttributeFilter, TopMostLayerPassCount,
-                                             TopMostLayerCompactionHalfPassCount))
+              if (Profiler.CellLiftBuilder.Build(CellProfile, ClientGrid,
+                AssignmentContext, // Place a filtered value into this assignment context
+                CellPassIterator,  // Iterate over the cells using this cell pass iterator
+                true, // Return an individual filtered value
+                      // Selection of a filtered value should occur in forwards time order
+                ref TopMostLayerPassCount,
+                ref TopMostLayerCompactionHalfPassCount))
               {
                   // Filtered value selection is combined with lift analysis in this context via
                   // the provision of the client grid and the assignment context to the
                   // lift analysis engine
                   HaveFilteredPass = true;
               }
-              */
 
               /* TODO ...
               if (Debug_ExtremeLogSwitchD)
@@ -595,18 +597,18 @@ namespace VSS.TRex.SubGridTrees
 
           ClientGrid.AssignFilteredValue(CellX, CellY, AssignmentContext);
 
-          /* TODO: Replace single line above with implementation below when cell profiling is implemented
           if (CellProfile == null)
               ClientGrid.AssignFilteredValue(CellX, CellY, AssignmentContext);
           else
           {
-              if (((_GridDataType in [icdtCCV, icdtCCVPercent]) && ((LiftBuildSettings.CCVSummaryTypes == []) || !LiftBuildSettings.CCVSummarizeTopLayerOnly)) ||
-                  ((_GridDataType in [icdtMDP, icdtMDPPercent]) && ((LiftBuildSettings.MDPSummaryTypes == []) || !LiftBuildSettings.MDPSummarizeTopLayerOnly)) ||
-                  (CellProfile.Layers.Count > 0) ||
-                  (_GridDataType in [icdtCCA, icdtCCAPercent])) // no CCA settings
+              if (((_GridDataType == GridDataType.CCV || _GridDataType == GridDataType.CCVPercent) 
+                    && ((Dummy_LiftBuildSettings.CCVSummaryTypes == 0) || !Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly)) ||
+                  ((_GridDataType == GridDataType.MDP || _GridDataType == GridDataType.MDPPercent) 
+                    && ((Dummy_LiftBuildSettings.MDPSummaryTypes == 0) || !Dummy_LiftBuildSettings.MDPSummarizeTopLayerOnly)) ||
+                  (CellProfile.Layers.Count() > 0) ||
+                  (_GridDataType == GridDataType.CCA || _GridDataType == GridDataType.CCAPercent)) // no CCA settings
                 ClientGrid.AssignFilteredValue(CellX, CellY, AssignmentContext);
           }
-          */
         }
       }
       finally
@@ -631,7 +633,7 @@ namespace VSS.TRex.SubGridTrees
     /// <returns></returns>
     public ServerRequestResult RetrieveSubGridStripe(byte StripeIndex, uint CellX, uint CellY)
     {
-      // int TopMostLayerPassCount = 0;
+      int TopMostLayerPassCount = 0;
       int TopMostLayerCompactionHalfPassCount = 0;
       bool FilteredValueIsFromLatestCellPass;
 
@@ -904,23 +906,19 @@ namespace VSS.TRex.SubGridTrees
                     SIGLogMessage.PublishNoODS(Nil, Format('SI@%d/%d at %dx%d: Calling BuildLiftsForCell', [StripeIndex, J, CellX, CellY]), slmcDebug);
                 */
 
-                /* TODO Cell Profiling not yet supported
-                if (Profiler.BuildLiftsForCell(cidRetrieveSubGridStripe, CellProfile,
-                                               false, LiftBuildSettings, ClientGrid,
-                                               // This subgrid wants filtered values form the cell passes being processed
-                                               AssignmentContext, // Place a filtered value into this assignment context
-                                               CellPassIterator,  // Iterate over the cells using this cell pass iterator
-                                               true, // Return an individual filtered value
-                                                     // Selection of a filtered value should occur in forwards time order
-                                               Filter.AttributeFilter, TopMostLayerPassCount,
-                                               TopMostLayerCompactionHalfPassCount))
+                if (Profiler.CellLiftBuilder.Build(CellProfile, ClientGrid,
+                  AssignmentContext, // Place a filtered value into this assignment context
+                  CellPassIterator,  // Iterate over the cells using this cell pass iterator
+                  true, // Return an individual filtered value
+                  // Selection of a filtered value should occur in forwards time order
+                  ref TopMostLayerPassCount,
+                  ref TopMostLayerCompactionHalfPassCount))
                 {
-                    // Filtered value selection is combined with lift analysis in this context via
-                    // the provision of the client grid and the assignment context to the
-                    // lift analysis engine
-                    HaveFilteredPass = true;
+                  // Filtered value selection is combined with lift analysis in this context via
+                  // the provision of the client grid and the assignment context to the
+                  // lift analysis engine
+                  HaveFilteredPass = true;
                 }
-                */
 
                 /* TODO ...
                 if (Debug_ExtremeLogSwitchD)
@@ -1234,8 +1232,6 @@ namespace VSS.TRex.SubGridTrees
 
     private bool ComputeSeiveBitmaskFloat(ISubGrid SubGrid)
     {
-      double SubGridWorldLimitX, SubGridWorldLimitY;
-
       if (AreaControlSet.PixelXWorldSize == 0 || AreaControlSet.PixelYWorldSize == 0)
         return false;
 
@@ -1255,8 +1251,8 @@ namespace VSS.TRex.SubGridTrees
       // Calculate the world coordinate location of the origin (bottom left corner)
       // and limits (top right corner) of this subgrid
       SubGrid.CalculateWorldOrigin(out double SubGridWorldOriginX, out double SubGridWorldOriginY);
-      SubGridWorldLimitX = SubGridWorldOriginX + (SubGridTree.SubGridTreeDimension * _CellSize);
-      SubGridWorldLimitY = SubGridWorldOriginY + (SubGridTree.SubGridTreeDimension * _CellSize);
+      double SubGridWorldLimitX = SubGridWorldOriginX + (SubGridTree.SubGridTreeDimension * _CellSize);
+      double SubGridWorldLimitY = SubGridWorldOriginY + (SubGridTree.SubGridTreeDimension * _CellSize);
 
       // Take into account the effect of having to have a grid probe position at
       // the 'first point' defined in AreaControlSet
@@ -1293,6 +1289,23 @@ namespace VSS.TRex.SubGridTrees
       ClientGrid = clientGrid;
       ClientGridAsLeaf = clientGrid as ClientLeafSubGrid;
       _GridDataType = clientGrid.GridDataType;
+
+      // Support for lazy construction of any required profilinf infrastructure
+      if (ClientGrid.WantsLiftProcessingResults() && Profiler == null)
+      {
+        // Some display types require lift processing to be able to select the
+        // appropriate cell pass containing the filtered value required.
+
+        Profiler = new ProfilerBuilder(SiteModel, PDExistenceMap, _GridDataType, Filter.AttributeFilter, Filter.SpatialFilter,
+            null, null, PopulationControl, CellPassFastEventLookerUpper);
+
+        CellProfile = new ProfileCell();
+
+        // Create and configure the assignment context which is used to contain
+        // a filtered pass and its attendant machine events and target values
+        // prior to assignment to the client subgrid.
+        AssignmentContext.CellProfile = CellProfile;
+      }
 
       try
       {
@@ -1386,26 +1399,10 @@ namespace VSS.TRex.SubGridTrees
             // Some display types require lift processing to be able to select the
             // appropriate cell pass containing the filtered value required.
             if (ClientGrid.WantsLiftProcessingResults())
-            {
-              Profiler = new ProductionDataProfiler(SiteModel, SiteModel.Grid, ClientGrid.GridDataType, PopulationControl, PDExistenceMap);
-
-              CellPassFastEventLookerUpper = new CellPassFastEventLookerUpper(SiteModel);
-              
-              Profiler.CellPassFastEventLookerUpper = CellPassFastEventLookerUpper;
-              CellProfile = new ProfileCell();
+            {            
               SegmentIterator.IterationDirection = IterationDirection.Forwards;
-
-              CellPassIterator.MaxNumberOfPassesToReturn =
-                MaxNumberOfPassesToReturn; //VLPDSvcLocations.VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary;
+              CellPassIterator.MaxNumberOfPassesToReturn = MaxNumberOfPassesToReturn; //VLPDSvcLocations.VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary;
             }
-
-            // Create and configure teh assignment context which is used to contain
-            // a filtered pass and its attendant machine events and target values
-            // prior to assignment to the client subgrid.
-            AssignmentContext = new FilteredValueAssignmentContext
-            {
-              CellProfile = CellProfile
-            };
 
             // TODO Add when cell left build settingssupported
             // AssignmentContext.LiftBuildSettings = LiftBuildSettings;
