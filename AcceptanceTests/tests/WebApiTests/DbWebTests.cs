@@ -1,7 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using TestUtility;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Repositories.DBModels;
@@ -322,7 +322,7 @@ namespace WebApiTests
       var startUtc = DateTime.Now.AddMonths(-6).ToUniversalTime();
       var endUtc = DateTime.Now.AddMonths(+6).ToUniversalTime();
       var listMachines = new List<MachineDetails>();
-      var machine = MachineDetails.CreateMachineDetails(123456789, "TheMachineName", false);
+      var machine = MachineDetails.Create(123456789, "TheMachineName", false);
       listMachines.Add(machine);
       var listPoints = new List<WGSPoint>
       {

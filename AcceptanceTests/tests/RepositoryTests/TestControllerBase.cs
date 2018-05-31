@@ -17,14 +17,12 @@ namespace RepositoryTests
     protected FilterRepository FilterRepo;
     protected ProjectRepository ProjectRepo;
     protected GeofenceRepository GeofenceRepo;
+    private readonly string loggerRepoName = "UnitTestLogTest";
 
     public void SetupLoggingAndRepos()
     {
-      const string loggerRepoName = "UnitTestLogTest";
-      var logPath = Directory.GetCurrentDirectory();
-
       Log4NetProvider.RepoName = loggerRepoName;
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
+      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);

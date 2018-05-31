@@ -50,6 +50,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Repositories
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ITask.Local", "..\..\MerinoSandbox\ITask\src\VSS.ITask.Local.csproj", "{7222CC76-9860-4886-8319-782CE619DFD0}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.WebApi.Common.Local", "..\..\MerinoSandbox\WebApi.Common\src\VSS.WebApi.Common.Local.csproj", "{2B7B5D1D-63B0-4331-89A8-9EF21A4329BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -108,6 +110,10 @@ Global
 		{7222CC76-9860-4886-8319-782CE619DFD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7222CC76-9860-4886-8319-782CE619DFD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7222CC76-9860-4886-8319-782CE619DFD0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B7B5D1D-63B0-4331-89A8-9EF21A4329BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B7B5D1D-63B0-4331-89A8-9EF21A4329BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B7B5D1D-63B0-4331-89A8-9EF21A4329BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B7B5D1D-63B0-4331-89A8-9EF21A4329BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

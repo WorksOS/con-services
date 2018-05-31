@@ -2,12 +2,10 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.IO;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
@@ -22,21 +20,17 @@ namespace VSS.Productivity3D.Filter.Tests
   {
     public IServiceProvider serviceProvider;
     public IServiceExceptionHandler serviceExceptionHandler;
+    private readonly string loggerRepoName = "UnitTestLogTest";
 
     [TestInitialize]
     public virtual void InitTest()
     {
       var serviceCollection = new ServiceCollection();
 
-      const string loggerRepoName = "UnitTestLogTest";
-      
-      var logPath = Directory.GetCurrentDirectory();
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
-      
+      Log4NetProvider.RepoName = loggerRepoName;
+      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
-
-      Log4NetProvider.RepoName = loggerRepoName; // for upgrading to vss.log4net v2.1
       loggerFactory.AddLog4Net(loggerRepoName);
 
       serviceCollection.AddLogging();
@@ -53,7 +47,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       serviceProvider = serviceCollection.BuildServiceProvider();
 
-      this.serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+      serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
     }
   }
 }
