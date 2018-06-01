@@ -1,10 +1,9 @@
-﻿using VSS.TRex.Analytics.Aggregators;
-using VSS.TRex.Analytics.Foundation.Aggregators;
+﻿using VSS.TRex.Analytics.Foundation.Aggregators;
 using VSS.TRex.Cells;
-using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Analytics.SpeedStatistics
 {
@@ -13,15 +12,10 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 	/// </summary>
 	public class SpeedAggregator : SummaryAggregator
   {
-	  /// <summary>
-	  /// Maximum machine speed target value.
-	  /// </summary>
-	  public ushort TargetMaxMachineSpeed { get; set; }
-
-	  /// <summary>
-	  /// Minimum machine speed target value.
-	  /// </summary>
-	  public ushort TargetMinMachineSpeed { get; set; }
+    /// <summary>
+    /// Machine speed target record. It contains min/max machine speed target value.
+    /// </summary>
+    public MachineSpeedExtendedRecord TargetMachineSpeed { get; set; }
 
 	  /// <summary>
 	  /// Default no-arg constructor
@@ -51,9 +45,9 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 			  if (SpeedRangeValue.Max != CellPass.NullMachineSpeed) // is there a value to test
 			  {
 				  SummaryCellsScanned++;
-				  if (SpeedRangeValue.Max > TargetMaxMachineSpeed)
+				  if (SpeedRangeValue.Max > TargetMachineSpeed.Max)
 					  CellsScannedOverTarget++;
-				  else if (SpeedRangeValue.Min < TargetMinMachineSpeed && SpeedRangeValue.Max < TargetMinMachineSpeed)
+				  else if (SpeedRangeValue.Min < TargetMachineSpeed.Min && SpeedRangeValue.Max < TargetMachineSpeed.Min)
 					  CellsScannedUnderTarget++;
 					else
 						CellsScannedAtTarget++;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using VSS.TRex.Cells;
 using VSS.TRex.Common;
 
 namespace VSS.TRex.Types
@@ -33,10 +34,19 @@ namespace VSS.TRex.Types
 		}
 
 	  /// <summary>
-	  /// Serialises content of the cell to the writer
+	  /// Initialises the Min and Max properties with null values.
 	  /// </summary>
-	  /// <param name="writer"></param>
-	  public void Write(BinaryWriter writer)
+	  public void Clear()
+	  {
+	    Min = CellPass.NullMachineSpeed;
+	    Max = CellPass.NullMachineSpeed;
+	  }
+
+    /// <summary>
+    /// Serialises content of the cell to the writer
+    /// </summary>
+    /// <param name="writer"></param>
+    public void Write(BinaryWriter writer)
 	  {
 	    writer.Write(Min);
 	    writer.Write(Max);

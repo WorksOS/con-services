@@ -28,8 +28,7 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 			SiteModelID = argument.DataModelID,
 			//LiftBuildSettings := LiftBuildSettings;
 			CellSize = SiteModel.Grid.CellSize,
-			TargetMinMachineSpeed = argument.TargetMinMachineSpeed,
-			TargetMaxMachineSpeed = argument.TargetMaxMachineSpeed
+			TargetMachineSpeed = argument.TargetMachineSpeed
 		};
 
 		/// <summary>

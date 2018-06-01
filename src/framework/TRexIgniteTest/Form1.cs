@@ -18,6 +18,8 @@ using VSS.TRex.DesignProfiling;
 using VSS.TRex.Analytics.Operations;
 using VSS.TRex.Analytics.GridFabric.Arguments;
 using VSS.TRex.Analytics.Models;
+using VSS.TRex.Analytics.SpeedStatistics;
+using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
 using VSS.TRex.Analytics.TemperatureStatistics;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
 using VSS.TRex.Designs;
@@ -1093,6 +1095,37 @@ namespace VSS.TRex.IgnitePOC.TestApp
     private void btnEmpty_Click(object sender, EventArgs e)
     {
       editProjectID.Text = new Guid().ToString();
+    }
+
+    private void SpeedSummaryButton_Click(object sender, EventArgs e)
+    {
+      var siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+
+      Stopwatch sw = new Stopwatch();
+      sw.Start();
+      try
+      {
+        SpeedOperation operation = new SpeedOperation();
+        SpeedResult result = operation.Execute(
+          new SpeedStatisticsArgument()
+          {
+            DataModelID = siteModel.ID,
+            Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+            TargetMachineSpeed = new MachineSpeedExtendedRecord(5, 50)
+          }
+        );
+
+        if (result != null)
+          MessageBox.Show($"Machine Speed Summary Results (in {sw.Elapsed}) :\n " +
+                          $"Above Temperature Percentage: {result.AboveTargetPercent} \n " +
+                          $"Within Temperature Percentage Range: {result.WithinTargetPercent} \n " +
+                          $"Below Temperature Percentage: {result.BelowTargetPercent} \n " +
+                          $"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
+      }
+      finally
+      {
+        sw.Stop();
+      }
     }
   }
 }
