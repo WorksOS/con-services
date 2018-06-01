@@ -10,6 +10,6 @@ namespace VSS.TRex.Pipelines
     /// <summary>
     /// The error status result from the pipeline execution
     /// </summary>
-    public RequestErrorStatus ResultStatus { get; set; }
+    public RequestErrorStatus ResultStatus { get; set; } = RequestErrorStatus.Unknown;
   }
 }

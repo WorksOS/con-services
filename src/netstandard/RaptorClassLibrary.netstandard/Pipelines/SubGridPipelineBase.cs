@@ -275,7 +275,74 @@ namespace VSS.TRex.Pipelines
         /// </summary>
         public void WaitForCompletion()
         {
-            if (PipelineSignalEvent.WaitOne(30000)) // Don't wait for more than two minutes...
+      /* TODO ????
+            // WaitResult            : TWaitResult;
+            // bool ShouldAbortDueToCompletedEventSet  = false;
+
+      FEpochCount := 0;
+      while not FPipeLine.AllFinished and not FPipeline.PipelineAborted do
+        begin
+          WaitResult := FPipeLine.CompleteEvent.WaitFor(5000);
+
+          if VLPDSvcLocations.Debug_EmitSubgridPipelineProgressLogging then
+            begin
+              if ((FEpochCount > 0) or(FPipeLine.SubmissionNode.TotalNumberOfSubgridsScanned > 0)) and
+                ((FPipeLine.OperationNode.NumPendingResultsReceived >0) or(FPipeLine.OperationNode.OustandingSubgridsToOperateOn > 0)) then
+                 SIGLogMessage.PublishNoODS(Self, Format('%s: Pipeline (request %d, model %d): #Progress# - Scanned = %d, Submitted = %d, Processed = %d (with %d pending and %d results outstanding)',
+                                                      [Self.ClassName,
+                                                         FRequestDescriptor, FPipeLine.DataModelID,
+                                                         FPipeLine.SubmissionNode.TotalNumberOfSubgridsScanned,
+                                                         FPipeLine.SubmissionNode.TotalSumbittedSubgridRequests,
+                                                         FPipeLine.OperationNode.TotalOperatedOnSubgrids,
+                                                         FPipeLine.OperationNode.NumPendingResultsReceived,
+                                                         FPipeLine.OperationNode.OustandingSubgridsToOperateOn]), slmcDebug);
+            end;
+
+          if (WaitResult = wrSignaled) and not FPipeLine.AllFinished and not FPipeLine.PipelineAborted and not FPipeLine.Terminated then
+            begin
+              if ShouldAbortDueToCompletedEventSet then
+                begin
+                  if (FPipeLine.OperationNode.NumPendingResultsReceived >0) or(FPipeLine.OperationNode.OustandingSubgridsToOperateOn > 0) then
+                   SIGLogMessage.PublishNoODS(Self, Format('%s: Pipeline (request %d, model %d) being aborted as it''s completed event has remained set but still has work to do (%d outstanding subgrids, %d pending results to process) over a sleep epoch',
+                                                         [Self.ClassName,
+                                                           FRequestDescriptor, FPipeline.DataModelID,
+                                                           FPipeLine.OperationNode.OustandingSubgridsToOperateOn,
+                                                           FPipeLine.OperationNode.NumPendingResultsReceived]), slmcError);
+                  FPipeLine.Abort;
+                  ASNodeImplInstance.AsyncResponder.ASNodeResponseProcessor.PerformTaskCancellation(FPipelinedTask);
+                  Exit;
+                end
+              else
+                begin
+                  if (FPipeLine.OperationNode.NumPendingResultsReceived >0) or(FPipeLine.OperationNode.OustandingSubgridsToOperateOn > 0) then
+                   SIGLogMessage.PublishNoODS(Self, Format('%s: Pipeline (request %d, model %d) has it''s completed event set but still has work to do (%d outstanding subgrids, %d pending results to process)',
+                                                         [Self.ClassName,
+                                                           FRequestDescriptor, FPipeline.DataModelID,
+                                                           FPipeLine.OperationNode.OustandingSubgridsToOperateOn,
+                                                           FPipeLine.OperationNode.NumPendingResultsReceived]), slmcDebug);
+
+                  Sleep(500);
+                  ShouldAbortDueToCompletedEventSet := True;
+                end;
+            end;
+
+          if FPipeLine.TimeToLiveExpired then
+            begin
+              FAbortedDueToTimeout := True;
+              FPipeLine.Abort;
+              ASNodeImplInstance.AsyncResponder.ASNodeResponseProcessor.PerformTaskCancellation(FPipelinedTask);
+
+              // The pipeline has exceed its allotted time to complete. It will now
+              // be aborted and this request will be failed.
+              SIGLogMessage.PublishNoODS(Self, Format('%s: Pipeline (request %d) aborted due to time to live expiration (%d seconds)',
+                                                      [Self.ClassName, FRequestDescriptor, FPipeLine.TimeToLiveSeconds]), slmcError);
+              Exit;
+            end;
+//              Inc(FEpochCount);
+*/
+
+
+      if (PipelineSignalEvent.WaitOne(30000)) // Don't wait for more than two minutes...
             {
                 Log.LogInformation($"WaitForCompletion received signal with wait handle: {PipelineSignalEvent.SafeWaitHandle.GetHashCode()}");
             }

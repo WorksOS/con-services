@@ -33,6 +33,18 @@ namespace VSS.TRex.Pipelines.Interfaces
     bool AbortedDueToTimeout { get; set; }
 
     /// <summary>
+    /// Indicates if the pipeline requests require the inclusion of surveyed surface information
+    /// </summary>
+    bool RequireSurveyedSurfaceInformation { get; set; }
+
+    /// <summary>
+    /// If this request involves a relationship with a design then ensure the existance map
+    /// for the design is loaded in to memory to allow the request pipeline to confine
+    /// subgrid requests that overlay the actual design
+    /// </summary>
+    bool RequestRequiresAccessToDesignFileExistanceMap { get; set; }
+
+    /// <summary>
     /// Builds the pipeline configured per the supplied state ready to exesute the request
     /// </summary>
     /// <returns></returns>
