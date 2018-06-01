@@ -35,6 +35,13 @@ namespace VSS.TRex.Pipelines.Interfaces
         BoundingWorldExtent3D WorldExtents { get; set; }
 
         /// <summary>
+        /// A restriction on the cells that are returned via the query that intersects with the spatial seelction filtering and criteria
+        /// </summary>
+        BoundingIntegerExtent2D OverrideSpatialCellRestriction { get; set; }
+
+        AreaControlSet AreaControlSet { get; set; }
+
+        /// <summary>
         /// Advise the pipeline processing has been aborted
         /// </summary>
         void Abort();

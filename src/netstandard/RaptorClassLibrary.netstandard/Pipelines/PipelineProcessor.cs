@@ -47,7 +47,7 @@ namespace VSS.TRex.Pipelines
     /// <summary>
     /// The response used as the return from the pipeline request
     /// </summary>
-    public SubGridsPipelinedReponseBase Response;
+    public SubGridsPipelinedReponseBase Response { get; set; }
 
     /// <summary>
     /// Grid data type to be processed and/or returned by the query (eg: Height, CutFill etc)
@@ -89,6 +89,11 @@ namespace VSS.TRex.Pipelines
     public IRequestAnalyser RequestAnalyser { get; set; }
 
     /// <summary>
+    /// Reference to the site model incolved in the request
+    /// </summary>
+    public ISiteModel SiteModel { get; set; }
+
+    /// <summary>
     /// Indicates if the pipeline was aborted due to a TTL timeout
     /// </summary>
     public bool AbortedDueToTimeout { get; set; }
@@ -106,21 +111,30 @@ namespace VSS.TRex.Pipelines
     public bool RequestRequiresAccessToDesignFileExistanceMap { get; set; }
 
     /// <summary>
+    /// A restriction on the cells that are returned via the query that intersects with the spatial seelction filtering and criteria
+    /// </summary>
+    public BoundingIntegerExtent2D OverrideSpatialCellRestriction { get; set; }
+
+    /// <summary>
     /// Constructs the context of a pipelined processor based on the project, filters and other common criteria
     /// of pipelined requests
     /// </summary>
     /// <param name="requestDescriptor"></param>
     /// <param name="dataModelID"></param>
+    /// <param name="gridDataType"></param>
     /// <param name="response"></param>
     /// <param name="filters"></param>
-    /// <param name="mode"></param>
     /// <param name="cutFillDesignID"></param>
     /// <param name="task"></param>
     /// <param name="pipeline"></param>
     /// <param name="requestAnalyser"></param>
     /// <param name="requireSurveyedSurfaceInformation"></param>
+    /// <param name="requestRequiresAccessToDesignFileExistanceMap"></param>
+    /// <param name="overrideSpatialCellRestriction">A restriction on the cells that are returned via the query that intersects with the spatial seelction filtering and criteria</param>
+    /// <param name="siteModel"></param>
     public PipelineProcessor(Guid requestDescriptor,
                              Guid dataModelID,
+                             ISiteModel siteModel,
                              GridDataType gridDataType,
                              SubGridsPipelinedReponseBase response,
                              FilterSet filters,
@@ -129,10 +143,12 @@ namespace VSS.TRex.Pipelines
                              ISubGridPipelineBase pipeline,
                              IRequestAnalyser requestAnalyser,
                              bool requireSurveyedSurfaceInformation,
-                             bool requestRequiresAccessToDesignFileExistanceMap)
+                             bool requestRequiresAccessToDesignFileExistanceMap,
+                             BoundingIntegerExtent2D overrideSpatialCellRestriction)
     {
       RequestDescriptor = requestDescriptor;
       DataModelID = dataModelID;
+      SiteModel = siteModel;
       GridDataType = gridDataType;
       Response = response;
       Filters = filters;
@@ -140,17 +156,12 @@ namespace VSS.TRex.Pipelines
       Task = task;
       Pipeline = pipeline;
 
-      // Introduce the task and the pipeline to each other
-      Pipeline.PipelineTask = Task;
-      Task.PipeLine = Pipeline;
-
       RequestAnalyser = requestAnalyser;
-      // Introduce the Request analyser to the pipeline and spatial extents is requires
-      RequestAnalyser.Pipeline = Pipeline;
-      RequestAnalyser.WorldExtents = SpatialExtents;
 
       RequireSurveyedSurfaceInformation = requireSurveyedSurfaceInformation;
       RequestRequiresAccessToDesignFileExistanceMap = requestRequiresAccessToDesignFileExistanceMap;
+
+      OverrideSpatialCellRestriction = overrideSpatialCellRestriction;
     }
 
     /// <summary>
@@ -159,6 +170,14 @@ namespace VSS.TRex.Pipelines
     /// <returns></returns>
     public bool Build()
     {
+      // Introduce the task and the pipeline to each other
+      Pipeline.PipelineTask = Task;
+      Task.PipeLine = Pipeline;
+
+      // Introduce the Request analyser to the pipeline and spatial extents is requires
+      RequestAnalyser.Pipeline = Pipeline;
+      RequestAnalyser.WorldExtents = SpatialExtents;
+
       // Construct an aggregated set of exlcluded surveyed surfaces for the filters used in the query
       foreach (var filter in Filters.Filters)
       {
@@ -170,12 +189,15 @@ namespace VSS.TRex.Pipelines
         }
       }
 
-      // Get the SiteModel for the request
-      ISiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(DataModelID);
       if (SiteModel == null)
       {
-        Response.ResultStatus = RequestErrorStatus.NoSuchDataModel;
-        return false;
+        // Get the SiteModel for the request
+        ISiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(DataModelID);
+        if (SiteModel == null)
+        {
+          Response.ResultStatus = RequestErrorStatus.NoSuchDataModel;
+          return false;
+        }
       }
 
       SpatialExtents = SiteModel.GetAdjustedDataModelSpatialExtents(SurveyedSurfaceExclusionList);
@@ -229,7 +251,7 @@ namespace VSS.TRex.Pipelines
 
       foreach (var filter in Filters.Filters)
       {
-        if (!DesignFilterUtilities.ProcessDesignElevationsForFilter(SiteModel.ID, filter, OverallExistenceMap))
+        if (!DesignFilterUtilities.ProcessDesignElevationsForFilter(SiteModel, filter, OverallExistenceMap))
         {
           Response.ResultStatus = RequestErrorStatus.NoDesignProvided;
           return false;
@@ -284,6 +306,8 @@ namespace VSS.TRex.Pipelines
     /// </summary>
     protected void ConfigurePipeline()
     {
+      Pipeline.GridDataType = GridDataType;
+
       Pipeline.RequestDescriptor = RequestDescriptor;
 
       // PipeLine.ExternalDescriptor  = ExternalDescriptor;
@@ -328,6 +352,8 @@ namespace VSS.TRex.Pipelines
       Pipeline.WorldExtents.Assign(SpatialExtents);
 
       Pipeline.IncludeSurveyedSurfaceInformation = RequireSurveyedSurfaceInformation && !SurveyedSurfacesExludedViaTimeFiltering;
+
+      Pipeline.OverrideSpatialCellRestriction = OverrideSpatialCellRestriction;
 
       //PipeLine.NoChangeVolumeTolerance  = FICOptions.NoChangeVolumeTolerance;
     }

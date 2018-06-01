@@ -1,5 +1,7 @@
 ﻿using System;
 using VSS.TRex.Filters;
+using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 
 namespace VSS.TRex.Designs
@@ -17,7 +19,7 @@ namespace VSS.TRex.Designs
         /// <param name="filter"></param>
         /// <param name="overallExistenceMap"></param>
         /// <returns></returns>
-        public static bool ProcessDesignElevationsForFilter(Guid siteModelID,
+        public static bool ProcessDesignElevationsForFilter(ISiteModel siteModel, //Guid siteModelID,
                                                             CombinedFilter filter,
                                                             SubGridTreeSubGridExistenceBitMask overallExistenceMap)
         {
@@ -27,16 +29,18 @@ namespace VSS.TRex.Designs
             if (filter.AttributeFilter.HasElevationRangeFilter && filter.AttributeFilter.ElevationRangeDesignID != Guid.Empty)
             {
                 SubGridTreeSubGridExistenceBitMask DesignExistanceMap = ExistenceMaps.ExistenceMaps.GetSingleExistenceMap
-                    (siteModelID, ExistenceMaps.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, filter.AttributeFilter.ElevationRangeDesignID);
+                    (siteModel.ID, ExistenceMaps.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, filter.AttributeFilter.ElevationRangeDesignID);
 
                 if (overallExistenceMap == null)
                     return false;
 
                 if (DesignExistanceMap != null)
                     overallExistenceMap.SetOp_OR(DesignExistanceMap);
+
+              DesignExistanceMap.CellSize = SubGridTree.SubGridTreeDimension * siteModel.Grid.CellSize;
             }
 
-            return true;
+      return true;
         }
     }
 }

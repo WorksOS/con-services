@@ -7,6 +7,7 @@ using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
+using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.RequestStatistics;
 using VSS.TRex.Types;
@@ -101,6 +102,7 @@ namespace VSS.TRex.Rendering.Patches.Executors
         // Provide the processor with a customised request analyser configured to return a specific page of subgrids
         processor = new PipelineProcessor(requestDescriptor: RequestDescriptor,
           dataModelID: DataModelID, 
+          siteModel:null,
           gridDataType: GridDataFromModeConverter.Convert(Mode), 
           response: PatchSubGridsResponse, 
           filters: Filters, 
@@ -114,7 +116,8 @@ namespace VSS.TRex.Rendering.Patches.Executors
             SubmitSinglePageOfRequests = true
           },
           requireSurveyedSurfaceInformation: Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode) && Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
-          requestRequiresAccessToDesignFileExistanceMap: Utilities.RequestRequiresAccessToDesignFileExistanceMap(Mode /*ReferenceVolumeType*/));
+          requestRequiresAccessToDesignFileExistanceMap: Utilities.RequestRequiresAccessToDesignFileExistanceMap(Mode /*ReferenceVolumeType*/),
+          overrideSpatialCellRestriction:BoundingIntegerExtent2D.Inverted());
 
         if (!processor.Build())
         {
