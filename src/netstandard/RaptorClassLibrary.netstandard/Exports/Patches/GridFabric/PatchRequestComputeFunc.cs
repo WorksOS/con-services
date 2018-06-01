@@ -44,7 +44,9 @@ namespace VSS.TRex.Exports.Patches.GridFabric.ComputeFuncs
 
         Log.LogInformation("Executing request.Execute()");
 
-        request.Execute();
+        if (!request.Execute())
+          Log.LogError($"Request execution failed");
+
         return request.PatchSubGridsResponse;
       }
       finally

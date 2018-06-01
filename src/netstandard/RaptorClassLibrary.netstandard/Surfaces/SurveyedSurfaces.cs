@@ -268,9 +268,7 @@ namespace VSS.TRex.Surfaces
                                                  Guid[] ExclusionList)
         {
             if (ExcludeSurveyedSurfaces)
-            {
                 return;
-            }
 
             if (!HasTimeFilter && ExclusionList.Length == 0)
             {
@@ -278,24 +276,19 @@ namespace VSS.TRex.Surfaces
                 return;
             }
 
+            FilteredSurveyedSurfaceDetails.Clear();
             foreach (SurveyedSurface ss in this)
             {
                 if (!HasTimeFilter)
                 {
                     if (!ExclusionList.Any(x => x == ss.ID)) // if SS not excluded from project
-                    {
                         FilteredSurveyedSurfaceDetails.Add(ss);  // Formerly ss.Clone
-                    }
                 }
                 else
                 {
-                    if (ss.AsAtDate >= StartTime && ss.AsAtDate <= EndTime)
-                    {
-                        if (!ExclusionList.Any(x => x == ss.ID)) // if SS not excluded from project
-                        {
-                            FilteredSurveyedSurfaceDetails.Add(ss);  // Formerly ss.Clone
-                        }
-                    }
+                    if (ss.AsAtDate >= StartTime && ss.AsAtDate <= EndTime &&
+                        !ExclusionList.Any(x => x == ss.ID)) // if SS not excluded from project
+                        FilteredSurveyedSurfaceDetails.Add(ss);  // Formerly ss.Clone
                 }
             }
         }

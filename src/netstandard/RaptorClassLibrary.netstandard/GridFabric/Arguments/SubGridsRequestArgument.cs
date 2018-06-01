@@ -18,7 +18,7 @@ namespace VSS.TRex.GridFabric.Arguments
         /// <summary>
         /// The request ID for the subgrid request
         /// </summary>
-        public long RequestID = -1;
+        public Guid RequestID = Guid.Empty;
 
         /// <summary>
         /// The grid data type to extract from the processed subgrids

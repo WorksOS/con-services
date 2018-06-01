@@ -1,6 +1,6 @@
 ﻿using VSS.TRex.Types;
 
-namespace VSS.TRex.Exports
+namespace VSS.TRex.Pipelines
 {
   /// <summary>
   /// A base class representing the generic result of requesting subgrids

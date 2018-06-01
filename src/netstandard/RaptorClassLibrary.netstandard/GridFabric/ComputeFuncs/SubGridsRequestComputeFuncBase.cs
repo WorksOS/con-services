@@ -373,9 +373,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
             int resultCount = 0;
 
             if (listCount == 0)
-            {
                 return;
-            }
 
             //Log.InfoFormat("Sending {0} subgrids to caller for processing", count);
 
@@ -517,9 +515,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                     Log.LogInformation($"Num subgrids present in request = {NumSubgridsToBeExamined} [All divisions]");
 
                     if (!EstablishRequiredIgniteContext(out SubGridRequestsResponseResult contextEstablishmentResponse))
-                    {
                         return new TSubGridRequestsResponse { ResponseCode = contextEstablishmentResponse };
-                    }
 
                     result = PerformSubgridRequests();
                     result.NumSubgridsExamined = NumSubgridsToBeExamined;

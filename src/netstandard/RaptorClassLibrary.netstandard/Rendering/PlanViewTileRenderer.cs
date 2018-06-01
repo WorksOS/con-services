@@ -25,7 +25,7 @@ namespace VSS.TRex.Rendering
         /// </summary>
         string RequestingTRexNodeID { get; set; }
 
-        public long RequestDescriptor;
+        public Guid RequestDescriptor;
         // FExternalDescriptor : TASNodeRequestDescriptor;
 
         public Guid DataModelID;

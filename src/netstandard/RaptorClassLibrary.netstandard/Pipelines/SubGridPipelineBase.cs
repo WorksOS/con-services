@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using VSS.TRex.Executors.Tasks;
+using VSS.TRex.Executors.Tasks.Interfaces;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
@@ -41,13 +42,19 @@ namespace VSS.TRex.Pipelines
         private long SubgridsRemainingToProcess;
 
 //        public int ID;
-        public PipelinedSubGridTask PipelineTask;
+        public ITask /*PipelinedSubGridTask*/ PipelineTask { get; set; }
+
         public bool Aborted { get; set; }
+
+        public bool Terminated { get; set; }
 
         public uint TimeToLiveSeconds = 0;
         private DateTime TimeToLiveExpiryTime = DateTime.MaxValue;
 
-        // public FExternalDescriptor: TASNodeRequestDescriptor;
+        /// <summary>
+        /// The request descriptor ID for this request
+        /// </summary>
+        public Guid RequestDescriptor { get; set; }
 
         // FMaximumOutstandingSubgridRequests : Integer;
 
@@ -63,7 +70,10 @@ namespace VSS.TRex.Pipelines
         /// </summary>
         public SubGridTreeSubGridExistenceBitMask ProdDataExistenceMap { get; set; }
 
-        public bool IncludeSurveyedSurfaceInformation = true;
+        /// <summary>
+        /// Notes if the underlyinf query needs to include surveyed surface information in its results
+        /// </summary>
+        public bool IncludeSurveyedSurfaceInformation { get; set; } = true;
 
         /// <summary>
         /// DesignSubgridOverlayMap is the subgrid index for subgrids that cover the design being related to for cut/fill operations
@@ -82,10 +92,6 @@ namespace VSS.TRex.Pipelines
         // public float FNoChangeVolumeTolerance;
 
         public AreaControlSet AreaControlSet;
-
-        public long RequestDescriptor = -1;
-
-        public bool Terminated = false;
 
         protected bool pipelineCompleted;
 
@@ -107,10 +113,17 @@ namespace VSS.TRex.Pipelines
         // FLiftBuildSettings is a reference to a lift build settings object provided by the caller
         //  property LiftBuildSettings : TICLiftBuildSettings read FLiftBuildSettings write FLiftBuildSettings;
         //  property Terminated : Boolean read FTerminated;
+      
+        /// <summary>
+        /// The type of grid data to be seleted from the data model
+        /// </summary>
+        public GridDataType GridDataType { get; set; } = GridDataType.All;
 
-        public GridDataType GridDataType = GridDataType.All;
+        /// <summary>
+        /// The world coordinate bounding box that restricts the spatial area within which the query should consider data
+        /// </summary>
+        public BoundingWorldExtent3D WorldExtents { get; set; } = BoundingWorldExtent3D.Inverted();
 
-        public BoundingWorldExtent3D WorldExtents = BoundingWorldExtent3D.Inverted();
         public BoundingIntegerExtent2D OverrideSpatialCellRestriction = BoundingIntegerExtent2D.Inverted();
 
         /// <summary>
@@ -158,15 +171,8 @@ namespace VSS.TRex.Pipelines
             }
         }
 
-        /// <summary>
-        /// Constructor accepting an identifier for the pipeline and a task for the pipeline to operate with
-        /// </summary>
-        /// <param name="task"></param>
-        public SubGridPipelineBase(/*int AID, */PipelinedSubGridTask task)
+        public SubGridPipelineBase()
         {
-            PipelineTask = task;
-            //ID = AID;
-
             // FMaxNumberOfPassesToReturn:= VLPDSvcLocations.VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary;
 
             // FNoChangeVolumeTolerance:= 0;
@@ -181,12 +187,23 @@ namespace VSS.TRex.Pipelines
             // FTimeToLiveSeconds:= kDefaultSubgridPipelineTimeToLiveSeconds;
 
             // FMaximumOutstandingSubgridRequests:= VLPDSvcLocations.VLPDASNode_DefaultMaximumOutstandingSubgridRequestsInPipeline;
+
         }
 
         /// <summary>
-        /// Signals to the running pipeline that its operation has been aborted
+        /// Constructor accepting an identifier for the pipeline and a task for the pipeline to operate with
         /// </summary>
-        public virtual void Abort()
+        /// <param name="task"></param>
+        public SubGridPipelineBase(/*int AID, */PipelinedSubGridTask task) : this()
+        {
+            //ID = AID;
+            PipelineTask = task;
+        }
+
+    /// <summary>
+    /// Signals to the running pipeline that its operation has been aborted
+    /// </summary>
+    public virtual void Abort()
         {
             Aborted = true;
 
@@ -235,7 +252,7 @@ namespace VSS.TRex.Pipelines
             {
                 Task = PipelineTask,
                 SiteModelID = DataModelID,
-                RequestID = PipelineTask.RequestDescriptor,
+                RequestID = RequestDescriptor,
                 TRexNodeId = PipelineTask.TRexNodeID,
                 RequestedGridDataType = GridDataType,
                 IncludeSurveyedSurfaceInformation = IncludeSurveyedSurfaceInformation,
