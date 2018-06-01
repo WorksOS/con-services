@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using VSS.TRex.Common;
 
@@ -30,5 +31,25 @@ namespace VSS.TRex.Types
 			Min = min;
 			Max = max;
 		}
-	}
+
+	  /// <summary>
+	  /// Serialises content of the cell to the writer
+	  /// </summary>
+	  /// <param name="writer"></param>
+	  public void Write(BinaryWriter writer)
+	  {
+	    writer.Write(Min);
+	    writer.Write(Max);
+	  }
+
+    /// <summary>
+    /// Serialises comtent of the cell from the writer
+    /// </summary>
+    /// <param name="reader"></param>
+    public void Read(BinaryReader reader)
+	  {
+	    Min = reader.ReadUInt16();
+	    Max = reader.ReadUInt16();
+	  }
+  }
 }

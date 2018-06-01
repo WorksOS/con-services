@@ -42,18 +42,18 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 
 			// Works out the percentage each colour on the map represents
 
-			if (!(subGrids[0][0] is ClientMachineSpeedLeafSubGrid SubGrid))
+			if (!(subGrids[0][0] is ClientMachineTargetSpeedLeafSubGrid SubGrid))
 			  return;
 
 			SubGridUtilities.SubGridDimensionalIterator((I, J) =>
 		  {
-			  float Value = SubGrid.Cells[I, J];
-			  if (Value != CellPass.NullMachineSpeed) // is there a value to test
+			  var SpeedRangeValue = SubGrid.Cells[I, J];
+			  if (SpeedRangeValue.Max != CellPass.NullMachineSpeed) // is there a value to test
 			  {
 				  SummaryCellsScanned++;
-				  if (Value > TargetMaxMachineSpeed)
+				  if (SpeedRangeValue.Max > TargetMaxMachineSpeed)
 					  CellsScannedOverTarget++;
-				  else if (Value < TargetMinMachineSpeed)
+				  else if (SpeedRangeValue.Min < TargetMinMachineSpeed && SpeedRangeValue.Max < TargetMinMachineSpeed)
 					  CellsScannedUnderTarget++;
 					else
 						CellsScannedAtTarget++;
