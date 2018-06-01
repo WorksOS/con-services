@@ -22,9 +22,7 @@ namespace VSS.TRex.Designs
                                                             SubGridTreeSubGridExistenceBitMask overallExistenceMap)
         {
             if (filter == null)
-            {
                 return true;
-            }
 
             if (filter.AttributeFilter.HasElevationRangeFilter && filter.AttributeFilter.ElevationRangeDesignID != Guid.Empty)
             {
@@ -32,14 +30,10 @@ namespace VSS.TRex.Designs
                     (siteModelID, ExistenceMaps.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, filter.AttributeFilter.ElevationRangeDesignID);
 
                 if (overallExistenceMap == null)
-                {
                     return false;
-                }
 
                 if (DesignExistanceMap != null)
-                {
                     overallExistenceMap.SetOp_OR(DesignExistanceMap);
-                }
             }
 
             return true;

@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs;
 using VSS.TRex.Executors.Tasks.Interfaces;
 using VSS.TRex.Filters;
@@ -18,6 +19,8 @@ namespace VSS.TRex.Pipelines
   /// </summary>
   public class PipelineProcessor : IPipelineProcessor
   {
+    private static ILogger Log = Logging.Logger.CreateLogger<PipelineProcessor>();
+
     public Guid RequestDescriptor;
 
     /// <summary>
@@ -39,7 +42,7 @@ namespace VSS.TRex.Pipelines
     /// <summary>
     /// The spatial extents derived from the parameters when building the pipeline
     /// </summary>
-    public BoundingWorldExtent3D SpatialExtents = BoundingWorldExtent3D.Inverted(); // No get;set; on purpose
+    public BoundingWorldExtent3D SpatialExtents = BoundingWorldExtent3D.Full(); // No get;set; on purpose
 
     /// <summary>
     /// The response used as the return from the pipeline request
@@ -47,9 +50,9 @@ namespace VSS.TRex.Pipelines
     public SubGridsPipelinedReponseBase Response;
 
     /// <summary>
-    /// The query context mode of data to be processed and/or returned by the query (eg: Height, CutFill etc)
+    /// Grid data type to be processed and/or returned by the query (eg: Height, CutFill etc)
     /// </summary>
-    public DisplayMode Mode;
+    public GridDataType GridDataType;
 
     public SubGridTreeSubGridExistenceBitMask ProdDataExistenceMap;
     public SubGridTreeSubGridExistenceBitMask OverallExistenceMap;
@@ -91,6 +94,18 @@ namespace VSS.TRex.Pipelines
     public bool AbortedDueToTimeout { get; set; }
 
     /// <summary>
+    /// Indicates if the pipeline requests should include surveyed surface information
+    /// </summary>
+    public bool RequireSurveyedSurfaceInformation { get; set; }
+
+    /// <summary>
+    /// If this request involves a relationship with a design then ensure the existance map
+    /// for the design is loaded in to memory to allow the request pipeline to confine
+    /// subgrid requests that overlay the actual design
+    /// </summary>
+    public bool RequestRequiresAccessToDesignFileExistanceMap { get; set; }
+
+    /// <summary>
     /// Constructs the context of a pipelined processor based on the project, filters and other common criteria
     /// of pipelined requests
     /// </summary>
@@ -103,19 +118,22 @@ namespace VSS.TRex.Pipelines
     /// <param name="task"></param>
     /// <param name="pipeline"></param>
     /// <param name="requestAnalyser"></param>
+    /// <param name="requireSurveyedSurfaceInformation"></param>
     public PipelineProcessor(Guid requestDescriptor,
                              Guid dataModelID,
-                             DisplayMode mode,
+                             GridDataType gridDataType,
                              SubGridsPipelinedReponseBase response,
                              FilterSet filters,
                              Guid cutFillDesignID,
                              ITask task,
                              ISubGridPipelineBase pipeline,
-                             IRequestAnalyser requestAnalyser)
+                             IRequestAnalyser requestAnalyser,
+                             bool requireSurveyedSurfaceInformation,
+                             bool requestRequiresAccessToDesignFileExistanceMap)
     {
       RequestDescriptor = requestDescriptor;
       DataModelID = dataModelID;
-      Mode = mode;
+      GridDataType = gridDataType;
       Response = response;
       Filters = filters;
       CutFillDesignID = cutFillDesignID;
@@ -130,6 +148,9 @@ namespace VSS.TRex.Pipelines
       // Introduce the Request analyser to the pipeline and spatial extents is requires
       RequestAnalyser.Pipeline = Pipeline;
       RequestAnalyser.WorldExtents = SpatialExtents;
+
+      RequireSurveyedSurfaceInformation = requireSurveyedSurfaceInformation;
+      RequestRequiresAccessToDesignFileExistanceMap = requestRequiresAccessToDesignFileExistanceMap;
     }
 
     /// <summary>
@@ -138,6 +159,7 @@ namespace VSS.TRex.Pipelines
     /// <returns></returns>
     public bool Build()
     {
+      // Construct an aggregated set of exlcluded surveyed surfaces for the filters used in the query
       foreach (var filter in Filters.Filters)
       {
         if (filter != null && SurveyedSurfaceExclusionList.Length > 0)
@@ -152,7 +174,8 @@ namespace VSS.TRex.Pipelines
       ISiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(DataModelID);
       if (SiteModel == null)
       {
-        throw new ArgumentException($"Unable to acquire site model instance for ID:{DataModelID}");
+        Response.ResultStatus = RequestErrorStatus.NoSuchDataModel;
+        return false;
       }
 
       SpatialExtents = SiteModel.GetAdjustedDataModelSpatialExtents(SurveyedSurfaceExclusionList);
@@ -179,7 +202,7 @@ namespace VSS.TRex.Pipelines
         CellSize = SubGridTree.SubGridTreeDimension * SiteModel.Grid.CellSize
       };
 
-      if (Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode))
+      if (RequireSurveyedSurfaceInformation)
       {
         // Obtain local reference to surveyed surfaces (lock free access)
         SurveyedSurfaces LocalSurveyedSurfaces = SiteModel.SurveyedSurfaces;
@@ -216,30 +239,34 @@ namespace VSS.TRex.Pipelines
         {
           Response.ResultStatus = FilterUtilities.PrepareFilterForUse(filter, DataModelID);
           if (Response.ResultStatus != RequestErrorStatus.OK)
+          {
+            Log.LogInformation($"PrepareFilterForUse failed: Datamodel={DataModelID}");
             return false;
+          }
         }
       }
 
+      // Adjust the extents we have been given to encompass the spatial extent of the supplied filters (if any)
       Filters.ApplyFilterAndSubsetBoundariesToExtents(ref SpatialExtents);
 
       // If this request involves a relationship with a design then ensure the existance map
       // for the design is loaded in to memory to allow the request pipeline to confine
       // subgrid requests that overlay the actual design
-      if (Rendering.Utilities.RequestRequiresAccessToDesignFileExistanceMap(Mode /*, ReferenceVolumeType*/))
+      if (RequestRequiresAccessToDesignFileExistanceMap)
       {
-        /* if (CutFillDesign.IsNull)
+        if (CutFillDesignID == Guid.Empty)
         {
             Log.LogError($"No design provided to cut fill, summary volume or thickness overlay render request for datamodel {DataModelID}");
-            PatchSubGridsResponse.ResultStatus = RequestErrorStatus.NoDesignProvided;
+            Response.ResultStatus = RequestErrorStatus.NoDesignProvided;
             return false;
-        }*/
+        }
 
         DesignSubgridOverlayMap = ExistenceMaps.ExistenceMaps.GetSingleExistenceMap(DataModelID,
           ExistenceMaps.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, CutFillDesignID);
 
         if (DesignSubgridOverlayMap == null)
         {
-          //Log.LogError($"Failed to request subgrid overlay index for design {CutFillDesignID} in datamodel {DataModelID}");
+          Log.LogError($"Failed to request subgrid overlay index for design {CutFillDesignID} in datamodel {DataModelID}");
           Response.ResultStatus = RequestErrorStatus.NoDesignProvided;
           return false;
         }
@@ -265,7 +292,8 @@ namespace VSS.TRex.Pipelines
 
       Pipeline.DataModelID = DataModelID;
 
-      // todo PipeLine.LiftBuildSettings  = FICOptions.GetLiftBuildSettings(FFilter1.LayerMethod);
+      //TODO Readd when lift build settings are supported
+      //todo PipeLine.LiftBuildSettings  = FICOptions.GetLiftBuildSettings(FFilter1.LayerMethod);
 
       // If summaries of compaction information (both CMV and MDP) are being displayed,
       // and the lift build settings requires all layers to be examined (so the
@@ -273,34 +301,33 @@ namespace VSS.TRex.Pipelines
       // analysis engine to apply to restriction to the number of cell passes to use
       // to perform layer analysis (ie: all cell passes will be used).
 
+      /* Todo: Delegate this kind of specialised configuration to the client of the pipeline processor
       if (Mode == DisplayMode.CCVSummary || Mode == DisplayMode.CCVPercentSummary)
       {
-        /* TODO... if (!PipeLine.LiftBuildSettings.CCVSummarizeTopLayerOnly)
-            PipeLine.MaxNumberOfPassesToReturn = VLPDSvcLocations.VLPDASNode_MaxCellPassDepthForAllLayersCompactionSummaryAnalysis;
-        */
+        // TODO... if (!PipeLine.LiftBuildSettings.CCVSummarizeTopLayerOnly)
+        //    PipeLine.MaxNumberOfPassesToReturn = VLPDSvcLocations.VLPDASNode_MaxCellPassDepthForAllLayersCompactionSummaryAnalysis;
+        //
       }
 
       if (Mode == DisplayMode.MDPSummary || Mode == DisplayMode.MDPPercentSummary)
       {
-        /* TODO... if (!PipeLine.LiftBuildSettings.MDPSummarizeTopLayerOnly)
-            PipeLine.MaxNumberOfPassesToReturn = VLPDSvcLocations.VLPDASNode_MaxCellPassDepthForAllLayersCompactionSummaryAnalysis;
-        */
+        // TODO... if (!PipeLine.LiftBuildSettings.MDPSummarizeTopLayerOnly)
+        //  PipeLine.MaxNumberOfPassesToReturn = VLPDSvcLocations.VLPDASNode_MaxCellPassDepthForAllLayersCompactionSummaryAnalysis;
+        //
       }
+      */
 
       Pipeline.OverallExistenceMap = OverallExistenceMap;
       Pipeline.ProdDataExistenceMap = ProdDataExistenceMap;
       Pipeline.DesignSubgridOverlayMap = DesignSubgridOverlayMap;
 
-      Pipeline.GridDataType = GridDataFromModeConverter.Convert(Mode);
-
       // Assign the filter set into the pipeline
       Pipeline.FilterSet = Filters;
 
+      Log.LogDebug($"Extents for query against DM={DataModelID}: {SpatialExtents}");
       Pipeline.WorldExtents.Assign(SpatialExtents);
 
-      Pipeline.IncludeSurveyedSurfaceInformation = Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode) && !SurveyedSurfacesExludedViaTimeFiltering;
-      if (Pipeline.IncludeSurveyedSurfaceInformation)  // if required then check if filter turns off requirement due to filters used
-        Pipeline.IncludeSurveyedSurfaceInformation = Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters);
+      Pipeline.IncludeSurveyedSurfaceInformation = RequireSurveyedSurfaceInformation && !SurveyedSurfacesExludedViaTimeFiltering;
 
       //PipeLine.NoChangeVolumeTolerance  = FICOptions.NoChangeVolumeTolerance;
     }

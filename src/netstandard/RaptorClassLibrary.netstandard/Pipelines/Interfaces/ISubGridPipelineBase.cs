@@ -1,5 +1,4 @@
 ﻿using System;
-using VSS.MasterData.Models.Models;
 using VSS.TRex.Executors.Tasks.Interfaces;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;

@@ -15,12 +15,18 @@ namespace VSS.TRex.Pipelines
         where TSubGridsRequestArgument : SubGridsRequestArgument, new()
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
+      /// <summary>
+      /// Default no-arg constructor
+      /// </summary>
+      public SubGridPipelineAggregative() : base()
+      {
+      }
+
         /// <summary>
-        /// Default no-arg constructor
-        /// </summary>
-        /// <param name="AID"></param>
-        /// <param name="task"></param>
-        public SubGridPipelineAggregative(/*int AID, */ PipelinedSubGridTask task) : base(/*AID, */ task)
+    /// Creates a pip
+    /// </summary>
+    /// <param name="task"></param>
+    public SubGridPipelineAggregative(/*int AID, */ PipelinedSubGridTask task) : base(/*AID, */ task)
         {
         }
     }

@@ -99,16 +99,22 @@ namespace VSS.TRex.Rendering.Patches.Executors
         Guid RequestDescriptor = Guid.NewGuid();
 
         // Provide the processor with a customised request analyser configured to return a specific page of subgrids
-        processor = new PipelineProcessor(RequestDescriptor,
-          DataModelID, Mode, PatchSubGridsResponse, Filters, CutFillDesignID,
-          new PatchTask(RequestDescriptor, RequestingTRexNodeID, GridDataFromModeConverter.Convert(Mode)),
-          new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(),
-          new RequestAnalyser
+        processor = new PipelineProcessor(requestDescriptor: RequestDescriptor,
+          dataModelID: DataModelID, 
+          gridDataType: GridDataFromModeConverter.Convert(Mode), 
+          response: PatchSubGridsResponse, 
+          filters: Filters, 
+          cutFillDesignID: CutFillDesignID,
+          task: new PatchTask(RequestDescriptor, RequestingTRexNodeID, GridDataFromModeConverter.Convert(Mode)),
+          pipeline: new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(),
+          requestAnalyser: new RequestAnalyser
           {
             SinglePageRequestNumber = DataPatchPageNumber,
             SinglePageRequestSize = DataPatchPageSize,
             SubmitSinglePageOfRequests = true
-          });
+          },
+          requireSurveyedSurfaceInformation: Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode) && Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
+          requestRequiresAccessToDesignFileExistanceMap: Utilities.RequestRequiresAccessToDesignFileExistanceMap(Mode /*ReferenceVolumeType*/));
 
         if (!processor.Build())
         {
