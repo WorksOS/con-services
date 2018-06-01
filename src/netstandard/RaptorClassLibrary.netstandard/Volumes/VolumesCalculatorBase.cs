@@ -161,7 +161,7 @@ namespace VSS.TRex.Volumes
         SurveyedSurfaces FilteredBaseSurveyedSurfaces = new SurveyedSurfaces();
         SurveyedSurfaces FilteredTopSurveyedSurfaces = new SurveyedSurfaces();
 
-        public long RequestDescriptor { get; set; } = -1;
+        public Guid RequestDescriptor { get; set; } = Guid.Empty;
 
         public abstract bool ComputeVolumeInformation();
 

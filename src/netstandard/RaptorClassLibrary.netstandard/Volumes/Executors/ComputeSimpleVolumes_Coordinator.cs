@@ -165,7 +165,7 @@ namespace VSS.TRex.Volumes.Executors
 //            BoundingWorldExtent3D SpatialExtent = BoundingWorldExtent3D.Null();
 //            long[] SurveyedSurfaceExclusionList = new long[0];
 
-            long RequestDescriptor = Guid.NewGuid().GetHashCode(); // TODO ASNodeImplInstance.NextDescriptor;
+            Guid RequestDescriptor = Guid.NewGuid(); // TODO ASNodeImplInstance.NextDescriptor;
 
             //NEECoords: TCSConversionCoordinates;
             //LLHCoords: TCSConversionCoordinates;

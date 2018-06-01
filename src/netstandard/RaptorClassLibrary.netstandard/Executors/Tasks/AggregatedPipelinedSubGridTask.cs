@@ -20,7 +20,7 @@ namespace VSS.TRex.Executors.Tasks
         /// Constructor acceoting an aggregator and defaulting all other internal Task state
         /// </summary>
         /// <param name="aggregator"></param>
-        public AggregatedPipelinedSubGridTask(ISubGridRequestsAggregator aggregator) : base(Guid.NewGuid().GetHashCode(), "", Types.GridDataType.All)
+        public AggregatedPipelinedSubGridTask(ISubGridRequestsAggregator aggregator) : base(Guid.NewGuid(), "", Types.GridDataType.All)
         {
             Aggregator = aggregator;
         }

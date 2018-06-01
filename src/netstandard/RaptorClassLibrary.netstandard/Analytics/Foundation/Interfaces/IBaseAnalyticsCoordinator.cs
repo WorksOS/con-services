@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Analytics.Aggregators;
+﻿using System;
+using VSS.TRex.Analytics.Aggregators;
 using VSS.TRex.Analytics.GridFabric.Responses;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.SiteModels;
@@ -18,7 +19,7 @@ namespace VSS.TRex.Analytics.Foundation.Interfaces
         /// <summary>
         /// Request descriptor used to track this request in different parts of the cluster compute
         /// </summary>
-        long RequestDescriptor { get; set; }
+        Guid RequestDescriptor { get; set; }
 
         /// <summary>
         /// Execution method for the derived coordinator to override

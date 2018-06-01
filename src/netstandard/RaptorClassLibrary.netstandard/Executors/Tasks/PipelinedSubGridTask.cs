@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
 using VSS.TRex.Types;
@@ -18,7 +19,7 @@ namespace VSS.TRex.Executors.Tasks
         /// <param name="requestDescriptor"></param>
         /// <param name="tRexNodeID"></param>
         /// <param name="gridDataType"></param>
-        public PipelinedSubGridTask(long requestDescriptor, string tRexNodeID, GridDataType gridDataType) : base(requestDescriptor, tRexNodeID, gridDataType)
+        public PipelinedSubGridTask(Guid requestDescriptor, string tRexNodeID, GridDataType gridDataType) : base(requestDescriptor, tRexNodeID, gridDataType)
         {
         }
 

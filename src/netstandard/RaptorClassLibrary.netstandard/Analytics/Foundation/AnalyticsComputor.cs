@@ -63,7 +63,7 @@ namespace VSS.TRex.Analytics
         {
         }
 
-        public long RequestDescriptor { get; set; } = -1;
+        public Guid RequestDescriptor { get; set; } = Guid.Empty;
 
         public FilterSet Filters { get; set; }
 

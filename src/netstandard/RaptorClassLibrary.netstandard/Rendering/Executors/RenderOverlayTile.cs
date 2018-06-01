@@ -361,7 +361,7 @@ namespace VSS.TRex.Rendering.Executors
               Exit;
             */
 
-            long RequestDescriptor = Guid.NewGuid().GetHashCode(); // TODO ASNodeImplInstance.NextDescriptor;
+            Guid RequestDescriptor = Guid.NewGuid(); // TODO ASNodeImplInstance.NextDescriptor;
 
             /* TODO Readd wen logging available
           if VLPDSvcLocations.Debug_EmitTileRenderRequestParametersToLog then

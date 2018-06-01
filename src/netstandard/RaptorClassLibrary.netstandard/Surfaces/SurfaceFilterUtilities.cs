@@ -32,9 +32,7 @@ namespace VSS.TRex.Surfaces
                                                             SubGridTreeSubGridExistenceBitMask OverallExistenceMap)
         {
             if (SurveyedSurfaces == null)
-            {
                 return true;
-            }
 
             // Filter out any surveyed surfaces which don't match current filter (if any) - realistically, this is time filters we're thinking of here
             SurveyedSurfaces.FilterSurveyedSurfaceDetails(Filter.AttributeFilter.HasTimeFilter,
@@ -44,9 +42,7 @@ namespace VSS.TRex.Surfaces
                                                           Filter.AttributeFilter.SurveyedSurfaceExclusionList);
 
             if (FilteredSurveyedSurfaces?.Equals(ComparisonList) == true)
-            {
                 return true;
-            }
 
             if (FilteredSurveyedSurfaces.Count > 0)
             {
@@ -54,14 +50,10 @@ namespace VSS.TRex.Surfaces
                 FilteredSurveyedSurfaces.Select(x => new Tuple<long, Guid>(ExistenceMaps.Consts.EXISTANCE_SURVEYED_SURFACE_DESCRIPTOR, x.ID)).ToArray());
 
                 if (OverallExistenceMap == null)
-                {
                     return false;
-                }
 
                 if (SurveyedSurfaceExistanceMap != null)
-                {
                     OverallExistenceMap.SetOp_OR(SurveyedSurfaceExistanceMap);
-                }
             }
 
             return true;

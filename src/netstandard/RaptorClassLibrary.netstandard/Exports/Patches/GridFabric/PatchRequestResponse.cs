@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using VSS.TRex.Pipelines;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Exports.Patches.GridFabric

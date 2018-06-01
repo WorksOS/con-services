@@ -29,7 +29,7 @@ namespace VSS.TRex.Analytics.Coordinators
         /// <summary>
         /// Request descriptor used to track this request in different parts of the cluster compute
         /// </summary>
-        public long RequestDescriptor { get; set; }
+        public Guid RequestDescriptor { get; set; }
 
         /// <summary>
         /// Execution method for the derived coordinator to override
@@ -68,7 +68,7 @@ namespace VSS.TRex.Analytics.Coordinators
                 }
                 */
 
-                RequestDescriptor = Guid.NewGuid().GetHashCode(); // TODO ASNodeImplInstance.NextDescriptor;
+                RequestDescriptor = Guid.NewGuid(); // TODO ASNodeImplInstance.NextDescriptor;
 
                 SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(arg.DataModelID);
 
