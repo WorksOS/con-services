@@ -33,7 +33,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models.UnitT
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.WebApi.Common", "WebApi.Common\src\VSS.WebApi.Common.csproj", "{281F3104-7976-4BAE-9D4A-2CFAEED2F61C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.WebApi.Common.UnitTests", "WebApi.Common\test\UnitTests\VSS.WebApi.Common.UnitTests.csproj", "{06D98B45-F0E0-4DA0-B692-ECB95B920D60}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.WebApi.Common.UnitTests", "WebApi.Common\test\UnitTests\VSS.WebApi.Common.UnitTests.csproj", "{06D98B45-F0E0-4DA0-B692-ECB95B920D60}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.AWS.TransferProxy", "AWS.TransferProxy\src\VSS.AWS.TransferProxy.csproj", "{F5C7B909-75FE-4B61-A640-7F843372428F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.AWS.TransferProxy.UnitTests", "AWS.TransferProxy\test\UnitTests\VSS.AWS.TransferProxy.UnitTests.csproj", "{65E55C57-0B3E-4CB8-A8AB-62639629F72F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -101,6 +105,14 @@ Global
 		{06D98B45-F0E0-4DA0-B692-ECB95B920D60}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06D98B45-F0E0-4DA0-B692-ECB95B920D60}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06D98B45-F0E0-4DA0-B692-ECB95B920D60}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5C7B909-75FE-4B61-A640-7F843372428F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5C7B909-75FE-4B61-A640-7F843372428F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5C7B909-75FE-4B61-A640-7F843372428F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5C7B909-75FE-4B61-A640-7F843372428F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65E55C57-0B3E-4CB8-A8AB-62639629F72F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65E55C57-0B3E-4CB8-A8AB-62639629F72F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65E55C57-0B3E-4CB8-A8AB-62639629F72F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65E55C57-0B3E-4CB8-A8AB-62639629F72F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -111,6 +123,7 @@ Global
 		{2244E500-82FC-4B52-8E3F-2C1DDF302366} = {C69D8EB6-8A39-427B-B7B6-4294826F0D39}
 		{1248C5C4-C138-4215-825F-18D61639027D} = {C69D8EB6-8A39-427B-B7B6-4294826F0D39}
 		{06D98B45-F0E0-4DA0-B692-ECB95B920D60} = {C69D8EB6-8A39-427B-B7B6-4294826F0D39}
+		{65E55C57-0B3E-4CB8-A8AB-62639629F72F} = {C69D8EB6-8A39-427B-B7B6-4294826F0D39}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D4448957-1BC7-4A47-9606-36038E69956B}
