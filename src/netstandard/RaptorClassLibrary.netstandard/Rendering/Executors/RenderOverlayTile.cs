@@ -495,7 +495,7 @@ namespace VSS.TRex.Rendering.Executors
             }
 
             // Get the current production data existance map from the sitemodel
-            var ProdDataExistenceMap = SiteModel.GetProductionDataExistanceMap(SiteModels.SiteModels.ImmutableStorageProxy);
+            var ProdDataExistenceMap = SiteModel.GetProductionDataExistanceMap(SiteModels.SiteModels.Instance().ImmutableStorageProxy);
 
             if (ProdDataExistenceMap == null)
             {
@@ -565,16 +565,6 @@ namespace VSS.TRex.Rendering.Executors
 
             if (Filter1?.AttributeFilter.AnyFilterSelections == true)
             {
-                if (Filter1.AttributeFilter.OverrideTimeBoundary && Filter1.AttributeFilter.EndTime == DateTime.MinValue)
-                {
-                    if (Filter2?.AttributeFilter.AnyFilterSelections == true)
-                    {
-                        // fix SV bug. Setup Filter 1 to look for early cell pass
-                        Filter1.AttributeFilter.StartTime = DateTime.MinValue;
-                        Filter1.AttributeFilter.EndTime = Filter2.AttributeFilter.StartTime;
-                    }
-                }
-
                 ResultStatus = FilterUtilities.PrepareFilterForUse(Filter1, DataModelID);
                 if (ResultStatus != RequestErrorStatus.OK)
                 {

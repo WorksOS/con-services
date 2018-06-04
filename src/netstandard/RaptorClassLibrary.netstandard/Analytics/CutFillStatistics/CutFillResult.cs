@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Linq;
-using VSS.TRex.Analytics.GridFabric.Responses;
 
 namespace VSS.TRex.Analytics.Models
 {
     /// <summary>
     /// The result obtained fcrom performing a CutFill analytics request
     /// </summary>
-    public class CutFillResult : AnalyticsResult<CutFillStatisticsResponse>
+    public class CutFillResult : AnalyticsResult
     {
         private long[] counts;
 
@@ -64,16 +63,6 @@ namespace VSS.TRex.Analytics.Models
         public CutFillResult(long [] counts) : this()
         {
             Counts = counts;
-        }
-
-        /// <summary>
-        ///  Takes a response from the cluster compuet layer and transforms it into the model to be handed back to the client context
-        /// </summary>
-        /// <param name="response"></param>
-        public override void PopulateFromClusterComputeResponse(CutFillStatisticsResponse response)
-        {
-            Counts = response.Counts;
-            ResultStatus = response.ResultStatus;
         }
     }
 }

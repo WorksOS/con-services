@@ -10,14 +10,14 @@ namespace VSS.TRex.SiteModels
     [Serializable]
     public class SiteModelDesign : IEquatable<string>
     {
-        public string Name { get; } 
+        public string Name { get; }
 
-        public BoundingWorldExtent3D Extents { get; set; } 
+      public BoundingWorldExtent3D Extents { get; set; } = new BoundingWorldExtent3D();
 
         //FWorkingExtents is used as a working area for computing modified
         //design extents by operations such as data deletion. It is not persisted
         //in the design description
-        public BoundingWorldExtent3D WorkingExtents { get; set; } 
+      public BoundingWorldExtent3D WorkingExtents { get; set; } = new BoundingWorldExtent3D();
 
         public SiteModelDesign()
         {

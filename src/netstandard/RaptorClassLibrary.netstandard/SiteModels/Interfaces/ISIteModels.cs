@@ -13,6 +13,8 @@ namespace VSS.TRex.SiteModels.Interfaces
     ISiteModel GetSiteModel(IStorageProxy storageProxy, Guid ID);
     ISiteModel GetSiteModel(IStorageProxy storageProxy, Guid ID, bool CreateIfNotExist);
 
+    IStorageProxy ImmutableStorageProxy { get; set; }
+
     /// <summary>
     /// Handles the situation when TAG file processing or some other activity has modified the attributes of a site model
     /// requiring the sitemodel to be reloaded

@@ -649,7 +649,7 @@ namespace VSS.TRex.SubGridTrees.Server
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.CCV).ToArray(), 0xffffffff, CellPass.NullCCV, true, ref EncodedFieldDescriptors.CCV);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.RMV).ToArray(), 0xffffffff, CellPass.NullRMV, true, ref EncodedFieldDescriptors.RMV);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.MDP).ToArray(), 0xffffffff, CellPass.NullMDP, true, ref EncodedFieldDescriptors.MDP);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.MaterialTemperature).ToArray(), 0xffffffff, CellPass.NullMaterialTemp, true, ref EncodedFieldDescriptors.MaterialTemperature);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.MaterialTemperature).ToArray(), 0xffffffff, CellPass.NullMaterialTemperatureValue, true, ref EncodedFieldDescriptors.MaterialTemperature);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.GPSModeStore).ToArray(), 0xff, (int)CellPass.NullGPSMode, true, ref EncodedFieldDescriptors.GPSModeStore);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.MachineSpeed).ToArray(), 0xffffffff, CellPass.NullMachineSpeed, true, ref EncodedFieldDescriptors.MachineSpeed);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.RadioLatency).ToArray(), 0xffffffff, CellPass.NullRadioLatency, true, ref EncodedFieldDescriptors.RadioLatency);

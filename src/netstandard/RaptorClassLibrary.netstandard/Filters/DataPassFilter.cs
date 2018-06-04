@@ -28,7 +28,7 @@ namespace VSS.TRex.Filters
         public GridDataType RequestedGridDataType { get; set; } = GridDataType.All;
 
         public abstract bool FilterPass(ref CellPass passValue);
-        public abstract bool FilterPass(ref FilteredPassData passValue, bool timeBoundaryIsOverride = false);
+        public abstract bool FilterPass(ref FilteredPassData passValue);
 
         public DataPassFilter()
         {
@@ -91,9 +91,9 @@ namespace VSS.TRex.Filters
                 case GridDataType.Amplitude:
                     return PassValue.Amplitude != CellPass.NullAmplitude;
                 case GridDataType.Temperature: 
-                    return PassValue.MaterialTemperature != CellPass.NullMaterialTemp;
+                    return PassValue.MaterialTemperature != CellPass.NullMaterialTemperatureValue;
                 case GridDataType.TemperatureDetail:
-                  return PassValue.MaterialTemperature != CellPass.NullMaterialTemp;
+                  return PassValue.MaterialTemperature != CellPass.NullMaterialTemperatureValue;
                 case GridDataType.GPSMode:
                     return PassValue.gpsMode != CellPass.NullGPSMode;
                 default:

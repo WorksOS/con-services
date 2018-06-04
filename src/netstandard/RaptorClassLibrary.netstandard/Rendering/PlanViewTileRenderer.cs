@@ -60,7 +60,7 @@ namespace VSS.TRex.Rendering
 
         // LiftBuildSettings : TICLiftBuildSettings;
 
-        public BoundingWorldExtent3D SpatialExtents;
+        public BoundingWorldExtent3D SpatialExtents { get; set; }
 
         public double CellSize;
 

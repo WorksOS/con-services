@@ -32,6 +32,9 @@ namespace VSS.TRex.Client
 
     private static Guid[] ExtraProjectGuids = new[] {Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid()};
 
+    private static Guid AssetOverride = Guid.Empty;
+
+
     public static void SubmitSingleTAGFile(Guid projectID, Guid assetID, string fileName)
     {
       submitTAGFileRequest = submitTAGFileRequest ?? new SubmitTAGFileRequest();
@@ -58,7 +61,8 @@ namespace VSS.TRex.Client
 
     public static void ProcessSingleTAGFile(Guid projectID, string fileName)
     {
-      Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
+   //   Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
+      Guid machineID = AssetOverride == Guid.Empty ? Guid.NewGuid() : AssetOverride; 
 
       processTAGFileRequest = processTAGFileRequest ?? new ProcessTAGFileRequest();
       ProcessTAGFileRequestArgument arg;
@@ -71,7 +75,7 @@ namespace VSS.TRex.Client
         arg = new ProcessTAGFileRequestArgument()
         {
           ProjectID = projectID,
-          AssetID = machine.ID,
+          AssetID = machineID,
           TAGFiles = new List<ProcessTAGFileRequestFileItem>()
           {
             new ProcessTAGFileRequestFileItem()
@@ -89,13 +93,14 @@ namespace VSS.TRex.Client
 
     public static void ProcessTAGFiles(Guid projectID, string[] files)
     {
-      Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
+     // Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
+      Guid machineID = AssetOverride == Guid.Empty ? Guid.NewGuid() : AssetOverride;
 
       processTAGFileRequest = processTAGFileRequest ?? new ProcessTAGFileRequest();
       ProcessTAGFileRequestArgument arg = new ProcessTAGFileRequestArgument
       {
         ProjectID = projectID,
-        AssetID = machine.ID,
+        AssetID = machineID,
         TAGFiles = new List<ProcessTAGFileRequestFileItem>()
       };
 
@@ -115,10 +120,10 @@ namespace VSS.TRex.Client
 
     public static void SubmitTAGFiles(Guid projectID, string[] files)
     {
-      Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
-
+      //   Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
+      Guid machineID = AssetOverride == Guid.Empty ? Guid.NewGuid() : AssetOverride;
       foreach (string file in files)
-        SubmitSingleTAGFile(projectID, machine.ID, file);
+        SubmitSingleTAGFile(projectID, machineID, file);
     }
 
     public static void ProcessTAGFilesInFolder(Guid projectID, string folder)
@@ -192,6 +197,21 @@ namespace VSS.TRex.Client
         {
           return;
         }
+
+
+
+        try
+        {
+          if (args.Length > 2)
+            AssetOverride = Guid.Parse(args[2]);
+        }
+        catch
+        {
+          Console.WriteLine($"Invalid Asset ID {args[2]}");
+          return;
+        }
+
+
 
         // Obtain a TAGFileProcessing client server
         TAGFileProcessingClientServer TAGServer = new TAGFileProcessingClientServer();

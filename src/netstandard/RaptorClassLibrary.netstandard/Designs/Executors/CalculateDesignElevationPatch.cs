@@ -1,5 +1,4 @@
-﻿using VSS.TRex;
-using VSS.TRex.DesignProfiling.GridFabric.Arguments;
+﻿using VSS.TRex.DesignProfiling.GridFabric.Arguments;
 using VSS.TRex.SubGridTrees.Client;
 
 namespace VSS.TRex.DesignProfiling.Executors

@@ -1,4 +1,6 @@
-﻿using VSS.TRex.Exports.Patches.GridFabric;
+﻿using System.Linq;
+using VSS.TRex.Exports.Patches;
+using VSS.TRex.Exports.Patches.GridFabric;
 using VSS.TRex.Servers;
 using VSS.TRex.Servers.Client;
 
@@ -34,11 +36,26 @@ namespace VSS.TRex.Rendering.Servers.Client
     /// </summary>
     /// <param name="argument"></param>
     /// <returns></returns>
-    public PatchRequestResponse Execute(PatchRequestArgument argument)
+    public PatchResult Execute(PatchRequestArgument argument)
     {
       PatchRequest request = new PatchRequest();
 
-      return request.Execute(argument);
+      PatchRequestResponse response = request.Execute(argument);
+
+      PatchResult result = new PatchResult
+      {
+        TotalNumberOfPagesToCoverFilteredData = response.TotalNumberOfPagesToCoverFilteredData,
+        MaxPatchSize = argument.DataPatchSize,
+        PatchNumber = argument.DataPatchNumber,
+        Patch = response?.SubGrids?.Select(x =>
+        {
+          SubgridDataPatchRecord_Elevation s = new SubgridDataPatchRecord_Elevation();
+          s.Populate(x);
+          return s;
+        }).ToArray()
+      };
+
+      return result;
     }
   }
 }

@@ -384,27 +384,27 @@ begin
 
   Result := kICNullRMVValue;
 end;
+*/
 
-function TICFilteredMultiplePassInfo.LowestPassTime: TDateTime;
-var
-  i :Integer;
-  TempHeight: Single;
-begin
-  TempHeight := kICNullHeight;
-  Result := 0;
+      public DateTime LowestPassTime()
+      {
+        float TempHeight = Consts.NullHeight;
+        DateTime Result = DateTime.MinValue;
 
-  for i := FPassCount - 1 downto 0 do
-    with FilteredPassData[i].FilteredPass do
-      if TempHeight = kICNullHeight then
-        begin
-          TempHeight := Height;
-          Result := Time;
-        end
-      else
-        if Height<TempHeight then
-          Result := Time;
-end;
+        for (int i = PassCount - 1; i >= 0; i--)
+          //  with FilteredPassData[i].FilteredPass do
+          if (TempHeight == Consts.NullHeight)
+          {
+            TempHeight = FilteredPassData[i].FilteredPass.Height;
+            Result = FilteredPassData[i].FilteredPass.Time;
+          }
+          else if (FilteredPassData[i].FilteredPass.Height < TempHeight)
+            Result = FilteredPassData[i].FilteredPass.Time;
 
+        return Result;
+      }
+
+      /*
 function TICFilteredMultiplePassInfo.LastPassValidTemperature :TICMaterialTemperature;
 var
   I :Integer;

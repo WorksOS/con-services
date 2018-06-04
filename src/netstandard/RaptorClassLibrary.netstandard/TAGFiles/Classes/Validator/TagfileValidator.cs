@@ -48,11 +48,11 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
             int radioType = processor.RadioType == "torch" ? (int)DeviceType.SNM940 : (int)DeviceType.ManualDevice; // torch device set to type 6
 
             ITFAProxy tfa = DIContext.Obtain<ITFAProxy>();
-            Log.LogInformation($"#Info# Calling TFA servce to validate tagfile:{tagDetail.tagFileName}");
+            Log.LogInformation($"Calling TFA servce to validate tagfile:{tagDetail.tagFileName}");
 
             // use decimal degrees when calling API
             var apiResult = tfa.ValidateTagfile(tagDetail.projectId, Guid.Parse(tagDetail.tccOrgId), processor.RadioSerial, radioType, processor.LLHLat * (180 / Math.PI), processor.LLHLon * (180 / Math.PI), processor.DataTime, out tagDetail.projectId, out tagDetail.assetId);
-            Log.LogInformation($"#Info# TFA GetId returned for {tagDetail.tagFileName} StatusCode: {apiResult}, ProjectId:{tagDetail.projectId}, AssetId:{tagDetail.assetId}");
+            Log.LogInformation($"TFA GetId returned for {tagDetail.tagFileName} StatusCode: {apiResult}, ProjectId:{tagDetail.projectId}, AssetId:{tagDetail.assetId}");
             if (apiResult == ValidationResult.Valid)
             {
                // Check For JohnDoe machines. if you get a valid pass and no assetid it means it had a manual3dlicense

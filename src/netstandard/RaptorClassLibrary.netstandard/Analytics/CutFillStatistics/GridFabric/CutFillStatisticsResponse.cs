@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using VSS.TRex.Analytics.Foundation.Interfaces;
+using VSS.TRex.Analytics.Models;
 using VSS.TRex.GridFabric.Requests.Interfaces;
 
 namespace VSS.TRex.Analytics.GridFabric.Responses
@@ -6,7 +8,7 @@ namespace VSS.TRex.Analytics.GridFabric.Responses
     /// <summary>
     /// The response state returned from a cut/fill statistics request
     /// </summary>
-    public class CutFillStatisticsResponse : BaseAnalyticsResponse, IAggregateWith<CutFillStatisticsResponse>
+    public class CutFillStatisticsResponse : BaseAnalyticsResponse, IAggregateWith<CutFillStatisticsResponse>, IAnalyticsOperationResponseResultConversion<CutFillResult>
     {
         /// <summary>
         /// An array (always 7) values representing the counts of cells within each of the cut fill bands defined in the request.
@@ -29,5 +31,18 @@ namespace VSS.TRex.Analytics.GridFabric.Responses
 
             return this;
         }
+
+      /// <summary>
+      /// Constructs the Cut/Fill result
+      /// </summary>
+      /// <returns></returns>
+      public CutFillResult ConstructResult()
+      {
+        return new CutFillResult
+        {
+          ResultStatus = ResultStatus,
+          Counts = Counts
+        };
+      }
     }
 }

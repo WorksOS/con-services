@@ -7,6 +7,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics
 {
     public class CutFillResultTests
     {
+/*
         [Fact]
         public void Test_CutFillResult_Population_Successful()
         {
@@ -29,5 +30,6 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics
                 Assert.True(Math.Abs(testPercents[i] - r.Percents[i]) < 0.00001, $"Invalid initial result percentage for item {i}");
             }
         }
+*/
     }
 }

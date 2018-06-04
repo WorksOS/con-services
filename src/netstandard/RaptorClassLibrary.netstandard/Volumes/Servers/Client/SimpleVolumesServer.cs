@@ -6,7 +6,7 @@ using VSS.TRex.Volumes.GridFabric.Responses;
 namespace VSS.TRex.Rendering.Servers.Client
 {
     /// <summary>
-    /// The server used to house simpole volumes services
+    /// The server used to house simple volumes services
     /// </summary>
     public class SimpleVolumesServer : ApplicationServiceServer
     {

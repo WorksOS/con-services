@@ -76,7 +76,7 @@ namespace VSS.TRex.Tests
                 //cp.MachineID == CellPass.NullMachineID &&
                 cp.InternalSiteModelMachineIndex == CellPass.NullInternalSiteModelMachineIndex &&
                 cp.MachineSpeed == CellPass.NullMachineSpeed &&
-                cp.MaterialTemperature == CellPass.NullMaterialTemp &&
+                cp.MaterialTemperature == CellPass.NullMaterialTemperatureValue &&
                 cp.MDP == CellPass.NullMDP &&
                 cp.PassType == PassType.Front &&
                 cp.RadioLatency == CellPass.NullRadioLatency &&

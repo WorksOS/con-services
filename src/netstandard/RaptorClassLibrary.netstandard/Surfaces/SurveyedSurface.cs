@@ -14,24 +14,9 @@ namespace VSS.TRex.Surfaces
     public class SurveyedSurface : IEquatable<SurveyedSurface>, IBinaryReaderWriter
     {
         /// <summary>
-        /// Unique identifier for the surveyed surface
-        /// </summary>
-        Guid FID = Guid.Empty;
-
-        /// <summary>
-        /// Underlying design the surveyed surface is based on
-        /// </summary>
-        DesignDescriptor FDesignDescriptor;
-
-        /// <summary>
-        /// The effective data the surveyed surface represents a snapshot of the ground topology recorded in the design descriptor+
-        /// </summary>
-        DateTime FAsAtDate = DateTime.MinValue;
-
-        /// <summary>
         /// 3D extents bounding box enclosing the underlying design represented by the design descriptor (excluding any vertical offset(
         /// </summary>
-        BoundingWorldExtent3D FExtents;
+        BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
 
         /// <summary>
         /// Serialises state to a binary writer
@@ -39,10 +24,10 @@ namespace VSS.TRex.Surfaces
         /// <param name="writer"></param>
         public void Write(BinaryWriter writer)
         {
-            writer.Write(FID.ToByteArray());
-            FDesignDescriptor.Write(writer);
-            writer.Write(FAsAtDate.ToBinary());
-            FExtents.Write(writer);
+            writer.Write(ID.ToByteArray());
+            DesignDescriptor.Write(writer);
+            writer.Write(AsAtDate.ToBinary());
+            extents.Write(writer);
         }
 
         /// <summary>
@@ -58,26 +43,26 @@ namespace VSS.TRex.Surfaces
         /// <param name="reader"></param>
         public void Read(BinaryReader reader)
         {
-            FID = reader.ReadGuid();
-            FDesignDescriptor.Read(reader);
-            FAsAtDate = DateTime.FromBinary(reader.ReadInt64());
-            FExtents.Read(reader);
+            ID = reader.ReadGuid();
+            DesignDescriptor.Read(reader);
+            AsAtDate = DateTime.FromBinary(reader.ReadInt64());
+            extents.Read(reader);
         }
 
-        /// <summary>
-        /// Readonly property exposing the surveyed surface ID
-        /// </summary>
-        public Guid ID { get => FID; }
+      /// <summary>
+      /// Readonly property exposing the surveyed surface ID
+      /// </summary>
+      public Guid ID;
 
-        /// <summary>
-        /// Readonlhy property exposing the design decriptor for the underlying topology surface
-        /// </summary>
-        public DesignDescriptor DesignDescriptor { get { return FDesignDescriptor; } }
+      /// <summary>
+      /// Readonlhy property exposing the design decriptor for the underlying topology surface
+      /// </summary>
+      public DesignDescriptor DesignDescriptor;
 
-        /// <summary>
-        /// Readonly attribute for AsAtData
-        /// </summary>
-        public DateTime AsAtDate { get { return FAsAtDate; } }
+      /// <summary>
+      /// Readonly attribute for AsAtData
+      /// </summary>
+      public DateTime AsAtDate;
 
         /// <summary>
         /// Returns the real world 3D enclosing extents for the surveyed surface topology, including any configured vertical offset
@@ -86,7 +71,7 @@ namespace VSS.TRex.Surfaces
         {
             get
             {
-                BoundingWorldExtent3D result = FExtents;
+                BoundingWorldExtent3D result = new BoundingWorldExtent3D(extents);
 
                 // Incorporate any vertical offset from the underlying design the surveyed surface is based on
                 result.Offset(DesignDescriptor.Offset);
@@ -114,26 +99,26 @@ namespace VSS.TRex.Surfaces
         /// <summary>
         /// Constructor accepting full surveyed surface state
         /// </summary>
-        /// <param name="AID">The unque identifier for the surveted surface in this site model</param>
-        /// <param name="ADesignDescriptor"></param>
-        /// <param name="AAsAtDate"></param>
-        /// <param name="AExtents"></param>
-        public SurveyedSurface(Guid AID,
-                               DesignDescriptor ADesignDescriptor,
-                               DateTime AAsAtDate,
-                               BoundingWorldExtent3D AExtents)
+        /// <param name="iD">The unque identifier for the surveted surface in this site model</param>
+        /// <param name="designDescriptor"></param>
+        /// <param name="asAtDate"></param>
+        /// <param name="extents"></param>
+        public SurveyedSurface(Guid iD,
+                               DesignDescriptor designDescriptor,
+                               DateTime asAtDate,
+                               BoundingWorldExtent3D extents_)
         {
-            FID = AID;
-            FDesignDescriptor = ADesignDescriptor;
-            FAsAtDate = AAsAtDate;
-            FExtents = AExtents;
+            ID = iD;
+            DesignDescriptor = designDescriptor;
+            AsAtDate = asAtDate;
+            extents = extents_;
         }
 
         /// <summary>
         /// Produces a deep clone of the surveyed surface
         /// </summary>
         /// <returns></returns>
-        public SurveyedSurface Clone() => new SurveyedSurface(FID, FDesignDescriptor, FAsAtDate, FExtents);
+        public SurveyedSurface Clone() => new SurveyedSurface(ID, DesignDescriptor, AsAtDate, new BoundingWorldExtent3D(extents));
 
         /// <summary>
         /// ToString() for SurveyedSurface
@@ -141,13 +126,8 @@ namespace VSS.TRex.Surfaces
         /// <returns></returns>
         public override string ToString()
         {
-            return string.Format("ID:{0}, DesignID:{1} {2}; {3};{4};{5} {6:F3} [{7}]",
-                            FID,
-                             FDesignDescriptor.DesignID,
-                             FAsAtDate,
-                             FDesignDescriptor.FileSpace, FDesignDescriptor.Folder, FDesignDescriptor.FileName,
-                             FDesignDescriptor.Offset,
-                             FExtents);
+            return
+              $"ID:{ID}, DesignID:{DesignDescriptor.DesignID} {AsAtDate}; {DesignDescriptor.FileSpace};{DesignDescriptor.Folder};{DesignDescriptor.FileName} {DesignDescriptor.Offset:F3} [{extents}]";
         }
 
         /// <summary>
@@ -158,9 +138,9 @@ namespace VSS.TRex.Surfaces
         public bool Equals(SurveyedSurface other)
         {
             return (ID == other.ID) &&
-                   FDesignDescriptor.Equals(other.DesignDescriptor) &&
-                   (FAsAtDate == other.AsAtDate) &&
-                   (FExtents.Equals(other.Extents));
+                   DesignDescriptor.Equals(other.DesignDescriptor) &&
+                   (AsAtDate == other.AsAtDate) &&
+                   (extents.Equals(other.Extents));
         }
     }
 }

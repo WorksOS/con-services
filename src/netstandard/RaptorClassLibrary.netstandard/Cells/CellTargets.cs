@@ -36,7 +36,7 @@ namespace VSS.TRex.Cells
         /// <summary>
         /// Target material layer thickness at the time a cell pass was recorded
         /// </summary>
-        public float TargetThickness { get; set; }
+        public float TargetLiftThickness { get; set; }
 
         /// <summary>
         /// Target machine pass count at the time a cell pass was recorded
@@ -65,10 +65,10 @@ namespace VSS.TRex.Cells
         {
             TargetCCV = CellPass.NullCCV;
             TargetMDP = CellPass.NullMDP;
-            TargetThickness = NullOverridingTargetLiftThicknessValue;
+            TargetLiftThickness = NullOverridingTargetLiftThicknessValue;
             TargetPassCount = NullPassCountTarget;
-            TempWarningLevelMin = CellPass.NullMaterialTemp;
-            TempWarningLevelMax = CellPass.NullMaterialTemp;
+            TempWarningLevelMin = CellPass.NullMaterialTemperatureValue;
+            TempWarningLevelMax = CellPass.NullMaterialTemperatureValue;
             TargetCCA = NullCCATarget;
         }
 
@@ -82,7 +82,7 @@ namespace VSS.TRex.Cells
             TargetCCV = source.TargetCCV;
             TargetMDP = source.TargetMDP;
             TargetPassCount = source.TargetPassCount;
-            TargetThickness = source.TargetThickness;
+            TargetLiftThickness = source.TargetLiftThickness;
             TempWarningLevelMax = source.TempWarningLevelMax;
             TempWarningLevelMin = source.TempWarningLevelMin;
         }

@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
 using System.Diagnostics;
+using VSS.TRex.Common;
 using VSS.TRex.Designs.Storage;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Affinity;
@@ -12,7 +13,6 @@ using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.GridFabric.Types;
 using VSS.TRex.Services.Designs;
-using VSS.TRex.SiteModels;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -125,10 +125,43 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                                                          ref IClientLeafSubGrid[] SubgridResultArray)
         {
             IClientLeafSubGrid[] NewClientGrids = new IClientLeafSubGrid[SubgridResultArray.Length];
+            ClientHeightAndTimeLeafSubGrid Subgrid1, Subgrid2;
 
-            try
-            {
-                if (SubgridResultArray.Length == 0)
+          try
+          {
+            //  SIGLogMessage.PublishNoODS(Self, Format('DisplayMode in PSNode:%s', [GetEnumName(TypeInfo(TICDisplayMode), Requests.DisplayType)]), slmcError);
+            // If performing simple volume calculations, there may be an intermediary filter in play. If this is
+            // the case then the first two subgrid results will be HeightAndTime elevation subgrids and will
+            // need to be merged into a single height and time subgrid before any secondary conversion of intermediary
+            //  results in the logic below.
+
+            if (SubgridResultArray.Length == 3 // Three filters in play
+                && SubgridResultArray[0].GridDataType == GridDataType.HeightAndTime // Height and time subgrids
+                && SubgridResultArray[1].GridDataType == GridDataType.HeightAndTime
+                && SubgridResultArray[2].GridDataType == GridDataType.HeightAndTime
+                //&& Requests.ReferenceVolumeType == VolumeComputationType.Between2Filters // Between two filters volume request
+              )
+              {
+                Subgrid1 = SubgridResultArray[0] as ClientHeightAndTimeLeafSubGrid;
+                Subgrid2 = SubgridResultArray[1] as ClientHeightAndTimeLeafSubGrid;
+
+                // Merge the first two results then swap the second and third items so later processing
+                // uses the correct two result, and the the third is correctly recycled
+                // Subgrid1 is 'latest @ first filter', subgrid 2 is earliest @ second filter
+                SubGridUtilities.SubGridDimensionalIterator((I, J) =>
+                {
+                  // Check if there is a non null candidate in the earlier @ second filter
+                  if (Subgrid1.Cells[I, J] == Consts.NullHeight && Subgrid2.Cells[I, J] != Consts.NullHeight)
+                    Subgrid1.Cells[I, J] = Subgrid2.Cells[I, J];
+                });
+
+                // Swap the lst two elements...
+                MinMax.Swap(ref SubgridResultArray[1], ref SubgridResultArray[2]);
+              }
+
+              //  SIGLogMessage.PublishNoODS(Self, Format('DisplayMode in PSNode:%s', [GetEnumName(TypeInfo(TICDisplayMode), Requests.DisplayType)]), slmcError);
+
+              if (SubgridResultArray.Length == 0)
                 {
                     return;
                 }
@@ -413,14 +446,15 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         // Construct the set of requestors to be used for the filters present in the request
         Requestors = localArg.Filters.Filters.Select
                 (x => new SubGridRequestor(siteModel,
-                                           SiteModels.SiteModels.ImmutableStorageProxy,
+                                           SiteModels.SiteModels.Instance().ImmutableStorageProxy,
                                            x,
                                            false, // Override cell restriction
                                            BoundingIntegerExtent2D.Inverted(),
                                            SubGridTree.SubGridTreeLevels,
                                            int.MaxValue, // MaxCellPasses
                                            AreaControlSet,
-                                           PopulationControl)
+                                           PopulationControl,
+                                           ProdDataMask)
                  ).ToArray();
 
             addresses = new SubGridCellAddress[addressBucketSize];

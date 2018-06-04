@@ -1,0 +1,7 @@
+del "..\VSS.TRex\src\framework\TRexMutableDataServer\bin\Debug\logs\TRexMutableDataServer.log"
+del "..\VSS.TRex\src\framework\TRexTAGFileSubmittor\bin\Debug\logs\TRexTAGFileSubmittor.log"
+del "..\VSS.TRex\src\framework\TRexServerApplication\bin\Debug\logs\TRexServerApplication.log"
+del "..\VSS.TRex\src\framework\TRexImmutableDataServer\bin\Debug\logs\TRexImmutableDataServer.log"
+del "..\VSS.TRex\src\framework\TRexIgniteTest\bin\Debug\logs\TRexIgniteTest.log"
+del "..\VSS.TRex\src\framework\TRexGridActivator\bin\Debug\logs\TRexGridActivator.log"
+del "..\VSS.TRex\src\framework\TRexDesignElevationsServer\bin\Debug\logs\TRexDesignElevationsServer.log"

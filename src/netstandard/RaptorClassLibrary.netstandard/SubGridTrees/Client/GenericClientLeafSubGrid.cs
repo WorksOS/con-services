@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Utilities;
@@ -7,7 +8,9 @@ namespace VSS.TRex.SubGridTrees.Client
 {
   [Serializable]
     public class GenericClientLeafSubGrid<T> : ClientLeafSubGrid, IGenericClientLeafSubGrid<T>
-    {
+  {
+        private static ILogger Log = Logging.Logger.CreateLogger("GenericClientLeafSubGrid");
+
         public T[,] Cells { get; set; }
   
         /// <summary>
@@ -108,8 +111,7 @@ namespace VSS.TRex.SubGridTrees.Client
         /// </summary>
         public override void DumpToLog(string title)
         {
-            // Implement when logging is set up
-            // SIGLogMessage.PublishNoODS(Self, Format('Subgrid %s: %s', [Moniker, Title]), slmcDebug);
+          Log.LogDebug($"Subgrid {Moniker()}: {title}");
         }
 
         /// <summary>

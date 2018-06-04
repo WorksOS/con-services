@@ -17,10 +17,10 @@ namespace VSS.TRex.Filters
       ref FilteredPassData filteredPass)
     {
       DateTime _Time;
-//  _EventMinElevMapping :TICMinElevMappingState;
-//  _EventInAvoidZone :TICInAvoidZoneState;
-//  bool UseMachineRMVThreshold;
-//  short OverrideRMVJumpThreshold;
+      // todo _EventMinElevMapping :TICMinElevMappingState;
+      // todo _EventInAvoidZone :TICInAvoidZoneState;
+      // todo bool UseMachineRMVThreshold;
+      // todo short OverrideRMVJumpThreshold;
 
       if (values == null)
       {
@@ -43,8 +43,8 @@ namespace VSS.TRex.Filters
       if (PopulationControl.WantsTargetPassCountValues)
         filteredPass.TargetValues.TargetPassCount = values.TargetPassCountStateEvents.GetValueAtDate(_Time, out int _);
 
-      if (PopulationControl.WantsTargetThicknessValues)
-        filteredPass.TargetValues.TargetThickness = values.TargetLiftThickness.GetValueAtDate(_Time, out int _);
+      if (PopulationControl.WantsTargetLiftThicknessValues)
+        filteredPass.TargetValues.TargetLiftThickness = values.TargetLiftThicknessStateEvents.GetValueAtDate(_Time, out int _);
 
       // Design Name...
       if (PopulationControl.WantsEventDesignNameValues)

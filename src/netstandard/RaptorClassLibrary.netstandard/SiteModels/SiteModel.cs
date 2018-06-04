@@ -136,13 +136,13 @@ namespace VSS.TRex.SiteModels
             // FCreationDate:= Now;
             // FMarkedForRemoval:= False;
 
-            MachinesTargetValues = new MachinesProductionEventLists(this); //EfficientMachinesTargetValuesList(this);
-
             // FName:= Format('SiteModel-%d', [AID]);
             // FDescription:= '';
             // FActive:= True;
 
             Machines = new MachinesList(id);
+
+            MachinesTargetValues = new MachinesProductionEventLists(this); //EfficientMachinesTargetValuesList(this);
 
             LastModifiedDate = DateTime.MinValue;
 
@@ -525,7 +525,7 @@ namespace VSS.TRex.SiteModels
             }
 
             // Start with the data model extents
-            BoundingWorldExtent3D SpatialExtents = SiteModelExtent;
+          BoundingWorldExtent3D SpatialExtents = new BoundingWorldExtent3D(SiteModelExtent);
 
             if (SurveyedSurfaceExclusionList == null || SurveyedSurfaceExclusionList.Length == 0)
             {

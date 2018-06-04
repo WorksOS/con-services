@@ -30,7 +30,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         public virtual bool OnProcessLeafSubgrid(ISubGrid subGrid) => true;
         public virtual bool OnProcessLeafSubgridAddress(SubGridCellAddress cellAddress)
         {
-            Debug.Assert(false, "TICSubGridTreeScannerBase.OnProcessLeafSubgridAddress should be overriden in descendant classes");
+            Debug.Assert(false, "TICSubGridTreeScannerBase.OnProcessLeafSubgridAddress should be overridden in descendant classes");
             return false;
         }
 

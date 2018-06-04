@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using VSS.TRex.Cells;
 using VSS.TRex.Filters;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Types;
+using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Client
@@ -11,7 +12,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// The content of each cell in a temperature client leaf sub grid. Each cell stores a temperature only.
     /// </summary>
-    public class ClientTemperatureLeafSubGrid : GenericClientLeafSubGrid<ushort>
+    public class ClientTemperatureLeafSubGrid : GenericClientLeafSubGrid<SubGridCellPassDataTemperatureEntryRecord>
     {
         /// <summary>
         /// First pass map records which cells hold cell pass machine speeds that were derived
@@ -37,7 +38,7 @@ namespace VSS.TRex.SubGridTrees.Client
         /// </summary>
         /// <param name="filteredValue"></param>
         /// <returns></returns>
-        public override bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue) => filteredValue.FilteredPass.MaterialTemperature == CellPass.NullMaterialTemp;
+        public override bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue) => filteredValue.FilteredPass.MaterialTemperature == CellPass.NullMaterialTemperatureValue;
 
         /// <summary>
         /// Assign filtered height value from a filtered pass to a cell
@@ -47,8 +48,10 @@ namespace VSS.TRex.SubGridTrees.Client
         /// <param name="Context"></param>
         public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext Context)
         {
-            Cells[cellX, cellY] = Context.FilteredValue.FilteredPassData.FilteredPass.MaterialTemperature;
-        }
+          Cells[cellX, cellY].MeasuredTemperature = Context.FilteredValue.FilteredPassData.FilteredPass.MaterialTemperature;
+	        Cells[cellX, cellY].TemperatureLevels.Min = Context.FilteredValue.FilteredPassData.TargetValues.TempWarningLevelMin;
+	        Cells[cellX, cellY].TemperatureLevels.Max = Context.FilteredValue.FilteredPassData.TargetValues.TempWarningLevelMax;
+				}
 
         /// <summary>
         /// Determines if the height at the cell location is null or not.
@@ -56,18 +59,22 @@ namespace VSS.TRex.SubGridTrees.Client
         /// <param name="cellX"></param>
         /// <param name="cellY"></param>
         /// <returns></returns>
-        public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY] != CellPass.NullMaterialTemp;
+        public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY].MeasuredTemperature != CellPass.NullMaterialTemperatureValue;
 
         /// <summary>
         /// Sets all cell heights to null and clears the first pass and sureyed surface pass maps
         /// </summary>
         public override void Clear()
         {
-            base.Clear();
+					base.Clear();
 
-            ForEach((x, y) => Cells[x, y] = CellPass.NullMaterialTemp); // TODO: Optimisation: Use PassData_MachineSpeed_Null assignment as in current gen;
-
-            FirstPassMap.Clear();
+	        // TODO: Optimisation: Use PassData_MachineSpeed_Null assignment as in current gen;
+					ForEach((x, y) =>
+          {
+							Cells[x, y].MeasuredTemperature = CellPass.NullMaterialTemperatureValue;
+          }); 
+	        
+					FirstPassMap.Clear();
         }
 
         /// <summary>
@@ -139,10 +146,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
             FirstPassMap.Write(writer, buffer);
 
-            Buffer.BlockCopy(Cells, 0, buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(ushort));
-            writer.Write(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(ushort));
-
-            //SubGridUtilities.SubGridDimensionalIterator((x, y) => writer.Write(Cells[x, y]));
+            SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Write(writer));
         }
 
         /// <summary>
@@ -158,10 +162,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
             FirstPassMap.Read(reader, buffer);
 
-            reader.Read(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(ushort));
-            Buffer.BlockCopy(buffer, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(ushort));
-
-            //SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y] = reader.ReadUInt16());
+            SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Read(reader));
         }
     }
 }

@@ -17,9 +17,6 @@ namespace VSS.TRex.Designs.Storage
     [Serializable]
     public class Design : IEquatable<Design>, IBinaryReaderWriter
     {
-        DesignDescriptor FDesignDescriptor;
-        BoundingWorldExtent3D FExtents;
-
         /// <summary>
         /// Singleton request used by all designs. This request encapsulates the Ignite reference which
         /// is relatively slow to initialise when making many calls.
@@ -33,8 +30,8 @@ namespace VSS.TRex.Designs.Storage
         public void Write(BinaryWriter writer)
         {
             writer.Write(ID.ToByteArray());
-            FDesignDescriptor.Write(writer);
-            FExtents.Write(writer);
+            DesignDescriptor.Write(writer);
+            Extents.Write(writer);
         }
 
         /// <summary>
@@ -51,8 +48,8 @@ namespace VSS.TRex.Designs.Storage
         public void Read(BinaryReader reader)
         {
             ID = reader.ReadGuid();
-            FDesignDescriptor.Read(reader);
-            FExtents.Read(reader);
+            DesignDescriptor.Read(reader);
+            Extents.Read(reader);
         }
 
         /// <summary>
@@ -60,15 +57,15 @@ namespace VSS.TRex.Designs.Storage
         /// </summary>
         public Guid ID { get; private set; } = Guid.Empty;
 
-        /// <summary>
-        /// The full design descriptior representing the design
-        /// </summary>
-        public DesignDescriptor DesignDescriptor { get { return FDesignDescriptor; } }
+      /// <summary>
+      /// The full design descriptior representing the design
+      /// </summary>
+      public DesignDescriptor DesignDescriptor;
 
-        /// <summary>
-        /// The rectangular bounding extents of the design in grid coordiantes
-        /// </summary>
-        public BoundingWorldExtent3D Extents { get { return FExtents; } }
+      /// <summary>
+      /// The rectangular bounding extents of the design in grid coordiantes
+      /// </summary>
+      private BoundingWorldExtent3D extents;
 
         /// <summary>
         /// No-arg constructor
@@ -77,11 +74,27 @@ namespace VSS.TRex.Designs.Storage
         {
         }
 
+      /// <summary>
+      /// Returns the real world 3D enclosing extents for the surveyed surface topology, including any configured vertical offset
+      /// </summary>
+      public BoundingWorldExtent3D Extents
+      {
+        get
+        {
+          BoundingWorldExtent3D result = new BoundingWorldExtent3D(extents);
+
+          // Incorporate any vertical offset from the underlying design the surveyed surface is based on
+          result.Offset(DesignDescriptor.Offset);
+
+          return result;
+        }
+      }
+
         /// <summary>
-        /// Constructor accepting a Binary Reader instance from which to instantiate itself
-        /// </summary>
-        /// <param name="reader"></param>
-        public Design(BinaryReader reader)
+    /// Constructor accepting a Binary Reader instance from which to instantiate itself
+    /// </summary>
+    /// <param name="reader"></param>
+    public Design(BinaryReader reader)
         {
             Read(reader);
         }
@@ -89,23 +102,23 @@ namespace VSS.TRex.Designs.Storage
         /// <summary>
         /// Constructor accepting full design state
         /// </summary>
-        /// <param name="AID"></param>
-        /// <param name="ADesignDescriptor"></param>
-        /// <param name="AExtents"></param>
-        public Design(Guid AID,
-                      DesignDescriptor ADesignDescriptor,
-                      BoundingWorldExtent3D AExtents)
+        /// <param name="iD"></param>
+        /// <param name="designDescriptor"></param>
+        /// <param name="extents"></param>
+        public Design(Guid iD,
+                      DesignDescriptor designDescriptor,
+                      BoundingWorldExtent3D extents_)
         {
-            ID = AID;
-            FDesignDescriptor = ADesignDescriptor;
-            FExtents = AExtents;
+            ID = iD;
+            DesignDescriptor = designDescriptor;
+            extents = extents_;
         }
 
         /// <summary>
         /// Produces a deep clone of the design
         /// </summary>
         /// <returns></returns>
-        public Design Clone() => new Design(ID, FDesignDescriptor, FExtents);
+        public Design Clone() => new Design(ID, DesignDescriptor, new BoundingWorldExtent3D(Extents));
 
         /// <summary>
         /// ToString() for Design
@@ -113,7 +126,7 @@ namespace VSS.TRex.Designs.Storage
         /// <returns></returns>
         public override string ToString()
         {
-            return $"ID:{ID}, DesignID:{FDesignDescriptor.DesignID}; {FDesignDescriptor.FileSpace};{FDesignDescriptor.Folder};{FDesignDescriptor.FileName} {FDesignDescriptor.Offset:F3} [{FExtents}]";
+            return $"ID:{ID}, DesignID:{DesignDescriptor.DesignID}; {DesignDescriptor.FileSpace};{DesignDescriptor.Folder};{DesignDescriptor.FileName} {DesignDescriptor.Offset:F3} [{Extents}]";
         }
 
         /// <summary>
@@ -124,8 +137,8 @@ namespace VSS.TRex.Designs.Storage
         public bool Equals(Design other)
         {
             return (ID == other.ID) &&
-                   FDesignDescriptor.Equals(other.DesignDescriptor) &&
-                   (FExtents.Equals(other.Extents));
+                   DesignDescriptor.Equals(other.DesignDescriptor) &&
+                   (Extents.Equals(other.Extents));
         }
 
         /// <summary>
@@ -152,7 +165,7 @@ namespace VSS.TRex.Designs.Storage
                 designHeights = request.Execute(new CalculateDesignElevationPatchArgument()
                 {
                     CellSize = cellSize,
-                    DesignDescriptor = FDesignDescriptor,
+                    DesignDescriptor = DesignDescriptor,
                     OriginX = originCellAddress.X,
                     OriginY = originCellAddress.Y,
                     // ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled),

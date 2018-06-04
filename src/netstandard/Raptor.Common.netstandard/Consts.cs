@@ -26,7 +26,8 @@ namespace VSS.TRex.Common
     /// </summary>
     public const float NullHeight = -3.4E38f;
 
-		public const ushort NullMachineSpeed = UInt16.MaxValue;
+	  // Value representing a null machine speed encoded as an IEEE ushort
+	  public const ushort NullMachineSpeed = UInt16.MaxValue;
 
 		/// <summary>
 		/// Null ID for a design reference descriptor ID

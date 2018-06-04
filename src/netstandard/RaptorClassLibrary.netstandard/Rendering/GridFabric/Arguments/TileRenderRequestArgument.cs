@@ -26,12 +26,6 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
         public CombinedFilter Filter1 { get; set; }
         public CombinedFilter Filter2 { get; set; }
 
-        /// <summary>
-        /// The identifier for the design held in the designs list ofr the project to be used to calculate cut/fill values
-        /// </summary>
-        public Guid CutFillDesignID { get; set; } = Guid.Empty;
-        //public DesignDescriptor CutFillDesign { get; set; }
-
         public TileRenderRequestArgument(Guid siteModelID,
                                          DisplayMode mode,
                                          BoundingWorldExtent3D extents,

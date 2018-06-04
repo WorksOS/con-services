@@ -7,7 +7,7 @@ namespace VSS.TRex.SubGridTrees.Server
     /// A wrapper for a subgrid containing all information related to the 'latest kown' information related to each cell.
     /// This includes 'existence' information which indicates if the cell in question has any cell passes recorded for it.
     /// </summary>
-    public class SubGridCellLatestPassDataWrapperBase
+    public abstract class SubGridCellLatestPassDataWrapperBase
     {
         /// <summary>
         /// The existence map detailed which cells have pass data recorded for them
@@ -23,15 +23,16 @@ namespace VSS.TRex.SubGridTrees.Server
         public SubGridTreeBitmapSubGridBits MDPValuesAreFromLastPass { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
         public SubGridTreeBitmapSubGridBits CCAValuesAreFromLastPass { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-        public bool HasCCVData => true;
-        public bool HasRMVData => true;
-        public bool HasFrequencyData => true;
-        public bool HasAmplitudeData => true;
-        public bool HasGPSModeData => true;
-        public bool HasTemperatureData => true;
-        public bool HasMDPData => true;
-        public bool HasCCAData => true;
-
+      /*
+        public bool HasCCVData() => true;
+        public bool HasRMVData() => true;
+        public bool HasFrequencyData() => true;
+        public bool HasAmplitudeData() => true;
+        public bool HasGPSModeData() => true;
+        public bool HasTemperatureData() => true;
+        public bool HasMDPData() => true;
+        public bool HasCCAData() => true;
+*/
         public SubGridCellLatestPassDataWrapperBase()
         {
         }

@@ -346,7 +346,7 @@ namespace VSS.TRex.TAGFiles.Classes.Tests
         {
             TAGProcessorStateBase state = new TAGProcessorStateBase();
 
-            Assert.True(state.ICTemperatureValues != null && (ushort)state.ICTemperatureValues.GetLatest() == CellPass.NullMaterialTemp, "Initial value incorrect");
+            Assert.True(state.ICTemperatureValues != null && (ushort)state.ICTemperatureValues.GetLatest() == CellPass.NullMaterialTemperatureValue, "Initial value incorrect");
             state.SetICTemperatureValue((ushort)100);
             Assert.True(state.ICTemperatureValues.NumAttrs == 2 && (ushort)state.ICTemperatureValues.GetLatest() == 100, "Initial value incorrect");
         }

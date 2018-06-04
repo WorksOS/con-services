@@ -1,4 +1,6 @@
-﻿namespace VSS.TRex.Filters
+﻿using VSS.TRex.Profiling;
+
+namespace VSS.TRex.Filters
 {
     /// <summary>
     /// FilteredValueAssignmentContext provides a context for collecting filtered values from production data in the 
@@ -30,9 +32,9 @@
 
         public FilteredSinglePassInfo PreviousFilteredValue;
 
-        //      CellProfile: TICProfileCell;
-        //      LiftBuildSettings: TICLiftBuildSettings;
+      public ProfileCell CellProfile { get; set; }
 
+        // TODO     LiftBuildSettings: TICLiftBuildSettings;
 
         /// <summary>
         /// ProbePositions is used to store the real world positions used to probe into
@@ -50,8 +52,8 @@
         {
             FilteredValue.Clear();
             PreviousFilteredValue.Clear();
-//            CellProfile:= Nil;
-//            LiftBuildSettings:= Nil;
+            CellProfile = null;
+//          todo  LiftBuildSettings:= Nil;
         }
 
         public void InitialiseProbePositions()

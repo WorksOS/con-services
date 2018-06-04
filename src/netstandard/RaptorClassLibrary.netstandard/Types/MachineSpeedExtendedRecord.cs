@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using VSS.TRex.Common;
 
-namespace VSS.TRex.SubGridTrees.Types
+namespace VSS.TRex.Types
 {
 	/// <summary>
 	/// Contains minimum and maximum machine speed values.
@@ -12,8 +12,9 @@ namespace VSS.TRex.SubGridTrees.Types
 	{
 		/// <summary>
 		/// Minimum machine speed value.
-		/// </summary>
+		/// </summary> 
 		public ushort Min { get; set; }
+
 	  /// <summary>
 	  /// Maximum machine speed value.
 	  /// </summary>
