@@ -12,6 +12,7 @@ namespace VSS.TRex.Rendering.Displayers
                 case DisplayMode.Height: return new PVMDisplayer_Height();
                 case DisplayMode.MachineSpeed: return new PVMDisplayer_MachineSpeed();
                 case DisplayMode.CCV: return new PVMDisplayer_CMV();
+                case DisplayMode.MDP: return new PVMDisplayer_MDP();
                 case DisplayMode.TemperatureSummary: return new PVMDisplayer_Temperature();
                 case DisplayMode.CutFill: return new PVMDisplayer_CutFill();
                     
