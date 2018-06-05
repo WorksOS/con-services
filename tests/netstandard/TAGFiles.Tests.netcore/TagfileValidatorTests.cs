@@ -1,15 +1,8 @@
 ﻿using System;
 using System.IO;
-using Apache.Ignite.Core;
-using VSS.TRex.DI;
-using VSS.TRex.TAGFiles.Classes.Queues;
-using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.Servers;
-using VSS.TRex.Servers.Client;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Validator;
 using VSS.TRex.Tests.netcore.TestFixtures;
-using VSSTests.TRex.Tests.Common;
 using Xunit;
 
 namespace TAGFiles.Tests.netcore
