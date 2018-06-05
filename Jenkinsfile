@@ -31,9 +31,12 @@ node ('jenkinsslave-pod') {
                 // Currently we need to execute the tests like this, because the pipeline docker plugin being aware of DIND, and attempting to map
                 // the volume to the bare metal host
 				
-				//TODO add comments about how this works
+				//Do not modify this unless you know the difference between ' and " in bash
+				// (https://www.gnu.org/software/bash/manual/html_node/Quoting.html#Quoting) see (https://gist.github.com/fuhbar/d00d11297a48b892684da34360e4135a) for Jenkinsfile 
+				// specific escaping examples. One day we might be able to test solutions (and have the results go to a specific directory) rather than specific projects, negating the need for such a complex command.
 				def testCommand = $/docker run -v ${env.WORKSPACE}/TestResults:/TestResults ${building.id} bash -c 'cd /build && ls tests/*/*/*netcore*.csproj | xargs -I@ -t dotnet test  --test-adapter-path:. --logger:"xunit;LogFilePath=/TestResults/@.xml" @'/$
-                sh(script: testCommand)
+                
+				sh(script: testCommand)
 				
 
 					
@@ -49,14 +52,14 @@ node ('jenkinsslave-pod') {
         stage('Publish Results'){
             step([$class: 'XUnitBuilder',
                 thresholds: [[$class: 'FailedThreshold', unstableThreshold: '10']],
-                tools: [[$class: 'XUnitDotNetTestType', pattern: 'TestResults/*']]])
+                tools: [[$class: 'XUnitDotNetTestType', pattern: 'TestResults/*/*/**/*']]])
         
         //http://javadoc.jenkins-ci.org/tfs/index.html?hudson/plugins/tfs/model/TeamResultType.html
         //Details of the agent -> https://docs.microsoft.com/en-us/vsts/build-release/task
         //Agent Variables -> https://docs.microsoft.com/en-us/vsts/build-release/concepts/definitions/build/variables?view=vsts&tabs=batch
         step([$class: 'TeamCollectResultsPostBuildAction', 
             requestedResults: [
-                [includes: 'TestResults/*.xml', teamResultType: 'XUNIT']
+                [includes: 'TestResults/*/*/**/*.xml', teamResultType: 'XUNIT']
             ]
         ])
         }
