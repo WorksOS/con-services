@@ -53,11 +53,11 @@ node ('jenkinsslave-pod') {
 			//List the test results - We should have some
 			sh "ls ${env.WORKSPACE}/TestResults"
         }
-	catch {
+
+    } 	catch (Exception e) {
 		//force build to be success for the moment
 		currentBuild.result = 'SUCCESS'
 	}
-    }
     finally {
         //See https://jenkins.io/doc/pipeline/steps/xunit/#xunit-publish-xunit-test-result-report for DSL Guide
         stage('Publish Results'){
