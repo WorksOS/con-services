@@ -1,19 +1,13 @@
 ﻿using System;
+using RaptorClassLibrary.Tests.netcore.Analytics.Common;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
-using VSS.TRex.Tests.netcore.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace RaptorClassLibrary.Tests.netcore.Analytics.TemperatureStatistics.GridFabric
 {
-	public class TemperatureResponseTests : IClassFixture<DILoggingFixture>
+	public class TemperatureResponseTests : BaseTests
   {
-		private const double CELL_SIZE = 0.34;
-		private const int CELLS_OVER_TARGET = 25;
-		private const int CELLS_AT_TARGET = 45;
-		private const int CELLS_UNDER_TARGET = 85;
-		private const double TOLERANCE = 0.00001;
-
 	  private TemperatureStatisticsResponse _response => new TemperatureStatisticsResponse()
 	  {
 	    ResultStatus = RequestErrorStatus.OK,
@@ -89,8 +83,6 @@ namespace RaptorClassLibrary.Tests.netcore.Analytics.TemperatureStatistics.GridF
 	    Assert.True(response.CellsScannedUnderTarget ==_response.CellsScannedUnderTarget * 2, "Invalid aggregated value for CellsScannedUnderTarget.");
 	    Assert.True(response.IsTargetValueConstant == _response.IsTargetValueConstant, "Invalid aggregated value for IsTargetValueConstant.");
 	    Assert.True(response.MissingTargetValue == _response.MissingTargetValue, "Invalid aggregated value for MissingTargetValue.");
-
     }
-
   }
 }

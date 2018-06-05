@@ -1,61 +1,59 @@
 ﻿using System;
 using RaptorClassLibrary.Tests.netcore.Analytics.Common;
-using VSS.TRex.Analytics.TemperatureStatistics;
-using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
+using VSS.TRex.Analytics.SpeedStatistics;
+using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
 using VSS.TRex.Filters;
 using VSS.TRex.Types;
 using Xunit;
 
-namespace RaptorClassLibrary.Tests.netcore.Analytics.TemperatureStatistics
+namespace RaptorClassLibrary.Tests.netcore.Analytics.SpeedStatistics
 {
-  public class TemperatureCoordinatorTests : BaseCoordinatorTests
+  public class SpeedCoordinatorTests : BaseCoordinatorTests
   {
-    private TemperatureStatisticsArgument Arg => new TemperatureStatisticsArgument()
+    private SpeedStatisticsArgument Arg => new SpeedStatisticsArgument()
     {
       DataModelID = _siteModel.ID,
       Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
-      OverrideTemperatureWarningLevels = true,
-      OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(10, 150)
+      TargetMachineSpeed = new MachineSpeedExtendedRecord(5, 100)
     };
 
-    private TemperatureCoordinator _getCoordinator()
+    private SpeedCoordinator _getCoordinator()
     {
-      return new TemperatureCoordinator() { RequestDescriptor = Guid.NewGuid(), SiteModel = _siteModel };
+      return new SpeedCoordinator() { RequestDescriptor = Guid.NewGuid(), SiteModel = _siteModel };
     }
 
-    private TemperatureAggregator _getTemperatureAggregator()
+    private SpeedAggregator _getSpeedAggregator()
     {
       var coordinator = _getCoordinator();
 
-      return coordinator.ConstructAggregator(Arg) as TemperatureAggregator;
+      return coordinator.ConstructAggregator(Arg) as SpeedAggregator;
     }
 
     [Fact]
-    public void Test_TemperatureCoordinator_Creation()
+    public void Test_SpeedCoordinator_Creation()
     {
-      var coordinator = new TemperatureCoordinator();
+      var coordinator = new SpeedCoordinator();
 
       Assert.True(coordinator.SiteModel == null, "Invalid initial value for SiteModel.");
       Assert.True(coordinator.RequestDescriptor == Guid.Empty, "Invalid initial value for RequestDescriptor.");
     }
 
     [Fact]
-    public void Test_TemperatureCoordinator_ConstructAggregator_Successful()
+    public void Test_SpeedCoordinator_ConstructAggregator_Successful()
     {
-      var aggregator = _getTemperatureAggregator();
+      var aggregator = _getSpeedAggregator();
 
       Assert.True(aggregator.RequiresSerialisation, "Invalid aggregator value for RequiresSerialisation.");
       Assert.True(aggregator.SiteModelID == Arg.DataModelID, "Invalid aggregator value for SiteModelID.");
       Assert.True(Math.Abs(aggregator.CellSize - _siteModel.Grid.CellSize) < TOLERANCE, "Invalid aggregator value for CellSize.");
-      Assert.True(aggregator.OverrideTemperatureWarningLevels == Arg.OverrideTemperatureWarningLevels, "Invalid aggregator value for OverrideTemperatureWarningLevels.");
-      Assert.True(aggregator.OverridingTemperatureWarningLevels.Max == Arg.OverridingTemperatureWarningLevels.Max, "Invalid aggregator value for OverridingTemperatureWarningLevels.Max.");
-      Assert.True(aggregator.OverridingTemperatureWarningLevels.Min == Arg.OverridingTemperatureWarningLevels.Min, "Invalid aggregator value for OverridingTemperatureWarningLevels.Min.");
+      Assert.True(aggregator.TargetMachineSpeed.Max == Arg.TargetMachineSpeed.Max, "Invalid aggregator value for TargetMachineSpeed.Max.");
+      Assert.True(aggregator.TargetMachineSpeed.Min == Arg.TargetMachineSpeed.Min, "Invalid aggregator value for TargetMachineSpeed.Min.");
     }
 
     [Fact]
-    public void Test_TemperatureCoordinator_ConstructComputor_Successful()
+    public void Test_SpeedCoordinator_ConstructComputor_Successful()
     {
-      var aggregator = _getTemperatureAggregator();
+      var aggregator = _getSpeedAggregator();
       var coordinator = _getCoordinator();
       var computor = coordinator.ConstructComputor(Arg, aggregator);
 
@@ -68,28 +66,25 @@ namespace RaptorClassLibrary.Tests.netcore.Analytics.TemperatureStatistics
       //Assert.True(computor.Filters.Filters[0].AttributeFilter.Equals(Arg.Filters.Filters[0].AttributeFilter), "Invalid computor value for Filters.Filters[0].AttributeFilter.");
       //Assert.True(computor.Filters.Filters[0].SpatialFilter.Equals(Arg.Filters.Filters[0].SpatialFilter), "Invalid computor value for Filters.Filters[0].SpatialFilter.");
       Assert.True(computor.IncludeSurveyedSurfaces, "Invalid computor value for IncludeSurveyedSurfaces.");
-      Assert.True(computor.RequestedGridDataType == GridDataType.Temperature, "Invalid computor value for RequestedGridDataType.");
+      Assert.True(computor.RequestedGridDataType == GridDataType.MachineSpeedTarget, "Invalid computor value for RequestedGridDataType.");
     }
 
     [Fact]
-    public void Test_TemperatureCoordinator_ReadOutResults_Successful()
+    public void Test_SpeedCoordinator_ReadOutResults_Successful()
     {
-      var aggregator = _getTemperatureAggregator();
+      var aggregator = _getSpeedAggregator();
       var coordinator = _getCoordinator();
 
-      var response = new TemperatureStatisticsResponse();
+      var response = new SpeedStatisticsResponse();
 
       coordinator.ReadOutResults(aggregator, response);
 
       Assert.True(Math.Abs(response.CellSize - aggregator.CellSize) < TOLERANCE, "CellSize invalid after result read-out.");
       Assert.True(response.SummaryCellsScanned == aggregator.SummaryCellsScanned, "Invalid read-out value for SummaryCellsScanned.");
-      Assert.True(response.LastTempRangeMax == aggregator.LastTempRangeMax, "Invalid read-out value for LastTempRangeMax.");
-      Assert.True(response.LastTempRangeMin == aggregator.LastTempRangeMin, "Invalid read-out value for LastTempRangeMin.");
       Assert.True(response.CellsScannedOverTarget == aggregator.CellsScannedOverTarget, "Invalid read-out value for CellsScannedOverTarget.");
       Assert.True(response.CellsScannedAtTarget == aggregator.CellsScannedAtTarget, "Invalid read-out value for CellsScannedAtTarget.");
       Assert.True(response.CellsScannedUnderTarget == aggregator.CellsScannedUnderTarget, "Invalid read-out value for CellsScannedUnderTarget.");
       Assert.True(response.IsTargetValueConstant == aggregator.IsTargetValueConstant, "Invalid read-out value for IsTargetValueConstant.");
       Assert.True(response.MissingTargetValue == aggregator.MissingTargetValue, "Invalid initial read-out for MissingTargetValue.");
-    }
-  }
+    }}
 }
