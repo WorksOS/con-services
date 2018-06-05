@@ -1290,6 +1290,20 @@ namespace VSS.TRex.SubGridTrees
       ClientGridAsLeaf = clientGrid as ClientLeafSubGrid;
       _GridDataType = clientGrid.GridDataType;
 
+      CanUseGlobalLatestCells &=
+        !(_GridDataType == GridDataType.CCV ||
+          _GridDataType == GridDataType.CCVPercent) /*&& (LiftBuildSettings.CCVSummaryTypes<>[])*/ &&
+        !(_GridDataType == GridDataType.MDP ||
+          _GridDataType == GridDataType.MDPPercent) /*&& (LiftBuildSettings.MDPSummaryTypes<>[])*/ &&
+        !(_GridDataType == GridDataType.CCA || _GridDataType == GridDataType.CCAPercent) &&
+        !(_GridDataType == GridDataType.CellProfile ||
+          _GridDataType == GridDataType.PassCount ||
+          _GridDataType == GridDataType.CellPasses ||
+          _GridDataType == GridDataType.MachineSpeed ||
+          _GridDataType == GridDataType.CCVPercentChange ||
+          _GridDataType == GridDataType.MachineSpeedTarget ||
+          _GridDataType == GridDataType.CCVPercentChangeIgnoredTopNullValue);
+
       // Support for lazy construction of any required profilinf infrastructure
       if (ClientGrid.WantsLiftProcessingResults() && Profiler == null)
       {

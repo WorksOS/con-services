@@ -44,7 +44,7 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 			Aggregator = aggregator,
 			Filters = argument.Filters,
 			IncludeSurveyedSurfaces = true,
-			RequestedGridDataType = GridDataType.MachineSpeed
+			RequestedGridDataType = GridDataType.MachineSpeedTarget
 		};
 
 		/// <summary>
