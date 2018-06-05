@@ -55,7 +55,7 @@ node ('jenkinsslave-pod') {
         }
 
     } 	catch (Exception e) {
-		//force build to be success for the moment
+		//force build to be success even with test failures as success/failure thresholds will be handled in finally below
 		currentBuild.result = 'SUCCESS'
 	}
     finally {
