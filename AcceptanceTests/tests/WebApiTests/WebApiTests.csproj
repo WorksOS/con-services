@@ -53,6 +53,9 @@
     <None Update="FileImportFiles\TestSurveyedSurface2.TTM">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="librdkafka.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

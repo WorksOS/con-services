@@ -49,6 +49,7 @@ namespace TestUtility
     public string ExecuteMySqlQueryAndReturnRecordCountResult(string connectionString, string queryString)
     {
       string queryResult = null;
+      Console.WriteLine(connectionString);
       using (var mySqlConnection = new MySqlConnection(connectionString))
       {
         mySqlConnection.Open();

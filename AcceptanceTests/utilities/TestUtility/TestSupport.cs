@@ -102,6 +102,7 @@ namespace TestUtility
     /// <returns></returns>
     public int SetLegacyProjectId()
     {
+      Console.WriteLine("SetLegacyProjectId start");
       var mysql = new MySqlHelper();
       var query = "SELECT max(LegacyProjectID) FROM Project WHERE LegacyProjectID < 100000;";
       var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(TsCfg.DbConnectionString, query);
@@ -110,6 +111,7 @@ namespace TestUtility
         return 1000;
       }
       var legacyProjectId = Convert.ToInt32(result);
+      Console.WriteLine("legacyProjectId=" + legacyProjectId);
       return legacyProjectId + 1;
     }
 

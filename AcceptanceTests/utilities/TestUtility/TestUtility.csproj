@@ -26,4 +26,10 @@
     <ProjectReference Include="..\..\..\src\ProjectWebApiCommon\VSS.Project.WebApi.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="librdkafka.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
