@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Analytics.SpeedStatistics.GridFabric
 {
@@ -9,15 +10,11 @@ namespace VSS.TRex.Analytics.SpeedStatistics.GridFabric
 	[Serializable]
   public class SpeedStatisticsArgument : BaseApplicationServiceRequestArgument
 	{
-		// TODO If desired: ExternalDescriptor :TASNodeRequestDescriptor, which should be moved to the base class;
+    // TODO If desired: ExternalDescriptor :TASNodeRequestDescriptor, which should be moved to the base class;
 
-		/// <summary>
-		/// Maximum machine speed target value.
-		/// </summary>
-		public ushort TargetMaxMachineSpeed { get; set; }
-		/// <summary>
-		/// Minimum machine speed target value.
-		/// </summary>
-		public ushort TargetMinMachineSpeed { get; set; }
+    /// <summary>
+    /// Machine speed target record. It contains min/max machine speed target value.
+    /// </summary>
+    public MachineSpeedExtendedRecord TargetMachineSpeed { get; set; }
 	}
 }

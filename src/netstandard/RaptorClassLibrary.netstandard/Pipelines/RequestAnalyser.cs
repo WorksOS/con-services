@@ -14,14 +14,14 @@ namespace VSS.TRex.Pipelines
   /// the need to be requested, and the production data/surveyed surface aspects of those requests.
   /// Its implementation was modelled on the activities of the Legacy TSVOICSubGridSubmissionThread class.
   /// </summary>
-  public class RequestAnalyser
+  public class RequestAnalyser : IRequestAnalyser
   {
     private static ILogger Log = Logging.Logger.CreateLogger<RequestAnalyser>();
 
     /// <summary>
     /// The pipeline that has initiated this request analysis
     /// </summary>
-    private ISubGridPipelineBase Owner;
+    public ISubGridPipelineBase Pipeline { get; set; }
 
     /// <summary>
     /// The resulting bitmap subgrid tree mask of all subgrids containing production data that need to be requested
@@ -39,7 +39,11 @@ namespace VSS.TRex.Pipelines
     /// </summary>
     public BoundingIntegerExtent2D OverrideSpatialCellRestriction = BoundingIntegerExtent2D.Inverted();
 
-    public BoundingWorldExtent3D WorldExtents = BoundingWorldExtent3D.Inverted();
+    /// <summary>
+    /// The bounding world extents costraining the query, derived from filter, design and other spatial restrictions
+    /// and criteria related to the query parameters
+    /// </summary>
+    public BoundingWorldExtent3D WorldExtents { get; set; } = BoundingWorldExtent3D.Inverted();
 
     public long TotalNumberOfSubgridsAnalysed;
     public long TotalNumberOfSubgridsToRequest;
@@ -80,12 +84,12 @@ namespace VSS.TRex.Pipelines
     /// Constructor accepting the pipeline (analyser client) and the bounding world coordinate extents within which subgrids
     /// are being requested
     /// </summary>
-    /// <param name="owner"></param>
+    /// <param name="pipeline"></param>
     /// <param name="worldExtents"></param>
-    public RequestAnalyser(ISubGridPipelineBase owner,
+    public RequestAnalyser(ISubGridPipelineBase pipeline,
       BoundingWorldExtent3D worldExtents) : this()
     {
-      Owner = owner;
+      Pipeline = pipeline;
       WorldExtents = worldExtents;
     }
 
@@ -106,7 +110,7 @@ namespace VSS.TRex.Pipelines
       else
         FilterRestriction.SetMaximalCoverage();
 
-      foreach (CombinedFilter filter in Owner.FilterSet.Filters)
+      foreach (CombinedFilter filter in Pipeline.FilterSet.Filters)
       {
         if (filter != null)
           FilterRestriction = filter.SpatialFilter.CalculateIntersectionWithExtents(FilterRestriction);
@@ -128,9 +132,9 @@ namespace VSS.TRex.Pipelines
       ScanningFullWorldExtent = !WorldExtents.IsValidPlanExtent || WorldExtents.IsMaximalPlanConverage;
 
       if (ScanningFullWorldExtent)
-        Owner.OverallExistenceMap.ScanSubGrids(Owner.OverallExistenceMap.FullCellExtent(), SubGridEvent);
+        Pipeline.OverallExistenceMap.ScanSubGrids(Pipeline.OverallExistenceMap.FullCellExtent(), SubGridEvent);
       else
-        Owner.OverallExistenceMap.ScanSubGrids(FilterRestriction, SubGridEvent);
+        Pipeline.OverallExistenceMap.ScanSubGrids(FilterRestriction, SubGridEvent);
     }
 
     /// <summary>
@@ -139,13 +143,13 @@ namespace VSS.TRex.Pipelines
     /// <returns></returns>
     public bool Execute()
     {
-      if (Owner == null)
+      if (Pipeline == null)
         throw new ArgumentException("No owning pipeline", "Owner");
 
-      if (Owner.FilterSet == null)
+      if (Pipeline.FilterSet == null)
         throw new ArgumentException("No filters in pipeline", "Filters");
 
-      if (Owner.ProdDataExistenceMap == null)
+      if (Pipeline.ProdDataExistenceMap == null)
         throw new ArgumentException("Production Data Existance Map should have been specified", "ProdDataExistenceMap");
 
       PerformScanning();
@@ -169,7 +173,7 @@ namespace VSS.TRex.Pipelines
       // the two sets of subgrids
 
       SubGridTreeLeafBitmapSubGrid ProdDataSubGrid =
-        Owner.ProdDataExistenceMap.LocateSubGridContaining(SubGrid.OriginX, SubGrid.OriginY) as
+        Pipeline.ProdDataExistenceMap.LocateSubGridContaining(SubGrid.OriginX, SubGrid.OriginY) as
           SubGridTreeLeafBitmapSubGrid;
 
       byte ScanMinXb, ScanMinYb, ScanMaxXb, ScanMaxYb;
@@ -228,16 +232,16 @@ namespace VSS.TRex.Pipelines
             // which means they are only 5 levels deep. This means the (OriginX + I, OriginY + J)
             // origin coordinates correctly identify the single bits that denote the subgrids.
 
-            if (Owner.DesignSubgridOverlayMap != null)
+            if (Pipeline.DesignSubgridOverlayMap != null)
             {
-              if (!Owner.DesignSubgridOverlayMap.GetCell(SubGrid.OriginX + I, SubGrid.OriginY + J))
+              if (!Pipeline.DesignSubgridOverlayMap.GetCell(SubGrid.OriginX + I, SubGrid.OriginY + J))
                 continue;
             }
 
             // If there is a spatial filter in play then determine if the subgrid about to be requested intersects the spatial filter extent
 
             bool SubgridSatisfiesFilter = true;
-            foreach (CombinedFilter filter in Owner.FilterSet.Filters)
+            foreach (CombinedFilter filter in Pipeline.FilterSet.Filters)
             {
               if (filter == null)
                 continue;

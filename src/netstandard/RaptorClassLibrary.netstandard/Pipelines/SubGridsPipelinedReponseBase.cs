@@ -1,6 +1,6 @@
 ﻿using VSS.TRex.Types;
 
-namespace VSS.TRex.Exports
+namespace VSS.TRex.Pipelines
 {
   /// <summary>
   /// A base class representing the generic result of requesting subgrids
@@ -10,6 +10,6 @@ namespace VSS.TRex.Exports
     /// <summary>
     /// The error status result from the pipeline execution
     /// </summary>
-    public RequestErrorStatus ResultStatus { get; set; }
+    public RequestErrorStatus ResultStatus { get; set; } = RequestErrorStatus.Unknown;
   }
 }

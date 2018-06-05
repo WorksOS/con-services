@@ -16,5 +16,7 @@ namespace VSS.TRex.Executors.Tasks.Interfaces
         string TRexNodeID { get; set; }
 
         ISubGridPipelineBase PipeLine { get; set; }
+
+        bool IsCancelled { get; set; }
     }
 }

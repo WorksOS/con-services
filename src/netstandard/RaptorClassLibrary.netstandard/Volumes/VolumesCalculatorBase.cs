@@ -161,7 +161,7 @@ namespace VSS.TRex.Volumes
         SurveyedSurfaces FilteredBaseSurveyedSurfaces = new SurveyedSurfaces();
         SurveyedSurfaces FilteredTopSurveyedSurfaces = new SurveyedSurfaces();
 
-        public long RequestDescriptor { get; set; } = -1;
+        public Guid RequestDescriptor { get; set; } = Guid.Empty;
 
         public abstract bool ComputeVolumeInformation();
 
@@ -282,13 +282,13 @@ namespace VSS.TRex.Volumes
                     // If necessary, impose spatial constraints from Lift filter design(s)
                     if (VolumeType == VolumeComputationType.Between2Filters || VolumeType == VolumeComputationType.BetweenFilterAndDesign)
                     {
-                        if (!DesignFilterUtilities.ProcessDesignElevationsForFilter(SiteModel.ID, BaseFilter, OverallExistenceMap))
+                        if (!DesignFilterUtilities.ProcessDesignElevationsForFilter(SiteModel, BaseFilter, OverallExistenceMap))
                             return RequestErrorStatus.Unknown;
                     }
 
                     if (VolumeType == VolumeComputationType.Between2Filters || VolumeType == VolumeComputationType.BetweenDesignAndFilter)
                     {
-                        if (!DesignFilterUtilities.ProcessDesignElevationsForFilter(SiteModel.ID, TopFilter, OverallExistenceMap))
+                        if (!DesignFilterUtilities.ProcessDesignElevationsForFilter(SiteModel, TopFilter, OverallExistenceMap))
                             return RequestErrorStatus.Unknown;
                     }
 

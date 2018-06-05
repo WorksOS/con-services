@@ -49,7 +49,7 @@ namespace VSS.TRex.Profiling
     private List<ProfileCell> ProfileCells;
     private XYZ[] NEECoords;
     private CellSpatialFilter CellFilter;
-    private Design Design;
+    private Design CutFillDesign;
 
     public double GridDistanceBetweenProfilePoints;
 
@@ -59,18 +59,14 @@ namespace VSS.TRex.Profiling
     /// <param name="nEECoords"></param>
     /// <param name="profileCells"></param>
     /// <param name="cellFilter"></param>
-    /// <param name="design"></param>
+    /// <param name="cutFillDesign"></param>
     public CellProfileBuilder(ISiteModel siteModel,
-      XYZ[] nEECoords,
-      List<ProfileCell> profileCells,
       CellSpatialFilter cellFilter,
-      Design design)
+      Design cutFillDesign)
     {
       SiteModel = siteModel;
-      NEECoords = nEECoords;
-      ProfileCells = profileCells;
       CellFilter = cellFilter;
-      Design = design;
+      CutFillDesign = cutFillDesign;
     }
 
     /// <summary>
@@ -183,8 +179,18 @@ namespace VSS.TRex.Profiling
       ProfileCells.Add(ProfileCell);
     }
 
-    public bool Build()
+    /// <summary>
+    /// Constructs a vector of cells in profileCells along the path of the profile geometry containing in nEECoords
+    /// </summary>
+    /// <param name="nEECoords"></param>
+    /// <param name="profileCells"></param>
+    /// <returns></returns>
+    public bool Build(XYZ[] nEECoords,
+      List<ProfileCell> profileCells)
     {
+      NEECoords = nEECoords;
+      ProfileCells = profileCells;
+
       CellSize = SiteModel.Grid.CellSize;
 
       CurrStationPos = 0;
@@ -192,7 +198,7 @@ namespace VSS.TRex.Profiling
 
       CurrentSubgridOrigin = new SubGridCellAddress(int.MaxValue, int.MaxValue);
       GridDistanceBetweenProfilePoints = 0;
-      ReturnDesignElevation = Design != null;
+      ReturnDesignElevation = CutFillDesign != null;
       DesignElevations = null;
 
       for (int I = 0; I < NEECoords.Length - 1; I++) //for I := 0 to Arraycount - 2 do
@@ -278,7 +284,7 @@ namespace VSS.TRex.Profiling
             DesignElevations = null;
             DesignResult = DesignProfilerRequestResult.UnknownError;
 
-            Design?.GetDesignHeights(SiteModel.ID, new SubGridCellAddress(OTGCellX, OTGCellY), CellSize,
+            CutFillDesign?.GetDesignHeights(SiteModel.ID, new SubGridCellAddress(OTGCellX, OTGCellY), CellSize,
               out DesignElevations, out DesignResult);
 
             if (DesignResult != DesignProfilerRequestResult.OK &&

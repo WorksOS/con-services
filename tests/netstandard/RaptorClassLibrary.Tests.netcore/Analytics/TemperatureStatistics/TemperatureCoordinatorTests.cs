@@ -25,7 +25,7 @@ namespace RaptorClassLibrary.Tests.netcore.Analytics.TemperatureStatistics
 
     private TemperatureCoordinator _getCoordinator()
     {
-      return new TemperatureCoordinator() { RequestDescriptor = 111, SiteModel = _siteModel };
+      return new TemperatureCoordinator() { RequestDescriptor = Guid.NewGuid(), SiteModel = _siteModel };
     }
 
     private TemperatureAggregator _getTemperatureAggregator()
@@ -41,7 +41,7 @@ namespace RaptorClassLibrary.Tests.netcore.Analytics.TemperatureStatistics
       var coordinator = new TemperatureCoordinator();
 
       Assert.True(coordinator.SiteModel == null, "Invalid initial value for SiteModel.");
-      Assert.True(coordinator.RequestDescriptor == 0, "Invalid initial value for RequestDescriptor.");
+      Assert.True(coordinator.RequestDescriptor == Guid.Empty, "Invalid initial value for RequestDescriptor.");
     }
 
     [Fact]

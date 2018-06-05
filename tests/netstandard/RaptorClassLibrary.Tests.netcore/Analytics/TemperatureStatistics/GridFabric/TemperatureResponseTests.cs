@@ -55,9 +55,9 @@ namespace RaptorClassLibrary.Tests.netcore.Analytics.TemperatureStatistics.GridF
 
 			Assert.True(Math.Abs(result.MaximumTemperature - _response.LastTempRangeMax) < TOLERANCE, "Invalid initial result value for MaximumTemperature.");
 			Assert.True(Math.Abs(result.MinimumTemperature - _response.LastTempRangeMin) < TOLERANCE, "Invalid initial result value for MinimumTemperature.");
-			Assert.True(Math.Abs(result.AboveTemperaturePercent - _response.ValueOverTargetPercent) < TOLERANCE, "Invalid initial result value for AboveTemperaturePercent.");
-			Assert.True(Math.Abs(result.WithinTemperaturePercent - _response.ValueAtTargetPercent) < TOLERANCE, "Invalid initial result value for WithinTemperaturePercent.");
-			Assert.True(Math.Abs(result.BelowTemperaturePercent - _response.ValueUnderTargetPercent) < TOLERANCE, "Invalid initial result value for BelowTemperaturePercent.");
+			Assert.True(Math.Abs(result.AboveTargetPercent - _response.ValueOverTargetPercent) < TOLERANCE, "Invalid initial result value for AboveTemperaturePercent.");
+			Assert.True(Math.Abs(result.WithinTargetPercent - _response.ValueAtTargetPercent) < TOLERANCE, "Invalid initial result value for WithinTemperaturePercent.");
+			Assert.True(Math.Abs(result.BelowTargetPercent - _response.ValueUnderTargetPercent) < TOLERANCE, "Invalid initial result value for BelowTemperaturePercent.");
 			Assert.True(Math.Abs(result.TotalAreaCoveredSqMeters - _response.SummaryProcessedArea) < TOLERANCE, "Invalid initial result value for TotalAreaCoveredSqMeters.");
 			Assert.True(result.IsTargetTemperatureConstant == _response.IsTargetValueConstant, "Invalid initial result value for IsTargetValueConstant.");
 		}

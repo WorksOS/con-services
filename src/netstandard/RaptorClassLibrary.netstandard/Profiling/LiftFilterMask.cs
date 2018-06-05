@@ -11,6 +11,10 @@ using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Profiling
 {
+  /// <summary>
+  /// Provides support for determining inclusion masks for subgrid cell selecitonand processing based on patial, positional
+  /// and design based spatial seletion criteria from filters
+  /// </summary>
   public static class LiftFilterMask
   {
     private static ILogger Log = Logging.Logger.CreateLogger("LiftFilterMask");
@@ -127,8 +131,10 @@ namespace VSS.TRex.Profiling
       return true;
     }
 
-    public static bool InitialiseFilterContext(ISiteModel siteModel, CellPassAttributeFilter passFilter, ProfileCell profileCell, Design design)
+    public static bool InitialiseFilterContext(ISiteModel siteModel, CellPassAttributeFilter passFilter, ProfileCell profileCell, Design design, out DesignProfilerRequestResult FilterDesignErrorCode)
     {
+      FilterDesignErrorCode = DesignProfilerRequestResult.UnknownError;
+
       if (passFilter.HasElevationRangeFilter)
       {
         // If the elevation range filter uses a design then the design elevations
@@ -138,7 +144,7 @@ namespace VSS.TRex.Profiling
         {
           design.GetDesignHeights(siteModel.ID, new SubGridCellAddress(profileCell.OTGCellX, profileCell.OTGCellY),
             siteModel.Grid.CellSize, out ClientHeightLeafSubGrid FilterDesignElevations,
-            out DesignProfilerRequestResult FilterDesignErrorCode);
+            out FilterDesignErrorCode);
 
           if (FilterDesignErrorCode != DesignProfilerRequestResult.OK || FilterDesignElevations == null)
           {
