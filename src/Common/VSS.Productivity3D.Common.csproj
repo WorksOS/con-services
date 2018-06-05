@@ -47,12 +47,7 @@
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.23.*" />
     <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.34.0" />
     <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.10.*" />
-    <!-- Lock Velociraptor.Interfaces to 1.0.55 so we remain unaffected by pending updates to the shims
-         to support 3 new filter type endpoints. This lock will be removed when support for the endpoints
-         is added to 3DP Raptor svc. -->
-    <PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.55" />
-    <!-- End version lock -->
-
+    <PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.*" />
     <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.1.*" />
   </ItemGroup>
 
