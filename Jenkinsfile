@@ -26,7 +26,7 @@ node ('jenkinsslave-pod') {
 	
 	//The runtimeContainerTag will need to updated when we want to push this to ecr
 	def buildContainerTag = "vss.trex_build:${fullVersion}"
-	def runtimeContainerTag = vss.trex_build:${fullVersion}"
+	def runtimeContainerTag = "vss.trex_build:${fullVersion}"
 	
     try {
 		//Tests are done here because host volume mounts cannot be specified in the dockerfile
