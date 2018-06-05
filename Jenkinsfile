@@ -32,7 +32,8 @@ node ('jenkinsslave-pod') {
                 // the volume to the bare metal host
 				
 				//TODO add comments about how this works
-                sh 'docker run -it -v ${env.WORKSPACE}/TestResults:/TestResults ${building.id} bash -c "ls /build/tests/*/*/*netcore*.csproj | xargs -I@ -t dotnet test  --test-adapter-path:. --logger:"xunit;LogFilePath=/TestResults/@.xml" @'
+				def testCommand = $/docker run -it -v ${env.WORKSPACE}/TestResults:/TestResults ${building.id} bash -c "ls /build/tests/*/*/*netcore*.csproj | xargs -I@ -t dotnet test  --test-adapter-path:. --logger:"xunit;LogFilePath=/TestResults/@.xml" @/$
+                sh(script: testCommand)
 
 					
                 // building.inside("-v ${env.WORKSPACE}/TestResults:/TestResults"){
