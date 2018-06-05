@@ -1,25 +1,16 @@
-FROM microsoft/dotnet:2.1.300-rc1-sdk-alpine3.7 as build_container
+#BUILD_CONTAINER is the container where T-Rex was just built and unit tested in usually this should be local i.e. not pushed to ecr or elsewhere.
+ARG BUILD_CONTAINER
+FROM ${BUILD_CONTAINER} as build_container
 
-#Copy files from scm into build container and build
-COPY . /build/
+#We are using the above as a base container as it is the one one just build and tested, therefore we want its T-Rex binaries
 
-####### TODO run tests
-RUN dotnet test --test-adapter-path:. --logger:"xunit;LogFilePath=/TestResults/RaptorClassLibraryTestResults.xml" \
-    /build/tests/netstandard/RaptorClassLibrary.Tests.netcore/RaptorClassLibrary.Tests.netcore.csproj
-
-
-# Build 
-RUN dotnet publish /build/TRex.netstandard.sln --output /trex
-
-# #Now create runtime container
+# Now create runtime container
 # Why bash? it seems to be needed for ignite to run (maybe a dependency?)
 FROM microsoft/dotnet:2.1.0-rc1-runtime-alpine3.7
 RUN \
-  apk update && \
-  apk upgrade && \
-  apk add openjdk8 && \
-  apk add bash && \
-  rm -rf /var/cache/apk/*
+  apk --no-cache add openjdk8 && \
+  apk --no-cache add bash
+
 
 # #Need these for ignite to work
 ENV JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk
@@ -28,7 +19,7 @@ ENV LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/amd64/server
 # # Copy built artifacts from last stage into runtime container
 # # TRex still cannot run in 
 COPY --from=build_container /trex/ /trex/
-#Get the ignite libs as these are ignored by dotnot publish
+#Get the ignite libs as these are ignored by dotnet publish
 COPY --from=build_container /root/.nuget/packages/apache.ignite/2.4.0/libs/ /trex/libs/
 
 

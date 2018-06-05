@@ -6,8 +6,7 @@ RUN apk --no-cache add bash
 #Copy files from scm into build container and build
 COPY . /build/
 
-####### TODO run tests
-#RUN dotnet test --test-adapter-path:. --logger:"xunit;LogFilePath=/TestResults/RaptorClassLibraryTestResults.xml" \
-#    /build/tests/netstandard/RaptorClassLibrary.Tests.netcore/RaptorClassLibrary.Tests.netcore.csproj
+#publish TRex
+RUN dotnet publish /build/TRex.netstandard.sln --output /trex
 
-
+#TRex unit tests will be tested by the jenkins file as host directory mounts cannot be specified in the dockerfile

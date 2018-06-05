@@ -4,6 +4,7 @@ node ('jenkinsslave-pod') {
     def versionPrefix = ""
     def suffix = ""
     def branchName = ""
+	def build_container = ""
 
     if (branch.contains("release")) {
         versionPrefix = "1.0."
@@ -22,30 +23,43 @@ node ('jenkinsslave-pod') {
 
     def versionNumber = versionPrefix + buildNumber
     def fullVersion = versionNumber + suffix
+	
+	//The runtimeContainerTag will need to updated when we want to push this to ecr
+	def buildContainerTag = "vss.trex_build:${fullVersion}"
+	def runtimeContainerTag = vss.trex_build:${fullVersion}"
+	
     try {
+		//Tests are done here because host volume mounts cannot be specified in the dockerfile
+		stage('Build Container') {
+			checkout scm
+			build_container = docker.build(buildContainerTag, "-f DockerfileBuild .")
+		}
+		
         stage('Test Solution') {
-                checkout scm
-                dir("/TestResults") {}
-                def building = docker.build("vss.trex:${fullVersion}", "-f DockerfileBuild .")
-
-                // Currently we need to execute the tests like this, because the pipeline docker plugin being aware of DIND, and attempting to map
-                // the volume to the bare metal host
-				
-				//Do not modify this unless you know the difference between ' and " in bash
-				// (https://www.gnu.org/software/bash/manual/html_node/Quoting.html#Quoting) see (https://gist.github.com/fuhbar/d00d11297a48b892684da34360e4135a) for Jenkinsfile 
-				// specific escaping examples. One day we might be able to test solutions (and have the results go to a specific directory) rather than specific projects, negating the need for such a complex command.
-				def testCommand = $/docker run -v ${env.WORKSPACE}/TestResults:/TestResults ${building.id} bash -c 'cd /build && ls tests/*/*/*netcore*.csproj | xargs -I@ -t dotnet test  --test-adapter-path:. --logger:"xunit;LogFilePath=/TestResults/@.xml" @'/$
-                
-				sh(script: testCommand)
-				
-
-					
-                // building.inside("-v ${env.WORKSPACE}/TestResults:/TestResults"){
-                //     sh 'dotnet test --test-adapter-path:. --logger:"xunit;LogFilePath=/TestResults/RaptorClassLibraryTestResults.xml" \
-                //         /build/tests/netstandard/RaptorClassLibrary.Tests.netcore/RaptorClassLibrary.Tests.netcore.csproj'
-                // }
-                sh "ls ${env.WORKSPACE}/TestResults"
+			//Create results directory in workspace
+			dir("/TestResults") {}
+			
+			// Currently we need to execute the tests like this, because the pipeline docker plugin being aware of DIND, and attempting to map
+			// the volume to the bare metal host
+			
+			//Do not modify this unless you know the difference between ' and " in bash
+			// (https://www.gnu.org/software/bash/manual/html_node/Quoting.html#Quoting) see (https://gist.github.com/fuhbar/d00d11297a48b892684da34360e4135a) for Jenkinsfile 
+			// specific escaping examples. One day we might be able to test solutions (and have the results go to a specific directory) rather than specific projects, negating the need for such a complex command.
+			def testCommand = $/docker run -v ${env.WORKSPACE}/TestResults:/TestResults ${build_container.id} bash -c 'cd /build && ls tests/*/*/*netcore*.csproj | xargs -I@ -t dotnet test  --test-adapter-path:. --logger:"xunit;LogFilePath=/TestResults/@.xml" @'/$
+			
+			//Run the test command generated above
+			sh(script: testCommand)
+			
+			//List the test results - We should have some
+			sh "ls ${env.WORKSPACE}/TestResults"
         }
+		
+		stage('Build Runtime Container') {
+			def runtime_container = docker.build(runtimeContainerTag, "-f DockerfileRuntime --build-arg BUILD_CONTAINER=${buildContainerTag} .")
+			
+			//This is where we would push at the moment just list available images to verify we have built containers
+			sh "docker images"
+		}
     }
     finally {
         //See https://jenkins.io/doc/pipeline/steps/xunit/#xunit-publish-xunit-test-result-report for DSL Guide
