@@ -7,7 +7,6 @@ using VSS.TRex.GridFabric.Caches;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Servers;
 using VSS.TRex.Servers.Client;
-using VSSTests.TRex.Tests.Common;
 using Xunit;
 
 namespace TAGFiles.Tests.netcore
@@ -47,16 +46,16 @@ namespace TAGFiles.Tests.netcore
             TAGFileBufferQueue queue = new TAGFileBufferQueue();
             Assert.NotNull(queue);
 
-            // Load a TAG file and add it to the queue. Verify the TAG file appears in the cache
+      // Load a TAG file and add it to the queue. Verify the TAG file appears in the cache
 
-            string tagFileName = "TestTAGFile - TAGFile - Read - Stream.tag";
+            string tagFileName = "TestTAGFile-TAGFile-Read-Stream.tag";
 
             Guid projectID = Guid.NewGuid();
             Guid assetID = Guid.NewGuid();
 
             byte[] tagContent;
             using (FileStream tagFileStream =
-                new FileStream(TAGTestConsts.TestDataFilePath() + "TAGFiles\\TestTAGFile-TAGFile-Read-Stream.tag",
+                new FileStream(Path.Combine("TestData", "TAGFiles", tagFileName),
                     FileMode.Open, FileAccess.Read))
             {
                 tagContent = new byte[tagFileStream.Length];

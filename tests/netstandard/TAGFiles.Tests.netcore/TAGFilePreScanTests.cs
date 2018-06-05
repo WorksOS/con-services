@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using VSS.TRex.Cells;
 using VSS.TRex.TAGFiles.Types;
-using VSSTests.TRex.Tests.Common;
 using Xunit;
 
 namespace VSS.TRex.Executors.Tests
