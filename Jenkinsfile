@@ -30,8 +30,8 @@ node ('jenkinsslave-pod') {
 
                 // Currently we need to execute the tests like this, because the pipeline docker plugin being aware of DIND, and attempting to map
                 // the volume to the bare metal host
-                sh "docker run -v ${env.WORKSPACE}/TestResults:/TestResults ${building.id} dotnet test --test-adapter-path:. --logger:\"xunit;LogFilePath=/TestResults/RaptorClassLibraryTestResults.xml\" \
-                    /build/tests/netstandard/RaptorClassLibrary.Tests.netcore/RaptorClassLibrary.Tests.netcore.csproj"
+                sh "docker run -v ${env.WORKSPACE}/TestResults:/TestResults ${building.id} dotnet test --test-adapter-path:. --logger:\"xunit;LogFilePath=/TestResults/UnittestResults.xml\" \
+                    /build/TRex.netstandard.sln"
                 // building.inside("-v ${env.WORKSPACE}/TestResults:/TestResults"){
                 //     sh 'dotnet test --test-adapter-path:. --logger:"xunit;LogFilePath=/TestResults/RaptorClassLibraryTestResults.xml" \
                 //         /build/tests/netstandard/RaptorClassLibrary.Tests.netcore/RaptorClassLibrary.Tests.netcore.csproj'
