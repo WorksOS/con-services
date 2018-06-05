@@ -33,7 +33,7 @@ node ('jenkinsslave-pod') {
 				
 				//TODO add comments about how this works
                 sh "docker run -v ${env.WORKSPACE}/TestResults:/TestResults ${building.id} \
-					ls /build/tests/*/*netcore*.csproj | xargs -L1 -I# -t dotnet test  --test-adapter-path:. --logger:"xunit;LogFilePath=/TestResults/#.xml" #
+					ls /build/tests/*/*netcore*.csproj | xargs -L1 -I@ -t dotnet test  --test-adapter-path:. --logger:\"xunit;LogFilePath=/TestResults/@.xml\" @
 
 					
                 // building.inside("-v ${env.WORKSPACE}/TestResults:/TestResults"){
