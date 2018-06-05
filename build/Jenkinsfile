@@ -32,7 +32,7 @@ node ('jenkinsslave-pod') {
 		//Tests are done here because host volume mounts cannot be specified in the dockerfile
 		stage('Build Container') {
 			checkout scm
-			build_container = docker.build(buildContainerTag, "-f DockerfileBuild .")
+			build_container = docker.build(buildContainerTag, "-f ./build/DockerfileBuild .")
 		}
 		
         stage('Test Solution') {
@@ -77,7 +77,7 @@ node ('jenkinsslave-pod') {
     }
 
 	stage('Build Runtime Container') {
-	def runtime_container = docker.build(runtimeContainerTag, "-f DockerfileRuntime --build-arg BUILD_CONTAINER=${buildContainerTag} .")
+	def runtime_container = docker.build(runtimeContainerTag, "-f ./build/DockerfileRuntime --build-arg BUILD_CONTAINER=${buildContainerTag} .")
 	
 	//This is where we would push at the moment just list available images to verify we have built containers
 	sh "docker images"
