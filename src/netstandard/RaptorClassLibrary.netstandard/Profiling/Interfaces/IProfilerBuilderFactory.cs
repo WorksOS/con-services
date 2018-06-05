@@ -30,10 +30,12 @@ namespace VSS.TRex.Profiling.Interfaces
     /// <param name="siteModel"></param>
     /// <param name="cellFilter"></param>
     /// <param name="cutFillDesign"></param>
+    /// <param name="slicerToolUsed"></param>
     /// <returns></returns>
     ICellProfileBuilder NewCellProfileBuilder(ISiteModel siteModel,
       CellSpatialFilter cellFilter,
-      Design cutFillDesign);
+      Design cutFillDesign,
+      bool slicerToolUsed);
 
     /// <summary>
     /// Creates a new builder responsible for analysing profile information for a cell of cells idenfitied along a profile line

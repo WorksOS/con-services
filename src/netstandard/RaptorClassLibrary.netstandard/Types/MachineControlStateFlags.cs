@@ -27,7 +27,7 @@
     public const int GCSControlStateAuto = 0x8;
 
     /// <summary>
-    /// Null value for machien automatics control state
+    /// Null value for machine automatics control state
     /// </summary>
     public const int NullGCSControlState = 0;
   }

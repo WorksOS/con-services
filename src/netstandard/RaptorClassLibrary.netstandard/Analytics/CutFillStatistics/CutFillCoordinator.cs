@@ -26,7 +26,7 @@ namespace VSS.TRex.Analytics.Coordinators
         public override AggregatorBase ConstructAggregator(CutFillStatisticsArgument argument) => new CutFillAggregator
             {
                 RequiresSerialisation = true,
-                SiteModelID = argument.DataModelID,
+                SiteModelID = argument.ProjectID,
                 //LiftBuildSettings := LiftBuildSettings;
                 CellSize = SiteModel.Grid.CellSize,
                 Offsets = argument.Offsets

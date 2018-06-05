@@ -45,6 +45,7 @@ namespace VSS.TRex.Profiling
     /// <param name="cellPassFilter_ElevationRangeDesign"></param>
     /// <param name="PopulationControl"></param>
     /// <param name="CellPassFastEventLookerUpper"></param>
+    /// <param name="slicerToolUsed"></param>
     public ProfilerBuilder(ISiteModel siteModel,
       SubGridTreeBitMask productionDataExistenceMap,
       GridDataType gridDataType,
@@ -53,11 +54,12 @@ namespace VSS.TRex.Profiling
       Design cutFillDesign,
       Design cellPassFilter_ElevationRangeDesign,
       FilteredValuePopulationControl PopulationControl,
-      CellPassFastEventLookerUpper CellPassFastEventLookerUpper)    
+      CellPassFastEventLookerUpper CellPassFastEventLookerUpper,
+      bool slicerToolUsed = true)    
     {
         CellLiftBuilder = factory.NewCellLiftBuilder(siteModel, gridDataType, PopulationControl, passFilter, CellPassFastEventLookerUpper);
 
-        CellProfileBuilder = factory.NewCellProfileBuilder(siteModel, cellFilter, cutFillDesign);
+        CellProfileBuilder = factory.NewCellProfileBuilder(siteModel, cellFilter, cutFillDesign, slicerToolUsed);
 
         ProfileLiftBuilder = factory.NewProfileLiftBuilder(siteModel, productionDataExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, CellLiftBuilder);
     }

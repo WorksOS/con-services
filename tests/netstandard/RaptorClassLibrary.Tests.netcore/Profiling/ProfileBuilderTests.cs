@@ -29,7 +29,7 @@ namespace RaptorClassLibrary.Tests.netcore.Profiling
 
         factory.Setup(mk => mk.NewCellLiftBuilder(null, GridDataType.All, null, null, null))
           .Returns(newCellLiftBuilder.Object);
-        factory.Setup(mk => mk.NewCellProfileBuilder(null, null, null)).Returns(newCellProfileBuilder.Object);
+        factory.Setup(mk => mk.NewCellProfileBuilder(null, null, null, true)).Returns(newCellProfileBuilder.Object);
         factory.Setup(mk => mk.NewProfileLiftBuilder(null, null, null, null, null, It.IsAny<ICellLiftBuilder>()))
           .Returns(newProfileLiftBuilder.Object);
 

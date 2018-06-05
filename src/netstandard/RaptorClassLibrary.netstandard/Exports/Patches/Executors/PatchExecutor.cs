@@ -19,8 +19,7 @@ namespace VSS.TRex.Rendering.Patches.Executors
   /// </summary>
   public class PatchExecutor
   {
-    private static readonly ILogger
-      Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     /// <summary>
     /// The response object avbailable for inspection once the Executor has completed processing
@@ -67,7 +66,6 @@ namespace VSS.TRex.Rendering.Patches.Executors
       FilterSet filters,
       Guid cutFillDesignID, //DesignDescriptor ACutFillDesign,
       //AReferenceVolumeType : TComputeICVolumesType;
-      //AICOptions: TSVOICOptions;
       string requestingTRexNodeId,
       int dataPatchPageNumber,
       int dataPatchPageSize
@@ -79,7 +77,6 @@ namespace VSS.TRex.Rendering.Patches.Executors
       Filters = filters;
       CutFillDesignID = cutFillDesignID; // CutFillDesign = ACutFillDesign;
       //ReferenceVolumeType = AReferenceVolumeType;
-      //ICOptions = AICOptions;
       RequestingTRexNodeID = requestingTRexNodeId;
       DataPatchPageNumber = dataPatchPageNumber;
       DataPatchPageSize = dataPatchPageSize;
@@ -125,11 +122,10 @@ namespace VSS.TRex.Rendering.Patches.Executors
           return false;
         }
 
-        // If this is the first page requested then make a count the total number of patches required for all subgrids to be returned
+        // If this is the first page requested then count the total number of patches required for all subgrids to be returned
         if (DataPatchPageNumber == 0)
           PatchSubGridsResponse.TotalNumberOfPagesToCoverFilteredData =
-            (int) Math.Truncate(Math.Ceiling(processor.RequestAnalyser.CountOfSubgridsThatWillBeSubmitted() /
-                                             (1.0 * DataPatchPageSize)));
+            (int) Math.Truncate(Math.Ceiling(processor.RequestAnalyser.CountOfSubgridsThatWillBeSubmitted() / (double)DataPatchPageSize));
 
         processor.Process();
 

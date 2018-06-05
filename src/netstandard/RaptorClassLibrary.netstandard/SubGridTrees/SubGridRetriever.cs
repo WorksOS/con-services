@@ -9,6 +9,7 @@ using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Interfaces;
 using VSS.TRex.Profiling;
+using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -66,7 +67,7 @@ namespace VSS.TRex.SubGridTrees
 
     private FilteredValuePopulationControl PopulationControl = null;
 
-    private ProfilerBuilder Profiler = null;
+    private IProfilerBuilder Profiler = null;
     private ProfileCell CellProfile = null;
 
     private CellPassFastEventLookerUpper CellPassFastEventLookerUpper = null;
@@ -540,15 +541,16 @@ namespace VSS.TRex.SubGridTrees
               if (Profiler.CellLiftBuilder.Build(CellProfile, ClientGrid,
                 AssignmentContext, // Place a filtered value into this assignment context
                 CellPassIterator,  // Iterate over the cells using this cell pass iterator
-                true, // Return an individual filtered value
-                      // Selection of a filtered value should occur in forwards time order
-                ref TopMostLayerPassCount,
-                ref TopMostLayerCompactionHalfPassCount))
+                true)) // Return an individual filtered value
+                       // Selection of a filtered value should occur in forwards time order
               {
-                  // Filtered value selection is combined with lift analysis in this context via
-                  // the provision of the client grid and the assignment context to the
-                  // lift analysis engine
-                  HaveFilteredPass = true;
+                TopMostLayerPassCount = Profiler.CellLiftBuilder.FilteredPassCountOfTopMostLayer;
+                TopMostLayerCompactionHalfPassCount = Profiler.CellLiftBuilder.FilteredHalfCellPassCountOfTopMostLayer;
+
+                // Filtered value selection is combined with lift analysis in this context via
+                // the provision of the client grid and the assignment context to the
+                // lift analysis engine
+                HaveFilteredPass = true;
               }
 
               /* TODO ...
@@ -909,11 +911,12 @@ namespace VSS.TRex.SubGridTrees
                 if (Profiler.CellLiftBuilder.Build(CellProfile, ClientGrid,
                   AssignmentContext, // Place a filtered value into this assignment context
                   CellPassIterator,  // Iterate over the cells using this cell pass iterator
-                  true, // Return an individual filtered value
+                  true)) // Return an individual filtered value
                   // Selection of a filtered value should occur in forwards time order
-                  ref TopMostLayerPassCount,
-                  ref TopMostLayerCompactionHalfPassCount))
                 {
+                  TopMostLayerPassCount = Profiler.CellLiftBuilder.FilteredPassCountOfTopMostLayer;
+                  TopMostLayerCompactionHalfPassCount = Profiler.CellLiftBuilder.FilteredHalfCellPassCountOfTopMostLayer;
+
                   // Filtered value selection is combined with lift analysis in this context via
                   // the provision of the client grid and the assignment context to the
                   // lift analysis engine
@@ -1028,8 +1031,7 @@ namespace VSS.TRex.SubGridTrees
 
     private void SetupForCellPassStackExamination()
     {
-      PopulationControl.PreparePopulationControl(_GridDataType, /* todo LiftBuildSettings, */ Filter.AttributeFilter,
-        ClientGrid);
+      PopulationControl.PreparePopulationControl(_GridDataType, /* todo LiftBuildSettings, */ Filter.AttributeFilter, ClientGrid);
 
       Filter.AttributeFilter.RequestedGridDataType = _GridDataType;
 

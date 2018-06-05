@@ -12,6 +12,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Profiling\Executors\Tasks\**" />
+    <EmbeddedResource Remove="Profiling\Executors\Tasks\**" />
+    <None Remove="Profiling\Executors\Tasks\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Apache.Ignite" Version="2.4.0" />
     <PackageReference Include="log4net.netcore" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.0.3" />

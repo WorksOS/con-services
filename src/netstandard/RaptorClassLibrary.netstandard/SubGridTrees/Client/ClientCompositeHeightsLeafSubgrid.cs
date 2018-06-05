@@ -1,35 +1,13 @@
-﻿using System;
+﻿using System.IO;
 using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Utilities;
 
 namespace VSS.TRex.SubGridTrees.Client
 {
-  public struct SubGridCellCompositeHeightsRecord
-  {
-    public float LowestHeight,
-      HighestHeight,
-      LastHeight,
-      FirstHeight;
-
-    public DateTime LowestHeightTime,
-      HighestHeightTime,
-      LastHeightTime,
-      FirstHeightTime;
-
-    public void Clear()
-    {
-      LowestHeight = Consts.NullHeight;
-      HighestHeight= Consts.NullHeight; 
-      LastHeight= Consts.NullHeight; 
-      FirstHeight= Consts.NullHeight; 
-      LowestHeightTime = DateTime.MinValue;
-      HighestHeightTime = DateTime.MinValue;
-      LastHeightTime = DateTime.MinValue;
-      FirstHeightTime = DateTime.MinValue;
-    }
-  }
-
+  /// <summary>
+  /// A client subgrid storing composite height information for each cell in the subgrid.
+  /// </summary>
   public class ClientCompositeHeightsLeafSubgrid : GenericClientLeafSubGrid<SubGridCellCompositeHeightsRecord>
   {
     /// <summary>
@@ -40,7 +18,8 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="level"></param>
     /// <param name="cellSize"></param>
     /// <param name="indexOriginOffset"></param>
-    public ClientCompositeHeightsLeafSubgrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
+    public ClientCompositeHeightsLeafSubgrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize,
+      uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
     {
       _gridDataType = TRex.Types.GridDataType.CompositeHeights;
     }
@@ -53,12 +32,15 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <returns></returns>
     public override bool CellHasValue(byte cellX, byte cellY)
     {
-        return Cells[cellX, cellY].LowestHeight != Consts.NullHeight ||
-        Cells[cellX, cellY].HighestHeight != Consts.NullHeight ||
-        Cells[cellX, cellY].LastHeight != Consts.NullHeight ||
-        Cells[cellX, cellY].FirstHeight != Consts.NullHeight;
+      return Cells[cellX, cellY].LowestHeight != Consts.NullHeight ||
+             Cells[cellX, cellY].HighestHeight != Consts.NullHeight ||
+             Cells[cellX, cellY].LastHeight != Consts.NullHeight ||
+             Cells[cellX, cellY].FirstHeight != Consts.NullHeight;
     }
 
+    /// <summary>
+    /// Zero out all elevations
+    /// </summary>
     public void SetToZeroHeight()
     {
       SubGridUtilities.SubGridDimensionalIterator((i, j) =>
@@ -70,6 +52,9 @@ namespace VSS.TRex.SubGridTrees.Client
       });
     }
 
+    /// <summary>
+    /// Null out all elevations
+    /// </summary>
     public void SetHeightsToNull()
     {
       SubGridUtilities.SubGridDimensionalIterator((i, j) =>
@@ -79,6 +64,35 @@ namespace VSS.TRex.SubGridTrees.Client
         Cells[i, j].LastHeight = Consts.NullHeight;
         Cells[i, j].FirstHeight = Consts.NullHeight;
       });
+    }
+
+    /// <summary>
+    /// Clears all cells in the composite height grid to null heights and dates
+    /// </summary>
+    public override void Clear() => SubGridUtilities.SubGridDimensionalIterator((i, j) => Cells[i, j].Clear());
+
+    /// <summary>
+    /// Write the contents of the Items array using the supplied writer
+    /// </summary>
+    /// <param name="writer"></param>
+    /// <param name="buffer"></param>
+    public override void Write(BinaryWriter writer, byte[] buffer)
+    {
+      base.Write(writer, buffer);
+
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Write(writer));
+    }
+
+    /// <summary>
+    /// Fill the items array by reading the binary representation using the provided reader. 
+    /// </summary>
+    /// <param name="reader"></param>
+    /// <param name="buffer"></param>
+    public override void Read(BinaryReader reader, byte[] buffer)
+    {
+      base.Read(reader, buffer);
+
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Read(reader));
     }
   }
 }

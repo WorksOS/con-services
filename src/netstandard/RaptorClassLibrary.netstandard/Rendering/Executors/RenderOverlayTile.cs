@@ -448,9 +448,7 @@ namespace VSS.TRex.Rendering.Executors
 
       RotatedTileBoundingExtents.SetInverted();
       foreach (XYZ xyz in NEECoords)
-      {
         RotatedTileBoundingExtents.Include(xyz.X, xyz.Y);
-      }
 
       // TODO [Put it back]: Temporarily remove tile pruning on intersection test
       // Intersect the site model extents with the extents requested by the caller

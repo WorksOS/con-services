@@ -152,8 +152,9 @@ namespace VSS.TRex.SubGridTrees
             SurfaceElevationPatchArg = new SurfaceElevationPatchArgument()
             {
                 SiteModelID = SiteModel.ID,
+                CellSize = SiteModel.Grid.CellSize,
                 IncludedSurveyedSurfaces = FilteredSurveyedSurfaces,
-                EarliestSurface = ReturnEarliestFilteredCellPass,
+                SurveyedSurfacePatchType = ReturnEarliestFilteredCellPass ? SurveyedSurfacePatchType.EarliestSingleElevation : SurveyedSurfacePatchType.LatestSingleElevation,
                 ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled)
             };
         }
@@ -465,23 +466,18 @@ namespace VSS.TRex.SubGridTrees
 
             // If we still have any cells to request surveyed surface elevations for...
             if (ProcessingMap.IsEmpty())
-            {
                 return Result;
-            }
 
             try
             {
                 // Hand client grid details, a mask of cells we need surveyed surface elevations for, and a temp grid to the Design Profiler
-                SurfaceElevationPatchArg.CellSize = ClientGrid.CellSize;
                 SurfaceElevationPatchArg.OTGCellBottomLeftX = ClientGrid.OriginX;
                 SurfaceElevationPatchArg.OTGCellBottomLeftY = ClientGrid.OriginY;
 
-                SurfaceElevations = surfaceElevationPatchRequest.Execute(SurfaceElevationPatchArg);
+                SurfaceElevations = surfaceElevationPatchRequest.Execute(SurfaceElevationPatchArg) as ClientHeightAndTimeLeafSubGrid;
 
                 if (SurfaceElevations == null)
-                {
                     return Result;
-                }
 
                 //ClientHeightLeafSubGrid temp = new ClientHeightLeafSubGrid(null, null, 6, 0.34, SubGridTree.DefaultIndexOriginOffset);
                 //temp.Assign(SurfaceElevations);
