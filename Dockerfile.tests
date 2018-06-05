@@ -10,7 +10,6 @@ FROM registry.k8s.vspengg.com:80/vss-jenkinsslave:core21
 RUN \
   apk update && \
   apk upgrade && \
-  apk add telnet && \
   rm -rf /var/cache/apk/*
 
 WORKDIR /app
