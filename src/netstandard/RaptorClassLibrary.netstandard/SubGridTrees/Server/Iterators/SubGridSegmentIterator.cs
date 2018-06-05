@@ -189,10 +189,9 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             return Result;
         }
 
-//        public SiteModel SiteModelReference { get; set; } = null;
-
         public SubGridCellPassesDataSegment CurrentSubGridSegment { get; set; }
-        //        property StorageClasses : TICSubGridCellStorageClasses read FStorageClasses write FStorageClasses;
+
+        // property StorageClasses : TICSubGridCellStorageClasses read FStorageClasses write FStorageClasses;
 
         /// <summary>
         /// ReturnDirtyOnly allows the iterator to only return segments in the subgrid that are dirty
@@ -240,11 +239,11 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         public int NumberOfSegmentsScanned { get; set; }
 
-        public SubGridSegmentIterator(IServerLeafSubGrid subgrid, IStorageProxy storageProxy)
+        public SubGridSegmentIterator(IServerLeafSubGrid subGrid, IStorageProxy storageProxy)
         {
             MarkReturnedSegmentsAsTouched = true;
-            SubGrid = subgrid;
-            Directory = subgrid == null ? null : SubGrid.Directory;
+            SubGrid = subGrid;
+            Directory = subGrid?.Directory;
             StorageProxy = storageProxy;
         }
 

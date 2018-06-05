@@ -16,7 +16,7 @@
         Manual,
 
         /// <summary>
-        /// Blade control is automatically operated by the machien control system
+        /// Blade control is automatically operated by the machine control system
         /// </summary>
         Automatics
     }

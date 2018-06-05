@@ -198,9 +198,9 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             RestrictSegmentIterationBasedOnElevationRange = (minIterationElevation != Consts.NullDouble) && (MaxIterationElevation != Consts.NullDouble);
         }
 
-        public void SetMachineRestriction(BitArray machienIDSet)
+        public void SetMachineRestriction(BitArray machineIDSet)
         {
-            MachineIDSet = machienIDSet;
+            MachineIDSet = machineIDSet;
         }
 
         public void SegmentListExtended()

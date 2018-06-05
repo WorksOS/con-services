@@ -18,7 +18,7 @@ namespace VSS.TRex.Geometry
         public XYZ Left;
 
         /// <summary>
-        /// Right machien implement position
+        /// Right machine implement position
         /// </summary>
         public XYZ Right;
 

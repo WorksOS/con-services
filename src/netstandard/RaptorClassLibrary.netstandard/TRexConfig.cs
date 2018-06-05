@@ -38,10 +38,13 @@ namespace VSS.TRex
         /// The file system location in which to store Ignite persistent data
         /// </summary>
         public static string PersistentCacheStoreLocation = Path.Combine(Path.GetTempPath(), "TRexIgniteData");
+        //public static string PersistentCacheStoreLocation = "C:/temp/TRexIgniteData"; //Path.Combine(Path.GetTempPath(), "TRexIgniteData");
+    
         /// <summary>
         /// Use TFA service to validate tagfiles
         /// </summary>
         public static bool EnableTFAService = true;
+
         /// <summary>
         /// Enable archiving of tagfiles
         /// </summary>

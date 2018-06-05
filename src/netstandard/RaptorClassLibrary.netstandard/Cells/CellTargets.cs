@@ -29,7 +29,7 @@ namespace VSS.TRex.Cells
         public short TargetCCV { get; set; }
 
         /// <summary>
-        ///  Target Machien Drive Power at the time a cell pass was recorded
+        ///  Target Machine Drive Power at the time a cell pass was recorded
         /// </summary>
         public short TargetMDP { get; set; }
 

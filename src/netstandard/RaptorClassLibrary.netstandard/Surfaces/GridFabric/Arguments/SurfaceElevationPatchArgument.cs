@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using VSS.TRex.SubGridTrees;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Surfaces.GridFabric.Arguments
 {
@@ -27,9 +28,9 @@ namespace VSS.TRex.Surfaces.GridFabric.Arguments
         public double CellSize { get; set; }
 
         /// <summary>
-        /// Extract elevation from the earliest available surface
+        /// Detemines which surface information shoudl be extracted: Earliest, Latest or Composite
         /// </summary>
-        public bool EarliestSurface { get; set; }
+        public SurveyedSurfacePatchType SurveyedSurfacePatchType { get; set; }
 
         /// <summary>
         /// A map of the cells within the subgrid patch to be computed
@@ -57,14 +58,14 @@ namespace VSS.TRex.Surfaces.GridFabric.Arguments
         /// <param name="oTGCellBottomLeftX"></param>
         /// <param name="oTGCellBottomLeftY"></param>
         /// <param name="cellSize"></param>
-        /// <param name="earliestSurface"></param>
+        /// <param name="surveyedSurfacePatchType"></param>
         /// <param name="processingMap"></param>
         /// <param name="includedSurveyedSurfaces"></param>
         public SurfaceElevationPatchArgument(Guid siteModelID,
                                              uint oTGCellBottomLeftX,
                                              uint oTGCellBottomLeftY,
                                              double cellSize,
-                                             bool earliestSurface,
+                                             SurveyedSurfacePatchType surveyedSurfacePatchType,
                                              SubGridTreeBitmapSubGridBits processingMap,
                                              SurveyedSurfaces includedSurveyedSurfaces)
         {
@@ -72,12 +73,12 @@ namespace VSS.TRex.Surfaces.GridFabric.Arguments
             OTGCellBottomLeftX = oTGCellBottomLeftX;
             OTGCellBottomLeftY = oTGCellBottomLeftY;
             CellSize = cellSize;
-            EarliestSurface = earliestSurface;
+            SurveyedSurfacePatchType = surveyedSurfacePatchType;
             ProcessingMap = processingMap;
             IncludedSurveyedSurfaces = includedSurveyedSurfaces;
 
             // Prepare the list of surveyed surfaces for use by all invocations using this argument
-            IncludedSurveyedSurfaces.SortChronologically(EarliestSurface);
+            IncludedSurveyedSurfaces.SortChronologically(surveyedSurfacePatchType == SurveyedSurfacePatchType.EarliestSingleElevation);
         }
 
         /// <summary>
@@ -86,7 +87,7 @@ namespace VSS.TRex.Surfaces.GridFabric.Arguments
         /// <returns></returns>
         public override string ToString()
         {
-            return base.ToString() + $" -> SiteModel:{SiteModelID}, OTGOriginBL:{OTGCellBottomLeftX}/{OTGCellBottomLeftY}, CellSize:{CellSize}, EarliestSurface:{EarliestSurface}";
+            return base.ToString() + $" -> SiteModel:{SiteModelID}, OTGOriginBL:{OTGCellBottomLeftX}/{OTGCellBottomLeftY}, CellSize:{CellSize}, SurfacePatchType:{SurveyedSurfacePatchType}";
         }
 
         /// <summary>
@@ -95,7 +96,7 @@ namespace VSS.TRex.Surfaces.GridFabric.Arguments
         /// <returns></returns>
         public string CacheKey()
         {
-            return $"{SiteModelID}:{OTGCellBottomLeftX}:{OTGCellBottomLeftY}:{CellSize}:{EarliestSurface}:{IncludedSurveyedSurfaces.Select(x => x.ID.ToString()).Aggregate((s1, s2) => s1 + s2)}";
+            return $"{SiteModelID}:{OTGCellBottomLeftX}:{OTGCellBottomLeftY}:{CellSize}:{SurveyedSurfacePatchType}:{IncludedSurveyedSurfaces.Select(x => x.ID.ToString()).Aggregate((s1, s2) => s1 + s2)}";
         }
     }
 }

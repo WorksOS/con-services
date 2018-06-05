@@ -12,7 +12,7 @@ namespace RaptorClassLibrary.Tests.netcore.Analytics.TemperatureStatistics
   {
     private TemperatureStatisticsArgument Arg => new TemperatureStatisticsArgument()
     {
-      DataModelID = _siteModel.ID,
+      ProjectID = _siteModel.ID,
       Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
       OverrideTemperatureWarningLevels = true,
       OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(10, 150)
@@ -45,7 +45,7 @@ namespace RaptorClassLibrary.Tests.netcore.Analytics.TemperatureStatistics
       var aggregator = _getTemperatureAggregator();
 
       Assert.True(aggregator.RequiresSerialisation, "Invalid aggregator value for RequiresSerialisation.");
-      Assert.True(aggregator.SiteModelID == Arg.DataModelID, "Invalid aggregator value for SiteModelID.");
+      Assert.True(aggregator.SiteModelID == Arg.ProjectID, "Invalid aggregator value for SiteModelID.");
       Assert.True(Math.Abs(aggregator.CellSize - _siteModel.Grid.CellSize) < TOLERANCE, "Invalid aggregator value for CellSize.");
       Assert.True(aggregator.OverrideTemperatureWarningLevels == Arg.OverrideTemperatureWarningLevels, "Invalid aggregator value for OverrideTemperatureWarningLevels.");
       Assert.True(aggregator.OverridingTemperatureWarningLevels.Max == Arg.OverridingTemperatureWarningLevels.Max, "Invalid aggregator value for OverridingTemperatureWarningLevels.Max.");

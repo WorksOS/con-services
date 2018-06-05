@@ -65,7 +65,7 @@ namespace VSS.TRex.Tests
 
             ISubGrid leaf = factory.GetSubGrid(tree, 6);
             Assert.NotNull(leaf);
-            Assert.True(leaf is LeafSubGrid, "Factory did not create node subgrid for tree level 6.");
+            Assert.True(leaf is LeafSubGrid, "Factory did not create leaf subgrid for tree level 6.");
         }
 
         [Fact]

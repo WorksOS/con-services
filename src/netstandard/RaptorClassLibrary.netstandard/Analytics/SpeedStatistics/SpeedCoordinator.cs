@@ -25,7 +25,7 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 		public override AggregatorBase ConstructAggregator(SpeedStatisticsArgument argument) => new SpeedAggregator
 		{
 			RequiresSerialisation = true,
-			SiteModelID = argument.DataModelID,
+			SiteModelID = argument.ProjectID,
 			//LiftBuildSettings := LiftBuildSettings;
 			CellSize = SiteModel.Grid.CellSize,
 			TargetMachineSpeed = argument.TargetMachineSpeed
