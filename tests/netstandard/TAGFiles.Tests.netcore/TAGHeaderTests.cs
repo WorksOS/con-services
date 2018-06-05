@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using VSS.TRex.TAGFiles.Classes;
-using VSSTests.TRex.Tests.Common;
 using Xunit;
 
 namespace VSS.TRex.TAGFiles.Tests

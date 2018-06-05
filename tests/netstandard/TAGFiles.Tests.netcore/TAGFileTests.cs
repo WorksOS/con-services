@@ -3,7 +3,6 @@ using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Sinks;
 using VSS.TRex.TAGFiles.Types;
 using VSS.TRex.Tests.netcore.TestFixtures;
-using VSSTests.TRex.Tests.Common;
 using Xunit;
 
 namespace VSS.TRex.TAGFiles.Tests
