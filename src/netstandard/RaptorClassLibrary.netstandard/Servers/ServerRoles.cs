@@ -21,6 +21,11 @@
     public const string ASNODE = "ASNode";
 
     /// <summary>
+    /// The 'ASNode' profiling role, meaning the server supports profiling operations
+    /// </summary>
+    public const string ASNODE_PROFILER = "ASNode-Profiler";
+
+    /// <summary>
     /// The generaic 'ASNode', application service, client role
     /// </summary>
     public const string ASNODE_CLIENT = "ASNodeClient";

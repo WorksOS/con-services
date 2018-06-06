@@ -8,7 +8,7 @@ namespace VSS.TRex.Rendering.Displayers
     /// <summary>
     /// Plan View Map displayer renderer for machine speed information presented as rendered tiles
     /// </summary>
-    public class PVMDisplayer_Temperature : PVMDisplayerBase
+    public class PVMDisplayer_TemperatureSummary : PVMDisplayerBase
     {
         private ClientTemperatureLeafSubGrid SubGrid;
 
@@ -33,4 +33,3 @@ namespace VSS.TRex.Rendering.Displayers
         }
     }
 }
- 

@@ -6,12 +6,12 @@
     public enum MachineDirection
     {
         /// <summary>
-        /// Machine is moving in machien defined forward direction
+        /// Machine is moving in machine defined forward direction
         /// </summary>
         Forward,
 
         /// <summary>
-        /// Machine is moving in machien defined reveres direction
+        /// Machine is moving in machine defined reveres direction
         /// </summary>
         Reverse,
 

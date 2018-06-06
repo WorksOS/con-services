@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using VSS.TRex.Executors.Tasks.Interfaces;
+using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Pipelines.Interfaces
 {
@@ -28,6 +29,11 @@ namespace VSS.TRex.Pipelines.Interfaces
     IRequestAnalyser RequestAnalyser { get; set; }
 
     /// <summary>
+    /// The respons esupplied to the pipeline processor
+    /// </summary>
+    SubGridsPipelinedReponseBase Response { get; set; }
+
+    /// <summary>
     /// Indicates if the pipeline was aborted due to a TTL timeout
     /// </summary>
     bool AbortedDueToTimeout { get; set; }
@@ -43,6 +49,11 @@ namespace VSS.TRex.Pipelines.Interfaces
     /// subgrid requests that overlay the actual design
     /// </summary>
     bool RequestRequiresAccessToDesignFileExistanceMap { get; set; }
+
+    /// <summary>
+    /// A restriction on the cells that are returned via the query that intersects with the spatial seelction filtering and criteria
+    /// </summary>
+    BoundingIntegerExtent2D OverrideSpatialCellRestriction { get; set; }
 
     /// <summary>
     /// Builds the pipeline configured per the supplied state ready to exesute the request

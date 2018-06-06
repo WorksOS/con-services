@@ -282,13 +282,13 @@ namespace VSS.TRex.Volumes
                     // If necessary, impose spatial constraints from Lift filter design(s)
                     if (VolumeType == VolumeComputationType.Between2Filters || VolumeType == VolumeComputationType.BetweenFilterAndDesign)
                     {
-                        if (!DesignFilterUtilities.ProcessDesignElevationsForFilter(SiteModel.ID, BaseFilter, OverallExistenceMap))
+                        if (!DesignFilterUtilities.ProcessDesignElevationsForFilter(SiteModel, BaseFilter, OverallExistenceMap))
                             return RequestErrorStatus.Unknown;
                     }
 
                     if (VolumeType == VolumeComputationType.Between2Filters || VolumeType == VolumeComputationType.BetweenDesignAndFilter)
                     {
-                        if (!DesignFilterUtilities.ProcessDesignElevationsForFilter(SiteModel.ID, TopFilter, OverallExistenceMap))
+                        if (!DesignFilterUtilities.ProcessDesignElevationsForFilter(SiteModel, TopFilter, OverallExistenceMap))
                             return RequestErrorStatus.Unknown;
                     }
 

@@ -19,7 +19,7 @@ namespace VSS.TRex.Profiling
   {
     private static ILogger Log = Logging.Logger.CreateLogger("LiftFilterMask");
 
-    public static void ConstructSubgridSpatialAndPositionalMask(ISubGridTree tree, ISubGrid subGrid,
+    public static void ConstructSubgridSpatialAndPositionalMask(ISubGridTree tree, 
       SubGridCellAddress currentSubGridOrigin, List<ProfileCell> profileCells, ref SubGridTreeBitmapSubGridBits mask,
       int fromProfileCellIndex, CellSpatialFilter cellFilter)
     {
@@ -36,8 +36,9 @@ namespace VSS.TRex.Profiling
         if (!currentSubGridOrigin.Equals(ThisSubgridOrigin))
           break;
 
-        subGrid.GetSubGridCellIndex(profileCells[CellIdx].OTGCellX, profileCells[CellIdx].OTGCellY, out byte CellX,
-          out byte CellY);
+        byte CellX = (byte)(profileCells[CellIdx].OTGCellX & SubGridTree.SubGridLocalKeyMask);
+        byte CellY = (byte)(profileCells[CellIdx].OTGCellY & SubGridTree.SubGridLocalKeyMask);
+
         if (cellFilter.HasSpatialOrPostionalFilters)
         {
           tree.GetCellCenterPosition(profileCells[CellIdx].OTGCellX, profileCells[CellIdx].OTGCellY,
@@ -50,18 +51,18 @@ namespace VSS.TRex.Profiling
       }
     }
 
-    public static bool ConstructSubgridCellFilterMask(ISubGridTree tree, ISubGrid subGrid,
+    public static bool ConstructSubgridCellFilterMask(ISubGridTree tree, 
       SubGridCellAddress currentSubGridOrigin, List<ProfileCell> profileCells, ref SubGridTreeBitmapSubGridBits mask,
       int fromProfileCellIndex, CellSpatialFilter cellFilter)
     {
-      //double OriginX, OriginY;
+      // double OriginX, OriginY;
 
-      //      SubGridTreeBitmapSubGridBits DesignMask;
-      //      SubGridTreeBitmapSubGridBits DesignFilterMask;
+      // SubGridTreeBitmapSubGridBits DesignMask;
+      // SubGridTreeBitmapSubGridBits DesignFilterMask;
       //      DesignProfilerRequestResult RequestResult;
       // bool Result;
 
-      ConstructSubgridSpatialAndPositionalMask(tree, subGrid, currentSubGridOrigin, profileCells, ref mask,
+      ConstructSubgridSpatialAndPositionalMask(tree, currentSubGridOrigin, profileCells, ref mask,
         fromProfileCellIndex, cellFilter);
 
       // If the filter contains a design mask filter then compute this and AND it with the

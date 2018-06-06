@@ -77,5 +77,10 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         //        void Read(BinaryFormatter formatter, Stream stream);
 
         SubGridCellAddress OriginAsCellAddress();
+
+      byte[] ToBytes();
+      byte[] ToBytes(byte[] helperBuffer);
+      byte[] ToBytes(MemoryStream helperStream, byte[] helperBuffer);
+      void FromBytes(byte[] bytes, byte[] helperBuffer = null);
     }
 }

@@ -55,7 +55,7 @@ namespace VSS.TRex.Surfaces
       public Guid ID;
 
       /// <summary>
-      /// Readonlhy property exposing the design decriptor for the underlying topology surface
+      /// Readonly property exposing the design decriptor for the underlying topology surface
       /// </summary>
       public DesignDescriptor DesignDescriptor;
 

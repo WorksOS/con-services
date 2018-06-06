@@ -3,12 +3,12 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using VSS.TRex.Cells;
-using VSS.TRex.Common;
 using VSS.TRex.Events;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Interfaces;
 using VSS.TRex.Profiling;
+using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -25,8 +25,7 @@ namespace VSS.TRex.SubGridTrees
   /// </summary>
   public class SubGridRetriever
   {
-    private static readonly ILogger
-      Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     // Local state populated by the retriever constructor
     private CombinedFilter Filter;
@@ -36,8 +35,8 @@ namespace VSS.TRex.SubGridTrees
     private bool HasOverrideSpatialCellRestriction;
     private BoundingIntegerExtent2D OverrideSpatialCellRestriction;
     private bool PrepareGridForCacheStorageIfNoSeiving;
-    private byte Level = SubGridTree.SubGridTreeLevels;
-    private int MaxNumberOfPassesToReturn = int.MaxValue;
+    private byte Level;
+    private int MaxNumberOfPassesToReturn;
     private AreaControlSet AreaControlSet;
 
     // Local state populated for the purpose of access from variosu local methods
@@ -48,7 +47,6 @@ namespace VSS.TRex.SubGridTrees
 
     private SubGridTreeBitmapSubGridBits SeiveBitmask;
 
-//        private SubGridTreeBitmapSubGridBits CellIterationBitmask = SubGridTreeBitmapSubGridBits.FullMask;
     ISubGrid _SubGrid;
     IServerLeafSubGrid _SubGridAsLeaf;
 
@@ -56,7 +54,7 @@ namespace VSS.TRex.SubGridTrees
     private SubGridSegmentIterator SegmentIterator;
     private SubGridSegmentCellPassIterator_NonStatic CellPassIterator;
 
-    private double _CellSize = Consts.NullDouble;
+    private double _CellSize;
     private int NumRowsToScan, NumColsToScan;
     private double FirstScanPointNorth, FirstScanPointEast;
 
@@ -66,10 +64,8 @@ namespace VSS.TRex.SubGridTrees
 
     private FilteredValuePopulationControl PopulationControl = null;
 
-    private ProfilerBuilder Profiler = null;
+    private IProfilerBuilder Profiler = null;
     private ProfileCell CellProfile = null;
-
-    private CellPassFastEventLookerUpper CellPassFastEventLookerUpper = null;
 
     private SubGridTreeBitMask PDExistenceMap;
 
@@ -302,347 +298,21 @@ namespace VSS.TRex.SubGridTrees
     }
 
     /// <summary>
-    /// Retrieves the requested information from a specific cell within the subgrid currently being processed
-    /// </summary>
-    /// <param name="CellX"></param>
-    /// <param name="CellY"></param>
-    /// <returns></returns>
-    public void RetrieveSubGridCell(byte CellX, byte CellY)
-    {
-      int TopMostLayerPassCount = 0;
-      int TopMostLayerCompactionHalfPassCount = 0;
-      bool FilteredValueIsFromLatestCellPass;
-
-      IterationDirection PreviousIterationDirection;
-
-      // TODO...  bool Debug_ExtremeLogSwitchD = VLPDSvcLocations.Debug_ExtremeLogSwitchD;
-
-      // Iterate over the cells in the subgrid applying the filter and assigning the requested information into the subgrid
-
-      try
-      {
-        /* TODO Readd when LiftBuildSettings is implemented, AND refactor this calculation so that is is made outside
-         * of the per cell loop
-         &&
-         (!(_GridDataType in [icdtCCV, icdtCCVPercent]) && (LiftBuildSettings.CCVSummaryTypes<>[])) &&
-         (!(_GridDataType in [icdtMDP, icdtMDPPercent]) && (LiftBuildSettings.MDPSummaryTypes<>[])) &&
-         (!(_GridDataType in [icdtCCA, icdtCCAPercent])) &&
-         !(_GridDataType in [icdtCellProfile,
-                                    icdtPassCount,
-                                    icdtCellPasses,
-                                    icdtMachineSpeed,
-                                    icdtCCVPercentChange,
-                                    icdtMachineSpeedTarget,
-                                    icdtCCVPercentChangeIgnoredTopNullValue]); */
-
-        // For pass attributes that are maintained on a historical last pass basis
-        // (meaning their values bubble up through cell passes where the values of
-        // those attributes are null), check the global latest pass version of
-        // those values. If they are null, then no further work needs to be done
-
-        switch (_GridDataType)
-        {
-          case GridDataType.CCV:
-            if (_GlobalLatestCells.ReadCCV(CellX, CellY) == CellPass.NullCCV)
-            {
-              return;
-            }
-
-            break;
-          case GridDataType.RMV:
-            if (_GlobalLatestCells.ReadRMV(CellX, CellY) == CellPass.NullRMV)
-            {
-              return;
-            }
-
-            break;
-          case GridDataType.Frequency:
-            if (_GlobalLatestCells.ReadFrequency(CellX, CellY) == CellPass.NullFrequency)
-            {
-              return;
-            }
-
-            break;
-          case GridDataType.Amplitude:
-            if (_GlobalLatestCells.ReadAmplitude(CellX, CellY) == CellPass.NullAmplitude)
-            {
-              return;
-            }
-
-            break;
-          case GridDataType.GPSMode:
-            if (_GlobalLatestCells.ReadGPSMode(CellX, CellY) == GPSMode.NoGPS)
-            {
-              return;
-            }
-
-            break;
-          case GridDataType.MDP:
-            if (_GlobalLatestCells.ReadMDP(CellX, CellY) == CellPass.NullMDP)
-            {
-              return;
-            }
-
-            break;
-          case GridDataType.CCA:
-            if (_GlobalLatestCells.ReadCCA(CellX, CellY) == CellPass.NullCCA)
-            {
-              return;
-            }
-
-            break;
-          case GridDataType.Temperature:
-            if (_GlobalLatestCells.ReadTemperature(CellX, CellY) == CellPass.NullMaterialTemperatureValue)
-            {
-              return;
-            }
-
-            break;
-          case GridDataType.TemperatureDetail:
-            if (_GlobalLatestCells.ReadTemperature(CellX, CellY) == CellPass.NullMaterialTemperatureValue)
-            {
-              return;
-            }
-
-            break;
-        }
-
-        HaveFilteredPass = false;
-
-        if (UseLastPassGrid)
-        {
-          /* TODO - readd when logging available
-         if Debug_ExtremeLogSwitchD then
-             SIGLogMessage.PublishNoODS(Nil, Format('At %dx%d: Using last pass grid', [CellX, CellY]), slmcDebug);
-          */
-
-          AssignRequiredFilteredPassAttributesFromGlobalLatestCells(
-            ref AssignmentContext.FilteredValue.FilteredPassData.FilteredPass, CellX, CellY);
-
-          // TODO: Review if line below replaced with line above in Ignite POC is good...
-          // AssignmentContext.FilteredValue.FilteredPassData.FilteredPass = _GlobalLatestCells[CellX, CellY];
-
-          HaveFilteredPass = true;
-          AssignmentContext.FilteredValue.PassCount = -1;
-        }
-        else
-        {
-          /* TODO Readd when logging available
-          if (Debug_ExtremeLogSwitchD)
-              SIGLogMessage.PublishNoODS(Nil, Format('At %dx%d: Using profiler', [CellX, CellY]), slmcDebug);
-          */
-
-          Filter.AttributeFilter.InitaliaseFilteringForCell(CellX, CellY);
-
-          if (Profiler != null) // we don't need this anymore as the logic is implemented in lift builder
-          {
-            // While we have been given a profiler, we may not need to use it to
-            // analyse layers in the cell pass stack. The layer analysis in this
-            // operation is intended to locate cell passes belonging to superceded
-            // layers, in which case they are not considered for providing the
-            // requested value. However, if there is no filter is in effect, then the
-            // global latest information for the subgrid may be consulted first
-            // to see if the appropriate values came from the last physically collected
-            // cell pass in the cell. Note that the tracking of latest values is
-            // also true for time, so that the time recorded in the latest values structure
-            // also includes that cell pass time.
-
-            if (CanUseGlobalLatestCells)
-            {
-              // Optimistically assume that the global latest value is acceptable
-              AssignRequiredFilteredPassAttributesFromGlobalLatestCells(
-                ref AssignmentContext.FilteredValue.FilteredPassData.FilteredPass, CellX, CellY);
-
-              // TODO: Review if line below replaced with line above in Ignite POC is good...
-              // AssignmentContext.FilteredValue.FilteredPassData.FilteredPass = _GlobalLatestCells[CellX, CellY];
-
-              AssignmentContext.FilteredValue.PassCount = -1;
-
-              // Check to see if there is a non-null value for the requested field in the latest value.
-              // If there is none, then there is no non-null value in any of the recorded cells passes
-              // so the null value may be returned as the filtered value.
-
-              if (ClientGrid.AssignableFilteredValueIsNull(ref AssignmentContext.FilteredValue.FilteredPassData))
-              {
-                // There is no value available for the requested data field in any recorded
-                // cell pass. Thus, there is no cell pass value to assign so abort consideration of this cell
-
-                return;
-              }
-
-              FilteredValueIsFromLatestCellPass = false;
-
-              if (ClientGrid.WantsLiftProcessingResults())
-              {
-                switch (_GridDataType)
-                {
-                  case GridDataType.CCV:
-                    FilteredValueIsFromLatestCellPass =_GlobalLatestCells.CCVValuesAreFromLastPass.BitSet(CellX, CellY);
-                    break;
-                  case GridDataType.RMV:
-                    FilteredValueIsFromLatestCellPass =_GlobalLatestCells.RMVValuesAreFromLastPass.BitSet(CellX, CellY);
-                    break;
-                  case GridDataType.Frequency:
-                    FilteredValueIsFromLatestCellPass =_GlobalLatestCells.FrequencyValuesAreFromLastPass.BitSet(CellX, CellY);
-                    break;
-                  case GridDataType.Amplitude:
-                    FilteredValueIsFromLatestCellPass =_GlobalLatestCells.AmplitudeValuesAreFromLastPass.BitSet(CellX, CellY);
-                    break;
-                  case GridDataType.Temperature:
-                    FilteredValueIsFromLatestCellPass =_GlobalLatestCells.TemperatureValuesAreFromLastPass.BitSet(CellX, CellY);
-                    break;
-                  case GridDataType.GPSMode:
-                    FilteredValueIsFromLatestCellPass =_GlobalLatestCells.GPSModeValuesAreFromLatestCellPass.BitSet(CellX, CellY);
-                    break;
-                  case GridDataType.MDP:
-                    FilteredValueIsFromLatestCellPass =_GlobalLatestCells.MDPValuesAreFromLastPass.BitSet(CellX, CellY);
-                    break;
-                  case GridDataType.CCA:
-                    FilteredValueIsFromLatestCellPass =_GlobalLatestCells.CCAValuesAreFromLastPass.BitSet(CellX, CellY);
-                    break;
-                  case GridDataType.TemperatureDetail:
-                    FilteredValueIsFromLatestCellPass =_GlobalLatestCells.TemperatureValuesAreFromLastPass.BitSet(CellX, CellY);
-                    break;
-                  case GridDataType.CCVPercentChange:
-                  case GridDataType.CCVPercentChangeIgnoredTopNullValue:
-                    break;
-                  case GridDataType.MachineSpeedTarget:
-                    break;
-                  case GridDataType.PassCount:
-                    // This cannot be answered here
-                    break;
-                  default:
-                    Debug.Assert(false, "Unimplemented data type for subgrid requiring lift processing results");
-                    break;
-                }
-              }
-
-              if (FilteredValueIsFromLatestCellPass)
-                HaveFilteredPass = FilteredValueIsFromLatestCellPass;
-
-              if (HaveFilteredPass)
-              {
-                FiltersValuePopulation.PopulateFilteredValues(
-                  SiteModel.MachinesTargetValues[CurrentPass.FilteredPass.InternalSiteModelMachineIndex],
-                  PopulationControl, ref AssignmentContext.FilteredValue.FilteredPassData);
-              }
-            }
-
-            if (!HaveFilteredPass)
-            {
-              CellPassIterator.SetCellCoordinatesInSubgrid(CellX, CellY);
-
-              /* TODO ...
-              if (Debug_ExtremeLogSwitchD)
-                  SIGLogMessage.PublishNoODS(Nil, Format('At %dx%d: Calling BuildLiftsForCell', [CellX, CellY]), slmcDebug);
-              */
-
-              if (Profiler.CellLiftBuilder.Build(CellProfile, ClientGrid,
-                AssignmentContext, // Place a filtered value into this assignment context
-                CellPassIterator,  // Iterate over the cells using this cell pass iterator
-                true, // Return an individual filtered value
-                      // Selection of a filtered value should occur in forwards time order
-                ref TopMostLayerPassCount,
-                ref TopMostLayerCompactionHalfPassCount))
-              {
-                  // Filtered value selection is combined with lift analysis in this context via
-                  // the provision of the client grid and the assignment context to the
-                  // lift analysis engine
-                  HaveFilteredPass = true;
-              }
-
-              /* TODO ...
-              if (Debug_ExtremeLogSwitchD)
-                  SIGLogMessage.PublishNoODS(Nil, Format('At %dx%d: Call to BuildLiftsForCell completed', [CellX, CellY]), slmcDebug);
-              */
-            }
-          }
-          else
-          {
-            CellPassIterator.SetCellCoordinatesInSubgrid(CellX, CellY);
-
-            if (Filter.AttributeFilter.HasElevationRangeFilter)
-            {
-              CellPassIterator.SetIteratorElevationRange(Filter.AttributeFilter.ElevationRangeBottomElevationForCell,
-                Filter.AttributeFilter.ElevationRangeTopElevationForCell);
-            }
-
-            CellPassIterator.Initialise();
-
-            ProcessCellPasses();
-
-            if (HaveFilteredPass &&
-                (Filter.AttributeFilter.HasMinElevMappingFilter ||
-                 (Filter.AttributeFilter.HasElevationTypeFilter &&
-                  (Filter.AttributeFilter.ElevationType == ElevationType.Highest ||
-                   Filter.AttributeFilter.ElevationType == ElevationType.Lowest))))
-            {
-              AssignmentContext.FilteredValue.FilteredPassData = TempPass;
-              AssignmentContext.FilteredValue.PassCount = -1;
-            }
-          }
-        }
-
-        if (HaveFilteredPass)
-        {
-          if (_GridDataType == GridDataType.PassCount || _GridDataType == GridDataType.CellProfile)
-            AssignmentContext.FilteredValue.PassCount = TopMostLayerCompactionHalfPassCount % 2;
-
-          // If we are displaying a CCV summary view or are displaying a summary of only
-          // the top layer in the cell pass stack, then we need to make additional checks to
-          // determine if the CCV value filtered from the cell passes is not overridden by
-          // the layer in question being superseded. If that is the case, then the CCV value
-          // is not assigned to the result set to be passed back to the client as it effectively
-          // does not exist given this situation.
-
-          ClientGrid.AssignFilteredValue(CellX, CellY, AssignmentContext);
-
-          if (CellProfile == null)
-              ClientGrid.AssignFilteredValue(CellX, CellY, AssignmentContext);
-          else
-          {
-              if (((_GridDataType == GridDataType.CCV || _GridDataType == GridDataType.CCVPercent) 
-                    && ((Dummy_LiftBuildSettings.CCVSummaryTypes == 0) || !Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly)) ||
-                  ((_GridDataType == GridDataType.MDP || _GridDataType == GridDataType.MDPPercent) 
-                    && ((Dummy_LiftBuildSettings.MDPSummaryTypes == 0) || !Dummy_LiftBuildSettings.MDPSummarizeTopLayerOnly)) ||
-                  (CellProfile.Layers.Count() > 0) ||
-                  (_GridDataType == GridDataType.CCA || _GridDataType == GridDataType.CCAPercent)) // no CCA settings
-                ClientGrid.AssignFilteredValue(CellX, CellY, AssignmentContext);
-          }
-        }
-      }
-      finally
-      {
-        ReleasePopulationFilterValuesInterlock();
-
-        /* TODO...
-        if (Debug_ExtremeLogSwitchD)
-        SIGLogMessage.PublishNoODS(Nil, Format('Completed cell at %dx%d', [CellX, CellY]), slmcDebug);
-        */
-      }
-    }
-
-    //===================================================================================================
-
-    /// <summary>
     /// Retrieves cell values for a subgrid stripe at a time. Currently deprecated in favour of RetriveSubGridCell()
     /// </summary>
     /// <param name="StripeIndex"></param>
     /// <param name="CellX"></param>
     /// <param name="CellY"></param>
     /// <returns></returns>
-    public ServerRequestResult RetrieveSubGridStripe(byte StripeIndex, uint CellX, uint CellY)
+    public ServerRequestResult RetrieveSubGridStripe(byte StripeIndex)
     {
       int TopMostLayerPassCount = 0;
       int TopMostLayerCompactionHalfPassCount = 0;
       bool FilteredValueIsFromLatestCellPass;
 
-      IterationDirection PreviousIterationDirection;
-
       // TODO... bool Debug_ExtremeLogSwitchD = VLPDSvcLocations.Debug_ExtremeLogSwitchD;
 
-      // Iterate over the cells in the subgrid applying the filter and assigning the
-      // requested information into the subgrid
+      // Iterate over the cells in the subgrid applying the filter and assigning the requested information into the subgrid
 
       /* TODO...
       if (Debug_ExtremeLogSwitchD)
@@ -672,11 +342,8 @@ namespace VSS.TRex.SubGridTrees
             continue;
 
           if (SeiveFilterInUse || !PrepareGridForCacheStorageIfNoSeiving)
-          {
-            if (!ClientGridAsLeaf.ProdDataMap.BitSet(StripeIndex, J)
-            ) // This cell does not match the filter mask and should not be processed
+            if (!ClientGridAsLeaf.ProdDataMap.BitSet(StripeIndex, J)) // This cell does not match the filter mask and should not be processed
               continue;
-          }
 
           // For pass attributes that are maintained on a historical last pass basis
           // (meaning their values bubble up through cell passes where the values of
@@ -687,80 +354,57 @@ namespace VSS.TRex.SubGridTrees
           {
             case GridDataType.CCV:
               if (_GlobalLatestCells.ReadCCV(StripeIndex, J) == CellPass.NullCCV)
-              {
                 continue;
-              }
-
               break;
+
             case GridDataType.RMV:
               if (_GlobalLatestCells.ReadRMV(StripeIndex, J) == CellPass.NullRMV)
-              {
                 continue;
-              }
-
               break;
+
             case GridDataType.Frequency:
               if (_GlobalLatestCells.ReadFrequency(StripeIndex, J) == CellPass.NullFrequency)
-              {
                 continue;
-              }
-
               break;
+
             case GridDataType.Amplitude:
               if (_GlobalLatestCells.ReadAmplitude(StripeIndex, J) == CellPass.NullAmplitude)
-              {
                 continue;
-              }
-
               break;
+
             case GridDataType.GPSMode:
               if (_GlobalLatestCells.ReadGPSMode(StripeIndex, J) == GPSMode.NoGPS)
-              {
                 continue;
-              }
-
               break;
+
             case GridDataType.MDP:
               if (_GlobalLatestCells.ReadMDP(StripeIndex, J) == CellPass.NullMDP)
-              {
                 continue;
-              }
-
               break;
+
             case GridDataType.CCA:
               if (_GlobalLatestCells.ReadCCA(StripeIndex, J) == CellPass.NullCCA)
-              {
                 continue;
-              }
-
               break;
+
             case GridDataType.Temperature:
               if (_GlobalLatestCells.ReadTemperature(StripeIndex, J) == CellPass.NullMaterialTemperatureValue)
-              {
                 continue;
-              }
-
               break;
+
             case GridDataType.TemperatureDetail:
               if (_GlobalLatestCells.ReadTemperature(StripeIndex, J) == CellPass.NullMaterialTemperatureValue)
-              {
                 continue;
-              }
-
               break;
+
             case GridDataType.CCVPercentChange:
               if (_GlobalLatestCells.ReadCCV(StripeIndex, J) == CellPass.NullCCV)
-              {
                 continue;
-              }
-
               break;
+
             case GridDataType.CCVPercentChangeIgnoredTopNullValue:
               if (_GlobalLatestCells.ReadCCV(StripeIndex, J) == CellPass.NullCCV)
-              {
                 continue;
-              }
-
               break;
           }
 
@@ -773,8 +417,7 @@ namespace VSS.TRex.SubGridTrees
                SIGLogMessage.PublishNoODS(Nil, Format('SI@%d/%d at %dx%d: Using last pass grid', [StripeIndex, J, CellX, CellY]), slmcDebug);
             */
 
-            AssignRequiredFilteredPassAttributesFromGlobalLatestCells(
-              ref AssignmentContext.FilteredValue.FilteredPassData.FilteredPass, StripeIndex, J);
+            AssignRequiredFilteredPassAttributesFromGlobalLatestCells(ref AssignmentContext.FilteredValue.FilteredPassData.FilteredPass, StripeIndex, J);
 
             // TODO: Review if line below replaced with line above in Ignite POC is good...
             // AssignmentContext.FilteredValue.FilteredPassData.FilteredPass = _GlobalLatestCells[StripeIndex, J];
@@ -786,8 +429,7 @@ namespace VSS.TRex.SubGridTrees
           {
             // SIGLogMessage.PublishNoODS(Nil, Format('Using profiler, StripeIndex = %d', [StripeIndex]), slmcMessage);
 
-            /* TODO Readd when logging available
-            if (Debug_ExtremeLogSwitchD)
+            /* TODO Readd when logging available             if (Debug_ExtremeLogSwitchD)
                 SIGLogMessage.PublishNoODS(Nil, Format('SI@%d/%d at %dx%d: Using profiler', [StripeIndex, J, CellX, CellY]), slmcDebug);
             */
 
@@ -809,8 +451,7 @@ namespace VSS.TRex.SubGridTrees
               if (CanUseGlobalLatestCells)
               {
                 // Optimistically assume that the global latest value is acceptable
-                AssignRequiredFilteredPassAttributesFromGlobalLatestCells(
-                  ref AssignmentContext.FilteredValue.FilteredPassData.FilteredPass, StripeIndex, J);
+                AssignRequiredFilteredPassAttributesFromGlobalLatestCells(ref AssignmentContext.FilteredValue.FilteredPassData.FilteredPass, StripeIndex, J);
 
                 // TODO: Review if line below replaced with line above in Ignite POC is good...
                 // AssignmentContext.FilteredValue.FilteredPassData.FilteredPass = _GlobalLatestCells[StripeIndex, J];
@@ -837,40 +478,31 @@ namespace VSS.TRex.SubGridTrees
                   switch (_GridDataType)
                   {
                     case GridDataType.CCV:
-                      FilteredValueIsFromLatestCellPass =
-                        _GlobalLatestCells.CCVValuesAreFromLastPass.BitSet(StripeIndex, J);
+                      FilteredValueIsFromLatestCellPass = _GlobalLatestCells.CCVValuesAreFromLastPass.BitSet(StripeIndex, J);
                       break;
                     case GridDataType.RMV:
-                      FilteredValueIsFromLatestCellPass =
-                        _GlobalLatestCells.RMVValuesAreFromLastPass.BitSet(StripeIndex, J);
+                      FilteredValueIsFromLatestCellPass = _GlobalLatestCells.RMVValuesAreFromLastPass.BitSet(StripeIndex, J);
                       break;
                     case GridDataType.Frequency:
-                      FilteredValueIsFromLatestCellPass =
-                        _GlobalLatestCells.FrequencyValuesAreFromLastPass.BitSet(StripeIndex, J);
+                      FilteredValueIsFromLatestCellPass = _GlobalLatestCells.FrequencyValuesAreFromLastPass.BitSet(StripeIndex, J);
                       break;
                     case GridDataType.Amplitude:
-                      FilteredValueIsFromLatestCellPass =
-                        _GlobalLatestCells.AmplitudeValuesAreFromLastPass.BitSet(StripeIndex, J);
+                      FilteredValueIsFromLatestCellPass = _GlobalLatestCells.AmplitudeValuesAreFromLastPass.BitSet(StripeIndex, J);
                       break;
                     case GridDataType.Temperature:
-                      FilteredValueIsFromLatestCellPass =
-                        _GlobalLatestCells.TemperatureValuesAreFromLastPass.BitSet(StripeIndex, J);
+                      FilteredValueIsFromLatestCellPass = _GlobalLatestCells.TemperatureValuesAreFromLastPass.BitSet(StripeIndex, J);
                       break;
                     case GridDataType.GPSMode:
-                      FilteredValueIsFromLatestCellPass =
-                        _GlobalLatestCells.GPSModeValuesAreFromLatestCellPass.BitSet(StripeIndex, J);
+                      FilteredValueIsFromLatestCellPass = _GlobalLatestCells.GPSModeValuesAreFromLatestCellPass.BitSet(StripeIndex, J);
                       break;
                     case GridDataType.MDP:
-                      FilteredValueIsFromLatestCellPass =
-                        _GlobalLatestCells.MDPValuesAreFromLastPass.BitSet(StripeIndex, J);
+                      FilteredValueIsFromLatestCellPass = _GlobalLatestCells.MDPValuesAreFromLastPass.BitSet(StripeIndex, J);
                       break;
                     case GridDataType.CCA:
-                      FilteredValueIsFromLatestCellPass =
-                        _GlobalLatestCells.CCAValuesAreFromLastPass.BitSet(StripeIndex, J);
+                      FilteredValueIsFromLatestCellPass = _GlobalLatestCells.CCAValuesAreFromLastPass.BitSet(StripeIndex, J);
                       break;
                     case GridDataType.TemperatureDetail:
-                      FilteredValueIsFromLatestCellPass =
-                        _GlobalLatestCells.TemperatureValuesAreFromLastPass.BitSet(StripeIndex, J);
+                      FilteredValueIsFromLatestCellPass = _GlobalLatestCells.TemperatureValuesAreFromLastPass.BitSet(StripeIndex, J);
                       break;
                     case GridDataType.CCVPercentChange:
                     case GridDataType.CCVPercentChangeIgnoredTopNullValue:
@@ -901,27 +533,26 @@ namespace VSS.TRex.SubGridTrees
               {
                 CellPassIterator.SetCellCoordinatesInSubgrid(StripeIndex, J);
 
-                /* TODO ...
-                if (Debug_ExtremeLogSwitchD)
+                /* TODO ...                 if (Debug_ExtremeLogSwitchD)
                     SIGLogMessage.PublishNoODS(Nil, Format('SI@%d/%d at %dx%d: Calling BuildLiftsForCell', [StripeIndex, J, CellX, CellY]), slmcDebug);
                 */
 
                 if (Profiler.CellLiftBuilder.Build(CellProfile, ClientGrid,
                   AssignmentContext, // Place a filtered value into this assignment context
                   CellPassIterator,  // Iterate over the cells using this cell pass iterator
-                  true, // Return an individual filtered value
+                  true)) // Return an individual filtered value
                   // Selection of a filtered value should occur in forwards time order
-                  ref TopMostLayerPassCount,
-                  ref TopMostLayerCompactionHalfPassCount))
                 {
+                  TopMostLayerPassCount = Profiler.CellLiftBuilder.FilteredPassCountOfTopMostLayer;
+                  TopMostLayerCompactionHalfPassCount = Profiler.CellLiftBuilder.FilteredHalfCellPassCountOfTopMostLayer;
+
                   // Filtered value selection is combined with lift analysis in this context via
                   // the provision of the client grid and the assignment context to the
                   // lift analysis engine
                   HaveFilteredPass = true;
                 }
 
-                /* TODO ...
-                if (Debug_ExtremeLogSwitchD)
+                /* TODO ...                 if (Debug_ExtremeLogSwitchD)
                     SIGLogMessage.PublishNoODS(Nil, Format('SI@%d/%d at %dx%d: Call to BuildLiftsForCell completed', [StripeIndex, J, CellX, CellY]), slmcDebug);
                 */
               }
@@ -933,6 +564,7 @@ namespace VSS.TRex.SubGridTrees
               if (Filter.AttributeFilter.HasElevationRangeFilter)
                 CellPassIterator.SetIteratorElevationRange(Filter.AttributeFilter.ElevationRangeBottomElevationForCell,
                   Filter.AttributeFilter.ElevationRangeTopElevationForCell);
+
               CellPassIterator.Initialise();
 
               ProcessCellPasses();
@@ -961,20 +593,17 @@ namespace VSS.TRex.SubGridTrees
             // is not assigned to the result set to be passed back to the client as it effectively
             // does not exist given this situation.
 
-            ClientGrid.AssignFilteredValue(StripeIndex, J, AssignmentContext);
-
-            /* TODO: Replace single line above with implementation below when cell profiling is implemented
             if (CellProfile == null)
-                ClientGrid.AssignFilteredValue(StripeIndex, J, AssignmentContext);
+              ClientGrid.AssignFilteredValue(StripeIndex, J, AssignmentContext);
             else
             {
-                if (((_GridDataType in [icdtCCV, icdtCCVPercent]) && ((LiftBuildSettings.CCVSummaryTypes == []) || !LiftBuildSettings.CCVSummarizeTopLayerOnly)) ||
-                    ((_GridDataType in [icdtMDP, icdtMDPPercent]) && ((LiftBuildSettings.MDPSummaryTypes == []) || !LiftBuildSettings.MDPSummarizeTopLayerOnly)) ||
-                    (CellProfile.Layers.Count > 0) ||
-                    (_GridDataType in [icdtCCA, icdtCCAPercent])) // no CCA settings
-                  ClientGrid.AssignFilteredValue(StripeIndex, J, AssignmentContext);
+              if (((_GridDataType == GridDataType.CCV || _GridDataType == GridDataType.CCVPercent) && (Dummy_LiftBuildSettings.CCVSummaryTypes == 0 || !Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly)) ||
+                  ((_GridDataType == GridDataType.MDP || _GridDataType == GridDataType.MDPPercent) && (Dummy_LiftBuildSettings.MDPSummaryTypes == 0 || !Dummy_LiftBuildSettings.MDPSummarizeTopLayerOnly)) ||
+                  // ReSharper disable once UseMethodAny.0
+                  CellProfile.Layers.Count() > 0 ||
+                  _GridDataType == GridDataType.CCA || _GridDataType == GridDataType.CCAPercent) // no CCA settings
+                ClientGrid.AssignFilteredValue(StripeIndex, J, AssignmentContext);
             }
-            */
           }
         }
 
@@ -1001,14 +630,6 @@ namespace VSS.TRex.SubGridTrees
     /// <returns></returns>
     private bool PruneSubGridRetrievalHere()
     {
-/*
-            if (_SubGridAsLeaf == null)
-            {
-                Debug.Assert(false, "No available leaf subgrid");
-                return true;
-            }
-*/
-
       // Check the subgrid global attribute presence flags that are tracked for optional
       // attribute values to see if there is anything at all that needs to be done here
       switch (_GridDataType)
@@ -1028,8 +649,7 @@ namespace VSS.TRex.SubGridTrees
 
     private void SetupForCellPassStackExamination()
     {
-      PopulationControl.PreparePopulationControl(_GridDataType, /* todo LiftBuildSettings, */ Filter.AttributeFilter,
-        ClientGrid);
+      PopulationControl.PreparePopulationControl(_GridDataType, /* todo LiftBuildSettings, */ Filter.AttributeFilter, ClientGrid);
 
       Filter.AttributeFilter.RequestedGridDataType = _GridDataType;
 
@@ -1044,7 +664,6 @@ namespace VSS.TRex.SubGridTrees
       else
         SegmentIterator.IterationDirection = IterationDirection.Backwards;
 
-//            SegmentIterator.SiteModelReference = SiteModel;
       SegmentIterator.SubGrid = _SubGridAsLeaf;
       SegmentIterator.Directory = _SubGridAsLeaf.Directory;
 
@@ -1054,12 +673,18 @@ namespace VSS.TRex.SubGridTrees
       // Create and configure the cell pass iterator to be used
 
       CellPassIterator = new SubGridSegmentCellPassIterator_NonStatic(SegmentIterator);
-      // TODO ??? CellPassIterator.SiteModelReference = SiteModel;
       CellPassIterator.SetTimeRange(Filter.AttributeFilter.HasTimeFilter,
         Filter.AttributeFilter.StartTime,
         Filter.AttributeFilter.EndTime);
     }
 
+    /// <summary>
+    /// Computes a bitmask used to seive out only the cells that will be used in the query context.
+    /// The seived cells are the only cells processed and returned. All other cells will be null values,
+    /// even if data is present for them that matches filtering and other conditions
+    /// </summary>
+    /// <param name="SubGrid"></param>
+    /// <returns></returns>
     private bool ComputeSeiveBitmask(ISubGrid SubGrid)
     {
       const int kMaxStepSize = 10000;
@@ -1096,10 +721,7 @@ namespace VSS.TRex.SubGridTrees
         return false;
 
       if (StepX >= SubGridTree.SubGridTreeDimension && StepY >= SubGridTree.SubGridTreeDimension)
-      {
-        // TODO Readd when logging available
-        //SIGLogMessage.PublishNoODS(Nil, Format('Skip value of %d/%d chosen for %s', [StepX, StepY, subgrid.Moniker]), slmcDebug);
-      }
+        Log.LogDebug($"Skip value of {StepX}/{StepY} chosen for {SubGrid.Moniker()}");
 
       SeiveBitmask.Clear();
 
@@ -1207,8 +829,8 @@ namespace VSS.TRex.SubGridTrees
 
       for (int I = 0; I < NumRowsToScan; I++)
       {
-        double CurrentNorth = FirstScanPointNorth + (I * StepNorthY);
-        double CurrentEast = FirstScanPointEast + (I * StepNorthX);
+        double CurrentNorth = FirstScanPointNorth + I * StepNorthY;
+        double CurrentEast = FirstScanPointEast + I * StepNorthX;
 
         for (int J = 0; J < NumColsToScan; J++)
         {
@@ -1263,8 +885,7 @@ namespace VSS.TRex.SubGridTrees
 
       // Calculate the parameter to control skipping across a rotated grid with respect to
       // a grid projection north oriented subgrid
-      InitialiseRotationAndBounds(AreaControlSet.Rotation, SubGridWorldOriginX, SubGridWorldOriginY, SubGridWorldLimitX,
-        SubGridWorldLimitY);
+      InitialiseRotationAndBounds(AreaControlSet.Rotation, SubGridWorldOriginX, SubGridWorldOriginY, SubGridWorldLimitX, SubGridWorldLimitY);
 
       // Perform the walk across all probed locations determining the cells we want to
       // obtain values for and the probe locations.
@@ -1273,8 +894,7 @@ namespace VSS.TRex.SubGridTrees
       return true;
     }
 
-    public ServerRequestResult RetrieveSubGrid(uint CellX,
-      uint CellY,
+    public ServerRequestResult RetrieveSubGrid(uint CellX, uint CellY,
       // liftBuildSettings          : TICLiftBuildSettings;
       IClientLeafSubGrid clientGrid,
       SubGridTreeBitmapSubGridBits cellOverrideMask,
@@ -1290,6 +910,20 @@ namespace VSS.TRex.SubGridTrees
       ClientGridAsLeaf = clientGrid as ClientLeafSubGrid;
       _GridDataType = clientGrid.GridDataType;
 
+      CanUseGlobalLatestCells &=
+        !(_GridDataType == GridDataType.CCV ||
+          _GridDataType == GridDataType.CCVPercent) /*&& (LiftBuildSettings.CCVSummaryTypes<>[])*/ &&
+        !(_GridDataType == GridDataType.MDP ||
+          _GridDataType == GridDataType.MDPPercent) /*&& (LiftBuildSettings.MDPSummaryTypes<>[])*/ &&
+        !(_GridDataType == GridDataType.CCA || _GridDataType == GridDataType.CCAPercent) &&
+        !(_GridDataType == GridDataType.CellProfile ||
+          _GridDataType == GridDataType.PassCount ||
+          _GridDataType == GridDataType.CellPasses ||
+          _GridDataType == GridDataType.MachineSpeed ||
+          _GridDataType == GridDataType.CCVPercentChange ||
+          _GridDataType == GridDataType.MachineSpeedTarget ||
+          _GridDataType == GridDataType.CCVPercentChangeIgnoredTopNullValue);
+
       // Support for lazy construction of any required profilinf infrastructure
       if (ClientGrid.WantsLiftProcessingResults() && Profiler == null)
       {
@@ -1297,7 +931,7 @@ namespace VSS.TRex.SubGridTrees
         // appropriate cell pass containing the filtered value required.
 
         Profiler = new ProfilerBuilder(SiteModel, PDExistenceMap, _GridDataType, Filter.AttributeFilter, Filter.SpatialFilter,
-            null, null, PopulationControl, CellPassFastEventLookerUpper);
+            null, null, PopulationControl, new CellPassFastEventLookerUpper(SiteModel));
 
         CellProfile = new ProfileCell();
 
@@ -1335,17 +969,15 @@ namespace VSS.TRex.SubGridTrees
           // SIGLogMessage.PublishNoODS(Nil, Format('Begin LocateSubGridContaining at %dx%d', [CellX, CellY]), slmcDebug); {SKIP}
 
           // _SubGrid = SiteModel.Grid.LocateSubGridContaining(CellX, CellY, Level);
-          _SubGrid = SubGridUtilities.LocateSubGridContaining(StorageProxy, SiteModel.Grid, CellX, CellY, Level, 0,
-            false, false);
+          _SubGrid = SubGridUtilities.LocateSubGridContaining(StorageProxy, SiteModel.Grid, CellX, CellY, Level, 0, false, false);
 
-          /* TODO ???:
-          if (_SubGrid != null && _SubGrid.LockToken != ASubGridLockToken)
+          /* TODO ???: if (_SubGrid != null && _SubGrid.LockToken != ASubGridLockToken)
           {
               SIGLogMessage.PublishNoODS(Nil, Format('Returned, locked, subgrid has incorrect lock token (%d vs expected %d)', [_SubGrid.LockToken, ASubGridLockToken]), slmcAssert); {SKIP}
               return Result;
           } */
 
-          //      SIGLogMessage.PublishNoODS(Nil, Format('End LocateSubGridContaining at %dx%d', [CellX, CellY]), slmcDebug); {SKIP}
+          //  SIGLogMessage.PublishNoODS(Nil, Format('End LocateSubGridContaining at %dx%d', [CellX, CellY]), slmcDebug); {SKIP}
 
           if (_SubGrid == null)
           {
@@ -1355,8 +987,7 @@ namespace VSS.TRex.SubGridTrees
             return ServerRequestResult.SubGridNotFound;
           }
 
-          // Now process the contents of that subgrid into the subgrid to be returned
-          // to the client.
+          // Now process the contents of that subgrid into the subgrid to be returned to the client.
 
           if (!_SubGrid.IsLeafSubGrid()) // It's a leaf node
           {
@@ -1380,11 +1011,8 @@ namespace VSS.TRex.SubGridTrees
 
           // Determine the bitmask detailing which cells match the cell selection filter
           if (!SubGridFilterMasks.ConstructSubgridCellFilterMask(_SubGridAsLeaf, SiteModel, Filter,
-            cellOverrideMask,
-            HasOverrideSpatialCellRestriction,
-            OverrideSpatialCellRestriction,
-            ref ClientGridAsLeaf.ProdDataMap,
-            ref ClientGridAsLeaf.FilterMap))
+            cellOverrideMask, HasOverrideSpatialCellRestriction, OverrideSpatialCellRestriction,
+            ref ClientGridAsLeaf.ProdDataMap, ref ClientGridAsLeaf.FilterMap))
           {
             return ServerRequestResult.FailedToComputeDesignFilterPatch;
           }
@@ -1409,9 +1037,7 @@ namespace VSS.TRex.SubGridTrees
 
             // Determine if a seive filter is required for the subgrid where the seive matches
             // the X and Y pixel world size (used for WMS tile computation)
-            SeiveFilterInUse = AreaControlSet.UseIntegerAlgorithm
-              ? ComputeSeiveBitmask(_SubGrid)
-              : ComputeSeiveBitmaskFloat(_SubGrid);
+            SeiveFilterInUse = AreaControlSet.UseIntegerAlgorithm ? ComputeSeiveBitmask(_SubGrid) : ComputeSeiveBitmaskFloat(_SubGrid);
 
             if (!SeiveFilterInUse)
             {
@@ -1420,33 +1046,13 @@ namespace VSS.TRex.SubGridTrees
               AreaControlSet.PixelYWorldSize = 0;
             }
 
-            /* TODO 
-            if (VLPDSvcLocations.Debug_ExtremeLogSwitchC)
+            /* TODO if (VLPDSvcLocations.Debug_ExtremeLogSwitchC)
               // SIGLogMessage.PublishNoODS(Nil, Format('Performing stripe iteration at %dx%d', [CellX, CellY]), slmcDebug);
             */
-/*
-           // Compute a mask of the cells that should be visited for this subgrid retrieval operation
-           if (SeiveFilterInUse)
-           {
-               // Remove cells that do not match the filter mask and should not be processed, and those which are not identified by any active seive
-               CellIterationBitmask.SetAndOf(SeiveBitmask, ClientGridAsLeaf.ProdDataMap);
-           }
-           else
-           {
-               // No active seive
-               if (!PrepareGridForCacheStorageIfNoSeiving)
-               {
-                   // Remove cells that do not match the fiilter mask and should not be processed
-                   CellIterationBitmask.Assign(ClientGridAsLeaf.ProdDataMap);
-               }
-           }
-*/
-            // Iterate over the cells in the cell iteration mask and retrieve them
-//             CellIterationBitmask.ForEachSetBit((x, y) => RetrieveSubGridCell(/* TODO PopulationControl, */  (byte)x, (byte)y /*, LiftBuildSettings */));
 
             // Iterate over the stripes in the subgrid processing each one in turn.
             for (byte I = 0; I < SubGridTree.SubGridTreeDimension; I++)
-              RetrieveSubGridStripe(I, CellX, CellY);
+              RetrieveSubGridStripe(I);
 
             /* TODO if VLPDSvcLocations.Debug_ExtremeLogSwitchC then
               SIGLogMessage.PublishNoODS(Nil, Format('Stripe iteration complete at %dx%d', [CellX, CellY]), slmcDebug);
@@ -1454,19 +1060,17 @@ namespace VSS.TRex.SubGridTrees
           }
           finally
           {
-            if (CellPassFastEventLookerUpper != null)
-            {
-              /* TODO - readd when looker upper etc implemented
-                  if (VLPDSvcLocations.Debug_LogCellPassLookerUpperFullLookups)
-                  {
-                      InterlockedExchangeAdd64(Debug_TotalCellPassLookerUpperFullLookups, CellPassFastEventLookerUpper.NumFullEventLookups);
-                      SIGLogMessage.PublishNoODS(Nil, Format('Cell pass looker-upper invoked %d full event lookups, total = %d', [CellPassFastEventLookerUpper.NumFullEventLookups, Debug_TotalCellPassLookerUpperFullLookups]), slmcDebug);
-                  }
-                  */
-            }
+            /* TODO - move to owning context of the cell pass loooker upper...
+          if (CellPassFastEventLookerUpper != null)
+          {
+                if (VLPDSvcLocations.Debug_LogCellPassLookerUpperFullLookups)
+                {
+                    InterlockedExchangeAdd64(Debug_TotalCellPassLookerUpperFullLookups, CellPassFastEventLookerUpper.NumFullEventLookups);
+                    SIGLogMessage.PublishNoODS(Nil, Format('Cell pass looker-upper invoked %d full event lookups, total = %d', [CellPassFastEventLookerUpper.NumFullEventLookups, Debug_TotalCellPassLookerUpperFullLookups]), slmcDebug);
+                }
           }
-
-          //      SIGLogMessage.PublishNoODS(Nil, Format('Stripe iteration context shutdown at %dx%d', [CellX, CellY]), slmcDebug);
+            */
+        }
 
           Result = ServerRequestResult.NoError;
         }
@@ -1474,11 +1078,8 @@ namespace VSS.TRex.SubGridTrees
         {
           /* TODO...
           if (_SubGrid != null)
-          {
               _SubGrid.ReleaseLock(ASubGridLockToken);
-          }
           */
-
           //      SIGLogMessage.PublishNoODS(Nil, 'Completed RetrieveSubGrid operation', slmcDebug); {SKIP}
         }
       }

@@ -2,6 +2,7 @@
 using System.Reflection;
 using VSS.TRex.Analytics.Aggregators;
 using VSS.TRex.Analytics.Coordinators;
+using VSS.TRex.Analytics.Foundation.Aggregators;
 using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
 using VSS.TRex.Types;
 
@@ -12,7 +13,7 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 	/// for the request onto the cluster compute layer.
 	/// </summary>
   public class SpeedCoordinator : BaseAnalyticsCoordinator<SpeedStatisticsArgument, SpeedStatisticsResponse>
-	{
+  {
 		private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
 		/// <summary>
@@ -24,11 +25,10 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 		public override AggregatorBase ConstructAggregator(SpeedStatisticsArgument argument) => new SpeedAggregator
 		{
 			RequiresSerialisation = true,
-			SiteModelID = argument.DataModelID,
+			SiteModelID = argument.ProjectID,
 			//LiftBuildSettings := LiftBuildSettings;
 			CellSize = SiteModel.Grid.CellSize,
-			TargetMinMachineSpeed = argument.TargetMinMachineSpeed,
-			TargetMaxMachineSpeed = argument.TargetMaxMachineSpeed
+			TargetMachineSpeed = argument.TargetMachineSpeed
 		};
 
 		/// <summary>
@@ -44,7 +44,7 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 			Aggregator = aggregator,
 			Filters = argument.Filters,
 			IncludeSurveyedSurfaces = true,
-			RequestedGridDataType = GridDataType.MachineSpeed
+			RequestedGridDataType = GridDataType.MachineSpeedTarget
 		};
 
 		/// <summary>
@@ -54,10 +54,15 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 		/// <param name="response"></param>
 		public override void ReadOutResults(AggregatorBase aggregator, SpeedStatisticsResponse response)
 		{
-			response.AboveTargetCellsCount = ((SpeedAggregator)aggregator).AboveTargetCellsCount;
-			response.BelowTargetCellsCount = ((SpeedAggregator)aggregator).BelowTargetCellsCount;
-			response.MatchTargetCellsCount = ((SpeedAggregator)aggregator).MatchTargetCellsCount;
-			response.CoverageArea = ((SpeedAggregator)aggregator).CoverageArea;
+		  response.CellSize = ((SummaryAggregator)aggregator).CellSize;
+		  response.SummaryCellsScanned = ((SummaryAggregator)aggregator).SummaryCellsScanned;
+
+		  response.CellsScannedOverTarget = ((SummaryAggregator)aggregator).CellsScannedOverTarget;
+		  response.CellsScannedUnderTarget = ((SummaryAggregator)aggregator).CellsScannedUnderTarget;
+		  response.CellsScannedAtTarget = ((SummaryAggregator)aggregator).CellsScannedAtTarget;
+
+		  response.IsTargetValueConstant = ((SummaryAggregator)aggregator).IsTargetValueConstant;
+		  response.MissingTargetValue = ((SummaryAggregator)aggregator).MissingTargetValue;
 		}
 	}
 }

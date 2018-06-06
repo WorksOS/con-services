@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using RaptorClassLibrary.Tests.netcore.Analytics.Common;
 using VSS.TRex.Analytics.TemperatureStatistics;
 using VSS.TRex.Cells;
-using VSS.TRex.Tests.netcore.TestFixtures;
 using Xunit;
 
 namespace RaptorClassLibrary.Tests.netcore.Analytics.TemperatureStatistics
 {
-  public class TemperatureAggregatorTests : IClassFixture<DILoggingFixture>
-	{
-		private const double TOLERANCE = 0.00001;
-
+  public class TemperatureAggregatorTests : BaseTests
+  {
 		[Fact]
 		public void Test_TemperatureAggregator_Creation()
 		{
@@ -31,6 +27,5 @@ namespace RaptorClassLibrary.Tests.netcore.Analytics.TemperatureStatistics
 			Assert.True(aggregator.LastTempRangeMax == CellPass.NullMaterialTemperatureValue, "Invalid initial value for LastTempRangeMax.");
 			Assert.True(aggregator.LastTempRangeMin == CellPass.NullMaterialTemperatureValue, "Invalid initial value for LastTempRangeMin.");
 		}
-
 	}
 }

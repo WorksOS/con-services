@@ -1,47 +1,28 @@
-﻿using VSS.TRex.Analytics.Aggregators;
-using VSS.TRex.Common;
+﻿using VSS.TRex.Analytics.Foundation.Aggregators;
+using VSS.TRex.Cells;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Analytics.SpeedStatistics
 {
 	/// <summary>
 	/// Implements the specific business rules for calculating a Speed summary
 	/// </summary>
-	public class SpeedAggregator : AggregatorBase
-  {
+	public class SpeedAggregator : SummaryAggregator
+	{
 	  /// <summary>
-	  /// Maximum machine speed target value.
+	  /// Machine speed target record. It contains min/max machine speed target value.
 	  /// </summary>
-	  public ushort TargetMaxMachineSpeed { get; set; }
-	  /// <summary>
-	  /// Minimum machine speed target value.
-	  /// </summary>
-	  public ushort TargetMinMachineSpeed { get; set; }
-	  /// <summary>
-	  /// A value representing the count of cells that have reported machine speed values higher than a speed target.
-	  /// </summary>
-	  public long AboveTargetCellsCount { get; set; }
-	  /// <summary>
-	  /// A value representing the count of cells that have reported machine speed values lower than a speed target.
-	  /// </summary>
-	  public long BelowTargetCellsCount { get; set; }
-	  /// <summary>
-	  /// A value representing the count of cells that have reported machine speed values the same as a speed target.
-	  /// </summary>
-	  public long MatchTargetCellsCount { get; set; }
-	  /// <summary>
-	  /// The amount of production data the Speed statistics are requested for.
-	  /// </summary>
-	  public double CoverageArea { get; set; } // Area in sq/m...-
+	  public MachineSpeedExtendedRecord TargetMachineSpeed;
 
 	  /// <summary>
 	  /// Default no-arg constructor
 	  /// </summary>
 	  public SpeedAggregator()
 	  {
-			// ...
+			TargetMachineSpeed.Clear();
 	  }
 
 	  /// <summary>
@@ -55,21 +36,21 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 
 			// Works out the percentage each colour on the map represents
 
-			if (!(subGrids[0][0] is ClientMachineSpeedLeafSubGrid SubGrid))
+			if (!(subGrids[0][0] is ClientMachineTargetSpeedLeafSubGrid SubGrid))
 			  return;
 
 			SubGridUtilities.SubGridDimensionalIterator((I, J) =>
 		  {
-			  float Value = SubGrid.Cells[I, J];
-			  if (Value != Consts.NullMachineSpeed) // is there a value to test
+			  var SpeedRangeValue = SubGrid.Cells[I, J];
+			  if (SpeedRangeValue.Max != CellPass.NullMachineSpeed) // is there a value to test
 			  {
 				  SummaryCellsScanned++;
-				  if (Value > TargetMaxMachineSpeed)
-					  AboveTargetCellsCount++;
-				  else if (Value < TargetMinMachineSpeed)
-					  BelowTargetCellsCount++;
+				  if (SpeedRangeValue.Max > TargetMachineSpeed.Max)
+					  CellsScannedOverTarget++;
+				  else if (SpeedRangeValue.Min < TargetMachineSpeed.Min && SpeedRangeValue.Max < TargetMachineSpeed.Min)
+					  CellsScannedUnderTarget++;
 					else
-						MatchTargetCellsCount++;
+						CellsScannedAtTarget++;
 				}
 			});
 	  }

@@ -10,7 +10,7 @@ using Xunit;
 
 namespace VSS.TRex.SubGridTrees.Server.Tests
 {
-        public class SubGridCellSegmentPassesDataWrapper_NonStaticTests
+    public class SubGridCellSegmentPassesDataWrapper_NonStaticTests
     {
         /// <summary>
         /// A handy test cell pass for the unit tests below to use
@@ -296,7 +296,7 @@ namespace VSS.TRex.SubGridTrees.Server.Tests
             ISubGridCellSegmentPassesDataWrapper item = new SubGridCellSegmentPassesDataWrapper_NonStatic();
 
             // Uncompressed static cell pass wrappers do not provide machine ID sets
-            Assert.Equal(null, item.GetMachineIDSet());
+            Assert.Null(item.GetMachineIDSet());
         }
     }
 }

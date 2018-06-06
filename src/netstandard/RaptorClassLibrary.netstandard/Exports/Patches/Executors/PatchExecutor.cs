@@ -7,6 +7,7 @@ using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
+using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.RequestStatistics;
 using VSS.TRex.Types;
@@ -18,8 +19,7 @@ namespace VSS.TRex.Rendering.Patches.Executors
   /// </summary>
   public class PatchExecutor
   {
-    private static readonly ILogger
-      Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     /// <summary>
     /// The response object avbailable for inspection once the Executor has completed processing
@@ -66,7 +66,6 @@ namespace VSS.TRex.Rendering.Patches.Executors
       FilterSet filters,
       Guid cutFillDesignID, //DesignDescriptor ACutFillDesign,
       //AReferenceVolumeType : TComputeICVolumesType;
-      //AICOptions: TSVOICOptions;
       string requestingTRexNodeId,
       int dataPatchPageNumber,
       int dataPatchPageSize
@@ -78,7 +77,6 @@ namespace VSS.TRex.Rendering.Patches.Executors
       Filters = filters;
       CutFillDesignID = cutFillDesignID; // CutFillDesign = ACutFillDesign;
       //ReferenceVolumeType = AReferenceVolumeType;
-      //ICOptions = AICOptions;
       RequestingTRexNodeID = requestingTRexNodeId;
       DataPatchPageNumber = dataPatchPageNumber;
       DataPatchPageSize = dataPatchPageSize;
@@ -101,6 +99,7 @@ namespace VSS.TRex.Rendering.Patches.Executors
         // Provide the processor with a customised request analyser configured to return a specific page of subgrids
         processor = new PipelineProcessor(requestDescriptor: RequestDescriptor,
           dataModelID: DataModelID, 
+          siteModel:null,
           gridDataType: GridDataFromModeConverter.Convert(Mode), 
           response: PatchSubGridsResponse, 
           filters: Filters, 
@@ -114,7 +113,8 @@ namespace VSS.TRex.Rendering.Patches.Executors
             SubmitSinglePageOfRequests = true
           },
           requireSurveyedSurfaceInformation: Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode) && Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
-          requestRequiresAccessToDesignFileExistanceMap: Utilities.RequestRequiresAccessToDesignFileExistanceMap(Mode /*ReferenceVolumeType*/));
+          requestRequiresAccessToDesignFileExistanceMap: Utilities.RequestRequiresAccessToDesignFileExistanceMap(Mode /*ReferenceVolumeType*/),
+          overrideSpatialCellRestriction:BoundingIntegerExtent2D.Inverted());
 
         if (!processor.Build())
         {
@@ -122,11 +122,10 @@ namespace VSS.TRex.Rendering.Patches.Executors
           return false;
         }
 
-        // If this is the first page requested then make a count the total number of patches required for all subgrids to be returned
+        // If this is the first page requested then count the total number of patches required for all subgrids to be returned
         if (DataPatchPageNumber == 0)
           PatchSubGridsResponse.TotalNumberOfPagesToCoverFilteredData =
-            (int) Math.Truncate(Math.Ceiling(processor.RequestAnalyser.CountOfSubgridsThatWillBeSubmitted() /
-                                             (1.0 * DataPatchPageSize)));
+            (int) Math.Truncate(Math.Ceiling(processor.RequestAnalyser.CountOfSubgridsThatWillBeSubmitted() / (double)DataPatchPageSize));
 
         processor.Process();
 

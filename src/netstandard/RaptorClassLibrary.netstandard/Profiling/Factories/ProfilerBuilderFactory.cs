@@ -37,12 +37,14 @@ namespace VSS.TRex.Profiling.Factories
     /// <param name="siteModel"></param>
     /// <param name="cellFilter"></param>
     /// <param name="cutFillDesign"></param>
+    /// <param name="slicerToolUsed"></param>
     /// <returns></returns>
     public ICellProfileBuilder NewCellProfileBuilder(ISiteModel siteModel, 
         CellSpatialFilter cellFilter, 
-        Design cutFillDesign)
+        Design cutFillDesign,
+        bool slicerToolUsed)
       {
-        return new CellProfileBuilder(siteModel, cellFilter, cutFillDesign);
+        return new CellProfileBuilder(siteModel, cellFilter, cutFillDesign, slicerToolUsed);
       }
 
     /// <summary>

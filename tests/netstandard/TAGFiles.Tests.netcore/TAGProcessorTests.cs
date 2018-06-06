@@ -74,7 +74,12 @@ namespace VSS.TRex.TAGFiles.Classes.Tests
             // a 'NoGPS' GPS mode state event and a 'UTS' positioning technology state event
 
             DateTime eventDate = new DateTime(2000, 1, 1, 1, 1, 1);
+
+            // Setting the first data time will create the start event
             processor.DataTime = eventDate;
+
+            DateTime eventDate2 = eventDate.AddMinutes(1);
+            processor.DataTime = eventDate2;
             processor.DoPostProcessFileAction(true);
 
             Assert.True(MachineTargetValueChangesAggregator.GPSModeStateEvents.Last().State == GPSMode.NoGPS &&
@@ -86,7 +91,7 @@ namespace VSS.TRex.TAGFiles.Classes.Tests
                           "DoPostProcessFileAction did not set positioning tech event");
 
             Assert.True(MachineTargetValueChangesAggregator.StartEndRecordedDataEvents.Last().State == ProductionEventType.EndEvent /*EndRecordedData*/ &&
-                          MachineTargetValueChangesAggregator.StartEndRecordedDataEvents.Last().Date == eventDate,
+                          MachineTargetValueChangesAggregator.StartEndRecordedDataEvents.Last().Date == eventDate2,
                           "DoPostProcessFileAction did not set end recorded data event");
         }
 

@@ -7,17 +7,38 @@ using VSS.TRex.Utilities;
 
 namespace VSS.TRex.Profiling
 {
+  /// <summary>
+  /// Contains a vector of IntercepRec instances that describe all the cells a profile line has crossed
+  /// </summary>
   public class InterceptList
   {
     private static ILogger Log = Logging.Logger.CreateLogger<InterceptList>();
 
+    /// <summary>
+    /// The amount by which the size of the list shoudl be increased as more elements are added.
+    /// This is also the initial size of the intercept rec list.
+    /// </summary>
     public const int ListInc = 2000;
+
+    /// <summary>
+    /// Profiel lines which require more intercepts than this are not supported
+    /// </summary>
     public const int MaxIntercepts = 20000; // note this should give a profile at least up to 4-6km long
 
+    /// <summary>
+    /// Explicit count of the number of intercepts in the vector. This is held distinctly from the count
+    /// of elements in the list itself due to recycling of elements
+    /// </summary>
     public int Count;
 
+    /// <summary>
+    /// The array of intercept items currently provisioned for the list
+    /// </summary>
     public InterceptRec[] Items = new InterceptRec[ListInc];
 
+    /// <summary>
+    /// Construct a default empty intercept list
+    /// </summary>
     public InterceptList()
     {
     }
@@ -108,6 +129,11 @@ namespace VSS.TRex.Profiling
       Count--;
     }
 
+    /// <summary>
+    /// Takes two intercepot lists and merges the two into a single list within this instance
+    /// </summary>
+    /// <param name="List1"></param>
+    /// <param name="List2"></param>
     public void MergeInterceptLists(InterceptList List1, InterceptList List2)
     {
       int Index1 = 0;

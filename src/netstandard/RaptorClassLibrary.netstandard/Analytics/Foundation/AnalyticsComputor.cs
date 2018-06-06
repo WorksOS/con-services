@@ -4,6 +4,7 @@ using System.Reflection;
 using VSS.TRex.Analytics.GridFabric.Responses;
 using VSS.TRex.Executors.Tasks;
 using VSS.TRex.Filters;
+using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Interfaces;
@@ -70,6 +71,7 @@ namespace VSS.TRex.Analytics
           PipelineProcessor processor =
             new PipelineProcessor(requestDescriptor: RequestDescriptor,
               dataModelID: SiteModel.ID,
+              siteModel: SiteModel,
               gridDataType: RequestedGridDataType,
               response: response,
               filters: Filters,
@@ -78,7 +80,8 @@ namespace VSS.TRex.Analytics
               pipeline: new SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse>(),
               requestAnalyser: new RequestAnalyser(),
               requestRequiresAccessToDesignFileExistanceMap: CutFillDesignID != Guid.Empty,
-              requireSurveyedSurfaceInformation: IncludeSurveyedSurfaces
+              requireSurveyedSurfaceInformation: IncludeSurveyedSurfaces,
+              overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted()
             );
 
           if (!processor.Build())

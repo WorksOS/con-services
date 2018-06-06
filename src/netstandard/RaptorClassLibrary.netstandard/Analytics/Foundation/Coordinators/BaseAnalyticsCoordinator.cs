@@ -67,7 +67,7 @@ namespace VSS.TRex.Analytics.Coordinators
 
                 RequestDescriptor = Guid.NewGuid(); // TODO ASNodeImplInstance.NextDescriptor;
 
-                SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(arg.DataModelID);
+                SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(arg.ProjectID);
 
                 AggregatorBase Aggregator = ConstructAggregator(arg);
                 AnalyticsComputor Computor = ConstructComputor(arg, Aggregator);

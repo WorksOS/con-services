@@ -116,8 +116,6 @@ namespace VSS.TRex.SubGridTrees.Client
 
         /// <summary>
         /// Write the contents of the Items array using the supplied writer
-        /// This is an unimplemented override; a generic BinaryReader based implementation is not provided. 
-        /// Override to implement if needed.
         /// </summary>
         /// <param name="writer"></param>
         /// <param name="buffer"></param>
@@ -131,8 +129,6 @@ namespace VSS.TRex.SubGridTrees.Client
 
         /// <summary>
         /// Fill the items array by reading the binary representation using the provided reader. 
-        /// This is an unimplemented override; a generic BinaryReader based implementation is not provided. 
-        /// Override to implement if needed.
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="buffer"></param>

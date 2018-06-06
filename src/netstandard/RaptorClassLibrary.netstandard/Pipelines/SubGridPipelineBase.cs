@@ -91,7 +91,7 @@ namespace VSS.TRex.Pipelines
 
         // public float FNoChangeVolumeTolerance;
 
-        public AreaControlSet AreaControlSet;
+        public AreaControlSet AreaControlSet { get; set;  }
 
         protected bool pipelineCompleted;
 
@@ -124,7 +124,7 @@ namespace VSS.TRex.Pipelines
         /// </summary>
         public BoundingWorldExtent3D WorldExtents { get; set; } = BoundingWorldExtent3D.Inverted();
 
-        public BoundingIntegerExtent2D OverrideSpatialCellRestriction = BoundingIntegerExtent2D.Inverted();
+        public BoundingIntegerExtent2D OverrideSpatialCellRestriction { get; set; } = BoundingIntegerExtent2D.Inverted();
 
         /// <summary>
         /// Have all subgrids in the request been returned and processed?
