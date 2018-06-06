@@ -70,8 +70,6 @@ namespace VSS.TRex.SubGridTrees
     private IProfilerBuilder Profiler = null;
     private ProfileCell CellProfile = null;
 
-    private CellPassFastEventLookerUpper CellPassFastEventLookerUpper = null;
-
     private SubGridTreeBitMask PDExistenceMap;
 
     // ProductionEventChanges MachineTargetValues = null;
@@ -1313,7 +1311,7 @@ namespace VSS.TRex.SubGridTrees
         // appropriate cell pass containing the filtered value required.
 
         Profiler = new ProfilerBuilder(SiteModel, PDExistenceMap, _GridDataType, Filter.AttributeFilter, Filter.SpatialFilter,
-            null, null, PopulationControl, CellPassFastEventLookerUpper);
+            null, null, PopulationControl, new CellPassFastEventLookerUpper(SiteModel));
 
         CellProfile = new ProfileCell();
 
@@ -1470,17 +1468,17 @@ namespace VSS.TRex.SubGridTrees
           }
           finally
           {
+            /* TODO - readd when looker upper etc implemented
             if (CellPassFastEventLookerUpper != null)
             {
-              /* TODO - readd when looker upper etc implemented
-                  if (VLPDSvcLocations.Debug_LogCellPassLookerUpperFullLookups)
-                  {
-                      InterlockedExchangeAdd64(Debug_TotalCellPassLookerUpperFullLookups, CellPassFastEventLookerUpper.NumFullEventLookups);
-                      SIGLogMessage.PublishNoODS(Nil, Format('Cell pass looker-upper invoked %d full event lookups, total = %d', [CellPassFastEventLookerUpper.NumFullEventLookups, Debug_TotalCellPassLookerUpperFullLookups]), slmcDebug);
-                  }
-                  */
+                if (VLPDSvcLocations.Debug_LogCellPassLookerUpperFullLookups)
+                {
+                    InterlockedExchangeAdd64(Debug_TotalCellPassLookerUpperFullLookups, CellPassFastEventLookerUpper.NumFullEventLookups);
+                    SIGLogMessage.PublishNoODS(Nil, Format('Cell pass looker-upper invoked %d full event lookups, total = %d', [CellPassFastEventLookerUpper.NumFullEventLookups, Debug_TotalCellPassLookerUpperFullLookups]), slmcDebug);
+                }
             }
-          }
+            */
+        }
 
           //      SIGLogMessage.PublishNoODS(Nil, Format('Stripe iteration context shutdown at %dx%d', [CellX, CellY]), slmcDebug);
 
