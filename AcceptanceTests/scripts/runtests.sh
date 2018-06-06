@@ -20,4 +20,5 @@ dotnet vstest WebApiTests/WebApiTests.dll --logger:\"xunit;LogFilePath=/TestResu
 echo " "
 echo " All acceptance tests completed"
 echo " "
+sleep 300s
 

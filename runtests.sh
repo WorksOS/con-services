@@ -22,5 +22,5 @@ dotnet test --no-build --no-restore VSS.Visionlink.Project.AcceptanceTests.sln -
 echo " "
 echo " All acceptance tests completed"
 echo " "
-echo " Wait for 240"
-sleep 240s
+echo " Wait for 300"
+sleep 300s
