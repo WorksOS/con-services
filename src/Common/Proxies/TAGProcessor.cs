@@ -18,30 +18,31 @@ namespace VSS.Productivity3D.Common.Proxies
     {
       log = logger.CreateLogger<TagProcessor>();
     }
+
     /// <summary>
     /// PDSClient implementation
     /// </summary>
-    /// <returns></returns>
     public TAGProcessorClient ProjectDataServerTAGProcessorClient()
     {
-      IPAddress PDSAddress;
       try
       {
         log.LogInformation("PDS server location  {0}:{1}", VLPDServiceLocations.__Global.VLPDSvcLocations().VLPDTAGProcServiceIPAddress,
             (short)VLPDServiceLocations.__Global.VLPDSvcLocations().VLPDTAGProcServiceIPPort);
 
-        string hostIdentifier = VLPDServiceLocations.__Global.VLPDSvcLocations().VLPDTAGProcServiceIPAddress;
+        var hostIdentifier = VLPDServiceLocations.__Global.VLPDSvcLocations().VLPDTAGProcServiceIPAddress;
 
-        if (hostIdentifier.Length == 0) {
+        if (hostIdentifier.Length == 0)
+        {
           throw new ArgumentNullException("Missing PDS TAG Processor IPAddress in configuration file");
         }
 
-
-        if (!IPAddress.TryParse(hostIdentifier, out PDSAddress)) {
-          IPHostEntry host = Dns.GetHostEntry(VLPDServiceLocations.__Global.VLPDSvcLocations().VLPDTAGProcServiceIPAddress);
+        if (!IPAddress.TryParse(hostIdentifier, out var PDSAddress))
+        {
+          var host = Dns.GetHostEntry(VLPDServiceLocations.__Global.VLPDSvcLocations().VLPDTAGProcServiceIPAddress);
           log.LogInformation("Have got {0} addresses for PDS server", host.AddressList.Length);
 
-          foreach (IPAddress address in host.AddressList) {
+          foreach (var address in host.AddressList)
+          {
             log.LogInformation("Checking PDS Server address {0}", address);
             if (address.AddressFamily == AddressFamily.InterNetwork)
             {
@@ -49,24 +50,22 @@ namespace VSS.Productivity3D.Common.Proxies
               break;
             }
           }
-
         }
-        
+
         if (PDSAddress == null)
         {
           throw new ArgumentException("Invalid PDS TAG Processor IPAddress in configuration file");
         }
 
         log.LogInformation("PDS Server address ok, creating TAG Processor Client with address {0}", PDSAddress);
-        return new TAGProcessorClient(PDSAddress, (short)VLPDServiceLocations.__Global.VLPDSvcLocations().VLPDTAGProcServiceIPPort);
 
+        return new TAGProcessorClient(PDSAddress, (short)VLPDServiceLocations.__Global.VLPDSvcLocations().VLPDTAGProcServiceIPPort);
       }
-      catch (System.Exception ex)
+      catch (Exception ex)
       {
         log.LogWarning("Exception creating PDS TAG processor client. {0}", ex.Message);
         return null;
       }
     }
-
   }
 }
