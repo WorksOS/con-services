@@ -606,7 +606,7 @@ namespace VSS.TRex.Profiling
 
       ComputedSupercededStatusForLayers = true;
 
-      for (int LayerIndex = Cell.Layers.Count() - 1; LayerIndex <= 0; LayerIndex--)
+      for (int LayerIndex = Cell.Layers.Count() - 1; LayerIndex >= 0; LayerIndex--)
       {
         float TestLayerHeight = Cell.Layers[LayerIndex].Height;
 
