@@ -35,7 +35,8 @@ namespace TestUtility
     {
       dbSchema = Environment.GetEnvironmentVariable("MYSQL_DATABASE_NAME");
       mySqlServer = Environment.GetEnvironmentVariable("MYSQL_SERVER_NAME_VSPDB");
-      DbConnectionString = $@"server={mySqlServer};database={dbSchema};userid={mySqlUser};password={mySqlPassword};port={mySqlPort};Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4;SslMode=None";
+      DbConnectionString =
+        $@"server={mySqlServer};database={dbSchema};userid={mySqlUser};password={mySqlPassword};port={mySqlPort}"; //Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4;SslMode=None";
 
     }
 
@@ -55,7 +56,7 @@ namespace TestUtility
 
     private void UpdateConnectionString()
     {
-      DbConnectionString = $@"server={mySqlServer};database={dbSchema};userid={mySqlUser};password={mySqlPassword};port={mySqlPort};Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4;SslMode=None";
+      DbConnectionString = $@"server={mySqlServer};database={dbSchema};userid={mySqlUser};password={mySqlPassword};port={mySqlPort}"; //;Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4;SslMode=None";
     }
   }
 }
