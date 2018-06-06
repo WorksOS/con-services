@@ -8,10 +8,7 @@ spec:
   - name: mysql-container
     image: mysql/mysql-server:5.7.15
     ports:
-    - port: 3306
-      containerPort: 3306
-      targetPort: 3306
-      protocol: TCP
+    - containerPort: 3306
     livenessProbe:
       tcpSocket:
         port: 3306
