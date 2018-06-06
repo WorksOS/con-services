@@ -79,7 +79,7 @@ namespace VSS.TRex.Profiling
     /// </summary>
     public FilteredMultiplePassInfo Passes;
 
-    public bool[] FilteredPassFlags;
+    public bool[] FilteredPassFlags = new bool[0];
     public int FilteredPassCount;
     public int FilteredHalfPassCount;
     public ProfileCellAttributeExistenceFlags AttributeExistenceFlags;
