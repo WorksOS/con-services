@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2.1-sdk-alpine as builder
+FROM microsoft/dotnet:2.1-sdk as builder
 
 COPY . /build/
 WORKDIR /build
@@ -6,12 +6,6 @@ WORKDIR /build
 RUN chmod 777 *.sh
 
 FROM registry.k8s.vspengg.com:80/vss-jenkinsslave:core21
-
-RUN \
-  apk update && \
-  apk upgrade && \
-  apk add bash && \
-  rm -rf /var/cache/apk/*
 
 WORKDIR /app
 COPY --from=builder /build .

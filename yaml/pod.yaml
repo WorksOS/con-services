@@ -7,6 +7,16 @@ spec:
 
   - name: mysql-container
     image: mysql/mysql-server:5.7.15
+    env: 
+      - 
+        name: "MYSQL_USERNAME"
+        value: "root"
+      - 
+        name: "MYSQL_PASSWORD"
+        value: "abc123"
+      - 
+        name: "MYSQL_DATABASE"
+        value: "VSS-MasterData-Project"
     ports:
     - containerPort: 3306
     livenessProbe:
