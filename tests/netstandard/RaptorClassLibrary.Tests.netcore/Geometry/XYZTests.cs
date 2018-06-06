@@ -107,8 +107,13 @@ namespace VSS.TRex.Geometry.Tests
         [Fact()]
         public void Test_XYZTests_Get3DLength()
         {
-            XYZ a = new XYZ(1, 2, 3);
-            XYZ b = new XYZ(3, 4, 5);
+            XYZ a = new XYZ(0, 0, 0);
+            XYZ b = new XYZ(1, 1, 1);
+
+            Assert.True(Math.Abs(XYZ.Get3DLength(a, b) - Math.Sqrt(3)) < 0.00001, "3D Length not as expected");
+
+            a = new XYZ(1, 2, 3);
+            b = new XYZ(3, 4, 5);
 
             Assert.True(Math.Abs(XYZ.Get3DLength(a, b) - Math.Sqrt(12)) < 0.00001, "3D Length not as expected");
         }
