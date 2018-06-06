@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 using VSS.TRex.Cells;
 using VSS.TRex.Filters;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.Types;
 

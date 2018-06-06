@@ -606,7 +606,7 @@ namespace VSS.TRex.Profiling
 
       ComputedSupercededStatusForLayers = true;
 
-      for (int LayerIndex = Cell.Layers.Count() - 1; LayerIndex <= 0; LayerIndex--)
+      for (int LayerIndex = Cell.Layers.Count() - 1; LayerIndex >= 0; LayerIndex--)
       {
         float TestLayerHeight = Cell.Layers[LayerIndex].Height;
 
@@ -1120,7 +1120,7 @@ namespace VSS.TRex.Profiling
           if (Dummy_LiftBuildSettings.IncludeSuperseded == false)
             ComputeSupercededStatusForLayers();
 
-          for (int I = Cell.Layers.Count() - 1; I >= 0; I++)
+          for (int I = Cell.Layers.Count() - 1; I >= 0; I--)
           {
             if ((Cell.Layers[I].Status & LayerStatus.Superseded) != 0)
               continue;
