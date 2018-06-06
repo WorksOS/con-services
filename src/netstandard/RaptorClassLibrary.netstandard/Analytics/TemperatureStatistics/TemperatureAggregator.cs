@@ -11,7 +11,7 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 	/// <summary>
 	/// Implements the specific business rules for calculating a Temperature summary
 	/// </summary>
-	public class TemperatureAggregator : SummaryAggregator
+	public class TemperatureAggregator : DataStatisticsAggregator
 	{
 		/// <summary>
 		/// The flag is to indicate wehther or not the temperature warning levels to be user overrides.
@@ -41,7 +41,7 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 			OverridingTemperatureWarningLevels.Clear();
 		}
 
-		protected override void DataCheck(SummaryAggregator other)
+		protected override void DataCheck(DataStatisticsAggregator other)
 		{
 			var aggregator = (TemperatureAggregator) other;
 

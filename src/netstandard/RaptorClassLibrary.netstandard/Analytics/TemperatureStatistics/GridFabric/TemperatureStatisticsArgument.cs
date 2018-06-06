@@ -8,7 +8,6 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
 	/// Argument containing the parameters required for a Temperature statistics request
 	/// </summary>    
 	[Serializable]
-
 	public class TemperatureStatisticsArgument : BaseApplicationServiceRequestArgument
   {
 		// TODO If desired: ExternalDescriptor :TASNodeRequestDescriptor, which should be moved to the base class;

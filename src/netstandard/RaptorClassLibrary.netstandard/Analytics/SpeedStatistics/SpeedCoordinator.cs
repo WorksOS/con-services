@@ -54,15 +54,15 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 		/// <param name="response"></param>
 		public override void ReadOutResults(AggregatorBase aggregator, SpeedStatisticsResponse response)
 		{
-		  response.CellSize = ((SummaryAggregator)aggregator).CellSize;
-		  response.SummaryCellsScanned = ((SummaryAggregator)aggregator).SummaryCellsScanned;
+		  response.CellSize = ((DataStatisticsAggregator)aggregator).CellSize;
+		  response.SummaryCellsScanned = ((DataStatisticsAggregator)aggregator).SummaryCellsScanned;
 
-		  response.CellsScannedOverTarget = ((SummaryAggregator)aggregator).CellsScannedOverTarget;
-		  response.CellsScannedUnderTarget = ((SummaryAggregator)aggregator).CellsScannedUnderTarget;
-		  response.CellsScannedAtTarget = ((SummaryAggregator)aggregator).CellsScannedAtTarget;
+		  response.CellsScannedOverTarget = ((DataStatisticsAggregator)aggregator).CellsScannedOverTarget;
+		  response.CellsScannedUnderTarget = ((DataStatisticsAggregator)aggregator).CellsScannedUnderTarget;
+		  response.CellsScannedAtTarget = ((DataStatisticsAggregator)aggregator).CellsScannedAtTarget;
 
-		  response.IsTargetValueConstant = ((SummaryAggregator)aggregator).IsTargetValueConstant;
-		  response.MissingTargetValue = ((SummaryAggregator)aggregator).MissingTargetValue;
+		  response.IsTargetValueConstant = ((DataStatisticsAggregator)aggregator).IsTargetValueConstant;
+		  response.MissingTargetValue = ((DataStatisticsAggregator)aggregator).MissingTargetValue;
 		}
 	}
 }
