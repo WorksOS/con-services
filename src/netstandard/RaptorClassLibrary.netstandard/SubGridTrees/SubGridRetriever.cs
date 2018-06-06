@@ -3,7 +3,6 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using VSS.TRex.Cells;
-using VSS.TRex.Common;
 using VSS.TRex.Events;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
@@ -26,8 +25,7 @@ namespace VSS.TRex.SubGridTrees
   /// </summary>
   public class SubGridRetriever
   {
-    private static readonly ILogger
-      Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     // Local state populated by the retriever constructor
     private CombinedFilter Filter;
@@ -57,7 +55,7 @@ namespace VSS.TRex.SubGridTrees
     private SubGridSegmentIterator SegmentIterator;
     private SubGridSegmentCellPassIterator_NonStatic CellPassIterator;
 
-    private double _CellSize = Consts.NullDouble;
+    private double _CellSize;
     private int NumRowsToScan, NumColsToScan;
     private double FirstScanPointNorth, FirstScanPointEast;
 
@@ -312,8 +310,6 @@ namespace VSS.TRex.SubGridTrees
       int TopMostLayerCompactionHalfPassCount = 0;
       bool FilteredValueIsFromLatestCellPass;
 
-      IterationDirection PreviousIterationDirection;
-
       // TODO...  bool Debug_ExtremeLogSwitchD = VLPDSvcLocations.Debug_ExtremeLogSwitchD;
 
       // Iterate over the cells in the subgrid applying the filter and assigning the requested information into the subgrid
@@ -343,65 +339,47 @@ namespace VSS.TRex.SubGridTrees
         {
           case GridDataType.CCV:
             if (_GlobalLatestCells.ReadCCV(CellX, CellY) == CellPass.NullCCV)
-            {
               return;
-            }
-
             break;
+
           case GridDataType.RMV:
             if (_GlobalLatestCells.ReadRMV(CellX, CellY) == CellPass.NullRMV)
-            {
               return;
-            }
-
             break;
+
           case GridDataType.Frequency:
             if (_GlobalLatestCells.ReadFrequency(CellX, CellY) == CellPass.NullFrequency)
-            {
               return;
-            }
-
             break;
+
           case GridDataType.Amplitude:
             if (_GlobalLatestCells.ReadAmplitude(CellX, CellY) == CellPass.NullAmplitude)
-            {
               return;
-            }
-
             break;
+
           case GridDataType.GPSMode:
             if (_GlobalLatestCells.ReadGPSMode(CellX, CellY) == GPSMode.NoGPS)
-            {
               return;
-            }
-
             break;
+
           case GridDataType.MDP:
             if (_GlobalLatestCells.ReadMDP(CellX, CellY) == CellPass.NullMDP)
-            {
               return;
-            }
-
             break;
+
           case GridDataType.CCA:
             if (_GlobalLatestCells.ReadCCA(CellX, CellY) == CellPass.NullCCA)
-            {
               return;
-            }
-
             break;
+
           case GridDataType.Temperature:
             if (_GlobalLatestCells.ReadTemperature(CellX, CellY) == CellPass.NullMaterialTemperatureValue)
-            {
               return;
-            }
-
             break;
+
           case GridDataType.TemperatureDetail:
             if (_GlobalLatestCells.ReadTemperature(CellX, CellY) == CellPass.NullMaterialTemperatureValue)
-            {
               return;
-            }
 
             break;
         }
@@ -415,8 +393,7 @@ namespace VSS.TRex.SubGridTrees
              SIGLogMessage.PublishNoODS(Nil, Format('At %dx%d: Using last pass grid', [CellX, CellY]), slmcDebug);
           */
 
-          AssignRequiredFilteredPassAttributesFromGlobalLatestCells(
-            ref AssignmentContext.FilteredValue.FilteredPassData.FilteredPass, CellX, CellY);
+          AssignRequiredFilteredPassAttributesFromGlobalLatestCells(ref AssignmentContext.FilteredValue.FilteredPassData.FilteredPass, CellX, CellY);
 
           // TODO: Review if line below replaced with line above in Ignite POC is good...
           // AssignmentContext.FilteredValue.FilteredPassData.FilteredPass = _GlobalLatestCells[CellX, CellY];
@@ -449,8 +426,7 @@ namespace VSS.TRex.SubGridTrees
             if (CanUseGlobalLatestCells)
             {
               // Optimistically assume that the global latest value is acceptable
-              AssignRequiredFilteredPassAttributesFromGlobalLatestCells(
-                ref AssignmentContext.FilteredValue.FilteredPassData.FilteredPass, CellX, CellY);
+              AssignRequiredFilteredPassAttributesFromGlobalLatestCells(ref AssignmentContext.FilteredValue.FilteredPassData.FilteredPass, CellX, CellY);
 
               // TODO: Review if line below replaced with line above in Ignite POC is good...
               // AssignmentContext.FilteredValue.FilteredPassData.FilteredPass = _GlobalLatestCells[CellX, CellY];
@@ -605,6 +581,7 @@ namespace VSS.TRex.SubGridTrees
                     && ((Dummy_LiftBuildSettings.CCVSummaryTypes == 0) || !Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly)) ||
                   ((_GridDataType == GridDataType.MDP || _GridDataType == GridDataType.MDPPercent) 
                     && ((Dummy_LiftBuildSettings.MDPSummaryTypes == 0) || !Dummy_LiftBuildSettings.MDPSummarizeTopLayerOnly)) ||
+                  // ReSharper disable once UseMethodAny.0
                   (CellProfile.Layers.Count() > 0) ||
                   (_GridDataType == GridDataType.CCA || _GridDataType == GridDataType.CCAPercent)) // no CCA settings
                 ClientGrid.AssignFilteredValue(CellX, CellY, AssignmentContext);
@@ -637,12 +614,9 @@ namespace VSS.TRex.SubGridTrees
       int TopMostLayerCompactionHalfPassCount = 0;
       bool FilteredValueIsFromLatestCellPass;
 
-      IterationDirection PreviousIterationDirection;
-
       // TODO... bool Debug_ExtremeLogSwitchD = VLPDSvcLocations.Debug_ExtremeLogSwitchD;
 
-      // Iterate over the cells in the subgrid applying the filter and assigning the
-      // requested information into the subgrid
+      // Iterate over the cells in the subgrid applying the filter and assigning the requested information into the subgrid
 
       /* TODO...
       if (Debug_ExtremeLogSwitchD)
@@ -673,8 +647,7 @@ namespace VSS.TRex.SubGridTrees
 
           if (SeiveFilterInUse || !PrepareGridForCacheStorageIfNoSeiving)
           {
-            if (!ClientGridAsLeaf.ProdDataMap.BitSet(StripeIndex, J)
-            ) // This cell does not match the filter mask and should not be processed
+            if (!ClientGridAsLeaf.ProdDataMap.BitSet(StripeIndex, J)) // This cell does not match the filter mask and should not be processed
               continue;
           }
 
@@ -687,80 +660,57 @@ namespace VSS.TRex.SubGridTrees
           {
             case GridDataType.CCV:
               if (_GlobalLatestCells.ReadCCV(StripeIndex, J) == CellPass.NullCCV)
-              {
                 continue;
-              }
-
               break;
+
             case GridDataType.RMV:
               if (_GlobalLatestCells.ReadRMV(StripeIndex, J) == CellPass.NullRMV)
-              {
                 continue;
-              }
-
               break;
+
             case GridDataType.Frequency:
               if (_GlobalLatestCells.ReadFrequency(StripeIndex, J) == CellPass.NullFrequency)
-              {
                 continue;
-              }
-
               break;
+
             case GridDataType.Amplitude:
               if (_GlobalLatestCells.ReadAmplitude(StripeIndex, J) == CellPass.NullAmplitude)
-              {
                 continue;
-              }
-
               break;
+
             case GridDataType.GPSMode:
               if (_GlobalLatestCells.ReadGPSMode(StripeIndex, J) == GPSMode.NoGPS)
-              {
                 continue;
-              }
-
               break;
+
             case GridDataType.MDP:
               if (_GlobalLatestCells.ReadMDP(StripeIndex, J) == CellPass.NullMDP)
-              {
                 continue;
-              }
-
               break;
+
             case GridDataType.CCA:
               if (_GlobalLatestCells.ReadCCA(StripeIndex, J) == CellPass.NullCCA)
-              {
                 continue;
-              }
-
               break;
+
             case GridDataType.Temperature:
               if (_GlobalLatestCells.ReadTemperature(StripeIndex, J) == CellPass.NullMaterialTemperatureValue)
-              {
                 continue;
-              }
-
               break;
+
             case GridDataType.TemperatureDetail:
               if (_GlobalLatestCells.ReadTemperature(StripeIndex, J) == CellPass.NullMaterialTemperatureValue)
-              {
                 continue;
-              }
-
               break;
+
             case GridDataType.CCVPercentChange:
               if (_GlobalLatestCells.ReadCCV(StripeIndex, J) == CellPass.NullCCV)
-              {
                 continue;
-              }
-
               break;
+
             case GridDataType.CCVPercentChangeIgnoredTopNullValue:
               if (_GlobalLatestCells.ReadCCV(StripeIndex, J) == CellPass.NullCCV)
-              {
                 continue;
-              }
-
               break;
           }
 
@@ -809,8 +759,7 @@ namespace VSS.TRex.SubGridTrees
               if (CanUseGlobalLatestCells)
               {
                 // Optimistically assume that the global latest value is acceptable
-                AssignRequiredFilteredPassAttributesFromGlobalLatestCells(
-                  ref AssignmentContext.FilteredValue.FilteredPassData.FilteredPass, StripeIndex, J);
+                AssignRequiredFilteredPassAttributesFromGlobalLatestCells(ref AssignmentContext.FilteredValue.FilteredPassData.FilteredPass, StripeIndex, J);
 
                 // TODO: Review if line below replaced with line above in Ignite POC is good...
                 // AssignmentContext.FilteredValue.FilteredPassData.FilteredPass = _GlobalLatestCells[StripeIndex, J];
@@ -1044,7 +993,6 @@ namespace VSS.TRex.SubGridTrees
       else
         SegmentIterator.IterationDirection = IterationDirection.Backwards;
 
-//            SegmentIterator.SiteModelReference = SiteModel;
       SegmentIterator.SubGrid = _SubGridAsLeaf;
       SegmentIterator.Directory = _SubGridAsLeaf.Directory;
 
@@ -1054,7 +1002,6 @@ namespace VSS.TRex.SubGridTrees
       // Create and configure the cell pass iterator to be used
 
       CellPassIterator = new SubGridSegmentCellPassIterator_NonStatic(SegmentIterator);
-      // TODO ??? CellPassIterator.SiteModelReference = SiteModel;
       CellPassIterator.SetTimeRange(Filter.AttributeFilter.HasTimeFilter,
         Filter.AttributeFilter.StartTime,
         Filter.AttributeFilter.EndTime);
@@ -1263,8 +1210,7 @@ namespace VSS.TRex.SubGridTrees
 
       // Calculate the parameter to control skipping across a rotated grid with respect to
       // a grid projection north oriented subgrid
-      InitialiseRotationAndBounds(AreaControlSet.Rotation, SubGridWorldOriginX, SubGridWorldOriginY, SubGridWorldLimitX,
-        SubGridWorldLimitY);
+      InitialiseRotationAndBounds(AreaControlSet.Rotation, SubGridWorldOriginX, SubGridWorldOriginY, SubGridWorldLimitX, SubGridWorldLimitY);
 
       // Perform the walk across all probed locations determining the cells we want to
       // obtain values for and the probe locations.
@@ -1488,11 +1434,8 @@ namespace VSS.TRex.SubGridTrees
         {
           /* TODO...
           if (_SubGrid != null)
-          {
               _SubGrid.ReleaseLock(ASubGridLockToken);
-          }
           */
-
           //      SIGLogMessage.PublishNoODS(Nil, 'Completed RetrieveSubGrid operation', slmcDebug); {SKIP}
         }
       }

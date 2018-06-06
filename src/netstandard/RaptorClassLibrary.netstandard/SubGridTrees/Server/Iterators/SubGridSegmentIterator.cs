@@ -114,8 +114,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                                  new SubGridCellAddress(IterationState.SubGrid.OriginX, IterationState.SubGrid.OriginY),
                                  RetrieveLatestData, RetrieveAllPasses, // StorageClasses,
                                  IterationState.SubGrid,
-                                 Result /*,
-                                 SiteModelReference*/))
+                                 Result))
                             {
                                 /* TODO: no separate cache - it is in ignite
                                 // The segment is now loaded and available for use and should be touched
