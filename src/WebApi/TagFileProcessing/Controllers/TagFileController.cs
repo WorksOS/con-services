@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -48,13 +47,11 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     [PostRequestVerifier]
     [Route("api/v1/tagfiles")]
     [HttpPost]
-    public TagFilePostResult Post([FromBody]TagFileRequest request)
+    public IActionResult Post([FromBody]TagFileRequest request)
     {
       request.Validate();
 
-      return RequestExecutorContainerFactory
-             .Build<TagFileExecutor>(logger, raptorClient, tagProcessor)
-             .Process(request) as TagFilePostResult;
+      return ExecuteRequest(request);
     }
 
     /// <summary>
@@ -63,7 +60,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     [PostRequestVerifier]
     [Route("api/v2/tagfiles")]
     [HttpPost]
-    public ContractExecutionResult PostTagFile([FromBody]CompactionTagFileRequest request)
+    public IActionResult PostTagFile([FromBody]CompactionTagFileRequest request)
     {
       // Serialize the request ignoring the Data property so not to overwhelm the logs.
       var serializedRequest = JsonConvert.SerializeObject(
@@ -75,12 +72,10 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
 
       var projectId = GetLegacyProjectId(request.ProjectUid).Result;
 
-      var tfRequest = TagFileRequest.CreateTagFile(request.FileName, request.Data, projectId, null, VelociraptorConstants.NO_MACHINE_ID, false, false, request.OrgId);
-      tfRequest.Validate();
+      var tagFileRequest = TagFileRequest.CreateTagFile(request.FileName, request.Data, projectId, null, VelociraptorConstants.NO_MACHINE_ID, false, false, request.OrgId);
+      tagFileRequest.Validate();
 
-      return RequestExecutorContainerFactory
-             .Build<TagFileExecutor>(logger, raptorClient, tagProcessor)
-             .Process(tfRequest);
+      return ExecuteRequest(tagFileRequest);
     }
 
     /// <summary>
@@ -116,6 +111,17 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
 
       log.LogDebug($"PostTagFile (Direct): Failed to import TAG file '{request.FileName}', {result.Message}");
       return StatusCode((int)HttpStatusCode.BadRequest, result);
+    }
+
+    private IActionResult ExecuteRequest(TagFileRequest tfRequest)
+    {
+      var responseObj = RequestExecutorContainerFactory
+                        .Build<TagFileExecutor>(logger, raptorClient, tagProcessor)
+                        .Process(tfRequest);
+
+      return responseObj.Code == 0
+        ? (IActionResult)Ok(responseObj)
+        : BadRequest(responseObj);
     }
   }
 }

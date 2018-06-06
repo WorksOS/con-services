@@ -9,6 +9,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 
@@ -66,9 +67,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         {
           try
           {
-            result = ExportResult.Create(
-              File.ReadAllBytes(BuildFilePath(request.ProjectId ?? -1, request.callerId, request.filename, true)),
-              dataexport.ReturnCode);
+            result = CompactionExportResult.Create(
+              BuildFilePath(request.ProjectId ?? -1, request.callerId, request.filename, true));
           }
           catch (Exception ex)
           {
