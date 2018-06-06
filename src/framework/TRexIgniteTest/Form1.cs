@@ -125,7 +125,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 						)) as TileRenderResponse_Framework;
 
         //TEST: compute profile first (reduces churn in other branches
-				  PerformProfile();
+				 // PerformProfile();
 
 						return response?.TileBitmap;
 				}
