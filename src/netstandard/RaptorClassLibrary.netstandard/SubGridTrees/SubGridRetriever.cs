@@ -342,10 +342,8 @@ namespace VSS.TRex.SubGridTrees
             continue;
 
           if (SeiveFilterInUse || !PrepareGridForCacheStorageIfNoSeiving)
-          {
             if (!ClientGridAsLeaf.ProdDataMap.BitSet(StripeIndex, J)) // This cell does not match the filter mask and should not be processed
               continue;
-          }
 
           // For pass attributes that are maintained on a historical last pass basis
           // (meaning their values bubble up through cell passes where the values of
@@ -595,16 +593,17 @@ namespace VSS.TRex.SubGridTrees
             // is not assigned to the result set to be passed back to the client as it effectively
             // does not exist given this situation.
 
-            ClientGrid.AssignFilteredValue(StripeIndex, J, AssignmentContext);
-
-            if (((_GridDataType == GridDataType.CCV || _GridDataType == GridDataType.CCVPercent)
-                 && ((Dummy_LiftBuildSettings.CCVSummaryTypes == 0) || !Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly)) ||
-                ((_GridDataType == GridDataType.MDP || _GridDataType == GridDataType.MDPPercent)
-                 && ((Dummy_LiftBuildSettings.MDPSummaryTypes == 0) || !Dummy_LiftBuildSettings.MDPSummarizeTopLayerOnly)) ||
-                // ReSharper disable once UseMethodAny.0
-                (CellProfile.Layers.Count() > 0) ||
-                (_GridDataType == GridDataType.CCA || _GridDataType == GridDataType.CCAPercent)) // no CCA settings
+            if (CellProfile == null)
               ClientGrid.AssignFilteredValue(StripeIndex, J, AssignmentContext);
+            else
+            {
+              if (((_GridDataType == GridDataType.CCV || _GridDataType == GridDataType.CCVPercent) && (Dummy_LiftBuildSettings.CCVSummaryTypes == 0 || !Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly)) ||
+                  ((_GridDataType == GridDataType.MDP || _GridDataType == GridDataType.MDPPercent) && (Dummy_LiftBuildSettings.MDPSummaryTypes == 0 || !Dummy_LiftBuildSettings.MDPSummarizeTopLayerOnly)) ||
+                  // ReSharper disable once UseMethodAny.0
+                  CellProfile.Layers.Count() > 0 ||
+                  _GridDataType == GridDataType.CCA || _GridDataType == GridDataType.CCAPercent) // no CCA settings
+                ClientGrid.AssignFilteredValue(StripeIndex, J, AssignmentContext);
+            }
           }
         }
 
