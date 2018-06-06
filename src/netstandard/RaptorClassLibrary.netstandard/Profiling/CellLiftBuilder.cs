@@ -1120,7 +1120,7 @@ namespace VSS.TRex.Profiling
           if (Dummy_LiftBuildSettings.IncludeSuperseded == false)
             ComputeSupercededStatusForLayers();
 
-          for (int I = Cell.Layers.Count() - 1; I >= 0; I++)
+          for (int I = Cell.Layers.Count() - 1; I >= 0; I--)
           {
             if ((Cell.Layers[I].Status & LayerStatus.Superseded) != 0)
               continue;
