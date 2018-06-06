@@ -12,7 +12,7 @@ namespace RaptorClassLibrary.Tests.netcore.Analytics.SpeedStatistics
   {
     private SpeedStatisticsArgument Arg => new SpeedStatisticsArgument()
     {
-      DataModelID = _siteModel.ID,
+      ProjectID = _siteModel.ID,
       Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
       TargetMachineSpeed = new MachineSpeedExtendedRecord(5, 100)
     };
@@ -44,7 +44,7 @@ namespace RaptorClassLibrary.Tests.netcore.Analytics.SpeedStatistics
       var aggregator = _getSpeedAggregator();
 
       Assert.True(aggregator.RequiresSerialisation, "Invalid aggregator value for RequiresSerialisation.");
-      Assert.True(aggregator.SiteModelID == Arg.DataModelID, "Invalid aggregator value for SiteModelID.");
+      Assert.True(aggregator.SiteModelID == Arg.ProjectID, "Invalid aggregator value for SiteModelID.");
       Assert.True(Math.Abs(aggregator.CellSize - _siteModel.Grid.CellSize) < TOLERANCE, "Invalid aggregator value for CellSize.");
       Assert.True(aggregator.TargetMachineSpeed.Max == Arg.TargetMachineSpeed.Max, "Invalid aggregator value for TargetMachineSpeed.Max.");
       Assert.True(aggregator.TargetMachineSpeed.Min == Arg.TargetMachineSpeed.Min, "Invalid aggregator value for TargetMachineSpeed.Min.");
