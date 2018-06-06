@@ -189,7 +189,7 @@ namespace VSS.TRex.Geometry
         /// <param name="p1"></param>
         /// <param name="p2"></param>
         /// <returns></returns>
-        public static double Get3DLength(XYZ p1, XYZ p2) => Math.Sqrt(Math.Pow(p2.X - p1.X, 2) + Math.Pow(p2.Y - p1.Y, 2) + Math.Pow(p2.Z - p1.Y, 2));
+        public static double Get3DLength(XYZ p1, XYZ p2) => Math.Sqrt(Math.Pow(p2.X - p1.X, 2) + Math.Pow(p2.Y - p1.Y, 2) + Math.Pow(p2.Z - p1.Z, 2));
 
         /// <summary>
         /// Calculate dot product of two vectors from Origin to Pt1 and Origin to Pt2
