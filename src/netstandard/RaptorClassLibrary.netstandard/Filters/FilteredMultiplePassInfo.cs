@@ -28,33 +28,34 @@ namespace VSS.TRex.Filters
         /// <param name="PassesOrderedInIncreasingTime"></param>
         public void AddPass(CellPass Pass, bool PassesOrderedInIncreasingTime = true)
         {
-            /*TODO convert when C# equivalent of IFOPT C+ is understood
-             * {$IFOPT C+}
-            {$IFDEF MSWINDOWS}
-              if PassesOrderedInIncreasingTime then
-                begin
-                  if (FPassCount > 0) and(FilteredPassData[FPassCount - 1].FilteredPass.Time > (Pass.Time + OneSecond)) then
-                   Assert(False, Format('Passes not added to filtered pass list in increasing time order (1) (Time1 vs Time2 = %.6f (%s) vs %.6f (%s)',
-                                         [FilteredPassData[FPassCount - 1].FilteredPass.Time,
-                                          FormatCellPassTimeValue(FilteredPassData[FPassCount - 1].FilteredPass.Time, cpftWithMilliseconds, False),
-                                           Pass.Time,
-                                           FormatCellPassTimeValue(Pass.Time, cpftWithMilliseconds, False)])); {SKIP}
-                end
-              else
-                begin
-                  Assert(((FPassCount = 0) or
-                          (FilteredPassData[FPassCount - 1].FilteredPass.Time > (Pass.Time - OneSecond))),
-                         'Passes not added to filtered pass list in decreasing time order'); {SKIP}
-                end;
-            {$ENDIF}
-            {$ENDIF}
-            */
+      /*TODO convert when C# equivalent of IFOPT C+ is understood
+       * {$IFOPT C+}
+      {$IFDEF MSWINDOWS}
+        if PassesOrderedInIncreasingTime then
+          begin
+            if (FPassCount > 0) and(FilteredPassData[FPassCount - 1].FilteredPass.Time > (Pass.Time + OneSecond)) then
+             Assert(False, Format('Passes not added to filtered pass list in increasing time order (1) (Time1 vs Time2 = %.6f (%s) vs %.6f (%s)',
+                                   [FilteredPassData[FPassCount - 1].FilteredPass.Time,
+                                    FormatCellPassTimeValue(FilteredPassData[FPassCount - 1].FilteredPass.Time, cpftWithMilliseconds, False),
+                                     Pass.Time,
+                                     FormatCellPassTimeValue(Pass.Time, cpftWithMilliseconds, False)])); {SKIP}
+          end
+        else
+          begin
+            Assert(((FPassCount = 0) or
+                    (FilteredPassData[FPassCount - 1].FilteredPass.Time > (Pass.Time - OneSecond))),
+                   'Passes not added to filtered pass list in decreasing time order'); {SKIP}
+          end;
+      {$ENDIF}
+      {$ENDIF}
+      */
 
-            // Increase the length of the passes array
+      // Increase the length of the passes array
+          if (FilteredPassData == null)
+            FilteredPassData = new FilteredPassData[TRexConfig.VLPDPSNode_CellPassAggregationListSizeIncrement];
+          else
             if (PassCount == FilteredPassData.Length)
-            {
                 Array.Resize(ref FilteredPassData, PassCount + TRexConfig.VLPDPSNode_CellPassAggregationListSizeIncrement);
-            }
 
             // Add the pass to the list
             FilteredPassData[PassCount].FilteredPass = Pass;
@@ -73,7 +74,7 @@ namespace VSS.TRex.Filters
                Assert(False, Format('Passes not added to filtered pass list in increasing time order (2) (Time1 vs Time2 = %.6f vs %.6f', [FilteredPassData[FPassCount - 1].FilteredPass.Time, Pass.FilteredPass.Time])); { SKIP}
             end
           else
-    begin
+            begin
               Assert(((FPassCount = 0) or
               (FilteredPassData[FPassCount - 1].FilteredPass.Time > (Pass.FilteredPass.Time - OneSecond))),
              'Passes not added to filtered pass list in decreasing time order'); { SKIP}
@@ -82,11 +83,11 @@ namespace VSS.TRex.Filters
             {$ENDIF}
             */
 
-            // Increase the length of the passes array
+          if (FilteredPassData == null)
+            FilteredPassData = new FilteredPassData[TRexConfig.VLPDPSNode_CellPassAggregationListSizeIncrement];
+            else // Increase the length of the passes array
             if (PassCount == FilteredPassData.Length)
-            {
                 Array.Resize(ref FilteredPassData, PassCount + TRexConfig.VLPDPSNode_CellPassAggregationListSizeIncrement);
-            }
 
             // Add the pass to the list
             FilteredPassData[PassCount] = Pass;
@@ -100,7 +101,10 @@ namespace VSS.TRex.Filters
         /// <param name="Source"></param>
         public void Assign(FilteredMultiplePassInfo Source)
         {
-            PassCount = Source.PassCount;
+            if (PassCount < Source.PassCount)
+              FilteredPassData = new FilteredPassData[PassCount];
+
+          PassCount = Source.PassCount;
 
             Array.Copy(Source.FilteredPassData, FilteredPassData, PassCount);
         }
@@ -116,7 +120,7 @@ namespace VSS.TRex.Filters
         /// <summary>
         /// Returns the time of the first cell pass in the set of filtered cell passes
         /// </summary>
-        public DateTime FirstPassTime => FilteredPassData[0].FilteredPass.Time;
+        public DateTime FirstPassTime => PassCount > 0 ? FilteredPassData[0].FilteredPass.Time : DateTime.MinValue;
 
         /// <summary>
         /// Determines the time of the cell pass with the highest elevation in the set of cell passes
@@ -153,7 +157,7 @@ namespace VSS.TRex.Filters
         /// Determine the time of the last cell pass in the set of filtered cell passes
         /// </summary>
         /// <returns></returns>
-        public DateTime LastPassTime() => FilteredPassData[PassCount - 1].FilteredPass.Time;
+        public DateTime LastPassTime() => PassCount > 0 ? FilteredPassData[PassCount - 1].FilteredPass.Time : DateTime.MinValue;
 
 
         /*
