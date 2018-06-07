@@ -2,7 +2,6 @@
 using System;
 using System.IO;
 using System.Reflection;
-using VSS.TRex.Common;
 using VSS.TRex.Filters;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Utilities;
@@ -10,70 +9,25 @@ using VSS.TRex.SubGridTrees.Utilities;
 namespace VSS.TRex.SubGridTrees.Client
 {
   /// <summary>
-  /// The content of each cell in a 'Height and time' client leaf sub grid. Each cell stores an elevation and 
-  /// the time at which the elevation measurement relates to (either the time stamp on a cell pass or the time
-  /// stamp from the surveyed surface that this elevation came from
-  /// </summary>
-  public struct SubGridCellHeightAndTime
-  {
-    /// <summary>
-    /// Measure height at the cell location
-    /// </summary>
-    public float Height { get; set; }
-
-    /// <summary>
-    /// UTC time at which the measurement is relevant
-    /// </summary>
-    public DateTime Time { get; set; }
-
-    /// <summary>
-    /// Set Height and Time values to null
-    /// </summary>
-    public void Clear()
-    {
-      Time = DateTime.MinValue;
-      Height = Consts.NullHeight;
-    }
-
-    /// <summary>
-    /// Sets height and time components of the struct in a single operation
-    /// </summary>
-    /// <param name="height"></param>
-    /// <param name="time"></param>
-    public void Set(float height, DateTime time)
-    {
-      Height = height;
-      Time = time;
-    }
-  }
-
-  /// <summary>
   /// Client leaf sub grid that tracks height and time for each cell
   /// </summary>
   [Serializable]
-  public class ClientHeightAndTimeLeafSubGrid : ClientHeightLeafSubGrid
+  public class ClientHeightAndTimeLeafSubGrid : GenericClientLeafSubGrid<SubGridCellHeightAndTime>
   {
     [NonSerialized] private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     /// <summary>
-    /// Time values for the heights stored in the height and time structure. Times are expressed as the binary DateTime format to promote efficient copying of arrays
+    /// Surveyed surface map records which cells hold cell pass heights that were derived
+    /// from a surveyed surface
     /// </summary>
-    public long[,] Times = new long[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
-
-    /// <summary>
-    /// An array containing the content of null times for all the cell in the subgrid
-    /// </summary>
-    public static long[,] nullTimes = new long[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+    public SubGridTreeBitmapSubGridBits SurveyedSurfaceMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
     /// <summary>
     /// Initialise the null cell values for the client subgrid
     /// </summary>
     static ClientHeightAndTimeLeafSubGrid()
     {
-      DateTime min = DateTime.MinValue;
-      long nullValue = min.ToBinary();
-
-      SubGridUtilities.SubGridDimensionalIterator((x, y) => nullTimes[x, y] = nullValue);
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y].Clear());
     }
 
     /// <summary>
@@ -99,7 +53,8 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.AssignFilteredValue(cellX, cellY, Context);
 
-      Times[cellX, cellY] = Context.FilteredValue.FilteredPassData.FilteredPass.Time.ToBinary();
+      Cells[cellX, cellY].Time = Context.FilteredValue.FilteredPassData.FilteredPass.Time.ToBinary();
+      Cells[cellX, cellY].Height = Context.FilteredValue.FilteredPassData.FilteredPass.Height;
     }
 
     /// <summary>
@@ -108,8 +63,6 @@ namespace VSS.TRex.SubGridTrees.Client
     public override void Clear()
     {
       base.Clear();
-
-      Array.Copy(nullTimes, 0, Times, 0, SubGridTree.SubGridTreeCellsPerSubgrid);
     }
 
     /// <summary>
@@ -121,8 +74,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Write(writer, buffer);
 
-      Buffer.BlockCopy(Times, 0, buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(long));
-      writer.Write(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(long));
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Write(writer));
     }
 
     /// <summary>
@@ -134,8 +86,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Read(reader, buffer);
 
-      reader.Read(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(long));
-      Buffer.BlockCopy(buffer, 0, Times, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(long));
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Read(reader));
     }
   }
 }

@@ -152,7 +152,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                 SubGridUtilities.SubGridDimensionalIterator((I, J) =>
                 {
                   // Check if there is a non null candidate in the earlier @ second filter
-                  if (Subgrid1.Cells[I, J] == Consts.NullHeight && Subgrid2.Cells[I, J] != Consts.NullHeight)
+                  if (Subgrid1.Cells[I, J].Height == Consts.NullHeight && Subgrid2.Cells[I, J].Height != Consts.NullHeight)
                     Subgrid1.Cells[I, J] = Subgrid2.Cells[I, J];
                 });
 

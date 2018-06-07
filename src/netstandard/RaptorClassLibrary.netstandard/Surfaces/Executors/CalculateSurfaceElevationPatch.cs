@@ -170,8 +170,8 @@ namespace VSS.TRex.Surfaces.Executors
                       case SurveyedSurfacePatchType.EarliestSingleElevation:
                       {
 
-                        PatchSingle.Cells[x, y] = (float) z;
-                        PatchSingle.Times[x, y] = AsAtDate;
+                        PatchSingle.Cells[x, y].Height = (float) z;
+                        PatchSingle.Cells[x, y].Time = AsAtDate;
                         break;
                       }
 

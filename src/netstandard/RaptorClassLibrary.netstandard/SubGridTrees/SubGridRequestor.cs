@@ -389,12 +389,12 @@ namespace VSS.TRex.SubGridTrees
                 // surveyed surfaces later (or earlier) than the cell production data
                 // pass time (depending on PassFilter.ReturnEarliestFilteredCellPass)
                 // then there's no point in asking the Design Profiler service for an elevation
-                long[,] Times = ClientGridAsHeightAndTime.Times;
-
                 ProcessingMap.ForEachSetBit((x, y) =>
                 {
-                    if (ClientGridAsHeightAndTime.Cells[x, y] != Consts.NullHeight &&
-                        (!(ReturnEarliestFilteredCellPass ? FilteredSurveyedSurfaces.HasSurfaceEarlierThan(Times[x, y]) : FilteredSurveyedSurfaces.HasSurfaceLaterThan(Times[x, y]))))
+                    if (ClientGridAsHeightAndTime.Cells[x, y].Height != Consts.NullHeight &&
+                        (!(ReturnEarliestFilteredCellPass 
+                          ? FilteredSurveyedSurfaces.HasSurfaceEarlierThan(ClientGridAsHeightAndTime.Cells[x, y].Time) 
+                          : FilteredSurveyedSurfaces.HasSurfaceLaterThan(ClientGridAsHeightAndTime.Cells[x, y].Time))))
                         ProcessingMap.ClearBit(x, y);
                 });
             }
@@ -458,15 +458,13 @@ namespace VSS.TRex.SubGridTrees
                 // IE: It is unsafe to test for null top indicate not-filtered, use the processing map iterators to cover only those cells required
                 ProcessingMap.ForEachSetBit((x, y) =>
                 {
-                    SurveyedSurfaceCellHeight = SurfaceElevations.Cells[x, y];
-                    SurveyedSurfaceCellTime = SurfaceElevations.Times[x, y];
+                    SubGridCellHeightAndTime SurveyedSurfaceCell = SurfaceElevations.Cells[x, y];
 
                     // If we got back a surveyed surface elevation...
-
                     if (ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime)
                     {
-                        ProdHeight = ClientGridAsHeightAndTime.Cells[x, y];
-                        ProdTime = ClientGridAsHeightAndTime.Times[x, y];
+                        ProdHeight = ClientGridAsHeightAndTime.Cells[x, y].Height;
+                        ProdTime = ClientGridAsHeightAndTime.Cells[x, y].Time;
                     }
                     else
                     /*
@@ -484,9 +482,9 @@ namespace VSS.TRex.SubGridTrees
 
                     // Determine if the elevation from the surveyed surface data is required based on the nullness of the production data elevation, and
                     // the relative age of the measured surveyed surface elevation compared with a non-null production data height
-                    SurveyedSurfaceElevationWanted = SurveyedSurfaceCellHeight != Consts.NullHeight &&
+                    SurveyedSurfaceElevationWanted = SurveyedSurfaceCell.Height != Consts.NullHeight &&
                                                      (ProdHeight == Consts.NullHeight ||
-                                                      ReturnEarliestFilteredCellPass ? SurveyedSurfaceCellTime < ProdTime : SurveyedSurfaceCellTime > ProdTime);
+                                                      ReturnEarliestFilteredCellPass ? SurveyedSurfaceCell.Time < ProdTime : SurveyedSurfaceCell.Time > ProdTime);
 
                     if (SurveyedSurfaceElevationWanted)
                     {
@@ -499,7 +497,7 @@ namespace VSS.TRex.SubGridTrees
                         {
                             Filter.AttributeFilter.InitaliaseFilteringForCell((byte)x, (byte)y);
 
-                            if (!Filter.AttributeFilter.FiltersElevation(SurveyedSurfaceCellHeight))
+                            if (!Filter.AttributeFilter.FiltersElevation(SurveyedSurfaceCell.Height))
                             {
                                 // We didn't get a surveyed surface elevation, so clear the bit so that ASNode won't render it as a surveyed surface
                                 ProcessingMap.ClearBit(x, y);
@@ -511,8 +509,8 @@ namespace VSS.TRex.SubGridTrees
                         {
                             if (ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime)
                             {
-                                ClientGridAsHeightAndTime.Cells[x, y] = SurveyedSurfaceCellHeight;
-                                ClientGridAsHeightAndTime.Times[x, y] = SurveyedSurfaceCellTime;
+                                ClientGridAsHeightAndTime.Cells[x, y].Height = SurveyedSurfaceCell.Height;
+                                ClientGridAsHeightAndTime.Cells[x, y].Time = SurveyedSurfaceCell.Time;
                             }
                             /*
                             else

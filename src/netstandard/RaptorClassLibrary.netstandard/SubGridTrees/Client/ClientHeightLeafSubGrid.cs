@@ -9,34 +9,33 @@ using VSS.TRex.SubGridTrees.Utilities;
 
 namespace VSS.TRex.SubGridTrees.Client
 {
+  /// <summary>
+  /// The content of each cell in a height client leaf sub grid. Each cell stores an elevation only.
+  /// </summary>
+  [Serializable]
+  public class ClientHeightLeafSubGrid : GenericClientLeafSubGrid<float>
+  {
+    [NonSerialized] private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+
     /// <summary>
-    /// The content of each cell in a height client leaf sub grid. Each cell stores an elevation only.
+    /// First pass map records which cells hold cell pass heights that were derived
+    /// from the first pass a machine made over the corresponding cell
     /// </summary>
-    [Serializable]
-    public class ClientHeightLeafSubGrid : GenericClientLeafSubGrid<float>
+    public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+
+    /// <summary>
+    /// Surveyed surface map records which cells hold cell pass heights that were derived
+    /// from a surveyed surface
+    /// </summary>
+    public SubGridTreeBitmapSubGridBits SurveyedSurfaceMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+
+    /// <summary>
+    /// Initilise the null cell values for the client subgrid
+    /// </summary>
+    static ClientHeightLeafSubGrid()
     {
-        [NonSerialized]
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
-
-        /// <summary>
-        /// First pass map records which cells hold cell pass heights that were derived
-        /// from the first pass a machine made over the corresponding cell
-        /// </summary>
-        public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
-
-        /// <summary>
-        /// Surveyed surface map records which cells hold cell pass heights that were derived
-        /// from a surveyed surface
-        /// </summary>
-        public SubGridTreeBitmapSubGridBits SurveyedSurfaceMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
-
-      /// <summary>
-      /// Initilise the null cell values for the client subgrid
-      /// </summary>
-      static ClientHeightLeafSubGrid()
-      {
-        SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y] = Consts.NullHeight);
-      }
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y] = Consts.NullHeight);
+    }
 
     /// <summary>
     /// Constructor. Set the grid to HeightAndTime.
@@ -47,104 +46,104 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="cellSize"></param>
     /// <param name="indexOriginOffset"></param>
     public ClientHeightLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
-        {
-            _gridDataType = TRex.Types.GridDataType.Height;
-        }
-        
-        /// <summary>
-        /// Assign contents of another height client lead sub grid to this one
-        /// </summary>
-        /// <param name="heightAndTimeResults"></param>
-        public void Assign(ClientHeightAndTimeLeafSubGrid heightAndTimeResults)
-        {
-            base.Assign(heightAndTimeResults);
+    {
+      _gridDataType = TRex.Types.GridDataType.Height;
+    }
 
-            Buffer.BlockCopy(heightAndTimeResults.Cells, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
+    /// <summary>
+    /// Assign contents of another height client lead sub grid to this one
+    /// </summary>
+    /// <param name="heightAndTimeResults"></param>
+    public void Assign(ClientHeightAndTimeLeafSubGrid heightAndTimeResults)
+    {
+      base.Assign(heightAndTimeResults);
 
-            SurveyedSurfaceMap.Assign(heightAndTimeResults.SurveyedSurfaceMap);
-        }
-        
+      // Can't use block copy here so need to iterate over the cells one by one
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y] = heightAndTimeResults.Cells[x, y].Height);
 
-        /// <summary>
-        /// Assign contents of another height client lead sub grid to this one
-        /// </summary>
-        /// <param name="heightLeaf"></param>
-        public void Assign(ClientHeightLeafSubGrid heightLeaf)
-        {
-            base.Assign(heightLeaf);
-
-            Buffer.BlockCopy(heightLeaf.Cells, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
-
-            SurveyedSurfaceMap.Assign(heightLeaf.SurveyedSurfaceMap);
-        }
+      SurveyedSurfaceMap.Assign(heightAndTimeResults.SurveyedSurfaceMap);
+    }
 
 
-        /// <summary>
-        /// Determine if a filtered height is valid (not null)
-        /// </summary>
-        /// <param name="filteredValue"></param>
-        /// <returns></returns>
-        public override bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue) => filteredValue.FilteredPass.Height == Consts.NullSingle;
+    /// <summary>
+    /// Assign contents of another height client lead sub grid to this one
+    /// </summary>
+    /// <param name="heightLeaf"></param>
+    public void Assign(ClientHeightLeafSubGrid heightLeaf)
+    {
+      base.Assign(heightLeaf);
 
-        /// <summary>
-        /// Assign filtered height value from a filtered pass to a cell
-        /// </summary>
-        /// <param name="cellX"></param>
-        /// <param name="cellY"></param>
-        /// <param name="Context"></param>
-        public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext Context)
-        {
-            Cells[cellX, cellY] = Context.FilteredValue.FilteredPassData.FilteredPass.Height;
-        }
+      Buffer.BlockCopy(heightLeaf.Cells, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
 
-        /// <summary>
-        /// Determines if the height at the cell location is null or not.
-        /// </summary>
-        /// <param name="cellX"></param>
-        /// <param name="cellY"></param>
-        /// <returns></returns>
-        public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY] != Consts.NullHeight;
+      SurveyedSurfaceMap.Assign(heightLeaf.SurveyedSurfaceMap);
+    }
 
-        /// <summary>
-        /// Sets all cell heights to null and clears the first pass and surveyed surface pass maps
-        /// </summary>
-        public override void Clear()
-        {
-            base.Clear();
+    /// <summary>
+    /// Determine if a filtered height is valid (not null)
+    /// </summary>
+    /// <param name="filteredValue"></param>
+    /// <returns></returns>
+    public override bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue) => filteredValue.FilteredPass.Height == Consts.NullSingle;
 
-            FirstPassMap.Clear();
-            SurveyedSurfaceMap.Clear();
-        }
+    /// <summary>
+    /// Assign filtered height value from a filtered pass to a cell
+    /// </summary>
+    /// <param name="cellX"></param>
+    /// <param name="cellY"></param>
+    /// <param name="Context"></param>
+    public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext Context)
+    {
+      Cells[cellX, cellY] = Context.FilteredValue.FilteredPassData.FilteredPass.Height;
+    }
 
-        /// <summary>
-        /// Dumps elevations from subgrid to the log
-        /// </summary>
-        /// <param name="title"></param>
-        public override void DumpToLog(string title)
-        {
-            base.DumpToLog(title);
-            /*
-             * var
-              I, J : Integer;
-              S : String;
-            begin
-              SIGLogMessage.PublishNoODS(Nil, Format('Dump of height map for subgrid %s', [Moniker]) , slmcDebug);
+    /// <summary>
+    /// Determines if the height at the cell location is null or not.
+    /// </summary>
+    /// <param name="cellX"></param>
+    /// <param name="cellY"></param>
+    /// <returns></returns>
+    public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY] != Consts.NullHeight;
 
-              for I := 0 to kSubGridTreeDimension - 1 do
-                begin
-                  S := Format('%2d:', [I]);
+    /// <summary>
+    /// Sets all cell heights to null and clears the first pass and surveyed surface pass maps
+    /// </summary>
+    public override void Clear()
+    {
+      base.Clear();
 
-                  for J := 0 to kSubGridTreeDimension - 1 do
-                    if CellHasValue(I, J) then
-                      S := S + Format('%9.3f', [Cells[I, J]])
-                    else
-                      S := S + '     Null';
+      FirstPassMap.Clear();
+      SurveyedSurfaceMap.Clear();
+    }
 
-                  SIGLogMessage.PublishNoODS(Nil, S, slmcDebug);
-                end;
-            end;
-            */
-        }
+    /// <summary>
+    /// Dumps elevations from subgrid to the log
+    /// </summary>
+    /// <param name="title"></param>
+    public override void DumpToLog(string title)
+    {
+      base.DumpToLog(title);
+      /*
+       * var
+        I, J : Integer;
+        S : String;
+      begin
+        SIGLogMessage.PublishNoODS(Nil, Format('Dump of height map for subgrid %s', [Moniker]) , slmcDebug);
+
+        for I := 0 to kSubGridTreeDimension - 1 do
+          begin
+            S := Format('%2d:', [I]);
+
+            for J := 0 to kSubGridTreeDimension - 1 do
+              if CellHasValue(I, J) then
+                S := S + Format('%9.3f', [Cells[I, J]])
+              else
+                S := S + '     Null';
+
+            SIGLogMessage.PublishNoODS(Nil, S, slmcDebug);
+          end;
+      end;
+      */
+    }
 
 /*
         /// <summary>
@@ -174,45 +173,45 @@ namespace VSS.TRex.SubGridTrees.Client
         }
 */
 
-        /// <summary>
-        /// Write the contents of the Items array using the supplied writer
-        /// This is an unimplemented override; a generic BinaryReader based implementation is not provided. 
-        /// Override to implement if needed.
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="buffer"></param>
-        public override void Write(BinaryWriter writer, byte [] buffer)
-        {
-            base.Write(writer, buffer);
+    /// <summary>
+    /// Write the contents of the Items array using the supplied writer
+    /// This is an unimplemented override; a generic BinaryReader based implementation is not provided. 
+    /// Override to implement if needed.
+    /// </summary>
+    /// <param name="writer"></param>
+    /// <param name="buffer"></param>
+    public override void Write(BinaryWriter writer, byte[] buffer)
+    {
+      base.Write(writer, buffer);
 
-            FirstPassMap.Write(writer, buffer);
-            SurveyedSurfaceMap.Write(writer, buffer);
+      FirstPassMap.Write(writer, buffer);
+      SurveyedSurfaceMap.Write(writer, buffer);
 
-            Buffer.BlockCopy(Cells, 0, buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
-            writer.Write(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
-        }
-
-        /// <summary>
-        /// Fill the items array by reading the binary representation using the provided reader. 
-        /// This is an unimplemented override; a generic BinaryReader based implementation is not provided. 
-        /// Override to implement if needed.
-        /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="buffer"></param>
-        public override void Read(BinaryReader reader, byte[] buffer)
-        {
-            base.Read(reader, buffer);
-
-            FirstPassMap.Read(reader, buffer);
-            SurveyedSurfaceMap.Read(reader, buffer);
-
-            reader.Read(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
-            Buffer.BlockCopy(buffer, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
-        }
-
-        /// <summary>
-        /// Sets all elevations in the height client leaf sub grid to zero (not null)
-        /// </summary>
-        public void SetToZeroHeight() => ForEach((x, y) => Cells[x, y] = 0); // TODO: Optimisation: Use single array assignment
+      Buffer.BlockCopy(Cells, 0, buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
+      writer.Write(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
     }
+
+    /// <summary>
+    /// Fill the items array by reading the binary representation using the provided reader. 
+    /// This is an unimplemented override; a generic BinaryReader based implementation is not provided. 
+    /// Override to implement if needed.
+    /// </summary>
+    /// <param name="reader"></param>
+    /// <param name="buffer"></param>
+    public override void Read(BinaryReader reader, byte[] buffer)
+    {
+      base.Read(reader, buffer);
+
+      FirstPassMap.Read(reader, buffer);
+      SurveyedSurfaceMap.Read(reader, buffer);
+
+      reader.Read(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
+      Buffer.BlockCopy(buffer, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
+    }
+
+    /// <summary>
+    /// Sets all elevations in the height client leaf sub grid to zero (not null)
+    /// </summary>
+    public void SetToZeroHeight() => ForEach((x, y) => Cells[x, y] = 0); // TODO: Optimisation: Use single array assignment
+  }
 }
