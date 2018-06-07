@@ -954,7 +954,7 @@ namespace VSS.TRex.Profiling
         // Build the list of cell passes to be processed into layers
 
         // Create a singleton/temporary array of cell passes and filtered pass flags to support the 
-        // fitst stage of call pass collation ready for analysis.
+        // first stage of call pass collation ready for analysis.
         if (TempPasses == null)
         {
           TempPassesSize = Math.Min(1000, NumCellPassesRemainingToFetch);
