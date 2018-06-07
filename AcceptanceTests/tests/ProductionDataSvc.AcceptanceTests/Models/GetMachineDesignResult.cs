@@ -12,7 +12,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
     public class GetMachineDesignResult : RequestResult, IEquatable<GetMachineDesignResult>
     {
         #region Members
-        public List<DesignNames> designs { get; set; }
+        public List<DesignName> designs { get; set; }
         #endregion
 
         #region Constructor

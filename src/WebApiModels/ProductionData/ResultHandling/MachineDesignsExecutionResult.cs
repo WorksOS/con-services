@@ -11,9 +11,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// The list of the on-machine designs available for the project.
     /// </summary>
     [JsonProperty(PropertyName = "designs")]
-    public List<DesignNames> Designs { get; private set; }
+    public List<DesignName> Designs { get; private set; }
 
-    public static MachineDesignsExecutionResult CreateMachineExecutionResult(List<DesignNames> designNames)
+    public static MachineDesignsExecutionResult CreateMachineExecutionResult(List<DesignName> designNames)
     {
       return new MachineDesignsExecutionResult
       {

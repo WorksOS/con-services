@@ -7,7 +7,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
   public class MachineDesignDetails : MachineDetails, IEquatable<MachineDesignDetails>
   {
     #region Members
-    public DesignNames[] designs { get; set; }
+    public DesignName[] designs { get; set; }
     #endregion
 
     #region Equality test

@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
       if (raptorDesigns != null)
       {
         //For details, need to set the end dates so can test date range
-        var designDetails = new List<DesignNames>();
+        var designDetails = new List<DesignName>();
 
         var machineIds = raptorDesigns.Select(d => d.FMachineID).Distinct();
         foreach (var machineId in machineIds)
@@ -30,10 +30,10 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
           var machineDesigns = raptorDesigns.Where(d => d.FMachineID == machineId).OrderBy(d => d.FStartDate.ToDateTime()).ToList();
           for (int i = 1; i < machineDesigns.Count; i++)
           {
-            designDetails.Add(DesignNames.CreateDesignNames(
+            designDetails.Add(DesignName.CreateDesignNames(
               machineDesigns[i - 1].FName, machineDesigns[i - 1].FID, machineDesigns[i - 1].FMachineID, machineDesigns[i - 1].FStartDate, machineDesigns[i].FStartDate));
           }
-          designDetails.Add(DesignNames.CreateDesignNames(
+          designDetails.Add(DesignName.CreateDesignNames(
             machineDesigns[machineDesigns.Count - 1].FName, machineDesigns[machineDesigns.Count - 1].FID, machineDesigns[machineDesigns.Count - 1].FMachineID, machineDesigns[machineDesigns.Count - 1].FStartDate, DateTime.UtcNow));
         }
         

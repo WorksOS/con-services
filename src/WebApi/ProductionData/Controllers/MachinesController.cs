@@ -162,9 +162,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// Filters out duplicate designs where the id and name match
     /// </summary>
-    private List<DesignNames> RemoveDuplicateDesigns(List<DesignNames> designNames)
+    private List<DesignName> RemoveDuplicateDesigns(List<DesignName> designNames)
     {
-      return designNames.Distinct().OrderBy(d => d.designId).ToList();
+      return designNames.Distinct().OrderBy(d => d.Id).ToList();
     }
 
 
@@ -198,8 +198,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         var filteredDesigns =
           designsResult.Designs.Where(
             design =>
-              design.machineId == machine.AssetId &&
-              IsDateRangeOverlapping(design.startDate, design.endDate, beginUtc, finishUtc)).ToList();
+              design.MachineId == machine.AssetId &&
+              IsDateRangeOverlapping(design.StartDate, design.EndDate, beginUtc, finishUtc)).ToList();
         if (filteredDesigns.Count > 0)
         {
           designDetailsList.Add(MachineDesignDetails.CreateMachineDesignDetails(

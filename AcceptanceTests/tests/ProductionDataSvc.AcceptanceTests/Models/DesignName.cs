@@ -2,13 +2,13 @@
 
 namespace ProductionDataSvc.AcceptanceTests.Models
 {
-  public class DesignNames : IEquatable<DesignNames>
+  public class DesignName : IEquatable<DesignName>
   {
     public string designName { get; set; }
     public long designId { get; set; }
 
     #region Equality test
-    public bool Equals(DesignNames other)
+    public bool Equals(DesignName other)
     {
       if (other == null)
         return false;
@@ -17,7 +17,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
              this.designName == other.designName;
     }
 
-    public static bool operator ==(DesignNames a, DesignNames b)
+    public static bool operator ==(DesignName a, DesignName b)
     {
       if ((object)a == null || (object)b == null)
         return Object.Equals(a, b);
@@ -25,14 +25,14 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       return a.Equals(b);
     }
 
-    public static bool operator !=(DesignNames a, DesignNames b)
+    public static bool operator !=(DesignName a, DesignName b)
     {
       return !(a == b);
     }
 
     public override bool Equals(object obj)
     {
-      return obj is DesignNames && this == (DesignNames)obj;
+      return obj is DesignName && this == (DesignName)obj;
     }
 
     public override int GetHashCode()

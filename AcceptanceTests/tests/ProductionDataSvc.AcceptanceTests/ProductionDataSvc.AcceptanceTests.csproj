@@ -330,7 +330,7 @@
     <Compile Include="Models\CoordinateConversion.cs" />
     <Compile Include="Models\CoordinateSystemFile.cs" />
     <Compile Include="Models\DesignNameRequest.cs" />
-    <Compile Include="Models\DesignNames.cs" />
+    <Compile Include="Models\DesignName.cs" />
     <Compile Include="Models\DesignResult.cs" />
     <Compile Include="Models\ElevationStatistics.cs" />
     <Compile Include="Models\ExportGriddedCSV.cs" />

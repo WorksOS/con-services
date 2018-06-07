@@ -46,10 +46,10 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       GetMachineDesignResult expectedResult = new GetMachineDesignResult();
 
       // Get expected machine designs from feature file
-      List<DesignNames> expectedDesigns = new List<DesignNames>();
+      List<DesignName> expectedDesigns = new List<DesignName>();
       foreach (var design in designs.Rows)
       {
-        expectedDesigns.Add(new DesignNames()
+        expectedDesigns.Add(new DesignName()
         {
           designId = Convert.ToInt64(design["designId"]),
           designName = design["designName"]
