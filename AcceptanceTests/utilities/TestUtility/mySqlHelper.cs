@@ -49,7 +49,7 @@ namespace TestUtility
     public string ExecuteMySqlQueryAndReturnRecordCountResult(string connectionString, string queryString)
     {
       string queryResult = null;
-      Console.WriteLine(connectionString);
+      //Console.WriteLine(connectionString);
       using (var mySqlConnection = new MySqlConnection(connectionString))
       {
         mySqlConnection.Open();
@@ -61,7 +61,7 @@ namespace TestUtility
           queryResult = mySqlDataReader[0].ToString();
         }
       }
-      Console.WriteLine("Result " + queryResult);
+     // Console.WriteLine("Result " + queryResult);
       return queryResult;
     }
 
@@ -73,13 +73,13 @@ namespace TestUtility
     /// <returns>Count of records effected</returns>
     public int ExecuteMySqlInsert(string connectionString, string sqlCommand)
     {
-      Console.WriteLine("ExecuteMySqlInsertcmd" + sqlCommand);
+      //Console.WriteLine("ExecuteMySqlInsertcmd" + sqlCommand);
       using (var mySqlConnection = new MySqlConnection(connectionString))
       {
         mySqlConnection.Open();
         var mySqlCommand = new MySqlCommand(sqlCommand, mySqlConnection);
         var result = mySqlCommand.ExecuteNonQuery();
-        Console.WriteLine("ExecuteMySqlInsert" + result.ToString());
+        //Console.WriteLine("ExecuteMySqlInsert" + result.ToString());
         return result;
       }
     }

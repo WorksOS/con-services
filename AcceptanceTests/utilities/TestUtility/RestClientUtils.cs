@@ -65,6 +65,7 @@ namespace TestUtility
           msg.DisplayWebApi(httpMethod, resourceUri, resp, payloadData);      
           return resp;
         }
+        Console.WriteLine(ex.InnerException.Message);
         msg.DisplayException(ex.Message);
         return string.Empty;
       }
