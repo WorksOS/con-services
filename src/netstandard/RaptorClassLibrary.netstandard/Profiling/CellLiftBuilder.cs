@@ -950,12 +950,19 @@ namespace VSS.TRex.Profiling
             filter over those until the maximum number of cell passes is achieved.
         4.	Perform layer analysis etc on the result of optimisations 1 to 3 above.
         */
-        // Build the list of cell passes to be processed into layers
-        TempPassesSize = Math.Min(1000, NumCellPassesRemainingToFetch);
-        TempPassesSizeDiv2 = TempPassesSize / 2;
 
-        TempPasses = new FilteredPassData[TempPassesSize];
-        TempFilteredPassFlags = new bool[TempPassesSize];
+        // Build the list of cell passes to be processed into layers
+
+        // Create a singleton/temporary array of cell passes and filtered pass flags to support the 
+        // fitst stage of call pass collation ready for analysis.
+        if (TempPasses == null)
+        {
+          TempPassesSize = Math.Min(1000, NumCellPassesRemainingToFetch);
+          TempPassesSizeDiv2 = TempPassesSize / 2;
+
+          TempPasses = new FilteredPassData[TempPassesSize];
+          TempFilteredPassFlags = new bool[TempPassesSize];
+        }
 
         // Override the cell pass iteration direction to backwards as this allows
         // stopping reading of cell passes once the maximum number of passes has been read
@@ -1065,7 +1072,8 @@ namespace VSS.TRex.Profiling
       }
       else
       {
-        Array.Resize(ref Cell.FilteredPassFlags, Cell.Passes.PassCount);
+        if (Cell.Passes.PassCount > Cell.FilteredPassFlags.Length)
+          Array.Resize(ref Cell.FilteredPassFlags, Cell.Passes.PassCount);
       }
 
       BeginCellPassIteration();
