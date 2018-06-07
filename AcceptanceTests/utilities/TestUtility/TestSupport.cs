@@ -1871,6 +1871,7 @@ namespace TestUtility
     public string CallProjectWebApiV4(string routeSuffix, string method, string configJson, string customerUid = null, string jwt = null)
     {
       var uri = GetBaseUri() + routeSuffix;  // "http://localhost:20979/"
+      Console.WriteLine("URI=" + uri);
       var restClient = new RestClientUtil();
       var response = restClient.DoHttpRequest(uri, method, configJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
       return response;

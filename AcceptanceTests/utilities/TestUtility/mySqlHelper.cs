@@ -61,6 +61,7 @@ namespace TestUtility
           queryResult = mySqlDataReader[0].ToString();
         }
       }
+      Console.WriteLine("Result " + queryResult);
       return queryResult;
     }
 
