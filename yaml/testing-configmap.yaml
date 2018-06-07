@@ -28,5 +28,5 @@ data:
   RAPTOR_PROJECT_SETTINGS_API_URL: http://localhost:5001/api/v2
   TCCBASEURL: localhost
   TCCFILESPACEID: localhost
-  WEBAPI_DEBUG_URI: http://localhost:3001/
+  WEBAPI_DEBUG_URI: http://localhost:80/
   WEBAPI_URI: http://localhost:80/

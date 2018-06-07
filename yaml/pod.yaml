@@ -121,7 +121,7 @@ spec:
   - name: service-container
     image: !container!
     ports:
-    - containerPort: 3001
+    - containerPort: 80
     tty: true
     envFrom:
     - configMapRef:
