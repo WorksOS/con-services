@@ -5,6 +5,7 @@ using VSS.TRex.Events;
 using VSS.TRex.Filters;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
 using VSS.TRex.Types;
@@ -1155,7 +1156,7 @@ namespace VSS.TRex.Profiling
 
                     if (ClientGrid.GridDataType == GridDataType.CCVPercentChange ||
                         ClientGrid.GridDataType == GridDataType.CCVPercentChangeIgnoredTopNullValue)
-                      ; // TODO... (ClientGrid as TICClientSubGridTreeLeaf_CCV).IgnoresNullValueForLastCMV = false;
+                      ((ClientCMVLeafSubGrid) ClientGrid).IgnoresNullValueForLastCMV = false;
                     FilteredPassIndex++;
                   }
                 }
@@ -1165,7 +1166,6 @@ namespace VSS.TRex.Profiling
                       ClientGrid.GridDataType == GridDataType.CellProfile ||
                       ClientGrid.GridDataType == GridDataType.CCVPercentChangeIgnoredTopNullValue)
                   {
-                    Result = true;
                     AssignmentContext.PreviousFilteredValue.FilteredPassData.Assign(
                       Cell.Passes.FilteredPassData[FilteredPassIndex]);
                     FilteredPassIndex--;

@@ -16,6 +16,7 @@ namespace VSS.TRex.Rendering.Palettes
             new Transition(2500, Color.SkyBlue)
         };
 
+      
         public SpeedPalette() : base(Transitions)
         {
         }

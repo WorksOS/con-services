@@ -29,7 +29,9 @@ namespace VSS.TRex.SubGridTrees.Client
         /// <param name="indexOriginOffset"></param>
         public ClientTemperatureLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
         {
-            _gridDataType = GridDataType.Temperature;
+          EventPopulationFlags |= PopulationControlFlags.WantsTempWarningLevelMinValues | PopulationControlFlags.WantsTempWarningLevelMaxValues;
+
+          _gridDataType = GridDataType.Temperature;
         }
 
         /// <summary>
@@ -70,7 +72,8 @@ namespace VSS.TRex.SubGridTrees.Client
 	        // TODO: Optimisation: Use PassData_MachineSpeed_Null assignment as in current gen;
 					ForEach((x, y) =>
           {
-							Cells[x, y].MeasuredTemperature = CellPass.NullMaterialTemperatureValue;
+						Cells[x, y].MeasuredTemperature = CellPass.NullMaterialTemperatureValue;
+            Cells[x, y].TemperatureLevels.Clear();
           }); 
 	        
 					FirstPassMap.Clear();

@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using VSS.TRex.Cells;
+using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
@@ -14,21 +15,6 @@ namespace VSS.TRex.Rendering.Displayers
     private ClientMachineTargetSpeedLeafSubGrid SubGrid;
 
     public MachineSpeedExtendedRecord machineSpeedTarget;
-
-    private Color ChooseColour(MachineSpeedExtendedRecord measuredSpeed, MachineSpeedExtendedRecord targetSpeed)
-    {
-      if (targetSpeed.Max == CellPass.NullMachineSpeed)
-        return Color.Empty;
-      else
-      {
-        if (measuredSpeed.Max > targetSpeed.Max)
-          return Color.Purple;
-        else if (measuredSpeed.Min < targetSpeed.Min && measuredSpeed.Max < targetSpeed.Min)
-          return Color.Lime;
-        else
-          return Color.Aqua;
-      }
-    }
 
     protected override bool DoRenderSubGrid(ISubGrid subGrid)
     {
@@ -47,7 +33,7 @@ namespace VSS.TRex.Rendering.Displayers
     {
       var value = SubGrid.Cells[east_col, north_row];
 
-      return value.Max == CellPass.NullMachineSpeed ? Color.Empty : ChooseColour(value, machineSpeedTarget);
+      return value.Max == CellPass.NullMachineSpeed ? Color.Empty : ((SpeedSummaryPalette) Palette).ChooseColour(value, machineSpeedTarget);
     }
 
   }
