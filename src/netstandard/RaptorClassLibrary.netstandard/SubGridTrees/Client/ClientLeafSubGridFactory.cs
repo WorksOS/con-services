@@ -92,14 +92,9 @@ namespace VSS.TRex.SubGridTrees.Client
         /// <returns>An appropriate instance derived from ClientLeafSubgrid</returns>
         public IClientLeafSubGrid GetSubGrid(GridDataType gridDataType)
         {
-            if (ClientLeaves[(int)gridDataType].TryTake(out IClientLeafSubGrid result))
+            if (!ClientLeaves[(int)gridDataType].TryTake(out IClientLeafSubGrid result))
             {
-                result.Clear();
-                return result;
-            }
-            else
-            {
-                return (IClientLeafSubGrid)Activator.CreateInstance(
+                result = (IClientLeafSubGrid)Activator.CreateInstance(
                             typeMap[(int)gridDataType], // IClientLeafSubGrid type
                             null, // Subgrid tree owner
                             null, // Subgrid parent
@@ -108,13 +103,16 @@ namespace VSS.TRex.SubGridTrees.Client
                             SubGridTree.DefaultIndexOriginOffset // IndexOfiginOffset, default to tree default value
                             );
             }
+
+          result.Clear();
+          return result;
         }
 
-        /// <summary>
-        /// Return a client grid previous obtained from the factory so it may reuse it
-        /// </summary>
-        /// <param name="clientGrid"></param>
-        public void ReturnClientSubGrid(ref IClientLeafSubGrid clientGrid)
+    /// <summary>
+    /// Return a client grid previous obtained from the factory so it may reuse it
+    /// </summary>
+    /// <param name="clientGrid"></param>
+    public void ReturnClientSubGrid(ref IClientLeafSubGrid clientGrid)
         {
             if (clientGrid == null)
             {

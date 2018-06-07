@@ -28,7 +28,7 @@ namespace VSS.TRex.GridFabric.Listeners
         private int responseCounter;
 
         [NonSerialized]
-        private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
+        private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.Factory();
 
         /// <summary>
         /// The reference to the task responsible for handling the returned subgrid information from the processing cluster

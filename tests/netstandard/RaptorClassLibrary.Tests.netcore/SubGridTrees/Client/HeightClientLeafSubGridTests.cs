@@ -1,7 +1,9 @@
-﻿using VSS.TRex.Common;
+﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.Tests.netcore.TestFixtures;
+using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests
@@ -11,14 +13,14 @@ namespace VSS.TRex.Tests
     [Fact]
     public void Test_HeightClientLeafSubGridTests_Creation()
     {
-      var clientGrid = new ClientHeightLeafSubGrid(null, null, SubGridTree.SubGridTreeLevels, 1.0, SubGridTree.DefaultIndexOriginOffset);
+      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.Height) as ClientHeightLeafSubGrid;
       Assert.NotNull(clientGrid);
     }
 
     [Fact]
     public void Test_NullCells()
     {
-      var clientGrid = new ClientHeightLeafSubGrid(null, null, SubGridTree.SubGridTreeLevels, 1.0, SubGridTree.DefaultIndexOriginOffset);
+      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.Height) as ClientHeightLeafSubGrid;
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Assert.True(clientGrid.Cells[x, y] == Consts.NullHeight, "Cell not set to correct null value"));
     }
 
