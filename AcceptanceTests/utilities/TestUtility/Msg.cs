@@ -35,11 +35,12 @@ namespace TestUtility
       /// <param name="descriptionOfTest"></param>
       public void Title(string testTag,string descriptionOfTest)
       {
-          currentTest = testTag;
-          Console.WriteLine("Test tag:" + testTag);
-          Console.WriteLine(descriptionOfTest);
-          Console.WriteLine();
-      }    
+        currentTest = testTag;
+        Console.WriteLine(DASH);
+        Console.WriteLine("Test name:" + testTag);
+        Console.WriteLine(descriptionOfTest);
+        Console.WriteLine(DASH);
+    }    
       /// <summary>
       /// Display all the events in the console 
       /// </summary>

@@ -44,6 +44,7 @@ namespace TestUtility
       try
       {
         string responseString = null;
+        Console.WriteLine("Call Web API=" + resourceUri);
         using (var response = (HttpWebResponse) request.GetResponseAsync().Result)
         {
           responseString = GetStringFromResponseStream(response);

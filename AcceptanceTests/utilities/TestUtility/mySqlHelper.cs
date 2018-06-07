@@ -73,13 +73,13 @@ namespace TestUtility
     /// <returns>Count of records effected</returns>
     public int ExecuteMySqlInsert(string connectionString, string sqlCommand)
     {
-      Log.Info(sqlCommand, Log.ContentType.DbQuery);
+      Console.WriteLine("ExecuteMySqlInsertcmd" + sqlCommand);
       using (var mySqlConnection = new MySqlConnection(connectionString))
       {
         mySqlConnection.Open();
         var mySqlCommand = new MySqlCommand(sqlCommand, mySqlConnection);
         var result = mySqlCommand.ExecuteNonQuery();
-        Log.Info(result.ToString(), Log.ContentType.DbQuery);
+        Console.WriteLine("ExecuteMySqlInsert" + result.ToString());
         return result;
       }
     }
@@ -149,7 +149,7 @@ namespace TestUtility
 
     /// <summary>
     /// Check the database to see if the records injected into kafka have reached there. This
-    /// Will loop for 20 times or until it finds the correct answer.
+    /// Will loop for 10 times or until it finds the correct answer.
     /// </summary>
     /// <param name="query"></param>
     /// <param name="eventCount"></param>
@@ -160,7 +160,7 @@ namespace TestUtility
       var resultCount = 0;
 
       msg.DisplayMySqlQuery(query);
-      while (retryCount < 30)
+      while (retryCount < 10)
       {
         var mysqlHelper = new MySqlHelper();
         resultCount = Convert.ToInt32(mysqlHelper.ExecuteMySqlQueryAndReturnRecordCountResult(appConfig.DbConnectionString, query));
