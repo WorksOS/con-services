@@ -15,7 +15,7 @@ namespace ProductionDataSvc.AcceptanceTests.Helpers
                 @"{
                       ""ProjectId"": 1001158,
                       ""SurveyedSurface"": {
-                        ""id"": 222,
+                        ""id"": 111,
                         ""file"": {
                           ""filespaceId"": ""u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01"",
                           ""path"": ""/SurveyedSurfaceAcceptanceTests/1001158"",
@@ -69,21 +69,10 @@ namespace ProductionDataSvc.AcceptanceTests.Helpers
 
         [AfterScenario("requireSurveyedSurface")]
         [AfterScenario("requireOldSurveyedSurface")]
-        public static void DeleteSurveyedSurface111()
-        {
-          DeleteSurveyedSurfaceFile(111);
-        }
-
         [AfterScenario("requireSurveyedSurfaceLargerThanProductionData")]
-        public static void DeleteSurveyedSurface222()
+        private static void DeleteSurveyedSurfaceFile()
         {
-          DeleteSurveyedSurfaceFile(222);
-        }
-
-
-        private static void DeleteSurveyedSurfaceFile(int id)
-        {
-            RaptorServicesClientUtil.DoHttpRequest($"{RaptorClientConfig.ProdSvcBaseUri}/api/v1/projects/1001158/surveyedsurfaces/{id}/delete",
+            RaptorServicesClientUtil.DoHttpRequest($"{RaptorClientConfig.ProdSvcBaseUri}/api/v1/projects/1001158/surveyedsurfaces/111/delete",
               "GET", RestClientConfig.JsonMediaType, null);
         }
   }
