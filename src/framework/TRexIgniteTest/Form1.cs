@@ -1152,9 +1152,9 @@ namespace VSS.TRex.IgnitePOC.TestApp
 
         if (result != null)
           MessageBox.Show($"Machine Speed Summary Results (in {sw.Elapsed}) :\n " +
-                          $"Above Temperature Percentage: {result.AboveTargetPercent} \n " +
-                          $"Within Temperature Percentage Range: {result.WithinTargetPercent} \n " +
-                          $"Below Temperature Percentage: {result.BelowTargetPercent} \n " +
+                          $"Above Machine Speed Percentage: {result.AboveTargetPercent} \n " +
+                          $"Within Machine Speed Percentage Range: {result.WithinTargetPercent} \n " +
+                          $"Below Machine Speed Percentage: {result.BelowTargetPercent} \n " +
                           $"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
       }
       finally

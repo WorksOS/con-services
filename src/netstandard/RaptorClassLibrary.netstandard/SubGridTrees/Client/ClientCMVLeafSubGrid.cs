@@ -32,7 +32,7 @@ namespace VSS.TRex.SubGridTrees.Client
       /// </summary>
       static ClientCMVLeafSubGrid()
       {
-        SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y] = CellPass.NullCCV);
+        SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y].Clear());
       }
 
     /// <summary>
@@ -186,15 +186,9 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Clear();
       // TODO: Optimisation: Use PassData_MachineSpeed_Null assignment as in current gen;
-      ForEach((x, y) =>
-      {
-        Cells[x, y].MeasuredCMV = CellPass.NullCCV;
-       Cells[x, y].TargetCMV = CellPass.NullCCV;
-        Cells[x, y].PreviousMeasuredCMV = CellPass.NullCCV;
-        Cells[x, y].PreviousTargetCMV = CellPass.NullCCV;
-      }); 
+      ForEach((x, y) => Cells[x, y].Clear()); 
 
-        FirstPassMap.Clear();
+      FirstPassMap.Clear();
     }
 
     public void RestoreInitialSettings()
