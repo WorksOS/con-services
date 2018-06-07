@@ -15,9 +15,9 @@ namespace VSS.TRex.SubGridTrees
         public const int kSubGridMajorVersion = 2;
         public const int kSubGridMinorVersion_Latest = 0;
 
-        public static byte[] kICServerSubgridLeafFileMoniker => new byte[] { 73, 67, 83, 71, 76, 69, 65, 70 }; // 'ICSGLEAF' 
+        public static byte[] kICServerSubgridLeafFileMoniker = new byte[] { 73, 67, 83, 71, 76, 69, 65, 70 }; // 'ICSGLEAF' 
 
-        public static byte[] kICServerSubgridDirectoryFileMoniker => new byte[] { 73, 67, 83, 71, 68, 73, 82, 76 }; // 'ICSGDIRL';
+        public static byte[] kICServerSubgridDirectoryFileMoniker = new byte[] { 73, 67, 83, 71, 68, 73, 82, 76 }; // 'ICSGDIRL';
 
 
         public byte[] Identifier = new byte[8];

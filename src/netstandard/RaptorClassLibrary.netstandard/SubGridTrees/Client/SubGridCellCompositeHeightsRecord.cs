@@ -7,6 +7,7 @@ namespace VSS.TRex.SubGridTrees.Client
   /// Stores the heights representing the first measure elevation, last measured elevation,
   /// lowest measured elevation and highest measured elevation spanning a set of cell passes
   /// and optionally a set of survyed surfaces within a time range.
+  /// Note: Do not implement any interfaces on this record
   /// </summary>
   public struct SubGridCellCompositeHeightsRecord
   {
@@ -74,6 +75,18 @@ namespace VSS.TRex.SubGridTrees.Client
       LastHeightTime = reader.ReadInt64();
       LowestHeightTime = reader.ReadInt64();
       HighestHeightTime = reader.ReadInt64();
+    }
+
+    public bool Equals(SubGridCellCompositeHeightsRecord other)
+    {
+      return FirstHeight == other.FirstHeight &&
+        LastHeight == other.LastHeight &&
+        LowestHeight == other.LowestHeight &&
+        HighestHeight == other.HighestHeight &&
+        FirstHeightTime == other.FirstHeightTime &&
+        LastHeightTime == other.LastHeightTime &&
+        LowestHeightTime == other.LowestHeightTime &&
+        HighestHeightTime == other.HighestHeightTime;
     }
   }
 }

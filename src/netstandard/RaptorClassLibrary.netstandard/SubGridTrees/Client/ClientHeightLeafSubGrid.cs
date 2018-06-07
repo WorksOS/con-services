@@ -5,6 +5,7 @@ using System.Reflection;
 using VSS.TRex.Common;
 using VSS.TRex.Filters;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Utilities;
 
 namespace VSS.TRex.SubGridTrees.Client
 {
@@ -29,15 +30,23 @@ namespace VSS.TRex.SubGridTrees.Client
         /// </summary>
         public SubGridTreeBitmapSubGridBits SurveyedSurfaceMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-        /// <summary>
-        /// Constructor. Set the grid to HeightAndTime.
-        /// </summary>
-        /// <param name="owner"></param>
-        /// <param name="parent"></param>
-        /// <param name="level"></param>
-        /// <param name="cellSize"></param>
-        /// <param name="indexOriginOffset"></param>
-        public ClientHeightLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
+      /// <summary>
+      /// Initilise the null cell values for the client subgrid
+      /// </summary>
+      static ClientHeightLeafSubGrid()
+      {
+        SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y] = Consts.NullHeight);
+      }
+
+    /// <summary>
+    /// Constructor. Set the grid to HeightAndTime.
+    /// </summary>
+    /// <param name="owner"></param>
+    /// <param name="parent"></param>
+    /// <param name="level"></param>
+    /// <param name="cellSize"></param>
+    /// <param name="indexOriginOffset"></param>
+    public ClientHeightLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
         {
             _gridDataType = TRex.Types.GridDataType.Height;
         }
@@ -97,33 +106,14 @@ namespace VSS.TRex.SubGridTrees.Client
         public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY] != Consts.NullHeight;
 
         /// <summary>
-        /// An array containing the content of a fully null subgrid
-        /// </summary>
-        public static float[,] nullCells = NullHeights();
-
-        /// <summary>
         /// Sets all cell heights to null and clears the first pass and surveyed surface pass maps
         /// </summary>
         public override void Clear()
         {
-            if (Cells == null)
-            {
-                base.Clear();
-            }
-
-            Buffer.BlockCopy(nullCells, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
+            base.Clear();
 
             FirstPassMap.Clear();
             SurveyedSurfaceMap.Clear();
-        }
-
-        private static float[,] NullHeights()
-        {
-            float[,] result = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
-
-            ForEach((x, y) => result[x, y] = Consts.NullHeight);
-
-            return result;
         }
 
         /// <summary>

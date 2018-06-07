@@ -27,6 +27,14 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
+      /// <summary>
+      /// Initilise the null cell values for the client subgrid
+      /// </summary>
+      static ClientCMVLeafSubGrid()
+      {
+        SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y] = CellPass.NullCCV);
+      }
+
     /// <summary>
     /// CMV subgrids require lift processing...
     /// </summary>
@@ -177,12 +185,11 @@ namespace VSS.TRex.SubGridTrees.Client
     public override void Clear()
     {
       base.Clear();
-
       // TODO: Optimisation: Use PassData_MachineSpeed_Null assignment as in current gen;
       ForEach((x, y) =>
       {
         Cells[x, y].MeasuredCMV = CellPass.NullCCV;
-        Cells[x, y].TargetCMV = CellPass.NullCCV;
+       Cells[x, y].TargetCMV = CellPass.NullCCV;
         Cells[x, y].PreviousMeasuredCMV = CellPass.NullCCV;
         Cells[x, y].PreviousTargetCMV = CellPass.NullCCV;
       }); 
