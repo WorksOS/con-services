@@ -15,10 +15,10 @@ namespace ProductionDataSvc.AcceptanceTests.Helpers
                 @"{
                       ""ProjectId"": 1001158,
                       ""SurveyedSurface"": {
-                        ""id"": 111,
+                        ""id"": 222,
                         ""file"": {
                           ""filespaceId"": ""u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01"",
-                          ""path"": ""/77561/1158"",
+                          ""path"": ""/SurveyedSurfaceAcceptanceTests/1001158"",
                           ""fileName"": ""Original Ground Survey - Dimensions 2012.ttm""
                         },
                         ""offset"": 0.0
@@ -38,7 +38,7 @@ namespace ProductionDataSvc.AcceptanceTests.Helpers
                     ""id"": 111,
                     ""file"": {
                         ""filespaceId"": ""u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01"",
-                        ""path"": ""/77561/1158"",
+                        ""path"": ""/SurveyedSurfaceAcceptanceTests/1001158"",
                         ""fileName"": ""Milling - Milling.ttm""
                     },
                     ""offset"": 0.0
@@ -58,7 +58,7 @@ namespace ProductionDataSvc.AcceptanceTests.Helpers
                     ""id"": 111,
                     ""file"": {
                         ""filespaceId"": ""u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01"",
-                        ""path"": ""/77561/1158"",
+                        ""path"": ""/SurveyedSurfaceAcceptanceTests/1001158"",
                         ""fileName"": ""Milling - Milling.ttm""
                     },
                     ""offset"": 0.0
@@ -69,11 +69,22 @@ namespace ProductionDataSvc.AcceptanceTests.Helpers
 
         [AfterScenario("requireSurveyedSurface")]
         [AfterScenario("requireOldSurveyedSurface")]
-        [AfterScenario("requireSurveyedSurfaceLargerThanProductionData")]
-        public static void DeleteSurveyedSurface()
+        public static void DeleteSurveyedSurface111()
         {
-            RaptorServicesClientUtil.DoHttpRequest(RaptorClientConfig.ProdSvcBaseUri + "/api/v1/projects/1001158/surveyedsurfaces/111/delete",
-                "GET", RestClientConfig.JsonMediaType, null);
+          DeleteSurveyedSurfaceFile(111);
         }
-    }
+
+        [AfterScenario("requireSurveyedSurfaceLargerThanProductionData")]
+        public static void DeleteSurveyedSurface222()
+        {
+          DeleteSurveyedSurfaceFile(222);
+        }
+
+
+        private static void DeleteSurveyedSurfaceFile(int id)
+        {
+            RaptorServicesClientUtil.DoHttpRequest($"{RaptorClientConfig.ProdSvcBaseUri}/api/v1/projects/1001158/surveyedsurfaces/{id}/delete",
+              "GET", RestClientConfig.JsonMediaType, null);
+        }
+  }
 }

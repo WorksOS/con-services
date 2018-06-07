@@ -28,8 +28,8 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         [Given(@"I decide to exclude all surveyed surfaces")]
         public void GivenIDecideToExcludeAllSurveyedSurfaces()
         {
-            // 111 is always the dummy ID specified when a surveyed surface is created
-            prjStatsRequester.CurrentRequest.excludedSurveyedSurfaceIds = new long[] { 111 };
+            // 222 is always the dummy ID specified when a surveyed surface is created
+            prjStatsRequester.CurrentRequest.excludedSurveyedSurfaceIds = new long[] { 222 };
         }
 
         [When(@"I request the project statistics")]
