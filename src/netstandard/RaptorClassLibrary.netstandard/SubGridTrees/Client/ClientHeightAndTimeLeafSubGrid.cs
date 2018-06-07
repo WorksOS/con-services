@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using VSS.TRex.Filters;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Utilities;
 
 namespace VSS.TRex.SubGridTrees.Client
 {
@@ -61,15 +62,31 @@ namespace VSS.TRex.SubGridTrees.Client
         /// </summary>
         public long[,] Times = new long[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
 
+      /// <summary>
+      /// An array containing the content of null times for all the cell in the subgrid
+      /// </summary>
+      public static long[,] nullTimes = new long[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+
+      /// <summary>
+    /// Initialise the null cell values for the client subgrid
+    /// </summary>
+    static ClientHeightAndTimeLeafSubGrid()
+      {
+        DateTime min = DateTime.MinValue;
+        long nullValue = min.ToBinary();
+
+        SubGridUtilities.SubGridDimensionalIterator((x, y) => nullTimes[x, y] = nullValue);
+      }
+
         /// <summary>
-        /// Constructor. Set the grid to HeightAndTime.
-        /// </summary>
-        /// <param name="owner"></param>
-        /// <param name="parent"></param>
-        /// <param name="level"></param>
-        /// <param name="cellSize"></param>
-        /// <param name="indexOriginOffset"></param>
-        public ClientHeightAndTimeLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
+    /// Constructor. Set the grid to HeightAndTime.
+    /// </summary>
+    /// <param name="owner"></param>
+    /// <param name="parent"></param>
+    /// <param name="level"></param>
+    /// <param name="cellSize"></param>
+    /// <param name="indexOriginOffset"></param>
+    public ClientHeightAndTimeLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
         {
             _gridDataType = TRex.Types.GridDataType.HeightAndTime;
         }
@@ -85,23 +102,6 @@ namespace VSS.TRex.SubGridTrees.Client
             base.AssignFilteredValue(cellX, cellY, Context);
 
             Times[cellX, cellY] = Context.FilteredValue.FilteredPassData.FilteredPass.Time.ToBinary();
-        }
-
-        /// <summary>
-        /// An array containing the content of null times for all the cell in the subgrid
-        /// </summary>
-        public static long[,] nullTimes = NullTimes();
-
-        private static long[,] NullTimes()
-        {
-            long[,] result = new long[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
-
-            DateTime min = DateTime.MinValue;
-            long nullValue = min.ToBinary();
-
-            ForEach((x, y) => result[x, y] = nullValue);
-
-            return result;
         }
 
         /// <summary>

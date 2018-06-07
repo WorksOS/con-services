@@ -11,6 +11,14 @@ namespace VSS.TRex.SubGridTrees.Client
   public class ClientCompositeHeightsLeafSubgrid : GenericClientLeafSubGrid<SubGridCellCompositeHeightsRecord>
   {
     /// <summary>
+    /// Initilise the null cell values for the client subgrid
+    /// </summary>
+    static ClientCompositeHeightsLeafSubgrid()
+    {
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y].Clear());
+    }
+
+    /// <summary>
     /// Constructor. Set the grid to HeightAndTime.
     /// </summary>
     /// <param name="owner"></param>
@@ -69,7 +77,10 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Clears all cells in the composite height grid to null heights and dates
     /// </summary>
-    public override void Clear() => SubGridUtilities.SubGridDimensionalIterator((i, j) => Cells[i, j].Clear());
+    public override void Clear()
+    {
+      base.Clear();
+    } 
 
     /// <summary>
     /// Write the contents of the Items array using the supplied writer
