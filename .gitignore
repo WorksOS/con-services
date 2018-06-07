@@ -19,6 +19,9 @@ Thumbs.db
 *.cache
 *.ilk
 *.log
+*.psess
+*.vsp
+*.vspx
 [Bb]in
 [Dd]ebug*/
 *.lib
