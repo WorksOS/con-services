@@ -133,6 +133,8 @@
     </Compile>
     <Compile Include="Models\CompactionCellDatumResult.cs" />
     <Compile Include="Models\CompactionTagFile.cs" />
+    <Compile Include="Models\GetMachineDesignDetailsResult.cs" />
+    <Compile Include="Models\MachineDesignDetails.cs" />
     <Compile Include="StepDefinitions\CompactionCellDatumSteps.cs" />
     <Compile Include="CompactionCmv.feature.cs">
       <AutoGen>True</AutoGen>
@@ -328,7 +330,7 @@
     <Compile Include="Models\CoordinateConversion.cs" />
     <Compile Include="Models\CoordinateSystemFile.cs" />
     <Compile Include="Models\DesignNameRequest.cs" />
-    <Compile Include="Models\DesignNames.cs" />
+    <Compile Include="Models\DesignName.cs" />
     <Compile Include="Models\DesignResult.cs" />
     <Compile Include="Models\ElevationStatistics.cs" />
     <Compile Include="Models\ExportGriddedCSV.cs" />
@@ -822,6 +824,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\CompactionTagFileRequest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\GetMachineDesignsResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\Profiles\ProfileSummaryResponse.json">
