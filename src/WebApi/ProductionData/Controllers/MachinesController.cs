@@ -128,7 +128,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       var id = ProjectID.Create(projectId);
       id.Validate();
-      return RequestExecutorContainerFactory.Build<GetMachineDesignsExecutor>(logger, raptorClient).Process(id) as MachineDesignsExecutionResult;
+      var result = RequestExecutorContainerFactory.Build<GetMachineDesignsExecutor>(logger, raptorClient).Process(id) as MachineDesignsExecutionResult;
+      return CreateUniqueDesignList(result);
     }
 
     // GET: api/Machines/Designs
@@ -146,8 +147,26 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       var projectId = await (User as RaptorPrincipal).GetLegacyProjectId(projectUid);
       var id = ProjectID.Create(projectId, projectUid);
       id.Validate();
-      return RequestExecutorContainerFactory.Build<GetMachineDesignsExecutor>(logger, raptorClient).Process(id) as MachineDesignsExecutionResult;
+      var result = RequestExecutorContainerFactory.Build<GetMachineDesignsExecutor>(logger, raptorClient).Process(id) as MachineDesignsExecutionResult;
+      return CreateUniqueDesignList(result);
     }
+
+    /// <summary>
+    /// Creates a unique list of all designs for all machines
+    /// </summary>
+    private MachineDesignsExecutionResult CreateUniqueDesignList(MachineDesignsExecutionResult result)
+    {
+      return MachineDesignsExecutionResult.CreateMachineExecutionResult(RemoveDuplicateDesigns(result.Designs));
+    }
+
+    /// <summary>
+    /// Filters out duplicate designs where the id and name match
+    /// </summary>
+    private List<DesignNames> RemoveDuplicateDesigns(List<DesignNames> designNames)
+    {
+      return designNames.Distinct().OrderBy(d => d.designId).ToList();
+    }
+
 
     /// <summary>
     /// Gets On Machine designs by machine and date range for the selected project
@@ -177,15 +196,15 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       foreach (var machine in machineResult.MachineStatuses)
       {
         var filteredDesigns =
-          designsResult.DesignDetails.Where(
+          designsResult.Designs.Where(
             design =>
-              design.FMachineID == machine.AssetId &&
-              IsDateRangeOverlapping(design.FStartDate, design.FEndDate, beginUtc, finishUtc)).ToList();
+              design.machineId == machine.AssetId &&
+              IsDateRangeOverlapping(design.startDate, design.endDate, beginUtc, finishUtc)).ToList();
         if (filteredDesigns.Count > 0)
         {
           designDetailsList.Add(MachineDesignDetails.CreateMachineDesignDetails(
             machine.AssetId, machine.MachineName, machine.IsJohnDoe,
-            filteredDesigns.Select(f => DesignNames.CreateDesignNames(f.FName, f.FID)).ToArray()));
+            RemoveDuplicateDesigns(filteredDesigns).ToArray()));
         }
       }
       return MachineDesignDetailsExecutionResult.Create(designDetailsList.ToArray());

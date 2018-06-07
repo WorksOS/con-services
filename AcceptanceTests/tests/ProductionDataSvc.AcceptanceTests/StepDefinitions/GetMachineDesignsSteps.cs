@@ -12,6 +12,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
   public class GetMachineDesignsSteps
   {
     private Getter<GetMachineDesignResult> machineDesignRequester;
+    private Getter<GetMachineDesignDetailsResult> machineDesignDetailsRequester;
 
     [Given(@"the Machine Design service URI ""(.*)""")]
     public void GivenTheMachineDesignServiceURI(string uri)
@@ -24,14 +25,20 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     public void GivenTheMachineDesignDetailsServiceURIAndTheResultFile(string uri, string resultFileName)
     {
       uri = RaptorClientConfig.ProdSvcBaseUri + uri;
-      machineDesignRequester = new Getter<GetMachineDesignResult>(uri, resultFileName);
+      machineDesignDetailsRequester = new Getter<GetMachineDesignDetailsResult>(uri, resultFileName);
     }
 
 
     [Given(@"a projectUid ""(.*)"" and route ""(.*)""")]
     public void GivenAProjectUidAndRoute(string projectUid, string route)
     {
-      machineDesignRequester.Uri = string.Format(machineDesignRequester.Uri, projectUid, route);
+      machineDesignDetailsRequester.Uri = string.Format(machineDesignDetailsRequester.Uri, projectUid, route);
+    }
+
+    [When(@"I request machine design details")]
+    public void WhenIRequestMachineDesignDetails()
+    {
+      machineDesignDetailsRequester.DoValidRequest();
     }
 
     [Given(@"a project Id (.*)")]
@@ -84,19 +91,19 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [Given(@"startUTC ""(.*)""")]
     public void GivenStartUTC(string startUTC)
     {
-      machineDesignRequester.QueryString.Add("startUtc", startUTC);
+      machineDesignDetailsRequester.QueryString.Add("startUtc", startUTC);
     }
 
     [Given(@"endUTC ""(.*)""")]
     public void GivenEndUTC(string endUTC)
     {
-      machineDesignRequester.QueryString.Add("endUtc", endUTC);
+      machineDesignDetailsRequester.QueryString.Add("endUtc", endUTC);
     }
 
     [Then(@"the result should match the ""(.*)"" from the repository")]
     public void ThenTheResultShouldMatchTheFromTheRepository(string resultName)
     {
-      Assert.AreEqual(machineDesignRequester.ResponseRepo[resultName], machineDesignRequester.CurrentResponse);
+      Assert.AreEqual(machineDesignDetailsRequester.ResponseRepo[resultName], machineDesignDetailsRequester.CurrentResponse);
     }
 
   }

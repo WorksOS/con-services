@@ -201,7 +201,7 @@
         "designName": "we love u juarne",
         "designId": 49
       }
-    ],  
+    ],
     "Code": 0,
     "Message": "success"
   },
@@ -210,12 +210,203 @@
       {
         "designs": [
           {
-            "designName": "",
+            "designName": "Small Site Road 29 10 2012",
             "designId": 1
           }
         ],
-        "assetID": 1111,
-        "machineName": "COMPACTOR",
+        "assetID": 4,
+        "machineName": "D61 SATD PE",
+        "isJohnDoe": false
+      },
+      {
+        "designs": [
+          {
+            "designName": "Canal_DC 02",
+            "designId": 2
+          }
+        ],
+        "assetID": 6,
+        "machineName": "KOMATSU PC210",
+        "isJohnDoe": false
+      },
+      {
+        "designs": [
+          {
+            "designName": "BC12",
+            "designId": 3
+          },
+          {
+            "designName": "1",
+            "designId": 10
+          }
+        ],
+        "assetID": 1,
+        "machineName": "ACOM",
+        "isJohnDoe": false
+      },
+      {
+        "designs": [
+          {
+            "designName": "Trimble Command Center",
+            "designId": 4
+          }
+        ],
+        "assetID": 7,
+        "machineName": "LIEBHERR 924C",
+        "isJohnDoe": false
+      },
+      {
+        "designs": [
+          {
+            "designName": "MAP 01",
+            "designId": 5
+          }
+        ],
+        "assetID": 3,
+        "machineName": "CAT CS56B",
+        "isJohnDoe": false
+      },
+      {
+        "designs": [
+          {
+            "designName": "Design",
+            "designId": 6
+          }
+        ],
+        "assetID": 9,
+        "machineName": "VOLVO G946B",
+        "isJohnDoe": false
+      },
+      {
+        "designs": [
+          {
+            "designName": "Trimble Road with Ref Surfaces v2",
+            "designId": 7
+          }
+        ],
+        "assetID": 2,
+        "machineName": "CASE CX160C",
+        "isJohnDoe": false
+      },
+      {
+        "designs": [
+          {
+            "designName": "SLOPE 02",
+            "designId": 8
+          }
+        ],
+        "assetID": 8,
+        "machineName": "LIEBHERR724",
+        "isJohnDoe": false
+      },
+      {
+        "designs": [
+          {
+            "designName": "Trimble Road 29 10 2012",
+            "designId": 9
+          }
+        ],
+        "assetID": 5,
+        "machineName": "JD 764 CV",
+        "isJohnDoe": false
+      },
+      {
+        "designs": [
+          {
+            "designName": "BC12",
+            "designId": 3
+          }
+        ],
+        "assetID": 1244020666025812,
+        "machineName": "ACOM",
+        "isJohnDoe": false
+      },
+      {
+        "designs": [
+          {
+            "designName": "Trimble Road 29 10 2012",
+            "designId": 9
+          }
+        ],
+        "assetID": 1219470261494388,
+        "machineName": "JD 764 CV",
+        "isJohnDoe": false
+      },
+      {
+        "designs": [
+          {
+            "designName": "Trimble Command Center",
+            "designId": 4
+          }
+        ],
+        "assetID": 796620067684243,
+        "machineName": "LIEBHERR 924C",
+        "isJohnDoe": false
+      },
+      {
+        "designs": [
+          {
+            "designName": "SLOPE 02",
+            "designId": 8
+          }
+        ],
+        "assetID": 2894079741131753,
+        "machineName": "LIEBHERR724",
+        "isJohnDoe": false
+      },
+      {
+        "designs": [
+          {
+            "designName": "Design",
+            "designId": 6
+          }
+        ],
+        "assetID": 4250986182719752,
+        "machineName": "VOLVO G946B",
+        "isJohnDoe": false
+      },
+      {
+        "designs": [
+          {
+            "designName": "Small Site Road 29 10 2012",
+            "designId": 1
+          }
+        ],
+        "assetID": 3385342403242252,
+        "machineName": "D61 SATD PE",
+        "isJohnDoe": false
+      },
+      {
+        "designs": [
+          {
+            "designName": "Trimble Road with Ref Surfaces v2",
+            "designId": 7
+          }
+        ],
+        "assetID": 4101662153056458,
+        "machineName": "CASE CX160C",
+        "isJohnDoe": false
+      },
+      {
+        "designs": [
+          {
+            "designName": "Canal_DC 02",
+            "designId": 2
+          }
+        ],
+        "assetID": 751877972662699,
+        "machineName": "KOMATSU PC210",
+        "isJohnDoe": false
+      },
+      {
+        "designs": [
+          {
+            "designName": "MAP 01",
+            "designId": 5
+          }
+        ],
+        "assetID": 3517551388324974,
+        "machineName": "CAT CS56B",
         "isJohnDoe": false
       }
     ],
@@ -227,12 +418,120 @@
       {
         "designs": [
           {
-            "designName": "",
-            "designId": 1
+            "designName": "Canal_DTM",
+            "designId": 2
+          },
+          {
+            "designName": "Canal_Road",
+            "designId": 3
+          },
+          {
+            "designName": "Canal_DC",
+            "designId": 6
+          },
+          {
+            "designName": "Canal2-DC",
+            "designId": 7
           }
         ],
-        "assetID": 1111,
-        "machineName": "COMPACTOR",
+        "assetID": 751877972662699,
+        "machineName": "KOMATSU PC210",
+        "isJohnDoe": false
+      },
+      {
+        "designs": [
+          {
+            "designName": "Trimble Command Center",
+            "designId": 16
+          }
+        ],
+        "assetID": 796620067684243,
+        "machineName": "LIEBHERR 924C",
+        "isJohnDoe": false
+      },
+      {
+        "designs": [
+          {
+            "designName": "Trimble Road 29 10 2012",
+            "designId": 26
+          },
+          {
+            "designName": "LEVEL 05",
+            "designId": 32
+          },
+          {
+            "designName": "SLOPE 03",
+            "designId": 33
+          }
+        ],
+        "assetID": 1219470261494388,
+        "machineName": "JD 764 CV",
+        "isJohnDoe": false
+      },
+      {
+        "designs": [
+          {
+            "designName": "BC12",
+            "designId": 37
+          }
+        ],
+        "assetID": 1244020666025812,
+        "machineName": "CAT ACOM",
+        "isJohnDoe": false
+      },
+      {
+        "designs": [
+          {
+            "designName": "Building Pad",
+            "designId": 38
+          }
+        ],
+        "assetID": 2894079741131753,
+        "machineName": "LIEBHERR724",
+        "isJohnDoe": false
+      },
+      {
+        "designs": [
+          {
+            "designName": "Trimble Command Center",
+            "designId": 16
+          }
+        ],
+        "assetID": 3385342403242252,
+        "machineName": "D61 SATD PE",
+        "isJohnDoe": false
+      },
+      {
+        "designs": [
+          {
+            "designName": "MAP 01",
+            "designId": 8
+          }
+        ],
+        "assetID": 3517551388324974,
+        "machineName": "CAT CS56B",
+        "isJohnDoe": false
+      },
+      {
+        "designs": [
+          {
+            "designName": "Trimble Road 29 10 2012",
+            "designId": 26
+          }
+        ],
+        "assetID": 4101662153056458,
+        "machineName": "CASE CX160C",
+        "isJohnDoe": false
+      },
+      {
+        "designs": [
+          {
+            "designName": "Design",
+            "designId": 48
+          }
+        ],
+        "assetID": 4250986182719752,
+        "machineName": "VOLVO G946B",
         "isJohnDoe": false
       }
     ],

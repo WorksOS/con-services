@@ -133,6 +133,8 @@
     </Compile>
     <Compile Include="Models\CompactionCellDatumResult.cs" />
     <Compile Include="Models\CompactionTagFile.cs" />
+    <Compile Include="Models\GetMachineDesignDetailsResult.cs" />
+    <Compile Include="Models\MachineDesignDetails.cs" />
     <Compile Include="StepDefinitions\CompactionCellDatumSteps.cs" />
     <Compile Include="CompactionCmv.feature.cs">
       <AutoGen>True</AutoGen>
