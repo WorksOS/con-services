@@ -13,6 +13,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
   {
     private Getter<GetMachineDesignResult> machineDesignRequester;
     private Getter<GetMachineDesignDetailsResult> machineDesignDetailsRequester;
+    private string operation;
 
     [Given(@"the Machine Design service URI ""(.*)""")]
     public void GivenTheMachineDesignServiceURI(string uri)
@@ -21,89 +22,136 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       machineDesignRequester = new Getter<GetMachineDesignResult>(uri);
     }
 
-    [Given(@"the Machine Design Details service URI ""(.*)"" and the result file ""(.*)""")]
-    public void GivenTheMachineDesignDetailsServiceURIAndTheResultFile(string uri, string resultFileName)
-    {
-      uri = RaptorClientConfig.ProdSvcBaseUri + uri;
-      machineDesignDetailsRequester = new Getter<GetMachineDesignDetailsResult>(uri, resultFileName);
-    }
-
-
-    [Given(@"a projectUid ""(.*)"" and route ""(.*)""")]
-    public void GivenAProjectUidAndRoute(string projectUid, string route)
-    {
-      machineDesignDetailsRequester.Uri = string.Format(machineDesignDetailsRequester.Uri, projectUid, route);
-    }
-
-    [When(@"I request machine design details")]
-    public void WhenIRequestMachineDesignDetails()
-    {
-      machineDesignDetailsRequester.DoValidRequest();
-    }
-
     [Given(@"a project Id (.*)")]
     public void GivenAProjectId(int projectId)
     {
-        machineDesignRequester.Uri = String.Format(machineDesignRequester.Uri, projectId);
+      machineDesignRequester.Uri = String.Format(machineDesignRequester.Uri, projectId);
     }
 
     [When(@"I request machine designs")]
     public void WhenIRequestMachineDesigns()
     {
-        machineDesignRequester.DoValidRequest();
+      machineDesignRequester.DoValidRequest();
     }
 
     [When(@"I request machine designs expecting Bad Request")]
     public void WhenIRequestMachineDesignsExpectingBadRequest()
     {
-        machineDesignRequester.DoInvalidRequest(HttpStatusCode.BadRequest);
+      machineDesignRequester.DoInvalidRequest(HttpStatusCode.BadRequest);
     }
 
     [Then(@"the following machine designs should be returned")]
     public void ThenTheFollowingMachineDesignsShouldBeReturned(Table designs)
     {
-        GetMachineDesignResult expectedResult = new GetMachineDesignResult();
+      GetMachineDesignResult expectedResult = new GetMachineDesignResult();
 
-        // Get expected machine designs from feature file
-        List<DesignNames> expectedDesigns = new List<DesignNames>();
-        foreach (var design in designs.Rows)
+      // Get expected machine designs from feature file
+      List<DesignNames> expectedDesigns = new List<DesignNames>();
+      foreach (var design in designs.Rows)
+      {
+        expectedDesigns.Add(new DesignNames()
         {
-            expectedDesigns.Add(new DesignNames()
-            { 
-                designId = Convert.ToInt64(design["designId"]),
-                designName = design["designName"]
-            });
-        }
+          designId = Convert.ToInt64(design["designId"]),
+          designName = design["designName"]
+        });
+      }
 
-        expectedResult.designs = expectedDesigns;
+      expectedResult.designs = expectedDesigns;
 
-        Assert.AreEqual(expectedResult, machineDesignRequester.CurrentResponse);
+      Assert.AreEqual(expectedResult, machineDesignRequester.CurrentResponse);
     }
 
     [Then(@"the response should contain Code (.*) and Message ""(.*)""")]
     public void ThenTheResponseShouldContainCodeAndMessage(int code, string message)
     {
-        Assert.IsTrue(machineDesignRequester.CurrentResponse.Code == code && 
-            machineDesignRequester.CurrentResponse.Message == message);
+      Assert.IsTrue(machineDesignRequester.CurrentResponse.Code == code &&
+                    machineDesignRequester.CurrentResponse.Message == message);
     }
 
+    [Given(@"the Machine Design Details service URI ""(.*)"" for operation ""(.*)"" and the result file ""(.*)""")]
+    public void GivenTheMachineDesignDetailsServiceURIForOperationAndTheResultFile(string uri, string operation, string resultFileName)
+    {
+      uri = RaptorClientConfig.ProdSvcBaseUri + uri;
+      this.operation = operation;
+      switch (operation)
+      {
+        case "machinedesigns":
+          machineDesignRequester = new Getter<GetMachineDesignResult>(uri, resultFileName);
+          break;
+        case "machinedesigndetails":
+          machineDesignDetailsRequester = new Getter<GetMachineDesignDetailsResult>(uri, resultFileName);
+          break;
+      }
+    }
+
+    [Given(@"a projectUid ""(.*)""")]
+    public void GivenAProjectUid(string projectUid)
+    {
+      switch (operation)
+      {
+        case "machinedesigns":
+          machineDesignRequester.Uri = String.Format(machineDesignRequester.Uri, projectUid);
+          break;
+        case "machinedesigndetails":
+          machineDesignDetailsRequester.Uri = String.Format(machineDesignDetailsRequester.Uri, projectUid);
+          break;
+      }
+    }
 
     [Given(@"startUTC ""(.*)""")]
     public void GivenStartUTC(string startUTC)
     {
-      machineDesignDetailsRequester.QueryString.Add("startUtc", startUTC);
+      switch (operation)
+      {
+        case "machinedesigns":
+          //Dates don't apply to machine designs end point only to details
+          break;
+        case "machinedesigndetails":
+          machineDesignDetailsRequester.QueryString.Add("startUtc", startUTC);
+          break;
+      }
     }
 
     [Given(@"endUTC ""(.*)""")]
     public void GivenEndUTC(string endUTC)
     {
-      machineDesignDetailsRequester.QueryString.Add("endUtc", endUTC);
+      switch (operation)
+      {
+        case "machinedesigns":
+          //Dates don't apply to machine designs end point only to details
+          break;
+        case "machinedesigndetails":
+          machineDesignDetailsRequester.QueryString.Add("endUtc", endUTC);
+          break;
+      }
+    }
+
+    [When(@"I request machine design details")]
+    public void WhenIRequestMachineDesignDetails()
+    {
+      switch (operation)
+      {
+        case "machinedesigns":
+          machineDesignRequester.DoValidRequest();
+          break;
+        case "machinedesigndetails":
+          machineDesignDetailsRequester.DoValidRequest();
+          break;
+      }
     }
 
     [Then(@"the result should match the ""(.*)"" from the repository")]
     public void ThenTheResultShouldMatchTheFromTheRepository(string resultName)
     {
-      Assert.AreEqual(machineDesignDetailsRequester.ResponseRepo[resultName], machineDesignDetailsRequester.CurrentResponse);
+      switch (operation)
+      {
+        case "machinedesigns":
+          Assert.AreEqual(machineDesignRequester.ResponseRepo[resultName], machineDesignRequester.CurrentResponse);
+          break;
+        case "machinedesigndetails":
+          Assert.AreEqual(machineDesignDetailsRequester.ResponseRepo[resultName], machineDesignDetailsRequester.CurrentResponse);
+          break;
+      }
     }
 
   }
