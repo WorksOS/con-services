@@ -5,6 +5,7 @@ using VSS.TRex.Filters;
 using VSS.TRex.Profiling;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
+using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Client
@@ -40,8 +41,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="level"></param>
     /// <param name="cellSize"></param>
     /// <param name="indexOriginOffset"></param>
-    public ClientCMVLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset, 
-      bool wantsPreviousCCVValue = false, bool ignoresNullValueForLastCMV = true) : base(owner, parent, level, cellSize, indexOriginOffset)
+    public ClientCMVLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
     {
       EventPopulationFlags |= 
         PopulationControlFlags.WantsTargetCCAValues | 
@@ -57,8 +57,8 @@ namespace VSS.TRex.SubGridTrees.Client
         PopulationControlFlags.WantsEventMinElevMappingValues |
         PopulationControlFlags.WantsEventInAvoidZoneStateValues;
 
-      WantsPreviousCCVValue = wantsPreviousCCVValue;
-      IgnoresNullValueForLastCMV = ignoresNullValueForLastCMV;
+      WantsPreviousCCVValue = false;
+      IgnoresNullValueForLastCMV = true;
 
       if (WantsPreviousCCVValue)
       {
@@ -265,10 +265,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
       FirstPassMap.Write(writer, buffer);
 
-      Buffer.BlockCopy(Cells, 0, buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(short));
-      writer.Write(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(short));
-
-      //SubGridUtilities.SubGridDimensionalIterator((x, y) => writer.Write(Cells[x, y]));
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Write(writer));
     }
 
     /// <summary>
@@ -284,10 +281,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
       FirstPassMap.Read(reader, buffer);
 
-      reader.Read(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(short));
-      Buffer.BlockCopy(buffer, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(short));
-
-      //SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y] = reader.ReadInt16());
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Read(reader));
     }
   }
 }
