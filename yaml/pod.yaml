@@ -121,13 +121,7 @@ spec:
   - name: service-container
     image: !container!
     ports:
-    - containerPort: 80
-    livenessProbe:
-      tcpSocket:
-        port: 80
-    readinessProbe:
-      tcpSocket:
-        port: 80
+    - containerPort: 3001
     tty: true
     envFrom:
     - configMapRef:
