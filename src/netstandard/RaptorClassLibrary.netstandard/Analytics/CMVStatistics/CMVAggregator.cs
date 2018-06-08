@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Analytics.Foundation.Aggregators;
+﻿using System;
+using VSS.TRex.Analytics.Foundation.Aggregators;
 using VSS.TRex.Cells;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -72,11 +73,62 @@ namespace VSS.TRex.Analytics.CMVStatistics
       if (!(subGrids[0][0] is ClientCMVLeafSubGrid SubGrid))
         return;
 
-      var currentTargetCCV = CellPass.NullCCV;
+      var currentTargetCMV = CellPass.NullCCV;
 
       SubGridUtilities.SubGridDimensionalIterator((I, J) =>
       {
+        var cmvValue = SubGrid.Cells[I, J];
 
+        if (cmvValue.MeasuredCMV != CellPass.NullCCV) // Is there a measured value to test?..
+        {
+          if (OverrideMachineCMV) // Are we overriding target values?..
+          {
+            if (LastTargetCMV != OverridingMachineCMV)
+              LastTargetCMV = OverridingMachineCMV;
+            if (currentTargetCMV != OverridingMachineCMV)
+              currentTargetCMV = OverridingMachineCMV;
+          }
+          else
+          {
+            // Using the machine target values test if target varies...
+            if (IsTargetValueConstant && cmvValue.TargetCMV != CellPass.NullCCV && LastTargetCMV != CellPass.NullCCV) // Values a re all good to test...
+              IsTargetValueConstant = LastTargetCMV == cmvValue.TargetCMV; // Check to see if target value varies...
+
+            if (LastTargetCMV != cmvValue.TargetCMV && cmvValue.TargetCMV != CellPass.NullCCV)
+              LastTargetCMV = cmvValue.TargetCMV; // LastTargetCMV holds last good value...
+
+            if (currentTargetCMV != cmvValue.TargetCMV) // Set current target value...
+              currentTargetCMV = cmvValue.TargetCMV;
+          }
+
+          if (currentTargetCMV != CellPass.NullCCV) // If target is not null then do statistics...
+          { 
+            var cmvRangeMin = Math.Round(LastTargetCMV * CMVPercentageRange.Min / 100);
+            var cmvRangeMax = Math.Round(LastTargetCMV * CMVPercentageRange.Max / 100);
+
+            SummaryCellsScanned++;
+            if (cmvValue.MeasuredCMV > cmvRangeMax)
+              CellsScannedOverTarget++;
+            else if (cmvValue.MeasuredCMV < cmvRangeMin)
+              CellsScannedUnderTarget++;
+            else
+              CellsScannedAtTarget++;
+          }
+          else // We have data but no target data to do a summary...
+            MissingTargetValue = true; // Flag to issue a warning to user...
+
+          // TODO: When CMV details is to be implemented...
+          //switch (SubGrid.GridDataType)
+          //{
+          //  case GridDataType.CCV:
+          //    Transitions.IncrementCountOfTransition(cmvValue.MeasuredCMV);
+          //    break;
+          //  case GridDataType.CCVPercent:
+          //    if CCVCellValueToDisplay(cmvValue.MeasuredCMV, LastTargetCMV, SubGrid.GridDataType, LiftBuildSettings, CCVPercentValue) then
+          //    Transitions.IncrementCountOfTransition(CCVPercentValue);
+          //    break;
+          //}
+        }
       });
     }
   }

@@ -47,7 +47,7 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 
 			if (IsTargetValueConstant && other.SummaryCellsScanned > 0) // if we need to check for a difference
 			{
-				// compare grouped results to determine if target varies
+				// Compare grouped results to determine if target varies
 				if (aggregator.LastTempRangeMax != CellPass.NullMaterialTemperatureValue && LastTempRangeMax != CellPass.NullMaterialTemperatureValue) // If the data is valid...
 				{
 					if (LastTempRangeMax != aggregator.LastTempRangeMax) // Compare...
@@ -88,7 +88,7 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 			SubGridUtilities.SubGridDimensionalIterator((I, J) =>
 			{
 				var temperatureValue = SubGrid.Cells[I, J];
-				if (temperatureValue.MeasuredTemperature != CellPass.NullMaterialTemperatureValue) // is there a value to test
+				if (temperatureValue.MeasuredTemperature != CellPass.NullMaterialTemperatureValue) // Is there a value to test?..
 				{
 					if (OverrideTemperatureWarningLevels)
 					{
@@ -105,27 +105,27 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 					{
 						// Using the machine target values test if target varies...
 						// Minimum level value...
-						if (IsTargetValueConstant) // Do we need to test...
+						if (IsTargetValueConstant) // Do we need to test?..
 						{
 							if (temperatureValue.TemperatureLevels.Min != CellPass.NullMaterialTemperatureValue && LastTempRangeMin != CellPass.NullMaterialTemperatureValue) // Values all good to test...
 								IsTargetValueConstant = LastTempRangeMin == temperatureValue.TemperatureLevels.Min; // Check to see if the target value varies...
 						}
 
 						if (LastTempRangeMin != temperatureValue.TemperatureLevels.Min && temperatureValue.TemperatureLevels.Min != CellPass.NullMaterialTemperatureValue)
-							LastTempRangeMin = temperatureValue.TemperatureLevels.Min; // ConstantTempRangeMin holds last good value
+							LastTempRangeMin = temperatureValue.TemperatureLevels.Min; // ConstantTempRangeMin holds last good value...
 
 						if (currentTempRangeMin != temperatureValue.TemperatureLevels.Min)
 						 currentTempRangeMin = temperatureValue.TemperatureLevels.Min;
 
 						// Maximum level value...
-						if (IsTargetValueConstant) // Do we need to test...
+						if (IsTargetValueConstant) // Do we need to test?..
 						{
 							if (temperatureValue.TemperatureLevels.Max != CellPass.NullMaterialTemperatureValue && LastTempRangeMax != CellPass.NullMaterialTemperatureValue) // Values all good to test...
 								IsTargetValueConstant = LastTempRangeMax == temperatureValue.TemperatureLevels.Max; // Check to see if the target value varies...
 						}
 
 						if (LastTempRangeMax != temperatureValue.TemperatureLevels.Max && temperatureValue.TemperatureLevels.Max != CellPass.NullMaterialTemperatureValue)
-							LastTempRangeMax = temperatureValue.TemperatureLevels.Max; // ConstantTempRangeMax holds last good value
+							LastTempRangeMax = temperatureValue.TemperatureLevels.Max; // ConstantTempRangeMax holds last good value...
 
 						if (currentTempRangeMax != temperatureValue.TemperatureLevels.Max)
 							currentTempRangeMax = temperatureValue.TemperatureLevels.Max;
@@ -145,8 +145,8 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 								CellsScannedAtTarget++;
 						}
 					}
-					else // we have data but no target data to do a summary
-						MissingTargetValue = true; // flag to issue a warning to user
+					else // We have data but no target data to do a summary...
+						MissingTargetValue = true; // Flag to issue a warning to user...
 				}
 			});
 		}

@@ -10,6 +10,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using VSS.TRex.Analytics.CMVStatistics;
+using VSS.TRex.Analytics.CMVStatistics.GridFabric;
 using VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
@@ -1155,6 +1157,39 @@ namespace VSS.TRex.IgnitePOC.TestApp
                           $"Above Machine Speed Percentage: {result.AboveTargetPercent} \n " +
                           $"Within Machine Speed Percentage Range: {result.WithinTargetPercent} \n " +
                           $"Below Machine Speed Percentage: {result.BelowTargetPercent} \n " +
+                          $"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
+      }
+      finally
+      {
+        sw.Stop();
+      }
+    }
+
+    private void CMVSummaryButton_Click(object sender, EventArgs e)
+    {
+      var siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+
+      Stopwatch sw = new Stopwatch();
+      sw.Start();
+      try
+      {
+        CMVOperation operation = new CMVOperation();
+        CMVResult result = operation.Execute(
+          new CMVStatisticsArgument()
+          {
+            ProjectID = siteModel.ID,
+            Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+            CMVPercentageRange = new CMVRangePercentageRecord(80, 120),
+            OverrideMachineCMV = false,
+            OverridingMachineCMV = 50
+          }
+        );
+
+        if (result != null)
+          MessageBox.Show($"CMV Summary Results (in {sw.Elapsed}) :\n " +
+                          $"Above CMV Percentage: {result.AboveTargetPercent} \n " +
+                          $"Within CMV Percentage Range: {result.WithinTargetPercent} \n " +
+                          $"Below CMV Percentage: {result.BelowTargetPercent} \n " +
                           $"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
       }
       finally
