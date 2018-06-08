@@ -2,7 +2,6 @@
 using RaptorSvcAcceptTestsCommon.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
 using System;
-using VSS.Productivity3D.Common.ResultHandling;
 
 namespace ProductionDataSvc.AcceptanceTests.Models
 {

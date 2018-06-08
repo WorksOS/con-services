@@ -6,7 +6,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
 {
   public class RaptorClientConfig
   {
-    public static Configuration DLLConfig => ConfigurationManager.OpenExeConfiguration(Assembly.GetExecutingAssembly().Location);
+    public static Configuration DllConfig => ConfigurationManager.OpenExeConfiguration(Assembly.GetExecutingAssembly().Location);
 
     public static string TestDataPath
     {

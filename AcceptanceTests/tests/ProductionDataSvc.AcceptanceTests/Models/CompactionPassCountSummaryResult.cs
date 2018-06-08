@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using RaptorSvcAcceptTestsCommon.Models;
 using System;
-using VSS.Productivity3D.Common.ResultHandling;
 
 namespace ProductionDataSvc.AcceptanceTests.Models
 {

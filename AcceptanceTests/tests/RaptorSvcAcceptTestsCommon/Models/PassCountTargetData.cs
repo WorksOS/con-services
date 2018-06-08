@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace VSS.Productivity3D.Common.ResultHandling
+namespace RaptorSvcAcceptTestsCommon.Models
 {
   /// <summary>
   /// Pass count target data returned by PassCounts requet.
