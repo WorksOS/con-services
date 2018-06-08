@@ -157,28 +157,28 @@ namespace VSS.MasterData.Models.Models
     /// <summary>
     /// The minimum temperature in °C for a temperature range filter. Only cell passes within the range will be selected.
     /// </summary>
-    [Range(MIN_TEMPERATURE, MAX_TEMPERATURE)]
+    [Range(ValidationConstants.MIN_TEMPERATURE, ValidationConstants.MAX_TEMPERATURE)]
     [JsonProperty(PropertyName = "temperatureRangeMin", Required = Required.Default)]
     public double? TemperatureRangeMin { get; protected set; }
 
     /// <summary>
     /// The maximum temperature in °C for a temperature range filter. Only cell passes within the range will be selected.
     /// </summary>
-    [Range(MIN_TEMPERATURE, MAX_TEMPERATURE)]
+    [Range(ValidationConstants.MIN_TEMPERATURE, ValidationConstants.MAX_TEMPERATURE)]
     [JsonProperty(PropertyName = "temperatureRangeMax", Required = Required.Default)]
     public double? TemperatureRangeMax { get; protected set; }
 
     /// <summary>
     /// The minimum pass count for a  pass count range filter. Only cell passes within the range will be selected.
     /// </summary>
-    [Range(MIN_PASS_COUNT, MAX_PASS_COUNT)]
+    [Range(ValidationConstants.MIN_PASS_COUNT, ValidationConstants.MAX_PASS_COUNT)]
     [JsonProperty(PropertyName = "passCountRangeMin", Required = Required.Default)]
     public int? PassCountRangeMin { get; protected set; }
 
     /// <summary>
     /// The maximum pass count for a  pass count range filter. Only cell passes within the range will be selected.
     /// </summary>
-    [Range(MIN_PASS_COUNT, MAX_PASS_COUNT)]
+    [Range(ValidationConstants.MIN_PASS_COUNT, ValidationConstants.MAX_PASS_COUNT)]
     [JsonProperty(PropertyName = "passCountRangeMax", Required = Required.Default)]
     public int? PassCountRangeMax { get; protected set; }
 
@@ -484,8 +484,8 @@ namespace VSS.MasterData.Models.Models
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 74);
         }
-        if (TemperatureRangeMin.Value < MIN_TEMPERATURE || TemperatureRangeMin.Value > MAX_TEMPERATURE ||
-            TemperatureRangeMax.Value < MIN_TEMPERATURE || TemperatureRangeMax.Value > MAX_TEMPERATURE)
+        if (TemperatureRangeMin.Value < ValidationConstants.MIN_TEMPERATURE || TemperatureRangeMin.Value > ValidationConstants.MAX_TEMPERATURE ||
+            TemperatureRangeMax.Value < ValidationConstants.MIN_TEMPERATURE || TemperatureRangeMax.Value > ValidationConstants.MAX_TEMPERATURE)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 76);
         }
@@ -502,8 +502,8 @@ namespace VSS.MasterData.Models.Models
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 75);
         }
-        if (PassCountRangeMin.Value < MIN_TEMPERATURE || PassCountRangeMin.Value > MAX_TEMPERATURE ||
-            PassCountRangeMax.Value < MIN_TEMPERATURE || PassCountRangeMax.Value > MAX_TEMPERATURE)
+        if (PassCountRangeMin.Value < ValidationConstants.MIN_TEMPERATURE || PassCountRangeMin.Value > ValidationConstants.MAX_TEMPERATURE ||
+            PassCountRangeMax.Value < ValidationConstants.MIN_TEMPERATURE || PassCountRangeMax.Value > ValidationConstants.MAX_TEMPERATURE)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 77);
         }
@@ -609,11 +609,6 @@ namespace VSS.MasterData.Models.Models
         StartUtc = null;
       }
     }
-
-    public const double MIN_TEMPERATURE = 0;
-    public const double MAX_TEMPERATURE = 409.5;//Raptor 'no temperature' value in 10ths is 4096
-    public const int MIN_PASS_COUNT = 0;
-    public const int MAX_PASS_COUNT = 1000;
   }
 
  

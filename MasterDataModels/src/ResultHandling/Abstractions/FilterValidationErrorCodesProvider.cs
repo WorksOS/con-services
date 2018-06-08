@@ -1,4 +1,5 @@
 ﻿using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.Utilities;
 
 namespace VSS.MasterData.Models.ResultHandling.Abstractions
 {
@@ -22,8 +23,8 @@ namespace VSS.MasterData.Models.ResultHandling.Abstractions
       DynamicAddwithOffset("Invalid pass count range filter. Both minimum and maximum must be provided.", 73);
       DynamicAddwithOffset("Invalid temperature range filter. Minimum must be less than maximum.", 74);
       DynamicAddwithOffset("Invalid pass count range filter. Minimum must be less than maximum.", 75);
-      DynamicAddwithOffset($"Invalid temperature range filter. Range must be between {Filter.MIN_TEMPERATURE} and {Filter.MAX_TEMPERATURE}.", 76);
-      DynamicAddwithOffset($"Invalid pass count range filter. Range must be between {Filter.MIN_PASS_COUNT} and {Filter.MAX_PASS_COUNT}.", 77);
+      DynamicAddwithOffset($"Invalid temperature range filter. Range must be between {ValidationConstants.MIN_TEMPERATURE} and {ValidationConstants.MAX_TEMPERATURE}.", 76);
+      DynamicAddwithOffset($"Invalid pass count range filter. Range must be between {ValidationConstants.MIN_PASS_COUNT} and {ValidationConstants.MAX_PASS_COUNT}.", 77);
     }
   }
 }
