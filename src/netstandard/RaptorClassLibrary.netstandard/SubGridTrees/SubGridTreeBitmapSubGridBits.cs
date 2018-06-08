@@ -7,6 +7,10 @@ using VSS.TRex.SubGridTrees.Helpers;
 
 namespace VSS.TRex.SubGridTrees
 {
+    /// <summary>
+    /// Represents a subgrid in terms of one bit per cell in the subgrid. Many bit-wise operations are supported
+    /// allowing efficient manipulation of bitmasks representing subgrids and trees.
+    /// </summary>
     [Serializable]
     public struct SubGridTreeBitmapSubGridBits : IEquatable<SubGridTreeBitmapSubGridBits>
     {
@@ -70,16 +74,17 @@ namespace VSS.TRex.SubGridTrees
             if (options == SubGridBitsCreationOptions.Filled)
             {
                 Fill();
+                return;
             }
-            else if (options == SubGridBitsCreationOptions.Unfilled)
+
+            if (options == SubGridBitsCreationOptions.Unfilled)
             {
-                // Note: The defualt .Net behaviuour of clearing the memory for the bit mask achieves the same result as Clear...
+                // Note: The default .Net behaviuour of clearing the memory for the bit mask achieves the same result as Clear...
                 // Clear();
+                return;
             }
-            else
-            {
-                Debug.Assert(false, "Unknown SubGridTreeBitmapSubGridBits creation option");
-            }
+
+          Debug.Assert(false, "Unknown SubGridTreeBitmapSubGridBits creation option");
         }
 
         /// <summary>
@@ -160,9 +165,7 @@ namespace VSS.TRex.SubGridTrees
             SubGridTreeBitmapSubGridBits result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
-            {
                 result.Bits[i] = a.Bits[i] & b.Bits[i];
-            }
 
             return result;
         }
@@ -175,9 +178,7 @@ namespace VSS.TRex.SubGridTrees
         public void AndWith(SubGridTreeBitmapSubGridBits other)
         {
             for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
-            {
                 Bits[i] &= other.Bits[i];
-            }
         }
 
         /// <summary>
@@ -189,9 +190,7 @@ namespace VSS.TRex.SubGridTrees
         public void SetAndOf(SubGridTreeBitmapSubGridBits a, SubGridTreeBitmapSubGridBits b)
         {
             for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
-            {
                 Bits[i] = a.Bits[i] & b.Bits[i];
-            }
         }
 
         /// <summary>
@@ -206,9 +205,7 @@ namespace VSS.TRex.SubGridTrees
             SubGridTreeBitmapSubGridBits result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
-            {
                 result.Bits[i] = a.Bits[i] | b.Bits[i];
-            }
 
             return result;
         }
@@ -221,9 +218,7 @@ namespace VSS.TRex.SubGridTrees
         public void OrWith(SubGridTreeBitmapSubGridBits other)
         {
             for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
-            {
                 Bits[i] |= other.Bits[i];
-            }
         }
 
         /// <summary>
@@ -235,9 +230,7 @@ namespace VSS.TRex.SubGridTrees
         public void SetOrOf(SubGridTreeBitmapSubGridBits a, SubGridTreeBitmapSubGridBits b)
         {
             for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
-            {
                 Bits[i] = a.Bits[i] | b.Bits[i];
-            }
         }
 
         /// <summary>
@@ -252,9 +245,7 @@ namespace VSS.TRex.SubGridTrees
             SubGridTreeBitmapSubGridBits result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
-            {
                 result.Bits[i] = a.Bits[i] ^ b.Bits[i];
-            }
 
             return result;
         }
@@ -267,9 +258,7 @@ namespace VSS.TRex.SubGridTrees
         public void XorWith(SubGridTreeBitmapSubGridBits other)
         {
             for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
-            {
                 Bits[i] ^= other.Bits[i];
-            }
         }
 
         /// <summary>
@@ -283,9 +272,7 @@ namespace VSS.TRex.SubGridTrees
             SubGridTreeBitmapSubGridBits result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
-            {
                 result.Bits[i] = a.Bits[i] ^ (a.Bits[i] & b.Bits[i]);
-            }
 
             return result;
         }
@@ -301,17 +288,15 @@ namespace VSS.TRex.SubGridTrees
             SubGridTreeBitmapSubGridBits result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
-            {
                 result.Bits[i] = ~bits.Bits[i];
-            }
 
             return result;
         }
 
         /// <summary>
-        /// Return a new SubGridTreeLeafBitmapSubGridBits instance with all bits set to on (1)
+        /// Return a a 'full mask' SubGridTreeLeafBitmapSubGridBits instance with all bits set to on (1)
         /// </summary>
-        public static SubGridTreeBitmapSubGridBits FullMask => new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
+        public static SubGridTreeBitmapSubGridBits FullMask { get; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
 
         /// <summary>
         /// Clear the bit at the location given by CellX, CellY in the bits array
@@ -489,12 +474,6 @@ namespace VSS.TRex.SubGridTrees
 
                     Buffer.BlockCopy(Bits, 0, buffer, 0, BytesOccupiedByBits);
                     writer.Write(buffer, 0, BytesOccupiedByBits);
-                    /*
-                    foreach (uint u in Bits)
-                    {
-                        writer.Write(u);
-                    }
-                    */
                     break;
             }
         }
@@ -542,16 +521,12 @@ namespace VSS.TRex.SubGridTrees
                 uint RowBits = Bits[Row];
 
                 if (RowBits == 0)
-                {
                     continue;
-                }
 
                 for (int Column = 0; Column < SubGridTree.SubGridTreeDimension; Column++)
                 {
                     if ((RowBits & (SubGridBitMapHighBitMask >> Column)) != 0)
-                    {
                         functor(Column, Row);
-                    }
                 }
             }
         }
@@ -569,19 +544,13 @@ namespace VSS.TRex.SubGridTrees
                 uint RowBits = Bits[Row];
 
                 if (RowBits == 0)
-                {
                     continue;
-                }
 
                 for (int Column = 0; Column < SubGridTree.SubGridTreeDimension; Column++)
                 {
                     if ((RowBits & (SubGridBitMapHighBitMask >> Column)) != 0)
-                    {
                         if (!functor(Column, Row))
-                        {
                             return;
-                        }
-                    }
                 }
             }
         }
@@ -598,16 +567,12 @@ namespace VSS.TRex.SubGridTrees
                 uint RowBits = Bits[Row];
 
                 if (RowBits == 0xFFFFFFFF)
-                {
                     continue;
-                }
 
                 for (byte Column = 0; Column < SubGridTree.SubGridTreeDimension; Column++)
                 {
                     if ((RowBits & (SubGridBitMapHighBitMask >> Column)) == 0)
-                    {
                         functor(Column, Row);
-                    }
                 }
             }
         }
@@ -622,9 +587,7 @@ namespace VSS.TRex.SubGridTrees
             for (byte Row = 0; Row < SubGridTree.SubGridTreeDimension; Row++)
             {
                 for (byte Column = 0; Column < SubGridTree.SubGridTreeDimension; Column++)
-                {
                     functor(Column, Row);
-                }
             }
         }
 
@@ -642,13 +605,9 @@ namespace VSS.TRex.SubGridTrees
                 for (byte Column = 0; Column < SubGridTree.SubGridTreeDimension; Column++)
                 {
                     if (functor(Column, Row))
-                    {
                         RowBits |= (SubGridBitMapHighBitMask >> Column);
-                    }
                     else
-                    {
                         RowBits &= ~(SubGridBitMapHighBitMask >> Column);
-                    }
                 }
 
                 Bits[Row] = RowBits;
@@ -668,9 +627,7 @@ namespace VSS.TRex.SubGridTrees
             // Set each alternate space in the string with a 0 or 1 for each bit
             uint RowBits = Bits[Row];
             for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
-            {
                 sb[2 * i + 1] = ((RowBits & (SubGridBitMapHighBitMask >> i)) != 0) ? '1' : '0';
-            }
 
             return sb.ToString();
         }
@@ -701,21 +658,15 @@ namespace VSS.TRex.SubGridTrees
         public bool Equals(SubGridTreeBitmapSubGridBits other)
         {
             if (other.Bits == null)
-            {
                 return false;
-            }
-
+         
             for (int i = 0; i < Bits.Length; i++)
-            {
                 if (Bits[i] != other.Bits[i])
-                {
                     return false;
-                }
-            }
-
+         
             return true;
         }
-
+      
         /// <summary>
         /// Default override for the GetHashCode method. This returns the base GetHashCode() result.
         /// </summary>
