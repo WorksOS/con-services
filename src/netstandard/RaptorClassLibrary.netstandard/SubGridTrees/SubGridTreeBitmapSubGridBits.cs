@@ -38,7 +38,7 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// The number obtained when summed values of bit rows when all bits in each bit row are set
         /// </summary>
-        public const long SumBitRowsFullCount = ((((long)1) << SubGridTree.SubGridTreeDimension) - 1) * SubGridTree.SubGridTreeDimension;
+        public const long SumBitRowsFullCount = (((long)1 << SubGridTree.SubGridTreeDimension) - 1) * SubGridTree.SubGridTreeDimension;
 
         /// <summary>
         /// The array that stores the memory for the individual bit flags (of which there are 32x32 = 1024)
@@ -296,7 +296,7 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// Return a a 'full mask' SubGridTreeLeafBitmapSubGridBits instance with all bits set to on (1)
         /// </summary>
-        public static SubGridTreeBitmapSubGridBits FullMask { get; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
+        public static SubGridTreeBitmapSubGridBits FullMask => new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
 
         /// <summary>
         /// Clear the bit at the location given by CellX, CellY in the bits array
