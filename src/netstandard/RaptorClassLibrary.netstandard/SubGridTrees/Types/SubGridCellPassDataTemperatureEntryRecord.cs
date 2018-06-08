@@ -9,18 +9,18 @@ namespace VSS.TRex.SubGridTrees.Types
 	/// </summary>
 	public struct SubGridCellPassDataTemperatureEntryRecord
   {
-	  /// <summary>
-	  /// Minimum machine speed value.
-	  /// </summary>
-	  public ushort MeasuredTemperature { get; set; }
+    /// <summary>
+    /// Measured temperature value.
+    /// </summary>
+    public ushort MeasuredTemperature { get; set; }
 
     /// <summary>
-    /// Maximum machine speed value.
+    /// Temperature warning levels.
     /// </summary>
     public TemperatureWarningLevelsRecord TemperatureLevels;
 
 		/// <summary>
-		/// /// Constractor with arguments.
+		/// Constractor with arguments.
 		/// </summary>
 		/// <param name="measuredTemperature"></param>
 		/// <param name="temperatureLevels"></param>
@@ -31,7 +31,7 @@ namespace VSS.TRex.SubGridTrees.Types
 	  }
 
 		/// <summary>
-		/// Initialises the Min and Max properties with null values.
+		/// Initialises the measured temperature and its warning leveles with null values.
 		/// </summary>
 		public void Clear()
 	  {

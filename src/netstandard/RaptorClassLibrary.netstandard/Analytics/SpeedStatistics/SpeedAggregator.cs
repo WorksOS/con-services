@@ -10,7 +10,7 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 	/// <summary>
 	/// Implements the specific business rules for calculating a Speed summary
 	/// </summary>
-	public class SpeedAggregator : SummaryAggregator
+	public class SpeedAggregator : DataStatisticsAggregator
 	{
 	  /// <summary>
 	  /// Machine speed target record. It contains min/max machine speed target value.

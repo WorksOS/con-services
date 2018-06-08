@@ -25,6 +25,7 @@ namespace VSS.TRex.Rendering.Palettes
                     }
 
                 case DisplayMode.MachineSpeed:       return new SpeedPalette();
+                case DisplayMode.TargetSpeedSummary: return new SpeedSummaryPalette();
                 case DisplayMode.CCV:                return new CMVPalette();
                 case DisplayMode.TemperatureSummary: return new TemperaturePalette();
                 case DisplayMode.CutFill:            return new CutFillPalette();

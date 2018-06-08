@@ -3,10 +3,10 @@
 namespace VSS.TRex.Analytics.Foundation.Aggregators
 {
   /// <summary>
-  /// Base class used by summary analytics aggregators supporting funcitons such as pass count summary, cut/fill summary, speed summary etc
+  /// Base class used by summary analytics aggregators supporting funcitons such as pass count summary/details, cut/fill summary, speed summary etc
   /// where the analytics are calculated at the cluster compute layer and reduced at the application service layer.
   /// </summary>
-  public class SummaryAggregator : AggregatorBase
+  public class DataStatisticsAggregator : AggregatorBase
   {
     /// <summary>
     /// The number of cells scanned while summarising information in the resulting analytics, report or export
@@ -59,7 +59,7 @@ namespace VSS.TRex.Analytics.Foundation.Aggregators
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    public SummaryAggregator AggregateWith(SummaryAggregator other)
+    public DataStatisticsAggregator AggregateWith(DataStatisticsAggregator other)
     {
       CellSize = other.CellSize;
       SummaryCellsScanned += other.SummaryCellsScanned;
@@ -79,7 +79,7 @@ namespace VSS.TRex.Analytics.Foundation.Aggregators
       return this;
     }
 
-    protected virtual void DataCheck(SummaryAggregator other)
+    protected virtual void DataCheck(DataStatisticsAggregator other)
     {
       // Nothing to implement...
     }

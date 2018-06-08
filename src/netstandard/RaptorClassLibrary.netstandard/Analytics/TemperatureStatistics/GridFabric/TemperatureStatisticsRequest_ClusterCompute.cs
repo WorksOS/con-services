@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
-using VSS.TRex.GridFabric.Requests;
+﻿using VSS.TRex.GridFabric.Requests;
 
 namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
 {
