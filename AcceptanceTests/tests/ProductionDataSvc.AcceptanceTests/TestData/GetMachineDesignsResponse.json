@@ -214,7 +214,7 @@
             "designId": 1
           }
         ],
-        "assetID": 4,
+        "assetID": "4",
         "machineName": "D61 SATD PE",
         "isJohnDoe": false
       },
@@ -225,7 +225,7 @@
             "designId": 2
           }
         ],
-        "assetID": 6,
+        "assetID": "6",
         "machineName": "KOMATSU PC210",
         "isJohnDoe": false
       },
@@ -240,7 +240,7 @@
             "designId": 10
           }
         ],
-        "assetID": 1,
+        "assetID": "1",
         "machineName": "ACOM",
         "isJohnDoe": false
       },
@@ -251,7 +251,7 @@
             "designId": 4
           }
         ],
-        "assetID": 7,
+        "assetID": "7",
         "machineName": "LIEBHERR 924C",
         "isJohnDoe": false
       },
@@ -262,7 +262,7 @@
             "designId": 5
           }
         ],
-        "assetID": 3,
+        "assetID": "3",
         "machineName": "CAT CS56B",
         "isJohnDoe": false
       },
@@ -273,7 +273,7 @@
             "designId": 6
           }
         ],
-        "assetID": 9,
+        "assetID": "9",
         "machineName": "VOLVO G946B",
         "isJohnDoe": false
       },
@@ -284,7 +284,7 @@
             "designId": 7
           }
         ],
-        "assetID": 2,
+        "assetID": "2",
         "machineName": "CASE CX160C",
         "isJohnDoe": false
       },
@@ -295,7 +295,7 @@
             "designId": 8
           }
         ],
-        "assetID": 8,
+        "assetID": "8",
         "machineName": "LIEBHERR724",
         "isJohnDoe": false
       },
@@ -306,7 +306,7 @@
             "designId": 9
           }
         ],
-        "assetID": 5,
+        "assetID": "5",
         "machineName": "JD 764 CV",
         "isJohnDoe": false
       },
@@ -317,7 +317,7 @@
             "designId": 3
           }
         ],
-        "assetID": 1244020666025812,
+        "assetID": "1244020666025812",
         "machineName": "ACOM",
         "isJohnDoe": false
       },
@@ -328,7 +328,7 @@
             "designId": 9
           }
         ],
-        "assetID": 1219470261494388,
+        "assetID": "1219470261494388",
         "machineName": "JD 764 CV",
         "isJohnDoe": false
       },
@@ -339,7 +339,7 @@
             "designId": 4
           }
         ],
-        "assetID": 796620067684243,
+        "assetID": "796620067684243",
         "machineName": "LIEBHERR 924C",
         "isJohnDoe": false
       },
@@ -350,7 +350,7 @@
             "designId": 8
           }
         ],
-        "assetID": 2894079741131753,
+        "assetID": "2894079741131753",
         "machineName": "LIEBHERR724",
         "isJohnDoe": false
       },
@@ -361,7 +361,7 @@
             "designId": 6
           }
         ],
-        "assetID": 4250986182719752,
+        "assetID": "4250986182719752",
         "machineName": "VOLVO G946B",
         "isJohnDoe": false
       },
@@ -372,7 +372,7 @@
             "designId": 1
           }
         ],
-        "assetID": 3385342403242252,
+        "assetID": "3385342403242252",
         "machineName": "D61 SATD PE",
         "isJohnDoe": false
       },
@@ -383,7 +383,7 @@
             "designId": 7
           }
         ],
-        "assetID": 4101662153056458,
+        "assetID": "4101662153056458",
         "machineName": "CASE CX160C",
         "isJohnDoe": false
       },
@@ -394,7 +394,7 @@
             "designId": 2
           }
         ],
-        "assetID": 751877972662699,
+        "assetID": "751877972662699",
         "machineName": "KOMATSU PC210",
         "isJohnDoe": false
       },
@@ -405,7 +405,7 @@
             "designId": 5
           }
         ],
-        "assetID": 3517551388324974,
+        "assetID": "3517551388324974",
         "machineName": "CAT CS56B",
         "isJohnDoe": false
       }
@@ -434,7 +434,7 @@
             "designId": 7
           }
         ],
-        "assetID": 751877972662699,
+        "assetID": "751877972662699",
         "machineName": "KOMATSU PC210",
         "isJohnDoe": false
       },
@@ -445,7 +445,7 @@
             "designId": 16
           }
         ],
-        "assetID": 796620067684243,
+        "assetID": "796620067684243",
         "machineName": "LIEBHERR 924C",
         "isJohnDoe": false
       },
@@ -464,7 +464,7 @@
             "designId": 33
           }
         ],
-        "assetID": 1219470261494388,
+        "assetID": "1219470261494388",
         "machineName": "JD 764 CV",
         "isJohnDoe": false
       },
@@ -475,7 +475,7 @@
             "designId": 37
           }
         ],
-        "assetID": 1244020666025812,
+        "assetID": "1244020666025812",
         "machineName": "CAT ACOM",
         "isJohnDoe": false
       },
@@ -486,7 +486,7 @@
             "designId": 38
           }
         ],
-        "assetID": 2894079741131753,
+        "assetID": "2894079741131753",
         "machineName": "LIEBHERR724",
         "isJohnDoe": false
       },
@@ -497,7 +497,7 @@
             "designId": 16
           }
         ],
-        "assetID": 3385342403242252,
+        "assetID": "3385342403242252",
         "machineName": "D61 SATD PE",
         "isJohnDoe": false
       },
@@ -508,7 +508,7 @@
             "designId": 8
           }
         ],
-        "assetID": 3517551388324974,
+        "assetID": "3517551388324974",
         "machineName": "CAT CS56B",
         "isJohnDoe": false
       },
@@ -519,7 +519,7 @@
             "designId": 26
           }
         ],
-        "assetID": 4101662153056458,
+        "assetID": "4101662153056458",
         "machineName": "CASE CX160C",
         "isJohnDoe": false
       },
@@ -530,7 +530,7 @@
             "designId": 48
           }
         ],
-        "assetID": 4250986182719752,
+        "assetID": "4250986182719752",
         "machineName": "VOLVO G946B",
         "isJohnDoe": false
       }
