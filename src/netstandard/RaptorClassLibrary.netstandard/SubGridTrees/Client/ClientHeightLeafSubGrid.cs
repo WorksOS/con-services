@@ -58,12 +58,10 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Assign(heightAndTimeResults);
 
-      // Can't use block copy here so need to iterate over the cells one by one
-      SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y] = heightAndTimeResults.Cells[x, y].Height);
+      Buffer.BlockCopy(heightAndTimeResults.Cells, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
 
       SurveyedSurfaceMap.Assign(heightAndTimeResults.SurveyedSurfaceMap);
     }
-
 
     /// <summary>
     /// Assign contents of another height client lead sub grid to this one
@@ -77,6 +75,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
       SurveyedSurfaceMap.Assign(heightLeaf.SurveyedSurfaceMap);
     }
+
 
     /// <summary>
     /// Determine if a filtered height is valid (not null)

@@ -24,8 +24,8 @@ namespace VSS.TRex.Tests
 
       var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.HeightAndTime) as ClientHeightAndTimeLeafSubGrid;
 
-      SubGridUtilities.SubGridDimensionalIterator((x, y) => Assert.True(clientGrid.Cells[x, y].Height == Consts.NullHeight, "Cell not set to correct null value"));
-      SubGridUtilities.SubGridDimensionalIterator((x, y) => Assert.True(clientGrid.Cells[x, y].Time == minDateTime, "Cell time not set to correct null value"));
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => Assert.True(clientGrid.Cells[x, y] == Consts.NullHeight, "Cell not set to correct null value"));
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => Assert.True(clientGrid.Times[x, y] == minDateTime, "Cell time not set to correct null value"));
     }
   }
 }

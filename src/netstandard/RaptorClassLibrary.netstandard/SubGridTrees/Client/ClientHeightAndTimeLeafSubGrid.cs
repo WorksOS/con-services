@@ -10,24 +10,33 @@ namespace VSS.TRex.SubGridTrees.Client
 {
   /// <summary>
   /// Client leaf sub grid that tracks height and time for each cell
+  /// This class is derived from the height leaf subgrid and decorated with times to allow efficient copy
+  /// operations for serialisation and asignation to the height leaf subgrid where the times are removed.
   /// </summary>
   [Serializable]
-  public class ClientHeightAndTimeLeafSubGrid : GenericClientLeafSubGrid<SubGridCellHeightAndTime>
+  public class ClientHeightAndTimeLeafSubGrid : ClientHeightLeafSubGrid
   {
     [NonSerialized] private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     /// <summary>
-    /// Surveyed surface map records which cells hold cell pass heights that were derived
-    /// from a surveyed surface
+    /// Time values for the heights stored in the height and time structure. Times are expressed as the binary DateTime format to promote efficient copying of arrays
     /// </summary>
-    public SubGridTreeBitmapSubGridBits SurveyedSurfaceMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+    public long[,] Times = new long[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+
+    /// <summary>
+    /// An array containing the content of null times for all the cell in the subgrid
+    /// </summary>
+    public static long[,] nullTimes = new long[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
 
     /// <summary>
     /// Initialise the null cell values for the client subgrid
     /// </summary>
     static ClientHeightAndTimeLeafSubGrid()
     {
-      SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y].Clear());
+      DateTime min = DateTime.MinValue;
+      long nullValue = min.ToBinary();
+
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => nullTimes[x, y] = nullValue);
     }
 
     /// <summary>
@@ -53,8 +62,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.AssignFilteredValue(cellX, cellY, Context);
 
-      Cells[cellX, cellY].Time = Context.FilteredValue.FilteredPassData.FilteredPass.Time.ToBinary();
-      Cells[cellX, cellY].Height = Context.FilteredValue.FilteredPassData.FilteredPass.Height;
+      Times[cellX, cellY] = Context.FilteredValue.FilteredPassData.FilteredPass.Time.ToBinary();
     }
 
     /// <summary>
@@ -63,6 +71,8 @@ namespace VSS.TRex.SubGridTrees.Client
     public override void Clear()
     {
       base.Clear();
+
+      Array.Copy(nullTimes, 0, Times, 0, SubGridTree.SubGridTreeCellsPerSubgrid);
     }
 
     /// <summary>
@@ -74,7 +84,8 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Write(writer, buffer);
 
-      SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Write(writer));
+      Buffer.BlockCopy(Times, 0, buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(long));
+      writer.Write(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(long));
     }
 
     /// <summary>
@@ -86,7 +97,8 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Read(reader, buffer);
 
-      SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Read(reader));
+      reader.Read(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(long));
+      Buffer.BlockCopy(buffer, 0, Times, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(long));
     }
   }
 }
