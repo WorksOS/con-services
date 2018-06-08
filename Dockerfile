@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2.1-sdk-alpine as builder
+FROM microsoft/dotnet:2.1-sdk as builder
 
 COPY . /build/
 WORKDIR /build
@@ -7,7 +7,7 @@ RUN chmod 777 *.sh
 
 RUN ["/bin/sh", "build.sh"]
 
-FROM microsoft/dotnet:2.1-runtime-alpine
+FROM microsoft/dotnet:2.1-runtime
 
 WORKDIR /app
 
