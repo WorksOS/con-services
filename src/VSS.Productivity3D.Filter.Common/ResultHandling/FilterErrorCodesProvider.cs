@@ -74,6 +74,15 @@ namespace VSS.Productivity3D.Filter.Common.ResultHandling
       //66: FilterValidationErrorCodesProvider
       //67: FilterValidationErrorCodesProvider
       //68: FilterValidationErrorCodesProvider
+      //69: FilterValidationErrorCodesProvider
+      //70: FilterValidationErrorCodesProvider
+      //71: FilterValidationErrorCodesProvider
+      //72: FilterValidationErrorCodesProvider
+      //73: FilterValidationErrorCodesProvider
+      //74: FilterValidationErrorCodesProvider
+      //75: FilterValidationErrorCodesProvider
+      //76: FilterValidationErrorCodesProvider
+      //77: FilterValidationErrorCodesProvider
     }
   }
 }

@@ -402,6 +402,94 @@ namespace VSS.Productivity3D.Filter.Tests
     [DataRow(FilterType.Persistent)]
     [DataRow(FilterType.Report)]
     [DataRow(FilterType.Transient)]
+    public void FilterRequestValidation_InvalidTemperatureRange(FilterType filterType)
+    {
+      var minTemperature = 100.5;
+
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData {ProjectUid = projectUid},
+        new FilterRequest
+        {
+          FilterUid = filterUid,
+          Name = "a filter",
+          FilterType = filterType,
+          FilterJson = "{\"vibeStateOn\": true, \"temperatureRangeMin\": \"" + minTemperature + "\", \"temperatureRangeMax\": null }"
+        });
+
+      var ex = Assert.ThrowsException<ServiceException>(() => request.Validate(serviceExceptionHandler));
+
+      StringAssert.Contains(ex.GetContent, "2072");
+      StringAssert.Contains(ex.GetContent, "Invalid temperature range filter. Both minimum and maximum must be provided.");
+    }
+
+    [TestMethod]
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    [DataRow(FilterType.Transient)]
+    public void FilterRequestValidation_ValidTemperatureRange(FilterType filterType)
+    {
+      var minTemperature = 100.5;
+      var maxTemperature = 120.9;
+
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
+        new FilterRequest
+        {
+          FilterUid = filterUid,
+          Name = "a filter",
+          FilterType = filterType,
+          FilterJson = "{\"vibeStateOn\": true, \"temperatureRangeMin\": \"" + minTemperature + "\", \"temperatureRangeMax\": \"" + maxTemperature + "\" }"
+        });
+
+      request.Validate(serviceExceptionHandler);
+    }
+
+    [TestMethod]
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    [DataRow(FilterType.Transient)]
+    public void FilterRequestValidation_InvalidPassCountRange(FilterType filterType)
+    {
+      var maxPassCount = 10;
+
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
+        new FilterRequest
+        {
+          FilterUid = filterUid,
+          Name = "a filter",
+          FilterType = filterType,
+          FilterJson = "{\"vibeStateOn\": true, \"passCountRangeMin\": null, \"passCountRangeMax\": \"" + maxPassCount + "\" }"
+        });
+
+      var ex = Assert.ThrowsException<ServiceException>(() => request.Validate(serviceExceptionHandler));
+
+      StringAssert.Contains(ex.GetContent, "2073");
+      StringAssert.Contains(ex.GetContent, "Invalid pass count range filter. Both minimum and maximum must be provided.");
+    }
+
+    [TestMethod]
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    [DataRow(FilterType.Transient)]
+    public void FilterRequestValidation_ValidPassCountRange(FilterType filterType)
+    {
+      var minPassCount = 5;
+      var maxPassCount = 8;
+
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
+        new FilterRequest
+        {
+          FilterUid = filterUid,
+          Name = "a filter",
+          FilterType = filterType,
+          FilterJson = "{\"vibeStateOn\": true, \"passCountRangeMin\": \"" + minPassCount + "\", \"passCountRangeMax\": \"" + maxPassCount + "\" }"
+        });
+
+      request.Validate(serviceExceptionHandler);
+    }
+
+    [TestMethod]
+    [DataRow(FilterType.Persistent)]
+    [DataRow(FilterType.Report)]
+    [DataRow(FilterType.Transient)]
     public void FilterRequestValidation_InvalidAlignment(FilterType filterType)
     {
       var alignmentUid = Guid.NewGuid().ToString();
@@ -409,7 +497,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var leftOffset = 4.5;
       var rightOffset = 2.5;
 
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData {ProjectUid = projectUid},
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
         new FilterRequest
         {
           FilterUid = filterUid,
@@ -438,7 +526,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var leftOffset = 4.5;
       var rightOffset = 2.5;
 
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData {ProjectUid = projectUid},
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
         new FilterRequest
         {
           FilterUid = filterUid,
