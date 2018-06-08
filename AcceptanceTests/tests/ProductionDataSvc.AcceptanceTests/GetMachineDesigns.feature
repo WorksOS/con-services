@@ -1,11 +1,9 @@
 ﻿Feature: GetMachineDesigns
 	I should be able to get on-machine designs.
 
-Background: 
-	Given the Machine Design service URI "/api/v1/projects/{0}/machinedesigns"
-
 Scenario: GetMachineDesigns - Good Request
-	Given a project Id 1001158
+  Given the Machine Design service URI "/api/v1/projects/{0}/machinedesigns"
+	And a project Id 1001158
 	When I request machine designs
 	Then the following machine designs should be returned
 	| designId | designName                             |
@@ -59,6 +57,19 @@ Scenario: GetMachineDesigns - Good Request
 	| 26       | Trimble Road 29 10 2012                |
 	| 47       | Trimble Road with Ref Surfaces v2      |
 	| 49       | we love u juarne                       |
+
+Scenario Outline: GetMachineDesigns For Date Range - Good Request
+  Given the Machine Design Details service URI "/api/v2/projects/{0}/<Operation>" for operation "<Operation>" and the result file "GetMachineDesignsResponse.json"
+	And a projectUid "<ProjectUID>" 
+  And startUTC "<startUTC>" 
+  And endUTC "<endUTC>"
+	When I request machine design details
+	Then the result should match the "<ResultName>" from the repository
+Examples: 
+	| RequestName   | ProjectUID                           | Operation            | startUTC             | endUTC               | ResultName    |
+	| NoFilter      | ff91dd40-1569-4765-a2bc-014321f76ace | machinedesigns       |                      |                      | NoFilter      |
+	| NoDateRange   | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | machinedesigndetails |                      |                      | NoDateRange   |
+	| WithDateRange | ff91dd40-1569-4765-a2bc-014321f76ace | machinedesigndetails | 2012-11-01T00:00:00Z | 2012-11-02T00:00:00Z | WithDateRange |
 
 #Scenario: GetMachineDesigns - Bad Request (Invalid Project ID)
 #	Given a project Id 0

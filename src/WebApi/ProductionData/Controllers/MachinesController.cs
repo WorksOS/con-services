@@ -128,7 +128,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       var id = ProjectID.Create(projectId);
       id.Validate();
-      return RequestExecutorContainerFactory.Build<GetMachineDesignsExecutor>(logger, raptorClient).Process(id) as MachineDesignsExecutionResult;
+      var result = RequestExecutorContainerFactory.Build<GetMachineDesignsExecutor>(logger, raptorClient).Process(id) as MachineDesignsExecutionResult;
+      return CreateUniqueDesignList(result);
     }
 
     // GET: api/Machines/Designs
@@ -141,13 +142,72 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v2/projects/{projectUid}/machinedesigns")]
     [HttpGet]
-
     public async Task<MachineDesignsExecutionResult> GetMachineDesigns([FromRoute] Guid projectUid)
     {
       var projectId = await (User as RaptorPrincipal).GetLegacyProjectId(projectUid);
       var id = ProjectID.Create(projectId, projectUid);
       id.Validate();
-      return RequestExecutorContainerFactory.Build<GetMachineDesignsExecutor>(logger, raptorClient).Process(id) as MachineDesignsExecutionResult;
+      var result = RequestExecutorContainerFactory.Build<GetMachineDesignsExecutor>(logger, raptorClient).Process(id) as MachineDesignsExecutionResult;
+      return CreateUniqueDesignList(result);
+    }
+
+    /// <summary>
+    /// Creates a unique list of all designs for all machines
+    /// </summary>
+    private MachineDesignsExecutionResult CreateUniqueDesignList(MachineDesignsExecutionResult result)
+    {
+      return MachineDesignsExecutionResult.CreateMachineExecutionResult(RemoveDuplicateDesigns(result.Designs));
+    }
+
+    /// <summary>
+    /// Filters out duplicate designs where the id and name match
+    /// </summary>
+    private List<DesignName> RemoveDuplicateDesigns(List<DesignName> designNames)
+    {
+      return designNames.Distinct().OrderBy(d => d.Id).ToList();
+    }
+
+
+    /// <summary>
+    /// Gets On Machine designs by machine and date range for the selected project
+    /// </summary>
+    /// <param name="projectUid">The project unique identifier.</param>
+    /// <param name="startUtc">The start date/time in UTC.</param>
+    /// <param name="endUtc">The end date/time in UTC.</param>
+    /// <returns>List with all available OnMachine designs in the selected project as reported to Raptor via tag files.</returns>
+    /// <executor>GetMachineDesignsExecutor</executor> 
+    [ProjectUidVerifier(AllowLandfillProjects = true)]
+    [Route("api/v2/projects/{projectUid}/machinedesigndetails")]
+    [HttpGet]
+    public async Task<MachineDesignDetailsExecutionResult> GetMachineDesignDetails([FromRoute] Guid projectUid, [FromQuery]string startUtc, [FromQuery]string endUtc)
+    {
+      var projectId = await (User as RaptorPrincipal).GetLegacyProjectId(projectUid);
+      var id = ProjectID.Create(projectId, projectUid);
+      id.Validate();
+
+      DateTime? beginUtc;
+      DateTime? finishUtc;
+      ValidateDates(startUtc, endUtc, out beginUtc, out finishUtc);
+
+      var designsResult = RequestExecutorContainerFactory.Build<GetMachineDesignsExecutor>(logger, raptorClient).Process(id) as MachineDesignsExecutionResult;
+      var machineResult = RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(logger, raptorClient).Process(id) as MachineExecutionResult;
+
+      var designDetailsList = new List<MachineDesignDetails>();
+      foreach (var machine in machineResult.MachineStatuses)
+      {
+        var filteredDesigns =
+          designsResult.Designs.Where(
+            design =>
+              design.MachineId == machine.AssetId &&
+              IsDateRangeOverlapping(design.StartDate, design.EndDate, beginUtc, finishUtc)).ToList();
+        if (filteredDesigns.Count > 0)
+        {
+          designDetailsList.Add(MachineDesignDetails.CreateMachineDesignDetails(
+            machine.AssetId, machine.MachineName, machine.IsJohnDoe,
+            RemoveDuplicateDesigns(filteredDesigns).ToArray()));
+        }
+      }
+      return MachineDesignDetailsExecutionResult.Create(designDetailsList.ToArray());
     }
 
     /// <summary>
@@ -229,27 +289,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       //Note: we use strings in the uri because the framework converts to local time although we are using UTC format.
       //Posts on the internet suggets using JsonSerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc
       //and IsoDateTimeConverter but that didn't fix the problem.
-      var beginUtc = ParseUtcDate(startUtc);
-      var finishUtc = ParseUtcDate(endUtc);
-
-      if (beginUtc.HasValue || finishUtc.HasValue)
-      {
-        if (beginUtc.HasValue && finishUtc.HasValue)
-        {
-          if (beginUtc.Value > finishUtc.Value)
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest,
-                new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                    "StartUtc must be earlier than endUtc"));
-          }
-        }
-        else
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                  "If using a date range both dates must be provided"));
-        }
-      }
+      DateTime? beginUtc;
+      DateTime? finishUtc;
+      ValidateDates(startUtc, endUtc, out beginUtc, out finishUtc);
 
       var layerIdsResult = RequestExecutorContainerFactory.Build<GetLayerIdsExecutor>(logger, raptorClient).Process(id) as LayerIdsExecutionResult;
       var machineResult = RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(logger, raptorClient).Process(id) as MachineExecutionResult;
@@ -271,6 +313,31 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       }
 
       return MachineLayerIdsExecutionResult.CreateMachineLayerIdsExecutionResult(liftDetailsList.ToArray());
+    }
+
+    private void ValidateDates(string startUtc, string endUtc, out DateTime? beginUtc, out DateTime? finishUtc)
+    {
+      beginUtc = ParseUtcDate(startUtc);
+      finishUtc = ParseUtcDate(endUtc);
+
+      if (beginUtc.HasValue || finishUtc.HasValue)
+      {
+        if (beginUtc.HasValue && finishUtc.HasValue)
+        {
+          if (beginUtc.Value > finishUtc.Value)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "StartUtc must be earlier than endUtc"));
+          }
+        }
+        else
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "If using a date range both dates must be provided"));
+        }
+      }
     }
 
     private DateTime? ParseUtcDate(string utcDate)

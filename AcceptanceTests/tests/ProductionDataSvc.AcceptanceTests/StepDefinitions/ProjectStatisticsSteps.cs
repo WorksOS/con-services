@@ -28,7 +28,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         [Given(@"I decide to exclude all surveyed surfaces")]
         public void GivenIDecideToExcludeAllSurveyedSurfaces()
         {
-            // 111 is always the dummy ID specified when a surveyed surface is created
+            // 111 is always the dummy ID specified when a surveyed surface is created (see BeforeAndAfter)
             prjStatsRequester.CurrentRequest.excludedSurveyedSurfaceIds = new long[] { 111 };
         }
 

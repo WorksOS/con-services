@@ -60,9 +60,9 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
                     lastKnownLongitude = Convert.ToDouble(machine["lastKnownLongitude"]),
                     lastKnownX = Convert.ToDouble(machine["lastKnownX"]),
                     lastKnownY = Convert.ToDouble(machine["lastKnownY"]),
-                    assetID = Convert.ToInt64(machine["assetID"]),
-                    machineName = machine["machineName"],
-                    isJohnDoe = Convert.ToBoolean(machine["isJohnDoe"])
+                    AssetId = Convert.ToInt64(machine["assetID"]),
+                    MachineName = machine["machineName"],
+                    IsJohnDoe = Convert.ToBoolean(machine["isJohnDoe"])
                 });
             }
             MachineStatus[] expectedMachineArray = expectedMachineList.ToArray();

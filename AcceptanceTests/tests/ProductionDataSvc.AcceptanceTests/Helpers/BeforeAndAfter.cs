@@ -18,7 +18,7 @@ namespace ProductionDataSvc.AcceptanceTests.Helpers
                         ""id"": 111,
                         ""file"": {
                           ""filespaceId"": ""u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01"",
-                          ""path"": ""/77561/1158"",
+                          ""path"": ""/SurveyedSurfaceAcceptanceTests/1001158"",
                           ""fileName"": ""Original Ground Survey - Dimensions 2012.ttm""
                         },
                         ""offset"": 0.0
@@ -38,7 +38,7 @@ namespace ProductionDataSvc.AcceptanceTests.Helpers
                     ""id"": 111,
                     ""file"": {
                         ""filespaceId"": ""u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01"",
-                        ""path"": ""/77561/1158"",
+                        ""path"": ""/SurveyedSurfaceAcceptanceTests/1001158"",
                         ""fileName"": ""Milling - Milling.ttm""
                     },
                     ""offset"": 0.0
@@ -58,7 +58,7 @@ namespace ProductionDataSvc.AcceptanceTests.Helpers
                     ""id"": 111,
                     ""file"": {
                         ""filespaceId"": ""u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01"",
-                        ""path"": ""/77561/1158"",
+                        ""path"": ""/SurveyedSurfaceAcceptanceTests/1001158"",
                         ""fileName"": ""Milling - Milling.ttm""
                     },
                     ""offset"": 0.0
@@ -70,10 +70,10 @@ namespace ProductionDataSvc.AcceptanceTests.Helpers
         [AfterScenario("requireSurveyedSurface")]
         [AfterScenario("requireOldSurveyedSurface")]
         [AfterScenario("requireSurveyedSurfaceLargerThanProductionData")]
-        public static void DeleteSurveyedSurface()
+        private static void DeleteSurveyedSurfaceFile()
         {
-            RaptorServicesClientUtil.DoHttpRequest(RaptorClientConfig.ProdSvcBaseUri + "/api/v1/projects/1001158/surveyedsurfaces/111/delete",
-                "GET", RestClientConfig.JsonMediaType, null);
+            RaptorServicesClientUtil.DoHttpRequest($"{RaptorClientConfig.ProdSvcBaseUri}/api/v1/projects/1001158/surveyedsurfaces/111/delete",
+              "GET", RestClientConfig.JsonMediaType, null);
         }
-    }
+  }
 }

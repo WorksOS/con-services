@@ -9,7 +9,7 @@
     "DesignOverrideBeforeUndoBlankInitialEventsResponse": {
         "dataEdits": [
             {
-                "assetId": 1244020666025812,
+                "assetId": "1244020666025812",
                 "startUTC": "2012-11-27T00:31:37.218",
                 "endUTC": "2012-11-29T00:31:37.219",
                 "onMachineDesignName": "Bob Excavator",
@@ -31,7 +31,7 @@
     "LayerOverrideBeforeUndoBlankInitialEventsResponse": {
         "dataEdits": [
             {
-                "assetId": 1244020666025812,
+                "assetId": "1244020666025812",
                 "startUTC": "2012-11-27T00:31:37.218",
                 "endUTC": "2012-11-29T00:31:37.219",
                 "onMachineDesignName": null,
