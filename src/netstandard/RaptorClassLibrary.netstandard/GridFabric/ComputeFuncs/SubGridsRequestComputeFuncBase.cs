@@ -290,7 +290,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                                                      (uint)(address.Y & ~((int)SubGridTree.SubGridLocalKeyMask)));
 
                 // Reach into the subgrid request layer and retrieve an appropriate subgrid
-                requestor.CellOverrideMask = SubGridTreeBitmapSubGridBits.FullMask;
+                requestor.CellOverrideMask.Fill();
                 ServerRequestResult result = requestor.RequestSubGridInternal(address, address.ProdDataRequested, address.SurveyedSurfaceDataRequested, clientGrid);
 
                 if (result != ServerRequestResult.NoError)

@@ -63,7 +63,7 @@ namespace VSS.TRex.SubGridTrees
         private uint CellY;
 
         [NonSerialized]
-        public SubGridTreeBitmapSubGridBits CellOverrideMask;
+        public SubGridTreeBitmapSubGridBits CellOverrideMask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
         [NonSerialized]
         public AreaControlSet AreaControlSet;
