@@ -23,17 +23,16 @@ namespace VSS.TRex.SubGridTrees.Client
         /// </summary>
         protected static T[,] NullCells = new T[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
 
-    /// <summary>
-    /// Main constructor. Creates the local generic Items[,] array and delegates to base(...)
-    /// </summary>
-    /// <param name="owner"></param>
-    /// <param name="parent"></param>
-    /// <param name="level"></param>
-    /// <param name="cellSize"></param>
-    /// <param name="indexOriginOffset"></param>
-    public GenericClientLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
+        /// <summary>
+        /// Main constructor. Creates the local generic Items[,] array and delegates to base(...)
+        /// </summary>
+        /// <param name="owner"></param>
+        /// <param name="parent"></param>
+        /// <param name="level"></param>
+        /// <param name="cellSize"></param>
+        /// <param name="indexOriginOffset"></param>
+        public GenericClientLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
         {
-            Clear();
         }
 
         /// <summary>

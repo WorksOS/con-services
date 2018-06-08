@@ -28,7 +28,7 @@ namespace VSS.TRex.Profiling
   {
     private static ILogger Log = Logging.Logger.CreateLogger<ProfileLiftBuilder>();
 
-    private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
+    private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.Factory();
 
     /// <summary>
     /// The number of passes identified in the top-most (most recent) layer

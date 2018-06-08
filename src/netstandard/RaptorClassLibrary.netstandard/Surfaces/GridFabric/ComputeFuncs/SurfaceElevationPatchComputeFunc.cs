@@ -20,7 +20,7 @@ namespace VSS.TRex.Surfaces.GridFabric.ComputeFuncs
     /// Local reference to the client subgrid factory
     /// </summary>
     [NonSerialized]
-    private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
+    private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.Factory();
 
     /// <summary>
     /// Invokes the surface elevation patch computation function on the server nodes the request has been sent to

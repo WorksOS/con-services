@@ -2,16 +2,17 @@
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.Tests.netcore.TestFixtures;
+using VSS.TRex.Types;
 using Xunit;
 
-namespace RaptorClassLibrary.Tests.netcore.SubGridTrees.Client
+namespace VSS.TRex.Tests.SubGridTrees.Client
 {
   public class CompositeHeightClientLeafSubgridGridTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Test_CompositeHeightClientLeafSubgridGridTests_Creation()
     {
-      var clientGrid = new ClientCompositeHeightsLeafSubgrid(null, null, SubGridTree.SubGridTreeLevels, 1.0, SubGridTree.DefaultIndexOriginOffset);
+      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.CompositeHeights) as ClientCompositeHeightsLeafSubgrid;
       Assert.NotNull(clientGrid);
     }
 
@@ -21,7 +22,7 @@ namespace RaptorClassLibrary.Tests.netcore.SubGridTrees.Client
       var cell = new SubGridCellCompositeHeightsRecord();
       cell.Clear();
 
-      var clientGrid = new ClientCompositeHeightsLeafSubgrid(null, null, SubGridTree.SubGridTreeLevels, 1.0, SubGridTree.DefaultIndexOriginOffset);
+      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.CompositeHeights) as ClientCompositeHeightsLeafSubgrid;
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Assert.True(clientGrid.Cells[x, y].Equals(cell)));
     }
   }

@@ -71,7 +71,7 @@ namespace VSS.TRex.Tests
         [Fact]
         public void Test_SubGridClientLeafFactory_Creation()
         {
-            IClientLeafSubgridFactory factory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
+            IClientLeafSubgridFactory factory = ClientLeafSubgridFactoryFactory.Factory();
 
             Assert.NotNull(factory);
 
@@ -87,7 +87,7 @@ namespace VSS.TRex.Tests
         [Fact]
         public void Test_SubGridClientLeafFactory_Recycling()
         {
-            IClientLeafSubgridFactory factory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
+            IClientLeafSubgridFactory factory = ClientLeafSubgridFactoryFactory.Factory();
 
             Assert.NotNull(factory);
 
@@ -105,7 +105,7 @@ namespace VSS.TRex.Tests
         [Fact]
         public void Test_SubGridClientLeafFactory_Reuse()
         {
-            IClientLeafSubgridFactory factory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
+            IClientLeafSubgridFactory factory = ClientLeafSubgridFactoryFactory.Factory();
 
             Assert.NotNull(factory);
 

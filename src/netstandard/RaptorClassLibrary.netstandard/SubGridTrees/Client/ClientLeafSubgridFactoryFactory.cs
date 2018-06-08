@@ -19,7 +19,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// returns an appropriate element from the Dependency Injection container when this is implemented
     /// </summary>
     /// <returns></returns>
-    public static IClientLeafSubgridFactory GetClientLeafSubGridFactory()
+    public static IClientLeafSubgridFactory Factory()
     {
       if (instance == null)
       {
@@ -30,7 +30,7 @@ namespace VSS.TRex.SubGridTrees.Client
         instance.RegisterClientLeafSubGridType(GridDataType.HeightAndTime, typeof(ClientHeightAndTimeLeafSubGrid));
         instance.RegisterClientLeafSubGridType(GridDataType.CompositeHeights, typeof(ClientCompositeHeightsLeafSubgrid));
         instance.RegisterClientLeafSubGridType(GridDataType.MachineSpeed, typeof(ClientMachineSpeedLeafSubGrid));
-                instance.RegisterClientLeafSubGridType(GridDataType.MachineSpeedTarget, typeof(ClientMachineTargetSpeedLeafSubGrid));
+        instance.RegisterClientLeafSubGridType(GridDataType.MachineSpeedTarget, typeof(ClientMachineTargetSpeedLeafSubGrid));
         instance.RegisterClientLeafSubGridType(GridDataType.CCV, typeof(ClientCMVLeafSubGrid));
         instance.RegisterClientLeafSubGridType(GridDataType.Temperature, typeof(ClientTemperatureLeafSubGrid));
         instance.RegisterClientLeafSubGridType(GridDataType.TemperatureDetail, typeof(ClientTemperatureLeafSubGrid));

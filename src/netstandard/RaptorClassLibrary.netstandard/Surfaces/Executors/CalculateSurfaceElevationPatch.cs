@@ -16,7 +16,7 @@ namespace VSS.TRex.Surfaces.Executors
     /// <summary>
     /// Local reference to the client subgrid factory
     /// </summary>
-    private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
+    private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.Factory();
 
     /// <summary>
     /// Private reference to the arguments provided to the executor
