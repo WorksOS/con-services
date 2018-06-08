@@ -5,6 +5,7 @@
     <AssemblyName>VSS.MasterData.Models.UnitTests</AssemblyName>
     <PackageId>VSS.MasterData.Models.UnitTests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <RootNamespace>VSS.MasterData.Models.UnitTests</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
