@@ -82,7 +82,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     /// <param name="filteredValue"></param>
     /// <returns></returns>
-    public override bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue) => filteredValue.FilteredPass.Height == Consts.NullSingle;
+    public override bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue) => filteredValue.FilteredPass.Height == Consts.NullHeight;
 
     /// <summary>
     /// Assign filtered height value from a filtered pass to a cell

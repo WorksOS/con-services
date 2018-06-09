@@ -34,11 +34,5 @@ namespace VSS.TRex.Tests
         {
             Assert.True(false,"Not implemented");
         }
-
-                [Fact(Skip = "Not Implemented")]
-        public void Test_GenericClientLeafSubgrid_DumpToLog()
-        {
-            Assert.True(false,"Not implemented");
-        }
     }
 }

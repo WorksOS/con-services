@@ -1,5 +1,6 @@
-﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+﻿using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Filters;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.Tests.netcore.TestFixtures;
@@ -30,28 +31,53 @@ namespace VSS.TRex.Tests
       Assert.True(false, "Not implemented");
     }
 
-    [Fact(Skip = "Not Implemented")]
-    public void Test_HeightClientLeafSubGridTests_AssignableFilteredValueIsNull()
+    [Fact]
+    public void Test_HeightClientLeafSubGridTests_AssignableFilteredValueIsNull_True()
     {
-      Assert.True(false, "Not implemented");
+      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.Height) as ClientHeightLeafSubGrid;
+      var passData = new FilteredPassData {FilteredPass = new CellPass {Height = Consts.NullHeight}};
+
+      Assert.True(clientGrid.AssignableFilteredValueIsNull(ref passData), "Filtered value stated as not null when it is");
     }
 
-    [Fact(Skip = "Not Implemented")]
-    public void Test_HeightClientLeafSubGridTests_CellHasValue()
+    [Fact]
+    public void Test_HeightClientLeafSubGridTests_AssignableFilteredValueIsNull_False()
     {
-      Assert.True(false, "Not implemented");
+      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.Height) as ClientHeightLeafSubGrid;
+      var passData = new FilteredPassData { FilteredPass = new CellPass { Height = 42.0f } };
+
+      Assert.False(clientGrid.AssignableFilteredValueIsNull(ref passData), "Filtered value stated as null when it is not");
     }
 
-    [Fact(Skip = "Not Implemented")]
+    [Fact]
+    public void Test_HeightClientLeafSubGridTests_CellHasValue_False()
+    {
+      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.Height) as ClientHeightLeafSubGrid;
+
+      // Initial state of cell should be null
+      Assert.False(clientGrid.CellHasValue(0, 0), "Cell has a value when it should not");
+    }
+
+    [Fact]
+    public void Test_HeightClientLeafSubGridTests_CellHasValue_True()
+    {
+      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.Height) as ClientHeightLeafSubGrid;
+
+      clientGrid.Cells[0, 0] = 42.0f;
+      // Initial state of cell should be null
+      Assert.True(clientGrid.CellHasValue(0, 0), "Cell has no value when it should");
+    }
+
+    [Fact]
     public void Test_HeightClientLeafSubGridTests_Clear()
     {
-      Assert.True(false, "Not implemented");
-    }
+      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.Height) as ClientHeightLeafSubGrid;
 
-    [Fact(Skip = "Not Implemented")]
-    public void Test_HeightClientLeafSubGridTests_DumpToLog()
-    {
-      Assert.True(false, "Not implemented");
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => clientGrid.Cells[x, y] = 42.0f);
+
+      clientGrid.Clear();
+
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => Assert.True(clientGrid.Cells[x, y] == Consts.NullHeight, "Cell not cleared"));
     }
 
     [Fact(Skip = "Not Implemented")]
