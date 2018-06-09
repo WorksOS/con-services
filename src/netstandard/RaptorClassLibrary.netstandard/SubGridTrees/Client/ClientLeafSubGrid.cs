@@ -17,7 +17,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// retrieved from the server.
     /// </summary>
     [Serializable]
-    public class ClientLeafSubGrid : SubGrid, IClientLeafSubGrid
+    public abstract class ClientLeafSubGrid : SubGrid, IClientLeafSubGrid
     {
         /// <summary>
         /// Enumeration indicating type of grid data held in this client leaf sub grid
