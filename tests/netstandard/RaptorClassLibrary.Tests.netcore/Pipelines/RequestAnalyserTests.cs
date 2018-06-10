@@ -8,7 +8,7 @@ using VSS.TRex.SubGridTrees;
 using VSS.TRex.Tests.netcore.TestFixtures;
 using Xunit;
 
-namespace RaptorClassLibrary.Tests.netcore.Pipelines
+namespace VSS.TRex.Tests.netcore.Pipelines
 {
   public class RequestAnalyserTests : IClassFixture<DILoggingFixture>
   {

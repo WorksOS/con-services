@@ -18,9 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\netstandard\Raptor.Common.netstandard\Raptor.Common.netstandard.csproj" />
-    <ProjectReference Include="..\..\..\src\netstandard\RaptorClassLibrary.netstandard\RaptorClassLibrary.netstandard.csproj" />
-    <ProjectReference Include="..\RaptorClassLibrary.Tests.netcore\RaptorClassLibrary.Tests.netcore.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\Raptor.Common.netstandard\VSS.TRex.Common.netstandard.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\RaptorClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj" />
+    <ProjectReference Include="..\RaptorClassLibrary.Tests.netcore\TRexClassLibrary.Tests.netcore.csproj" />
     <ProjectReference Include="..\Tests.Common\Tests.Common.csproj" />
   </ItemGroup>
 

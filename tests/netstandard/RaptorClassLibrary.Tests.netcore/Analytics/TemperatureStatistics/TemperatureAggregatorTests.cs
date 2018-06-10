@@ -1,10 +1,10 @@
 ﻿using System;
-using RaptorClassLibrary.Tests.netcore.Analytics.Common;
+using VSS.TRex.Tests.netcore.Analytics.Common;
 using VSS.TRex.Analytics.TemperatureStatistics;
 using VSS.TRex.Cells;
 using Xunit;
 
-namespace RaptorClassLibrary.Tests.netcore.Analytics.TemperatureStatistics
+namespace VSS.TRex.Tests.netcore.Analytics.TemperatureStatistics
 {
   public class TemperatureAggregatorTests : BaseTests
   {

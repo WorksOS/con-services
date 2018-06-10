@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.TRex.SiteModels;
 
-namespace RaptorClassLibrary.Tests.netcore.Analytics.Common
+namespace VSS.TRex.Tests.netcore.Analytics.Common
 {
   public class BaseCoordinatorTests : BaseTests
   {

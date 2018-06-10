@@ -4,7 +4,7 @@ using VSS.TRex.Tests.netcore.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
-namespace RaptorClassLibrary.Tests.netcore.Profiling.Factories
+namespace VSS.TRex.Tests.netcore.Profiling.Factories
 {
     public class ProfileBuilderFactoryTests : IClassFixture<DILoggingFixture>
     {

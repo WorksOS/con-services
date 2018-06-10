@@ -7,7 +7,7 @@ using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Types;
 using Xunit;
 
-namespace RaptorClassLibrary.Tests.netcore.Profiling
+namespace VSS.TRex.Tests.netcore.Profiling
 {
   public class ProfileBuilderTests_Fixture : IDisposable
   {

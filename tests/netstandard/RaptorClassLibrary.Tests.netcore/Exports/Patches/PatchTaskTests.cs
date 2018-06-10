@@ -8,7 +8,7 @@ using VSS.TRex.Tests.netcore.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
-namespace RaptorClassLibrary.Tests.netcore.Exports.Patches
+namespace VSS.TRex.Tests.netcore.Exports.Patches
 {
   public class PatchTaskTests //: IClassFixture<DILoggingFixture>
   {

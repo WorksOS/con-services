@@ -2,7 +2,7 @@
 using VSS.TRex.Analytics.Foundation.Aggregators;
 using Xunit;
 
-namespace RaptorClassLibrary.Tests.netcore.Analytics.Foundation
+namespace VSS.TRex.Tests.netcore.Analytics.Foundation
 {
   public class SummaryAggregatorTests
   {

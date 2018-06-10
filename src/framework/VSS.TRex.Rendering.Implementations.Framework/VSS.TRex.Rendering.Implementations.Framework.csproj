@@ -93,9 +93,9 @@
       <Project>{3ff74fe8-c1b2-4a78-b685-99fabcd4989b}</Project>
       <Name>VSS.TRex.Rendering.Abstractions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\netstandard\RaptorClassLibrary.netstandard\RaptorClassLibrary.netstandard.csproj">
+    <ProjectReference Include="..\..\netstandard\RaptorClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj">
       <Project>{40db7cf3-5817-45a5-9f90-29baa80e2c7a}</Project>
-      <Name>RaptorClassLibrary.netstandard</Name>
+      <Name>TRexClassLibrary.netstandard</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -132,13 +132,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\netstandard\Raptor.Common.netstandard\Raptor.Common.netstandard.csproj">
+    <ProjectReference Include="..\..\netstandard\Raptor.Common.netstandard\VSS.TRex.Common.netstandard.csproj">
       <Project>{737bfd08-031b-4506-8205-947b82c6d2ba}</Project>
-      <Name>Raptor.Common.netstandard</Name>
+      <Name>VSS.TRex.Common.netstandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\netstandard\RaptorClassLibrary.netstandard\RaptorClassLibrary.netstandard.csproj">
+    <ProjectReference Include="..\..\netstandard\RaptorClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj">
       <Project>{40db7cf3-5817-45a5-9f90-29baa80e2c7a}</Project>
-      <Name>RaptorClassLibrary.netstandard</Name>
+      <Name>TRexClassLibrary.netstandard</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
