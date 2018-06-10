@@ -1,37 +1,36 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.FlowJSHandler;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Project.WebAPI.Common.Executors;
+using VSS.MasterData.Project.WebAPI.Common.Helpers;
+using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.MasterData.Project.WebAPI.Factories;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.MasterData.Project.WebAPI.Factories;
-using VSS.MasterData.Proxies.Interfaces;
-using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterData.Project.WebAPI.Common.Helpers;
-using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Project.WebAPI.Common.Executors;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
-  /// <summary>
-  /// File Import controller v4
-  /// </summary>
-  public class FileImportV4Controller : FileImportBaseController
+    /// <summary>
+    /// File Import controller v4
+    /// </summary>
+    public class FileImportV4Controller : FileImportBaseController
   {
     /// <summary>
     /// Logger factory for use by executor
@@ -200,12 +199,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
     public async Task<ImportedFileDescriptorSingleResult> CreateImportedFileV4(
       FlowFile file,
-      [FromUri] Guid projectUid, 
-      [FromUri] ImportedFileType importedFileType,
-      [FromUri] DxfUnitsType dxfUnitsType,
-      [FromUri] DateTime fileCreatedUtc, 
-      [FromUri] DateTime fileUpdatedUtc,
-      [FromUri] DateTime? surveyedUtc = null)
+      [FromQuery] Guid projectUid, 
+      [FromQuery] ImportedFileType importedFileType,
+      [FromQuery] DxfUnitsType dxfUnitsType,
+      [FromQuery] DateTime fileCreatedUtc, 
+      [FromQuery] DateTime fileUpdatedUtc,
+      [FromQuery] DateTime? surveyedUtc = null)
     {
       FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
@@ -312,12 +311,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
     public async Task<ImportedFileDescriptorSingleResult> UpsertImportedFileV4(
       FlowFile file,
-      [FromUri] Guid projectUid, 
-      [FromUri] ImportedFileType importedFileType,
-      [FromUri] DxfUnitsType dxfUnitsType,
-      [FromUri] DateTime fileCreatedUtc, 
-      [FromUri] DateTime fileUpdatedUtc,
-      [FromUri] DateTime? surveyedUtc = null)
+      [FromQuery] Guid projectUid, 
+      [FromQuery] ImportedFileType importedFileType,
+      [FromQuery] DxfUnitsType dxfUnitsType,
+      [FromQuery] DateTime fileCreatedUtc, 
+      [FromQuery] DateTime fileUpdatedUtc,
+      [FromQuery] DateTime? surveyedUtc = null)
     {
       FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
@@ -376,8 +375,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <response code="400">Bad request</response>
     [Route("api/v4/importedfile")]
     [HttpDelete]
-    public async Task<ContractExecutionResult> DeleteImportedFileV4([FromUri] Guid projectUid,
-      [FromUri] Guid importedFileUid)
+    public async Task<ContractExecutionResult> DeleteImportedFileV4([FromQuery] Guid projectUid,
+      [FromQuery] Guid importedFileUid)
     {
       log.LogInformation($"DeleteImportedFileV4. projectUid {projectUid} importedFileUid: {importedFileUid}");
 

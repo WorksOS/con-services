@@ -1,31 +1,30 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Repositories;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.MasterData.Proxies.Interfaces;
-using VSS.TCCFileAccess;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.MasterData.Proxies.Interfaces;
+using VSS.MasterData.Repositories;
+using VSS.TCCFileAccess;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
-  /// <summary>
-  /// Project controller v3
-  ///   This is used by Legacy during Lift and Shift
-  ///   The functionality is quite different (simplified) to v4 
-  /// </summary>
-  public class ProjectV3Controller : ProjectBaseController
+    /// <summary>
+    /// Project controller v3
+    ///   This is used by Legacy during Lift and Shift
+    ///   The functionality is quite different (simplified) to v4 
+    /// </summary>
+    public class ProjectV3Controller : ProjectBaseController
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="ProjectV3Controller"/> class.
@@ -134,7 +133,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <response code="400">Bad request</response>
     [Route("api/v3/project/{projectUid}")]
     [HttpDelete]
-    public async Task DeleteProjectV3([FromUri] Guid projectUid)
+    public async Task DeleteProjectV3([FromQuery] Guid projectUid)
     {
       log.LogInformation("DeleteProjectV3. project: {0}", projectUid);
       var project = new DeleteProjectEvent
