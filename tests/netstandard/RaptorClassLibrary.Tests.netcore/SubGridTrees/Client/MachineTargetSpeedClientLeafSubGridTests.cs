@@ -6,15 +6,11 @@ using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees.Client
 {
+  /// <summary>
+  /// Includes tests not covered in GenericClientLeafSibgriTests
+  /// </summary>
   public class MachineTargetSpeedClientLeafSubGridTests : IClassFixture<DILoggingFixture>
   {
-    [Fact]
-    public void Test_MachineTargetSpeedClientLeafSubgridGridTests_Creation()
-    {
-      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.MachineSpeedTarget) as ClientMachineTargetSpeedLeafSubGrid;
-      Assert.NotNull(clientGrid);
-    }
-
     [Fact]
     public void Test_NullCells()
     {

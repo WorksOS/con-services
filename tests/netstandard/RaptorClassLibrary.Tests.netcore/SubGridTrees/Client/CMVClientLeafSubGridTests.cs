@@ -7,15 +7,11 @@ using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees.Client
 {
+  /// <summary>
+  /// Includes tests not covered in GenericClientLeafSibgriTests
+  /// </summary>
   public class CMVClientLeafSubGridTests : IClassFixture<DILoggingFixture>
   {
-    [Fact]
-    public void Test_CMVClientLeafSubgridGridTests_Creation()
-    {
-      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.CCV) as ClientCMVLeafSubGrid;
-      Assert.NotNull(clientGrid);
-    }
-
     [Fact]
     public void Test_NullCells()
     {

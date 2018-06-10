@@ -5,24 +5,27 @@ using Xunit;
 
 namespace RaptorClassLibrary.Tests.netcore.SubGridTrees.Client
 {
-    public class SubGridCellCompositeHeightsRecordTests
+  /// <summary>
+  /// Includes tests not covered in GenericClientLeafSibgriTests
+  /// </summary>
+  public class SubGridCellCompositeHeightsRecordTests
+  {
+    [Fact]
+    public void Test_SubGridCellCompositeHeightsRecord_Creation()
     {
-      [Fact]
-      public void Test_SubGridCellCompositeHeightsRecord_Creation()
-      {
-        SubGridCellCompositeHeightsRecord rec = new SubGridCellCompositeHeightsRecord();
+      SubGridCellCompositeHeightsRecord rec = new SubGridCellCompositeHeightsRecord();
 
-        rec.Clear();
+      rec.Clear();
 
-        Assert.True(rec.FirstHeight == Consts.NullHeight);
-        Assert.True(rec.LastHeight == Consts.NullHeight);
-        Assert.True(rec.LowestHeight == Consts.NullHeight);
-        Assert.True(rec.HighestHeight == Consts.NullHeight);
+      Assert.True(rec.FirstHeight == Consts.NullHeight);
+      Assert.True(rec.LastHeight == Consts.NullHeight);
+      Assert.True(rec.LowestHeight == Consts.NullHeight);
+      Assert.True(rec.HighestHeight == Consts.NullHeight);
 
-        Assert.True(rec.FirstHeightTime == DateTime.MinValue.ToBinary());
-        Assert.True(rec.LastHeightTime == DateTime.MinValue.ToBinary());
-        Assert.True(rec.LowestHeightTime == DateTime.MinValue.ToBinary());
-        Assert.True(rec.HighestHeightTime == DateTime.MinValue.ToBinary());
-      }
+      Assert.True(rec.FirstHeightTime == DateTime.MinValue.ToBinary());
+      Assert.True(rec.LastHeightTime == DateTime.MinValue.ToBinary());
+      Assert.True(rec.LowestHeightTime == DateTime.MinValue.ToBinary());
+      Assert.True(rec.HighestHeightTime == DateTime.MinValue.ToBinary());
+    }
   }
 }

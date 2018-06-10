@@ -7,16 +7,11 @@ using Xunit;
 
 namespace VSS.TRex.Tests
 {
+  /// <summary>
+  /// Includes tests not covered in GenericClientLeafSibgriTests
+  /// </summary>
   public class HeightAndTimeClientLeafSubgridTests
   {
-    [Fact()]
-
-    public void Test_HeightAndTimeClientLeafSubgrid_Creation()
-    {
-      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.HeightAndTime) as ClientHeightAndTimeLeafSubGrid;
-      Assert.NotNull(clientGrid);
-    }
-
     [Fact]
     public void Test_NullCells()
     {
