@@ -20,8 +20,8 @@ namespace VSS.TRex.SubGridTrees.Client
 	  /// </summary>
 	  static ClientMachineTargetSpeedLeafSubGrid()
 	  {
-	    SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y].Clear());
-	  }
+	    SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y] = MachineSpeedExtendedRecord.NullValue);
+    }
 
 		/// <summary>
     /// Constructor. Set the grid to MachineSpeedTarget.
@@ -67,7 +67,13 @@ namespace VSS.TRex.SubGridTrees.Client
 	  /// <param name="cellX"></param>
 	  /// <param name="cellY"></param>
 	  /// <returns></returns>
-	  public override bool CellHasValue(byte cellX, byte cellY) => (Cells[cellX, cellY].Min != CellPass.NullMachineSpeed) || (Cells[cellX, cellY].Max != CellPass.NullMachineSpeed);
+	  public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY].Min != CellPass.NullMachineSpeed || Cells[cellX, cellY].Max != CellPass.NullMachineSpeed;
+
+	  /// <summary>
+	  /// Provides a copy of the null value defined for cells in thie client leaf subgrid
+	  /// </summary>
+	  /// <returns></returns>
+	  public override MachineSpeedExtendedRecord NullCell() => MachineSpeedExtendedRecord.NullValue;
 
 	  /// <summary>
 	  /// Sets all min/max cell machine speeds to null and clears the first pass and sureyed surface pass maps

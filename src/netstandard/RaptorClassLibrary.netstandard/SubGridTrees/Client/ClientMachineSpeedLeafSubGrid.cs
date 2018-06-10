@@ -65,7 +65,13 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="cellY"></param>
     /// <returns></returns>
     public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY] != CellPass.NullMachineSpeed;
-   
+
+    /// <summary>
+    /// Provides a copy of the null value defined for cells in thie client leaf subgrid
+    /// </summary>
+    /// <returns></returns>
+    public override ushort NullCell() => CellPass.NullMachineSpeed;
+
     /// <summary>
     /// Sets all cell heights to null and clears the first pass and sureyed surface pass maps
     /// </summary>

@@ -14,7 +14,7 @@ namespace VSS.TRex.SubGridTrees
         /// Create a human readable string representing the location and tree level this subgrid occupies in the tree.
         /// </summary>
         /// <returns></returns>
-        public override string ToString() => string.Format("Level:{0}, OriginX:{1}, OriginY:{2}", Level, OriginX, OriginY);
+        public override string ToString() => $"Level:{Level}, OriginX:{OriginX}, OriginY:{OriginY}";
 
         /// <summary>
         /// The sub grid tree instance to which this subgrid belongs
@@ -34,9 +34,7 @@ namespace VSS.TRex.SubGridTrees
             lock (this)
             {
                 if (Locked)
-                {
                     return false;
-                }
 
                 Locked = true;
                 LockToken = lockToken;
@@ -269,7 +267,6 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         public virtual void Clear()
         {
-            throw new Exception("SubGrid.Clear() should never be called");
         }
 
         /// <summary>

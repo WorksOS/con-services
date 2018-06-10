@@ -14,19 +14,13 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// The four elevations are expressed in meters above the project calibration datum
     /// </summary>
-    public float LowestHeight,
-      HighestHeight,
-      LastHeight,
-      FirstHeight;
+    public float LowestHeight, HighestHeight, LastHeight, FirstHeight;
 
     /// <summary>
     /// The four dates are expressed as the binary representation of a DateTime to promote efficient
     /// serialization
     /// </summary>
-    public long LowestHeightTime,
-      HighestHeightTime,
-      LastHeightTime,
-      FirstHeightTime;
+    public long LowestHeightTime, HighestHeightTime, LastHeightTime, FirstHeightTime;
 
     public void Clear()
     {
@@ -40,6 +34,15 @@ namespace VSS.TRex.SubGridTrees.Client
       FirstHeightTime = 0; //DateTime.MinValue;
     }
 
+    /// <summary>
+    /// Defines a publically accessible null value for this cell value type
+    /// </summary>
+    public static SubGridCellCompositeHeightsRecord NullValue = SubGridCellCompositeHeightsRecord.Null();
+    
+    /// <summary>
+    /// Implements the business logic to create the null value for this cell valuye type
+    /// </summary>
+    /// <returns></returns>
     public static SubGridCellCompositeHeightsRecord Null()
     {
       SubGridCellCompositeHeightsRecord Result = new SubGridCellCompositeHeightsRecord();
@@ -87,6 +90,17 @@ namespace VSS.TRex.SubGridTrees.Client
         LastHeightTime == other.LastHeightTime &&
         LowestHeightTime == other.LowestHeightTime &&
         HighestHeightTime == other.HighestHeightTime;
+    }
+
+    /// <summary>
+    /// Sets all the elevations in the cell to zero
+    /// </summary>
+    public void SetToZeroHeight()
+    {
+      LowestHeight = 0;
+      HighestHeight = 0;
+      LastHeight = 0;
+      FirstHeight = 0;
     }
   }
 }

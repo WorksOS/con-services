@@ -282,7 +282,7 @@ namespace VSS.TRex.Profiling
               continue;
 
             if (DesignResult == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
-              DesignElevations = null; // force a nullsingle to be written
+              DesignElevations = null; // force a null height to be written
           }
         }
 

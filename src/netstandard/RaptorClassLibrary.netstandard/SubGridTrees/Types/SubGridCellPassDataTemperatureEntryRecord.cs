@@ -40,6 +40,22 @@ namespace VSS.TRex.SubGridTrees.Types
 	  }
 
     /// <summary>
+    /// Defines a publically accessible null value for this cell value type
+    /// </summary>
+    public static SubGridCellPassDataTemperatureEntryRecord NullValue = SubGridCellPassDataTemperatureEntryRecord.Null();
+
+    /// <summary>
+    /// Implements the business logic to create the null value for this cell valuye type
+    /// </summary>
+    /// <returns></returns>
+    public static SubGridCellPassDataTemperatureEntryRecord Null()
+    {
+      SubGridCellPassDataTemperatureEntryRecord Result = new SubGridCellPassDataTemperatureEntryRecord();
+      Result.Clear();
+      return Result;
+    }
+
+    /// <summary>
     /// Serialises content of the cell to the writer
     /// </summary>
     /// <param name="writer"></param>

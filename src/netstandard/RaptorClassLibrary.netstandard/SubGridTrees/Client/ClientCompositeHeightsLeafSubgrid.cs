@@ -15,7 +15,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     static ClientCompositeHeightsLeafSubgrid()
     {
-      SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y].Clear());
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y] = SubGridCellCompositeHeightsRecord.NullValue);
     }
 
     /// <summary>
@@ -49,30 +49,18 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Zero out all elevations
     /// </summary>
-    public void SetToZeroHeight()
-    {
-      SubGridUtilities.SubGridDimensionalIterator((i, j) =>
-      {
-        Cells[i, j].LowestHeight = 0;
-        Cells[i, j].HighestHeight = 0;
-        Cells[i, j].LastHeight = 0;
-        Cells[i, j].FirstHeight = 0;
-      });
-    }
+    public void SetToZeroHeight() => SubGridUtilities.SubGridDimensionalIterator((i, j) => Cells[i, j].SetToZeroHeight());
 
     /// <summary>
     /// Null out all elevations
     /// </summary>
-    public void SetHeightsToNull()
-    {
-      SubGridUtilities.SubGridDimensionalIterator((i, j) =>
-      {
-        Cells[i, j].LowestHeight = Consts.NullHeight;
-        Cells[i, j].HighestHeight = Consts.NullHeight;
-        Cells[i, j].LastHeight = Consts.NullHeight;
-        Cells[i, j].FirstHeight = Consts.NullHeight;
-      });
-    }
+    public void SetHeightsToNull() => SubGridUtilities.SubGridDimensionalIterator((i, j) => Cells[i, j] = SubGridCellCompositeHeightsRecord.NullValue);
+
+    /// <summary>
+    /// Provides a copy of the null value defined for cells in thie client leaf subgrid
+    /// </summary>
+    /// <returns></returns>
+    public override SubGridCellCompositeHeightsRecord NullCell() => SubGridCellCompositeHeightsRecord.NullValue;
 
     /// <summary>
     /// Clears all cells in the composite height grid to null heights and dates

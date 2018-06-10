@@ -20,12 +20,12 @@ namespace VSS.TRex.SubGridTrees.Client
         public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
       /// <summary>
-      /// Initilise the null cell values for the client subgrid
+      /// Initialise the null cell values for the client subgrid
       /// </summary>
       static ClientTemperatureLeafSubGrid()
       {
-        SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y].Clear());
-      }
+        SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y] = SubGridCellPassDataTemperatureEntryRecord.NullValue);
+      } 
 
     /// <summary>
     /// Constructor. Set the grid to Temperature.
@@ -71,19 +71,18 @@ namespace VSS.TRex.SubGridTrees.Client
         public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY].MeasuredTemperature != CellPass.NullMaterialTemperatureValue;
 
         /// <summary>
+        /// Provides a copy of the null value defined for cells in thie client leaf subgrid
+        /// </summary>
+        /// <returns></returns>
+        public override SubGridCellPassDataTemperatureEntryRecord NullCell() => SubGridCellPassDataTemperatureEntryRecord.NullValue;
+
+        /// <summary>
         /// Sets all cell heights to null and clears the first pass and sureyed surface pass maps
         /// </summary>
         public override void Clear()
         {
 					base.Clear();
-
-	        // TODO: Optimisation: Use PassData_MachineSpeed_Null assignment as in current gen;
-					ForEach((x, y) =>
-          {
-						Cells[x, y].MeasuredTemperature = CellPass.NullMaterialTemperatureValue;
-            Cells[x, y].TemperatureLevels.Clear();
-          }); 
-	        
+       
 					FirstPassMap.Clear();
         }
 

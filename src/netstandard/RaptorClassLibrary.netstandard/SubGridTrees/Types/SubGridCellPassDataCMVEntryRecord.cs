@@ -148,5 +148,20 @@ namespace VSS.TRex.SubGridTrees.Types
       PreviousTargetCMV = reader.ReadInt16();
     }
 
+    /// <summary>
+    /// Defines a publically accessible null value for this cell value type
+    /// </summary>
+    public static SubGridCellPassDataCMVEntryRecord NullValue = SubGridCellPassDataCMVEntryRecord.Null();
+
+    /// <summary>
+    /// Implements the business logic to create the null value for this cell valuye type
+    /// </summary>
+    /// <returns></returns>
+    private static SubGridCellPassDataCMVEntryRecord Null()
+    {
+      SubGridCellPassDataCMVEntryRecord result = new SubGridCellPassDataCMVEntryRecord();
+      result.Clear();
+      return result;
+    }
   }
 }

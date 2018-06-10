@@ -24,6 +24,11 @@ namespace VSS.TRex.SubGridTrees.Client
         protected static T[,] NullCells = new T[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
 
         /// <summary>
+        /// Represented a T element configured as the null value for cells is this client leafe subgrid
+        /// </summary>
+        public abstract T NullCell(); // => default(T);
+
+        /// <summary>
         /// Main constructor. Creates the local generic Items[,] array and delegates to base(...)
         /// </summary>
         /// <param name="owner"></param>

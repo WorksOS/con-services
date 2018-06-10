@@ -104,6 +104,12 @@ namespace VSS.TRex.SubGridTrees.Client
     public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY] != Consts.NullHeight;
 
     /// <summary>
+    /// Provides a copy of the null value defined for cells in thie client leaf subgrid
+    /// </summary>
+    /// <returns></returns>
+    public override float NullCell() => Consts.NullHeight;
+
+    /// <summary>
     /// Sets all cell heights to null and clears the first pass and surveyed surface pass maps
     /// </summary>
     public override void Clear()

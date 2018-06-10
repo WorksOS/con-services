@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using VSS.TRex.Cells;
 using VSS.TRex.Filters;
 using VSS.TRex.Profiling;
@@ -32,7 +31,7 @@ namespace VSS.TRex.SubGridTrees.Client
       /// </summary>
       static ClientCMVLeafSubGrid()
       {
-        SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y].Clear());
+        SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y] = SubGridCellPassDataCMVEntryRecord.NullValue);
       }
 
     /// <summary>
@@ -110,10 +109,8 @@ namespace VSS.TRex.SubGridTrees.Client
       Cells[cellX, cellY].IsTopLayerUndercompacted = false;
       Cells[cellX, cellY].IsOvercompacted = false;
 
-      int lowLayerIndex;
-      int highLayerIndex;
-
-      lowLayerIndex = highLayerIndex = -1;
+      int lowLayerIndex = -1;
+      int highLayerIndex = -1;
 
       if (Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly)
       {
@@ -180,13 +177,17 @@ namespace VSS.TRex.SubGridTrees.Client
     public override bool CellHasValue(byte cellX, byte cellY) => _gridDataType == GridDataType.CCVPercentChange || Cells[cellX, cellY].MeasuredCMV != CellPass.NullCCV;
 
     /// <summary>
+    /// Provides a copy of the null value defined for cells in thie client leaf subgrid
+    /// </summary>
+    /// <returns></returns>
+    public override SubGridCellPassDataCMVEntryRecord NullCell() => SubGridCellPassDataCMVEntryRecord.NullValue;
+
+    /// <summary>
     /// Sets all cell CMVs to null and clears the first pass and sureyed surface pass maps
     /// </summary>
     public override void Clear()
     {
       base.Clear();
-      // TODO: Optimisation: Use PassData_MachineSpeed_Null assignment as in current gen;
-      ForEach((x, y) => Cells[x, y].Clear()); 
 
       FirstPassMap.Clear();
     }
