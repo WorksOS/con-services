@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{309905EF-7F3F-4086-B166-E01D055820FF}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>TRexMutableDataServer</RootNamespace>
+    <RootNamespace>VSS.TRex</RootNamespace>
     <AssemblyName>TRexMutableDataServer</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
