@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using VSS.TRex.SubGridTrees.Client;
-using VSS.TRex.SubGridTrees.Types;
-using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.Types;
 using Xunit;
 
@@ -106,14 +104,14 @@ namespace VSS.TRex.Tests
     public void Test_GenericClientLeafSubgrid_Clear_Ex(GridDataType gridDataType)
     {
       var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(gridDataType);
-
+      clientGrid.FillWithTestPattern();
       clientGrid.Clear();
       clientGrid.ForEach((x, y) => Assert.True(!clientGrid.CellHasValue(x, y), "Clear() did not clear all cells"));
     }
 
     [Theory]
     [MemberData(nameof(ClientLeafDataTypes_ExpectedOnly), parameters: kGridDataTypeCount_Expected)]
-    public void Test_GenericClientLeafSubgrid_ReadWrite(GridDataType gridDataType)
+    public void Test_GenericClientLeafSubgrid_ReadWrite_Ex(GridDataType gridDataType)
     {
       var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(gridDataType);
       clientGrid.FillWithTestPattern();
@@ -124,6 +122,24 @@ namespace VSS.TRex.Tests
       clientGrid2.FromBytes(bytes);
 
       Assert.True(clientGrid.LeafContentEquals(clientGrid2), "Client grids not equal after read/write serialisation");
+    }
+
+    [Theory]
+    [MemberData(nameof(ClientLeafDataTypes_ExpectedOnly), parameters: kGridDataTypeCount_Expected)]
+    public void Test_GenericClientLeafSubgrid_CellHasValue_True_Ex(GridDataType gridDataType)
+    {
+      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(gridDataType);
+      clientGrid.FillWithTestPattern();
+
+      clientGrid.ForEach((x, y) => Assert.True(clientGrid.CellHasValue(x, y), "Cell does not have value when it should"));
+    }
+
+    [Theory]
+    [MemberData(nameof(ClientLeafDataTypes_ExpectedOnly), parameters: kGridDataTypeCount_Expected)]
+    public void Test_GenericClientLeafSubgrid_CellHasValue_False_Ex(GridDataType gridDataType)
+    {
+      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(gridDataType);
+      clientGrid.ForEach((x, y) => Assert.False(clientGrid.CellHasValue(x, y), "Cell does have value when it should not"));
     }
   }
 }
