@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <NetStandardImplicitPackageVersion>2.0</NetStandardImplicitPackageVersion>
     <AssemblyName>VSS.MasterData.Project.WebAPI.Common</AssemblyName>
     <PackageId>ProjectWebApiCommon</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -13,10 +12,6 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="6.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Routing" Version="2.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="2.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
@@ -28,6 +23,7 @@
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.8.*" />
     <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.8.*" />
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.20.*" />
+    <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

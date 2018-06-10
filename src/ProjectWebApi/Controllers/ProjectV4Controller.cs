@@ -38,20 +38,21 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     protected readonly IHttpContextAccessor httpContextAccessor;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="producer"></param>
-    /// <param name="projectRepo"></param>
-    /// <param name="subscriptionRepo"></param>
-    /// <param name="store"></param>
-    /// <param name="subscriptionProxy"></param>
-    /// <param name="geofenceProxy"></param>
-    /// <param name="raptorProxy"></param>
-    /// <param name="fileRepo"></param>
-    /// <param name="logger"></param>
-    /// <param name="serviceExceptionHandler">The ServiceException handler.</param>
-    public ProjectV4Controller(IKafka producer, IProjectRepository projectRepo,
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="producer"></param>
+        /// <param name="projectRepo"></param>
+        /// <param name="subscriptionRepo"></param>
+        /// <param name="store"></param>
+        /// <param name="subscriptionProxy"></param>
+        /// <param name="httpContextAccessor"></param>
+        /// <param name="geofenceProxy"></param>
+        /// <param name="raptorProxy"></param>
+        /// <param name="fileRepo"></param>
+        /// <param name="logger"></param>
+        /// <param name="serviceExceptionHandler">The ServiceException handler.</param>
+        public ProjectV4Controller(IKafka producer, IProjectRepository projectRepo,
       ISubscriptionRepository subscriptionRepo, IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
       IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, IFileRepository fileRepo,
       ILoggerFactory logger,
