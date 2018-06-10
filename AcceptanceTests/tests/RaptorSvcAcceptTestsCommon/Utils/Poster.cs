@@ -21,7 +21,18 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     public TRequest CurrentRequest { get; set; }
     public TResponse CurrentResponse { get; private set; }
     public ServiceResponse CurrentServiceResponse { get; private set; }
-    
+
+    public Poster(string uri, TRequest request)
+    {
+      RequestRepo = null;
+      ResponseRepo = null;
+
+      Uri = uri;
+      CurrentRequest = request;
+      CurrentResponse = default(TResponse);
+      CurrentServiceResponse = null;
+    }
+
     /// <summary>
     /// Construct a service POSTer
     /// </summary>
@@ -42,21 +53,19 @@ namespace RaptorSvcAcceptTestsCommon.Utils
       {
         if (requestFile != null)
         {
-          using (StreamReader file = File.OpenText(RaptorClientConfig.TestDataPath + requestFile))
+          using (var file = File.OpenText(RaptorClientConfig.TestDataPath + requestFile))
           {
-            JsonSerializer serializer = new JsonSerializer();
-            RequestRepo = (Dictionary<string, TRequest>)serializer.Deserialize(file,
-                typeof(Dictionary<string, TRequest>));
+            var serializer = new JsonSerializer();
+            RequestRepo = (Dictionary<string, TRequest>)serializer.Deserialize(file, typeof(Dictionary<string, TRequest>));
           }
         }
 
         if (responseFile != null)
         {
-          using (StreamReader file = File.OpenText(RaptorClientConfig.TestDataPath + responseFile))
+          using (var file = File.OpenText(RaptorClientConfig.TestDataPath + responseFile))
           {
-            JsonSerializer serializer = new JsonSerializer();
-            ResponseRepo = (Dictionary<string, TResponse>)serializer.Deserialize(file,
-                typeof(Dictionary<string, TResponse>));
+            var serializer = new JsonSerializer();
+            ResponseRepo = (Dictionary<string, TResponse>)serializer.Deserialize(file, typeof(Dictionary<string, TResponse>));
           }
         }
       }
@@ -65,20 +74,6 @@ namespace RaptorSvcAcceptTestsCommon.Utils
         Logger.Error(e.Message, Logger.ContentType.Error);
         throw;
       }
-    }
-
-    /// <summary>
-    /// Construct a service POSTer
-    /// </summary>
-    public Poster(string uri, TRequest request)
-    {
-      RequestRepo = null;
-      ResponseRepo = null;
-
-      Uri = uri;
-      CurrentRequest = request;
-      CurrentResponse = default(TResponse);
-      CurrentServiceResponse = null;
     }
 
     /// <summary>
@@ -169,23 +164,22 @@ namespace RaptorSvcAcceptTestsCommon.Utils
       CurrentServiceResponse = RaptorServicesClientUtil.DoHttpRequest(Uri, "POST",
           RestClientConfig.JsonMediaType, requestBodyString);
 
-      if (CurrentServiceResponse != null)
+      if (CurrentServiceResponse == null)
       {
-        if (expectedHttpCode != CurrentServiceResponse.HttpCode)
-        {
-          Logger.Error($"Expected {expectedHttpCode}, but got {CurrentServiceResponse.HttpCode} instead.",
-              Logger.ContentType.Error);
-        }
-
-        Assert.AreEqual(expectedHttpCode, CurrentServiceResponse.HttpCode,
-          $"Expected {expectedHttpCode}, but got {CurrentServiceResponse.HttpCode} instead. Message was {CurrentServiceResponse.ResponseBody}");
-
-        CurrentResponse = JsonConvert.DeserializeObject<TResponse>(CurrentServiceResponse.ResponseBody);
-
-        return CurrentResponse;
+        return default(TResponse);
       }
 
-      return default(TResponse);
+      if (expectedHttpCode != CurrentServiceResponse.HttpCode)
+      {
+        Logger.Error($"Expected {expectedHttpCode}, but got {CurrentServiceResponse.HttpCode} instead.", Logger.ContentType.Error);
+      }
+
+      Assert.AreEqual(expectedHttpCode, CurrentServiceResponse.HttpCode,
+        $"Expected {expectedHttpCode}, but got {CurrentServiceResponse.HttpCode} instead. Message was {CurrentServiceResponse.ResponseBody}");
+
+      CurrentResponse = JsonConvert.DeserializeObject<TResponse>(CurrentServiceResponse.ResponseBody);
+
+      return CurrentResponse;
     }
   }
 }
