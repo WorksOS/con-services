@@ -457,16 +457,25 @@ namespace VSS.TRex.SubGridTrees
         }
 
       /// <summary>
-      /// Perform an action over all cells in the subgrid, exposed in ISubGrid
+      /// Iterates over all the cells in the subgrid calling functor on each of them.
+      /// Both non-null and null values are presented to functor.
       /// </summary>
-      /// <param name="action"></param>
-      public void ForAllCells(Action<uint, uint> action) => SubGridUtilities.SubGridDimensionalIterator(action);
+      /// <param name="functor"></param>
+      /// <returns></returns>
+      public void ForEach(Action<byte, byte> functor) => SubGridUtilities.SubGridDimensionalIterator((x, y) => functor((byte)x, (byte)y));
+
+      public bool Equals(ISubGrid other)
+      {
+        throw new NotImplementedException();
+      }
 
       /// <summary>
-      /// Perform an action over all cells in the subgrid, exposed as a static method
+      /// Iterates over all the cells in the subgrid calling functor on each of them.
+      /// Both non-null and null values are presented to functor.
       /// </summary>
-      /// <param name="action"></param>
-      public static void ForAllCellsStatic(Action<uint, uint> action) => SubGridUtilities.SubGridDimensionalIterator(action);
-    }
+      /// <param name="functor"></param>
+      /// <returns></returns>
+      public static void ForEachStatic(Action<byte, byte> functor) => SubGridUtilities.SubGridDimensionalIterator((x, y) => functor((byte)x, (byte)y));
+  }
 }
 

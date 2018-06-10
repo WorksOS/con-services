@@ -9,15 +9,11 @@ using Xunit;
 
 namespace VSS.TRex.Tests
 {
+  /// <summary>
+  /// Includes tests not covered in GenericClientLeafSibgriTests
+  /// </summary>
   public class HeightClientLeafSubGridTests : IClassFixture<DILoggingFixture>
   {
-    [Fact]
-    public void Test_HeightClientLeafSubGridTests_Creation()
-    {
-      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.Height) as ClientHeightLeafSubGrid;
-      Assert.NotNull(clientGrid);
-    }
-
     [Fact]
     public void Test_NullCells()
     {
@@ -80,18 +76,6 @@ namespace VSS.TRex.Tests
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Assert.True(clientGrid.Cells[x, y] == Consts.NullHeight, "Cell not cleared"));
     }
 
-    [Fact(Skip = "Not Implemented")]
-    public void Test_HeightClientLeafSubGridTests_Read()
-    {
-      Assert.True(false, "Not implemented");
-    }
-
-    [Fact(Skip = "Not Implemented")]
-    public void Test_HeightClientLeafSubGridTests_Write()
-    {
-      Assert.True(false, "Not implemented");
-    }
-
     [Fact]
     public void Test_HeightClientLeafSubGridTests_SetToZero()
     {
@@ -102,7 +86,7 @@ namespace VSS.TRex.Tests
       Assert.Equal((uint) subgrid.CountNonNullCells(), SubGridTree.CellsPerSubgrid);
 
       int NumEqualZero = 0;
-      ClientHeightLeafSubGrid.ForEach((x, y) =>
+      ClientHeightLeafSubGrid.ForEachStatic((x, y) =>
       {
         if (subgrid.Cells[x, y] == 0.0) NumEqualZero++;
       });

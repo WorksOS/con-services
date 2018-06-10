@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using VSS.TRex.Common;
 using VSS.TRex.Filters;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Utilities;
 
@@ -96,6 +97,26 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
+    /// Fills the contents of the client leaf subgrid with a known, non-null test pattern of values
+    /// </summary>
+    public override void FillWithTestPattern() => ForEach((x, y) => Cells[x, y] = x + y);
+
+    /// <summary>
+    /// Determines if the leaf content of this subgrid is equal to 'other'
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public override bool LeafContentEquals(IClientLeafSubGrid other)
+    {
+      bool result = true;
+
+      IGenericClientLeafSubGrid<float> _other = (IGenericClientLeafSubGrid<float>)other;
+      ForEach((x, y) => result &= Cells[x, y] == _other.Cells[x, y]);
+
+      return result;
+    }
+
+    /// <summary>
     /// Determines if the height at the cell location is null or not.
     /// </summary>
     /// <param name="cellX"></param>
@@ -150,33 +171,33 @@ namespace VSS.TRex.SubGridTrees.Client
       */
     }
 
-/*
-        /// <summary>
-        /// Reads an elevation client leaf sub grid from a stream using a binary formatter
-        /// </summary>
-        /// <param name="formatter"></param>
-        /// <param name="stream"></param>
-        public override void Read(BinaryFormatter formatter, Stream stream)
-        {
-            base.Read(formatter, stream);
+    /*
+            /// <summary>
+            /// Reads an elevation client leaf sub grid from a stream using a binary formatter
+            /// </summary>
+            /// <param name="formatter"></param>
+            /// <param name="stream"></param>
+            public override void Read(BinaryFormatter formatter, Stream stream)
+            {
+                base.Read(formatter, stream);
 
-            FirstPassMap = (SubGridTreeBitmapSubGridBits)formatter.Deserialize(stream);
-            SurveyedSurfaceMap = (SubGridTreeBitmapSubGridBits)formatter.Deserialize(stream);
-        }
+                FirstPassMap = (SubGridTreeBitmapSubGridBits)formatter.Deserialize(stream);
+                SurveyedSurfaceMap = (SubGridTreeBitmapSubGridBits)formatter.Deserialize(stream);
+            }
 
-        /// <summary>
-        /// Writes an elevation client leaf sub grid to a stream using a binary formatter
-        /// </summary>
-        /// <param name="formatter"></param>
-        /// <param name="stream"></param>
-        public override void Write(BinaryFormatter formatter, Stream stream)
-        {
-            base.Write(formatter, stream);
+            /// <summary>
+            /// Writes an elevation client leaf sub grid to a stream using a binary formatter
+            /// </summary>
+            /// <param name="formatter"></param>
+            /// <param name="stream"></param>
+            public override void Write(BinaryFormatter formatter, Stream stream)
+            {
+                base.Write(formatter, stream);
 
-            formatter.Serialize(stream, FirstPassMap);
-            formatter.Serialize(stream, SurveyedSurfaceMap);
-        }
-*/
+                formatter.Serialize(stream, FirstPassMap);
+                formatter.Serialize(stream, SurveyedSurfaceMap);
+            }
+    */
 
     /// <summary>
     /// Write the contents of the Items array using the supplied writer

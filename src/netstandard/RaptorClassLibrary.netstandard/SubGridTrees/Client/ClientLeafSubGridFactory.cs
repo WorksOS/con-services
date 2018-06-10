@@ -39,8 +39,8 @@ namespace VSS.TRex.SubGridTrees.Client
                 null, // Moisture = $00000007;
                 null, // Temperature = $00000008;
                 null, // RMV = $00000009;
-                null, // CCVPercent = $0000000B;
                 null, // GPSMode = $0000000A;
+                null, // CCVPercent = $0000000B;
                 null, // SimpleVolumeOverlay = $0000000C;
                 null, // HeightAndTime = $0000000D;
                 null, // CompositeHeights = $0000000E;
@@ -55,6 +55,12 @@ namespace VSS.TRex.SubGridTrees.Client
                 null, // CCA = $0000017
                 null, // CCAPerccent = $0000018
                 null, // TemperatureDetail = 0x00000019
+                null, // Unused 0x0000001A
+                null, // Unused 0x0000001B
+                null, // Unused 0x0000001C
+                null, // Unused 0x0000001D
+                null, // Unused 0x0000001E
+                null, // Unused 0x0000001F
                 null  // CutFill = 0x00000020
             };
         }

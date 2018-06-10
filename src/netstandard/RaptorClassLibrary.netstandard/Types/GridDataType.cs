@@ -12,34 +12,40 @@ namespace VSS.TRex.Types
     [Serializable]
     public enum GridDataType
     {
-        All,  //0x00000000, // Could possilbly remove this from the enumeration
-        CCV,  //0x00000001,
-        Height,  //0x00000002,
-        Latency,  //0x00000003,
-        PassCount,  //0x00000004,
-        Frequency,  //0x00000005,
-        Amplitude,  //0x00000006,
-        Moisture,  //0x00000007,
-        Temperature,  //0x00000008,
-        RMV,  //0x00000009,
-        CCVPercent,  //0x0000000A,
-        GPSMode,  //0x0000000B,
-        SimpleVolumeOverlay,  //0x0000000C,
-        HeightAndTime,  //0x0000000D,
-        CompositeHeights,  //0x0000000E,
-        MDP,  //0x0000000F,
-        MDPPercent,  //0x00000010,
-        CellProfile,  //0x00000011,
-        CellPasses,  //0x00000012,
-        MachineSpeed,  //0x00000013,
-        CCVPercentChange,  //0x00000014,
-        MachineSpeedTarget,  //0x00000015,
-        CCVPercentChangeIgnoredTopNullValue,  //0x00000016,
-        CCA,  //0x00000017,
-        CCAPercent,  //0x00000018,
-        TemperatureDetail,  //0x00000019,
-        CutFill,  //0x0000001A
-  }
+        All = 0x00000000, // Could possilbly remove this from the enumeration
+        CCV = 0x00000001,
+        Height = 0x00000002,
+        Latency = 0x00000003,
+        PassCount = 0x00000004,
+        Frequency = 0x00000005,
+        Amplitude = 0x00000006,
+        Moisture = 0x00000007,
+        Temperature = 0x00000008,
+        RMV = 0x00000009,
+        GPSMode = 0x0000000A,
+        CCVPercent = 0x0000000B,
+        SimpleVolumeOverlay = 0x0000000C,
+        HeightAndTime = 0x0000000D,
+        CompositeHeights = 0x0000000E,
+        MDP = 0x0000000F,
+        MDPPercent = 0x00000010,
+        CellProfile = 0x00000011,
+        CellPasses = 0x00000012,
+        MachineSpeed = 0x00000013,
+        CCVPercentChange = 0x00000014,
+        MachineSpeedTarget = 0x00000015,
+        CCVPercentChangeIgnoredTopNullValue = 0x00000016,
+        CCA = 0x00000017,
+        CCAPercent = 0x00000018,
+        TemperatureDetail = 0x00000019,
+        Unused1 = 0x0000001A,
+        Unused2 = 0x0000001B,
+        Unused3 = 0x0000001C,
+        Unused4 = 0x0000001D,
+        Unused5 = 0x0000001E,
+        Unused6 = 0x0000001F,
+        CutFill = 0x00000020
+    }
 
     public static class GridDataFromModeConverter
     {

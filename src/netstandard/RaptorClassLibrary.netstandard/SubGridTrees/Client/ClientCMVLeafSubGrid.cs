@@ -2,6 +2,7 @@
 using VSS.TRex.Cells;
 using VSS.TRex.Filters;
 using VSS.TRex.Profiling;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.SubGridTrees.Utilities;
@@ -169,6 +170,14 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
+    /// Fills the contents of the client leaf subgrid with a known, non-null test pattern of values
+    /// </summary>
+    public override void FillWithTestPattern()
+    {
+      ForEach((x, y) => Cells[x, y] = new SubGridCellPassDataCMVEntryRecord { MeasuredCMV = x, TargetCMV = y});
+    }
+
+    /// <summary>
     /// Determines if the CMV at the cell location is null or not.
     /// </summary>
     /// <param name="cellX"></param>
@@ -284,6 +293,21 @@ namespace VSS.TRex.SubGridTrees.Client
       FirstPassMap.Read(reader, buffer);
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Read(reader));
+    }
+
+    /// <summary>
+    /// Determines if the leaf content of this subgrid is equal to 'other'
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public override bool LeafContentEquals(IClientLeafSubGrid other)
+    {
+      bool result = true;
+
+      IGenericClientLeafSubGrid<SubGridCellPassDataCMVEntryRecord> _other = (IGenericClientLeafSubGrid<SubGridCellPassDataCMVEntryRecord>)other;
+      ForEach((x, y) => result &= Cells[x, y].Equals(_other.Cells[x, y]));
+
+      return result;
     }
   }
 }

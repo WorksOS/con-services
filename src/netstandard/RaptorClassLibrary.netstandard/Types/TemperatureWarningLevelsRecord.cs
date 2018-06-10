@@ -53,5 +53,10 @@ namespace VSS.TRex.Types
       Min = reader.ReadUInt16();
       Max = reader.ReadUInt16();
     }
+
+    public bool Equal(TemperatureWarningLevelsRecord other)
+    {
+      return Min == other.Min && Max == other.Max;
+    }
   }
 }

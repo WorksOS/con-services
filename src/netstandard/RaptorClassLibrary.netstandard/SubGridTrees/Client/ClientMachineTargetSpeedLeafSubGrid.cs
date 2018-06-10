@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using VSS.TRex.Cells;
 using VSS.TRex.Filters;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.Types;
@@ -62,6 +63,14 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
 	  /// <summary>
+	  /// Fills the contents of the client leaf subgrid with a known, non-null test pattern of values
+	  /// </summary>
+	  public override void FillWithTestPattern()
+	  {
+	    ForEach((x, y) => { Cells[x, y] = new MachineSpeedExtendedRecord {Min = x, Max = (ushort)(x + y)};});
+	  }
+
+	  /// <summary>
 	  /// Determines if the machine speed at the cell location is null or not.
 	  /// </summary>
 	  /// <param name="cellX"></param>
@@ -92,6 +101,21 @@ namespace VSS.TRex.SubGridTrees.Client
 	  public override void DumpToLog(string title)
 	  {
 	    base.DumpToLog(title);
+	  }
+
+	  /// <summary>
+	  /// Determines if the leaf content of this subgrid is equal to 'other'
+	  /// </summary>
+	  /// <param name="other"></param>
+	  /// <returns></returns>
+	  public override bool LeafContentEquals(IClientLeafSubGrid other)
+	  {
+	    bool result = true;
+
+	    IGenericClientLeafSubGrid<MachineSpeedExtendedRecord> _other = (IGenericClientLeafSubGrid<MachineSpeedExtendedRecord>)other;
+	    ForEach((x, y) => result &= Cells[x, y].Equals(_other.Cells[x, y]));
+
+	    return result;
 	  }
 
 	  /// <summary>

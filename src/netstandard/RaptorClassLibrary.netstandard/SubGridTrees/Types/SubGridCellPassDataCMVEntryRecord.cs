@@ -163,5 +163,19 @@ namespace VSS.TRex.SubGridTrees.Types
       result.Clear();
       return result;
     }
+
+    public bool Equals(SubGridCellPassDataCMVEntryRecord other)
+    {
+      return IsDecoupled == other.IsDecoupled &&
+             IsOvercompacted == other.IsOvercompacted &&
+             IsTooThick == other.IsTooThick &&
+             IsTopLayerTooThick == other.IsTopLayerTooThick &&
+             IsTopLayerUndercompacted == other.IsTopLayerUndercompacted &&
+             IsUndercompacted == other.IsUndercompacted &&
+             MeasuredCMV == other.MeasuredCMV &&
+             TargetCMV == other.TargetCMV &&
+             PreviousMeasuredCMV == other.PreviousMeasuredCMV &&
+             PreviousTargetCMV == other.PreviousTargetCMV;
+    }
   }
 }

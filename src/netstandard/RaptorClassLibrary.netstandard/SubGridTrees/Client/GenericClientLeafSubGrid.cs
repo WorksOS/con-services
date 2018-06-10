@@ -80,14 +80,6 @@ namespace VSS.TRex.SubGridTrees.Client
             }
         }
 
-        /// <summary>
-        /// Iterates over all the cells in the leaf subgrid calling functor on each of them.
-        /// Both non-null and null values are presented to functor.
-        /// </summary>
-        /// <param name="functor"></param>
-        /// <returns></returns>
-        public static void ForEach(Action<byte, byte> functor) => SubGridUtilities.SubGridDimensionalIterator((x, y) => functor((byte)x, (byte)y));
-
         public override void Clear()
         {
           Array.Copy(NullCells, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid);
@@ -141,5 +133,5 @@ namespace VSS.TRex.SubGridTrees.Client
             // Derived classes are responsible for performing assignation of the Cells structure as they can use optimal methods such as BlockCopy()
             // ForEach((x, y) => Cells[x, y] = source.Cells[x, y]);
         }
-    }
+  }
 }

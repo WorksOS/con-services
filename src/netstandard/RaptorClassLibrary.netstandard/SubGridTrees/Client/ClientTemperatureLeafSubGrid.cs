@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using VSS.TRex.Cells;
 using VSS.TRex.Filters;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.SubGridTrees.Utilities;
@@ -62,7 +63,25 @@ namespace VSS.TRex.SubGridTrees.Client
 	        Cells[cellX, cellY].TemperatureLevels.Max = Context.FilteredValue.FilteredPassData.TargetValues.TempWarningLevelMax;
 				}
 
-        /// <summary>
+      /// <summary>
+      /// Fills the contents of the client leaf subgrid with a known, non-null test pattern of values
+      /// </summary>
+      public override void FillWithTestPattern()
+      {
+        ForEach((x, y) =>
+        {
+          Cells[x, y] = new SubGridCellPassDataTemperatureEntryRecord
+          {
+            MeasuredTemperature = x,
+            TemperatureLevels = new TemperatureWarningLevelsRecord
+            {
+              Min = x, Max = (ushort)(x + y) 
+            }
+          };
+        });
+      }
+
+      /// <summary>
         /// Determines if the height at the cell location is null or not.
         /// </summary>
         /// <param name="cellX"></param>
@@ -115,6 +134,21 @@ namespace VSS.TRex.SubGridTrees.Client
             end;
             */
         }
+
+      /// <summary>
+      /// Determines if the leaf content of this subgrid is equal to 'other'
+      /// </summary>
+      /// <param name="other"></param>
+      /// <returns></returns>
+      public override bool LeafContentEquals(IClientLeafSubGrid other)
+      {
+        bool result = true;
+
+        IGenericClientLeafSubGrid<SubGridCellPassDataTemperatureEntryRecord> _other = (IGenericClientLeafSubGrid<SubGridCellPassDataTemperatureEntryRecord>)other;
+        ForEach((x, y) => result &= Cells[x, y] .Equals(_other.Cells[x, y]));
+
+        return result;
+      }
 
 /*
         /// <summary>

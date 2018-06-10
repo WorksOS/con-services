@@ -78,5 +78,10 @@ namespace VSS.TRex.Types
 	    Result.Clear();
 	    return Result;
 	  }
+
+	  public bool Equals(MachineSpeedExtendedRecord other)
+	  {
+	    return Min == other.Min && Max == other.Max;
+	  }
   }
 }

@@ -74,5 +74,10 @@ namespace VSS.TRex.SubGridTrees.Types
       MeasuredTemperature = reader.ReadUInt16();
       TemperatureLevels.Read(reader);
     }
+
+    public bool Equals(SubGridCellPassDataTemperatureEntryRecord other)
+    {
+      return MeasuredTemperature == other.MeasuredTemperature && TemperatureLevels.Equals(other.TemperatureLevels);
+    }
   }
 }

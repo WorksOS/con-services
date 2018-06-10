@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using VSS.TRex.Common;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SubGridTrees.Utilities;
 
 namespace VSS.TRex.SubGridTrees.Client
 {
@@ -15,7 +15,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     static ClientCompositeHeightsLeafSubgrid()
     {
-      SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y] = SubGridCellCompositeHeightsRecord.NullValue);
+       ForEachStatic((x, y) => NullCells[x, y] = SubGridCellCompositeHeightsRecord.NullValue);
     }
 
     /// <summary>
@@ -49,12 +49,12 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Zero out all elevations
     /// </summary>
-    public void SetToZeroHeight() => SubGridUtilities.SubGridDimensionalIterator((i, j) => Cells[i, j].SetToZeroHeight());
+    public void SetToZeroHeight() => ForEach((i, j) => Cells[i, j].SetToZeroHeight());
 
     /// <summary>
     /// Null out all elevations
     /// </summary>
-    public void SetHeightsToNull() => SubGridUtilities.SubGridDimensionalIterator((i, j) => Cells[i, j] = SubGridCellCompositeHeightsRecord.NullValue);
+    public void SetHeightsToNull() => ForEach((i, j) => Cells[i, j] = SubGridCellCompositeHeightsRecord.NullValue);
 
     /// <summary>
     /// Provides a copy of the null value defined for cells in thie client leaf subgrid
@@ -68,8 +68,37 @@ namespace VSS.TRex.SubGridTrees.Client
     public override void Clear()
     {
       base.Clear();
-    } 
+    }
 
+    /// <summary>
+    /// Determines if the leaf content of this subgrid is equal to 'other'
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public override bool LeafContentEquals(IClientLeafSubGrid other)
+    {
+      bool result = true;
+
+      IGenericClientLeafSubGrid<SubGridCellCompositeHeightsRecord> _other = (IGenericClientLeafSubGrid<SubGridCellCompositeHeightsRecord>)other;
+      ForEach((x, y) => result &= Cells[x, y].Equals(_other.Cells[x, y]));
+
+      return result;
+    }
+
+    /// <summary>
+    /// Fills the contents of the client leaf subgrid with a known, non-null test pattern of values
+    /// </summary>
+    public override void FillWithTestPattern()
+    {
+      ForEach((x, y) => Cells[x, y] = new SubGridCellCompositeHeightsRecord
+      {
+        LowestHeight = x,
+        FirstHeight = y,
+        LowestHeightTime = x + y,
+        HighestHeight = 2 * (x + y),        
+      });
+    }
+    
     /// <summary>
     /// Write the contents of the Items array using the supplied writer
     /// </summary>
@@ -79,7 +108,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Write(writer, buffer);
 
-      SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Write(writer));
+      ForEach((x, y) => Cells[x, y].Write(writer));
     }
 
     /// <summary>
@@ -91,7 +120,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Read(reader, buffer);
 
-      SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Read(reader));
+      ForEach((x, y) => Cells[x, y].Read(reader));
     }
   }
 }
