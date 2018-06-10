@@ -14,7 +14,6 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         public LeafSubGrid()
         {
-
         }
 
         public LeafSubGrid(ISubGridTree owner,
@@ -23,9 +22,7 @@ namespace VSS.TRex.SubGridTrees
         {
             // Assert level = tree.NumLevels (leaves are only at the tips)
             if (owner != null && level != owner.NumLevels)
-            {
                 throw new ArgumentException("Requested level for leaf subgrid <> number of levels in tree", "level");
-            }
         }
 
         public override bool IsEmpty()
@@ -35,9 +32,7 @@ namespace VSS.TRex.SubGridTrees
                 for (byte J = 0; J < SubGridTree.SubGridTreeDimension; J++)
                 {
                     if (CellHasValue(I, J))
-                    {
                         return false;
-                    }
                 }
             }
 
