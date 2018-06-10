@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace VSS.TRex.SubGridTrees.Interfaces
@@ -82,5 +83,11 @@ namespace VSS.TRex.SubGridTrees.Interfaces
       byte[] ToBytes(byte[] helperBuffer);
       byte[] ToBytes(MemoryStream helperStream, byte[] helperBuffer);
       void FromBytes(byte[] bytes, byte[] helperBuffer = null);
+
+      /// <summary>
+      /// Perform an action over all cells in the subgrid by calling the supplied action lambda with the coordinates of each cell
+      /// </summary>
+      /// <param name="action"></param>
+      void ForAllCells(Action<uint, uint> action);
     }
 }

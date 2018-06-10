@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Utilities;
 
 namespace VSS.TRex.SubGridTrees
 {
@@ -454,6 +455,18 @@ namespace VSS.TRex.SubGridTrees
                 }
             }
         }
+
+      /// <summary>
+      /// Perform an action over all cells in the subgrid, exposed in ISubGrid
+      /// </summary>
+      /// <param name="action"></param>
+      public void ForAllCells(Action<uint, uint> action) => SubGridUtilities.SubGridDimensionalIterator(action);
+
+      /// <summary>
+      /// Perform an action over all cells in the subgrid, exposed as a static method
+      /// </summary>
+      /// <param name="action"></param>
+      public static void ForAllCellsStatic(Action<uint, uint> action) => SubGridUtilities.SubGridDimensionalIterator(action);
     }
 }
 
