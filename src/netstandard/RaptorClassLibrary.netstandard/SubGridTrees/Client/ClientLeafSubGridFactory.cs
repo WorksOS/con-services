@@ -94,17 +94,18 @@ namespace VSS.TRex.SubGridTrees.Client
         {
             if (!ClientLeaves[(int)gridDataType].TryTake(out IClientLeafSubGrid result))
             {
-                result = (IClientLeafSubGrid)Activator.CreateInstance(
-                            typeMap[(int)gridDataType], // IClientLeafSubGrid type
-                            null, // Subgrid tree owner
-                            null, // Subgrid parent
-                            SubGridTree.SubGridTreeLevels, // Level, default to standard tree levels
-                            SubGridTree.DefaultCellSize, // Cell Size
-                            SubGridTree.DefaultIndexOriginOffset // IndexOfiginOffset, default to tree default value
-                            );
+                if (typeMap[(int)gridDataType] != null)
+                    result = (IClientLeafSubGrid)Activator.CreateInstance(
+                              typeMap[(int)gridDataType], // IClientLeafSubGrid type
+                              null, // Subgrid tree owner
+                              null, // Subgrid parent
+                              SubGridTree.SubGridTreeLevels, // Level, default to standard tree levels
+                              SubGridTree.DefaultCellSize, // Cell Size
+                              SubGridTree.DefaultIndexOriginOffset // IndexOfiginOffset, default to tree default value
+                              );
             }
 
-          result.Clear();
+          result?.Clear();
           return result;
         }
 
