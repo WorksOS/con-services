@@ -54,14 +54,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     /// <summary>
     /// The station on an alignment centerline design (if one is provided) to start computing the profile from. Values are expressed in meters.
     /// </summary>
-    [Range(ValidationConstants.MIN_STATION, ValidationConstants.MAX_STATION)]
+    [Range(ValidationConstants3D.MIN_STATION, ValidationConstants3D.MAX_STATION)]
     [JsonProperty(PropertyName = "startStation", Required = Required.Default)]
     public double? startStation { get; private set; }
 
     /// <summary>
     /// The station on an alignment centerline design (if one is provided) to finish computing the profile at. Values are expressed in meters.
     /// </summary>
-    [Range(ValidationConstants.MIN_STATION, ValidationConstants.MAX_STATION)]
+    [Range(ValidationConstants3D.MIN_STATION, ValidationConstants3D.MAX_STATION)]
     [JsonProperty(PropertyName = "endStation", Required = Required.Default)]
     public double? endStation { get; private set; }
 

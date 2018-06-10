@@ -64,7 +64,7 @@ namespace VSS.Productivity3D.Common.Models
     /// <summary>
     /// The tolerance to be used to indicate no change in volume for a cell. Used for summary volume thematic rendering. Value is expressed in meters.
     /// </summary>
-    [Range(ValidationConstants.MIN_NO_CHANGE_TOLERANCE, ValidationConstants.MAX_NO_CHANGE_TOLERANCE)]
+    [Range(ValidationConstants3D.MIN_NO_CHANGE_TOLERANCE, ValidationConstants3D.MAX_NO_CHANGE_TOLERANCE)]
     [JsonProperty(PropertyName = "computeVolNoChangeTolerance", Required = Required.Default)]
     public double ComputeVolNoChangeTolerance { get; protected set; }
 

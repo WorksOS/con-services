@@ -43,7 +43,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     /// The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file) to be used as the layer type filter. Layer 3 is then the third layer from the
     /// datum elevation where each layer has a thickness defined by the layerThickness member.
     /// </summary>
-    [Range(ValidationConstants.MIN_LAYER_NUMBER, ValidationConstants.MAX_LAYER_NUMBER)]
+    [Range(ValidationConstants3D.MIN_LAYER_NUMBER, ValidationConstants3D.MAX_LAYER_NUMBER)]
     [JsonProperty(PropertyName = "layerNumber", Required = Required.Default)]
     public int? layerNumber { get; private set; }
 

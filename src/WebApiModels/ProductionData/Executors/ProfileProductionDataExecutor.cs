@@ -36,8 +36,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         var args = ASNode.RequestAlignmentProfile.RPC.__Global.Construct_RequestAlignmentProfile_Args(
           request.ProjectId ?? -1,
           ProfilesHelper.PROFILE_TYPE_NOT_REQUIRED,
-          request.startStation ?? ValidationConstants.MIN_STATION,
-          request.endStation ?? ValidationConstants.MIN_STATION,
+          request.startStation ?? ValidationConstants3D.MIN_STATION,
+          request.endStation ?? ValidationConstants3D.MIN_STATION,
           RaptorConverters.DesignDescriptor(request.alignmentDesign),
           RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId),
           RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),

@@ -97,7 +97,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
 
       var filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, 
         polygonPoints, null, null, null, null, null, null, null, null, null, null, null, null, null, 
-        null, null, null, null, null, null, null, null, null);
+        null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
       var raptorClient = new Mock<IASNodeClient>();
 
@@ -122,7 +122,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
       };
       var filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, 
         polygonPoints, null, null, null, null, null, null, null, null, null, null, null, null, null, 
-        null, null, null, null, null, null, null, null, design);
+        null, null, null, null, null, null, null, null, design, null, null, null, null, null);
 
       var raptorClient = new Mock<IASNodeClient>();
 
@@ -154,7 +154,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
       DesignDescriptor design = DesignDescriptor.CreateDesignDescriptor(-1, null, 0);
       var filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, design);
+        null, null, null, null, null, design, null, null, null, null, null);
 
       var raptorClient = new Mock<IASNodeClient>();
 
@@ -223,7 +223,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
 
       var filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null,
         polygonPoints, null, null, null, null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null, null, null, null);
+        null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
       DesignDescriptor design = DesignDescriptor.CreateDesignDescriptor(-1, null, 0);
 
@@ -256,7 +256,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
       DesignDescriptor alignment = DesignDescriptor.CreateDesignDescriptor(-1, null, 0);
       var filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, null,
         null, null, alignment, 0, 3, 0.5, 0.5, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null);
+        null, null, null, null, null, null, null, null, null, null, null);
 
       var raptorClient = new Mock<IASNodeClient>();
 
@@ -298,7 +298,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
 
       var baseFilter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null,
         polygonPoints1, null, null, null, null, null, null, null, null, null, null, null, null, null, 
-        null, null, null, null, null, null, null, null, null);
+        null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
       List<WGSPoint> polygonPoints2 = new List<WGSPoint>
       {
@@ -311,7 +311,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
 
       var topFilter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, 
         polygonPoints2, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 
-        null, null, null, null, null, null, null, null);
+        null, null, null, null, null, null, null, null, null, null, null, null, null);
 
       var raptorClient = new Mock<IASNodeClient>();
 

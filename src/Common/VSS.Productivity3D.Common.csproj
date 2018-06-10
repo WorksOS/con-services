@@ -44,7 +44,7 @@
     <PackageReference Include="VSS.AWS.TransferProxy" Version="1.0.0" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.*" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.23.*" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.24.*" />
     <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.34.0" />
     <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.10.*" />
     <PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.*" />
