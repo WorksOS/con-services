@@ -391,9 +391,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         out positionsAreGrid);
 
       CompactionProfileResult<CompactionSummaryVolumesProfileCell> volumesResult = null;
-      if (request.volumeCalcType.HasValue && request.volumeCalcType != VolumeCalcType.None)
+      if (request.volumeCalcType.HasValue && request.volumeCalcType.Value != VolumeCalcType.None)
       {
-        var volCalcType = (TComputeICVolumesType) request.volumeCalcType;
+        var volCalcType = (TComputeICVolumesType) request.volumeCalcType.Value;
         if (volCalcType == TComputeICVolumesType.ic_cvtBetween2Filters)
         {
           RaptorConverters.AdjustFilterToFilter(ref baseFilter, topFilter);
@@ -423,7 +423,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
             = ASNode.RequestSummaryVolumesProfile.RPC.__Global.Construct_RequestSummaryVolumesProfile_Args(
               (request.ProjectId ?? -1),
               ProfilesHelper.PROFILE_TYPE_HEIGHT,
-              (TComputeICVolumesType)request.volumeCalcType.Value,
+              volCalcType,
               startPt,
               endPt,
               positionsAreGrid,
