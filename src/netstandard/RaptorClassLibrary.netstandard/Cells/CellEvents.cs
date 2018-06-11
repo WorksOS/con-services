@@ -59,11 +59,6 @@ namespace VSS.TRex.Cells
         public MachineAutomaticsMode EventMachineAutomatics { get; set; }
 
         /// <summary>
-        /// Is the machine implementin contact with the ground, and how is this state determined
-        /// </summary>
-        public OnGroundState EventOnGroundState { get; set; }
-
-        /// <summary>
         /// Positioning technology used to calculate machine position
         /// </summary>
         public PositioningTech PositioningTechnology { get; set; }
@@ -116,7 +111,6 @@ namespace VSS.TRex.Cells
             GPSAccuracy = GPSAccuracy.Unknown;
             GPSTolerance = CellPass.NullGPSTolerance;
             PositioningTechnology = PositioningTech.Unknown;
-            EventOnGroundState = OnGroundState.Unknown;
 
             LayerID = NullLayerID;
         }
@@ -143,7 +137,6 @@ namespace VSS.TRex.Cells
             GPSAccuracy = source.GPSAccuracy;
             GPSTolerance = source.GPSTolerance;
             PositioningTechnology = source.PositioningTechnology;
-            EventOnGroundState = source.EventOnGroundState;
 
             LayerID = source.LayerID;
         }

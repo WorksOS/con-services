@@ -57,8 +57,6 @@ namespace VSS.TRex.Events
       }
     }
 
-// todo    private int NumFullEventLookups;
-
     private short LastMachineID;
     public SiteModelMachineTargetValuesTrackingState TrackingState;
     private short PrevLastMachineID;
@@ -70,7 +68,6 @@ namespace VSS.TRex.Events
     {
       SiteModel = siteModel;
       Stamp = 0;
-// todo      NumFullEventLookups = 0;
 
       ClearLastValues();
     }
@@ -137,6 +134,7 @@ namespace VSS.TRex.Events
           if (_MachineID == PrevLastMachineID)
           {
             // Todo: Look at if there is a better way of optimising this rather than tracking previous tracking state
+            // TODO: IE: maintain tracking state for each machine (some A/B testing and profilinf required.
             MinMax.Swap(ref TrackingState, ref PrevTrackingState);
             MinMax.Swap(ref LastMachineID, ref PrevLastMachineID);
           }
@@ -166,7 +164,7 @@ namespace VSS.TRex.Events
               // TODO: Validate locking... TrackingState.MachineTargetValues.TargetValueChanges.AcquireReadAccessInterlock;
 
               /* TODO: Validate machine scope context for the UseMachineRMVThreshold and OverrideRMVJumpThreshold
-               // TODO: ie: Is it really a single value per machine configuration...
+              // TODO: ie: Is it really a single value per machine configuration...
               if (TrackingState.MachineTargetValues.Machine != null)
               with TICMachine(MachineTargetValues.Machine) do
                 {
@@ -357,15 +355,6 @@ namespace VSS.TRex.Events
               TrackingState.MachineTargetValues.MachineAutomaticsStateEvents);
           passes[I].EventValues.EventMachineAutomatics = TrackingState.EventMachineAutomatics;
         }
-
-        // TODO: OnGroundState not present as an event list in ProductionEventLists
-        /*
-        if (populationControl.WantsEventOnGroundValues)
-        {
-          TrackingState.EventOnGroundState = TrackingState.EventOnGroundState_Tracking.DetermineTrackingStateValue(Stamp, _Time, TrackingState.MachineTargetValues.??????);
-          passes[I].EventValues.EventOnGroundState = TrackingState.EventOnGroundState;
-        }
-        */
 
         if (populationControl.WantsLayerIDValues)
         {
