@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -16,14 +18,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(source);
       createProjectEvent.ProjectUID = Guid.NewGuid();
       createProjectEvent.CustomerUID = Guid.Parse(customerUid);
-      createProjectEvent.ProjectBoundary = ProjectBoundaryValidator.GetWicketFromPoints(ProjectBoundaryValidator.MakingValidPoints(ConvertPoints(source.BoundaryLL)));
+      createProjectEvent.ProjectBoundary = GeofenceValidation.GetWicketFromPoints(GeofenceValidation.MakingValidPoints(source.BoundaryLL));
       return createProjectEvent;
     }
-
-    private static List<Point> ConvertPoints(List<Point> latLngs)
-    {
-      return latLngs.ConvertAll<Point>(delegate (Point ll) { return new Point(ll.Latitude, ll.Longitude); });
-    }
-
   }
 }

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -11,14 +11,14 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Project.WebAPI.Common.Executors;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies.Interfaces;
-using VSS.MasterData.Project.WebAPI.Common.Executors;
-using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 
 namespace VSS.MasterData.ProjectTests
 {
@@ -41,9 +41,9 @@ namespace VSS.MasterData.ProjectTests
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
       projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>(), It.IsAny<string>(), settingsType)).ReturnsAsync((ProjectSettings)null);
 
-      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+      var configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
 
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, string.Empty, settingsType);
 
@@ -79,9 +79,9 @@ namespace VSS.MasterData.ProjectTests
       var projectSettings = new ProjectSettings { ProjectUid = projectUid, Settings = settings, ProjectSettingsType = settingsType, UserID = userId };
       projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>(), userId, settingsType)).ReturnsAsync(projectSettings);
 
-      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+      var configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
 
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings, settingsType);
 
@@ -120,9 +120,9 @@ namespace VSS.MasterData.ProjectTests
       var projectSettings2 = new ProjectSettings { ProjectUid = projectUid, Settings = settings2, ProjectSettingsType = settingsType2, UserID = userId };
       projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>(), userId, settingsType2)).ReturnsAsync(projectSettings2);
 
-      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+      var configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
 
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings2, settingsType2);
 
@@ -156,10 +156,10 @@ namespace VSS.MasterData.ProjectTests
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
       projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ProjectSettingsType>())).ReturnsAsync((ProjectSettings)null);
 
-      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
-      var projectErrorCodesProvider = serviceProvider.GetRequiredService<IErrorCodesProvider>();
+      var configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
+      var projectErrorCodesProvider = ServiceProvider.GetRequiredService<IErrorCodesProvider>();
 
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, string.Empty, ProjectSettingsType.Targets);
 
@@ -196,9 +196,9 @@ namespace VSS.MasterData.ProjectTests
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
       projectRepo.Setup(ps => ps.StoreEvent(It.IsAny<UpdateProjectSettingsEvent>())).ReturnsAsync(1); 
 
-      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+      var configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
       var producer = new Mock<IKafka>();
       producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
 
@@ -209,7 +209,7 @@ namespace VSS.MasterData.ProjectTests
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
         (logger, configStore, serviceExceptionHandler,
         customerUid, userId, null, null,
-        producer.Object, kafkaTopicName,
+        producer.Object, KafkaTopicName,
         null, raptorProxy.Object, null,
         projectRepo.Object);
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings, settingsType);
@@ -264,9 +264,9 @@ namespace VSS.MasterData.ProjectTests
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
       projectRepo.Setup(ps => ps.StoreEvent(It.IsAny<UpdateProjectSettingsEvent>())).ReturnsAsync(1);
 
-      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+      var configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
       var producer = new Mock<IKafka>();
       producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
       producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
@@ -278,7 +278,7 @@ namespace VSS.MasterData.ProjectTests
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
       (logger, configStore, serviceExceptionHandler,
         customerUid, userId, null, null,
-        producer.Object, kafkaTopicName,
+        producer.Object, KafkaTopicName,
         null, raptorProxy.Object, null,
         projectRepo.Object);
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings1, settingsType1);

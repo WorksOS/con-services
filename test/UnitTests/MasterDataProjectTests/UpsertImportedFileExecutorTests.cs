@@ -2,23 +2,22 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Project.WebAPI.Common.Executors;
+using VSS.MasterData.Project.WebAPI.Common.Helpers;
+using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.TCCFileAccess;
-using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Project.WebAPI.Common.Executors;
-using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterData.Project.WebAPI.Common.Helpers;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.ProjectTests
 {
@@ -44,8 +43,8 @@ namespace VSS.MasterData.ProjectTests
     [TestMethod]
     public async Task UpsertImportedFileExecutorTests_CopyTCCFile()
     {
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
 
       var importedFileTbc = new ImportedFileTbc
       {
@@ -83,9 +82,9 @@ namespace VSS.MasterData.ProjectTests
        FileDescriptor.CreateFileDescriptor("u3bdc38d-1afe-470e-8c1c-fc241d4c5e01", "/BC Data/Sites/Chch Test Site", "CTCTSITECAL.dc")
       );
 
-      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+      var configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
       var producer = new Mock<IKafka>();
       producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
       producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
@@ -107,7 +106,7 @@ namespace VSS.MasterData.ProjectTests
       var executor = RequestExecutorContainerFactory
         .Build<UpsertImportedFileExecutor>(logger, configStore, serviceExceptionHandler,
           _customerUid, _userId, _userEmailAddress, customHeaders,
-          producer.Object, kafkaTopicName,
+          producer.Object, KafkaTopicName,
           null, raptorProxy.Object, null,
           projectRepo.Object, null, fileRepo.Object);
       await executor.ProcessAsync(importedFileUpsertEvent);

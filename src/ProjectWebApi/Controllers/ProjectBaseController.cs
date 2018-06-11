@@ -33,9 +33,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected Guid subscriptionUidAssigned = Guid.Empty;
 
     /// <summary>
-    ///
+    ///  Used for rollback
     /// </summary>
     protected Guid geofenceUidCreated = Guid.Empty;
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ProjectBaseController"/> class.

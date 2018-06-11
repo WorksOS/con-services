@@ -2,6 +2,8 @@
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySql.Data.MySqlClient;
+using VSS.MasterData.Repositories.DBModels;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace TestUtility
 {
@@ -9,6 +11,7 @@ namespace TestUtility
   {
     private readonly TestConfig appConfig = new TestConfig();
     private readonly Msg msg = new Msg();
+    public readonly TestConfig TsCfg = new TestConfig();
 
     /// <summary>
     /// Read a my sql table and return records/columns 
@@ -49,7 +52,6 @@ namespace TestUtility
     public string ExecuteMySqlQueryAndReturnRecordCountResult(string connectionString, string queryString)
     {
       string queryResult = null;
-      //Console.WriteLine(connectionString);
       using (var mySqlConnection = new MySqlConnection(connectionString))
       {
         mySqlConnection.Open();
@@ -61,7 +63,6 @@ namespace TestUtility
           queryResult = mySqlDataReader[0].ToString();
         }
       }
-     // Console.WriteLine("Result " + queryResult);
       return queryResult;
     }
 
@@ -73,13 +74,13 @@ namespace TestUtility
     /// <returns>Count of records effected</returns>
     public int ExecuteMySqlInsert(string connectionString, string sqlCommand)
     {
-      //Console.WriteLine("ExecuteMySqlInsertcmd" + sqlCommand);
+      Log.Info(sqlCommand, Log.ContentType.DbQuery);
       using (var mySqlConnection = new MySqlConnection(connectionString))
       {
         mySqlConnection.Open();
         var mySqlCommand = new MySqlCommand(sqlCommand, mySqlConnection);
         var result = mySqlCommand.ExecuteNonQuery();
-        //Console.WriteLine("ExecuteMySqlInsert" + result.ToString());
+        Log.Info(result.ToString(), Log.ContentType.DbQuery);
         return result;
       }
     }
@@ -97,6 +98,28 @@ namespace TestUtility
       var result = GetDatabaseCountForEvents(string.Format(sqlQuery, appConfig.dbSchema, table, column, uid), expectedEventCount);
      // msg.DisplayResults(expectedEventCount + " records", result + " records");
       Assert.AreEqual(expectedEventCount, result, " Number of expected events do not match actual events in database");
+    }
+
+    public string VerifyProjectGeofence(string projectUid, int expectedEventCount)
+    {
+      // since we're using geofenceProxy which doesn't write to db, we cant check Geofence in DB
+      var sqlQuery = $@"SELECT COUNT(*)
+                          FROM Project p
+                            INNER JOIN ProjectGeofence pg ON pg.fk_ProjectUID = p.ProjectUID
+                          WHERE ProjectUID = '{projectUid}'";
+      var result = GetDatabaseCountForEvents(sqlQuery, expectedEventCount);
+      Assert.AreEqual(expectedEventCount, result, " Number of expected events do not match actual events in database");
+
+      string geofenceUid = null;
+      if (result == 1)
+      {
+        sqlQuery = $@"SELECT pg.fk_GeofenceUID
+                          FROM Project p
+                            INNER JOIN ProjectGeofence pg ON pg.fk_ProjectUID = p.ProjectUID
+                          WHERE ProjectUID = '{projectUid}'";
+        geofenceUid = ExecuteMySqlQueryAndReturnRecordCountResult(TsCfg.DbConnectionString, sqlQuery);
+      }
+      return geofenceUid;
     }
 
     /// <summary>

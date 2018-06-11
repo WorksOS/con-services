@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -19,19 +18,19 @@ namespace VSS.MasterData.ProjectTests
   [TestClass]
   public class ExecutorBaseTests
   {
-    public IServiceProvider serviceProvider;
-    protected string kafkaTopicName;
+    public static IServiceProvider ServiceProvider;
+    protected string KafkaTopicName;
+    private readonly string loggerRepoName = "UnitTestLogTest";
+    protected IErrorCodesProvider ProjectErrorCodesProvider;
+    protected IServiceExceptionHandler ServiceExceptionHandler;
 
     [TestInitialize]
     public virtual void InitTest()
     {
       var serviceCollection = new ServiceCollection();
 
-      const string loggerRepoName = "UnitTestLogTest";
-      var logPath = Directory.GetCurrentDirectory();
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
-
       Log4NetProvider.RepoName = loggerRepoName;
+      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
@@ -46,9 +45,11 @@ namespace VSS.MasterData.ProjectTests
         .AddSingleton<IKafka, RdKafkaDriver>()
         .AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>();
 
-      serviceProvider = serviceCollection.BuildServiceProvider();
-      kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
-                       serviceProvider.GetRequiredService<IConfigurationStore>().GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+      ServiceProvider = serviceCollection.BuildServiceProvider();
+      KafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
+                       ServiceProvider.GetRequiredService<IConfigurationStore>().GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+      ProjectErrorCodesProvider = ServiceProvider.GetRequiredService<IErrorCodesProvider>();
+      ServiceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
     }
   }
 }

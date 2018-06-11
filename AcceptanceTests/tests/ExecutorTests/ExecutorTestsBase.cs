@@ -9,7 +9,9 @@ using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
@@ -31,17 +33,15 @@ namespace ExecutorTests
     protected IRaptorProxy raptorProxy;
     protected IKafka producer;
     protected string kafkaTopicName;
+    private readonly string loggerRepoName = "UnitTestLogTest";
 
     [TestInitialize]
     public virtual void InitTest()
     {
       var serviceCollection = new ServiceCollection();
-
-      string loggerRepoName = "UnitTestLogTest";
-      var logPath = System.IO.Directory.GetCurrentDirectory();
-
+      
       Log4NetProvider.RepoName = loggerRepoName;
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
+      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
@@ -54,6 +54,7 @@ namespace ExecutorTests
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
         .AddTransient<IRaptorProxy, RaptorProxy>()
         .AddSingleton<IKafka, RdKafkaDriver>()
+        .AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>()
         .AddMemoryCache();  
 
       serviceProvider = serviceCollection.BuildServiceProvider();

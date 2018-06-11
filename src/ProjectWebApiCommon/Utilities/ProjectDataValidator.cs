@@ -3,7 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Repositories;
@@ -16,7 +18,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
   /// <summary>
   /// Validates all project event data sent to the Web API
   /// </summary>
-  public class ProjectDataValidator
+  public class ProjectDataValidator 
   {
     private const int MAX_FILE_NAME_LENGTH = 256;
     protected static ProjectErrorCodesProvider projectErrorCodesProvider = new ProjectErrorCodesProvider();
@@ -75,7 +77,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
     /// </summary>
     /// <param name="evt">The event containing the data to be validated</param>
     /// <param name="repo">Project repository to use in validation</param>
-    public static void Validate(IProjectEvent evt, IProjectRepository repo)
+    /// <param name="serviceExceptionHandler"></param>
+    public static void Validate(IProjectEvent evt, IProjectRepository repo, IServiceExceptionHandler serviceExceptionHandler)
     {
       IProjectRepository projectRepo = repo;
       if (projectRepo == null)
@@ -120,7 +123,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
               new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(8),
                 projectErrorCodesProvider.FirstNameWithOffset(8)));
           }
-          ProjectBoundaryValidator.ValidateWKT(createEvent.ProjectBoundary);
+          
+          ProjectRequestHelper.ValidateGeofence(createEvent.ProjectBoundary, serviceExceptionHandler);
 
           if (string.IsNullOrEmpty(createEvent.ProjectTimezone))
           {
@@ -211,6 +215,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             throw new ServiceException(HttpStatusCode.Forbidden,
               new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(17),
                 projectErrorCodesProvider.FirstNameWithOffset(17)));
+          }
+          if (!string.IsNullOrEmpty(updateEvent.ProjectBoundary))
+          {
+            ProjectRequestHelper.ValidateGeofence(updateEvent.ProjectBoundary, serviceExceptionHandler);
           }
         }
         //Nothing else to check for DeleteProjectEvent

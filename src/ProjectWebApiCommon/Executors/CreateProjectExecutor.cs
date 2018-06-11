@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Repositories.DBModels;
@@ -45,12 +44,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
       }
       
-      ProjectBoundaryValidator.ValidateWKT(createProjectEvent.ProjectBoundary);
+      ProjectRequestHelper.ValidateGeofence(createProjectEvent.ProjectBoundary, serviceExceptionHandler);
       await ProjectRequestHelper.ValidateCoordSystemInRaptor(createProjectEvent,
         serviceExceptionHandler, customHeaders, raptorProxy).ConfigureAwait(false);
 
       log.LogDebug($"Testing if there are overlapping projects for project {createProjectEvent.ProjectName}");
-      await DoesProjectOverlap(createProjectEvent, createProjectEvent.ProjectBoundary);
+      await ProjectRequestHelper.DoesProjectOverlap(createProjectEvent.CustomerUID.ToString(), createProjectEvent.ProjectUID.ToString(), 
+        createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate, createProjectEvent.ProjectBoundary, 
+        log, serviceExceptionHandler, projectRepo);
 
       AssociateProjectCustomer customerProject = new AssociateProjectCustomer
       {
@@ -61,7 +62,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         ActionUTC = createProjectEvent.ActionUTC,
         ReceivedUTC = createProjectEvent.ReceivedUTC
       };
-      ProjectDataValidator.Validate(customerProject, projectRepo);
+      ProjectDataValidator.Validate(customerProject, projectRepo, serviceExceptionHandler);
 
       // now making changes, potentially needing rollback 
       createProjectEvent = await CreateProjectInDb(createProjectEvent, customerProject).ConfigureAwait(false);
@@ -71,10 +72,21 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         projectRepo, raptorProxy, configStore, fileRepo).ConfigureAwait(false);
 
       await AssociateProjectSubscriptionInSubscriptionService(createProjectEvent).ConfigureAwait(false);
-      await CreateGeofenceInGeofenceService(createProjectEvent).ConfigureAwait(false);
+      var geofenceUid = await CreateGeofenceInGeofenceService(createProjectEvent).ConfigureAwait(false);
+      AssociateProjectGeofence associateProjectGeofence = null;
+      if (geofenceUid != Guid.Empty) // TBC work-around 
+      {
+        associateProjectGeofence = new AssociateProjectGeofence()
+        {
+          ProjectUID = createProjectEvent.ProjectUID,
+          GeofenceUID = geofenceUid,
+          ActionUTC = DateTime.UtcNow
+        };
+        await AssociateProjectGeofence(associateProjectGeofence).ConfigureAwait(false);
+      }
 
       // doing this as late as possible in case something fails. We can't cleanup kafka que.
-      CreateKafkaEvents(createProjectEvent, customerProject);
+      CreateKafkaEvents(createProjectEvent, customerProject, associateProjectGeofence);
 
       log.LogDebug("CreateProjectV4. completed succesfully");
       return new ContractExecutionResult();
@@ -85,24 +97,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       throw new NotImplementedException();
     }
 
-    /// <summary>
-    /// Determines if the project boundary overlaps any exising project for the customer in time and space.
-    ///    not needed for v1 or 3 and they come via CGen which already does this overlap checking.
-    /// </summary>    
-    /// <param name="project">The create project event</param>
-    /// <param name="databaseProjectBoundary">The project boundary in the new format (WKT)</param>
-    /// <returns></returns>
-    private async Task<bool> DoesProjectOverlap(CreateProjectEvent project, string databaseProjectBoundary)
-    {
-      var overlaps =
-        await projectRepo.DoesPolygonOverlap(project.CustomerUID.ToString(), databaseProjectBoundary,
-          project.ProjectStartDate, project.ProjectEndDate).ConfigureAwait(false);
-      if (overlaps)
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 43);
-
-      log.LogDebug($"No overlapping projects for {project.ProjectName}");
-      return overlaps;
-    }
 
     /// <summary>
     /// Creates a project. Handles both old and new project boundary formats.
@@ -158,7 +152,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         subscriptionUidAssigned = Guid.Parse((await GetFreeSubs(customerUid, project.ProjectType, project.ProjectUID))
           .First().SubscriptionUID);
         log.LogDebug($"Received {subscriptionUidAssigned} subscription");
-        //Assign a new project to a subscription
+        
+        //Assign the new project to a subscription
         try
         {
           // rethrows any exception
@@ -205,21 +200,21 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// </summary>
     /// <param name="project">The project.</param>
     /// <returns></returns>
-    protected async Task CreateGeofenceInGeofenceService(CreateProjectEvent project)
+    protected async Task<Guid> CreateGeofenceInGeofenceService(CreateProjectEvent project)
     {
       // This is a temporary work-around of UserAuthorization issue with external applications.
       //     GeofenceService contains UserAuthorization which will fail for TBC, which uses the v2 API
       if (httpContextAccessor != null && httpContextAccessor.HttpContext.Request.Path.Value.Contains("api/v2/projects"))
       {
         log.LogWarning($"Skip creating a geofence for project: {project.ProjectName}, as request has come from the TBC endpoint: {httpContextAccessor.HttpContext.Request.Path.Value}.");
-        return;
+        return Guid.Empty;
       }
 
       log.LogDebug($"Creating a geofence for project: {project.ProjectName}");
 
       try
       {
-        var area = ProjectBoundaryValidator.CalculateAreaSqMeters(project.ProjectBoundary);
+        var area = GeofenceValidation.CalculateAreaSqMeters(project.ProjectBoundary);
 
         geofenceUidCreated = await geofenceProxy.CreateGeofence(project.CustomerUID, project.ProjectName, "", "Project",
           project.ProjectBoundary,
@@ -241,6 +236,25 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 59);
       }
+
+      return geofenceUidCreated;
+    }
+
+    /// <summary>
+    /// Associates project with its geofence.
+    ///      projectService uses Project.ProjectBoundary, 
+    ///      however other services use the ProjectGeofence/Geofence association
+    /// </summary>
+    /// <param name="projectGeofence">The geofence project.</param>
+    /// <returns></returns>
+    protected async Task AssociateProjectGeofence(AssociateProjectGeofence projectGeofence)
+    {
+      ProjectDataValidator.Validate(projectGeofence, projectRepo, serviceExceptionHandler);
+      projectGeofence.ReceivedUTC = DateTime.UtcNow;
+
+      var isUpdated = await projectRepo.StoreEvent(projectGeofence).ConfigureAwait(false);
+      if (isUpdated == 0)
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 65);
     }
 
     /// <summary>
@@ -248,15 +262,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// </summary>
     /// <param name="project"></param>
     /// <param name="customerProject">The create projectCustomer event</param>
+    /// <param name="projectGeofence"></param>
     /// <returns></returns>
-    protected void CreateKafkaEvents(CreateProjectEvent project, AssociateProjectCustomer customerProject)
+    protected void CreateKafkaEvents(CreateProjectEvent project, AssociateProjectCustomer customerProject, AssociateProjectGeofence projectGeofence)
     {
       log.LogDebug($"CreateProjectEvent on kafka queue {JsonConvert.SerializeObject(project)}");
       string wktBoundary = project.ProjectBoundary;
 
       // Convert to old format for Kafka for consistency on kakfa queue
       string kafkaBoundary = project.ProjectBoundary
-        .Replace(ProjectBoundaryValidator.POLYGON_WKT, string.Empty)
+        .Replace(GeofenceValidation.POLYGON_WKT, string.Empty)
         .Replace("))", string.Empty)
         .Replace(',', ';')
         .Replace(' ', ',');
@@ -278,6 +293,18 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayloadCustomerProject)
         });
+
+      if (projectGeofence != null)
+      {
+        log.LogDebug($"AssociateProjectGeofenceEvent on kafka queue {JsonConvert.SerializeObject(projectGeofence)}");
+
+        var messagePayload = JsonConvert.SerializeObject(new {AssociateProjectGeofence = projectGeofence});
+        producer.Send(kafkaTopicName,
+          new List<KeyValuePair<string, string>>()
+          {
+            new KeyValuePair<string, string>(projectGeofence.ProjectUID.ToString(), messagePayload)
+          });
+      }
     }
 
     #region rollback
