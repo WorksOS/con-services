@@ -1,8 +1,8 @@
 ﻿using System;
-using RaptorClassLibrary.Tests.netcore.Analytics.Common;
 using VSS.TRex.Analytics.MDPStatistics;
 using VSS.TRex.Analytics.MDPStatistics.GridFabric;
 using VSS.TRex.Filters;
+using VSS.TRex.Tests.netcore.Analytics.Common;
 using VSS.TRex.Types;
 using Xunit;
 

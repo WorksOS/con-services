@@ -3,7 +3,7 @@
 namespace VSS.TRex.Analytics.SpeedStatistics
 {
   /// <summary>
-  /// The result obtained fcrom performing a machine speed analytics request
+  /// The result obtained from performing a machine speed analytics request
   /// </summary>
   public class SpeedResult : SummaryAnalyticsResult
 	{

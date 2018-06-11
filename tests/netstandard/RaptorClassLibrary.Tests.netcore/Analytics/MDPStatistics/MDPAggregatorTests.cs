@@ -1,7 +1,7 @@
 ﻿using System;
-using RaptorClassLibrary.Tests.netcore.Analytics.Common;
 using VSS.TRex.Analytics.MDPStatistics;
 using VSS.TRex.Cells;
+using VSS.TRex.Tests.netcore.Analytics.Common;
 using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.MDPStatistics

@@ -56,15 +56,17 @@ namespace VSS.TRex.Analytics.CMVStatistics
     /// <param name="response"></param>
     public override void ReadOutResults(AggregatorBase aggregator, CMVStatisticsResponse response)
     {
-      response.CellSize = ((DataStatisticsAggregator)aggregator).CellSize;
-      response.SummaryCellsScanned = ((DataStatisticsAggregator)aggregator).SummaryCellsScanned;
+      var tempAggregator = (DataStatisticsAggregator) aggregator;
 
-      response.CellsScannedOverTarget = ((DataStatisticsAggregator)aggregator).CellsScannedOverTarget;
-      response.CellsScannedUnderTarget = ((DataStatisticsAggregator)aggregator).CellsScannedUnderTarget;
-      response.CellsScannedAtTarget = ((DataStatisticsAggregator)aggregator).CellsScannedAtTarget;
+      response.CellSize = tempAggregator.CellSize;
+      response.SummaryCellsScanned = tempAggregator.SummaryCellsScanned;
 
-      response.IsTargetValueConstant = ((DataStatisticsAggregator)aggregator).IsTargetValueConstant;
-      response.MissingTargetValue = ((DataStatisticsAggregator)aggregator).MissingTargetValue;
+      response.CellsScannedOverTarget = tempAggregator.CellsScannedOverTarget;
+      response.CellsScannedUnderTarget = tempAggregator.CellsScannedUnderTarget;
+      response.CellsScannedAtTarget = tempAggregator.CellsScannedAtTarget;
+
+      response.IsTargetValueConstant = tempAggregator.IsTargetValueConstant;
+      response.MissingTargetValue = tempAggregator.MissingTargetValue;
 
       response.LastTargetCMV = ((CMVAggregator)aggregator).LastTargetCMV;
     }
