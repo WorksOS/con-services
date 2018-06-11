@@ -286,6 +286,27 @@ namespace MockProjectWebApi.Utils
         FilterType = FilterType.Persistent,
         FilterJson = JsonResourceHelper.GetFilterJson("DimensionsAlignmentFilter100to200")
       };
+      public static FilterDescriptor DimensionsTemperatureRangeFilter => new FilterDescriptor
+      {
+        FilterUid = "1980fc8b-c892-4f9f-b673-bc09827bf2b5",
+        Name = "Dimensions Temperature Range Filter",
+        FilterType = FilterType.Persistent,
+        FilterJson = JsonResourceHelper.GetFilterJson("DimensionsTemperatureRange")
+      };
+      public static FilterDescriptor DimensionsPassCountRangeFilter => new FilterDescriptor
+      {
+        FilterUid = "c5590172-a1bb-440a-bc7d-6c35ecc75724",
+        Name = "Dimensions Pass Count Range Filter",
+        FilterType = FilterType.Persistent,
+        FilterJson = JsonResourceHelper.GetFilterJson("DimensionsPassCountRange")
+      };
+      public static FilterDescriptor DimensionsAutomaticsFilter => new FilterDescriptor
+      {
+        FilterUid = "887f90a6-56b9-4266-9d62-ff99e7d346f0",
+        Name = "Dimensions Automatics Filter",
+        FilterType = FilterType.Persistent,
+        FilterJson = JsonResourceHelper.GetFilterJson("DimensionsAutomatics")
+      };
     }
   }
 }
