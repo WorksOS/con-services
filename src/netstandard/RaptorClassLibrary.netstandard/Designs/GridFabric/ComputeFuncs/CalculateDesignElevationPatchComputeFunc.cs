@@ -16,7 +16,9 @@ namespace VSS.TRex.DesignProfiling.GridFabric.ComputeFuncs
         [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
-        // TODO: Ignite 2.4 has a fix for the two dimensional arrya serialisation buf that requires this result to be a byte array - this can be changed back...
+    // TODO: Ignite 2.4 has a fix for the two dimensional array serialisation bug that requires this result to be a byte array - this can be changed back...
+    // Anti-TODO: Work out if our serialisation is preferred over Ignites
+    // Anti-TODO ^ 2: The [Serializable] annotation means we are using the .Net serialisation. Which sucks bananas...
         public byte[] /*ClientHeightLeafSubGrid */Invoke(CalculateDesignElevationPatchArgument arg)
         {
             try

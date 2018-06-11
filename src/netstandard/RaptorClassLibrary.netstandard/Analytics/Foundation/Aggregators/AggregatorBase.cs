@@ -20,25 +20,31 @@ namespace VSS.TRex.Analytics.Aggregators
     /// </summary>
     public double CellSize { get; set; }
 
-		/// <summary>
-		/// Provides any state initialization logic for the aggregator
-		/// </summary>
-		/// <param name="state"></param>
-		public virtual void Initialise(AggregatorBase state)
+    /// <summary>
+    /// Provides any state initialization logic for the aggregator
+    /// </summary>
+    /// <param name="state"></param>
+    public virtual void Initialise(AggregatorBase state)
     {
-      // Todo
-      // No implementation in base class yet
+      // Initialise the aggregator ... no base implementation yet
     }
 
+    /// <summary>
+    /// Performs base aggregator handling of subgrid results
+    /// </summary>
+    /// <param name="subGrids"></param>
     public virtual void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
     {
-      // Todo
       // Processes the given set of subgrids into this aggregator
+      // ... no base implementation yet
     }
 
+    /// <summary>
+    /// Performs base aggregator finalisation activities
+    /// </summary>
     public virtual void Finalise()
     {
-			// ...
+      // Finalise the aggregator ... no base implementation yet
     }
 
     /// <summary>
@@ -46,7 +52,6 @@ namespace VSS.TRex.Analytics.Aggregators
     /// </summary>
     public AggregatorBase()
     {
-			// ...
     }
   }
 }

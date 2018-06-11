@@ -135,9 +135,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                             if (!(passType == PassType.Track || passType == PassType.Wheel))
                             {
                                 if (Processor.OnGrounds.GetOnGroundAtDateTime(_TheTime) == OnGroundState.No)
-                                {
                                     continue;
-                                }
                             }
 
                             // Fill in all the details for the processed cell pass, using the tag event lookups
