@@ -43,7 +43,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             {
                 while (IterationState.NextSegment())
                 {
-                    /* TODO Locking not implemented yet
+                    /* TODO Locking not implemented yet (and planned no to be!)
                     if (!(!MarkReturnedSegmentsAsTouched || IterationState.SubGrid.Locked))
                     {
                         SIGLogMessage.PublishNoODS(Self, Format('Subgrid %s not locked in LocateNextSubgridSegmentInIteration as expected', [IterationState.SubGrid.Moniker]), slmcAssert);
@@ -158,7 +158,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             }
             finally
             {
-                // TODO: Currently no caching layer...
+                // TODO: Currently no caching layer... (and planning npt to be)
                 /*
                 if (MarkReturnedSegmentsAsTouched && (Result != null) && Result.Owner.PresentInCache)
                 {

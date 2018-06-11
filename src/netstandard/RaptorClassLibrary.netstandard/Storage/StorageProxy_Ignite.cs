@@ -163,7 +163,7 @@ namespace VSS.TRex.Storage
             {
                 NonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
-                Log.LogInformation(string.Format("Removing key:{0}", cacheKey));
+                Log.LogInformation($"Removing key:{cacheKey}");
 
                 // Remove item from both immutable and mutable caches
                 try

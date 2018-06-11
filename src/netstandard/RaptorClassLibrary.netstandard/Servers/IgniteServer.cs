@@ -116,7 +116,7 @@ namespace VSS.TRex.Servers
             }
         }
 
-        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+        // Note: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
         // ~IgniteServer() {
         //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
         //   Dispose(false);
@@ -127,7 +127,7 @@ namespace VSS.TRex.Servers
         {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
+            // Note: uncomment the following line if the finalizer is overridden above.
             // GC.SuppressFinalize(this);
         }
         #endregion
