@@ -28,5 +28,8 @@ data:
   RAPTOR_PROJECT_SETTINGS_API_URL: http://localhost:5001/api/v2
   TCCBASEURL: localhost
   TCCFILESPACEID: localhost
+  TCCORG:vldev
+  TCCUSERNAME:vldev
+  TCCPWD:vldev_key
   WEBAPI_DEBUG_URI: http://localhost:80/
   WEBAPI_URI: http://localhost:80/
