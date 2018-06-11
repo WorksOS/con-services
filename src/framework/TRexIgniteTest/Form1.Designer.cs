@@ -71,6 +71,7 @@
       this.tabPage1 = new System.Windows.Forms.TabPage();
       this.btnZoomAll = new System.Windows.Forms.Button();
       this.tabPage2 = new System.Windows.Forms.TabPage();
+      this.CMVSummaryButton = new System.Windows.Forms.Button();
       this.SpeedSummaryButton = new System.Windows.Forms.Button();
       this.TemperatureSummaryButton = new System.Windows.Forms.Button();
       this.button7 = new System.Windows.Forms.Button();
@@ -93,7 +94,7 @@
       this.tabPage4 = new System.Windows.Forms.TabPage();
       this.btnKill = new System.Windows.Forms.Button();
       this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-      this.CMVSummaryButton = new System.Windows.Forms.Button();
+      this.MDPSummaryButton = new System.Windows.Forms.Button();
       this.panel1.SuspendLayout();
       this.panel2.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -167,7 +168,7 @@
       // 
       // button6
       // 
-      this.button6.Location = new System.Drawing.Point(20, 309);
+      this.button6.Location = new System.Drawing.Point(20, 336);
       this.button6.Name = "button6";
       this.button6.Size = new System.Drawing.Size(158, 20);
       this.button6.TabIndex = 43;
@@ -187,7 +188,7 @@
       // 
       // button4
       // 
-      this.button4.Location = new System.Drawing.Point(20, 284);
+      this.button4.Location = new System.Drawing.Point(20, 311);
       this.button4.Name = "button4";
       this.button4.Size = new System.Drawing.Size(225, 20);
       this.button4.TabIndex = 41;
@@ -197,7 +198,7 @@
       // 
       // button3
       // 
-      this.button3.Location = new System.Drawing.Point(20, 259);
+      this.button3.Location = new System.Drawing.Point(20, 286);
       this.button3.Name = "button3";
       this.button3.Size = new System.Drawing.Size(140, 20);
       this.button3.TabIndex = 40;
@@ -544,6 +545,7 @@
       // 
       // tabPage2
       // 
+      this.tabPage2.Controls.Add(this.MDPSummaryButton);
       this.tabPage2.Controls.Add(this.CMVSummaryButton);
       this.tabPage2.Controls.Add(this.SpeedSummaryButton);
       this.tabPage2.Controls.Add(this.TemperatureSummaryButton);
@@ -569,6 +571,16 @@
       this.tabPage2.Text = "Tests";
       this.tabPage2.UseVisualStyleBackColor = true;
       // 
+      // CMVSummaryButton
+      // 
+      this.CMVSummaryButton.Location = new System.Drawing.Point(19, 230);
+      this.CMVSummaryButton.Name = "CMVSummaryButton";
+      this.CMVSummaryButton.Size = new System.Drawing.Size(140, 21);
+      this.CMVSummaryButton.TabIndex = 48;
+      this.CMVSummaryButton.Text = "&CMV Summary";
+      this.CMVSummaryButton.UseVisualStyleBackColor = true;
+      this.CMVSummaryButton.Click += new System.EventHandler(this.CMVSummaryButton_Click);
+      // 
       // SpeedSummaryButton
       // 
       this.SpeedSummaryButton.Location = new System.Drawing.Point(20, 203);
@@ -591,7 +603,7 @@
       // 
       // button7
       // 
-      this.button7.Location = new System.Drawing.Point(22, 335);
+      this.button7.Location = new System.Drawing.Point(22, 362);
       this.button7.Name = "button7";
       this.button7.Size = new System.Drawing.Size(120, 19);
       this.button7.TabIndex = 46;
@@ -787,15 +799,15 @@
       this.openFileDialog1.InitialDirectory = "@\"c:\\\"";
       this.openFileDialog1.RestoreDirectory = true;
       // 
-      // CMVSummaryButton
+      // MDPSummaryButton
       // 
-      this.CMVSummaryButton.Location = new System.Drawing.Point(19, 230);
-      this.CMVSummaryButton.Name = "CMVSummaryButton";
-      this.CMVSummaryButton.Size = new System.Drawing.Size(140, 21);
-      this.CMVSummaryButton.TabIndex = 48;
-      this.CMVSummaryButton.Text = "&CMV Summary";
-      this.CMVSummaryButton.UseVisualStyleBackColor = true;
-      this.CMVSummaryButton.Click += new System.EventHandler(this.CMVSummaryButton_Click);
+      this.MDPSummaryButton.Location = new System.Drawing.Point(20, 257);
+      this.MDPSummaryButton.Name = "MDPSummaryButton";
+      this.MDPSummaryButton.Size = new System.Drawing.Size(140, 21);
+      this.MDPSummaryButton.TabIndex = 49;
+      this.MDPSummaryButton.Text = "M&DP Summary";
+      this.MDPSummaryButton.UseVisualStyleBackColor = true;
+      this.MDPSummaryButton.Click += new System.EventHandler(this.MDPSummaryButton_Click);
       // 
       // Form1
       // 
@@ -894,6 +906,7 @@
     private System.Windows.Forms.Button btnEmpty;
     private System.Windows.Forms.Button SpeedSummaryButton;
     private System.Windows.Forms.Button CMVSummaryButton;
+    private System.Windows.Forms.Button MDPSummaryButton;
   }
 }
 

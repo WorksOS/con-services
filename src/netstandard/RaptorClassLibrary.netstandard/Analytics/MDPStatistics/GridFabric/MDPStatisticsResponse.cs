@@ -3,20 +3,20 @@ using VSS.TRex.Analytics.Foundation.Interfaces;
 using VSS.TRex.GridFabric.Requests.Interfaces;
 using VSS.TRex.Types;
 
-namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
+namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
 {
   /// <summary>
-  /// The response state returned from a CMV statistics request
+  /// The response state returned from a MDP statistics request
   /// </summary>
-  public class CMVStatisticsResponse : SummaryAnalyticsResponse, IAggregateWith<CMVStatisticsResponse>, IAnalyticsOperationResponseResultConversion<CMVResult>
+  public class MDPStatisticsResponse : SummaryAnalyticsResponse, IAggregateWith<MDPStatisticsResponse>, IAnalyticsOperationResponseResultConversion<MDPResult>
   {
     /// <summary>
-    /// Holds last known good target CMV value.
+    /// Holds last known good target MDP value.
     /// </summary>
-    public short LastTargetCMV { get; set; }
+    public short LastTargetMDP { get; set; }
 
     /// <summary>
-    /// Aggregate a set of CMV statistics into this set and return the result.
+    /// Aggregate a set of MDP statistics into this set and return the result.
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
@@ -24,20 +24,22 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
     {
       base.AggregateBaseDataWith(other);
 
-      LastTargetCMV = ((CMVStatisticsResponse)other).LastTargetCMV;
+      LastTargetMDP = ((MDPStatisticsResponse)other).LastTargetMDP;
+
     }
 
-    public CMVStatisticsResponse AggregateWith(CMVStatisticsResponse other)
+    public MDPStatisticsResponse AggregateWith(MDPStatisticsResponse other)
     {
-      return base.AggregateWith(other) as CMVStatisticsResponse;
+      return base.AggregateWith(other) as MDPStatisticsResponse;
     }
 
-    public CMVResult ConstructResult()
+
+    public MDPResult ConstructResult()
     {
-      return new CMVResult
+      return new MDPResult
       {
-        IsTargetCMVConstant = IsTargetValueConstant,
-        ConstantTargetCMV = LastTargetCMV,
+        IsTargetMDPConstant = IsTargetValueConstant,
+        ConstantTargetMDP = LastTargetMDP,
         AboveTargetPercent = ValueOverTargetPercent,
         WithinTargetPercent = ValueAtTargetPercent,
         BelowTargetPercent = ValueUnderTargetPercent,

@@ -2,6 +2,9 @@
 
 namespace VSS.TRex.Analytics.CMVStatistics
 {
+  /// <summary>
+  /// The result obtained fcrom performing a CMV analytics request
+  /// </summary>
   public class CMVResult : SummaryAnalyticsResult
   {
     /// <summary>

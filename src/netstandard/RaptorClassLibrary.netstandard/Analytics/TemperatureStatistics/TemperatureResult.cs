@@ -2,6 +2,9 @@
 
 namespace VSS.TRex.Analytics.TemperatureStatistics
 {
+  /// <summary>
+  /// The result obtained fcrom performing a temperature analytics request
+  /// </summary>
   public class TemperatureResult : SummaryAnalyticsResult
 	{
 		/// <summary>

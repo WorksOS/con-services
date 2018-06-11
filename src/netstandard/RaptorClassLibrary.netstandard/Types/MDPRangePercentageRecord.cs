@@ -6,7 +6,7 @@ using VSS.TRex.Common;
 
 namespace VSS.TRex.Types
 {
-  public class MDPRangePercentageRecord
+  public struct MDPRangePercentageRecord
   {
     /// <summary>
     /// Minimum MDP percentage range value.

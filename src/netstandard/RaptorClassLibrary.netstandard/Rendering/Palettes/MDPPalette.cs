@@ -13,7 +13,7 @@ namespace VSS.TRex.Rendering.Palettes
   {
     public bool DisplayTargetMDPColourInPVM { get; set; }
 
-    private MDPRangePercentageRecord _cmvPercentageRange = new MDPRangePercentageRecord(80, 120);
+    private MDPRangePercentageRecord _mdpPercentageRange = new MDPRangePercentageRecord(80, 120);
     private Color _targetMDPColour = Color.Blue;
 
     private static Transition[] Transitions =
@@ -34,7 +34,7 @@ namespace VSS.TRex.Rendering.Palettes
     {
       // Check to see if the value is in the target range and use the target MDP colour
       // if it is. MDPRange holds a min/max percentage of target MDP...
-      if (DisplayTargetMDPColourInPVM && (value >= targetValue * (_cmvPercentageRange.Min / 100) && value <= targetValue * (_cmvPercentageRange.Max / 100)))
+      if (DisplayTargetMDPColourInPVM && (value >= targetValue * (_mdpPercentageRange.Min / 100) && value <= targetValue * (_mdpPercentageRange.Max / 100)))
         return _targetMDPColour;
 
       return ChooseColour(value);
