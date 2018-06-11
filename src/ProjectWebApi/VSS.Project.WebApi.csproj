@@ -54,7 +54,7 @@
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.1.*" />
     <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.30.*" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.8.*" />
-    <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.8.*" />
+    <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.10.*" />
     <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.0.*" />
   </ItemGroup>
 
