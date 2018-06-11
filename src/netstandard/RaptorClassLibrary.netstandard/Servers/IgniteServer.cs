@@ -105,20 +105,12 @@ namespace VSS.TRex.Servers
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects).
                     if (mutableTRexGrid != null)
-                    {
                         Ignition.Stop(mutableTRexGrid.Name, false);
-                    }
 
                     if (immutableTRexGrid != null)
-                    {
                         Ignition.Stop(immutableTRexGrid.Name, false);
-                    }
                 }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
 
                 disposedValue = true;
             }

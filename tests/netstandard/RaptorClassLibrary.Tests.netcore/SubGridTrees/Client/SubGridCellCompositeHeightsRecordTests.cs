@@ -3,7 +3,7 @@ using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Client;
 using Xunit;
 
-namespace RaptorClassLibrary.Tests.netcore.SubGridTrees.Client
+namespace VSS.TRex.Tests.netcore.SubGridTrees.Client
 {
   /// <summary>
   /// Includes tests not covered in GenericClientLeafSibgriTests

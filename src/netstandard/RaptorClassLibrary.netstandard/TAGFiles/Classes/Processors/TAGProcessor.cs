@@ -8,7 +8,6 @@ using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.TAGFiles.Classes.Swather;
 using VSS.TRex.TAGFiles.Types;
 using VSS.TRex.Types;
-using VSS.TRex.Time;
 
 namespace VSS.TRex.TAGFiles.Classes
 {
@@ -189,13 +188,13 @@ namespace VSS.TRex.TAGFiles.Classes
 
             if (DataTime != DateTime.MinValue)
             {
-                // TODO: Not like this...
-                //   MachineTargetValueChangesAggregator.DesignNameStateEvents.PutValueAtDate(DataTime, Value);
+        // TODO: Not like this...
+        // See: TICProductionEventChanges.AddDesignChangeEvent(
 
-                // TODO: But like this:
-                // See: TICProductionEventChanges.AddDesignChangeEvent(
-            }
-            else
+        // TODO: But like this:
+        //   MachineTargetValueChangesAggregator.DesignNameStateEvents.PutValueAtDate(DataTime, Value);
+      }
+      else
             {
                 //{$IFDEF DENSE_TAG_FILE_LOGGING}
                 //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetDesign', slpmcDebug);

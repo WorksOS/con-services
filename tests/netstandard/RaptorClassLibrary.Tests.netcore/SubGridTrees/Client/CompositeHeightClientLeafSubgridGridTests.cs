@@ -10,13 +10,6 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
   public class CompositeHeightClientLeafSubgridGridTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
-    public void Test_CompositeHeightClientLeafSubgridGridTests_Creation()
-    {
-      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.CompositeHeights) as ClientCompositeHeightsLeafSubgrid;
-      Assert.NotNull(clientGrid);
-    }
-
-    [Fact]
     public void Test_NullCells()
     {
       var cell = new SubGridCellCompositeHeightsRecord();

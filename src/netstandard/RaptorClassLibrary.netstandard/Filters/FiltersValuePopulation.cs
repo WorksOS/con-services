@@ -17,7 +17,6 @@ namespace VSS.TRex.Filters
       ref FilteredPassData filteredPass)
     {
       DateTime _Time;
-      // todo _EventMinElevMapping :TICMinElevMappingState;
       // todo _EventInAvoidZone :TICInAvoidZoneState;
       // todo bool UseMachineRMVThreshold;
       // todo short OverrideRMVJumpThreshold;

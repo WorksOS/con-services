@@ -33,9 +33,7 @@ namespace VSS.TRex.SubGridTrees
             ISubGrid subGrid = LocateSubGridContaining(cellX, cellY, NumLevels);
 
             if (subGrid == null)
-            {
                 return NullCellValue;
-            }
 
             subGrid.GetSubGridCellIndex(cellX, cellY, out byte subGridX, out byte subGridY);
             return ((GenericLeafSubGrid<T>)subGrid).Items[subGridX, subGridY];

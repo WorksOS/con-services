@@ -9,7 +9,7 @@ namespace VSS.TRex.SubGridTrees
     /// </summary>
     public class SubGridTreeLeafBitmapSubGrid : SubGrid, ILeafSubGrid
     {
-        public SubGridTreeBitmapSubGridBits Bits;
+        public SubGridTreeBitmapSubGridBits Bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
         /// <summary>
         /// Writes the contents of the subgrid bit mask to the writer
@@ -36,7 +36,6 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         public SubGridTreeLeafBitmapSubGrid()
         {
-            Bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
         }
 
         /// <summary>
@@ -47,11 +46,8 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="level"></param>
         public SubGridTreeLeafBitmapSubGrid(ISubGridTree owner,
             ISubGrid parent,
-            byte level /*,
-            double cellSize,
-            int indexOriginOffset*/) : base(owner, parent, level /*, cellSize, indexOriginOffset*/)
+            byte level) : base(owner, parent, level)
         {
-            Bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
         }
 
         /// <summary>
@@ -69,9 +65,7 @@ namespace VSS.TRex.SubGridTrees
             BoundingIntegerExtent2D Result = Bits.ComputeCellsExtents();
 
             if (Result.IsValidExtent)
-            {
                 Result.Offset((int)OriginX, (int)OriginY);
-            }
 
             return Result;
         }

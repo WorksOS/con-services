@@ -40,32 +40,7 @@ namespace VSS.TRex.Analytics.Coordinators
             TResponse Response = new TResponse();
             try
             {
-                /* TODO ... Some concerns from various requests that may need ot be taken into account
-                    //  ScheduledWithGovernor       :Boolean = false;
-                    //  SurveyedSurfaceExclusionList:TSurveyedSurfaceIDList;
-
-                        if Assigned(ASNodeImplInstance.RequestCancellations) and ASNodeImplInstance.RequestCancellations.IsRequestCancelled(FExternalDescriptor) then
-                          begin
-                            SIGLogMessage.PublishNoODS(Self, 'Request cancelled: ' + FExternalDescriptor.ToString, slmcDebug);
-                            ASNodeResult := asneRequestHasBeenCancelled;
-                            Exit;
-                          end;
-
-                                SetLength(SurveyedSurfaceExclusionList, 0);
-
-                              if ASNodeImplInstance.PSLoadBalancer.LoadBalancedPSService.GetDataModelSpatialExtents(FDataModelID, SurveyedSurfaceExclusionList, SpatialExtent, CellSize, IndexOriginOffset) <> icsrrNoError then
-                                begin
-                                  ASNodeResult := asneFailedToRequestDatamodelStatistics;
-                                  Exit;
-                                end;
-
-                        //BoundingWorldExtent3D ResultBoundingExtents = BoundingWorldExtent3D.Null();
-                        //BoundingWorldExtent3D SpatialExtent = BoundingWorldExtent3D.Null();
-                        //long[] SurveyedSurfaceExclusionList = new long[0];
-                }
-                */
-
-                RequestDescriptor = Guid.NewGuid(); // TODO ASNodeImplInstance.NextDescriptor;
+                RequestDescriptor = Guid.NewGuid(); 
 
                 SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(arg.ProjectID);
 

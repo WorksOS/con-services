@@ -1,7 +1,7 @@
 ﻿using VSS.TRex.Tests.netcore.TestFixtures;
 using Xunit;
 
-namespace RaptorClassLibrary.Tests.netcore.Analytics.Common
+namespace VSS.TRex.Tests.netcore.Analytics.Common
 {
   public class BaseTests : IClassFixture<DILoggingFixture>
   {

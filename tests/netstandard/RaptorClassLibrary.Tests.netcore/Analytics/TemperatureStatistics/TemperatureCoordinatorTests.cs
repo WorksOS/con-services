@@ -1,12 +1,12 @@
 ﻿using System;
-using RaptorClassLibrary.Tests.netcore.Analytics.Common;
 using VSS.TRex.Analytics.TemperatureStatistics;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
 using VSS.TRex.Filters;
+using VSS.TRex.Tests.netcore.Analytics.Common;
 using VSS.TRex.Types;
 using Xunit;
 
-namespace RaptorClassLibrary.Tests.netcore.Analytics.TemperatureStatistics
+namespace VSS.TRex.Tests.netcore.Analytics.TemperatureStatistics
 {
   public class TemperatureCoordinatorTests : BaseCoordinatorTests
   {

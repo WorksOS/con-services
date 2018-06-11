@@ -1,10 +1,10 @@
 ﻿using System;
-using RaptorClassLibrary.Tests.netcore.Analytics.Common;
+using VSS.TRex.Tests.netcore.Analytics.Common;
 using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
 using VSS.TRex.Types;
 using Xunit;
 
-namespace RaptorClassLibrary.Tests.netcore.Analytics.SpeedStatistics.GridFabric
+namespace VSS.TRex.Tests.netcore.Analytics.SpeedStatistics.GridFabric
 {
   public class SpeedResponseTests : BaseTests
   {

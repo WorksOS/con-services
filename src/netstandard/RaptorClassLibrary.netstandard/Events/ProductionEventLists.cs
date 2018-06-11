@@ -135,7 +135,7 @@ namespace VSS.TRex.Events
         /// Records the Resonance Meter Value jump threshold configured on the machine control system
         /// </summary>
         public ProductionEvents<short> RMVJumpThresholdEvents;
-
+   
         /// <summary>
         /// Create all defined event lists in one operation.
         /// </summary>
@@ -143,53 +143,43 @@ namespace VSS.TRex.Events
         {
             MachineStartupShutdownEvents = new StartEndProductionEvents(this, MachineID, SiteModel.ID,
                 ProductionEventType.MachineStartupShutdown,
-                (w, s) => w.Write((byte) s),
-                r => (ProductionEventType) r.ReadByte());
+                (w, s) => w.Write((byte) s), r => (ProductionEventType) r.ReadByte());
 
             StartEndRecordedDataEvents = new StartEndProductionEvents(this, MachineID, SiteModel.ID,
                 ProductionEventType.StartEndRecordedData,
-                (w, s) => w.Write((byte) s),
-                r => (ProductionEventType) r.ReadByte());
+                (w, s) => w.Write((byte) s), r => (ProductionEventType) r.ReadByte());
 
             VibrationStateEvents = new ProductionEvents<VibrationState>(this, MachineID, SiteModel.ID,
                 ProductionEventType.VibrationStateChange,
-                (w, s) => w.Write((byte) s),
-                r => (VibrationState) r.ReadByte());
+                (w, s) => w.Write((byte) s), r => (VibrationState) r.ReadByte());
 
             AutoVibrationStateEvents = new ProductionEvents<AutoVibrationState>(this, MachineID, SiteModel.ID,
                 ProductionEventType.AutoVibrationStateChange,
-                (w, s) => w.Write((byte) s),
-                r => (AutoVibrationState) r.ReadByte());
+                (w, s) => w.Write((byte) s), r => (AutoVibrationState) r.ReadByte());
 
             GPSModeStateEvents = new ProductionEvents<GPSMode>(this, MachineID, SiteModel.ID,
                 ProductionEventType.GPSModeChange,
-                (w, s) => w.Write((byte) s),
-                r => (GPSMode) r.ReadByte());
+                (w, s) => w.Write((byte) s), r => (GPSMode) r.ReadByte());
 
             PositioningTechStateEvents = new ProductionEvents<PositioningTech>(this, MachineID, SiteModel.ID,
                 ProductionEventType.PositioningTech,
-                (w, s) => w.Write((byte) s),
-                r => (PositioningTech) r.ReadByte());
+                (w, s) => w.Write((byte) s), r => (PositioningTech) r.ReadByte());
 
             DesignNameIDStateEvents = new ProductionEvents<int>(this, MachineID, SiteModel.ID,
                 ProductionEventType.DesignChange,
-                (w, s) => w.Write(s),
-                r => r.ReadInt32());
+                (w, s) => w.Write(s), r => r.ReadInt32());
 
             MachineAutomaticsStateEvents = new ProductionEvents<MachineAutomaticsMode>(this, MachineID, SiteModel.ID,
                 ProductionEventType.MachineAutomaticsChange,
-                (w, s) => w.Write((byte) s),
-                r => (MachineAutomaticsMode) r.ReadByte());
+                (w, s) => w.Write((byte) s), r => (MachineAutomaticsMode) r.ReadByte());
 
             MachineGearStateEvents = new ProductionEvents<MachineGear>(this, MachineID, SiteModel.ID,
                 ProductionEventType.MachineGearChange,
-                (w, s) => w.Write((byte) s),
-                r => (MachineGear) r.ReadByte());
+                (w, s) => w.Write((byte) s), r => (MachineGear) r.ReadByte());
 
             MinElevMappingStateEvents = new ProductionEvents<bool>(this, MachineID, SiteModel.ID,
                 ProductionEventType.MinElevMappingStateChange,
-                (w, s) => w.Write(s),
-                r => r.ReadBoolean());
+                (w, s) => w.Write(s), r => r.ReadBoolean());
 
             GPSAccuracyAndToleranceStateEvents = new ProductionEvents<GPSAccuracyAndTolerance>(this, MachineID,
                 SiteModel.ID, ProductionEventType.GPSAccuracyChange,
@@ -241,13 +231,13 @@ namespace VSS.TRex.Events
             RMVJumpThresholdEvents = new ProductionEvents<short>(this, MachineID, SiteModel.ID,
                 ProductionEventType.MachineRMVJumpValueChange,
                 (w, s) => w.Write(s), r => r.ReadInt16());
-        }
+    }
 
-        /// <summary>
-        /// Returns an array containing all the event lists for a machine
-        /// </summary>
-        /// <returns></returns>
-        public IProductionEvents[] GetEventLists()
+    /// <summary>
+    /// Returns an array containing all the event lists for a machine
+    /// </summary>
+    /// <returns></returns>
+    public IProductionEvents[] GetEventLists()
         {
             return new IProductionEvents[]
             {

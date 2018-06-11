@@ -5,6 +5,10 @@ using VSS.TRex.SubGridTrees.Types;
 
 namespace VSS.TRex.SubGridTrees
 {
+    /// <summary>
+    /// Base class for 'node' subgrids that form the structure of a subgridtree at all levels from the root
+    /// to the level above the leaf subgrids at the bottom layer of the tree.
+    /// </summary>
     public class NodeSubGrid : SubGrid, INodeSubGrid
     {
         /// <summary>
@@ -92,9 +96,7 @@ namespace VSS.TRex.SubGridTrees
         public override ISubGrid GetSubGrid(byte X, byte Y)
         {
             if (Cells != null)
-            {
                 return Cells[X, Y];
-            }
 
             if (SparseCells != null)
             {
@@ -103,9 +105,7 @@ namespace VSS.TRex.SubGridTrees
                     SubgridTreeSparseCellRecord sparceCell = SparseCells[I];
 
                     if ((sparceCell.CellX == X) && (sparceCell.CellY == Y))
-                    {
                         return sparceCell.Cell;
-                    }
                 }
             }
 
@@ -201,9 +201,7 @@ namespace VSS.TRex.SubGridTrees
                     for (byte J = minSubGridCellY; J <= maxSubGridCellY; J++)
                     {
                         if ((Cells[I, J] != null) && (functor(I, J, Cells[I, J]) != SubGridProcessNodeSubGridResult.OK))
-                        {
                             return;
-                        }
                     }
                 }
 
@@ -223,8 +221,6 @@ namespace VSS.TRex.SubGridTrees
                         return;
                     }
                 }
-
-//                return;
             }
         }
 
@@ -247,9 +243,7 @@ namespace VSS.TRex.SubGridTrees
         {
             // Allow the scanner to deal with the node subgrid and short circuit scanning here is desired
             if (nodeFunctor != null && nodeFunctor(this) == SubGridProcessNodeSubGridResult.TerminateProcessing)
-            {
                 return false;
-            }
 
             // Work out the on-the-ground cell extent needed to be scanned that this sub grid covers
             uint ScanMinX = (uint)Math.Max(OriginX, Extent.MinX);
@@ -264,9 +258,7 @@ namespace VSS.TRex.SubGridTrees
             ForEachSubGrid(subgrid =>
             {
                 if (leafFunctor != null && subgrid.IsLeafSubGrid()) // Leaf subgrids are passed to leafFunctor
-                {
                     return (leafFunctor(subgrid)) ? SubGridProcessNodeSubGridResult.OK : SubGridProcessNodeSubGridResult.TerminateProcessing;
-                }
 
                 // Node subgrids are descended into recursively to continue processing
                 return (!((INodeSubGrid)(subgrid)).ScanSubGrids(Extent, leafFunctor, nodeFunctor)) ? SubGridProcessNodeSubGridResult.TerminateProcessing : SubGridProcessNodeSubGridResult.OK;
@@ -291,9 +283,7 @@ namespace VSS.TRex.SubGridTrees
             if (Value != null)
             {
                 if (Value.Level != 0 && Value.Level != (Level + 1))
-                {
                     throw new ArgumentException("Level of subgrid being added is non-null and is not set correctly for the level it is being added to", "Value.Level");
-                }
 
                 Value.Parent = this;
                 Value.SetOriginPosition(X, Y);
@@ -345,15 +335,11 @@ namespace VSS.TRex.SubGridTrees
                     if ((SparseCells[I].CellX == X) && (SparseCells[I].CellY == Y))
                     {
                         if (I < SparseCellCount - 1)
-                        {
                             Array.Copy(SparseCells, I + 1, SparseCells, I, SparseCellCount - I);
-                        }
 
                         SparseCellCount--;
                         if (SparseCellCount == 0)
-                        {
                             SparseCells = null;
-                        }
 
                         break;
                     }

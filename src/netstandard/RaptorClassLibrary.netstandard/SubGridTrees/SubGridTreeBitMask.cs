@@ -57,9 +57,7 @@ namespace VSS.TRex.SubGridTrees
             ISubGrid SubGrid = LocateSubGridContaining(CellX, CellY, NumLevels);
 
             if (SubGrid == null)
-            {
                 return false;
-            }
 
             SubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
 
@@ -154,14 +152,8 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public bool this[uint CellX, uint CellY]
         {
-            get
-            {
-                return GetCell(CellX, CellY);
-            }
-            set
-            {
-                SetCell(CellX, CellY, value);
-            }
+            get => GetCell(CellX, CellY);
+            set => SetCell(CellX, CellY, value);
         }
 
         /// <summary>
@@ -175,9 +167,7 @@ namespace VSS.TRex.SubGridTrees
             ISubGrid SubGrid = LocateSubGridContaining(CellX, CellY, (byte)(NumLevels - 1));
 
             if (SubGrid == null)
-            {
                 return;
-            }
 
             SubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
 
@@ -311,9 +301,7 @@ namespace VSS.TRex.SubGridTrees
                 {
                     bitMapSubGrid = Source.LocateSubGridContaining(x.OriginX, x.OriginY) as SubGridTreeLeafBitmapSubGrid;
                     if (bitMapSubGrid != null)
-                    {
                         (x as SubGridTreeLeafBitmapSubGrid).Bits.AndWith(bitMapSubGrid.Bits);
-                    }
                 }
 
                 return true; // Keep the scan going
@@ -333,9 +321,7 @@ namespace VSS.TRex.SubGridTrees
             ISubGrid SubGrid = LocateSubGridContaining(CellX, CellY, NumLevels);
 
             if (SubGrid == null)
-            {
                 return false;
-            }
 
             SubGridTreeLeafBitmapSubGrid bitmapSubGrid = SubGrid as SubGridTreeLeafBitmapSubGrid;
 

@@ -238,6 +238,6 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Sets all elevations in the height client leaf sub grid to zero (not null)
     /// </summary>
-    public void SetToZeroHeight() => ForEach((x, y) => Cells[x, y] = 0); // TODO: Optimisation: Use single array assignment
+    public void SetToZeroHeight() => ForEach((x, y) => Cells[x, y] = 0); 
   }
 }

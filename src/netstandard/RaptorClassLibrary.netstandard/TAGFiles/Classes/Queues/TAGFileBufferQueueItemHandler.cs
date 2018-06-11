@@ -253,7 +253,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 {
                     try
                     {
-                        // TODO: Determine what to do in this failure more:
+                        // TODO: Determine what to do in this failure mode:
                         // TODO: - Leave in place?
                         // TODO: - Copy to dead letter queue?
                         // TODO: - Place in S3 bucket pending downstream handling?

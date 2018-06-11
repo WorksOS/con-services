@@ -1,5 +1,5 @@
 ﻿using System;
-using RaptorClassLibrary.Tests.netcore.Analytics.Common;
+using VSS.TRex.Tests.netcore.Analytics.Common;
 using VSS.TRex.Analytics.CMVStatistics;
 using VSS.TRex.Analytics.CMVStatistics.GridFabric;
 using VSS.TRex.Filters;

@@ -28,13 +28,13 @@ namespace VSS.TRex.TAGFiles.Classes
     }
 
 
-    public static class TagfileReposity
+    public static class TagFileRepository
     {
 
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
 
-        private static string MakePath(TagfileDetail td)
+        private static string MakePath(TagFileDetail td)
         {
             if (TRexConfig.TagFileArchiveFolder != String.Empty)
                 return Path.Combine(TRexConfig.TagFileArchiveFolder, td.projectId.ToString(),td.assetId.ToString());
@@ -47,7 +47,7 @@ namespace VSS.TRex.TAGFiles.Classes
         /// </summary>
         /// <param name="tagDetail"></param>
         /// <returns></returns>
-        public static bool ArchiveTagfile(TagfileDetail tagDetail)
+        public static bool ArchiveTagfile(TagFileDetail tagDetail)
         {
             string thePath = MakePath(tagDetail);
             if (!Directory.Exists(thePath))
@@ -109,24 +109,18 @@ namespace VSS.TRex.TAGFiles.Classes
             }
         }
 
-        public static bool MoveToUnableToProcess(TagfileDetail tagDetail)
+        public static bool MoveToUnableToProcess(TagFileDetail tagDetail)
         {
             // todo Should be moved to a common location. To preserve state I sugest saving all details as a json file which includes the state and binary content. 
             return true;
         }
 
-
-        public static bool RemoveTagfileArchive(TagfileDetail tagDetail)
-        {
-            // todo 
-            return true;
-        }
         /// <summary>
         /// Returns tagfile content and meta data for an archived tagfile. Input requires filename and projectid
         /// </summary>
         /// <param name="tagDetail"></param>
         /// <returns></returns>
-        public static TagfileDetail GetTagfile(TagfileDetail tagDetail)
+        public static TagFileDetail GetTagfile(TagFileDetail tagDetail)
         {
             // just requires the projectid and tagfile name to be set
             string ArchiveTagfilePath = Path.Combine(MakePath(tagDetail), tagDetail.tagFileName);

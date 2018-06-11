@@ -342,9 +342,9 @@ namespace VSS.TRex.Rendering.Executors
         Exit;
       */
 
-      Guid RequestDescriptor = Guid.NewGuid(); // TODO ASNodeImplInstance.NextDescriptor;
+      Guid RequestDescriptor = Guid.NewGuid();
 
-      /* TODO Readd wen logging available
+      /* TODO Readd when logging available
     if VLPDSvcLocations.Debug_EmitTileRenderRequestParametersToLog then
       begin
         if FCoordsAreGrid then

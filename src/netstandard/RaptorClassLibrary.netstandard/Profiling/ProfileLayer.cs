@@ -209,9 +209,6 @@ namespace VSS.TRex.Profiling
 
       RadioLatency = source.RadioLatency;
 
-      // TODO: Ensure that the passes are assigned in the parent (Note: This is a TODO from the Raptor source...)
-      // Passes.Assign(source.Passes);
-
       StartCellPassIdx = source.StartCellPassIdx;
       EndCellPassIdx = source.EndCellPassIdx;
 

@@ -10,13 +10,6 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
   public class TemperatureClientLeafSubGridTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
-    public void Test_TemperatureClientLeafSubgridGridTests_Creation()
-    {
-      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.Temperature) as ClientTemperatureLeafSubGrid;
-      Assert.NotNull(clientGrid);
-    }
-
-    [Fact]
     public void Test_NullCells()
     {
       var cell = new SubGridCellPassDataTemperatureEntryRecord();
