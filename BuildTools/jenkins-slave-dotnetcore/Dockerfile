@@ -1,45 +1,37 @@
-FROM jenkins/jnlp-slave:alpine
+FROM jenkins/jnlp-slave:latest
 
 USER root
 
-RUN apk add --no-cache \
-        ca-certificates \
-        \
-        # .NET Core dependencies
-        krb5-libs \
-        libgcc \
-        libintl \
-        libssl1.0 \
-        libstdc++ \
-        tzdata \
-        userspace-rcu \
-        zlib \
-    && apk -X https://dl-cdn.alpinelinux.org/alpine/edge/main add --no-cache \
-        lttng-ust
-
-# Disable the invariant mode (set in base image)
-RUN apk add --no-cache icu-libs
-
-ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
-    LC_ALL=en_US.UTF-8 \
-    LANG=en_US.UTF-8
+# Install .NET CLI dependencies
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        libc6 \
+        libgcc1 \
+        libgssapi-krb5-2 \
+        libicu57 \
+        liblttng-ust0 \
+        libssl1.0.2 \
+        libstdc++6 \
+        zlib1g \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install .NET Core SDK
 ENV DOTNET_SDK_VERSION 2.1.300
 
-RUN apk add --no-cache --virtual .build-deps \
-        openssl \
-    && wget -O dotnet.tar.gz https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VERSION/dotnet-sdk-$DOTNET_SDK_VERSION-linux-musl-x64.tar.gz \
-    && dotnet_sha512='8e69f6ddcf979373d14619160c266430525559ffef317e6328d5e98be0538bb00e8a7a83bb5d3bc9ce3e0c5f4be5d8fc52b9c9835aa626f7dab6ef0424635923' \
-    && echo "$dotnet_sha512  dotnet.tar.gz" | sha512sum -c - \
+RUN curl -SL --output dotnet.tar.gz https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VERSION/dotnet-sdk-$DOTNET_SDK_VERSION-linux-x64.tar.gz \
+    && dotnet_sha512='80a6bfb1db5862804e90f819c1adeebe3d624eae0d6147e5d6694333f0458afd7d34ce73623964752971495a310ff7fcc266030ce5aef82d5de7293d94d13770' \
+    && echo "$dotnet_sha512 dotnet.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
-    && tar -C /usr/share/dotnet -xzf dotnet.tar.gz \
-    && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet \
+    && tar -zxf dotnet.tar.gz -C /usr/share/dotnet \
     && rm dotnet.tar.gz \
-    && apk del .build-deps
+    && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
 
-# Enable correct mode for dotnet watch (only mode supported in a container)
-ENV DOTNET_USE_POLLING_FILE_WATCHER=true \ 
+# Configure Kestrel web server to bind to port 80 when present
+ENV ASPNETCORE_URLS=http://+:80 \
+    # Enable detection of running in a container
+    DOTNET_RUNNING_IN_CONTAINER=true \
+    # Enable correct mode for dotnet watch (only mode supported in a container)
+    DOTNET_USE_POLLING_FILE_WATCHER=true \
     # Skip extraction of XML docs - generally not useful within an image/container - helps perfomance
     NUGET_XMLDOC_MODE=skip
 
