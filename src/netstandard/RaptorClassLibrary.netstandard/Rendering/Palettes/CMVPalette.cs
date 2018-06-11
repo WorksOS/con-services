@@ -12,6 +12,10 @@ namespace VSS.TRex.Rendering.Palettes
     public bool DisplayDecoupledColourInPVM { get; set; }
 
     private CMVRangePercentageRecord _cmvPercentageRange = new CMVRangePercentageRecord(80, 120);
+
+    private double _minTarget;
+    private double _maxTarget;
+
     private Color _targetCCVColour = Color.Blue;
 
     private static Transition[] Transitions =
@@ -25,13 +29,15 @@ namespace VSS.TRex.Rendering.Palettes
 
     public CMVPalette() : base(Transitions)
     {
+      _minTarget = _cmvPercentageRange.Min / 100;
+      _maxTarget = _cmvPercentageRange.Max / 100;
     }
 
     public Color ChooseColour(double value, double targetValue)
     {
       // Check to see if the value is in the target range and use the target CMV colour
       // if it is. CCVRange holds a min/max percentage of target CMV...
-      if (DisplayTargetCCVColourInPVM && (value >= targetValue * (_cmvPercentageRange.Min / 100) && value <= targetValue * (_cmvPercentageRange.Max / 100)))
+      if (DisplayTargetCCVColourInPVM && (value >= targetValue * _minTarget && value <= targetValue * _maxTarget))
         return _targetCCVColour;
 
       return ChooseColour(value);

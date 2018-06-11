@@ -31,19 +31,19 @@ namespace VSS.TRex.Rendering.Displayers
 
     protected override Color DoGetDisplayColour()
     {
-      var subGrid = SubGrid.Cells[east_col, north_row];
+      var cellValue = SubGrid.Cells[east_col, north_row];
 
-      if (subGrid.MeasuredMDP == CellPass.NullMDP)
+      if (cellValue.MeasuredMDP == CellPass.NullMDP)
         return Color.Empty;
 
-      var targetMDPValue = subGrid.TargetMDP;
+      var targetMDPValue = cellValue.TargetMDP;
 
       // If we are not using the machine target MDP value then we need to replace the
       // target MDP report from the machine, with the override value specified in the options
       if (!UseMachineTargetMDP)
         targetMDPValue = AbsoluteTargetMDP;
 
-      return ((MDPPalette)Palette).ChooseColour(subGrid.MeasuredMDP, targetMDPValue);
+      return ((MDPPalette)Palette).ChooseColour(cellValue.MeasuredMDP, targetMDPValue);
     }
   }
 }

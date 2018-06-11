@@ -43,7 +43,7 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
         BelowTargetPercent = ValueUnderTargetPercent,
         TotalAreaCoveredSqMeters = SummaryProcessedArea,
 
-        ReturnCode = MissingTargetValue ? SummaryCellsScanned == 0 ? (short)MissingTargetDataResultType.NoResult : (short)MissingTargetDataResultType.PartialResult : (short)MissingTargetDataResultType.NoProblems,
+        ReturnCode = MissingTargetValue ? SummaryCellsScanned == 0 ? MissingTargetDataResultType.NoResult : MissingTargetDataResultType.PartialResult : MissingTargetDataResultType.NoProblems,
 
         ResultStatus = ResultStatus
       };

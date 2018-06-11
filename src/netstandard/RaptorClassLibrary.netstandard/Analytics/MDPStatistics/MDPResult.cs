@@ -1,4 +1,5 @@
 ﻿using VSS.TRex.Analytics.Foundation.Models;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Analytics.MDPStatistics
 {
@@ -20,6 +21,6 @@ namespace VSS.TRex.Analytics.MDPStatistics
     /// <summary>
     /// The internal result code of the request. Documented elsewhere.
     /// </summary>
-    public short ReturnCode { get; set; }
+    public MissingTargetDataResultType ReturnCode { get; set; }
   }
 }

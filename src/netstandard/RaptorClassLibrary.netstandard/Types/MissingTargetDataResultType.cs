@@ -10,11 +10,11 @@
     /// <summary>
     /// No result due to missing target data.
     /// </summary>
-    NoResult,
+    NoResult = 1,
 
     /// <summary>
     /// Partial result due to missing target data.
     /// </summary>
-    PartialResult
+    PartialResult = 2
   }
 }
