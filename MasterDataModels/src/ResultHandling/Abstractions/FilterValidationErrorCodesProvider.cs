@@ -1,4 +1,7 @@
-﻿namespace VSS.MasterData.Models.ResultHandling.Abstractions
+﻿using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.Utilities;
+
+namespace VSS.MasterData.Models.ResultHandling.Abstractions
 {
   public class FilterValidationErrorCodesProvider : ContractExecutionStatesEnum
   {
@@ -16,6 +19,12 @@
       DynamicAddwithOffset("Invalid boundary polygon WKT. Should not be null.", 69);
       DynamicAddwithOffset("Invalid boundary polygon WKT. Should be > 3 points.", 70);
       DynamicAddwithOffset("Invalid boundary polygon WKT. Invalid format.", 71);
+      DynamicAddwithOffset("Invalid temperature range filter. Both minimum and maximum must be provided.", 72);
+      DynamicAddwithOffset("Invalid pass count range filter. Both minimum and maximum must be provided.", 73);
+      DynamicAddwithOffset("Invalid temperature range filter. Minimum must be less than maximum.", 74);
+      DynamicAddwithOffset("Invalid pass count range filter. Minimum must be less than maximum.", 75);
+      DynamicAddwithOffset($"Invalid temperature range filter. Range must be between {ValidationConstants.MIN_TEMPERATURE} and {ValidationConstants.MAX_TEMPERATURE}.", 76);
+      DynamicAddwithOffset($"Invalid pass count range filter. Range must be between {ValidationConstants.MIN_PASS_COUNT} and {ValidationConstants.MAX_PASS_COUNT}.", 77);
     }
   }
 }

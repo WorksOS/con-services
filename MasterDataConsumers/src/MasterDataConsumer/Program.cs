@@ -138,6 +138,7 @@ namespace VSS.Productivity3D.MasterDataConsumer
       Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName);
 
       var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+      loggerFactory.AddProvider(new Log4NetProvider());
       loggerFactory.AddConsole(configStore.GetLoggingConfig());
       loggerFactory.AddDebug();
 

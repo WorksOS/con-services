@@ -1,28 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <PackageId>VSS.MasterData.Proxies.netcore</PackageId>
+    <PackageId>VSS.AWS.TransferProxy</PackageId>
     <Authors>Merino</Authors>
     <Company>VSS</Company>
-    <Product>VSS.MasterData.Proxies.netcore</Product>
-    <Description>Shared library providing access to MasterData services through WebApis</Description>
-    <VersionPrefix>2.34.0</VersionPrefix>
+    <Product>VSS.AWS.TransferProxy</Product>
+    <Description>AWS file transfer wrapper</Description>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>VSS.MasterData.Proxies</AssemblyName>
+    <AssemblyName>VSS.AWS.TransferProxy</AssemblyName>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <RootNamespace>VSS.MasterData.Proxies</RootNamespace>
+    <RootNamespace>VSS.AWS.TransferProxy</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AWSSDK.S3" Version="3.3.18.2" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.2" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="Polly" Version="6.0.1" />
-    <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.*" />
-    <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.22.*" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ConfigurationStore\src\VSS.ConfigurationStore.Local.csproj" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

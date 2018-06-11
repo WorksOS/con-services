@@ -29,9 +29,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8AF291F2
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models.UnitTests.Local", "MasterDataModels\test\UnitTests\VSS.MasterData.Models.UnitTests.Local.csproj", "{47BD9DB9-86D3-4AF9-9408-0AD3AAB21577}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.WebApi.Common.UnitTests.Local", "WebApi.Common\test\UnitTests\VSS.WebApi.Common.UnitTests.Local.csproj", "{662D3D8F-2924-439A-9467-C3529799FA45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.WebApi.Common.UnitTests.Local", "WebApi.Common\test\UnitTests\VSS.WebApi.Common.UnitTests.Local.csproj", "{662D3D8F-2924-439A-9467-C3529799FA45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.WebApi.Common.Local", "WebApi.Common\src\VSS.WebApi.Common.Local.csproj", "{4D834139-877A-4DCD-9D1C-EE698DC5341F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.WebApi.Common.Local", "WebApi.Common\src\VSS.WebApi.Common.Local.csproj", "{4D834139-877A-4DCD-9D1C-EE698DC5341F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.AWS.TransferProxy.UnitTests.Local", "AWS.TransferProxy\test\UnitTests\VSS.AWS.TransferProxy.UnitTests.Local.csproj", "{5F1E03EB-92E3-401D-B82E-91236CC9ADDB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.AWS.TransferProxy.Local", "AWS.TransferProxy\src\VSS.AWS.TransferProxy.Local.csproj", "{4BA2CC86-F855-430E-AE26-DBEB1826D281}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -95,6 +99,14 @@ Global
 		{4D834139-877A-4DCD-9D1C-EE698DC5341F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D834139-877A-4DCD-9D1C-EE698DC5341F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D834139-877A-4DCD-9D1C-EE698DC5341F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F1E03EB-92E3-401D-B82E-91236CC9ADDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F1E03EB-92E3-401D-B82E-91236CC9ADDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F1E03EB-92E3-401D-B82E-91236CC9ADDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F1E03EB-92E3-401D-B82E-91236CC9ADDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BA2CC86-F855-430E-AE26-DBEB1826D281}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BA2CC86-F855-430E-AE26-DBEB1826D281}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BA2CC86-F855-430E-AE26-DBEB1826D281}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BA2CC86-F855-430E-AE26-DBEB1826D281}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -104,6 +116,7 @@ Global
 		{AE6404FE-B292-4B1B-A164-891F3EBA2397} = {8AF291F2-01BC-4EA8-BB3C-3CFBEAF660E9}
 		{47BD9DB9-86D3-4AF9-9408-0AD3AAB21577} = {8AF291F2-01BC-4EA8-BB3C-3CFBEAF660E9}
 		{662D3D8F-2924-439A-9467-C3529799FA45} = {8AF291F2-01BC-4EA8-BB3C-3CFBEAF660E9}
+		{5F1E03EB-92E3-401D-B82E-91236CC9ADDB} = {8AF291F2-01BC-4EA8-BB3C-3CFBEAF660E9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {61051E1C-44A2-4BB0-966A-5921ABAD87E8}

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-namespace VSS.MasterData.Proxies.Interfaces
+namespace VSS.AWS.TransferProxy.Interfaces
 {
   public interface ITransferProxy
   {

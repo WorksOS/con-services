@@ -8,8 +8,6 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Interfaces;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Utilities;
-using NodaTime;
-using NodaTime.Extensions;
 
 namespace VSS.MasterData.Models.Models
 {
@@ -71,7 +69,9 @@ namespace VSS.MasterData.Models.Models
     public ElevationType? ElevationType { get; private set; }
 
     /// <summary>
-    /// Only filter cell passes recorded when the vibratory drum was 'on'.  If set to null, returns all cell passes.  If true, returns only cell passes with the cell pass parameter and the drum was on.  If false, returns only cell passes with the cell pass parameter and the drum was off.
+    /// Only filter cell passes recorded when the vibratory drum was 'on'.  
+    /// If set to null, returns all cell passes.  If true, returns only cell passes with the cell pass parameter and the drum was on.  
+    /// If false, returns only cell passes with the cell pass parameter and the drum was off.
     /// </summary>
     [JsonProperty(PropertyName = "vibeStateOn", Required = Required.Default)]
     public bool? VibeStateOn { get; private set; }
@@ -95,14 +95,15 @@ namespace VSS.MasterData.Models.Models
     public List<WGSPoint> PolygonLL { get; private set; }
 
     /// <summary>
-    /// Only use cell passes recorded when the machine was driving in the forwards direction. If true, only returns machines travelling forward, if false, returns machines travelling in reverse, if null, returns all machines.
+    /// Only use cell passes recorded when the machine was driving in the forwards direction. 
+    /// If true, only returns machines travelling forward, if false, returns machines travelling in reverse, if null, returns all machines.
     /// </summary>
     [JsonProperty(PropertyName = "forwardDirection", Required = Required.Default)]
     public bool? ForwardDirection { get; private set; }
 
     /// <summary>
-    /// The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file) to be used as the layer type filter. Layer 3 is then the third layer from the
-    /// datum elevation where each layer has a thickness defined by the layerThickness member.
+    /// The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file) to be used as the layer type filter. 
+    /// Layer 3 is then the third layer from the datum elevation where each layer has a thickness defined by the layerThickness member.
     /// </summary>
     [Range(ValidationConstants.MIN_LAYER_NUMBER, ValidationConstants.MAX_LAYER_NUMBER)]
     [JsonProperty(PropertyName = "layerNumber", Required = Required.Default)]
@@ -115,25 +116,25 @@ namespace VSS.MasterData.Models.Models
     public string AlignmentUid { get; protected set; }
 
     /// <summary>
-    /// The starting Station along the alignment.
+    /// The starting Station along the alignment in meters.
     /// </summary>
     [JsonProperty(PropertyName = "startStation", Required = Required.Default)]
     public double? StartStation { get; protected set; }
 
     /// <summary>
-    /// The ending Station along the alignment.
+    /// The ending Station along the alignment in meters.
     /// </summary>
     [JsonProperty(PropertyName = "endStation", Required = Required.Default)]
     public double? EndStation { get; protected set; }
 
     /// <summary>
-    /// The leftmost offset from the alignment.
+    /// The leftmost offset from the alignment in meters.
     /// </summary>
     [JsonProperty(PropertyName = "leftOffset", Required = Required.Default)]
     public double? LeftOffset { get; protected set; }
 
     /// <summary>
-    /// The leftmost offset from the alignment.
+    /// The rightmost offset from the alignment in meters.
     /// </summary>
     [JsonProperty(PropertyName = "rightOffset", Required = Required.Default)]
     public double? RightOffset { get; protected set; }
@@ -145,6 +146,41 @@ namespace VSS.MasterData.Models.Models
     [JsonProperty(PropertyName = "asAtDate", Required = Required.Default)]
     public bool? AsAtDate { get; protected set; }
 
+    /// <summary>
+    /// Only filter cell passes recorded when the guidance mode is automatics.
+    /// If set to null, returns all cell passes.  If true, returns only cell passes with the cell pass parameter and guidance mode was automatics.  
+    /// If false, returns only cell passes with the cell pass parameter and guidance mode was manual.
+    /// </summary>
+    [JsonProperty(PropertyName = "automaticsOn", Required = Required.Default)]
+    public bool? AutomaticsOn { get; protected set; }
+
+    /// <summary>
+    /// The minimum temperature in °C for a temperature range filter. Only cell passes within the range will be selected.
+    /// </summary>
+    [Range(ValidationConstants.MIN_TEMPERATURE, ValidationConstants.MAX_TEMPERATURE)]
+    [JsonProperty(PropertyName = "temperatureRangeMin", Required = Required.Default)]
+    public double? TemperatureRangeMin { get; protected set; }
+
+    /// <summary>
+    /// The maximum temperature in °C for a temperature range filter. Only cell passes within the range will be selected.
+    /// </summary>
+    [Range(ValidationConstants.MIN_TEMPERATURE, ValidationConstants.MAX_TEMPERATURE)]
+    [JsonProperty(PropertyName = "temperatureRangeMax", Required = Required.Default)]
+    public double? TemperatureRangeMax { get; protected set; }
+
+    /// <summary>
+    /// The minimum pass count for a  pass count range filter. Only cell passes within the range will be selected.
+    /// </summary>
+    [Range(ValidationConstants.MIN_PASS_COUNT, ValidationConstants.MAX_PASS_COUNT)]
+    [JsonProperty(PropertyName = "passCountRangeMin", Required = Required.Default)]
+    public int? PassCountRangeMin { get; protected set; }
+
+    /// <summary>
+    /// The maximum pass count for a  pass count range filter. Only cell passes within the range will be selected.
+    /// </summary>
+    [Range(ValidationConstants.MIN_PASS_COUNT, ValidationConstants.MAX_PASS_COUNT)]
+    [JsonProperty(PropertyName = "passCountRangeMax", Required = Required.Default)]
+    public int? PassCountRangeMax { get; protected set; }
 
     #region For JSON Serialization
     public bool ShouldSerializeStartUtc()
@@ -227,6 +263,27 @@ namespace VSS.MasterData.Models.Models
     {
       return AsAtDate != null;
     }
+
+    public bool ShouldSerializeAutomaticsOn()
+    {
+      return AutomaticsOn != null;
+    }
+    public bool ShouldSerializeTemperatureRangeMin()
+    {
+      return TemperatureRangeMin != null;
+    }
+    public bool ShouldSerializeTemperatureRangeMax()
+    {
+      return TemperatureRangeMax != null;
+    }
+    public bool ShouldSerializePassCountRangeMin()
+    {
+      return PassCountRangeMin != null;
+    }
+    public bool ShouldSerializePassCountRangeMax()
+    {
+      return PassCountRangeMax != null;
+    }
     #endregion
 
     public bool HasData() =>
@@ -245,7 +302,12 @@ namespace VSS.MasterData.Models.Models
       EndStation.HasValue ||
       LeftOffset.HasValue ||
       RightOffset.HasValue ||
-      AsAtDate.HasValue;
+      AsAtDate.HasValue ||
+      AutomaticsOn.HasValue ||
+      TemperatureRangeMin.HasValue ||
+      TemperatureRangeMax.HasValue ||
+      PassCountRangeMin.HasValue ||
+      PassCountRangeMax.HasValue;
 
     public void AddBoundary(string polygonUID, string polygonName, List<WGSPoint> polygonLL)
     {
@@ -276,7 +338,12 @@ namespace VSS.MasterData.Models.Models
         double? endStation = null,
         double? leftOffset = null,
         double? rightOffset = null,
-        bool? asAtDate = null
+        bool? asAtDate = null,
+        bool? automaticsOn = null,
+        double? temperatureRangeMin = null,
+        double? temperatureRangeMax = null,
+        int? passCountRangeMin = null,
+        int? passCountRangeMax = null
       )
     {
       return new Filter
@@ -298,7 +365,12 @@ namespace VSS.MasterData.Models.Models
         EndStation = endStation,
         LeftOffset = leftOffset,
         RightOffset = rightOffset,
-        AsAtDate = asAtDate
+        AsAtDate = asAtDate,
+        AutomaticsOn = automaticsOn,
+        TemperatureRangeMin = temperatureRangeMin,
+        TemperatureRangeMax = temperatureRangeMax,
+        PassCountRangeMin = passCountRangeMin,
+        PassCountRangeMax = passCountRangeMax
       };
     }
 
@@ -306,7 +378,8 @@ namespace VSS.MasterData.Models.Models
     {
       var filter = CreateFilter(StartUtc, EndUtc, DesignUid, ContributingMachines, OnMachineDesignId, ElevationType, 
         VibeStateOn, PolygonLL, ForwardDirection, LayerNumber, PolygonUid, PolygonName, 
-        AlignmentUid, StartStation, EndStation, LeftOffset, RightOffset, AsAtDate);
+        AlignmentUid, StartStation, EndStation, LeftOffset, RightOffset, AsAtDate, AutomaticsOn,
+        TemperatureRangeMin, TemperatureRangeMax, PassCountRangeMin, PassCountRangeMax);
 
       return JsonConvert.SerializeObject(filter);
     }
@@ -399,6 +472,42 @@ namespace VSS.MasterData.Models.Models
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
         }
       }
+
+      if (TemperatureRangeMin.HasValue != TemperatureRangeMax.HasValue)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 72);
+      }
+
+      if (TemperatureRangeMin.HasValue && TemperatureRangeMax.HasValue)
+      {
+        if (TemperatureRangeMin.Value > TemperatureRangeMax.Value)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 74);
+        }
+        if (TemperatureRangeMin.Value < ValidationConstants.MIN_TEMPERATURE || TemperatureRangeMin.Value > ValidationConstants.MAX_TEMPERATURE ||
+            TemperatureRangeMax.Value < ValidationConstants.MIN_TEMPERATURE || TemperatureRangeMax.Value > ValidationConstants.MAX_TEMPERATURE)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 76);
+        }
+      }
+
+      if (PassCountRangeMin.HasValue != PassCountRangeMax.HasValue)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 73);
+      }
+
+      if (PassCountRangeMin.HasValue && PassCountRangeMax.HasValue)
+      {
+        if (PassCountRangeMin.Value > PassCountRangeMax.Value)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 75);
+        }
+        if (PassCountRangeMin.Value < ValidationConstants.MIN_TEMPERATURE || PassCountRangeMin.Value > ValidationConstants.MAX_TEMPERATURE ||
+            PassCountRangeMax.Value < ValidationConstants.MIN_TEMPERATURE || PassCountRangeMax.Value > ValidationConstants.MAX_TEMPERATURE)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 77);
+        }
+      }
     }
 
     public bool Equals(Filter other)
@@ -411,8 +520,12 @@ namespace VSS.MasterData.Models.Models
              VibeStateOn == other.VibeStateOn && string.Equals(PolygonUid, other.PolygonUid) &&
              string.Equals(PolygonName, other.PolygonName) && PolygonLL.ScrambledEquals(other.PolygonLL) &&
              ForwardDirection == other.ForwardDirection && LayerNumber == other.LayerNumber && 
-             string.Equals(AlignmentUid, other.AlignmentUid) && string.Equals(StartStation, other.StartStation) && string.Equals(EndStation, other.EndStation) &&
-             string.Equals(LeftOffset, other.LeftOffset) && string.Equals(RightOffset, other.RightOffset);
+             string.Equals(AlignmentUid, other.AlignmentUid) && 
+             StartStation.Equals(other.StartStation) && EndStation.Equals(other.EndStation) &&
+             LeftOffset.Equals(other.LeftOffset) && RightOffset.Equals(other.RightOffset) &&
+             AutomaticsOn == other.AutomaticsOn && 
+             TemperatureRangeMin.Equals(other.TemperatureRangeMin) && TemperatureRangeMax.Equals(other.TemperatureRangeMax) &&
+             PassCountRangeMin.Equals(other.PassCountRangeMin) && PassCountRangeMax.Equals(other.PassCountRangeMax);
     }
 
     public override bool Equals(object obj)
@@ -446,6 +559,11 @@ namespace VSS.MasterData.Models.Models
         hashCode = (hashCode * 397) ^ (LeftOffset != null ? LeftOffset.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (RightOffset != null ? RightOffset.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (AsAtDate != null ? AsAtDate.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (AutomaticsOn != null ? AutomaticsOn.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (TemperatureRangeMin != null ? TemperatureRangeMin.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (TemperatureRangeMax != null ? TemperatureRangeMax.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (PassCountRangeMin != null ? PassCountRangeMin.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (PassCountRangeMax != null ? PassCountRangeMax.GetHashCode() : 397);
         return hashCode;
       }
     }
@@ -492,4 +610,6 @@ namespace VSS.MasterData.Models.Models
       }
     }
   }
+
+ 
 }
