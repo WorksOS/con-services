@@ -1,21 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
+using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.MasterData.Repositories.DBModels;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -273,6 +275,65 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       return FileDescriptor.CreateFileDescriptor(fileSpaceId, tccPath, tccFileName);
     }
 
+    /// <summary>
+    /// Gets the geofence list available for a customer, 
+    ///    or those associated with a project
+    /// </summary>
+    /// <returns></returns>
+    public static async Task<List<GeofenceWithAssociation>> GetGeofenceList(string customerUid, string projectUid, int[] geofenceTypes,
+      ILogger log, IProjectRepository projectRepo, IGeofenceRepository geofenceRepo)
+    {
+      log.LogInformation(
+        $"GetGeofenceList: customerUid {customerUid}, projectUid {projectUid}, {JsonConvert.SerializeObject(geofenceTypes)}");
+
+      var geofencesWithAssociation = (await projectRepo.GetCustomerGeofences(customerUid).ConfigureAwait(false))
+        .Where(g => !geofenceTypes.Any() || geofenceTypes.Contains((int) g.GeofenceType));
+
+      if (!string.IsNullOrEmpty(projectUid))
+      {
+        var geofencesAssociated = geofencesWithAssociation
+          .Where(g => g.ProjectUID == projectUid).ToList();
+
+        var associated = geofencesAssociated.ToList();
+        log.LogInformation(
+          $"Geofence list contains {associated.Count} geofences associated to project {projectUid}");
+        return associated;
+      }
+
+      // geofences which are not associated with ANY project
+      var notAssociated = geofencesWithAssociation
+        .Where(g => string.IsNullOrEmpty(g.ProjectUID)).ToList();
+      log.LogInformation($"Geofence list contains {notAssociated.Count} available geofences");
+      return notAssociated;
+    }
+
+    //public static async Task<List<Geofence>> GetGeofenceList(string customerUid, string projectUid, int[] geofenceTypes,
+    //  ILogger log, IProjectRepository projectRepo, IGeofenceRepository geofenceRepo)
+    //{
+    //  log.LogInformation(
+    //    $"GetGeofenceList: customerUid {customerUid}, projectUid {projectUid}, {JsonConvert.SerializeObject(geofenceTypes)}");
+
+    //  var geofences = (await geofenceRepo.GetCustomerGeofences(customerUid).ConfigureAwait(false))
+    //    .Where(g => !geofenceTypes.Any() || geofenceTypes.Contains((int)g.GeofenceType));
+
+    //  if (!string.IsNullOrEmpty(projectUid))
+    //  {
+    //    // remove any of wrong type, or for which the Geofence has been deleted (it won't be in the geofences list)
+    //    var projectGeofenceAssociations = (await projectRepo.GetAssociatedGeofences(projectUid).ConfigureAwait(false))
+    //      .Where(pg => !geofenceTypes.Any() || geofenceTypes.Contains((int)pg.GeofenceType));
+    //    var geofencesAssociated = geofences
+    //      .Where(g => projectGeofenceAssociations.Any(pg => pg.GeofenceUID == g.GeofenceUID));
+
+    //    var associated = geofencesAssociated.ToList();
+    //    log.LogInformation(
+    //      $"Geofence list contains {associated.Count()} geofences associated to project {projectUid}");
+    //    return associated.ToList();
+    //  }
+
+    //  var enumerable = geofences.ToList();
+    //  log.LogInformation($"Geofence list contains {enumerable.Count()} available geofences");
+    //  return enumerable.ToList();
+    //}
 
     #region rollback
 

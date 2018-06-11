@@ -77,6 +77,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected readonly IFileRepository fileRepo;
 
     /// <summary>
+    /// Gets or sets the Geofence DB Repository.
+    /// </summary>
+    protected readonly IGeofenceRepository geofenceRepo;
+
+    /// <summary>
     /// Gets the custom customHeaders for the request.
     /// </summary>
     /// <value>
@@ -119,10 +124,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="projectRepo">The project repo.</param>
     /// <param name="subscriptionRepo"></param>
     /// <param name="fileRepo"></param>
+    /// <param name="geofenceRepo"></param>
     protected BaseController(ILogger log, IConfigurationStore configStore,
       IServiceExceptionHandler serviceExceptionHandler, IKafka producer,
       IRaptorProxy raptorProxy, 
-      IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null)
+      IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null, IGeofenceRepository geofenceRepo = null)
     {
       this.log = log;
       this.configStore = configStore;
@@ -140,6 +146,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       this.projectRepo = projectRepo;
       this.subscriptionRepo = subscriptionRepo;
       this.fileRepo = fileRepo;
+      this.geofenceRepo = geofenceRepo;
       this.raptorProxy = raptorProxy;
     }
 

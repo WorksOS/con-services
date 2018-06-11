@@ -9,15 +9,18 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Remotion.Linq.Clauses;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
+using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.MasterData.Repositories.DBModels;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -44,6 +47,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="producer"></param>
     /// <param name="projectRepo"></param>
     /// <param name="subscriptionRepo"></param>
+    /// <param name="geofenceRepo"></param>
     /// <param name="store"></param>
     /// <param name="subscriptionProxy"></param>
     /// <param name="geofenceProxy"></param>
@@ -53,12 +57,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="serviceExceptionHandler">The ServiceException handler.</param>
     /// <param name="httpContextAccessor"></param>
     public ProjectV4Controller(IKafka producer, IProjectRepository projectRepo,
-      ISubscriptionRepository subscriptionRepo, IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
-      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, IFileRepository fileRepo,
+      ISubscriptionRepository subscriptionRepo, IFileRepository fileRepo, IGeofenceRepository geofenceRepo, 
+      IConfigurationStore store, 
+      ISubscriptionProxy subscriptionProxy, IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, 
       ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
       IHttpContextAccessor httpContextAccessor)
-      : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, geofenceProxy, raptorProxy,
+      : base(producer, projectRepo, subscriptionRepo, fileRepo, geofenceRepo, store, subscriptionProxy, geofenceProxy, raptorProxy,
         logger, serviceExceptionHandler, logger.CreateLogger<ProjectV4Controller>())
     {
       this._logger = logger;
@@ -271,6 +276,59 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     #endregion subscriptions
-    
+
+
+    #region geofences
+
+    /// <summary>
+    /// Gets a list of geofences for a customer, which are NOT associated with any project.
+    ///  The list includes projects of selected/all types. Empty geofences list indicates All.
+    ///  Includes only !deleted Geofences.
+    /// </summary>
+    /// <returns>A list of geofences</returns>
+    [Route("api/v4/geofences")]
+    [HttpGet]
+    public async Task<GeofenceV4DescriptorsListResult> GetGeofencesV4([FromBody] int[] geofenceTypes)
+    {
+      log.LogInformation("GetGeofencesV4");
+
+      ProjectDataValidator.ValidateGeofenceTypes(geofenceTypes);
+
+      var geofences = (await ProjectRequestHelper.GetGeofenceList(customerUid, string.Empty, geofenceTypes, log,
+        projectRepo, geofenceRepo));
+      return new GeofenceV4DescriptorsListResult
+      {
+        GeofenceDescriptors = geofences.Select(geofence =>
+            AutoMapperUtility.Automapper.Map<GeofenceV4Descriptor>(geofence))
+          .ToImmutableList()
+      };
+    }
+
+    /// <summary>
+    /// Gets a list of geofences associated with particular project.
+    ///  The list includes geofences of selected/all types.
+    ///  Includes only !deleted Geofences.
+    /// </summary>
+    /// <exception cref="NotImplementedException"></exception>
+    /// <returns>A list of geofences</returns>
+    [Route("api/v4/geofences/{projectUid}")]
+    [HttpGet]
+    public async Task<GeofenceV4DescriptorsListResult> GetAssociatedGeofencesV4([FromUri] string projectUid, [FromBody] int[] geofenceTypes)
+    {
+      ProjectDataValidator.ValidateGeofenceTypes(geofenceTypes);
+      await GetProject(projectUid).ConfigureAwait(false);
+
+      var geofences = (await ProjectRequestHelper.GetGeofenceList(customerUid, projectUid, geofenceTypes, log,
+        projectRepo, geofenceRepo));
+      return new GeofenceV4DescriptorsListResult
+      {
+        GeofenceDescriptors = geofences.Select(geofence =>
+            AutoMapperUtility.Automapper.Map<GeofenceV4Descriptor>(geofence))
+          .ToImmutableList()
+      };
+    }
+
+    #endregion geofences
+
   }
 }

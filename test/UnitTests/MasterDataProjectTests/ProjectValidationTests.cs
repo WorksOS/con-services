@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
@@ -173,6 +172,28 @@ namespace VSS.MasterData.ProjectTests
         () => ProjectDataValidator.Validate(updateProjectEvent, projectRepo.Object, ServiceExceptionHandler));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2025", StringComparison.Ordinal), "Expected error number 2025");
     }
+
+
+    [TestMethod]
+    [DataRow(new[] { 0, 3 })]
+    [DataRow(new[] { 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 0, 8 })]
+    [DataRow(new int[] {})]
+    public void ValidateGeofenceTypes_HappyPath(int[] geofenceTypes)
+    {
+      ProjectDataValidator.ValidateGeofenceTypes(geofenceTypes);
+    }
+
+    [TestMethod]
+    [DataRow(null)]
+    [DataRow(new int[] {-1, 3})]
+    [DataRow(new int[] { 99 })]
+    public void ValidateGeofenceTypes_UnhappyPath(int[] geofenceTypes)
+    {
+      var ex = Assert.ThrowsException<ServiceException>(
+        () => ProjectDataValidator.ValidateGeofenceTypes(geofenceTypes));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2073", StringComparison.Ordinal), "Expected error number 2073");
+    }
+
 
   }
 }

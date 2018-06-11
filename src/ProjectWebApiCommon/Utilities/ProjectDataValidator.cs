@@ -9,6 +9,7 @@ using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Repositories;
+using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -34,6 +35,33 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(2),
             projectErrorCodesProvider.FirstNameWithOffset(2)));
+    }
+
+    /// <summary>
+    /// Validate list of geofenceTypes
+    /// </summary>
+    /// <param name="geofenceTypes">FileName</param>
+    public static bool ValidateGeofenceTypes(int[] geofenceTypes)
+    {
+      var geofenceTypeErrorCode = 73;
+      if (geofenceTypes == null)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(geofenceTypeErrorCode),
+            projectErrorCodesProvider.FirstNameWithOffset(geofenceTypeErrorCode)));
+      }
+
+      foreach (var gt in geofenceTypes)
+      {
+        if (!Enum.IsDefined(typeof(GeofenceType), gt))
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(geofenceTypeErrorCode),
+              projectErrorCodesProvider.FirstNameWithOffset(geofenceTypeErrorCode)));
+        }
+      }
+
+      return true;
     }
 
     /// <summary>
