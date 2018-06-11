@@ -24,9 +24,9 @@ namespace ProductionDataSvc.AcceptanceTests.Models
         if (!this.designs[i].Equals(other.designs[i]))
           return false;
       }
-      return this.assetID == other.assetID &&
-             this.machineName == other.machineName &&
-             this.isJohnDoe == other.isJohnDoe;
+      return this.AssetId == other.AssetId &&
+             this.MachineName == other.MachineName &&
+             this.IsJohnDoe == other.IsJohnDoe;
     }
 
     public static bool operator ==(MachineDesignDetails a, MachineDesignDetails b)

@@ -45,9 +45,9 @@ namespace ProductionDataSvc.AcceptanceTests.Models
                 for (int i = 0; i < thisList.Count; ++i)
                 {
                     if (!otherList.Exists(m =>
-                        m.assetID == thisList[i].assetID &&
-                        m.machineName == thisList[i].machineName &&
-                        m.isJohnDoe == thisList[i].isJohnDoe &&
+                        m.AssetId == thisList[i].AssetId &&
+                        m.MachineName == thisList[i].MachineName &&
+                        m.IsJohnDoe == thisList[i].IsJohnDoe &&
                         m.lastKnownDesignName == thisList[i].lastKnownDesignName &&
                         Math.Round((double)m.lastKnownLatitude, 6) == Math.Round((double)thisList[i].lastKnownLatitude, 6) &&
                         Math.Round((double)m.lastKnownLongitude, 6) == Math.Round((double)thisList[i].lastKnownLongitude, 6) &&
