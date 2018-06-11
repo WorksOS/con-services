@@ -9,6 +9,11 @@ RUN ["/bin/sh", "build.sh"]
 
 FROM microsoft/dotnet:2.1-runtime
 
+#This is required for the webpi to run properly
+RUN apt-get update && apt-get install -y \
+    libunwind8 \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 ENV ASPNETCORE_URLS http://*:80

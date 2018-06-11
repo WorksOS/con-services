@@ -1,22 +1,21 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Http;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
+using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.TCCFileAccess;
@@ -24,10 +23,10 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
-  /// <summary>
-  /// Project controller v4
-  /// </summary>
-  public class ProjectV4Controller : ProjectBaseController
+    /// <summary>
+    /// Project controller v4
+    /// </summary>
+    public class ProjectV4Controller : ProjectBaseController
   {
     /// <summary>
     /// Logger factory for use by executor
@@ -39,20 +38,21 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     protected readonly IHttpContextAccessor httpContextAccessor;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="producer"></param>
-    /// <param name="projectRepo"></param>
-    /// <param name="subscriptionRepo"></param>
-    /// <param name="store"></param>
-    /// <param name="subscriptionProxy"></param>
-    /// <param name="geofenceProxy"></param>
-    /// <param name="raptorProxy"></param>
-    /// <param name="fileRepo"></param>
-    /// <param name="logger"></param>
-    /// <param name="serviceExceptionHandler">The ServiceException handler.</param>
-    public ProjectV4Controller(IKafka producer, IProjectRepository projectRepo,
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="producer"></param>
+        /// <param name="projectRepo"></param>
+        /// <param name="subscriptionRepo"></param>
+        /// <param name="store"></param>
+        /// <param name="subscriptionProxy"></param>
+        /// <param name="httpContextAccessor"></param>
+        /// <param name="geofenceProxy"></param>
+        /// <param name="raptorProxy"></param>
+        /// <param name="fileRepo"></param>
+        /// <param name="logger"></param>
+        /// <param name="serviceExceptionHandler">The ServiceException handler.</param>
+        public ProjectV4Controller(IKafka producer, IProjectRepository projectRepo,
       ISubscriptionRepository subscriptionRepo, IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
       IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, IFileRepository fileRepo,
       ILoggerFactory logger,
@@ -257,7 +257,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <response code="400">Bad request</response>
     [Route("api/v4/project/{projectUid}")]
     [HttpDelete]
-    public async Task<ProjectV4DescriptorsSingleResult> DeleteProjectV4([FromUri] string projectUid)
+    public async Task<ProjectV4DescriptorsSingleResult> DeleteProjectV4([FromQuery] string projectUid)
     {
       LogCustomerDetails("DeleteProjectV4", projectUid);
       var project = new DeleteProjectEvent
