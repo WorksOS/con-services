@@ -12,17 +12,17 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="6.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.0" />
-    <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.0.*" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.*" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.0.0*" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.*" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.*" />
+    <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.1.*" />
     <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.5.*" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.1.*" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.30.*" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.33.*" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.8.*" />
-    <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.8.*" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.20.*" />
+    <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.10.*" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.22.*" />
     <!--Common does not directly depend on NameResolution however it wont build without it due to package downgrade issues--> 
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
   </ItemGroup>
