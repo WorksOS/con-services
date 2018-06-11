@@ -76,5 +76,31 @@
     ],
     "Code": 0,
     "Message": "success"
+  },
+  "TemperatureFilter_Details": {
+    "percents": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "Code": 0,
+    "Message": "success"
+  },
+  "PassCountFilter_Details": {
+    "percents": [
+      1.507138165854333,
+      1.6108403332296313,
+      31.535829098828167,
+      49.379515365204469,
+      4.2898129904248332,
+      4.7599294825261849,
+      6.9169345639323865
+    ],
+    "Code": 0,
+    "Message": "success"
   }
 }

@@ -241,21 +241,51 @@ this.CompactionGetPasscountSummary("AlignmentFilter", "ff91dd40-1569-4765-a2bc-0
 #line hidden
         }
         
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Passcount Summary: TemperatureFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionPassCount")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "TemperatureFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "TemperatureFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUID", "1980fc8b-c892-4f9f-b673-bc09827bf2b5")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "TemperatureFilter_Summary")]
+        public virtual void CompactionGetPasscountSummary_TemperatureFilter()
+        {
+#line 16
+this.CompactionGetPasscountSummary("TemperatureFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "1980fc8b-c892-4f9f-b673-bc09827bf2b5", "TemperatureFilter_Summary", ((string[])(null)));
+#line hidden
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Passcount Summary: PassCountFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionPassCount")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "PassCountFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "PassCountFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUID", "c5590172-a1bb-440a-bc7d-6c35ecc75724")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "PassCountFilter_Summary")]
+        public virtual void CompactionGetPasscountSummary_PassCountFilter()
+        {
+#line 16
+this.CompactionGetPasscountSummary("PassCountFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "c5590172-a1bb-440a-bc7d-6c35ecc75724", "PassCountFilter_Summary", ((string[])(null)));
+#line hidden
+        }
+        
         public virtual void CompactionGetPasscountDetails_NoDesignFilter(string requestName, string projectUID, string resultName, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Passcount Details - No Design Filter", exampleTags);
-#line 33
+#line 36
 this.ScenarioSetup(scenarioInfo);
-#line 34
+#line 37
 testRunner.Given("the Compaction service URI \"/api/v2/passcounts/details\" for operation \"PassCountD" +
                     "etails\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 35
-testRunner.And("the result file \"CompactionGetPassCountDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 36
-testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 37
-testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 38
+testRunner.And("the result file \"CompactionGetPassCountDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 39
+testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 40
+testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 41
 testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -269,7 +299,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDesignFilter_Details")]
         public virtual void CompactionGetPasscountDetails_NoDesignFilter_()
         {
-#line 33
+#line 36
 this.CompactionGetPasscountDetails_NoDesignFilter("", "ff91dd40-1569-4765-a2bc-014321f76ace", "NoDesignFilter_Details", ((string[])(null)));
 #line hidden
         }
@@ -283,7 +313,7 @@ this.CompactionGetPasscountDetails_NoDesignFilter("", "ff91dd40-1569-4765-a2bc-0
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDesignFilter_Details_PS")]
         public virtual void CompactionGetPasscountDetails_NoDesignFilter_ProjectSettings()
         {
-#line 33
+#line 36
 this.CompactionGetPasscountDetails_NoDesignFilter("ProjectSettings", "3335311a-f0e2-4dbe-8acd-f21135bafee4", "NoDesignFilter_Details_PS", ((string[])(null)));
 #line hidden
         }
@@ -291,20 +321,20 @@ this.CompactionGetPasscountDetails_NoDesignFilter("ProjectSettings", "3335311a-f
         public virtual void CompactionGetPasscountDetails(string requestName, string projectUID, string filterUID, string resultName, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Passcount Details", exampleTags);
-#line 44
+#line 47
 this.ScenarioSetup(scenarioInfo);
-#line 45
+#line 48
 testRunner.Given("the Compaction service URI \"/api/v2/passcounts/details\" for operation \"PassCountD" +
                     "etails\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 46
-testRunner.And("the result file \"CompactionGetPassCountDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 47
-testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 48
-testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 49
-testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+testRunner.And("the result file \"CompactionGetPassCountDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 50
+testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 51
+testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 52
+testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 53
 testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -320,7 +350,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "DesignOutside_Details")]
         public virtual void CompactionGetPasscountDetails_DesignOutside()
         {
-#line 44
+#line 47
 this.CompactionGetPasscountDetails("DesignOutside", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "1cf81668-1739-42d5-b068-ea025588796a", "DesignOutside_Details", ((string[])(null)));
 #line hidden
         }
@@ -335,7 +365,7 @@ this.CompactionGetPasscountDetails("DesignOutside", "7925f179-013d-4aaf-aff4-7b9
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "DesignIntersects_Details")]
         public virtual void CompactionGetPasscountDetails_DesignIntersects()
         {
-#line 44
+#line 47
 this.CompactionGetPasscountDetails("DesignIntersects", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "3d9086f2-3c04-4d92-9141-5134932b1523", "DesignIntersects_Details", ((string[])(null)));
 #line hidden
         }
@@ -350,7 +380,7 @@ this.CompactionGetPasscountDetails("DesignIntersects", "7925f179-013d-4aaf-aff4-
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "BoundaryFilterPCDetails")]
         public virtual void CompactionGetPasscountDetails_FilterArea()
         {
-#line 44
+#line 47
 this.CompactionGetPasscountDetails("FilterArea", "ff91dd40-1569-4765-a2bc-014321f76ace", "154470b6-15ae-4cca-b281-eae8ac1efa6c", "BoundaryFilterPCDetails", ((string[])(null)));
 #line hidden
         }
@@ -365,7 +395,7 @@ this.CompactionGetPasscountDetails("FilterArea", "ff91dd40-1569-4765-a2bc-014321
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "BoundaryFilterPCDetails")]
         public virtual void CompactionGetPasscountDetails_AsAtToday()
         {
-#line 44
+#line 47
 this.CompactionGetPasscountDetails("AsAtToday", "ff91dd40-1569-4765-a2bc-014321f76ace", "3c836562-bcd5-4a35-99a5-cb5655572be7", "BoundaryFilterPCDetails", ((string[])(null)));
 #line hidden
         }
@@ -380,7 +410,7 @@ this.CompactionGetPasscountDetails("AsAtToday", "ff91dd40-1569-4765-a2bc-014321f
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "AsAtCustomPCDetails")]
         public virtual void CompactionGetPasscountDetails_AsAtCustom()
         {
-#line 44
+#line 47
 this.CompactionGetPasscountDetails("AsAtCustom", "ff91dd40-1569-4765-a2bc-014321f76ace", "a8405aca-71f1-463d-8821-c2415d67e78c", "AsAtCustomPCDetails", ((string[])(null)));
 #line hidden
         }
@@ -395,7 +425,7 @@ this.CompactionGetPasscountDetails("AsAtCustom", "ff91dd40-1569-4765-a2bc-014321
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "BoundaryMachineFilterPCDetails")]
         public virtual void CompactionGetPasscountDetails_FilterAreaMachine()
         {
-#line 44
+#line 47
 this.CompactionGetPasscountDetails("FilterAreaMachine", "ff91dd40-1569-4765-a2bc-014321f76ace", "9c27697f-ea6d-478a-a168-ed20d6cd9a20", "BoundaryMachineFilterPCDetails", ((string[])(null)));
 #line hidden
         }
@@ -410,8 +440,38 @@ this.CompactionGetPasscountDetails("FilterAreaMachine", "ff91dd40-1569-4765-a2bc
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "AlignmentFilter_Details")]
         public virtual void CompactionGetPasscountDetails_AlignmentFilter()
         {
-#line 44
+#line 47
 this.CompactionGetPasscountDetails("AlignmentFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "2811c7c3-d270-4d63-97e2-fc3340bf6c6b", "AlignmentFilter_Details", ((string[])(null)));
+#line hidden
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Passcount Details: TemperatureFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionPassCount")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "TemperatureFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "TemperatureFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUID", "1980fc8b-c892-4f9f-b673-bc09827bf2b5")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "TemperatureFilter_Details")]
+        public virtual void CompactionGetPasscountDetails_TemperatureFilter()
+        {
+#line 47
+this.CompactionGetPasscountDetails("TemperatureFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "1980fc8b-c892-4f9f-b673-bc09827bf2b5", "TemperatureFilter_Details", ((string[])(null)));
+#line hidden
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Passcount Details: PassCountFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionPassCount")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "PassCountFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "PassCountFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUID", "c5590172-a1bb-440a-bc7d-6c35ecc75724")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "PassCountFilter_Details")]
+        public virtual void CompactionGetPasscountDetails_PassCountFilter()
+        {
+#line 47
+this.CompactionGetPasscountDetails("PassCountFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "c5590172-a1bb-440a-bc7d-6c35ecc75724", "PassCountFilter_Details", ((string[])(null)));
 #line hidden
         }
     }

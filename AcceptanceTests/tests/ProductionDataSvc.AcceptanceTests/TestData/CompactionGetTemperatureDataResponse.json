@@ -78,5 +78,35 @@
     },
     "Code": 0,
     "Message": "success"
+  },
+  "TemperatureFilter_Summary": {
+    "temperatureSummaryData": {
+      "percentEqualsTarget": 0.0,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 100.0,
+      "totalAreaCoveredSqMeters": 487.02280000000007,
+      "temperatureTarget": {
+        "minTemperatureMachineTarget": 90.0,
+        "maxTemperatureMachineTarget": 143.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "PassCountFilter_Summary": {
+    "temperatureSummaryData": {
+      "percentEqualsTarget": 0.0,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 100.0,
+      "totalAreaCoveredSqMeters": 953.93120000000022,
+      "temperatureTarget": {
+        "minTemperatureMachineTarget": 90.0,
+        "maxTemperatureMachineTarget": 143.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
   }
 }
