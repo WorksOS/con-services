@@ -310,7 +310,7 @@ namespace VSS.TRex.Volumes
             // const bool TargetLiftThicknessCalculationsRequired = false; // TODO: Should be -> (LiftBuildSettings.TargetLiftThickness != Consts.NullHeight && LiftBuildSettings.TargetLiftThickness > 0)
 
             //If we are interested in thickness calculations do them
-            /* Uncomment when the constant above becomes... not constant
+            /* todo Uncomment when the constant above becomes... not constant
             if (TargetLiftThicknessCalculationsRequired)
             {
                 BelowToleranceToCheck = LiftBuildSettings.TargetLiftThickness - LiftBuildSettings.BelowToleranceLiftThickness;

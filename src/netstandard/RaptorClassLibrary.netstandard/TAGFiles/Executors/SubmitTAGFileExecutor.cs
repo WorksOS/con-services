@@ -47,7 +47,7 @@ namespace VSS.TRex.TAGFiles.Executors
                 try
                 {
                     // wrap up details into obj
-                    TagfileDetail td = new TagfileDetail()
+                    TagFileDetail td = new TagFileDetail()
                                        {
                                                assetId = assetId,
                                                projectId = projectId,
@@ -65,7 +65,7 @@ namespace VSS.TRex.TAGFiles.Executors
                         if (TRexConfig.EnableTagfileArchiving)
                         {
                             Log.LogInformation($"Archiving tagfile:{tagFileName}, ProjectID:{td.projectId}");
-                            TagfileReposity.ArchiveTagfile(td); 
+                            TagFileRepository.ArchiveTagfile(td); 
                         }
 
                         Log.LogInformation($"Submitting tagfile to TagfileBufferQueue. ProjectID:{td.projectId}, AssetID:{td.assetId}, Tagfile:{tagFileName}");

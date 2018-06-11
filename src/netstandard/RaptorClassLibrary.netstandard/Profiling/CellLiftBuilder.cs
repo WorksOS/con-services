@@ -907,7 +907,7 @@ namespace VSS.TRex.Profiling
       if (cellPassIterator == null)
       {
         NumCellPassesRemainingToFetch =
-          10000; // TODO... = VLPDSvcLocations.VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary;
+          1000; // TODO... = VLPDSvcLocations.VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary;
 
         SetCellIterationParameters();
         if (CellPassFastEventLookerUpper != null)
@@ -1221,7 +1221,7 @@ namespace VSS.TRex.Profiling
       if (ClientGrid != null)
         if (ClientGrid.GridDataType == GridDataType.CCVPercentChange ||
             ClientGrid.GridDataType == GridDataType.CCVPercentChangeIgnoredTopNullValue)
-          ; // todo ... (ClientGrid as TICClientSubGridTreeLeaf_CCV).RestoreInitialSettings();
+          (ClientGrid as ClientCMVLeafSubGrid).RestoreInitialSettings();
 
       if (MainValueAquired)
         Result = true;

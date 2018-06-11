@@ -1057,7 +1057,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
                 Guid TheAsset = (this.edtAssetID.Text == String.Empty) ? Guid.Empty : Guid.Parse(this.edtAssetID.Text);
                 string TheFileName = Path.GetFileName(fileName);
 
-                TagfileDetail td = new TagfileDetail()
+                TagFileDetail td = new TagFileDetail()
                                    {
                                            projectId = TheProject,
                                            assetId = TheAsset,
@@ -1066,7 +1066,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
                                            tagFileContent = new byte[0]
                                   };
 
-                td = TagfileReposity.GetTagfile(td);
+                td = TagFileRepository.GetTagfile(td);
                 MessageBox.Show(String.Format("ProjectID:{0}, Asset:{1}, TCCOrg:{2},IsJohnDoe:{3}, FileLenght:{4}",
                         td.projectId, td.assetId,td.tccOrgId,td.IsJohnDoe,td.tagFileContent.Length));
 

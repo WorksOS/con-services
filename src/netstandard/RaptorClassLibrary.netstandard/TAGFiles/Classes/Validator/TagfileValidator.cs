@@ -22,7 +22,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         /// <param name="tagDetail"></param>
         /// <param name="processor"></param>
         /// <returns></returns>
-        private static ValidationResult CheckFileIsProcessible(TagfileDetail tagDetail, TAGProcessor processor)
+        private static ValidationResult CheckFileIsProcessible(TagFileDetail tagDetail, TAGProcessor processor)
         {
 
             /*
@@ -67,7 +67,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         /// </summary>
         /// <param name="tagDetail"></param>
         /// <returns></returns>
-        public static ValidationResult ValidSubmission(TagfileDetail tagDetail)
+        public static ValidationResult ValidSubmission(TagFileDetail tagDetail)
         {
             ValidationResult result = ValidationResult.Unknown;
 
