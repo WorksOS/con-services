@@ -173,7 +173,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         {
             if (SegmentIterator == null)
             {
-                // TODO add whenlogging available
+                // TODO add when logging available
                 // SIGLogMessage.PublishNoODS(Self, 'No segment iterator assigned', slmcAssert);
                 return;
             }
