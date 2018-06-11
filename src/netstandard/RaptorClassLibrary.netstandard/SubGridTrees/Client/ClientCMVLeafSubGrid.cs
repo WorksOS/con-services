@@ -27,13 +27,13 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-      /// <summary>
-      /// Initilise the null cell values for the client subgrid
-      /// </summary>
-      static ClientCMVLeafSubGrid()
-      {
-        SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y] = SubGridCellPassDataCMVEntryRecord.NullValue);
-      }
+    /// <summary>
+    /// Initilise the null cell values for the client subgrid
+    /// </summary>
+    static ClientCMVLeafSubGrid()
+    {
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y] = SubGridCellPassDataCMVEntryRecord.NullValue);
+    }
 
     /// <summary>
     /// CMV subgrids require lift processing...

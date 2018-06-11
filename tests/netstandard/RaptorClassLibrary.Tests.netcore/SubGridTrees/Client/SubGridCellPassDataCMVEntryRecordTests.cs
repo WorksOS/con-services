@@ -7,7 +7,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
   public class SubGridCellPassDataCMVEntryRecordTests
   {
     [Fact]
-    public void Test_SubGridCellPassDataTemperatureEntryRecord_Creation()
+    public void Test_SubGridCellPassDataCMVEntryRecord_Creation()
     {
       SubGridCellPassDataCMVEntryRecord rec = new SubGridCellPassDataCMVEntryRecord();
 

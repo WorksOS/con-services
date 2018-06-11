@@ -2,20 +2,38 @@
 using System.IO;
 using VSS.TRex.Cells;
 using VSS.TRex.Filters;
+using VSS.TRex.Profiling;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Types;
+using VSS.TRex.SubGridTrees.Utilities;
 
 namespace VSS.TRex.SubGridTrees.Client
 {
   /// <summary>
   /// The content of each cell in a MDP client leaf sub grid. Each cell stores an MDP only.
   /// </summary>
-  public class ClientMDPLeafSubGrid : GenericClientLeafSubGrid<short>
+  public class ClientMDPLeafSubGrid : GenericClientLeafSubGrid<SubGridCellPassDataMDPEntryRecord>
   {
     /// <summary>
     /// First pass map records which cells hold cell pass MDP that were derived
     /// from the first pass a machine made over the corresponding cell
     /// </summary>
     public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+
+    /// <summary>
+    /// Initilise the null cell values for the client subgrid
+    /// </summary>
+    static ClientMDPLeafSubGrid()
+    {
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y] = SubGridCellPassDataMDPEntryRecord.NullValue);
+    }
+    
+    /// <summary>
+         /// MDP subgrids require lift processing...
+         /// </summary>
+         /// <returns></returns>
+    public override bool WantsLiftProcessingResults() => true;
 
     /// <summary>
     /// Constructor. Set the grid to MDP.
@@ -27,6 +45,20 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="indexOriginOffset"></param>
     public ClientMDPLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
     {
+      EventPopulationFlags |=
+        PopulationControlFlags.WantsTargetMDPValues |
+        PopulationControlFlags.WantsTargetThicknessValues |
+        PopulationControlFlags.WantsEventVibrationStateValues |
+        PopulationControlFlags.WantsEventDesignNameValues |
+        PopulationControlFlags.WantsEventGPSAccuracyValues |
+        PopulationControlFlags.WantsEventAutoVibrationStateValues |
+        PopulationControlFlags.WantsEventICFlagsValues |
+        PopulationControlFlags.WantsEventMachineGearValues |
+        PopulationControlFlags.WantsEventMachineCompactionRMVJumpThreshold |
+        PopulationControlFlags.WantsEventMachineAutomaticsValues |
+        PopulationControlFlags.WantsEventMinElevMappingValues |
+        PopulationControlFlags.WantsEventInAvoidZoneStateValues;
+
       _gridDataType = TRex.Types.GridDataType.MDP;
     }
 
@@ -45,7 +77,94 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="Context"></param>
     public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext Context)
     {
-      Cells[cellX, cellY] = Context.FilteredValue.FilteredPassData.FilteredPass.MDP;
+      Cells[cellX, cellY].MeasuredMDP = Context.FilteredValue.FilteredPassData.FilteredPass.MDP;
+      Cells[cellX, cellY].TargetMDP = Context.FilteredValue.FilteredPassData.TargetValues.TargetMDP;
+      Cells[cellX, cellY].IsUndercompacted = false;
+      Cells[cellX, cellY].IsTooThick = false;
+      Cells[cellX, cellY].IsTopLayerTooThick = false;
+      Cells[cellX, cellY].IsTopLayerUndercompacted = false;
+      Cells[cellX, cellY].IsOvercompacted = false;
+
+      int lowLayerIndex = -1;
+      int highLayerIndex = -1;
+
+      if (Dummy_LiftBuildSettings.MDPSummarizeTopLayerOnly)
+      {
+        for (var i = Context.CellProfile.Layers.Count() - 1; i >= 0; i--)
+        {
+          if ((Context.CellProfile.Layers[i].Status & LayerStatus.Superseded) == 0)
+          {
+            lowLayerIndex = highLayerIndex = i;
+            break;
+          }
+        }
+      }
+      else
+      {
+        for (var i = Context.CellProfile.Layers.Count() - 1; i >= 0; i--)
+        {
+          if ((Context.CellProfile.Layers[i].Status & LayerStatus.Superseded) == 0 && Context.CellProfile.Layers[i].MDP != CellPass.NullMDP)
+          {
+            highLayerIndex = i;
+            break;
+          }
+        }
+
+        lowLayerIndex = highLayerIndex > -1 ? 0 : -1;
+      }
+
+      if (highLayerIndex > -1 && lowLayerIndex > -1)
+      {
+        for (var i = lowLayerIndex; i <= highLayerIndex; i++)
+        {
+          var layer = Context.CellProfile.Layers[i];
+
+          if (layer.FilteredPassCount == 0)
+            continue;
+
+          if ((layer.Status & LayerStatus.Undercompacted) != 0)
+          {
+            if (i == highLayerIndex)
+              Cells[cellX, cellY].IsTopLayerUndercompacted = true;
+            else
+              Cells[cellX, cellY].IsUndercompacted = true;
+          }
+
+          if ((layer.Status & LayerStatus.Overcompacted) != 0)
+            Cells[cellX, cellY].IsOvercompacted = true;
+
+          if ((layer.Status & LayerStatus.TooThick) != 0)
+          {
+            if (i == highLayerIndex)
+              Cells[cellX, cellY].IsTopLayerTooThick = true;
+            else
+              Cells[cellX, cellY].IsTooThick = true;
+          }
+        }
+      }
+    }
+
+    /// <summary>
+    /// Fills the contents of the client leaf subgrid with a known, non-null test pattern of values
+    /// </summary>
+    public override void FillWithTestPattern()
+    {
+      ForEach((x, y) => Cells[x, y] = new SubGridCellPassDataMDPEntryRecord { MeasuredMDP = x, TargetMDP = y });
+    }
+
+    /// <summary>
+    /// Determines if the leaf content of this subgrid is equal to 'other'
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public override bool LeafContentEquals(IClientLeafSubGrid other)
+    {
+      bool result = true;
+
+      IGenericClientLeafSubGrid<SubGridCellPassDataMDPEntryRecord> _other = (IGenericClientLeafSubGrid<SubGridCellPassDataMDPEntryRecord>)other;
+      ForEach((x, y) => result &= Cells[x, y].Equals(_other.Cells[x, y]));
+
+      return result;
     }
 
     /// <summary>
@@ -54,7 +173,13 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="cellX"></param>
     /// <param name="cellY"></param>
     /// <returns></returns>
-    public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY] != CellPass.NullMDP;
+    public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY].MeasuredMDP != CellPass.NullMDP;
+
+    /// <summary>
+    /// Provides a copy of the null value defined for cells in thie client leaf subgrid
+    /// </summary>
+    /// <returns></returns>
+    public override SubGridCellPassDataMDPEntryRecord NullCell() => SubGridCellPassDataMDPEntryRecord.NullValue;
 
     /// <summary>
     /// Sets all cell MDP values to null and clears the first pass and surveyed surface pass maps
@@ -62,8 +187,6 @@ namespace VSS.TRex.SubGridTrees.Client
     public override void Clear()
     {
       base.Clear();
-
-      ForEach((x, y) => Cells[x, y] = CellPass.NullMDP); // TODO: Optimisation: Use PassData_MachineSpeed_Null assignment as in current gen;
 
       FirstPassMap.Clear();
     }
@@ -137,10 +260,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
       FirstPassMap.Write(writer, buffer);
 
-      Buffer.BlockCopy(Cells, 0, buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(short));
-      writer.Write(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(short));
-
-      //SubGridUtilities.SubGridDimensionalIterator((x, y) => writer.Write(Cells[x, y]));
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Write(writer));
     }
 
     /// <summary>
@@ -156,10 +276,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
       FirstPassMap.Read(reader, buffer);
 
-      reader.Read(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(short));
-      Buffer.BlockCopy(buffer, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(short));
-
-      //SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y] = reader.ReadInt16());
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Read(reader));
     }
   }
 }

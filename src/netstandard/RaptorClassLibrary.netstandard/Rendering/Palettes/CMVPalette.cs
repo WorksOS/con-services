@@ -11,7 +11,7 @@ namespace VSS.TRex.Rendering.Palettes
     public bool DisplayTargetCCVColourInPVM { get; set; }
     public bool DisplayDecoupledColourInPVM { get; set; }
 
-    private CMVRangePercentageRecord _cmvPercentageRange = new CMVRangePercentageRecord(30, 80);
+    private CMVRangePercentageRecord _cmvPercentageRange = new CMVRangePercentageRecord(80, 120);
     private Color _targetCCVColour = Color.Blue;
 
     private static Transition[] Transitions =
