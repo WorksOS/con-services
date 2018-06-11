@@ -393,6 +393,11 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       CompactionProfileResult<CompactionSummaryVolumesProfileCell> volumesResult = null;
       if (request.volumeCalcType.HasValue && request.volumeCalcType != VolumeCalcType.None)
       {
+        var volCalcType = (TComputeICVolumesType) request.volumeCalcType;
+        if (volCalcType == TComputeICVolumesType.ic_cvtBetween2Filters)
+        {
+          RaptorConverters.AdjustFilterToFilter(ref baseFilter, topFilter);
+        }
         if (request.IsAlignmentDesign)
         {
           ASNode.RequestSummaryVolumesAlignmentProfile.RPC.
@@ -401,7 +406,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
                 .Construct_RequestSummaryVolumesAlignmentProfile_Args
                 (request.ProjectId ?? -1,
                   ProfilesHelper.PROFILE_TYPE_NOT_REQUIRED,
-                  (TComputeICVolumesType)request.volumeCalcType,
+                  volCalcType,
                   request.startStation ?? ValidationConstants.MIN_STATION,
                   request.endStation ?? ValidationConstants.MIN_STATION,
                   alignmentDescriptor,
