@@ -61,11 +61,8 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics
       Assert.True(computor.RequestDescriptor == coordinator.RequestDescriptor, "Invalid computor value for RequestDescriptor.");
       Assert.True(computor.SiteModel == coordinator.SiteModel, "Invalid computor value for SiteModel.");
       Assert.True(computor.Aggregator.Equals(aggregator), "Invalid computor value for Aggregator.");
-      //Assert.True(computor.Filters.Equals(Arg.Filters), "Invalid computor value for Filters.");
       Assert.True(computor.Filters.Filters.Length == Arg.Filters.Filters.Length, "Invalid computor value for Filters length as different to Arg.");
       Assert.True(computor.Filters.Filters.Length == 1, "Invalid computor value for Filters length.");
-      //Assert.True(computor.Filters.Filters[0].AttributeFilter.Equals(Arg.Filters.Filters[0].AttributeFilter), "Invalid computor value for Filters.Filters[0].AttributeFilter.");
-      //Assert.True(computor.Filters.Filters[0].SpatialFilter.Equals(Arg.Filters.Filters[0].SpatialFilter), "Invalid computor value for Filters.Filters[0].SpatialFilter.");
       Assert.True(computor.IncludeSurveyedSurfaces, "Invalid computor value for IncludeSurveyedSurfaces.");
       Assert.True(computor.RequestedGridDataType == GridDataType.MDP, "Invalid computor value for RequestedGridDataType.");
     }

@@ -55,8 +55,8 @@ namespace VSS.TRex.Types
     /// <param name="reader"></param>
     public void Read(BinaryReader reader)
     {
-      Min = reader.ReadUInt16();
-      Max = reader.ReadUInt16();
+      Min = reader.ReadDouble();
+      Max = reader.ReadDouble();
     }
   }
 }

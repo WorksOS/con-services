@@ -5,16 +5,16 @@
     /// <summary>
     /// No problems due to missing target data could still be no data however.
     /// </summary>
-    NoProblems = 0,
+    NoProblems,
 
     /// <summary>
     /// No result due to missing target data.
     /// </summary>
-    NoResult = 1,
+    NoResult,
 
     /// <summary>
     /// Partial result due to missing target data.
     /// </summary>
-    PartialResult = 2
+    PartialResult
   }
 }
