@@ -378,7 +378,7 @@ namespace VSS.TRex.SubGridTrees.Server
         {
             if (segmentInfo.Segment != null)
             {
-                // TODO add when loggin available
+                // TODO add when logging available
                 // SIGLogMessage.PublishNoODS(Self, 'Cannot allocate a segment that is already allocated', slmcAssert);
                 return;
             }
