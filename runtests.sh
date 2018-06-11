@@ -17,10 +17,7 @@ echo "Check the database and kafka to see if port is available"
 echo "Run the AcceptanceTests solution"
 cd AcceptanceTests
 #dotnet publish --force VSS.Visionlink.Project.AcceptanceTests.sln
-#dotnet test VSS.Visionlink.Project.AcceptanceTests.sln --logger \"xunit;LogFileName=acceptancetestresults.xml\"
-dotnet publish ./VSS.Visionlink.Project.AcceptanceTests.sln -o /app/AcceptanceTests --framework netcoreapp2.0 --runtime linux-x64
-dotnet test VSS.Visionlink.Project.AcceptanceTests.sln  -o /app/AcceptanceTests --no-build --logger \"xunit;LogFileName=acceptancetestresults.xml\"
-
+dotnet test VSS.Visionlink.Project.AcceptanceTests.sln --logger \"xunit;LogFileName=acceptancetestresults.xml\"
 
 echo " "
 echo " All acceptance tests completed"
