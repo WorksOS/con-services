@@ -2,6 +2,9 @@
 using VSS.TRex.Tests.netcore.Analytics.Common;
 using VSS.TRex.Analytics.CMVStatistics;
 using VSS.TRex.Cells;
+using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.CMVStatistics
@@ -24,6 +27,70 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
       Assert.True(!aggregator.OverrideMachineCMV, "Invalid initial value for OverrideTemperatureWarningLevels.");
       Assert.True(aggregator.OverridingMachineCMV == CellPass.NullCCV, "Invalid initial value for OverridingMachineCMV.");
       Assert.True(aggregator.LastTargetCMV == CellPass.NullCCV, "Invalid initial value for LastTargetCMV.");
+    }
+
+    [Fact]
+    public void Test_CMVAggregator_ProcessResult_NoAggregation()
+    {
+      var aggregator = new CMVAggregator();
+
+      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.CCV) as ClientCMVLeafSubGrid;
+
+      clientGrid.FillWithTestPattern();
+
+      var length = (short) Math.Sqrt(clientGrid.Cells.Length);
+      aggregator.CellSize = CELL_SIZE;
+      aggregator.OverrideMachineCMV = true;
+      aggregator.OverridingMachineCMV = (short) (length - 1);
+      aggregator.CMVPercentageRange = new CMVRangePercentageRecord(100, 100);
+
+      IClientLeafSubGrid[][] subGrids = new [] { new [] { clientGrid } };
+      
+      aggregator.ProcessSubgridResult(subGrids);
+
+      Assert.True(aggregator.SummaryCellsScanned == 1024, "Invalid value for SummaryCellsScanned.");
+      Assert.True(Math.Abs(aggregator.SummaryProcessedArea - 1024 * Math.Pow(aggregator.CellSize, 2)) < TOLERANCE, "Invalid value for SummaryProcessedArea.");
+      Assert.True(aggregator.CellsScannedAtTarget == length, "Invalid value for CellsScannedAtTarget.");
+      Assert.True(aggregator.CellsScannedOverTarget == 0, "Invalid value for CellsScannedOverTarget.");
+      Assert.True(aggregator.CellsScannedUnderTarget == 1024 - length, "Invalid value for CellsScannedUnderTarget.");
+    }
+
+    [Fact]
+    public void Test_CMVAggregator_ProcessResult_WithAggregation()
+    {
+      var aggregator = new CMVAggregator();
+
+      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.CCV) as ClientCMVLeafSubGrid;
+
+      clientGrid.FillWithTestPattern();
+
+      var length = (short)Math.Sqrt(clientGrid.Cells.Length);
+      aggregator.CellSize = CELL_SIZE;
+      aggregator.OverrideMachineCMV = true;
+      aggregator.OverridingMachineCMV = (short)(length - 1);
+      aggregator.CMVPercentageRange = new CMVRangePercentageRecord(100, 100);
+
+      IClientLeafSubGrid[][] subGrids = new[] { new[] { clientGrid } };
+
+      aggregator.ProcessSubgridResult(subGrids);
+
+      // Other aggregator...
+      var otherAggregator = new CMVAggregator();
+
+      otherAggregator.CellSize = CELL_SIZE;
+      otherAggregator.OverrideMachineCMV = true;
+      otherAggregator.OverridingMachineCMV = (short)(length - 1);
+      otherAggregator.CMVPercentageRange = new CMVRangePercentageRecord(100, 100);
+
+      otherAggregator.ProcessSubgridResult(subGrids);
+
+      aggregator.AggregateWith(otherAggregator);
+
+      Assert.True(aggregator.SummaryCellsScanned == 2048, "Invalid value for SummaryCellsScanned.");
+      Assert.True(Math.Abs(aggregator.SummaryProcessedArea - 2048 * Math.Pow(aggregator.CellSize, 2)) < TOLERANCE, "Invalid value for SummaryProcessedArea.");
+      Assert.True(aggregator.CellsScannedAtTarget == length * 2, "Invalid value for CellsScannedAtTarget.");
+      Assert.True(aggregator.CellsScannedOverTarget == 0, "Invalid value for CellsScannedOverTarget.");
+      Assert.True(aggregator.CellsScannedUnderTarget == (1024 - length) * 2, "Invalid value for CellsScannedUnderTarget.");
     }
   }
 }
