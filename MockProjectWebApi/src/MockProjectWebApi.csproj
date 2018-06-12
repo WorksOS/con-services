@@ -52,6 +52,7 @@
     <Content Remove="Json\Filters\DimensionsBoundaryMDPAsAtToday.json" />
     <Content Remove="Json\Filters\DimensionsPassCountRange.json" />
     <Content Remove="Json\Filters\DimensionsTemperatureRange.json" />
+    <Content Remove="Json\Filters\DimensionsTempRangeBoundary.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101First.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101Last.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterNoDates.json" />
@@ -95,6 +96,7 @@
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryMDPAsAtToday.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryMDP.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsPassCountRange.json" />
+    <EmbeddedResource Include="Json\Filters\DimensionsTempRangeBoundary.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsTemperatureRange.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101First.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101Last.json" />

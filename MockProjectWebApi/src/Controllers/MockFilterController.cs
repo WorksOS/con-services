@@ -114,6 +114,7 @@ namespace MockProjectWebApi.Controllers
                 FilterDescriptors.Dimensions.DimensionsAlignmentFilter0to200,
                 FilterDescriptors.Dimensions.DimensionsAlignmentFilter100to200,
                 FilterDescriptors.Dimensions.DimensionsTemperatureRangeFilter,
+                FilterDescriptors.Dimensions.DimensionsTempRangeBoundaryFilter,
                 FilterDescriptors.Dimensions.DimensionsPassCountRangeFilter,
                 FilterDescriptors.Dimensions.DimensionsAutomaticsFilter
               }
