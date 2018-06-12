@@ -65,7 +65,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy,
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
       IHttpContextAccessor httpContextAccessor)
-      : base(producer, projectRepo, subscriptionRepo, fileRepo, null, store, subscriptionProxy, geofenceProxy, raptorProxy,
+      : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, geofenceProxy, raptorProxy,
         logger, serviceExceptionHandler, logger.CreateLogger<ProjectV2Controller>())
     {
       this.logger = logger;

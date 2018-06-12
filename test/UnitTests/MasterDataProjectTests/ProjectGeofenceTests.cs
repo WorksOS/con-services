@@ -128,12 +128,9 @@ namespace VSS.MasterData.ProjectTests
       projectRepo.Setup(gr => gr.GetCustomerGeofences(It.IsAny<string>()))
         .ReturnsAsync(_geofencesWithAssociation);
 
-      var geofenceTypes = new int[] {10};
+      var geofenceTypes = new List<GeofenceType>() {GeofenceType.Landfill};
 
-      // todo remove geofenceRepo from ProjectOCntroller?
-
-      var geofences = await ProjectRequestHelper.GetGeofenceList(_customerUid, string.Empty, geofenceTypes, log,
-          projectRepo.Object, null)
+      var geofences = await ProjectRequestHelper.GetGeofenceList(_customerUid, string.Empty, geofenceTypes, log, projectRepo.Object)
         .ConfigureAwait(false);
 
       Assert.AreEqual(1, geofences.Count, "Should be 1 landfill");
@@ -159,30 +156,9 @@ namespace VSS.MasterData.ProjectTests
       projectRepo.Setup(gr => gr.GetCustomerGeofences(It.IsAny<string>()))
         .ReturnsAsync(_geofencesWithAssociation);
 
-      //var geofenceWithAssociation = new List<GeofenceWithAssociation>()
-      //{ new GeofenceWithAssociation()
-      //  {
-      //    GeofenceUID = _geofences[2].GeofenceUID,
-      //    GeofenceType = GeofenceType.Landfill,
-      //    CustomerUID = _geofences[2].CustomerUID,
-      //    Name = _geofences[2].Name,
-      //    Description = _geofences[2].Description,
-      //    GeometryWKT = _geofences[2].GeometryWKT,
-      //    FillColor = _geofences[2].FillColor,
-      //    IsTransparent = _geofences[2].IsTransparent,
-      //    UserUID = _geofences[2].UserUID,
-      //    AreaSqMeters = _geofences[2].AreaSqMeters
-      //}
-      //};
+      var geofenceTypes = new List<GeofenceType> { GeofenceType.Landfill };
 
-      //var projectRepo = new Mock<IProjectRepository>();
-      //projectRepo.Setup(pr => pr.GetCustomersGeofences(It.IsAny<string>()))
-      //  .ReturnsAsync(geofenceWithAssociation);
-
-      var geofenceTypes = new int[] { 10 };
-
-      var geofences = await ProjectRequestHelper.GetGeofenceList(_customerUid, _projectUid, geofenceTypes, log,
-          projectRepo.Object, null)
+      var geofences = await ProjectRequestHelper.GetGeofenceList(_customerUid, _projectUid, geofenceTypes, log, projectRepo.Object)
         .ConfigureAwait(false);
 
       Assert.AreEqual(1, geofences.Count, "Should be 1 landfills");

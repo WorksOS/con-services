@@ -13,6 +13,7 @@ using Remotion.Linq.Clauses;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
@@ -47,7 +48,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="producer"></param>
     /// <param name="projectRepo"></param>
     /// <param name="subscriptionRepo"></param>
-    /// <param name="geofenceRepo"></param>
     /// <param name="store"></param>
     /// <param name="subscriptionProxy"></param>
     /// <param name="geofenceProxy"></param>
@@ -57,13 +57,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="serviceExceptionHandler">The ServiceException handler.</param>
     /// <param name="httpContextAccessor"></param>
     public ProjectV4Controller(IKafka producer, IProjectRepository projectRepo,
-      ISubscriptionRepository subscriptionRepo, IFileRepository fileRepo, IGeofenceRepository geofenceRepo, 
-      IConfigurationStore store, 
-      ISubscriptionProxy subscriptionProxy, IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, 
+      ISubscriptionRepository subscriptionRepo, IFileRepository fileRepo,
+      IConfigurationStore store,
+      ISubscriptionProxy subscriptionProxy, IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy,
       ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
       IHttpContextAccessor httpContextAccessor)
-      : base(producer, projectRepo, subscriptionRepo, fileRepo, geofenceRepo, store, subscriptionProxy, geofenceProxy, raptorProxy,
+      : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, geofenceProxy, raptorProxy,
         logger, serviceExceptionHandler, logger.CreateLogger<ProjectV4Controller>())
     {
       this._logger = logger;
@@ -118,7 +118,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       log.LogInformation("GetProjectV4");
 
-      var project = await GetProject(projectUid).ConfigureAwait(false);
+      var project = await ProjectRequestHelper.GetProject(projectUid.ToString(), customerUid, log, serviceExceptionHandler, projectRepo).ConfigureAwait(false);
       return new ProjectV4DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(project));
     }
 
@@ -139,7 +139,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 39);
       }
-      
+
       log.LogInformation("CreateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
 
       if (projectRequest.CustomerUID == null) projectRequest.CustomerUID = Guid.Parse(customerUid);
@@ -164,7 +164,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       );
 
       var result = new ProjectV4DescriptorsSingleResult(
-        AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await GetProject(createProjectEvent.ProjectUID.ToString())
+        AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await ProjectRequestHelper.GetProject(createProjectEvent.ProjectUID.ToString(), customerUid, log, serviceExceptionHandler, projectRepo)
           .ConfigureAwait(false)));
 
       log.LogResult(this.ToString(), JsonConvert.SerializeObject(projectRequest), result);
@@ -194,7 +194,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       // validation includes check that project must exist - otherwise there will be a null legacyID.
       ProjectDataValidator.Validate(project, projectRepo, serviceExceptionHandler);
-      
+
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<UpdateProjectExecutor>(_logger, configStore, serviceExceptionHandler,
@@ -207,7 +207,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       log.LogInformation("UpdateProjectV4. Completed successfully");
       return new ProjectV4DescriptorsSingleResult(
-        AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await GetProject(project.ProjectUID.ToString())
+        AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await ProjectRequestHelper.GetProject(project.ProjectUID.ToString(), customerUid, log, serviceExceptionHandler, projectRepo)
           .ConfigureAwait(false)));
     }
 
@@ -247,10 +247,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       log.LogInformation("DeleteProjectV4. Completed succesfully");
       return new ProjectV4DescriptorsSingleResult(
-        AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await GetProject(project.ProjectUID.ToString())
+        AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await ProjectRequestHelper.GetProject(project.ProjectUID.ToString(), customerUid, log, serviceExceptionHandler, projectRepo)
           .ConfigureAwait(false)));
 
     }
+
     #endregion projects
 
 
@@ -288,14 +289,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns>A list of geofences</returns>
     [Route("api/v4/geofences")]
     [HttpGet]
-    public async Task<GeofenceV4DescriptorsListResult> GetGeofencesV4([FromBody] int[] geofenceTypes)
+    public async Task<GeofenceV4DescriptorsListResult> GetGeofencesV4([FromBody] List<GeofenceType> geofenceTypes)
     {
       log.LogInformation("GetGeofencesV4");
 
       ProjectDataValidator.ValidateGeofenceTypes(geofenceTypes);
 
-      var geofences = (await ProjectRequestHelper.GetGeofenceList(customerUid, string.Empty, geofenceTypes, log,
-        projectRepo, geofenceRepo));
+      var geofences =
+        (await ProjectRequestHelper.GetGeofenceList(customerUid, string.Empty, geofenceTypes, log, projectRepo));
       return new GeofenceV4DescriptorsListResult
       {
         GeofenceDescriptors = geofences.Select(geofence =>
@@ -313,19 +314,55 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns>A list of geofences</returns>
     [Route("api/v4/geofences/{projectUid}")]
     [HttpGet]
-    public async Task<GeofenceV4DescriptorsListResult> GetAssociatedGeofencesV4([FromUri] string projectUid, [FromBody] int[] geofenceTypes)
+    public async Task<GeofenceV4DescriptorsListResult> GetAssociatedGeofencesV4([FromUri] string projectUid,
+      [FromBody] List<GeofenceType> geofenceTypes)
     {
-      ProjectDataValidator.ValidateGeofenceTypes(geofenceTypes);
-      await GetProject(projectUid).ConfigureAwait(false);
+      log.LogInformation("GetAssociatedGeofencesV4");
 
-      var geofences = (await ProjectRequestHelper.GetGeofenceList(customerUid, projectUid, geofenceTypes, log,
-        projectRepo, geofenceRepo));
+      var project = await ProjectRequestHelper.GetProject(projectUid, customerUid, log, serviceExceptionHandler, projectRepo).ConfigureAwait(false);
+      if (project.ProjectType != ProjectType.LandFill)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 102);
+      }
+
+      ProjectDataValidator.ValidateGeofenceTypes(geofenceTypes, project.ProjectType);
+
+      var geofences =
+        (await ProjectRequestHelper.GetGeofenceList(customerUid, projectUid, geofenceTypes, log, projectRepo));
       return new GeofenceV4DescriptorsListResult
       {
         GeofenceDescriptors = geofences.Select(geofence =>
             AutoMapperUtility.Automapper.Map<GeofenceV4Descriptor>(geofence))
           .ToImmutableList()
       };
+    }
+
+    /// <summary>
+    /// Update ProjectGeofence Associations for selected geofenceTypes
+    /// </summary>
+    /// <response code="200">Ok</response>
+    /// <response code="400">Bad request</response>
+    [Route("api/v4/geofences")]
+    [HttpPut]
+    public async Task<ContractExecutionResult> UpdateProjectGeofencesV4(
+      [FromBody] UpdateProjectGeofenceRequest updateProjectGeofenceRequest)
+    {
+      log.LogInformation("UpdateProjectGeofencesV4");
+
+      updateProjectGeofenceRequest.Validate();
+
+      await WithServiceExceptionTryExecuteAsync(() =>
+        RequestExecutorContainerFactory
+          .Build<UpdateProjectGeofenceExecutor>(_logger, configStore, serviceExceptionHandler,
+            customerUid, userId, null, customHeaders,
+            producer, kafkaTopicName,
+            geofenceProxy, raptorProxy, subscriptionProxy,
+            projectRepo, subscriptionRepo, fileRepo, null, HttpContextAccessor)
+          .ProcessAsync(updateProjectGeofenceRequest)
+      );
+
+      log.LogInformation("UpdateProjectGeofencesV4. Completed successfully");
+      return new ContractExecutionResult();
     }
 
     #endregion geofences

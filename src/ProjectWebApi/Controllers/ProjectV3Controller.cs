@@ -46,7 +46,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       ISubscriptionRepository subscriptionRepo, IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
       IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, IFileRepository fileRepo, 
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
-      : base(producer, projectRepo, subscriptionRepo, fileRepo, null, store, subscriptionProxy, geofenceProxy, raptorProxy,
+      : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, geofenceProxy, raptorProxy,
           logger, serviceExceptionHandler, logger.CreateLogger<ProjectV3Controller>())
     { }
 
@@ -194,7 +194,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpPost]
     public async Task AssociateGeofenceProjectV3([FromBody] AssociateProjectGeofence geofenceProject)
     {
-      await AssociateGeofenceProject(geofenceProject);
+      ProjectDataValidator.Validate(geofenceProject, projectRepo, serviceExceptionHandler);
+      await ProjectRequestHelper.AssociateGeofenceProject(geofenceProject, projectRepo,
+        log, serviceExceptionHandler, producer, kafkaTopicName);
     }
 
     #region private
@@ -293,27 +295,27 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         });
     }
 
-    /// <summary>
-    /// Associates the geofence project.
-    /// </summary>
-    /// <param name="geofenceProject">The geofence project.</param>
-    /// <returns></returns>
-    private async Task AssociateGeofenceProject(AssociateProjectGeofence geofenceProject)
-    {
-      ProjectDataValidator.Validate(geofenceProject, projectRepo, serviceExceptionHandler);
-      geofenceProject.ReceivedUTC = DateTime.UtcNow;
+    ///// <summary>
+    ///// Associates the geofence project.
+    ///// </summary>
+    ///// <param name="geofenceProject">The geofence project.</param>
+    ///// <returns></returns>
+    //private async Task AssociateGeofenceProject(AssociateProjectGeofence geofenceProject)
+    //{
+    //  ProjectDataValidator.Validate(geofenceProject, projectRepo, serviceExceptionHandler);
+    //  geofenceProject.ReceivedUTC = DateTime.UtcNow;
 
-      var isUpdated = await projectRepo.StoreEvent(geofenceProject).ConfigureAwait(false);
-      if (isUpdated == 0)
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 65);
+    //  var isUpdated = await projectRepo.StoreEvent(geofenceProject).ConfigureAwait(false);
+    //  if (isUpdated == 0)
+    //    serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 65);
 
-      var messagePayload = JsonConvert.SerializeObject(new { AssociateProjectGeofence = geofenceProject });
-      producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
-        {
-          new KeyValuePair<string, string>(geofenceProject.ProjectUID.ToString(), messagePayload)
-        });
-    }
+    //  var messagePayload = JsonConvert.SerializeObject(new { AssociateProjectGeofence = geofenceProject });
+    //  producer.Send(kafkaTopicName,
+    //    new List<KeyValuePair<string, string>>()
+    //    {
+    //      new KeyValuePair<string, string>(geofenceProject.ProjectUID.ToString(), messagePayload)
+    //    });
+    //}
 
     /// <summary>
     /// Deletes the project.

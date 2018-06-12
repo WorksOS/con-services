@@ -45,7 +45,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="projectRepo">The project repo.</param>
     /// <param name="subscriptionRepo">The subscriptions repo.</param>
     /// <param name="fileRepo"></param>
-    /// <param name="geofenceRepo"></param>
     /// <param name="configStore">The configStore.</param>
     /// <param name="subscriptionProxy">The subs proxy.</param>
     /// <param name="geofenceProxy">The geofence proxy.</param>
@@ -54,11 +53,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="serviceExceptionHandler">The ServiceException handler</param>
     /// <param name="log"></param>
     public ProjectBaseController(IKafka producer, 
-      IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo, IFileRepository fileRepo, IGeofenceRepository geofenceRepo,
+      IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo, IFileRepository fileRepo,
       IConfigurationStore configStore, 
       ISubscriptionProxy subscriptionProxy, IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy,
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, ILogger log)
-      : base(log, configStore, serviceExceptionHandler, producer, raptorProxy, projectRepo, subscriptionRepo, fileRepo, geofenceRepo)
+      : base(log, configStore, serviceExceptionHandler, producer, raptorProxy, projectRepo, subscriptionRepo, fileRepo)
     {
       this.subscriptionProxy = subscriptionProxy;
       this.geofenceProxy = geofenceProxy;
