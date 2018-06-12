@@ -433,7 +433,6 @@ namespace RepositoryTests
       var projectGeofences = g.Result.Where(x => x.GeofenceUID == createGeofenceEvent.GeofenceUID.ToString()).ToList();
       Assert.AreEqual(1, projectGeofences.Count(), "Wrong number of geofences");
       Assert.AreEqual(createGeofenceEvent.GeofenceUID.ToString(), projectGeofences[0].GeofenceUID, "Wrong project geofence returned");
-
     }
 
     /// <summary>
@@ -479,7 +478,6 @@ namespace RepositoryTests
       var projectGeofences = g.Result.Where(x => x.GeofenceUID == createGeofenceEvent.GeofenceUID.ToString()).ToList();
       Assert.AreEqual(1, projectGeofences.Count(), "Wrong number of geofences");
       Assert.AreEqual(createGeofenceEvent.GeofenceUID.ToString(), projectGeofences[0].GeofenceUID, "Wrong project geofence returned");
-
     }
 
     #endregion

@@ -131,6 +131,17 @@ namespace VSS.MasterData.Repositories
         };
         upsertedCount = await UpsertProjectGeofenceDetail(projectGeofence, "AssociateProjectGeofenceEvent");
       }
+      else if (evt is DissociateProjectGeofence )
+      {
+        var projectEvent = (DissociateProjectGeofence)evt;
+        var projectGeofence = new ProjectGeofence
+        {
+          ProjectUID = projectEvent.ProjectUID.ToString(),
+          GeofenceUID = projectEvent.GeofenceUID.ToString(),
+          LastActionedUTC = projectEvent.ActionUTC
+        };
+        upsertedCount = await UpsertProjectGeofenceDetail(projectGeofence, "DissociateProjectGeofenceEvent");
+      }
       else if (evt is CreateImportedFileEvent)
       {
         var projectEvent = (CreateImportedFileEvent) evt;
@@ -658,16 +669,16 @@ namespace VSS.MasterData.Repositories
                   AND fk_ProjectUID = @projectUID";
           upsertedCount = await ExecuteWithAsyncPolicy(delete, customerProject);
           log.LogDebug(
-            $"CustomerRepository/DissociateProjectCustomer: upserted {upsertedCount} rows for: customerUid:{customerProject.CustomerUID}");
+            $"ProjectRepository/DissociateProjectCustomer: upserted {upsertedCount} rows for: customerUid:{customerProject.CustomerUID}");
           return upsertedCount;
         }
 
         // may have been associated again since, so don't delete
-        log.LogDebug("CustomerRepository/DissociateProjectCustomer: old delete event ignored");
+        log.LogDebug("ProjectRepository/DissociateProjectCustomer: old delete event ignored");
       }
       else
       {
-        log.LogDebug("CustomerRepository/DissociateProjectCustomer: can't delete as none existing");
+        log.LogDebug("ProjectRepository/DissociateProjectCustomer: can't delete as none existing");
       }
 
       return upsertedCount;
@@ -687,7 +698,8 @@ namespace VSS.MasterData.Repositories
 
       if (eventType == "AssociateProjectGeofenceEvent")
         upsertedCount = await AssociateProjectGeofence(projectGeofence, existing);
-
+      if (eventType == "DissociateProjectGeofenceEvent")
+        upsertedCount = await DissociateProjectGeofence(projectGeofence, existing);
 
       return upsertedCount;
     }
@@ -717,6 +729,38 @@ namespace VSS.MasterData.Repositories
 
       log.LogDebug(
         $"ProjectRepository/AssociateProjectGeofence: can't create as already exists projectGeofence={JsonConvert.SerializeObject(projectGeofence)}");
+      return upsertedCount;
+    }
+
+    private async Task<int> DissociateProjectGeofence(ProjectGeofence projectGeofence, ProjectGeofence existing)
+    {
+      var upsertedCount = 0;
+
+      log.LogDebug(
+        $"ProjectRepository/DissociateProjectGeofence: projectGeofence={JsonConvert.SerializeObject(projectGeofence)} existing={JsonConvert.SerializeObject(existing)}");
+
+      if (existing != null)
+      {
+        if (projectGeofence.LastActionedUTC >= existing.LastActionedUTC)
+        {
+          const string delete =
+            @"DELETE FROM ProjectGeofence
+                WHERE fk_GeofenceUID = @geofenceUID 
+                  AND fk_ProjectUID = @projectUID";
+          upsertedCount = await ExecuteWithAsyncPolicy(delete, projectGeofence);
+          log.LogDebug(
+            $"ProjectRepository/DissociateProjectGeofence: upserted {upsertedCount} rows for: geofenceUid:{projectGeofence.GeofenceUID}");
+          return upsertedCount;
+        }
+
+        // may have been associated again since, so don't delete
+        log.LogDebug("ProjectRepository/DissociateProjectGeofence: old delete event ignored");
+      }
+      else
+      {
+        log.LogDebug("ProjectRepository/DissociateProjectGeofence: can't delete as none existing");
+      }
+
       return upsertedCount;
     }
 
@@ -1380,6 +1424,25 @@ namespace VSS.MasterData.Repositories
                 LEFT OUTER JOIN Geofence g on g.GeofenceUID = pg.fk_GeofenceUID
               WHERE fk_ProjectUID = @projectUid",
         new {projectUid}
+      );
+    }
+
+    /// <summary>
+    /// Gets the list of geofence UIDs for the customer, along with any potential projectUid association
+    /// </summary>
+    /// <param name="customerUid"></param>
+    /// <returns>List of geofences and potential ProjectUid</returns>
+    public async Task<IEnumerable<GeofenceWithAssociation>> GetCustomerGeofences(string customerUid)
+    {
+      return await QueryWithAsyncPolicy<GeofenceWithAssociation>
+      (@"SELECT 
+                g.GeofenceUID, g.Name, g.fk_GeofenceTypeID AS GeofenceType, g.GeometryWKT, g.FillColor, g.IsTransparent,
+                g.IsDeleted, g.Description, g.fk_CustomerUID AS CustomerUID, g.UserUID, g.AreaSqMeters,
+                g.LastActionedUTC, pg.fk_ProjectUID AS ProjectUID 
+              FROM Geofence g 
+                LEFT OUTER JOIN ProjectGeofence pg on pg.fk_GeofenceUID = g.GeofenceUID 
+              WHERE fk_CustomerUID = @customerUid AND g.IsDeleted = 0",
+        new { customerUid }
       );
     }
 
