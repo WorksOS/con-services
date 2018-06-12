@@ -3,7 +3,7 @@
 
 Background: 
 	Given the Machine Design service URI "/api/v1/projects/{0}/machinedesigns"
-
+@ignore
 Scenario: GetMachineDesigns - Good Request
 	Given a project Id 1001158
 	When I request machine designs
