@@ -252,12 +252,12 @@ namespace VSS.Productivity3D.Common.Models
     public DesignDescriptor DesignFile { get; private set; }
 
     /// <summary>
-    /// Only filter cell passes recorded when the guidance mode is automatics.
-    /// If set to null, returns all cell passes.  If true, returns only cell passes with the cell pass parameter and guidance mode was automatics.  
-    /// If false, returns only cell passes with the cell pass parameter and guidance mode was manual.
+    /// Filter cell passes recorded when the guidance mode is automatics, manual or unknown.
+    /// If set to null, returns all cell passes.  If set to an automatics type, returns only cell passes with the 
+    /// guidance mode set to the specified automatics type.  
     /// </summary>
-    [JsonProperty(PropertyName = "automaticsOn", Required = Required.Default)]
-    public bool? AutomaticsOn { get; private set; }
+    [JsonProperty(PropertyName = "automaticsType", Required = Required.Default)]
+    public AutomaticsType? AutomaticsType { get; protected set; }
 
     /// <summary>
     /// The minimum temperature in °C for a temperature range filter. Only cell passes within the range will be selected.
@@ -336,7 +336,7 @@ namespace VSS.Productivity3D.Common.Models
         !TrackMapping.HasValue &&
         !WheelTracking.HasValue &&
         DesignFile == null &&
-        !AutomaticsOn.HasValue &&
+        !AutomaticsType.HasValue &&
         !TemperatureRangeMin.HasValue &&
         !TemperatureRangeMax.HasValue &&
         !PassCountRangeMin.HasValue &&
@@ -407,7 +407,7 @@ namespace VSS.Productivity3D.Common.Models
         bool? trackMapping,
         bool? wheelTracking,
         DesignDescriptor designFile,
-        bool? automaticsOn,
+        AutomaticsType? automaticsType,
         double? temperatureRangeMin,
         double? temperatureRangeMax,
         int? passCountRangeMin,
@@ -449,7 +449,7 @@ namespace VSS.Productivity3D.Common.Models
         TrackMapping = trackMapping,
         WheelTracking = wheelTracking,
         DesignFile = designFile,
-        AutomaticsOn = automaticsOn,
+        AutomaticsType = automaticsType,
         TemperatureRangeMin = temperatureRangeMin,
         TemperatureRangeMax = temperatureRangeMax,
         PassCountRangeMin = passCountRangeMin,
@@ -503,7 +503,7 @@ namespace VSS.Productivity3D.Common.Models
         DesignFile = designFile,
         DateRangeType = filter.DateRangeType,
         AsAtDate = filter.AsAtDate,
-        AutomaticsOn = filter.AutomaticsOn,
+        AutomaticsType = filter.AutomaticsType,
         TemperatureRangeMin = filter.TemperatureRangeMin,
         TemperatureRangeMax = filter.TemperatureRangeMax,
         PassCountRangeMin = filter.PassCountRangeMin,
@@ -756,7 +756,7 @@ namespace VSS.Productivity3D.Common.Models
              TrackMapping.Equals(other.TrackMapping) &&
              WheelTracking.Equals(other.WheelTracking) &&
              (DesignFile == null ? other.DesignFile == null : DesignFile.Equals(other.DesignFile)) &&
-             AutomaticsOn == other.AutomaticsOn &&
+             AutomaticsType == other.AutomaticsType &&
              TemperatureRangeMin.Equals(other.TemperatureRangeMin) && 
              TemperatureRangeMax.Equals(other.TemperatureRangeMax) &&
              PassCountRangeMin.Equals(other.PassCountRangeMin) && 
@@ -810,7 +810,7 @@ namespace VSS.Productivity3D.Common.Models
         hashCode = GetHashCode(hashCode, GetNullableHashCode(TrackMapping));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(WheelTracking));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(DesignFile));
-        hashCode = GetHashCode(hashCode, GetNullableHashCode(AutomaticsOn));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(AutomaticsType));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(TemperatureRangeMin));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(TemperatureRangeMax));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(PassCountRangeMin));

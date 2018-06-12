@@ -39,10 +39,11 @@ namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Models
         MachineDetails.Create(12345678, "Acme Compactor 1", false)
       };
 
-      var filter = FilterResult.CreateFilter(null, null, null, new DateTime(2014, 1, 1), new DateTime(2014, 1, 31), 1111, new List<long> { 12345678, 87654321 }, true,
-          true, ElevationType.First, latLngs, gridPoints,
+      var filter = FilterResult.CreateFilter(null, null, null, new DateTime(2014, 1, 1), new DateTime(2014, 1, 31), 
+          1111, new List<long> { 12345678, 87654321 }, true, true, ElevationType.First, latLngs, gridPoints,
           true, desc, 5.0, 100.0, 1.0, 2.0, "Acme Compactor", FilterLayerMethod.OffsetFromBench, desc, 0.3, 2,
-          0.35, machines, new List<long> { 1, 2, 3, 4 }, true, GPSAccuracy.Medium, false, true, false, false, desc, false, 100.0, 150.0, 3, 10);
+          0.35, machines, new List<long> { 1, 2, 3, 4 }, true, GPSAccuracy.Medium, false, true, false, false, 
+          desc, AutomaticsType.Manual, 100.0, 150.0, 3, 10);
       ICollection<ValidationResult> results;
       Assert.IsTrue(validator.TryValidate(filter, out results));
 

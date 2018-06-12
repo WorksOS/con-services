@@ -682,9 +682,9 @@ namespace VSS.Productivity3D.Common.Proxies
 
       filter.ReturnEarliestFilteredCellPass = (pdf != null) && pdf.ReturnEarliest.HasValue && pdf.ReturnEarliest.Value;
 
-      if (pdf.AutomaticsOn.HasValue)
+      if (pdf.AutomaticsType.HasValue)
       {
-        filter.GCSGuidanceMode = pdf.AutomaticsOn.Value ? TGCSAutomaticsMode.amAutomatics : TGCSAutomaticsMode.amManual;
+        filter.GCSGuidanceMode = (TGCSAutomaticsMode)pdf.AutomaticsType.Value;
         filter.SetGCSGuidanceModeCellpassState(true);
       }
 
