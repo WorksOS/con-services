@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using VSS.TRex.Cells;
 using VSS.TRex.Filters;
 using VSS.TRex.Profiling;
@@ -6,23 +7,16 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.SubGridTrees.Utilities;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Client
 {
   /// <summary>
-  /// The content of each cell in a CMV client leaf sub grid. Each cell stores an elevation only.
+  /// The content of each cell in a MDP client leaf sub grid. Each cell stores an MDP only.
   /// </summary>
-  public class ClientCMVLeafSubGrid : GenericClientLeafSubGrid<SubGridCellPassDataCMVEntryRecord>
+  public class ClientMDPLeafSubGrid : GenericClientLeafSubGrid<SubGridCellPassDataMDPEntryRecord>
   {
-    private bool _sWantsPreviousCCVValue;
-    private bool _sIgnoresNullValueForLastCMV;
-
-    public bool WantsPreviousCCVValue { get; set; }
-    public bool IgnoresNullValueForLastCMV { get; set; }
-
     /// <summary>
-    /// First pass map records which cells hold cell pass CMVs that were derived
+    /// First pass map records which cells hold cell pass MDP that were derived
     /// from the first pass a machine made over the corresponding cell
     /// </summary>
     public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
@@ -30,30 +24,30 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Initilise the null cell values for the client subgrid
     /// </summary>
-    static ClientCMVLeafSubGrid()
+    static ClientMDPLeafSubGrid()
     {
-      SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y] = SubGridCellPassDataCMVEntryRecord.NullValue);
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y] = SubGridCellPassDataMDPEntryRecord.NullValue);
     }
-
+    
     /// <summary>
-    /// CMV subgrids require lift processing...
-    /// </summary>
-    /// <returns></returns>
+         /// MDP subgrids require lift processing...
+         /// </summary>
+         /// <returns></returns>
     public override bool WantsLiftProcessingResults() => true;
 
     /// <summary>
-    /// Constructor. Set the grid to CCV.
+    /// Constructor. Set the grid to MDP.
     /// </summary>
     /// <param name="owner"></param>
     /// <param name="parent"></param>
     /// <param name="level"></param>
     /// <param name="cellSize"></param>
     /// <param name="indexOriginOffset"></param>
-    public ClientCMVLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
+    public ClientMDPLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
     {
-      EventPopulationFlags |= 
-        PopulationControlFlags.WantsTargetCCAValues | 
-        PopulationControlFlags.WantsTargetThicknessValues | 
+      EventPopulationFlags |=
+        PopulationControlFlags.WantsTargetMDPValues |
+        PopulationControlFlags.WantsTargetThicknessValues |
         PopulationControlFlags.WantsEventVibrationStateValues |
         PopulationControlFlags.WantsEventDesignNameValues |
         PopulationControlFlags.WantsEventGPSAccuracyValues |
@@ -65,45 +59,26 @@ namespace VSS.TRex.SubGridTrees.Client
         PopulationControlFlags.WantsEventMinElevMappingValues |
         PopulationControlFlags.WantsEventInAvoidZoneStateValues;
 
-      WantsPreviousCCVValue = false;
-      IgnoresNullValueForLastCMV = true;
-
-      if (WantsPreviousCCVValue)
-      {
-        _gridDataType = GridDataType.CCVPercentChange;
-
-        if (IgnoresNullValueForLastCMV)
-          _gridDataType = GridDataType.CCVPercentChangeIgnoredTopNullValue;
-      }
-      else
-        _gridDataType = GridDataType.CCV;
-
-      _sWantsPreviousCCVValue = WantsPreviousCCVValue;
-      _sIgnoresNullValueForLastCMV = IgnoresNullValueForLastCMV;
+      _gridDataType = TRex.Types.GridDataType.MDP;
     }
 
     /// <summary>
-    /// Determine if a filtered CMV is valid (not null)
+    /// Determine if a filtered MDP is valid (not null)
     /// </summary>
     /// <param name="filteredValue"></param>
     /// <returns></returns>
-    public override bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue) =>
-      _gridDataType != GridDataType.CCVPercentChange && IgnoresNullValueForLastCMV && filteredValue.FilteredPass.CCV == CellPass.NullCCV;
+    public override bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue) => filteredValue.FilteredPass.MDP == CellPass.NullMDP;
 
     /// <summary>
-    /// Assign filtered CMV value from a filtered pass to a cell
+    /// Assign filtered MDP value from a filtered pass to a cell
     /// </summary>
     /// <param name="cellX"></param>
     /// <param name="cellY"></param>
     /// <param name="Context"></param>
     public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext Context)
     {
-      Cells[cellX, cellY].MeasuredCMV = Context.FilteredValue.FilteredPassData.FilteredPass.CCV;
-      Cells[cellX, cellY].TargetCMV = Context.FilteredValue.FilteredPassData.TargetValues.TargetCCV;
-      Cells[cellX, cellY].PreviousMeasuredCMV = Context.PreviousFilteredValue.FilteredPassData.FilteredPass.CCV;
-      Cells[cellX, cellY].PreviousMeasuredCMV = Context.PreviousFilteredValue.FilteredPassData.TargetValues.TargetCCV;
-
-      Cells[cellX, cellY].IsDecoupled = Context.PreviousFilteredValue.FilteredPassData.FilteredPass.RMV > Context.FilteredValue.FilteredPassData.EventValues.EventMachineRMVThreshold;
+      Cells[cellX, cellY].MeasuredMDP = Context.FilteredValue.FilteredPassData.FilteredPass.MDP;
+      Cells[cellX, cellY].TargetMDP = Context.FilteredValue.FilteredPassData.TargetValues.TargetMDP;
       Cells[cellX, cellY].IsUndercompacted = false;
       Cells[cellX, cellY].IsTooThick = false;
       Cells[cellX, cellY].IsTopLayerTooThick = false;
@@ -113,7 +88,7 @@ namespace VSS.TRex.SubGridTrees.Client
       int lowLayerIndex = -1;
       int highLayerIndex = -1;
 
-      if (Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly)
+      if (Dummy_LiftBuildSettings.MDPSummarizeTopLayerOnly)
       {
         for (var i = Context.CellProfile.Layers.Count() - 1; i >= 0; i--)
         {
@@ -128,7 +103,7 @@ namespace VSS.TRex.SubGridTrees.Client
       {
         for (var i = Context.CellProfile.Layers.Count() - 1; i >= 0; i--)
         {
-          if ((Context.CellProfile.Layers[i].Status & LayerStatus.Superseded) == 0 && Context.CellProfile.Layers[i].CCV != CellPass.NullCCV)
+          if ((Context.CellProfile.Layers[i].Status & LayerStatus.Superseded) == 0 && Context.CellProfile.Layers[i].MDP != CellPass.NullMDP)
           {
             highLayerIndex = i;
             break;
@@ -165,7 +140,7 @@ namespace VSS.TRex.SubGridTrees.Client
             else
               Cells[cellX, cellY].IsTooThick = true;
           }
-        };
+        }
       }
     }
 
@@ -174,25 +149,40 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     public override void FillWithTestPattern()
     {
-      ForEach((x, y) => Cells[x, y] = new SubGridCellPassDataCMVEntryRecord { MeasuredCMV = x, TargetCMV = y});
+      ForEach((x, y) => Cells[x, y] = new SubGridCellPassDataMDPEntryRecord { MeasuredMDP = x, TargetMDP = y });
     }
 
     /// <summary>
-    /// Determines if the CMV at the cell location is null or not.
+    /// Determines if the leaf content of this subgrid is equal to 'other'
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public override bool LeafContentEquals(IClientLeafSubGrid other)
+    {
+      bool result = true;
+
+      IGenericClientLeafSubGrid<SubGridCellPassDataMDPEntryRecord> _other = (IGenericClientLeafSubGrid<SubGridCellPassDataMDPEntryRecord>)other;
+      ForEach((x, y) => result &= Cells[x, y].Equals(_other.Cells[x, y]));
+
+      return result;
+    }
+
+    /// <summary>
+    /// Determines if the MDP at the cell location is null or not.
     /// </summary>
     /// <param name="cellX"></param>
     /// <param name="cellY"></param>
     /// <returns></returns>
-    public override bool CellHasValue(byte cellX, byte cellY) => _gridDataType == GridDataType.CCVPercentChange || Cells[cellX, cellY].MeasuredCMV != CellPass.NullCCV;
+    public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY].MeasuredMDP != CellPass.NullMDP;
 
     /// <summary>
     /// Provides a copy of the null value defined for cells in thie client leaf subgrid
     /// </summary>
     /// <returns></returns>
-    public override SubGridCellPassDataCMVEntryRecord NullCell() => SubGridCellPassDataCMVEntryRecord.NullValue;
+    public override SubGridCellPassDataMDPEntryRecord NullCell() => SubGridCellPassDataMDPEntryRecord.NullValue;
 
     /// <summary>
-    /// Sets all cell CMVs to null and clears the first pass and sureyed surface pass maps
+    /// Sets all cell MDP values to null and clears the first pass and surveyed surface pass maps
     /// </summary>
     public override void Clear()
     {
@@ -201,67 +191,61 @@ namespace VSS.TRex.SubGridTrees.Client
       FirstPassMap.Clear();
     }
 
-    public void RestoreInitialSettings()
-    {
-      WantsPreviousCCVValue = _sWantsPreviousCCVValue;
-      IgnoresNullValueForLastCMV = _sIgnoresNullValueForLastCMV;
-    }
-
     /// <summary>
     /// Dumps elevations from subgrid to the log
     /// </summary>
     /// <param name="title"></param>
     public override void DumpToLog(string title)
     {
-        base.DumpToLog(title);
-        /*
-          * var
-          I, J : Integer;
-          S : String;
-        begin
-          SIGLogMessage.PublishNoODS(Nil, Format('Dump of machine speed map for subgrid %s', [Moniker]) , slmcDebug);
+      base.DumpToLog(title);
+      /*
+       * var
+        I, J : Integer;
+        S : String;
+      begin
+        SIGLogMessage.PublishNoODS(Nil, Format('Dump of MDP map for subgrid %s', [Moniker]) , slmcDebug);
 
-          for I := 0 to kSubGridTreeDimension - 1 do
-            begin
-              S := Format('%2d:', [I]);
+        for I := 0 to kSubGridTreeDimension - 1 do
+          begin
+            S := Format('%2d:', [I]);
 
-              for J := 0 to kSubGridTreeDimension - 1 do
-                if CellHasValue(I, J) then
-                  S := S + Format('%9.3f', [Cells[I, J]])
-                else
-                  S := S + '     Null';
+            for J := 0 to kSubGridTreeDimension - 1 do
+              if CellHasValue(I, J) then
+                S := S + Format('%9.3f', [Cells[I, J]])
+              else
+                S := S + '     Null';
 
-              SIGLogMessage.PublishNoODS(Nil, S, slmcDebug);
-            end;
-        end;
-        */
+            SIGLogMessage.PublishNoODS(Nil, S, slmcDebug);
+          end;
+      end;
+      */
     }
 
-/*
-    /// <summary>
-    /// Reads an elevation client leaf sub grid from a stream using a binary formatter
-    /// </summary>
-    /// <param name="formatter"></param>
-    /// <param name="stream"></param>
-    public override void Read(BinaryFormatter formatter, Stream stream)
-    {
-        base.Read(formatter, stream);
+    /*
+            /// <summary>
+            /// Reads an MDP client leaf sub grid from a stream using a binary formatter
+            /// </summary>
+            /// <param name="formatter"></param>
+            /// <param name="stream"></param>
+            public override void Read(BinaryFormatter formatter, Stream stream)
+            {
+                base.Read(formatter, stream);
 
-        FirstPassMap = (SubGridTreeBitmapSubGridBits)formatter.Deserialize(stream);
-    }
+                FirstPassMap = (SubGridTreeBitmapSubGridBits)formatter.Deserialize(stream);
+            }
 
-    /// <summary>
-    /// Writes an elevation client leaf sub grid to a stream using a binary formatter
-    /// </summary>
-    /// <param name="formatter"></param>
-    /// <param name="stream"></param>
-    public override void Write(BinaryFormatter formatter, Stream stream)
-    {
-        base.Write(formatter, stream);
+            /// <summary>
+            /// Writes an MDP client leaf sub grid to a stream using a binary formatter
+            /// </summary>
+            /// <param name="formatter"></param>
+            /// <param name="stream"></param>
+            public override void Write(BinaryFormatter formatter, Stream stream)
+            {
+                base.Write(formatter, stream);
 
-        formatter.Serialize(stream, FirstPassMap);
-    }
-*/
+                formatter.Serialize(stream, FirstPassMap);
+            }
+    */
 
     /// <summary>
     /// Write the contents of the Items array using the supplied writer
@@ -270,7 +254,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     /// <param name="writer"></param>
     /// <param name="buffer"></param>
-    public override void Write(BinaryWriter writer, byte [] buffer)
+    public override void Write(BinaryWriter writer, byte[] buffer)
     {
       base.Write(writer, buffer);
 
@@ -286,28 +270,13 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     /// <param name="reader"></param>
     /// <param name="buffer"></param>
-    public override void Read(BinaryReader reader, byte [] buffer)
+    public override void Read(BinaryReader reader, byte[] buffer)
     {
       base.Read(reader, buffer);
 
       FirstPassMap.Read(reader, buffer);
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Read(reader));
-    }
-
-    /// <summary>
-    /// Determines if the leaf content of this subgrid is equal to 'other'
-    /// </summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
-    public override bool LeafContentEquals(IClientLeafSubGrid other)
-    {
-      bool result = true;
-
-      IGenericClientLeafSubGrid<SubGridCellPassDataCMVEntryRecord> _other = (IGenericClientLeafSubGrid<SubGridCellPassDataCMVEntryRecord>)other;
-      ForEach((x, y) => result &= Cells[x, y].Equals(_other.Cells[x, y]));
-
-      return result;
     }
   }
 }

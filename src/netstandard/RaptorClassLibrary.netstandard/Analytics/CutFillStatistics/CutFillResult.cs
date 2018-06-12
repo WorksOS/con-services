@@ -4,7 +4,7 @@ using System.Linq;
 namespace VSS.TRex.Analytics.Models
 {
     /// <summary>
-    /// The result obtained fcrom performing a CutFill analytics request
+    /// The result obtained from performing a CutFill analytics request
     /// </summary>
     public class CutFillResult : AnalyticsResult
     {

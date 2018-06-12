@@ -78,7 +78,7 @@ namespace VSS.TRex.SubGridTrees.Types
     #endregion
 
     /// <summary>
-    /// Minimum CMV value.
+    /// Measured CMV value.
     /// </summary>
     public short MeasuredCMV { get; set; }
 

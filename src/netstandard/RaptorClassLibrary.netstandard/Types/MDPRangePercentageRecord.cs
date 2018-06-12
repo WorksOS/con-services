@@ -2,20 +2,19 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using VSS.TRex.Cells;
 using VSS.TRex.Common;
 
 namespace VSS.TRex.Types
 {
-  public struct CMVRangePercentageRecord
+  public struct MDPRangePercentageRecord
   {
     /// <summary>
-    /// Minimum CMV percentage range value.
+    /// Minimum MDP percentage range value.
     /// </summary>
     public double Min { get; set; }
 
     /// <summary>
-    /// Maximum CMV percentage range value.
+    /// Maximum MDP percentage range value.
     /// </summary>
     public double Max { get; set; }
 
@@ -24,7 +23,7 @@ namespace VSS.TRex.Types
     /// </summary>
     /// <param name="min"></param>
     /// <param name="max"></param>
-    public CMVRangePercentageRecord(double min, double max)
+    public MDPRangePercentageRecord(double min, double max)
     {
       Min = min;
       Max = max;

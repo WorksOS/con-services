@@ -1,7 +1,11 @@
 ﻿using VSS.TRex.Analytics.Foundation.Models;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Analytics.TemperatureStatistics
 {
+  /// <summary>
+  /// The result obtained from performing a temperature analytics request
+  /// </summary>
   public class TemperatureResult : SummaryAnalyticsResult
 	{
 		/// <summary>
@@ -22,6 +26,6 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 		/// <summary>
 		/// The internal result code of the request. Documented elsewhere.
 		/// </summary>
-		public short ReturnCode { get; set; }
+		public MissingTargetDataResultType ReturnCode { get; set; }
   }
 }

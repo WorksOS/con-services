@@ -33,27 +33,24 @@ namespace VSS.TRex.Rendering.Displayers
 
     protected override Color DoGetDisplayColour()
     {
-      var subGrid = SubGrid.Cells[east_col, north_row];
+      var cellValue = SubGrid.Cells[east_col, north_row];
 
-      if (subGrid.MeasuredCMV == CellPass.NullCCV)
+      if (cellValue.MeasuredCMV == CellPass.NullCCV)
         return Color.Empty;
 
-      var decoupled = subGrid.IsDecoupled && ((CMVPalette) Palette).DisplayDecoupledColourInPVM;
+      var decoupled = cellValue.IsDecoupled && ((CMVPalette) Palette).DisplayDecoupledColourInPVM;
 
       if (decoupled)
         return DefaultDecoupledCMVColour;
-      else
-      {
-        var targetCMVValue = subGrid.TargetCMV;
 
-        // If we are not using the machine target CCV value then we need to replace the
-        // target CMV report from the machine, with the override value specified here.
-        if (!UseMachineTargetCMV)
-          targetCMVValue = AbsoluteTargetCMV;
+      var targetCMVValue = cellValue.TargetCMV;
 
-
-        return ((CMVPalette) Palette).ChooseColour(subGrid.MeasuredCMV, targetCMVValue);
-      }
+      // If we are not using the machine target CCV value then we need to replace the
+      // target CMV report from the machine, with the override value specified here.
+      if (!UseMachineTargetCMV)
+        targetCMVValue = AbsoluteTargetCMV;
+        
+      return ((CMVPalette) Palette).ChooseColour(cellValue.MeasuredCMV, targetCMVValue);
     }
   }
 }

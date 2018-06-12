@@ -27,6 +27,7 @@ namespace VSS.TRex.Tests
              gridDataType == GridDataType.HeightAndTime ||
              gridDataType == GridDataType.CompositeHeights ||
              gridDataType == GridDataType.CCV ||
+             gridDataType == GridDataType.MDP ||
              gridDataType == GridDataType.MachineSpeed ||
              gridDataType == GridDataType.MachineSpeedTarget ||
              gridDataType == GridDataType.Temperature ||
@@ -70,9 +71,9 @@ namespace VSS.TRex.Tests
     /// Fail if a new grid data type has been added to ensure tests are created for it
     /// </summary>
     [Fact]
-    public void Test_GenericClientLeafSubgrid_EnsureThereAre8ExpectedGridDataTypes()
+    public void Test_GenericClientLeafSubgrid_EnsureThereAre9ExpectedGridDataTypes()
     {
-      Assert.True(8 == ClientLeafDataTypes_ExpectedOnly(100).Count(), "Number of expected grid date types is not 8 as expected");
+      Assert.True(9 == ClientLeafDataTypes_ExpectedOnly(100).Count(), "Number of expected grid date types is not 9 as expected");
     }
 
     [Theory]

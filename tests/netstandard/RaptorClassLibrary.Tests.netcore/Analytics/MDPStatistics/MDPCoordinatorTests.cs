@@ -1,60 +1,60 @@
 ﻿using System;
-using VSS.TRex.Tests.netcore.Analytics.Common;
-using VSS.TRex.Analytics.CMVStatistics;
-using VSS.TRex.Analytics.CMVStatistics.GridFabric;
+using VSS.TRex.Analytics.MDPStatistics;
+using VSS.TRex.Analytics.MDPStatistics.GridFabric;
 using VSS.TRex.Filters;
+using VSS.TRex.Tests.netcore.Analytics.Common;
 using VSS.TRex.Types;
 using Xunit;
 
-namespace VSS.TRex.Tests.Analytics.CMVStatistics
+namespace VSS.TRex.Tests.Analytics.MDPStatistics
 {
-  public class CMVCoordinatorTests : BaseCoordinatorTests
+  public class MDPCoordinatorTests : BaseCoordinatorTests
   {
-    private CMVStatisticsArgument Arg => new CMVStatisticsArgument()
+    private MDPStatisticsArgument Arg => new MDPStatisticsArgument()
     {
       ProjectID = _siteModel.ID,
       Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
-      OverrideMachineCMV = true,
-      OverridingMachineCMV = 70
+      OverrideMachineMDP = true,
+      OverridingMachineMDP = 70
     };
 
-    private CMVCoordinator _getCoordinator()
+    private MDPCoordinator _getCoordinator()
     {
-      return new CMVCoordinator() { RequestDescriptor = Guid.NewGuid(), SiteModel = _siteModel };
+      return new MDPCoordinator() { RequestDescriptor = Guid.NewGuid(), SiteModel = _siteModel };
     }
 
-    private CMVAggregator _getCMVAggregator()
+    private MDPAggregator _getMDPAggregator()
     {
       var coordinator = _getCoordinator();
 
-      return coordinator.ConstructAggregator(Arg) as CMVAggregator;
+      return coordinator.ConstructAggregator(Arg) as MDPAggregator;
     }
 
     [Fact]
-    public void Test_CMVCoordinator_Creation()
+    public void Test_MDPCoordinator_Creation()
     {
-      var coordinator = new CMVCoordinator();
+      var coordinator = new MDPCoordinator();
 
       Assert.True(coordinator.SiteModel == null, "Invalid initial value for SiteModel.");
       Assert.True(coordinator.RequestDescriptor == Guid.Empty, "Invalid initial value for RequestDescriptor.");
     }
 
     [Fact]
-    public void Test_CMVCoordinator_ConstructAggregator_Successful()
+    public void Test_MDPCoordinator_ConstructAggregator_Successful()
     {
-      var aggregator = _getCMVAggregator();
+      var aggregator = _getMDPAggregator();
 
       Assert.True(aggregator.RequiresSerialisation, "Invalid aggregator value for RequiresSerialisation.");
       Assert.True(aggregator.SiteModelID == Arg.ProjectID, "Invalid aggregator value for SiteModelID.");
       Assert.True(Math.Abs(aggregator.CellSize - _siteModel.Grid.CellSize) < TOLERANCE, "Invalid aggregator value for CellSize.");
-      Assert.True(aggregator.OverrideMachineCMV == Arg.OverrideMachineCMV, "Invalid aggregator value for OverrideMachineCMV.");
-      Assert.True(aggregator.OverridingMachineCMV == Arg.OverridingMachineCMV, "Invalid aggregator value for OverridingMachineCMV.");
+      Assert.True(aggregator.OverrideMachineMDP == Arg.OverrideMachineMDP, "Invalid aggregator value for OverrideMachineMDP.");
+      Assert.True(aggregator.OverridingMachineMDP == Arg.OverridingMachineMDP, "Invalid aggregator value for OverridingMachineMDP.");
     }
 
     [Fact]
-    public void Test_CMVCoordinator_ConstructComputor_Successful()
+    public void Test_MDPCoordinator_ConstructComputor_Successful()
     {
-      var aggregator = _getCMVAggregator();
+      var aggregator = _getMDPAggregator();
       var coordinator = _getCoordinator();
       var computor = coordinator.ConstructComputor(Arg, aggregator);
 
@@ -64,22 +64,22 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
       Assert.True(computor.Filters.Filters.Length == Arg.Filters.Filters.Length, "Invalid computor value for Filters length as different to Arg.");
       Assert.True(computor.Filters.Filters.Length == 1, "Invalid computor value for Filters length.");
       Assert.True(computor.IncludeSurveyedSurfaces, "Invalid computor value for IncludeSurveyedSurfaces.");
-      Assert.True(computor.RequestedGridDataType == GridDataType.CCV, "Invalid computor value for RequestedGridDataType.");
+      Assert.True(computor.RequestedGridDataType == GridDataType.MDP, "Invalid computor value for RequestedGridDataType.");
     }
 
     [Fact]
-    public void Test_CMVCoordinator_ReadOutResults_Successful()
+    public void Test_MDPCoordinator_ReadOutResults_Successful()
     {
-      var aggregator = _getCMVAggregator();
+      var aggregator = _getMDPAggregator();
       var coordinator = _getCoordinator();
 
-      var response = new CMVStatisticsResponse();
+      var response = new MDPStatisticsResponse();
 
       coordinator.ReadOutResults(aggregator, response);
 
       Assert.True(Math.Abs(response.CellSize - aggregator.CellSize) < TOLERANCE, "CellSize invalid after result read-out.");
       Assert.True(response.SummaryCellsScanned == aggregator.SummaryCellsScanned, "Invalid read-out value for SummaryCellsScanned.");
-      Assert.True(response.LastTargetCMV == aggregator.LastTargetCMV, "Invalid read-out value for LastTargetCMV.");
+      Assert.True(response.LastTargetMDP == aggregator.LastTargetMDP, "Invalid read-out value for LastTargetMDP.");
       Assert.True(response.CellsScannedOverTarget == aggregator.CellsScannedOverTarget, "Invalid read-out value for CellsScannedOverTarget.");
       Assert.True(response.CellsScannedAtTarget == aggregator.CellsScannedAtTarget, "Invalid read-out value for CellsScannedAtTarget.");
       Assert.True(response.CellsScannedUnderTarget == aggregator.CellsScannedUnderTarget, "Invalid read-out value for CellsScannedUnderTarget.");

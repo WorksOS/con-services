@@ -1,7 +1,11 @@
 ﻿using VSS.TRex.Analytics.Foundation.Models;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Analytics.CMVStatistics
 {
+  /// <summary>
+  /// The result obtained from performing a CMV analytics request
+  /// </summary>
   public class CMVResult : SummaryAnalyticsResult
   {
     /// <summary>
@@ -17,6 +21,6 @@ namespace VSS.TRex.Analytics.CMVStatistics
     /// <summary>
     /// The internal result code of the request. Documented elsewhere.
     /// </summary>
-    public short ReturnCode { get; set; }
+    public MissingTargetDataResultType ReturnCode { get; set; }
   }
 }

@@ -19,6 +19,8 @@ using VSS.TRex.TAGFiles.GridFabric.Requests;
 using VSS.TRex.DesignProfiling;
 using VSS.TRex.Analytics.Operations;
 using VSS.TRex.Analytics.GridFabric.Arguments;
+using VSS.TRex.Analytics.MDPStatistics;
+using VSS.TRex.Analytics.MDPStatistics.GridFabric;
 using VSS.TRex.Analytics.Models;
 using VSS.TRex.Analytics.SpeedStatistics;
 using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
@@ -1190,6 +1192,39 @@ namespace VSS.TRex.IgnitePOC.TestApp
                           $"Above CMV Percentage: {result.AboveTargetPercent} \n " +
                           $"Within CMV Percentage Range: {result.WithinTargetPercent} \n " +
                           $"Below CMV Percentage: {result.BelowTargetPercent} \n " +
+                          $"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
+      }
+      finally
+      {
+        sw.Stop();
+      }
+    }
+
+    private void MDPSummaryButton_Click(object sender, EventArgs e)
+    {
+      var siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+
+      Stopwatch sw = new Stopwatch();
+      sw.Start();
+      try
+      {
+        MDPOperation operation = new MDPOperation();
+        MDPResult result = operation.Execute(
+          new MDPStatisticsArgument()
+          {
+            ProjectID = siteModel.ID,
+            Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+            MDPPercentageRange = new MDPRangePercentageRecord(80, 120),
+            OverrideMachineMDP = false,
+            OverridingMachineMDP = 1000
+          }
+        );
+
+        if (result != null)
+          MessageBox.Show($"MDP Summary Results (in {sw.Elapsed}) :\n " +
+                          $"Above MDP Percentage: {result.AboveTargetPercent} \n " +
+                          $"Within MDP Percentage Range: {result.WithinTargetPercent} \n " +
+                          $"Below MDP Percentage: {result.BelowTargetPercent} \n " +
                           $"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
       }
       finally
