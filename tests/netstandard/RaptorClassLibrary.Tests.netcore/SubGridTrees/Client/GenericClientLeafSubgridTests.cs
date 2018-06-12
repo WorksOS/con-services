@@ -13,7 +13,7 @@ namespace VSS.TRex.Tests
 
     static int GridDataTypeCount = GetGridDataTypeCount();
 
-    private const int kGridDataTypeCount_Expected = 8;
+    private const int kGridDataTypeCount_Expected = 10;
     private const int kGridDataTypeCount = 33;
 
     /// <summary>
@@ -31,7 +31,8 @@ namespace VSS.TRex.Tests
              gridDataType == GridDataType.MachineSpeed ||
              gridDataType == GridDataType.MachineSpeedTarget ||
              gridDataType == GridDataType.Temperature ||
-             gridDataType == GridDataType.TemperatureDetail;
+             gridDataType == GridDataType.TemperatureDetail ||
+             gridDataType == GridDataType.PassCount;
     }
 
     /// <summary>
@@ -71,9 +72,9 @@ namespace VSS.TRex.Tests
     /// Fail if a new grid data type has been added to ensure tests are created for it
     /// </summary>
     [Fact]
-    public void Test_GenericClientLeafSubgrid_EnsureThereAre9ExpectedGridDataTypes()
+    public void Test_GenericClientLeafSubgrid_EnsureThereAreNumberOfExpectedGridDataTypes()
     {
-      Assert.True(9 == ClientLeafDataTypes_ExpectedOnly(100).Count(), "Number of expected grid date types is not 9 as expected");
+      Assert.True(kGridDataTypeCount_Expected == ClientLeafDataTypes_ExpectedOnly(100).Count(), $"Number of expected grid date types is not {kGridDataTypeCount_Expected} as expected");
     }
 
     [Theory]
