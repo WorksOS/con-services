@@ -41,6 +41,21 @@
     "Code": -4,
     "Message": "No elevation range"
   },
+  "AutomaticsFilter_ER": {
+    "BoundingExtents": {
+      "maxX": -115.02477404574897,
+      "maxY": 36.207347660105043,
+      "maxZ": 1E+308,
+      "minX": -115.02489501829339,
+      "minY": 36.2072496172315,
+      "minZ": 1E+308
+    },
+    "MinElevation": 609.99200439453125,
+    "MaxElevation": 609.99200439453125,
+    "TotalCoverageArea": 0.11560000000000002,
+    "Code": 0,
+    "Message": "success"
+  },
   "GoodRequest_PRS": {
     "startTime": "2012-10-30T00:12:09.109",
     "endTime": "2012-11-08T01:00:08.756",

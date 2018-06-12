@@ -365,28 +365,85 @@ this.CompactionCellDatum_GoodRequest("CutFillWithDesign", "ff91dd40-1569-4765-a2
 #line hidden
         }
         
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("CompactionCellDatum - Good Request: PassCountFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCellDatum")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "PassCountFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "PassCountFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUID", "c5590172-a1bb-440a-bc7d-6c35ecc75724")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CutFillDesignUID", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:DisplayMode", "4")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Latitude", "36.20696541")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Longitude", "-115.02021047")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "PassCountFilter")]
+        public virtual void CompactionCellDatum_GoodRequest_PassCountFilter()
+        {
+#line 7
+this.CompactionCellDatum_GoodRequest("PassCountFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "c5590172-a1bb-440a-bc7d-6c35ecc75724", "", "4", "36.20696541", "-115.02021047", "PassCountFilter", ((string[])(null)));
+#line hidden
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("CompactionCellDatum - Good Request: MachineSpeedFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCellDatum")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "MachineSpeedFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "MachineSpeedFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUID", "c5590172-a1bb-440a-bc7d-6c35ecc75724")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CutFillDesignUID", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:DisplayMode", "23")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Latitude", "36.20696541")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Longitude", "-115.02021047")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "MachineSpeedFilter")]
+        public virtual void CompactionCellDatum_GoodRequest_MachineSpeedFilter()
+        {
+#line 7
+this.CompactionCellDatum_GoodRequest("MachineSpeedFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "c5590172-a1bb-440a-bc7d-6c35ecc75724", "", "23", "36.20696541", "-115.02021047", "MachineSpeedFilter", ((string[])(null)));
+#line hidden
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("CompactionCellDatum - Good Request: HeightFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCellDatum")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "HeightFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "HeightFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUID", "c5590172-a1bb-440a-bc7d-6c35ecc75724")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CutFillDesignUID", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:DisplayMode", "0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Latitude", "36.20696541")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Longitude", "-115.02021047")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "HeightFilter")]
+        public virtual void CompactionCellDatum_GoodRequest_HeightFilter()
+        {
+#line 7
+this.CompactionCellDatum_GoodRequest("HeightFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "c5590172-a1bb-440a-bc7d-6c35ecc75724", "", "0", "36.20696541", "-115.02021047", "HeightFilter", ((string[])(null)));
+#line hidden
+        }
+        
         public virtual void CompactionCellDatum_BadRequest(string requestName, string projectUID, string filterUID, string cutFillDesignUID, string displayMode, string latitude, string longitude, string httpCode, string errorCode, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("CompactionCellDatum - Bad Request", exampleTags);
-#line 32
+#line 35
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 33
-testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 34
-testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 35
-testRunner.And(string.Format("cutfillDesignUid \"{0}\"", cutFillDesignUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 36
-testRunner.And(string.Format("displayMode \"{0}\"", displayMode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 37
-testRunner.And(string.Format("lat \"{0}\"", latitude), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 38
-testRunner.And(string.Format("lon \"{0}\"", longitude), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And(string.Format("cutfillDesignUid \"{0}\"", cutFillDesignUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 39
-testRunner.When(string.Format("I request Compaction Cell Datum I expect http error code {0}", httpCode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+testRunner.And(string.Format("displayMode \"{0}\"", displayMode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 40
+testRunner.And(string.Format("lat \"{0}\"", latitude), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 41
+testRunner.And(string.Format("lon \"{0}\"", longitude), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 42
+testRunner.When(string.Format("I request Compaction Cell Datum I expect http error code {0}", httpCode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 43
 testRunner.Then(string.Format("the response should contain error code {0}", errorCode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -407,7 +464,7 @@ testRunner.Then(string.Format("the response should contain error code {0}", erro
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "-1")]
         public virtual void CompactionCellDatum_BadRequest_NoProjectUID()
         {
-#line 32
+#line 35
 this.CompactionCellDatum_BadRequest("NoProjectUID", "", "", "", "0", "36.20696541", "-115.02021047", "400", "-1", ((string[])(null)));
 #line hidden
         }
@@ -427,7 +484,7 @@ this.CompactionCellDatum_BadRequest("NoProjectUID", "", "", "", "0", "36.2069654
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "-1")]
         public virtual void CompactionCellDatum_BadRequest_NoFoundFilter()
         {
-#line 32
+#line 35
 this.CompactionCellDatum_BadRequest("NoFoundFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "7f2fb9ec-2384-420e-b2e3-72b9cea939a3", "", "0", "36.20696541", "-115.02021047", "400", "-1", ((string[])(null)));
 #line hidden
         }
@@ -447,7 +504,7 @@ this.CompactionCellDatum_BadRequest("NoFoundFilter", "ff91dd40-1569-4765-a2bc-01
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "-1")]
         public virtual void CompactionCellDatum_BadRequest_NoFoundDesign()
         {
-#line 32
+#line 35
 this.CompactionCellDatum_BadRequest("NoFoundDesign", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "3d255208-8aa2-4172-9046-f97a36eff896", "8", "36.20696541", "-115.02021047", "400", "-1", ((string[])(null)));
 #line hidden
         }

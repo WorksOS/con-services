@@ -94,6 +94,11 @@
     "Code": 0,
     "Message": "success"
   },
+  "TempBoundaryFilter_Summary": {
+    "temperatureSummaryData": null,
+    "Code": 0,
+    "Message": "success"
+  },
   "PassCountFilter_Summary": {
     "temperatureSummaryData": {
       "percentEqualsTarget": 0.0,

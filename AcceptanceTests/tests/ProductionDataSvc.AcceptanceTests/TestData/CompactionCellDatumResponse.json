@@ -9,6 +9,16 @@
     "Code": 0,
     "Message": "success"
   },
+  "HeightFilter": {
+    "northing": 1165.2625185966872,
+    "easting": 2738.7511710978069,
+    "displayMode": 0,
+    "returnCode": 0,
+    "value": 594.81597900390625,
+    "timestamp": "2012-10-31T21:53:28.807",
+    "Code": 0,
+    "Message": "success"
+  },
   "CMV": {
     "northing": 1165.2625185966872,
     "easting": 2738.7511710978069,
@@ -36,6 +46,16 @@
     "returnCode": 0,
     "value": 11,
     "timestamp": "2012-10-31T21:56:24.807",
+    "Code": 0,
+    "Message": "success"
+  },
+  "PassCountFilter": {
+    "northing": 1165.2625185966872,
+    "easting": 2738.7511710978069,
+    "displayMode": 4,
+    "returnCode": 0,
+    "value": 8.0,
+    "timestamp": "2012-10-31T21:53:28.807",
     "Code": 0,
     "Message": "success"
   },
@@ -94,6 +114,16 @@
     "displayMode": 23,
     "returnCode": 1,
     "timestamp": "2012-10-31T21:56:24.807",
+    "Code": 0,
+    "Message": "success"
+  },
+  "MachineSpeedFilter": {
+    "northing": 1165.2625185966872,
+    "easting": 2738.7511710978069,
+    "displayMode": 23,
+    "returnCode": 1,
+    "value": 0.0,
+    "timestamp": "2012-10-31T21:53:28.807",
     "Code": 0,
     "Message": "success"
   },
