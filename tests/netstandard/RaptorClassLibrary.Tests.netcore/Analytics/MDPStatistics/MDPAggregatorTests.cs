@@ -9,7 +9,7 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics
   public class MDPAggregatorTests : BaseTests
   {
     [Fact]
-    public void Test_TemperatureAggregator_Creation()
+    public void Test_MDPAggregator_Creation()
     {
       var aggregator = new MDPAggregator();
 

@@ -4,7 +4,7 @@ using VSS.TRex.Types;
 namespace VSS.TRex.Analytics.MDPStatistics
 {
   /// <summary>
-  /// The result obtained fcrom performing a MDP analytics request
+  /// The result obtained from performing a MDP analytics request
   /// </summary>
   public class MDPResult : SummaryAnalyticsResult
   {

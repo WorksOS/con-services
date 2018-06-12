@@ -4,7 +4,7 @@ using VSS.TRex.Types;
 namespace VSS.TRex.Analytics.CMVStatistics
 {
   /// <summary>
-  /// The result obtained fcrom performing a CMV analytics request
+  /// The result obtained from performing a CMV analytics request
   /// </summary>
   public class CMVResult : SummaryAnalyticsResult
   {

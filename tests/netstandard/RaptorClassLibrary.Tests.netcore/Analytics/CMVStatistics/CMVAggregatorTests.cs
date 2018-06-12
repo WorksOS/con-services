@@ -9,7 +9,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
   public class CMVAggregatorTests : BaseTests
   {
     [Fact]
-    public void Test_TemperatureAggregator_Creation()
+    public void Test_CMVAggregator_Creation()
     {
       var aggregator = new CMVAggregator();
 

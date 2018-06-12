@@ -4,7 +4,7 @@ using VSS.TRex.Types;
 namespace VSS.TRex.Analytics.TemperatureStatistics
 {
   /// <summary>
-  /// The result obtained fcrom performing a temperature analytics request
+  /// The result obtained from performing a temperature analytics request
   /// </summary>
   public class TemperatureResult : SummaryAnalyticsResult
 	{

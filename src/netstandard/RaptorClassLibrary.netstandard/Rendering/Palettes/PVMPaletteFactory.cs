@@ -36,7 +36,8 @@ namespace VSS.TRex.Rendering.Palettes
                     return new HeightPalette(extent2.MinZ, extent2.MaxZ);
                     //return new HeightPalette(spatialExtents.MinZ, spatialExtents.MaxZ);
             }
-
+            
+            // TODO The additional logic in the commented out code below should be implemented as per the corresponding User Story...
             /*
             Complicated legacy implementation follows:
               if Assigned(FDisplayPalettes) then
