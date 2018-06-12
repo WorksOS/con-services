@@ -42,13 +42,16 @@ node ('jenkinsslave-pod') {
         step([$class: 'XUnitBuilder',
                 thresholds: [[$class: 'FailedThreshold', unstableThreshold: '10']],
                 tools: [[$class: 'XUnitDotNetTestType', pattern: 'TestResults/*']]])
+
+		cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/*.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
 				
 		//http://javadoc.jenkins-ci.org/tfs/index.html?hudson/plugins/tfs/model/TeamResultType.html
         //Details of the agent -> https://docs.microsoft.com/en-us/vsts/build-release/task
         //Agent Variables -> https://docs.microsoft.com/en-us/vsts/build-release/concepts/definitions/build/variables?view=vsts&tabs=batch
         step([$class: 'TeamCollectResultsPostBuildAction', 
             requestedResults: [
-                [includes: 'TestResults/*.xml', teamResultType: 'XUNIT']
+                [includes: 'TestResults/*.xml', teamResultType: 'XUNIT'],
+				[includes: 'TestCoverage/*.xml', teamResultType: 'COBERTURA']
             ]
         ])
 	}
