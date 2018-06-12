@@ -26,10 +26,10 @@ data:
   PROJECTSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IProjectEvent
   RAPTOR_NOTIFICATION_API_URL: http://localhost:5001/api/v2/notification
   RAPTOR_PROJECT_SETTINGS_API_URL: http://localhost:5001/api/v2
-  TCCBASEURL: localhost
-  TCCFILESPACEID: localhost
-  TCCORG:vldev
-  TCCUSERNAME:vldev
-  TCCPWD:vldev_key
+  TCCBASEURL: mock
+  TCCFILESPACEID: mock
+  TCCORG: vldev
+  TCCUSERNAME: vldev
+  TCCPWD: vldev_key
   WEBAPI_DEBUG_URI: http://localhost:80/
   WEBAPI_URI: http://localhost:80/

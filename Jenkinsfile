@@ -79,9 +79,9 @@ node ('jenkinsslave-pod') {
 			node (label) {
 				dir ("/app") {
 					sh "/bin/sh runtests.sh"
-					step([$class: 'JUnitResultArchiver', testResults: '**/testresults/*.xml'])
+					step([$class: 'JUnitResultArchiver', testResults: 'AcceptanceTests/tests/*/TestResults/*.xml'])
 			        step([$class: 'TeamCollectResultsPostBuildAction', 
-						requestedResults: [[includes: 'testresults/*.xml', teamResultType: 'JUNIT']]])
+						requestedResults: [[includes: 'AcceptanceTests/tests/*/TestResults/*.xml', teamResultType: 'JUNIT']]])
 				}
 			}		
 		}
