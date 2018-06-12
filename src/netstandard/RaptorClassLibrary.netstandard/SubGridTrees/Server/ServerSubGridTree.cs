@@ -120,7 +120,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
             bool Result;
 
-            /* TODO ... Locking semantics not defined for Inite
+            /* TODO ... Locking semantics not defined for Ignite - planning to be lock free
             if (!SubGrid.Locked)
             {
              SIGLogMessage.PublishNoODS(Self, 'TICServerSubGridTree.LoadLeafSubGrid (Subgrid not locked on request for reading)', slmcAssert);
