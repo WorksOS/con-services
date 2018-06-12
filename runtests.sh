@@ -22,5 +22,5 @@ dotnet test VSS.Visionlink.Project.AcceptanceTests.sln --logger \"xunit;LogFileN
 echo " "
 echo " All acceptance tests completed"
 echo " "
-echo " Wait for 300"
-sleep 300s
+#echo " Wait for 300"
+#sleep 300s
