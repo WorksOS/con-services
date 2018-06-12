@@ -147,12 +147,12 @@ namespace VSS.MasterData.Models.Models
     public bool? AsAtDate { get; protected set; }
 
     /// <summary>
-    /// Only filter cell passes recorded when the guidance mode is automatics.
-    /// If set to null, returns all cell passes.  If true, returns only cell passes with the cell pass parameter and guidance mode was automatics.  
-    /// If false, returns only cell passes with the cell pass parameter and guidance mode was manual.
+    /// Filter cell passes recorded when the guidance mode is automatics, manual or unknown.
+    /// If set to null, returns all cell passes.  If set to an automatics type, returns only cell passes with the 
+    /// guidance mode set to the specified automatics type.  
     /// </summary>
-    [JsonProperty(PropertyName = "automaticsOn", Required = Required.Default)]
-    public bool? AutomaticsOn { get; protected set; }
+    [JsonProperty(PropertyName = "automaticsType", Required = Required.Default)]
+    public AutomaticsType? AutomaticsType { get; protected set; }
 
     /// <summary>
     /// The minimum temperature in °C for a temperature range filter. Only cell passes within the range will be selected.
@@ -264,9 +264,9 @@ namespace VSS.MasterData.Models.Models
       return AsAtDate != null;
     }
 
-    public bool ShouldSerializeAutomaticsOn()
+    public bool ShouldSerializeAutomaticsType()
     {
-      return AutomaticsOn != null;
+      return AutomaticsType != null;
     }
     public bool ShouldSerializeTemperatureRangeMin()
     {
@@ -303,7 +303,7 @@ namespace VSS.MasterData.Models.Models
       LeftOffset.HasValue ||
       RightOffset.HasValue ||
       AsAtDate.HasValue ||
-      AutomaticsOn.HasValue ||
+      AutomaticsType.HasValue ||
       TemperatureRangeMin.HasValue ||
       TemperatureRangeMax.HasValue ||
       PassCountRangeMin.HasValue ||
@@ -339,7 +339,7 @@ namespace VSS.MasterData.Models.Models
         double? leftOffset = null,
         double? rightOffset = null,
         bool? asAtDate = null,
-        bool? automaticsOn = null,
+        AutomaticsType? automaticsType = null,
         double? temperatureRangeMin = null,
         double? temperatureRangeMax = null,
         int? passCountRangeMin = null,
@@ -366,7 +366,7 @@ namespace VSS.MasterData.Models.Models
         LeftOffset = leftOffset,
         RightOffset = rightOffset,
         AsAtDate = asAtDate,
-        AutomaticsOn = automaticsOn,
+        AutomaticsType = automaticsType,
         TemperatureRangeMin = temperatureRangeMin,
         TemperatureRangeMax = temperatureRangeMax,
         PassCountRangeMin = passCountRangeMin,
@@ -378,7 +378,7 @@ namespace VSS.MasterData.Models.Models
     {
       var filter = CreateFilter(StartUtc, EndUtc, DesignUid, ContributingMachines, OnMachineDesignId, ElevationType, 
         VibeStateOn, PolygonLL, ForwardDirection, LayerNumber, PolygonUid, PolygonName, 
-        AlignmentUid, StartStation, EndStation, LeftOffset, RightOffset, AsAtDate, AutomaticsOn,
+        AlignmentUid, StartStation, EndStation, LeftOffset, RightOffset, AsAtDate, AutomaticsType,
         TemperatureRangeMin, TemperatureRangeMax, PassCountRangeMin, PassCountRangeMax);
 
       return JsonConvert.SerializeObject(filter);
@@ -523,7 +523,7 @@ namespace VSS.MasterData.Models.Models
              string.Equals(AlignmentUid, other.AlignmentUid) && 
              StartStation.Equals(other.StartStation) && EndStation.Equals(other.EndStation) &&
              LeftOffset.Equals(other.LeftOffset) && RightOffset.Equals(other.RightOffset) &&
-             AutomaticsOn == other.AutomaticsOn && 
+             AutomaticsType == other.AutomaticsType && 
              TemperatureRangeMin.Equals(other.TemperatureRangeMin) && TemperatureRangeMax.Equals(other.TemperatureRangeMax) &&
              PassCountRangeMin.Equals(other.PassCountRangeMin) && PassCountRangeMax.Equals(other.PassCountRangeMax);
     }
@@ -559,7 +559,7 @@ namespace VSS.MasterData.Models.Models
         hashCode = (hashCode * 397) ^ (LeftOffset != null ? LeftOffset.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (RightOffset != null ? RightOffset.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (AsAtDate != null ? AsAtDate.GetHashCode() : 397);
-        hashCode = (hashCode * 397) ^ (AutomaticsOn != null ? AutomaticsOn.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (AutomaticsType != null ? AutomaticsType.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (TemperatureRangeMin != null ? TemperatureRangeMin.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (TemperatureRangeMax != null ? TemperatureRangeMax.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (PassCountRangeMin != null ? PassCountRangeMin.GetHashCode() : 397);

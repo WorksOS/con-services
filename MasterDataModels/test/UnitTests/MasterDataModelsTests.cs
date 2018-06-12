@@ -525,7 +525,7 @@ namespace VSS.MasterData.Models.UnitTests
     public void AutomaticsFilterSuccess()
     {
       var filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null, null, null, true);
+        null, null, null, null, null, null, null, null, AutomaticsType.Manual);
       filter.Validate(_serviceExceptionHandler);
     }
 
