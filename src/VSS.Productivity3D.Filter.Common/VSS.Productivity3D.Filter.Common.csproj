@@ -19,7 +19,7 @@
     <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.7.*" />
     <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.33.*" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.11.*" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.24.*" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.25.*" />
     <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.1.*" />
   </ItemGroup>
 
