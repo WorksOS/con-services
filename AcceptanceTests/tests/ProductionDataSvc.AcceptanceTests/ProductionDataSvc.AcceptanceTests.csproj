@@ -279,11 +279,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>GetLifts.feature</DependentUpon>
     </Compile>
-    <Compile Include="GetMachineDesigns.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>GetMachineDesigns.feature</DependentUpon>
-    </Compile>
     <Compile Include="GetProjectExtents.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -658,10 +653,6 @@
     <None Include="GetLifts.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>GetLifts.feature.cs</LastGenOutput>
-    </None>
-    <None Include="GetMachineDesigns.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>GetMachineDesigns.feature.cs</LastGenOutput>
     </None>
     <None Include="GetProjectExtents.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
