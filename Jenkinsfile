@@ -79,9 +79,14 @@ node ('jenkinsslave-pod') {
 			node (label) {
 				dir ("/app") {
 					sh "/bin/sh runtests.sh"
-					step([$class: 'JUnitResultArchiver', testResults: 'AcceptanceTests/tests/*/TestResults/*.xml'])
+
+					step([$class: 'XUnitBuilder',
+							thresholds: [[$class: 'FailedThreshold', unstableThreshold: '100']],
+							tools: [[$class: 'XUnitDotNetTestType', pattern: 'AcceptanceTests/tests/**/TestResults/*.xml']]])
+
+					//step([$class: 'JUnitResultArchiver', testResults: 'AcceptanceTests/tests/**/TestResults/*.xml'])
 			        step([$class: 'TeamCollectResultsPostBuildAction', 
-						requestedResults: [[includes: 'AcceptanceTests/tests/*/TestResults/*.xml', teamResultType: 'JUNIT']]])
+						requestedResults: [[includes: 'AcceptanceTests/tests/**/TestResults/*.xml', teamResultType: 'XUNIT']]])
 				}
 			}		
 		}
