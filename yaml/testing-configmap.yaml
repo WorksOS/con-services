@@ -8,7 +8,7 @@ data:
   CREATEGEOFENCE_API_URL: http://localhost:5001/dummy/
   CUSTOMERSERVICE_API_URL: http://localhost:5001/api/v1/mock/getcustomersforme
   DISSOCIATESUBSPROJECT_API_URL: http://localhost:5001/dummy/
-  GEOFENCE_API_URL: http://mockprojectwebapi:5001/api/v1/mock/geofences/
+  GEOFENCE_API_URL: http://localhost:5001/api/v1/mock/geofences/
   KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
   KAFKA_TOPIC_NAME_SUFFIX: -Project
   KAFKA_GROUP_NAME: Project-Consumer
