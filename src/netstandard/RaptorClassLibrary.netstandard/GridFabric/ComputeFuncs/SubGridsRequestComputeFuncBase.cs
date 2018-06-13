@@ -39,7 +39,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         [NonSerialized]
-        private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
+        private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.Factory();
 
         // private static int requestCount = 0;
 
@@ -130,6 +130,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
           try
           {
             //  SIGLogMessage.PublishNoODS(Self, Format('DisplayMode in PSNode:%s', [GetEnumName(TypeInfo(TICDisplayMode), Requests.DisplayType)]), slmcError);
+
             // If performing simple volume calculations, there may be an intermediary filter in play. If this is
             // the case then the first two subgrid results will be HeightAndTime elevation subgrids and will
             // need to be merged into a single height and time subgrid before any secondary conversion of intermediary
@@ -142,8 +143,8 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                 //&& Requests.ReferenceVolumeType == VolumeComputationType.Between2Filters // Between two filters volume request
               )
               {
-                Subgrid1 = SubgridResultArray[0] as ClientHeightAndTimeLeafSubGrid;
-                Subgrid2 = SubgridResultArray[1] as ClientHeightAndTimeLeafSubGrid;
+                Subgrid1 = (ClientHeightAndTimeLeafSubGrid)SubgridResultArray[0];
+                Subgrid2 = (ClientHeightAndTimeLeafSubGrid)SubgridResultArray[1];
 
                 // Merge the first two results then swap the second and third items so later processing
                 // uses the correct two result, and the the third is correctly recycled
@@ -171,9 +172,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                     for (int I = 0; I < SubgridResultArray.Length; I++)
                     {
                         if (SubgridResultArray[I] == null)
-                        {
                             continue;
-                        }
 
                         if (SubgridResultArray[I].GridDataType != RequestGridDataType)
                         {
@@ -265,9 +264,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
 
             // Set up any required cut fill design
             if (arg.CutFillDesignID != Guid.Empty)
-            {
                 CutFillDesign = DesignsService.Instance().Find(arg.SiteModelID, arg.CutFillDesignID);
-            }
         }
 
 
@@ -293,13 +290,11 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                                                      (uint)(address.Y & ~((int)SubGridTree.SubGridLocalKeyMask)));
 
                 // Reach into the subgrid request layer and retrieve an appropriate subgrid
-                requestor.CellOverrideMask = SubGridTreeBitmapSubGridBits.FullMask;
+                requestor.CellOverrideMask.Fill();
                 ServerRequestResult result = requestor.RequestSubGridInternal(address, address.ProdDataRequested, address.SurveyedSurfaceDataRequested, clientGrid);
 
                 if (result != ServerRequestResult.NoError)
-                {
-                    Log.LogInformation(string.Format("Request for subgrid {0} request failed with code {1}", address, result));
-                }
+                    Log.LogInformation($"Request for subgrid {address} request failed with code {result}");
 
                 // Some request types require additional processing of the subgrid results prior to repatriating the answers back to the caller
                 // Convert the computed intermediary grids into the client grid form expected by the caller
@@ -327,10 +322,8 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                             if (!CutFillUtilities.ComputeCutFillSubgrid(ClientArray[0], // base
                                                                         CutFillDesign, // 'top'
                                                                         localArg.SiteModelID,
-                                                                        out DesignProfilerRequestResult ProfilerRequestResult))
-                            {
+                                                                        out DesignProfilerRequestResult _ /*ProfilerRequestResult*/))
                                 result = ServerRequestResult.FailedToComputeDesignElevationPatch;
-                            }
                         }
                     }
 
@@ -373,9 +366,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
             int resultCount = 0;
 
             if (listCount == 0)
-            {
                 return;
-            }
 
             //Log.InfoFormat("Sending {0} subgrids to caller for processing", count);
 
@@ -420,7 +411,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         }
 
         /// <summary>
-        /// Process the full set of subgrids in the request
+        /// Process the set of subgrids in the request that have partition mappings that match their affinity with this node
         /// </summary>
         private TSubGridRequestsResponse PerformSubgridRequests()
         {
@@ -433,18 +424,8 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
 
             siteModel = SiteModels.SiteModels.Instance().GetSiteModel(localArg.SiteModelID);
 
-          FilteredValuePopulationControl PopulationControl = new FilteredValuePopulationControl();
-
-      // TODO: Use TICServerProfiler.PreparePopulationControl per Raptor to set flags appropriately.
-          // Currently all events are requested except for the unimplemented ones
-       PopulationControl.Fill();
-          PopulationControl.WantsEventMachineCompactionRMVJumpThreshold = false;
-          PopulationControl.WantsEventMapResetValues = false;
-          PopulationControl.WantsEventInAvoidZoneStateValues = false;
-        //  TICServerProfiler.PreparePopulationControl(ClientGrid.GridDataType, LiftBuildSettings, PassFilter, ClientGrid);
-
-        // Construct the set of requestors to be used for the filters present in the request
-        Requestors = localArg.Filters.Filters.Select
+            // Construct the set of requestors to be used for the filters present in the request
+            Requestors = localArg.Filters.Filters.Select
                 (x => new SubGridRequestor(siteModel,
                                            SiteModels.SiteModels.Instance().ImmutableStorageProxy,
                                            x,
@@ -453,7 +434,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                                            SubGridTree.SubGridTreeLevels,
                                            int.MaxValue, // MaxCellPasses
                                            AreaControlSet,
-                                           PopulationControl,
+                                           new FilteredValuePopulationControl(),
                                            ProdDataMask)
                  ).ToArray();
 
@@ -462,7 +443,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
             // Obtain the primary partition map to allow this request to determine the elements it needs to process
             PrimaryPartitionMap = ImmutableSpatialAffinityPartitionMap.Instance().PrimaryPartitions;
 
-            // Request production data only, or hybrid production data and surveyd surface data subgrids
+            // Request production data only, or hybrid production data and surveyed surface data subgrids
             ProdDataMask?.ScanAllSetBitsAsSubGridAddresses(address =>
             {
                 // Is this subgrid is the responsibility of this server?
@@ -517,9 +498,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                     Log.LogInformation($"Num subgrids present in request = {NumSubgridsToBeExamined} [All divisions]");
 
                     if (!EstablishRequiredIgniteContext(out SubGridRequestsResponseResult contextEstablishmentResponse))
-                    {
                         return new TSubGridRequestsResponse { ResponseCode = contextEstablishmentResponse };
-                    }
 
                     result = PerformSubgridRequests();
                     result.NumSubgridsExamined = NumSubgridsToBeExamined;

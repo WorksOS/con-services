@@ -69,9 +69,6 @@ namespace VSS.TRex.Events
     public MachineAutomaticsMode EventMachineAutomatics;
     public SiteModelMachineTargetValueTrackingState<MachineAutomaticsMode> EventMachineAutomatics_Tracking = new SiteModelMachineTargetValueTrackingState<MachineAutomaticsMode>();
 
-    public OnGroundState EventOnGroundState;
-    public SiteModelMachineTargetValueTrackingState<OnGroundState> EventOnGroundState_Tracking = new SiteModelMachineTargetValueTrackingState<OnGroundState>();
-
     public ushort EventLayerID;
     public SiteModelMachineTargetValueTrackingState<ushort> EventLayerID_Tracking = new SiteModelMachineTargetValueTrackingState<ushort>();
 
@@ -200,12 +197,6 @@ namespace VSS.TRex.Events
       {
         PositioningTechState = PositioningTech.Unknown;
         PositioningTechState_Tracking.Initialise();
-      }
-
-      if (populationControl.WantsEventOnGroundValues)
-      {
-        EventOnGroundState = OnGroundState.Unknown;
-        EventOnGroundState_Tracking.Initialise();
       }
 
       if (populationControl.WantsTempWarningLevelMinValues)

@@ -77,7 +77,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
             if (InitialNumberOfSegments != _Directory.SegmentDirectory.Count)
             {
-                // TODO add when login avbailable
+                // TODO add when loging available
                 // SIGLogMessage.PublishNoODS(Nil, 'Number of segments in subgrid has changed since the iterator was initialised', slmcAssert);
                 return false;
             }
@@ -198,9 +198,9 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             RestrictSegmentIterationBasedOnElevationRange = (minIterationElevation != Consts.NullDouble) && (MaxIterationElevation != Consts.NullDouble);
         }
 
-        public void SetMachineRestriction(BitArray machienIDSet)
+        public void SetMachineRestriction(BitArray machineIDSet)
         {
-            MachineIDSet = machienIDSet;
+            MachineIDSet = machineIDSet;
         }
 
         public void SegmentListExtended()

@@ -21,6 +21,11 @@
     public const string ASNODE = "ASNode";
 
     /// <summary>
+    /// The 'ASNode' profiling role, meaning the server supports profiling operations
+    /// </summary>
+    public const string ASNODE_PROFILER = "ASNode-Profiler";
+
+    /// <summary>
     /// The generaic 'ASNode', application service, client role
     /// </summary>
     public const string ASNODE_CLIENT = "ASNodeClient";
@@ -49,5 +54,10 @@
     /// A server responsible for computing various analytics, such as cut fill statistics, from production data
     /// </summary>
     public const string ANALYTICS_NODE = "Analytics";
+
+    /// <summary>
+    /// A server responsible for producing elevation subgrid information from design and surveyed surface topology models (TTMs)
+    /// </summary>
+    public const string DESIGN_PROFILER = "DesignProfiler";
   }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
 using VSS.TRex.Executors.Tasks;
@@ -12,8 +13,7 @@ namespace VSS.TRex.Exports.Patches.Executors.Tasks
   /// </summary>
   public class PatchTask : PipelinedSubGridTask
   {
-    private static readonly ILogger
-      Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     /// <summary>
     /// The collection of subgrids being collected for a patch response
@@ -26,7 +26,7 @@ namespace VSS.TRex.Exports.Patches.Executors.Tasks
     /// <param name="requestDescriptor"></param>
     /// <param name="tRexNodeId"></param>
     /// <param name="gridDataType"></param>
-    public PatchTask(long requestDescriptor, string tRexNodeId, GridDataType gridDataType) : base(requestDescriptor, tRexNodeId, gridDataType)
+    public PatchTask(Guid requestDescriptor, string tRexNodeId, GridDataType gridDataType) : base(requestDescriptor, tRexNodeId, gridDataType)
     {
     }
 

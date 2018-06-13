@@ -5,10 +5,7 @@ using VSS.TRex.Analytics.Aggregators;
 using VSS.TRex.Analytics.Foundation.Interfaces;
 using VSS.TRex.Analytics.GridFabric.Responses;
 using VSS.TRex.GridFabric.Arguments;
-using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Types;
-using VSS.TRex.Utilities;
 
 namespace VSS.TRex.Analytics.Coordinators
 {
@@ -29,7 +26,7 @@ namespace VSS.TRex.Analytics.Coordinators
         /// <summary>
         /// Request descriptor used to track this request in different parts of the cluster compute
         /// </summary>
-        public long RequestDescriptor { get; set; }
+        public Guid RequestDescriptor { get; set; }
 
         /// <summary>
         /// Execution method for the derived coordinator to override
@@ -43,59 +40,14 @@ namespace VSS.TRex.Analytics.Coordinators
             TResponse Response = new TResponse();
             try
             {
-                /* TODO ... Some concerns from various requests that may need ot be taken into account
-                    //  ScheduledWithGovernor       :Boolean = false;
-                    //  SurveyedSurfaceExclusionList:TSurveyedSurfaceIDList;
+                RequestDescriptor = Guid.NewGuid(); 
 
-                        if Assigned(ASNodeImplInstance.RequestCancellations) and ASNodeImplInstance.RequestCancellations.IsRequestCancelled(FExternalDescriptor) then
-                          begin
-                            SIGLogMessage.PublishNoODS(Self, 'Request cancelled: ' + FExternalDescriptor.ToString, slmcDebug);
-                            ASNodeResult := asneRequestHasBeenCancelled;
-                            Exit;
-                          end;
+                SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(arg.ProjectID);
 
-                                SetLength(SurveyedSurfaceExclusionList, 0);
-
-                              if ASNodeImplInstance.PSLoadBalancer.LoadBalancedPSService.GetDataModelSpatialExtents(FDataModelID, SurveyedSurfaceExclusionList, SpatialExtent, CellSize, IndexOriginOffset) <> icsrrNoError then
-                                begin
-                                  ASNodeResult := asneFailedToRequestDatamodelStatistics;
-                                  Exit;
-                                end;
-
-                        //BoundingWorldExtent3D ResultBoundingExtents = BoundingWorldExtent3D.Null();
-                        //BoundingWorldExtent3D SpatialExtent = BoundingWorldExtent3D.Null();
-                        //long[] SurveyedSurfaceExclusionList = new long[0];
-                }
-                */
-
-                RequestDescriptor = Guid.NewGuid().GetHashCode(); // TODO ASNodeImplInstance.NextDescriptor;
-
-                SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(arg.DataModelID);
-
-              foreach (var filter in arg.Filters.Filters)
-              {
-                Response.ResultStatus = FilterUtilities.PrepareFilterForUse(filter, arg.DataModelID);
-                if (Response.ResultStatus != RequestErrorStatus.OK)
-                {
-                  Log.LogInformation($"PrepareFilterForUse failed: Datamodel={arg.DataModelID}");
-                  return Response;
-                }
-              }
-
-              AggregatorBase Aggregator = ConstructAggregator(arg);
+                AggregatorBase Aggregator = ConstructAggregator(arg);
                 AnalyticsComputor Computor = ConstructComputor(arg, Aggregator);
 
-                // TODO - Need to figure out where to put this in relevant queries
-                // Reporter.LiftBuildSettings.Assign(FLiftBuildSettings);
-
-                if (Computor.ComputeAnalytics())
-                    Response.ResultStatus = RequestErrorStatus.OK;
-                else if (Computor.AbortedDueToTimeout)
-                    Response.ResultStatus = RequestErrorStatus.AbortedDueToPipelineTimeout;
-                else
-                    Response.ResultStatus = RequestErrorStatus.Unknown;
-
-                if (Response.ResultStatus == RequestErrorStatus.OK)
+                if (Computor.ComputeAnalytics(Response))
                 {
                     // Instruct the Aggregator to perform any finalisation logic before returning results
                     Aggregator.Finalise();

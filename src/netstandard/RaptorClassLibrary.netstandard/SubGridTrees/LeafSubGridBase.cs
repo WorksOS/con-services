@@ -3,6 +3,9 @@ using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.SubGridTrees
 {
+    /// <summary>
+    /// Base class for any subgrid derivative that contains data at the bottom layer of a sub grid tree
+    /// </summary>
     public class LeafSubGridBase : SubGrid
     {
         /// <summary>
@@ -19,9 +22,7 @@ namespace VSS.TRex.SubGridTrees
             base.SetDirty(value);
 
             if (Dirty)
-            {
                 latestCellPassesOutOfDate = true;
-            }
         }
 
         public LeafSubGridBase(ISubGridTree owner,

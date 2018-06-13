@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Executors.Tasks.Interfaces;
+﻿using System;
+using VSS.TRex.Executors.Tasks.Interfaces;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Types;
 
@@ -15,12 +16,12 @@ namespace VSS.TRex.Executors.Tasks
         /// <summary>
         /// The request descriptor assigned to the task.
         /// </summary>
-        public long RequestDescriptor = -1;
+        public Guid RequestDescriptor = Guid.Empty;
 
         /// <summary>
         /// Determines if the processing of the task activities as been cancelled by external control
         /// </summary>
-        public bool IsCancelled;
+        public bool IsCancelled { get; set; }
 
         /// <summary>
         /// The type of grid data being processed by this task
@@ -45,7 +46,7 @@ namespace VSS.TRex.Executors.Tasks
         /// <param name="requestDescriptor"></param>
         /// <param name="tRexNodeId"></param>
         /// <param name="gridDataType"></param>
-        public TaskBase(long requestDescriptor, string tRexNodeId, GridDataType gridDataType)
+        public TaskBase(Guid requestDescriptor, string tRexNodeId, GridDataType gridDataType)
         {
             RequestDescriptor = requestDescriptor;
             TRexNodeID = tRexNodeId;

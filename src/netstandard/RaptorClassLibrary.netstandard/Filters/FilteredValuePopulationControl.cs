@@ -24,7 +24,6 @@ namespace VSS.TRex.Filters
     public bool WantsEventInAvoidZoneStateValues { get; set; }
     public bool WantsEventGPSAccuracyValues { get; set; }
     public bool WantsEventPositioningTechValues { get; set; }
-    public bool WantsEventOnGroundValues { get; set; }
     public bool WantsTempWarningLevelMinValues { get; set; }
     public bool WantsTempWarningLevelMaxValues { get; set; }
     public bool WantsTargetMDPValues { get; set; }
@@ -52,7 +51,6 @@ namespace VSS.TRex.Filters
              WantsEventInAvoidZoneStateValues ||
              WantsEventGPSAccuracyValues ||
              WantsEventPositioningTechValues ||
-             WantsEventOnGroundValues ||
              WantsTempWarningLevelMinValues ||
              WantsTempWarningLevelMaxValues ||
              WantsTargetMDPValues ||
@@ -80,7 +78,6 @@ namespace VSS.TRex.Filters
       WantsEventInAvoidZoneStateValues = false;
       WantsEventGPSAccuracyValues = false;
       WantsEventPositioningTechValues = false;
-      WantsEventOnGroundValues = false;
       WantsTempWarningLevelMinValues = false;
       WantsTempWarningLevelMaxValues = false;
       WantsTargetMDPValues = false;
@@ -108,7 +105,6 @@ namespace VSS.TRex.Filters
       WantsEventInAvoidZoneStateValues = true;
       WantsEventGPSAccuracyValues = true;
       WantsEventPositioningTechValues = true;
-      WantsEventOnGroundValues = true;
       WantsTempWarningLevelMinValues = true;
       WantsTempWarningLevelMaxValues = true;
       WantsTargetMDPValues = true;
@@ -137,12 +133,11 @@ namespace VSS.TRex.Filters
              ((WantsEventInAvoidZoneStateValues ? 1 : 0) * 0x1000) |
              ((WantsEventGPSAccuracyValues ? 1 : 0) * 0x2000) |
              ((WantsEventPositioningTechValues ? 1 : 0) * 0x4000) |
-             ((WantsEventOnGroundValues ? 1 : 0) * 0x8000) |
-             ((WantsTempWarningLevelMinValues ? 1 : 0) * 0x10000) |
-             ((WantsTempWarningLevelMaxValues ? 1 : 0) * 0x20000) |
-             ((WantsTargetMDPValues ? 1 : 0) * 0x40000) |
-             ((WantsLayerIDValues ? 1 : 0) * 0x80000) |
-             ((WantsTargetCCAValues ? 1 : 0) * 0x100000);
+             ((WantsTempWarningLevelMinValues ? 1 : 0) * 0x8000) |
+             ((WantsTempWarningLevelMaxValues ? 1 : 0) * 0x10000) |
+             ((WantsTargetMDPValues ? 1 : 0) * 0x20000) |
+             ((WantsLayerIDValues ? 1 : 0) * 0x40000) |
+             ((WantsTargetCCAValues ? 1 : 0) * 0x80000);
     }
 
     /// <summary>
@@ -166,12 +161,11 @@ namespace VSS.TRex.Filters
       WantsEventInAvoidZoneStateValues = (flags & 0x1000) != 0;
       WantsEventGPSAccuracyValues = (flags & 0x2000) != 0;
       WantsEventPositioningTechValues = (flags & 0x4000) != 0;
-      WantsEventOnGroundValues = (flags & 0x8000) != 0;
-      WantsTempWarningLevelMinValues = (flags & 0x10000) != 0;
-      WantsTempWarningLevelMaxValues = (flags & 0x20000) != 0;
-      WantsTargetMDPValues = (flags & 0x40000) != 0;
-      WantsLayerIDValues = (flags & 0x80000) != 0;
-      WantsTargetCCAValues = (flags & 0x100000) != 0;
+      WantsTempWarningLevelMinValues = (flags & 0x08000) != 0;
+      WantsTempWarningLevelMaxValues = (flags & 0x10000) != 0;
+      WantsTargetMDPValues = (flags & 0x20000) != 0;
+      WantsLayerIDValues = (flags & 0x40000) != 0;
+      WantsTargetCCAValues = (flags & 0x80000) != 0;
     }
 
     /// <summary>

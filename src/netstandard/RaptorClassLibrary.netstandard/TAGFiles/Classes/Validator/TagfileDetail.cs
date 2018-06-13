@@ -7,7 +7,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     /// <summary>
     /// All details relating to a tagfile request including tagfile contents
     /// </summary>
-    public class TagfileDetail
+    public class TagFileDetail
     {
         public Guid projectId;
         public Guid assetId;

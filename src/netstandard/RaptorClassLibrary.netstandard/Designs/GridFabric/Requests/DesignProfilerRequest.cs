@@ -1,5 +1,6 @@
 ﻿using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Requests;
+using VSS.TRex.Servers;
 
 namespace VSS.VisionLink.DesignProfiling.GridFabric.Requests
 {
@@ -11,7 +12,7 @@ namespace VSS.VisionLink.DesignProfiling.GridFabric.Requests
         /// <summary>
         /// Default no-arg constructor that sets up cluster and compute projections available for use
         /// </summary>
-        public DesignProfilerRequest() : base(TRexGrids.ImmutableGridName(), "DesignProfiler")
+        public DesignProfilerRequest() : base(TRexGrids.ImmutableGridName(), ServerRoles.DESIGN_PROFILER)
         {
         }
     }

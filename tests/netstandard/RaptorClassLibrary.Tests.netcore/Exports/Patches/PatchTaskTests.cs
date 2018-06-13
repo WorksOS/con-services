@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using System;
+using Moq;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
@@ -7,14 +8,14 @@ using VSS.TRex.Tests.netcore.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
-namespace RaptorClassLibrary.Tests.netcore.Exports.Patches
+namespace VSS.TRex.Tests.netcore.Exports.Patches
 {
-  public class PatchTaskTests : IClassFixture<DILoggingFixture>
+  public class PatchTaskTests //: IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Test_PatchTask_Creation()
     {
-      PatchTask task = new PatchTask(0, "", GridDataType.All);
+      PatchTask task = new PatchTask(Guid.Empty, "", GridDataType.All);
 
       Assert.NotNull(task);
       Assert.NotNull(task.PatchSubgrids);
@@ -27,7 +28,7 @@ namespace RaptorClassLibrary.Tests.netcore.Exports.Patches
       var pipeLine = new Mock<ISubGridPipelineBase>();
       pipeLine.Setup(mk => mk.Aborted).Returns(false);
 
-      PatchTask task = new PatchTask(0, "", GridDataType.All)
+      PatchTask task = new PatchTask(Guid.Empty, "", GridDataType.All)
       {
         PipeLine = pipeLine.Object
       };

@@ -1,9 +1,12 @@
-﻿using VSS.TRex.Analytics.Models;
+﻿using VSS.TRex.Analytics.Foundation.Models;
 
 namespace VSS.TRex.Analytics.SpeedStatistics
 {
-  public class SpeedResult : AnalyticsResult
+  /// <summary>
+  /// The result obtained from performing a machine speed analytics request
+  /// </summary>
+  public class SpeedResult : SummaryAnalyticsResult
 	{
-		// ...
+    // ...
   }
 }

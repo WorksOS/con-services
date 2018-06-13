@@ -10,6 +10,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using VSS.TRex.Analytics.CMVStatistics;
+using VSS.TRex.Analytics.CMVStatistics.GridFabric;
 using VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
@@ -17,7 +19,11 @@ using VSS.TRex.TAGFiles.GridFabric.Requests;
 using VSS.TRex.DesignProfiling;
 using VSS.TRex.Analytics.Operations;
 using VSS.TRex.Analytics.GridFabric.Arguments;
+using VSS.TRex.Analytics.MDPStatistics;
+using VSS.TRex.Analytics.MDPStatistics.GridFabric;
 using VSS.TRex.Analytics.Models;
+using VSS.TRex.Analytics.SpeedStatistics;
+using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
 using VSS.TRex.Analytics.TemperatureStatistics;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
 using VSS.TRex.Designs;
@@ -32,6 +38,9 @@ using VSS.TRex.GridFabric.Caches;
 using VSS.TRex.GridFabric.Events;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Queues;
+using VSS.TRex.Profiling.GridFabric.Arguments;
+using VSS.TRex.Profiling.GridFabric.Responses;
+using VSS.TRex.Profiling.Servers.Client;
 using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.Servers.Client;
 using VSS.TRex.Servers;
@@ -58,6 +67,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 		TileRenderingServer tileRenderServer;
 		SimpleVolumesServer simpleVolumesServer;
 		MutableClientServer mutableClient;
+	  ProfilingServer profilingServer;
 
 		SiteModelAttributesChangedEventListener SiteModelAttrubutesChanged;
 
@@ -81,7 +91,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 		{
 				// Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
 				// SiteModel siteModel = GenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
-            ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+        ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
 
 				if (siteModel == null)
 				{
@@ -91,7 +101,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 
 				try
 				{
-						CellPassAttributeFilter AttributeFilter = new CellPassAttributeFilter(/*siteModel*/)
+						CellPassAttributeFilter AttributeFilter = new CellPassAttributeFilter
 						{
 								ReturnEarliestFilteredCellPass = returnEarliestFilteredCellPass,
 								HasElevationTypeFilter = true,
@@ -99,7 +109,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 								SurveyedSurfaceExclusionList = GetSurveyedSurfaceExclusionList(siteModel)
 						};
 
-						CellSpatialFilter SpatialFilter = new CellSpatialFilter()
+						CellSpatialFilter SpatialFilter = new CellSpatialFilter
 						{
 								CoordsAreGrid = true,
 								IsSpatial = true,
@@ -118,6 +128,9 @@ namespace VSS.TRex.IgnitePOC.TestApp
 							(cmbDesigns.Items.Count == 0) ? Guid.Empty : (cmbDesigns.SelectedValue as Design).ID// DesignDescriptor
 						)) as TileRenderResponse_Framework;
 
+        //TEST: compute profile first (reduces churn in other branches
+				 // PerformProfile();
+
 						return response?.TileBitmap;
 				}
 				catch (Exception E)
@@ -127,9 +140,36 @@ namespace VSS.TRex.IgnitePOC.TestApp
 				}
 		}
 
-		private BoundingWorldExtent3D GetZoomAllExtents()
+	  private void PerformProfile()
+	  {
+	    ProfileRequestArgument_ApplicationService arg = new ProfileRequestArgument_ApplicationService
+	    {
+	      ProjectID = ID(),
+	      ProfileTypeRequired = GridDataType.Height,
+	      PositionsAreGrid = true,
+	      Filters = new FilterSet(new[] {new CombinedFilter()}),
+	      CutFillDesignID = Guid.Empty,
+	      StartPoint = new WGS84Point(lon: extents.MinX, lat: extents.MinY),
+	      EndPoint = new WGS84Point(lon: extents.MaxX, lat: extents.MaxY),
+	      ReturnAllPassesAndLayers = false,
+	      DesignDescriptor = DesignDescriptor.Null()
+	    };
+
+      // Compute a profile from the bottom left of the screen extents to the top right 
+      ProfileRequestResponse Response = profilingServer.ComputeProfile(arg);
+
+	    if (Response == null)
+	      MessageBox.Show("Profile response is null");
+	    else
+	    if (Response.ProfileCells == null)
+	      MessageBox.Show("Profile response contains no profile cells");
+	    else
+	      MessageBox.Show($"Profile line returned a profile result of {Response?.ResultStatus} and {Response?.ProfileCells?.Count ?? 0} cells");
+	  }
+
+	  private BoundingWorldExtent3D GetZoomAllExtents()
 		{
-            ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+        ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
 
 				if (siteModel != null)
 				{
@@ -154,6 +194,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 				tileRenderServer = TileRenderingServer.NewInstance(new[] { ApplicationServiceServer.DEFAULT_ROLE_CLIENT, ServerRoles.TILE_RENDERING_NODE });
 				simpleVolumesServer = SimpleVolumesServer.NewInstance(new [] { ApplicationServiceServer.DEFAULT_ROLE_CLIENT });
 				mutableClient = new MutableClientServer("TestApplication");
+        profilingServer = ProfilingServer.NewInstance(new[] { ApplicationServiceServer.DEFAULT_ROLE_CLIENT, ServerRoles.ASNODE_PROFILER});
 
 				// Instantiate a site model changed listener to catch changes to site model attributes
 				SiteModelAttrubutesChanged = new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName());
@@ -165,7 +206,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 
 		private void fitExtentsToView(int width, int height)
 		{
-				double Aspect = (1.0 * height) / (1.0 * width);
+				double Aspect = height / (double)width;
 
 				if ((extents.SizeX / extents.SizeY) > Aspect)
 				{
@@ -814,7 +855,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 			CutFillOperation operation = new CutFillOperation();
 			CutFillResult result = operation.Execute(new CutFillStatisticsArgument()
 			{
-					DataModelID = siteModel.ID,
+			    ProjectID = siteModel.ID,
 					Filters = new FilterSet {Filters = new [] { new CombinedFilter() } },
 					DesignID = (cmbDesigns.Items.Count == 0) ? Guid.Empty : (cmbDesigns.SelectedValue as Design).ID,
 					Offsets = offsets
@@ -836,7 +877,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 				TemperatureResult result = operation.Execute(
 					new TemperatureStatisticsArgument()
 					{
-						DataModelID = siteModel.ID, 
+					  ProjectID = siteModel.ID, 
 						Filters = new FilterSet() { Filters = new []{new CombinedFilter() }},
 						OverrideTemperatureWarningLevels = true,
 						OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(10, 150)
@@ -847,9 +888,9 @@ namespace VSS.TRex.IgnitePOC.TestApp
 					MessageBox.Show($"Temperature Summary Results (in {sw.Elapsed}) :\n " +
 					                $"Minimum Temperature: {result.MinimumTemperature} \n " +
 					                $"Maximum Temperature: {result.MaximumTemperature} \n " +
-													$"Above Temperature Percentage: {result.AboveTemperaturePercent} \n " +
-													$"Within Temperature Percentage Range: {result.WithinTemperaturePercent} \n " +
-													$"Below Temperature Percentage: {result.BelowTemperaturePercent} \n " +
+													$"Above Temperature Percentage: {result.AboveTargetPercent} \n " +
+													$"Within Temperature Percentage Range: {result.WithinTargetPercent} \n " +
+													$"Below Temperature Percentage: {result.BelowTargetPercent} \n " +
 													$"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters} \n " +
 													$"Is Target Temperature Constant: {result.IsTargetTemperatureConstant}");
 			}
@@ -1018,7 +1059,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
                 Guid TheAsset = (this.edtAssetID.Text == String.Empty) ? Guid.Empty : Guid.Parse(this.edtAssetID.Text);
                 string TheFileName = Path.GetFileName(fileName);
 
-                TagfileDetail td = new TagfileDetail()
+                TagFileDetail td = new TagFileDetail()
                                    {
                                            projectId = TheProject,
                                            assetId = TheAsset,
@@ -1027,7 +1068,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
                                            tagFileContent = new byte[0]
                                   };
 
-                td = TagfileReposity.GetTagfile(td);
+                td = TagFileRepository.GetTagfile(td);
                 MessageBox.Show(String.Format("ProjectID:{0}, Asset:{1}, TCCOrg:{2},IsJohnDoe:{3}, FileLenght:{4}",
                         td.projectId, td.assetId,td.tccOrgId,td.IsJohnDoe,td.tagFileContent.Length));
 
@@ -1053,7 +1094,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 
       PatchResult result = server.Execute(new PatchRequestArgument()
       {
-        DataModelID = ID(),
+        ProjectID = ID(),
         DataPatchNumber = 0,
         DataPatchSize = 10,
         Mode = DisplayMode.Height,
@@ -1093,6 +1134,103 @@ namespace VSS.TRex.IgnitePOC.TestApp
     private void btnEmpty_Click(object sender, EventArgs e)
     {
       editProjectID.Text = new Guid().ToString();
+    }
+
+    private void SpeedSummaryButton_Click(object sender, EventArgs e)
+    {
+      var siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+
+      Stopwatch sw = new Stopwatch();
+      sw.Start();
+      try
+      {
+        SpeedOperation operation = new SpeedOperation();
+        SpeedResult result = operation.Execute(
+          new SpeedStatisticsArgument()
+          {
+            ProjectID = siteModel.ID,
+            Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+            TargetMachineSpeed = new MachineSpeedExtendedRecord(5, 50)
+          }
+        );
+
+        if (result != null)
+          MessageBox.Show($"Machine Speed Summary Results (in {sw.Elapsed}) :\n " +
+                          $"Above Machine Speed Percentage: {result.AboveTargetPercent} \n " +
+                          $"Within Machine Speed Percentage Range: {result.WithinTargetPercent} \n " +
+                          $"Below Machine Speed Percentage: {result.BelowTargetPercent} \n " +
+                          $"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
+      }
+      finally
+      {
+        sw.Stop();
+      }
+    }
+
+    private void CMVSummaryButton_Click(object sender, EventArgs e)
+    {
+      var siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+
+      Stopwatch sw = new Stopwatch();
+      sw.Start();
+      try
+      {
+        CMVOperation operation = new CMVOperation();
+        CMVResult result = operation.Execute(
+          new CMVStatisticsArgument()
+          {
+            ProjectID = siteModel.ID,
+            Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+            CMVPercentageRange = new CMVRangePercentageRecord(80, 120),
+            OverrideMachineCMV = false,
+            OverridingMachineCMV = 50
+          }
+        );
+
+        if (result != null)
+          MessageBox.Show($"CMV Summary Results (in {sw.Elapsed}) :\n " +
+                          $"Above CMV Percentage: {result.AboveTargetPercent} \n " +
+                          $"Within CMV Percentage Range: {result.WithinTargetPercent} \n " +
+                          $"Below CMV Percentage: {result.BelowTargetPercent} \n " +
+                          $"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
+      }
+      finally
+      {
+        sw.Stop();
+      }
+    }
+
+    private void MDPSummaryButton_Click(object sender, EventArgs e)
+    {
+      var siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+
+      Stopwatch sw = new Stopwatch();
+      sw.Start();
+      try
+      {
+        MDPOperation operation = new MDPOperation();
+        MDPResult result = operation.Execute(
+          new MDPStatisticsArgument()
+          {
+            ProjectID = siteModel.ID,
+            Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+            MDPPercentageRange = new MDPRangePercentageRecord(80, 120),
+            OverrideMachineMDP = false,
+            OverridingMachineMDP = 1000
+          }
+        );
+
+        if (result != null)
+          MessageBox.Show($"MDP Summary Results (in {sw.Elapsed}) :\n " +
+                          $"Above MDP Percentage: {result.AboveTargetPercent} \n " +
+                          $"Within MDP Percentage Range: {result.WithinTargetPercent} \n " +
+                          $"Below MDP Percentage: {result.BelowTargetPercent} \n " +
+                          $"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
+      }
+      finally
+      {
+        sw.Stop();
+      }
     }
   }
 }

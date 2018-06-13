@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using System.Reflection;
 using VSS.TRex.Executors.Tasks;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -25,7 +26,7 @@ namespace VSS.TRex.Rendering.Executors.Tasks
         /// <param name="tRexNodeId"></param>
         /// <param name="gridDataType"></param>
         /// <param name="tileRenderer"></param>
-        public PVMRenderingTask(long requestDescriptor, 
+        public PVMRenderingTask(Guid requestDescriptor, 
                                 string tRexNodeId, 
                                 GridDataType gridDataType, 
                                 PlanViewTileRenderer tileRenderer) : base(requestDescriptor, tRexNodeId, gridDataType)

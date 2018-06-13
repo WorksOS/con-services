@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using VSS.TRex.Cells;
-using VSS.TRex.Common;
+﻿using VSS.TRex.Cells;
 using VSS.TRex.Types;
 
 namespace VSS.TRex
@@ -12,7 +8,7 @@ namespace VSS.TRex
   /// elements thet need significant re-design for TRes. This dummy class is a place holder to permit initial conversion of Raptor
   /// code to TRex pending those structural refactorings.
   /// </summary>
-    public static class Dummy_LiftBuildSettings
+  public static class Dummy_LiftBuildSettings
   {
     public static bool OverrideMachineThickness = false;
     public static LiftThicknessType LiftThicknessType = LiftThicknessType.Compacted;
@@ -24,7 +20,7 @@ namespace VSS.TRex
     public static bool CCVSummarizeTopLayerOnly = false;
     public static float FirstPassThickness = 0.0f;
 
-    public static bool OverrideMachineMDP= false;
+    public static bool OverrideMachineMDP = false;
     public static short OverridingMachineMDP = 0;
     public static MDPRangePercentage MDPRange = new MDPRangePercentage();
     public static byte MDPSummaryTypes = 0;
@@ -38,20 +34,20 @@ namespace VSS.TRex
 
     public static bool IncludeSuperseded = false;
 
-      //Parameters controlling TargetLiftThcknessSummary overlay
-      public static double TargetLiftThickness = 0.0;
+    //Parameters controlling TargetLiftThcknessSummary overlay
+    public static double TargetLiftThickness = 0.0;
     public static double AboveToleranceLiftThickness = 0.0;
     public static double BelowToleranceLiftThickness = 0.0;
 
-      // Boundaries extending above/below a cell pass constituting the dead band
+    // Boundaries extending above/below a cell pass constituting the dead band
     public static double DeadBandLowerBoundary = 0.0;
     public static double DeadBandUpperBoundary = 0.0;
 
-      // Setup target speeds here for SpeedSummary request
+    // Setup target speeds here for SpeedSummary request
 
     public static ushort TargetMaxMachineSpeed = 0;
     public static ushort TargetMinMachineSpeed = 0;
 
-      public static int CCATolerance = 0;  // How many extra passes is OK before overcompaction is set
-    }
+    public static int CCATolerance = 0; // How many extra passes is OK before overcompaction is set
+  }
 }

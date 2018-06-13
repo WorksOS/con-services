@@ -2,22 +2,17 @@
 using VSS.TRex.Analytics.TemperatureStatistics;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
 using VSS.TRex.Filters;
-using VSS.TRex.SiteModels;
-using VSS.TRex.Tests.netcore.TestFixtures;
+using VSS.TRex.Tests.netcore.Analytics.Common;
 using VSS.TRex.Types;
 using Xunit;
 
-namespace RaptorClassLibrary.Tests.netcore.Analytics.TemperatureStatistics
+namespace VSS.TRex.Tests.netcore.Analytics.TemperatureStatistics
 {
-  public class TemperatureCoordinatorTests : IClassFixture<DILoggingFixture>
+  public class TemperatureCoordinatorTests : BaseCoordinatorTests
   {
-    private const double TOLERANCE = 0.00001;
-
-    private readonly SiteModel _siteModel = new SiteModel(Guid.NewGuid());
-
     private TemperatureStatisticsArgument Arg => new TemperatureStatisticsArgument()
     {
-      DataModelID = _siteModel.ID,
+      ProjectID = _siteModel.ID,
       Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
       OverrideTemperatureWarningLevels = true,
       OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(10, 150)
@@ -25,7 +20,7 @@ namespace RaptorClassLibrary.Tests.netcore.Analytics.TemperatureStatistics
 
     private TemperatureCoordinator _getCoordinator()
     {
-      return new TemperatureCoordinator() { RequestDescriptor = 111, SiteModel = _siteModel };
+      return new TemperatureCoordinator() { RequestDescriptor = Guid.NewGuid(), SiteModel = _siteModel };
     }
 
     private TemperatureAggregator _getTemperatureAggregator()
@@ -41,7 +36,7 @@ namespace RaptorClassLibrary.Tests.netcore.Analytics.TemperatureStatistics
       var coordinator = new TemperatureCoordinator();
 
       Assert.True(coordinator.SiteModel == null, "Invalid initial value for SiteModel.");
-      Assert.True(coordinator.RequestDescriptor == 0, "Invalid initial value for RequestDescriptor.");
+      Assert.True(coordinator.RequestDescriptor == Guid.Empty, "Invalid initial value for RequestDescriptor.");
     }
 
     [Fact]
@@ -50,7 +45,7 @@ namespace RaptorClassLibrary.Tests.netcore.Analytics.TemperatureStatistics
       var aggregator = _getTemperatureAggregator();
 
       Assert.True(aggregator.RequiresSerialisation, "Invalid aggregator value for RequiresSerialisation.");
-      Assert.True(aggregator.SiteModelID == Arg.DataModelID, "Invalid aggregator value for SiteModelID.");
+      Assert.True(aggregator.SiteModelID == Arg.ProjectID, "Invalid aggregator value for SiteModelID.");
       Assert.True(Math.Abs(aggregator.CellSize - _siteModel.Grid.CellSize) < TOLERANCE, "Invalid aggregator value for CellSize.");
       Assert.True(aggregator.OverrideTemperatureWarningLevels == Arg.OverrideTemperatureWarningLevels, "Invalid aggregator value for OverrideTemperatureWarningLevels.");
       Assert.True(aggregator.OverridingTemperatureWarningLevels.Max == Arg.OverridingTemperatureWarningLevels.Max, "Invalid aggregator value for OverridingTemperatureWarningLevels.Max.");
@@ -67,13 +62,10 @@ namespace RaptorClassLibrary.Tests.netcore.Analytics.TemperatureStatistics
       Assert.True(computor.RequestDescriptor == coordinator.RequestDescriptor, "Invalid computor value for RequestDescriptor.");
       Assert.True(computor.SiteModel == coordinator.SiteModel, "Invalid computor value for SiteModel.");
       Assert.True(computor.Aggregator.Equals(aggregator), "Invalid computor value for Aggregator.");
-      //Assert.True(computor.Filters.Equals(Arg.Filters), "Invalid computor value for Filters.");
       Assert.True(computor.Filters.Filters.Length == Arg.Filters.Filters.Length, "Invalid computor value for Filters length as different to Arg.");
       Assert.True(computor.Filters.Filters.Length == 1, "Invalid computor value for Filters length.");
-      //Assert.True(computor.Filters.Filters[0].AttributeFilter.Equals(Arg.Filters.Filters[0].AttributeFilter), "Invalid computor value for Filters.Filters[0].AttributeFilter.");
-      //Assert.True(computor.Filters.Filters[0].SpatialFilter.Equals(Arg.Filters.Filters[0].SpatialFilter), "Invalid computor value for Filters.Filters[0].SpatialFilter.");
       Assert.True(computor.IncludeSurveyedSurfaces, "Invalid computor value for IncludeSurveyedSurfaces.");
-      Assert.True(computor.RequestedGridDataType == GridDataType.Temperature, "Invalid computor value for IncludeSurveyedSurfaces.");
+      Assert.True(computor.RequestedGridDataType == GridDataType.Temperature, "Invalid computor value for RequestedGridDataType.");
     }
 
     [Fact]

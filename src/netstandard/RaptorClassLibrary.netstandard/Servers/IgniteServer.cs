@@ -105,26 +105,18 @@ namespace VSS.TRex.Servers
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects).
                     if (mutableTRexGrid != null)
-                    {
                         Ignition.Stop(mutableTRexGrid.Name, false);
-                    }
 
                     if (immutableTRexGrid != null)
-                    {
                         Ignition.Stop(immutableTRexGrid.Name, false);
-                    }
                 }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
 
                 disposedValue = true;
             }
         }
 
-        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+        // Note: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
         // ~IgniteServer() {
         //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
         //   Dispose(false);
@@ -135,7 +127,7 @@ namespace VSS.TRex.Servers
         {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
+            // Note: uncomment the following line if the finalizer is overridden above.
             // GC.SuppressFinalize(this);
         }
         #endregion

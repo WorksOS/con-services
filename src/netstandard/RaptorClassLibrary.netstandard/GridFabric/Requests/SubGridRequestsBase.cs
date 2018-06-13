@@ -45,7 +45,7 @@ namespace VSS.TRex.GridFabric.Requests
         /// The request ID assigned to the activity requiring these subgrids to be requested. This ID is used to funnel 
         /// traffic from the processing cluster into the correct processing context
         /// </summary>
-        public long RequestID { get; set; } = -1;
+        public Guid RequestID { get; set; } = Guid.Empty;
 
         /// <summary>
         /// The identifier of the TRex Node that is issuing the request for subgrids and which wants to receive the processed
@@ -106,7 +106,7 @@ namespace VSS.TRex.GridFabric.Requests
         /// <param name="cutFillDesignID"></param>
         public SubGridRequestsBase(ITask task,
                                    Guid siteModelID, 
-                                   long requestID, 
+                                   Guid requestID, 
                                    string trexNodeId, 
                                    GridDataType requestedGridDataType, 
                                    bool includeSurveyedSurfaceInformation,
@@ -162,7 +162,7 @@ namespace VSS.TRex.GridFabric.Requests
         protected void CheckArguments()
         {
             // Make sure things look kosher
-            if (ProdDataMask == null || SurveyedSurfaceOnlyMask == null || Filters == null || RequestID == -1)
+            if (ProdDataMask == null || SurveyedSurfaceOnlyMask == null || Filters == null || RequestID == Guid.Empty)
             {
                 if (ProdDataMask == null)
                     throw new ArgumentException("ProdDataMask not initialised");
@@ -170,7 +170,7 @@ namespace VSS.TRex.GridFabric.Requests
                     throw new ArgumentException("SurveyedSurfaceOnlyMask not initialised");
                 if (Filters == null)
                     throw new ArgumentException("Filters not initialised");
-                if (RequestID == -1)
+                if (RequestID == Guid.Empty)
                     throw new ArgumentException("RequestID not initialised");
             }
         }

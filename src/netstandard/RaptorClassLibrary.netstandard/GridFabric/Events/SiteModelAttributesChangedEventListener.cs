@@ -91,9 +91,6 @@ namespace VSS.TRex.GridFabric.Events
                     StopListening();
                 }
 
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
-
                 disposedValue = true;
             }
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Utilities;
 
 namespace VSS.TRex.SubGridTrees
 {
@@ -14,7 +15,7 @@ namespace VSS.TRex.SubGridTrees
         /// Create a human readable string representing the location and tree level this subgrid occupies in the tree.
         /// </summary>
         /// <returns></returns>
-        public override string ToString() => string.Format("Level:{0}, OriginX:{1}, OriginY:{2}", Level, OriginX, OriginY);
+        public override string ToString() => $"Level:{Level}, OriginX:{OriginX}, OriginY:{OriginY}";
 
         /// <summary>
         /// The sub grid tree instance to which this subgrid belongs
@@ -34,9 +35,7 @@ namespace VSS.TRex.SubGridTrees
             lock (this)
             {
                 if (Locked)
-                {
                     return false;
-                }
 
                 Locked = true;
                 LockToken = lockToken;
@@ -269,7 +268,6 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         public virtual void Clear()
         {
-            throw new Exception("SubGrid.Clear() should never be called");
         }
 
         /// <summary>
@@ -367,8 +365,6 @@ namespace VSS.TRex.SubGridTrees
 
         /// <summary>
         /// Write the contents of the Items array using the supplied writer
-        /// This is an unimplemented override; a generic BinaryReader based implementation is not provided. 
-        /// Override to implement if needed.
         /// </summary>
         /// <param name="writer"></param>
         /// <param name="buffer"></param>
@@ -381,8 +377,6 @@ namespace VSS.TRex.SubGridTrees
 
         /// <summary>
         /// Fill the items array by reading the binary representation using the provided reader. 
-        /// This is an unimplemented override; a generic BinaryReader based implementation is not provided. 
-        /// Override to implement if needed.
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="buffer"></param>
@@ -461,6 +455,27 @@ namespace VSS.TRex.SubGridTrees
                 }
             }
         }
-    }
+
+      /// <summary>
+      /// Iterates over all the cells in the subgrid calling functor on each of them.
+      /// Both non-null and null values are presented to functor.
+      /// </summary>
+      /// <param name="functor"></param>
+      /// <returns></returns>
+      public void ForEach(Action<byte, byte> functor) => SubGridUtilities.SubGridDimensionalIterator((x, y) => functor((byte)x, (byte)y));
+
+      public bool Equals(ISubGrid other)
+      {
+        throw new NotImplementedException();
+      }
+
+      /// <summary>
+      /// Iterates over all the cells in the subgrid calling functor on each of them.
+      /// Both non-null and null values are presented to functor.
+      /// </summary>
+      /// <param name="functor"></param>
+      /// <returns></returns>
+      public static void ForEachStatic(Action<byte, byte> functor) => SubGridUtilities.SubGridDimensionalIterator((x, y) => functor((byte)x, (byte)y));
+  }
 }
 

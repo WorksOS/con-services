@@ -1,37 +1,23 @@
-﻿using System;
+﻿using System.IO;
 using VSS.TRex.Common;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SubGridTrees.Utilities;
 
 namespace VSS.TRex.SubGridTrees.Client
 {
-  public struct SubGridCellCompositeHeightsRecord
-  {
-    public float LowestHeight,
-      HighestHeight,
-      LastHeight,
-      FirstHeight;
-
-    public DateTime LowestHeightTime,
-      HighestHeightTime,
-      LastHeightTime,
-      FirstHeightTime;
-
-    public void Clear()
-    {
-      LowestHeight = Consts.NullHeight;
-      HighestHeight= Consts.NullHeight; 
-      LastHeight= Consts.NullHeight; 
-      FirstHeight= Consts.NullHeight; 
-      LowestHeightTime = DateTime.MinValue;
-      HighestHeightTime = DateTime.MinValue;
-      LastHeightTime = DateTime.MinValue;
-      FirstHeightTime = DateTime.MinValue;
-    }
-  }
-
+  /// <summary>
+  /// A client subgrid storing composite height information for each cell in the subgrid.
+  /// </summary>
   public class ClientCompositeHeightsLeafSubgrid : GenericClientLeafSubGrid<SubGridCellCompositeHeightsRecord>
   {
+    /// <summary>
+    /// Initilise the null cell values for the client subgrid
+    /// </summary>
+    static ClientCompositeHeightsLeafSubgrid()
+    {
+       ForEachStatic((x, y) => NullCells[x, y] = SubGridCellCompositeHeightsRecord.NullValue);
+    }
+
     /// <summary>
     /// Constructor. Set the grid to HeightAndTime.
     /// </summary>
@@ -40,7 +26,8 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="level"></param>
     /// <param name="cellSize"></param>
     /// <param name="indexOriginOffset"></param>
-    public ClientCompositeHeightsLeafSubgrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
+    public ClientCompositeHeightsLeafSubgrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize,
+      uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
     {
       _gridDataType = TRex.Types.GridDataType.CompositeHeights;
     }
@@ -53,32 +40,87 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <returns></returns>
     public override bool CellHasValue(byte cellX, byte cellY)
     {
-        return Cells[cellX, cellY].LowestHeight != Consts.NullHeight ||
-        Cells[cellX, cellY].HighestHeight != Consts.NullHeight ||
-        Cells[cellX, cellY].LastHeight != Consts.NullHeight ||
-        Cells[cellX, cellY].FirstHeight != Consts.NullHeight;
+      return Cells[cellX, cellY].LowestHeight != Consts.NullHeight ||
+             Cells[cellX, cellY].HighestHeight != Consts.NullHeight ||
+             Cells[cellX, cellY].LastHeight != Consts.NullHeight ||
+             Cells[cellX, cellY].FirstHeight != Consts.NullHeight;
     }
 
-    public void SetToZeroHeight()
+    /// <summary>
+    /// Zero out all elevations
+    /// </summary>
+    public void SetToZeroHeight() => ForEach((i, j) => Cells[i, j].SetToZeroHeight());
+
+    /// <summary>
+    /// Null out all elevations
+    /// </summary>
+    public void SetHeightsToNull() => ForEach((i, j) => Cells[i, j] = SubGridCellCompositeHeightsRecord.NullValue);
+
+    /// <summary>
+    /// Provides a copy of the null value defined for cells in thie client leaf subgrid
+    /// </summary>
+    /// <returns></returns>
+    public override SubGridCellCompositeHeightsRecord NullCell() => SubGridCellCompositeHeightsRecord.NullValue;
+
+    /// <summary>
+    /// Clears all cells in the composite height grid to null heights and dates
+    /// </summary>
+    public override void Clear()
     {
-      SubGridUtilities.SubGridDimensionalIterator((i, j) =>
-      {
-        Cells[i, j].LowestHeight = 0;
-        Cells[i, j].HighestHeight = 0;
-        Cells[i, j].LastHeight = 0;
-        Cells[i, j].FirstHeight = 0;
-      });
+      base.Clear();
     }
 
-    public void SetHeightsToNull()
+    /// <summary>
+    /// Determines if the leaf content of this subgrid is equal to 'other'
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public override bool LeafContentEquals(IClientLeafSubGrid other)
     {
-      SubGridUtilities.SubGridDimensionalIterator((i, j) =>
+      bool result = true;
+
+      IGenericClientLeafSubGrid<SubGridCellCompositeHeightsRecord> _other = (IGenericClientLeafSubGrid<SubGridCellCompositeHeightsRecord>)other;
+      ForEach((x, y) => result &= Cells[x, y].Equals(_other.Cells[x, y]));
+
+      return result;
+    }
+
+    /// <summary>
+    /// Fills the contents of the client leaf subgrid with a known, non-null test pattern of values
+    /// </summary>
+    public override void FillWithTestPattern()
+    {
+      ForEach((x, y) => Cells[x, y] = new SubGridCellCompositeHeightsRecord
       {
-        Cells[i, j].LowestHeight = Consts.NullHeight;
-        Cells[i, j].HighestHeight = Consts.NullHeight;
-        Cells[i, j].LastHeight = Consts.NullHeight;
-        Cells[i, j].FirstHeight = Consts.NullHeight;
+        LowestHeight = x,
+        FirstHeight = y,
+        LowestHeightTime = x + y,
+        HighestHeight = 2 * (x + y),        
       });
+    }
+    
+    /// <summary>
+    /// Write the contents of the Items array using the supplied writer
+    /// </summary>
+    /// <param name="writer"></param>
+    /// <param name="buffer"></param>
+    public override void Write(BinaryWriter writer, byte[] buffer)
+    {
+      base.Write(writer, buffer);
+
+      ForEach((x, y) => Cells[x, y].Write(writer));
+    }
+
+    /// <summary>
+    /// Fill the items array by reading the binary representation using the provided reader. 
+    /// </summary>
+    /// <param name="reader"></param>
+    /// <param name="buffer"></param>
+    public override void Read(BinaryReader reader, byte[] buffer)
+    {
+      base.Read(reader, buffer);
+
+      ForEach((x, y) => Cells[x, y].Read(reader));
     }
   }
 }

@@ -19,7 +19,7 @@ namespace VSS.TRex.GridFabric.Arguments
     /// <summary>
     /// The project the request is relevant to
     /// </summary>
-    public Guid DataModelID { get; set; }
+    public Guid ProjectID { get; set; }
 
     /// <summary>
     /// The set of filters to be applied to the requested subgrids

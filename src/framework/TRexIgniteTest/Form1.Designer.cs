@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
       this.panel1 = new System.Windows.Forms.Panel();
+      this.btnEmpty = new System.Windows.Forms.Button();
       this.editProjectID = new System.Windows.Forms.TextBox();
       this.label2 = new System.Windows.Forms.Label();
       this.btnCalcAll = new System.Windows.Forms.Button();
@@ -70,6 +71,8 @@
       this.tabPage1 = new System.Windows.Forms.TabPage();
       this.btnZoomAll = new System.Windows.Forms.Button();
       this.tabPage2 = new System.Windows.Forms.TabPage();
+      this.CMVSummaryButton = new System.Windows.Forms.Button();
+      this.SpeedSummaryButton = new System.Windows.Forms.Button();
       this.TemperatureSummaryButton = new System.Windows.Forms.Button();
       this.button7 = new System.Windows.Forms.Button();
       this.tabPage3 = new System.Windows.Forms.TabPage();
@@ -91,7 +94,7 @@
       this.tabPage4 = new System.Windows.Forms.TabPage();
       this.btnKill = new System.Windows.Forms.Button();
       this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-      this.btnEmpty = new System.Windows.Forms.Button();
+      this.MDPSummaryButton = new System.Windows.Forms.Button();
       this.panel1.SuspendLayout();
       this.panel2.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -114,6 +117,16 @@
       this.panel1.Name = "panel1";
       this.panel1.Size = new System.Drawing.Size(351, 41);
       this.panel1.TabIndex = 15;
+      // 
+      // btnEmpty
+      // 
+      this.btnEmpty.Location = new System.Drawing.Point(300, 10);
+      this.btnEmpty.Name = "btnEmpty";
+      this.btnEmpty.Size = new System.Drawing.Size(47, 28);
+      this.btnEmpty.TabIndex = 31;
+      this.btnEmpty.Text = "Empty";
+      this.btnEmpty.UseVisualStyleBackColor = true;
+      this.btnEmpty.Click += new System.EventHandler(this.btnEmpty_Click);
       // 
       // editProjectID
       // 
@@ -155,7 +168,7 @@
       // 
       // button6
       // 
-      this.button6.Location = new System.Drawing.Point(22, 253);
+      this.button6.Location = new System.Drawing.Point(20, 336);
       this.button6.Name = "button6";
       this.button6.Size = new System.Drawing.Size(158, 20);
       this.button6.TabIndex = 43;
@@ -165,9 +178,9 @@
       // 
       // button5
       // 
-      this.button5.Location = new System.Drawing.Point(21, 151);
+      this.button5.Location = new System.Drawing.Point(20, 151);
       this.button5.Name = "button5";
-      this.button5.Size = new System.Drawing.Size(121, 19);
+      this.button5.Size = new System.Drawing.Size(140, 21);
       this.button5.TabIndex = 42;
       this.button5.Text = "Cut/Fill Statistics...";
       this.button5.UseVisualStyleBackColor = true;
@@ -175,7 +188,7 @@
       // 
       // button4
       // 
-      this.button4.Location = new System.Drawing.Point(22, 228);
+      this.button4.Location = new System.Drawing.Point(20, 311);
       this.button4.Name = "button4";
       this.button4.Size = new System.Drawing.Size(225, 20);
       this.button4.TabIndex = 41;
@@ -185,9 +198,9 @@
       // 
       // button3
       // 
-      this.button3.Location = new System.Drawing.Point(22, 203);
+      this.button3.Location = new System.Drawing.Point(20, 286);
       this.button3.Name = "button3";
-      this.button3.Size = new System.Drawing.Size(122, 20);
+      this.button3.Size = new System.Drawing.Size(140, 20);
       this.button3.TabIndex = 40;
       this.button3.Text = "Test Queue...";
       this.button3.UseVisualStyleBackColor = true;
@@ -195,9 +208,9 @@
       // 
       // btnCalculateVolumes
       // 
-      this.btnCalculateVolumes.Location = new System.Drawing.Point(21, 76);
+      this.btnCalculateVolumes.Location = new System.Drawing.Point(20, 76);
       this.btnCalculateVolumes.Name = "btnCalculateVolumes";
-      this.btnCalculateVolumes.Size = new System.Drawing.Size(120, 19);
+      this.btnCalculateVolumes.Size = new System.Drawing.Size(139, 21);
       this.btnCalculateVolumes.TabIndex = 39;
       this.btnCalculateVolumes.Text = "Calculate Volume...";
       this.btnCalculateVolumes.UseVisualStyleBackColor = true;
@@ -205,9 +218,9 @@
       // 
       // button2
       // 
-      this.button2.Location = new System.Drawing.Point(20, 126);
+      this.button2.Location = new System.Drawing.Point(19, 126);
       this.button2.Name = "button2";
-      this.button2.Size = new System.Drawing.Size(121, 19);
+      this.button2.Size = new System.Drawing.Size(140, 21);
       this.button2.TabIndex = 38;
       this.button2.Text = "Statistics...";
       this.button2.UseVisualStyleBackColor = true;
@@ -245,9 +258,9 @@
       // 
       // button1
       // 
-      this.button1.Location = new System.Drawing.Point(22, 101);
+      this.button1.Location = new System.Drawing.Point(20, 101);
       this.button1.Name = "button1";
-      this.button1.Size = new System.Drawing.Size(120, 19);
+      this.button1.Size = new System.Drawing.Size(139, 21);
       this.button1.TabIndex = 34;
       this.button1.Text = "Scan all keys to file...";
       this.button1.UseVisualStyleBackColor = true;
@@ -532,6 +545,9 @@
       // 
       // tabPage2
       // 
+      this.tabPage2.Controls.Add(this.MDPSummaryButton);
+      this.tabPage2.Controls.Add(this.CMVSummaryButton);
+      this.tabPage2.Controls.Add(this.SpeedSummaryButton);
       this.tabPage2.Controls.Add(this.TemperatureSummaryButton);
       this.tabPage2.Controls.Add(this.button7);
       this.tabPage2.Controls.Add(this.button6);
@@ -555,11 +571,31 @@
       this.tabPage2.Text = "Tests";
       this.tabPage2.UseVisualStyleBackColor = true;
       // 
+      // CMVSummaryButton
+      // 
+      this.CMVSummaryButton.Location = new System.Drawing.Point(19, 230);
+      this.CMVSummaryButton.Name = "CMVSummaryButton";
+      this.CMVSummaryButton.Size = new System.Drawing.Size(140, 21);
+      this.CMVSummaryButton.TabIndex = 48;
+      this.CMVSummaryButton.Text = "&CMV Summary";
+      this.CMVSummaryButton.UseVisualStyleBackColor = true;
+      this.CMVSummaryButton.Click += new System.EventHandler(this.CMVSummaryButton_Click);
+      // 
+      // SpeedSummaryButton
+      // 
+      this.SpeedSummaryButton.Location = new System.Drawing.Point(20, 203);
+      this.SpeedSummaryButton.Name = "SpeedSummaryButton";
+      this.SpeedSummaryButton.Size = new System.Drawing.Size(140, 21);
+      this.SpeedSummaryButton.TabIndex = 47;
+      this.SpeedSummaryButton.Text = "&Machine Speed Summary";
+      this.SpeedSummaryButton.UseVisualStyleBackColor = true;
+      this.SpeedSummaryButton.Click += new System.EventHandler(this.SpeedSummaryButton_Click);
+      // 
       // TemperatureSummaryButton
       // 
-      this.TemperatureSummaryButton.Location = new System.Drawing.Point(22, 176);
+      this.TemperatureSummaryButton.Location = new System.Drawing.Point(20, 176);
       this.TemperatureSummaryButton.Name = "TemperatureSummaryButton";
-      this.TemperatureSummaryButton.Size = new System.Drawing.Size(121, 21);
+      this.TemperatureSummaryButton.Size = new System.Drawing.Size(140, 21);
       this.TemperatureSummaryButton.TabIndex = 46;
       this.TemperatureSummaryButton.Text = "&Temperature Summary";
       this.TemperatureSummaryButton.UseVisualStyleBackColor = true;
@@ -567,7 +603,7 @@
       // 
       // button7
       // 
-      this.button7.Location = new System.Drawing.Point(23, 279);
+      this.button7.Location = new System.Drawing.Point(22, 362);
       this.button7.Name = "button7";
       this.button7.Size = new System.Drawing.Size(120, 19);
       this.button7.TabIndex = 46;
@@ -763,15 +799,15 @@
       this.openFileDialog1.InitialDirectory = "@\"c:\\\"";
       this.openFileDialog1.RestoreDirectory = true;
       // 
-      // btnEmpty
+      // MDPSummaryButton
       // 
-      this.btnEmpty.Location = new System.Drawing.Point(300, 10);
-      this.btnEmpty.Name = "btnEmpty";
-      this.btnEmpty.Size = new System.Drawing.Size(47, 28);
-      this.btnEmpty.TabIndex = 31;
-      this.btnEmpty.Text = "Empty";
-      this.btnEmpty.UseVisualStyleBackColor = true;
-      this.btnEmpty.Click += new System.EventHandler(this.btnEmpty_Click);
+      this.MDPSummaryButton.Location = new System.Drawing.Point(20, 257);
+      this.MDPSummaryButton.Name = "MDPSummaryButton";
+      this.MDPSummaryButton.Size = new System.Drawing.Size(140, 21);
+      this.MDPSummaryButton.TabIndex = 49;
+      this.MDPSummaryButton.Text = "M&DP Summary";
+      this.MDPSummaryButton.UseVisualStyleBackColor = true;
+      this.MDPSummaryButton.Click += new System.EventHandler(this.MDPSummaryButton_Click);
       // 
       // Form1
       // 
@@ -868,6 +904,9 @@
     private System.Windows.Forms.TabPage tabPage4;
     private System.Windows.Forms.Button btnKill;
     private System.Windows.Forms.Button btnEmpty;
+    private System.Windows.Forms.Button SpeedSummaryButton;
+    private System.Windows.Forms.Button CMVSummaryButton;
+    private System.Windows.Forms.Button MDPSummaryButton;
   }
 }
 

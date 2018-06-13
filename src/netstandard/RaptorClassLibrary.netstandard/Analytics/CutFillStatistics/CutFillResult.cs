@@ -4,7 +4,7 @@ using System.Linq;
 namespace VSS.TRex.Analytics.Models
 {
     /// <summary>
-    /// The result obtained fcrom performing a CutFill analytics request
+    /// The result obtained from performing a CutFill analytics request
     /// </summary>
     public class CutFillResult : AnalyticsResult
     {
@@ -50,7 +50,7 @@ namespace VSS.TRex.Analytics.Models
 
             long sum = counts.Sum();
             for (int i = 0; i < counts.Length; i++)
-                Percents[i] = counts[i] == 0 ? 0 : ((1.0 * counts[i]) / sum) * 100;
+                Percents[i] = counts[i] == 0 ? 0 : ((double)counts[i] / sum) * 100;
         }
 
         /// <summary>

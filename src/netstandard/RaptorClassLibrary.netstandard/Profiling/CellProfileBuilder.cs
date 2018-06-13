@@ -28,15 +28,14 @@ namespace VSS.TRex.Profiling
     private InterceptList HzIntercepts = new InterceptList();
     private InterceptList VtHzIntercepts = new InterceptList();
 
-    private bool SlicerToolUsed;
+    public bool SlicerToolUsed;
     private bool ReturnDesignElevation;
     private uint OTGCellX, OTGCellY;
 
     private SubGridCellAddress CurrentSubgridOrigin;
     private SubGridCellAddress ThisSubgridOrigin;
 
-    private SubGridTreeBitmapSubGridBits FilterMask =
-      new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+    private SubGridTreeBitmapSubGridBits FilterMask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
     private double StartX, StartY, StartStation;
     private double EndX, EndY, EndStation;
@@ -49,28 +48,26 @@ namespace VSS.TRex.Profiling
     private List<ProfileCell> ProfileCells;
     private XYZ[] NEECoords;
     private CellSpatialFilter CellFilter;
-    private Design Design;
+    private Design CutFillDesign;
 
     public double GridDistanceBetweenProfilePoints;
 
     /// <summary>
     /// Creates a CellProfile builder given a list of coordinates defining the path to profile and a container to place the resulting cells into
     /// </summary>
-    /// <param name="nEECoords"></param>
-    /// <param name="profileCells"></param>
+    /// <param name="siteModel"></param>
     /// <param name="cellFilter"></param>
-    /// <param name="design"></param>
+    /// <param name="cutFillDesign"></param>
+    /// <param name="slicerToolUsed"></param>
     public CellProfileBuilder(ISiteModel siteModel,
-      XYZ[] nEECoords,
-      List<ProfileCell> profileCells,
       CellSpatialFilter cellFilter,
-      Design design)
+      Design cutFillDesign,
+      bool slicerToolUsed)
     {
       SiteModel = siteModel;
-      NEECoords = nEECoords;
-      ProfileCells = profileCells;
       CellFilter = cellFilter;
-      Design = design;
+      CutFillDesign = cutFillDesign;
+      SlicerToolUsed = slicerToolUsed;
     }
 
     /// <summary>
@@ -175,27 +172,34 @@ namespace VSS.TRex.Profiling
       };
 
       if (DesignElevations != null)
-        ProfileCell.DesignElev = DesignElevations.Cells[OTGX & TRex.SubGridTree.SubGridLocalKeyMask,
-          OTGY & TRex.SubGridTree.SubGridLocalKeyMask];
+        ProfileCell.DesignElev = DesignElevations.Cells[OTGX & SubGridTree.SubGridLocalKeyMask, OTGY & SubGridTree.SubGridLocalKeyMask];
       else
         ProfileCell.DesignElev = Consts.NullHeight;
 
       ProfileCells.Add(ProfileCell);
     }
 
-    public bool Build()
+    /// <summary>
+    /// Constructs a vector of cells in profileCells along the path of the profile geometry containing in nEECoords
+    /// </summary>
+    /// <param name="nEECoords"></param>
+    /// <param name="profileCells"></param>
+    /// <returns></returns>
+    public bool Build(XYZ[] nEECoords, List<ProfileCell> profileCells)
     {
+      NEECoords = nEECoords;
+      ProfileCells = profileCells;
+
       CellSize = SiteModel.Grid.CellSize;
 
       CurrStationPos = 0;
-      SlicerToolUsed = false;
 
       CurrentSubgridOrigin = new SubGridCellAddress(int.MaxValue, int.MaxValue);
       GridDistanceBetweenProfilePoints = 0;
-      ReturnDesignElevation = Design != null;
+      ReturnDesignElevation = CutFillDesign != null;
       DesignElevations = null;
 
-      for (int I = 0; I < NEECoords.Length - 1; I++) //for I := 0 to Arraycount - 2 do
+      for (int loopBound = NEECoords.Length - 1, I = 0; I < loopBound; I++)
       {
         StartX = NEECoords[I].X;
         StartY = NEECoords[I].Y;
@@ -207,19 +211,13 @@ namespace VSS.TRex.Profiling
 
         if (I == 0) // Add start point of profile line to intercept list
         {
-          // this could be improved by passing a is slicertoolused variable but this method should be reliable
-          SlicerToolUsed = NEECoords.Length == 2 && NEECoords[0].Z == 0 && NEECoords[1].Z == 0;
-          if (SlicerToolUsed)
-            CurrStationPos = 0;
-          else
-            CurrStationPos = NEECoords[I].Z; // alignment profiles pass in chainage for more accuracy
+          CurrStationPos = SlicerToolUsed ? 0 : NEECoords[I].Z; // alignment profiles pass in chainage for more accuracy
           VtHzIntercepts.AddPoint(StartX, StartY, CurrStationPos);
         }
 
-        if (SlicerToolUsed)
-          Distance = MathUtilities.Hypot(EndX - StartX, EndY - StartY); // chainage is not passed so compute
-        else
-          Distance = EndStation - StartStation; // use precise chainage passed
+        Distance = SlicerToolUsed
+          ? MathUtilities.Hypot(EndX - StartX, EndY - StartY) // chainage is not passed so compute
+          : EndStation - StartStation; // use precise chainage passed
 
         if (Distance == 0) // if we have two points the same
           continue;
@@ -257,8 +255,7 @@ namespace VSS.TRex.Profiling
         SiteModel.Grid.CalculateIndexOfCellContainingPosition(VtHzIntercepts.Items[i].MidPointX,
           VtHzIntercepts.Items[i].MidPointY, out OTGCellX, out OTGCellY);
 
-        ThisSubgridOrigin = new SubGridCellAddress(OTGCellX >> TRex.SubGridTree.SubGridIndexBitsPerLevel,
-          OTGCellY >> TRex.SubGridTree.SubGridIndexBitsPerLevel);
+        ThisSubgridOrigin = new SubGridCellAddress(OTGCellX >> SubGridTree.SubGridIndexBitsPerLevel, OTGCellY >> SubGridTree.SubGridIndexBitsPerLevel);
 
         if (!CurrentSubgridOrigin.Equals(ThisSubgridOrigin))
         {
@@ -278,22 +275,19 @@ namespace VSS.TRex.Profiling
             DesignElevations = null;
             DesignResult = DesignProfilerRequestResult.UnknownError;
 
-            Design?.GetDesignHeights(SiteModel.ID, new SubGridCellAddress(OTGCellX, OTGCellY), CellSize,
-              out DesignElevations, out DesignResult);
+            CutFillDesign?.GetDesignHeights(SiteModel.ID, new SubGridCellAddress(OTGCellX, OTGCellY), CellSize, out DesignElevations, out DesignResult);
 
             if (DesignResult != DesignProfilerRequestResult.OK &&
                 DesignResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
               continue;
 
             if (DesignResult == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
-              DesignElevations = null; // force a nullsingle to be written
+              DesignElevations = null; // force a null height to be written
           }
         }
 
-        if (FilterMask.BitSet(OTGCellX & TRex.SubGridTree.SubGridLocalKeyMask,
-          OTGCellY & TRex.SubGridTree.SubGridLocalKeyMask))
-          AddCellPassesDataToList(OTGCellX, OTGCellY, VtHzIntercepts.Items[i].ProfileItemIndex,
-            VtHzIntercepts.Items[i].InterceptLength);
+        if (FilterMask.BitSet(OTGCellX & SubGridTree.SubGridLocalKeyMask, OTGCellY & SubGridTree.SubGridLocalKeyMask))
+          AddCellPassesDataToList(OTGCellX, OTGCellY, VtHzIntercepts.Items[i].ProfileItemIndex, VtHzIntercepts.Items[i].InterceptLength);
       }
 
       return true;

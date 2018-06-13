@@ -14,6 +14,9 @@ indent_size = 2
 insert_final_newline = true
 charset = utf-8-bom
 
+# Allow a reasonable line length before wrapping (default is 100 - too short)
+max_line_length = 250
+
 # Xml project files
 [*.{csproj,vbproj,vcxproj,vcxproj.filters,proj,projitems,shproj}]
 indent_size = 2
@@ -50,9 +53,9 @@ dotnet_style_explicit_tuple_names = true:suggestion
 # CSharp code style settings:
 [*.cs]
 # Prefer "var" everywhere
-csharp_style_var_for_built_in_types = true:suggestion
-csharp_style_var_when_type_is_apparent = true:suggestion
-csharp_style_var_elsewhere = true:suggestion
+csharp_style_var_for_built_in_types = false:suggestion
+csharp_style_var_when_type_is_apparent = false:suggestion
+csharp_style_var_elsewhere = false:suggestion
 
 # Prefer method-like constructs to have a block body
 csharp_style_expression_bodied_methods = false:none

@@ -7,11 +7,12 @@ using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Surfaces.GridFabric.Arguments;
 using VSS.TRex.Surfaces.GridFabric.ComputeFuncs;
+using VSS.TRex.Types;
 using VSS.VisionLink.DesignProfiling.GridFabric.Requests;
 
 namespace VSS.TRex.Surfaces.GridFabric.Requests
 {
-    public class SurfaceElevationPatchRequest : DesignProfilerRequest<SurfaceElevationPatchArgument, ClientHeightAndTimeLeafSubGrid>
+    public class SurfaceElevationPatchRequest : DesignProfilerRequest<SurfaceElevationPatchArgument, IClientLeafSubGrid>
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
@@ -24,7 +25,7 @@ namespace VSS.TRex.Surfaces.GridFabric.Requests
         /// Local reference to the client subgrid factory
         /// </summary>
         [NonSerialized]
-        private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
+        private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.Factory();
 
         /// <summary>
         /// Default no-arg constructor
@@ -33,7 +34,7 @@ namespace VSS.TRex.Surfaces.GridFabric.Requests
         {
         }
 
-        public override ClientHeightAndTimeLeafSubGrid Execute(SurfaceElevationPatchArgument arg)
+        public override IClientLeafSubGrid Execute(SurfaceElevationPatchArgument arg)
         {
             // Check the item is available in the cache
             ClientHeightAndTimeLeafSubGrid cachedResult = _cache.Get(arg);
@@ -48,14 +49,14 @@ namespace VSS.TRex.Surfaces.GridFabric.Requests
 
             // Construct the function to be used, but override the procesing map in the argument to specify that all cells are required as the result 
             // will be cached
-            IComputeFunc<SurfaceElevationPatchArgument, byte[] /*ClientHeightAndTimeLeafSubGrid*/> func = new SurfaceElevationPatchComputeFunc();
+            IComputeFunc<SurfaceElevationPatchArgument, byte[]> func = new SurfaceElevationPatchComputeFunc();
 
             byte[] result = null;
             arg.ProcessingMap.Fill();
 
             try
             {
-                /*ClientHeightAndTimeLeafSubGrid */ result = _Compute.Apply(func, arg);
+                result = _Compute.Apply(func, arg);
             }
             catch (ClusterGroupEmptyException e)
             {
@@ -64,7 +65,7 @@ namespace VSS.TRex.Surfaces.GridFabric.Requests
 
                 try
                 {
-                    /*ClientHeightAndTimeLeafSubGrid */ result = _Compute.Apply(func, arg);
+                    result = _Compute.Apply(func, arg);
                 }
                 catch (ClusterGroupEmptyException e2)
                 {
@@ -77,10 +78,12 @@ namespace VSS.TRex.Surfaces.GridFabric.Requests
                 return null;
             }
 
-            ClientHeightAndTimeLeafSubGrid clientResult = ClientLeafSubGridFactory.GetSubGrid(Types.GridDataType.HeightAndTime) as ClientHeightAndTimeLeafSubGrid;
+            IClientLeafSubGrid clientResult = ClientLeafSubGridFactory.GetSubGrid(arg.SurveyedSurfacePatchType == SurveyedSurfacePatchType.CompositeElevations ? GridDataType.CompositeHeights : GridDataType.HeightAndTime);
             clientResult.FromBytes(result);
 
-            _cache.Put(arg, clientResult);
+            // Fow now, only cache non-composite elevation subgrids
+            if (arg.SurveyedSurfacePatchType != SurveyedSurfacePatchType.CompositeElevations)
+              _cache.Put(arg, clientResult as ClientHeightAndTimeLeafSubGrid);
 
             return clientResult;
 

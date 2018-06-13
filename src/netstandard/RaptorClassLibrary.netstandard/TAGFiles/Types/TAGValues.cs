@@ -128,9 +128,14 @@ namespace VSS.TRex.TAGFiles
         public const string kTagFileICCCALeftRearTag = "CCA_PASS_COUNT_LEFT_REAR";
         public const string kTagFileICCCARightRearTag = "CCA_PASS_COUNT_RIGHT_REAR";
 
-
+      /// <summary>
+      /// Returns all TAG name strings as a list
+      /// </summary>
+      /// <returns></returns>
+      public static List<string> Names() => typeof(TAGValueNames).GetFields().Select(x => x.GetValue(typeof(TAGValueNames)).ToString()).ToList();
   }
 
+  /*
   /// <summary>
   /// Utility class for TAG names
   /// </summary>
@@ -143,7 +148,7 @@ namespace VSS.TRex.TAGFiles
         public static List<string> Names()
         {
             Dictionary<string, string> constProperties = new Dictionary<string, string>();
-
+       
             var fields = typeof(TAGValueNames).GetFields();
             foreach (var field in fields)
             {
@@ -153,4 +158,5 @@ namespace VSS.TRex.TAGFiles
             return constProperties.Values.ToList();
         }
     }
+    */
 }

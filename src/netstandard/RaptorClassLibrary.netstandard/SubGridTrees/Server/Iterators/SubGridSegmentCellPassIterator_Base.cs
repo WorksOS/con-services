@@ -91,8 +91,6 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         /// </summary>
         public int MaxNumberOfPassesToReturn { get; set; } = int.MaxValue;
 
-        //        protected SiteModel SiteModelReference { get; set; } = null;
-
         /// <summary>
         /// Default no-arg constructor
         /// </summary>
@@ -121,13 +119,9 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             SegmentIterator.MoveToNextSubGridSegment();
 
             if (SegmentIterator.CurrentSubGridSegment != null)
-            {
                 InitialiseForNewSegment();
-            }
             else
-            {
                 cellInSegmentIndex = finishCellInSegmentIndex;
-            }
         }
 
         /// <summary>
@@ -156,8 +150,8 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         // cell passes are being iterated over. The coordinates should be in the 0..DimensionSize-1 range
         public void SetCellCoordinatesInSubgrid(byte _cellX, byte _cellY)
         {
-            Debug.Assert(Range.InRange(_cellX, (byte) 0, (byte) (SubGridTree.SubGridTreeDimensionMinus1)) &&
-                         Range.InRange(_cellY, (byte) 0, (byte) (SubGridTree.SubGridTreeDimensionMinus1)),
+            Debug.Assert(Range.InRange(_cellX, (byte) 0, SubGridTree.SubGridTreeDimensionMinus1) &&
+                         Range.InRange(_cellY, (byte) 0, SubGridTree.SubGridTreeDimensionMinus1),
                 "Cell coordinates out of range in SetCellCoordinatesInSubgrid");
 
             cellX = _cellX;
@@ -179,7 +173,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         {
             if (SegmentIterator == null)
             {
-                // TODO add whenlogging available
+                // TODO add when logging available
                 // SIGLogMessage.PublishNoODS(Self, 'No segment iterator assigned', slmcAssert);
                 return;
             }
@@ -212,12 +206,10 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             DateTime CellPassTime;
 
             if (SegmentIterator.CurrentSubGridSegment == null)
-            {
                 return false; // No more cells to process
-            }
 
-            Debug.Assert(Range.InRange(cellX, (byte) 0, (byte) (SubGridTree.SubGridTreeDimensionMinus1)) &&
-                         Range.InRange(cellY, (byte) 0, (byte) (SubGridTree.SubGridTreeDimensionMinus1)),
+            Debug.Assert(Range.InRange(cellX, (byte) 0, SubGridTree.SubGridTreeDimensionMinus1) &&
+                         Range.InRange(cellY, (byte) 0, SubGridTree.SubGridTreeDimensionMinus1),
                 "Cell coordinates out of range in GetNextCellPass");
 
             do
@@ -232,9 +224,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                 }
 
                 if (SegmentIterator.CurrentSubGridSegment == null)
-                {
                     return false; // No more segments to process
-                }
 
                 CellPass = ExtractCellPass();
                 CellPassTime = CellPass.Time;
@@ -245,16 +235,12 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                 if (SegmentIterator.IterationDirection == IterationDirection.Forwards)
                 {
                     if (CellPassTime > iteratorEndTime)
-                    {
                         return false;
-                    }
                 }
                 else
                 {
                     if (CellPassTime < iteratorStartTime)
-                    {
                         return false;
-                    }
                 }
             } while (CellPassTime < iteratorStartTime || CellPassTime > iteratorEndTime);
 
@@ -302,6 +288,11 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             SegmentIterator?.SetTimeRange(iteratorStartTime, iteratorEndTime);
         }
 
+        /// <summary>
+        /// Sets the machine restriction within the iterator to the set of machines passed to it. The cell pass iterator
+        /// will proactively ignore cell passes from machines not present in the passed set.
+        /// </summary>
+        /// <param name="machineIDSet"></param>
         public void SetMachineRestriction(BitArray machineIDSet) => SegmentIterator.SetMachineRestriction(machineIDSet);
     }
 }

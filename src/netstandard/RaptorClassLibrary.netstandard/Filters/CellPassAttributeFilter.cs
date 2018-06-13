@@ -1143,7 +1143,7 @@ FAvoidZoneUndergroundServiceZones = false;
 
     public bool FilterPassUsingTimeOnly(ref CellPass PassValue)
         {
-            // TODO readd when ifopt c+ is understoof
+            // TODO readd when ifopt c+ is understood
             /*  {$IFOPT C+}
               if not Assigned(FOwner) 
                 {
@@ -1182,7 +1182,7 @@ FAvoidZoneUndergroundServiceZones = false;
                 return true;
             }
 
-            // TODO readd when IFOPT c+ understoots in c#
+            // TODO readd when IFOPT c+ understood in c#
             /*{$IFOPT C+}
             if not Assigned(FOwner) 
               {
@@ -1406,9 +1406,7 @@ FAvoidZoneUndergroundServiceZones = false;
         public void InitaliaseFilteringForCell(byte ASubgridCellX, byte ASubgridCellY)
         {
             if (!HasElevationRangeFilter)
-            {
                 return;
-            }
 
             if (ElevationRangeDesignElevations != null)
             {

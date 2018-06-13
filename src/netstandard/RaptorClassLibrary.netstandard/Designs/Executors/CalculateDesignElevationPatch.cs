@@ -87,9 +87,6 @@ namespace VSS.TRex.DesignProfiling.Executors
                 // Perform the design profile calculation
                 try
                 {
-                    // Check we are still active
-                    // TODO.... 
-
                     /* Test code to force all subgrids to have 0 elevations from a design
                     ClientHeightLeafSubGrid test = new ClientHeightLeafSubGrid(null, null, 6, 0.34, SubGridTree.DefaultIndexOriginOffset);
                     test.SetToZeroHeight();

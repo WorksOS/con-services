@@ -46,8 +46,16 @@ namespace VSS.TRex.Events
     private int Stamp;
 
     private SiteModelMachineTargetValuesTrackingState[] MachinesValuesTrackingState;
-    public ISiteModel SiteModel { get; set; }
-// todo    private int NumFullEventLookups;
+
+    private ISiteModel _SiteModel;
+
+    public ISiteModel SiteModel { get => _SiteModel;
+      set
+      {
+        _SiteModel = value;
+        MachinesValuesTrackingState = new SiteModelMachineTargetValuesTrackingState[_SiteModel?.Machines.Count ?? 0];
+      }
+    }
 
     private short LastMachineID;
     public SiteModelMachineTargetValuesTrackingState TrackingState;
@@ -56,11 +64,11 @@ namespace VSS.TRex.Events
 
     protected void IncrementStamp() => Stamp++;
 
-    public CellPassFastEventLookerUpper(ISiteModel SiteModel)
+    public CellPassFastEventLookerUpper(ISiteModel siteModel)
     {
+      SiteModel = siteModel;
       Stamp = 0;
-// todo      NumFullEventLookups = 0;
-      MachinesValuesTrackingState = new SiteModelMachineTargetValuesTrackingState[SiteModel.Machines.Count];
+
       ClearLastValues();
     }
 
@@ -126,6 +134,7 @@ namespace VSS.TRex.Events
           if (_MachineID == PrevLastMachineID)
           {
             // Todo: Look at if there is a better way of optimising this rather than tracking previous tracking state
+            // TODO: IE: maintain tracking state for each machine (some A/B testing and profilinf required.
             MinMax.Swap(ref TrackingState, ref PrevTrackingState);
             MinMax.Swap(ref LastMachineID, ref PrevLastMachineID);
           }
@@ -155,7 +164,7 @@ namespace VSS.TRex.Events
               // TODO: Validate locking... TrackingState.MachineTargetValues.TargetValueChanges.AcquireReadAccessInterlock;
 
               /* TODO: Validate machine scope context for the UseMachineRMVThreshold and OverrideRMVJumpThreshold
-               // TODO: ie: Is it really a single value per machine configuration...
+              // TODO: ie: Is it really a single value per machine configuration...
               if (TrackingState.MachineTargetValues.Machine != null)
               with TICMachine(MachineTargetValues.Machine) do
                 {
@@ -346,15 +355,6 @@ namespace VSS.TRex.Events
               TrackingState.MachineTargetValues.MachineAutomaticsStateEvents);
           passes[I].EventValues.EventMachineAutomatics = TrackingState.EventMachineAutomatics;
         }
-
-        // TODO: OnGroundState not present as an event list in ProductionEventLists
-        /*
-        if (populationControl.WantsEventOnGroundValues)
-        {
-          TrackingState.EventOnGroundState = TrackingState.EventOnGroundState_Tracking.DetermineTrackingStateValue(Stamp, _Time, TrackingState.MachineTargetValues.??????);
-          passes[I].EventValues.EventOnGroundState = TrackingState.EventOnGroundState;
-        }
-        */
 
         if (populationControl.WantsLayerIDValues)
         {

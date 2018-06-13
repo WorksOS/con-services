@@ -25,7 +25,7 @@ namespace VSS.TRex.Volumes.Executors.Tasks
         /// Constructor accepting a simple volumes aggregator that hardwires the expected grid data type to height
         /// </summary>
         /// <param name="aggregator"></param>
-        public SimpleVolumesComputationTask(ISubGridRequestsAggregator aggregator) : base(Guid.NewGuid().GetHashCode(), "", GridDataType.Height)
+        public SimpleVolumesComputationTask(ISubGridRequestsAggregator aggregator) : base(Guid.NewGuid(), "", GridDataType.Height)
         {
             Aggregator = aggregator;
         }

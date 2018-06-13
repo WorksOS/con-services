@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Analytics.Aggregators;
 using VSS.TRex.Analytics.Coordinators;
+using VSS.TRex.Analytics.Foundation.Aggregators;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
 using VSS.TRex.Types;
 
@@ -24,7 +25,7 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 		public override AggregatorBase ConstructAggregator(TemperatureStatisticsArgument argument) => new TemperatureAggregator
 		{
 			RequiresSerialisation = true,
-			SiteModelID = argument.DataModelID,
+			SiteModelID = argument.ProjectID,
 			//LiftBuildSettings := LiftBuildSettings;
 			CellSize = SiteModel.Grid.CellSize,
 			OverrideTemperatureWarningLevels = argument.OverrideTemperatureWarningLevels,
@@ -54,20 +55,20 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 		/// <param name="response"></param>
 		public override void ReadOutResults(AggregatorBase aggregator, TemperatureStatisticsResponse response)
 		{
-		  response.CellSize = ((TemperatureAggregator) aggregator).CellSize;
-      response.SummaryCellsScanned = ((TemperatureAggregator)aggregator).SummaryCellsScanned;
+		  var tempAggregator = (DataStatisticsAggregator)aggregator;
 
-      response.CellsScannedOverTarget = ((TemperatureAggregator)aggregator).CellsScannedOverTarget;
-			response.CellsScannedUnderTarget = ((TemperatureAggregator)aggregator).CellsScannedUnderTarget;
-			response.CellsScannedAtTarget = ((TemperatureAggregator)aggregator).CellsScannedAtTarget;
-			//response.CoverageArea = ((TemperatureAggregator)aggregator).SummaryProcessedArea;
+      response.CellSize = tempAggregator.CellSize;
+      response.SummaryCellsScanned = tempAggregator.SummaryCellsScanned;
 
-      response.IsTargetValueConstant = ((TemperatureAggregator)aggregator).IsTargetValueConstant;
-      response.MissingTargetValue = ((TemperatureAggregator)aggregator).MissingTargetValue;
+      response.CellsScannedOverTarget = tempAggregator.CellsScannedOverTarget;
+			response.CellsScannedUnderTarget = tempAggregator.CellsScannedUnderTarget;
+			response.CellsScannedAtTarget = tempAggregator.CellsScannedAtTarget;
+
+      response.IsTargetValueConstant = tempAggregator.IsTargetValueConstant;
+      response.MissingTargetValue = tempAggregator.MissingTargetValue;
 
 			response.LastTempRangeMin = ((TemperatureAggregator) aggregator).LastTempRangeMin;
 			response.LastTempRangeMax = ((TemperatureAggregator)aggregator).LastTempRangeMax;
 		}
-
 	}
 }

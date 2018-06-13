@@ -107,83 +107,6 @@ namespace VSS.TRex.DesignProfiling.Tests
         }
 
         [Theory]
-        [InlineData(247500.0, 193350.0, 29.875899875665258)]
-        public void InterpolateHeightTest1(double probeX, double probeY, double expectedZ)
-        {
-            LoadTheDesign();
-            object Hint = null;
-
-            TriangleQuadTree.Tsearch_state_rec SearchState = TriangleQuadTree.Tsearch_state_rec.Init();
-
-            bool result = design.InterpolateHeight1(ref SearchState, ref Hint, probeX, probeY, 0, out double Z);
-
-            Assert.True(result, "Height interpolation returned false");
-
-            Assert.True(Math.Abs(Z - expectedZ) < 0.001, $"Interpolated height value is incorrect, expected {expectedZ}");
-        }
-
-        [Theory(Skip = "Performance Test")]
-        [InlineData(247500.0, 193350.0)]
-        public void InterpolateHeightTestPerf1(double probeX, double probeY)
-        {
-            LoadTheDesign();
-          object Hint;
-
-            TriangleQuadTree.Tsearch_state_rec SearchState = TriangleQuadTree.Tsearch_state_rec.Init();
-            for (int i = 0; i < 1000000; i++)
-            {
-                Hint = null;
-                bool result = design.InterpolateHeight1(ref SearchState, ref Hint, probeX, probeY, 0, out double Z);
-                Assert.True(result);
-            }
-
-            Assert.False(true, "Perf Test");
-        }
-
-        [Theory()]
-        [InlineData(247500.0, 193350.0, 29.875899875665258)]
-        public void InterpolateHeightTest2(double probeX, double probeY, double expectedZ)
-        {
-            LoadTheDesign();
-            object Hint = null;
-            bool result = design.InterpolateHeight2(ref Hint, probeX, probeY, 0, out double Z);
-
-            Assert.True(result, "Height interpolation returned false");
-
-            Assert.True(Math.Abs(Z - expectedZ) < 0.001, $"Interpolated height value is incorrect, expected {expectedZ}");
-        }
-
-        [Theory(Skip = "Performance Test")]
-        [InlineData(247500.0, 193350.0)]
-        public void InterpolateHeightTest2Perf(double probeX, double probeY)
-        {
-            LoadTheDesign();
-          object Hint;
-            for (int i = 0; i < 10000000; i++)
-            {
-                Hint = null;
-                design.InterpolateHeight2(ref Hint, probeX, probeY, 0, out double Z);
-            }
-
-            Assert.False(true,"Perf Test");
-        }
-
-        [Theory(Skip = "Performance Test")]
-        [InlineData(247500.0, 193350.0)]
-        public void InterpolateHeightTest3Perf(double probeX, double probeY)
-        { 
-            LoadTheDesign();
-          object Hint;
-            for (int i = 0; i < 10000000; i++)
-            {
-                Hint = null;
-                design.InterpolateHeight3(ref Hint, probeX, probeY, 0, out double Z);
-            }
-
-            Assert.False(true, "Perf Test");
-        }
-
-        [Theory()]
         [InlineData(247500.0, 193350.0)]
         public void InterpolateHeightsTest(double probeX, double probeY)
         {
@@ -204,46 +127,12 @@ namespace VSS.TRex.DesignProfiling.Tests
             float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
             
             for (int i = 0; i < 10000; i++)
-            {
                 design.InterpolateHeights(Patch, probeX, probeY, SubGridTree.DefaultCellSize, 0);
-            }
 
             Assert.False(true, "Perf Test");
         }
 
-        [Theory(Skip = "Performance Test")]
-        [InlineData(247500.0, 193350.0)]
-        public void InterpolateHeightsTest2Perf(double probeX, double probeY)
-        {
-            LoadTheDesign();
-
-            float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
-
-            for (int i = 0; i < 10000; i++)
-            {
-                design.InterpolateHeights2(Patch, probeX, probeY, SubGridTree.DefaultCellSize, 0);
-            }
-
-            Assert.False(true, "Perf Test");
-        }
-
-        [Theory(Skip = "Performance Test")]
-        [InlineData(247500.0, 193350.0)]
-        public void InterpolateHeightsTest3Perf(double probeX, double probeY)
-        {
-            LoadTheDesign();
-
-            float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
-
-            for (int i = 0; i < 10000; i++)
-            {
-                design.InterpolateHeights3(Patch, probeX, probeY, SubGridTree.DefaultCellSize, 0);
-            }
-
-            Assert.False(true, "Perf Test");
-        }
-
-        [Fact()]
+        [Fact]
         public void LoadFromFileTest()
         {
             LoadTheDesign();
@@ -252,7 +141,7 @@ namespace VSS.TRex.DesignProfiling.Tests
             Assert.True(design.Data.Vertices.Count > 0, "No vertices present in loaded TTM file.");
         }
 
-        [Fact()]
+        [Fact]
         public void SubgridOverlayIndexTest()
         {
             LoadTheDesign();

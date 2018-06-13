@@ -43,7 +43,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             {
                 while (IterationState.NextSegment())
                 {
-                    /* TODO Locking not implemented yet
+                    /* TODO Locking not implemented yet (and planned no to be!)
                     if (!(!MarkReturnedSegmentsAsTouched || IterationState.SubGrid.Locked))
                     {
                         SIGLogMessage.PublishNoODS(Self, Format('Subgrid %s not locked in LocateNextSubgridSegmentInIteration as expected', [IterationState.SubGrid.Moniker]), slmcAssert);
@@ -114,8 +114,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                                  new SubGridCellAddress(IterationState.SubGrid.OriginX, IterationState.SubGrid.OriginY),
                                  RetrieveLatestData, RetrieveAllPasses, // StorageClasses,
                                  IterationState.SubGrid,
-                                 Result /*,
-                                 SiteModelReference*/))
+                                 Result))
                             {
                                 /* TODO: no separate cache - it is in ignite
                                 // The segment is now loaded and available for use and should be touched
@@ -159,7 +158,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             }
             finally
             {
-                // TODO: Currently no caching layer...
+                // TODO: Currently no caching layer... (and planning npt to be)
                 /*
                 if (MarkReturnedSegmentsAsTouched && (Result != null) && Result.Owner.PresentInCache)
                 {
@@ -189,10 +188,9 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             return Result;
         }
 
-//        public SiteModel SiteModelReference { get; set; } = null;
-
         public SubGridCellPassesDataSegment CurrentSubGridSegment { get; set; }
-        //        property StorageClasses : TICSubGridCellStorageClasses read FStorageClasses write FStorageClasses;
+
+        // property StorageClasses : TICSubGridCellStorageClasses read FStorageClasses write FStorageClasses;
 
         /// <summary>
         /// ReturnDirtyOnly allows the iterator to only return segments in the subgrid that are dirty
@@ -240,11 +238,11 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         public int NumberOfSegmentsScanned { get; set; }
 
-        public SubGridSegmentIterator(IServerLeafSubGrid subgrid, IStorageProxy storageProxy)
+        public SubGridSegmentIterator(IServerLeafSubGrid subGrid, IStorageProxy storageProxy)
         {
             MarkReturnedSegmentsAsTouched = true;
-            SubGrid = subgrid;
-            Directory = subgrid == null ? null : SubGrid.Directory;
+            SubGrid = subGrid;
+            Directory = subGrid?.Directory;
             StorageProxy = storageProxy;
         }
 

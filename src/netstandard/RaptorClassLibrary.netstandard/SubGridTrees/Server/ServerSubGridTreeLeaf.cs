@@ -378,7 +378,7 @@ namespace VSS.TRex.SubGridTrees.Server
         {
             if (segmentInfo.Segment != null)
             {
-                // TODO add when loggin available
+                // TODO add when logging available
                 // SIGLogMessage.PublishNoODS(Self, 'Cannot allocate a segment that is already allocated', slmcAssert);
                 return;
             }
@@ -840,9 +840,7 @@ namespace VSS.TRex.SubGridTrees.Server
             FileSystemErrorStatus FSError = storage.ReadSpatialStreamFromPersistentStore(Owner.ID, fileName, OriginX, OriginY, string.Empty,
                                                                                          FileSystemStreamType.SubGridDirectory, out MemoryStream SMS);
 
-            bool Result = FSError == FileSystemErrorStatus.OK;
-
-            if (!Result)
+            if (FSError != FileSystemErrorStatus.OK || SMS == null)
             {
                 /* TODO Readd when logging available
                     if (FSError == FileSystemErrorStatus.FileDoesNotExist)
@@ -852,7 +850,7 @@ namespace VSS.TRex.SubGridTrees.Server
                         SIGLogMessage.PublishNoODS(this, "Unable to load leaf subgrid file %1. Details: %2",  [fileName, FSErrorStatusName(FSError)], slmcError);
                 */
 
-                return Result;
+                return false;
             }
 
             // To ensure integrity of partial cache memory updates we need to ensure that
@@ -863,9 +861,7 @@ namespace VSS.TRex.SubGridTrees.Server
             // the subgrid prior to reading the directory.
 
             SMS.Position = 0;
-            Result = LoadDirectoryFromStream(SMS);
-
-            return Result;
+            return LoadDirectoryFromStream(SMS);
         }
 
         public void Integrate(IServerLeafSubGrid Source,

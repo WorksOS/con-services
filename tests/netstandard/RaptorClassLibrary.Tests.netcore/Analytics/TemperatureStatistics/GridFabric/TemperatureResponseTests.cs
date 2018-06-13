@@ -1,19 +1,13 @@
 ﻿using System;
+using VSS.TRex.Tests.netcore.Analytics.Common;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
-using VSS.TRex.Tests.netcore.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
-namespace RaptorClassLibrary.Tests.netcore.Analytics.TemperatureStatistics.GridFabric
+namespace VSS.TRex.Tests.netcore.Analytics.TemperatureStatistics.GridFabric
 {
-	public class TemperatureResponseTests : IClassFixture<DILoggingFixture>
+	public class TemperatureResponseTests : BaseTests
   {
-		private const double CELL_SIZE = 0.34;
-		private const int CELLS_OVER_TARGET = 25;
-		private const int CELLS_AT_TARGET = 45;
-		private const int CELLS_UNDER_TARGET = 85;
-		private const double TOLERANCE = 0.00001;
-
 	  private TemperatureStatisticsResponse _response => new TemperatureStatisticsResponse()
 	  {
 	    ResultStatus = RequestErrorStatus.OK,
@@ -55,9 +49,9 @@ namespace RaptorClassLibrary.Tests.netcore.Analytics.TemperatureStatistics.GridF
 
 			Assert.True(Math.Abs(result.MaximumTemperature - _response.LastTempRangeMax) < TOLERANCE, "Invalid initial result value for MaximumTemperature.");
 			Assert.True(Math.Abs(result.MinimumTemperature - _response.LastTempRangeMin) < TOLERANCE, "Invalid initial result value for MinimumTemperature.");
-			Assert.True(Math.Abs(result.AboveTemperaturePercent - _response.ValueOverTargetPercent) < TOLERANCE, "Invalid initial result value for AboveTemperaturePercent.");
-			Assert.True(Math.Abs(result.WithinTemperaturePercent - _response.ValueAtTargetPercent) < TOLERANCE, "Invalid initial result value for WithinTemperaturePercent.");
-			Assert.True(Math.Abs(result.BelowTemperaturePercent - _response.ValueUnderTargetPercent) < TOLERANCE, "Invalid initial result value for BelowTemperaturePercent.");
+			Assert.True(Math.Abs(result.AboveTargetPercent - _response.ValueOverTargetPercent) < TOLERANCE, "Invalid initial result value for AboveTemperaturePercent.");
+			Assert.True(Math.Abs(result.WithinTargetPercent - _response.ValueAtTargetPercent) < TOLERANCE, "Invalid initial result value for WithinTemperaturePercent.");
+			Assert.True(Math.Abs(result.BelowTargetPercent - _response.ValueUnderTargetPercent) < TOLERANCE, "Invalid initial result value for BelowTemperaturePercent.");
 			Assert.True(Math.Abs(result.TotalAreaCoveredSqMeters - _response.SummaryProcessedArea) < TOLERANCE, "Invalid initial result value for TotalAreaCoveredSqMeters.");
 			Assert.True(result.IsTargetTemperatureConstant == _response.IsTargetValueConstant, "Invalid initial result value for IsTargetValueConstant.");
 		}
@@ -89,8 +83,6 @@ namespace RaptorClassLibrary.Tests.netcore.Analytics.TemperatureStatistics.GridF
 	    Assert.True(response.CellsScannedUnderTarget ==_response.CellsScannedUnderTarget * 2, "Invalid aggregated value for CellsScannedUnderTarget.");
 	    Assert.True(response.IsTargetValueConstant == _response.IsTargetValueConstant, "Invalid aggregated value for IsTargetValueConstant.");
 	    Assert.True(response.MissingTargetValue == _response.MissingTargetValue, "Invalid aggregated value for MissingTargetValue.");
-
     }
-
   }
 }

@@ -520,9 +520,7 @@ namespace VSS.TRex.SiteModels
         public BoundingWorldExtent3D GetAdjustedDataModelSpatialExtents(Guid[] SurveyedSurfaceExclusionList)
         {
             if (SurveyedSurfaces == null || SurveyedSurfaces.Count == 0)
-            {
                 return SiteModelExtent;
-            }
 
             // Start with the data model extents
           BoundingWorldExtent3D SpatialExtents = new BoundingWorldExtent3D(SiteModelExtent);
@@ -530,18 +528,14 @@ namespace VSS.TRex.SiteModels
             if (SurveyedSurfaceExclusionList == null || SurveyedSurfaceExclusionList.Length == 0)
             {
                 foreach (SurveyedSurface surveyedSurface in SurveyedSurfaces)
-                {
                     SpatialExtents.Include(surveyedSurface.Extents);
-                }
             }
             else
             {
                 foreach (SurveyedSurface surveyedSurface in SurveyedSurfaces)
                 {
                     if (SurveyedSurfaceExclusionList.All(x => x != surveyedSurface.ID))
-                    {
                         SpatialExtents.Include(surveyedSurface.Extents);
-                    }
                 }
             }
 

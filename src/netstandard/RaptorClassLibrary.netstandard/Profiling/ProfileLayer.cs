@@ -15,12 +15,12 @@ namespace VSS.TRex.Profiling
     private static ILogger Log = Logging.Logger.CreateLogger<ProfileLayer>();
 
     /// <summary>
-    /// FOwner is the profile cell that owns this layer. This is important as the
+    /// Owner is the profile cell that owns this layer. This is important as the
     /// layer itself does not own the passes that comprise it, rather the profile
     /// cell does and the layer keeps track of the range of passes in the profile
     /// that the layer represents. This is mainly a performance measure to reduce
     /// the number of time the lists of cell passes get copied and reconstructed
-    /// in the process of extracting them from the databace (by TICServerImpl.RequestSubGrid() etc)
+    /// in the process of extracting them from the databace (by RequestSubGrid() etc)
     /// </summary>
     public ProfileCell Owner;
 
@@ -80,8 +80,10 @@ namespace VSS.TRex.Profiling
     public float MaterialTemperature_Elev; // The height of the cell pass from which the Temperature came from
     public LayerStatus Status; // The status of the layer; complete, undercompacted, etc.
 
-    public float
-      MaxThickness; // The calculated maximum thickness of any pass in this layer (when interested in "uncompacted" lift thickness)
+    /// <summary>
+    /// The calculated maximum thickness of any pass in this layer (when interested in "uncompacted" lift thickness)
+    /// </summary>
+    public float MaxThickness; 
 
     public int FilteredPassCount;
     public int FilteredHalfPassCount;
@@ -91,18 +93,28 @@ namespace VSS.TRex.Profiling
     public float FirstPassHeight;
     public float LastPassHeight;
 
+    /// <summary>
+    /// Default no-arg constructor, not to be used as the profile layer requires an owning ProfileCell
+    /// </summary>
     public ProfileLayer()
     {
       throw new ArgumentException(
-        "No-args Create constructor for ProfileLayer may nto be called. Use Create() with Owner instead");
+        "No-args Create constructor for ProfileLayer may not be called. Use Create() with Owner instead");
     }
 
+    /// <summary>
+    /// Createa a new defaulted profile layer with the given ProfileCell as owner
+    /// </summary>
+    /// <param name="owner"></param>
     public ProfileLayer(ProfileCell owner)
     {
       Owner = owner;
       Clear();
     }
 
+    /// <summary>
+    /// Clears this profile layer to the default state
+    /// </summary>
     public void Clear()
     {
       StartCellPassIdx = -1;
@@ -136,6 +148,10 @@ namespace VSS.TRex.Profiling
       LastPassHeight = CellPass.NullHeight;
     }
 
+    /// <summary>
+    /// Assigns the cell passes contained in a set of filtered pass values into this layer
+    /// </summary>
+    /// <param name="cellPassValues"></param>
     public void Assign(FilteredMultiplePassInfo cellPassValues)
     {
       Clear();
@@ -148,7 +164,8 @@ namespace VSS.TRex.Profiling
 
       if (cellPassValues.PassCount > 0)
       {
-        System.Array.Copy(cellPassValues.FilteredPassData, Owner.Passes.FilteredPassData, cellPassValues.PassCount);
+        Owner.Passes.FilteredPassData = new FilteredPassData[cellPassValues.PassCount];
+        Array.Copy(cellPassValues.FilteredPassData, Owner.Passes.FilteredPassData, cellPassValues.PassCount);
 
         Owner.Passes.PassCount = cellPassValues.PassCount;
 
@@ -174,6 +191,10 @@ namespace VSS.TRex.Profiling
       }
     }
 
+    /// <summary>
+    /// Assigns the contents of anothern prfile layer to this profile layer
+    /// </summary>
+    /// <param name="source"></param>
     public void Assign(ProfileLayer source)
     {
       MachineID = source.MachineID;
@@ -187,9 +208,6 @@ namespace VSS.TRex.Profiling
       TargetCCA = source.TargetCCA;
 
       RadioLatency = source.RadioLatency;
-
-      // TODO: Ensure that the passes are assigned in the parent (Note: This is a TODO from the Raptor source...)
-      // Passes.Assign(source.Passes);
 
       StartCellPassIdx = source.StartCellPassIdx;
       EndCellPassIdx = source.EndCellPassIdx;
@@ -214,6 +232,12 @@ namespace VSS.TRex.Profiling
     /// </summary>
     public int PassCount => EndCellPassIdx - StartCellPassIdx + 1;
 
+    /// <summary>
+    /// Records the addition of a cell pass identified by its index in the overall set passes for
+    /// the cell being analysed. The pass itself is not physically added, but the index range of
+    /// cells included in the layer is nodified to take the newly added cell pass into account
+    /// </summary>
+    /// <param name="passIndex"></param>
     public void AddPass(int passIndex)
     {
       if (StartCellPassIdx == -1)
