@@ -45,22 +45,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
     /// <param name="projectType"></param>
     public static bool ValidateGeofenceTypes(List<GeofenceType> geofenceTypes, ProjectType? projectType = null)
     {
-      var geofenceTypeErrorCode = 73;
-      if (geofenceTypes == null || geofenceTypes.Count == 0)
+      if (geofenceTypes == null || geofenceTypes.Count == 0 )
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(geofenceTypeErrorCode),
-            projectErrorCodesProvider.FirstNameWithOffset(geofenceTypeErrorCode)));
-      }
-
-      foreach (var gt in geofenceTypes)
-      {
-        if (!Enum.IsDefined(typeof(GeofenceType), gt))
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(geofenceTypeErrorCode),
-              projectErrorCodesProvider.FirstNameWithOffset(geofenceTypeErrorCode)));
-        }
+          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(73),
+            projectErrorCodesProvider.FirstNameWithOffset(73)));
       }
 
       if (geofenceTypes.Count != 1 || geofenceTypes[0] != GeofenceType.Landfill)
@@ -71,7 +60,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       }
 
       // future-proofing here, geofence types will be dependant on projectType
-      if (projectType != null && projectType == ProjectType.LandFill && geofenceTypes[0] != GeofenceType.Landfill)
+      if (projectType != null && projectType != ProjectType.LandFill )
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(102),

@@ -113,7 +113,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       this.DynamicAddwithOffset("ProjectGeofenceAssociation: Unable to find GeofenceUid/s.", 104);
       this.DynamicAddwithOffset("ProjectGeofenceAssociation: Geofence is assigned to a different project.", 105);
       this.DynamicAddwithOffset("ProjectGeofenceAssociation: Error accessing database. Exception: {0}", 106);
-      this.DynamicAddwithOffset("Unable to Dissociate geofence from project.", 107);
+      this.DynamicAddwithOffset("ProjectGeofenceAssociation: Already associated geofence is missing from request.", 107);
     }
   }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -15,7 +14,6 @@ using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
@@ -369,6 +367,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       return FileDescriptor.CreateFileDescriptor(fileSpaceId, tccPath, tccFileName);
     }
 
+    public static async Task<IEnumerable<GeofenceWithAssociation>> GetCustomerGeofenceList(string customerUid,
+      List<GeofenceType> geofenceTypes,
+      ILogger log, IProjectRepository projectRepo)
+    {
+      return (await projectRepo.GetCustomerGeofences(customerUid).ConfigureAwait(false))
+        .Where(g => geofenceTypes.Contains(g.GeofenceType));
+    }
+
     /// <summary>
     /// Gets the geofence list available for a customer, 
     ///    or those associated with a project
@@ -381,8 +387,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       log.LogInformation(
         $"GetGeofenceList: customerUid {customerUid}, projectUid {projectUid}, {JsonConvert.SerializeObject(geofenceTypes)}");
 
-      var geofencesWithAssociation = (await projectRepo.GetCustomerGeofences(customerUid).ConfigureAwait(false))
-        .Where(g => geofenceTypes.Contains(g.GeofenceType));
+      var geofencesWithAssociation = await GetCustomerGeofenceList(customerUid, geofenceTypes, log, projectRepo);
 
       if (!string.IsNullOrEmpty(projectUid))
       {

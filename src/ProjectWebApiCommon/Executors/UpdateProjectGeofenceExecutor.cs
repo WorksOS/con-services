@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
@@ -31,7 +29,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       if (updateProjectGeofenceRequest == null)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
 
-      var project = await ProjectRequestHelper.GetProject(updateProjectGeofenceRequest.ProjectUid.ToString(), customerUid, 
+      var project = await ProjectRequestHelper.GetProject(updateProjectGeofenceRequest.ProjectUid.ToString(),
+        customerUid,
         log, serviceExceptionHandler, projectRepo).ConfigureAwait(false);
 
       // only Landfill Project and Landfill geofence combination currently supported
@@ -39,6 +38,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 102);
       }
+
       ProjectDataValidator.ValidateGeofenceTypes(updateProjectGeofenceRequest.GeofenceTypes, project.ProjectType);
 
       // Validate GeofencesExist, and are of correct type for project type, and are not assigned to another project
@@ -46,8 +46,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       var allGeofencesOfTypes = new List<GeofenceWithAssociation>();
       try
       {
-        allGeofencesOfTypes = (await ProjectRequestHelper.GetGeofenceList(customerUid, string.Empty,
-          updateProjectGeofenceRequest.GeofenceTypes, log, projectRepo));
+        allGeofencesOfTypes =
+          (await ProjectRequestHelper.GetCustomerGeofenceList(customerUid, updateProjectGeofenceRequest.GeofenceTypes,
+            log, projectRepo)).ToList();
       }
       catch (Exception e)
       {
@@ -57,7 +58,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       // do we have all the GeofenceUids requested, in the database?
       var requestedGeofenceUids = allGeofencesOfTypes
         .Where(g => updateProjectGeofenceRequest.GeofenceGuids.Contains(Guid.Parse(g.GeofenceUID))).ToList();
-      if (requestedGeofenceUids.Count 
+      if (requestedGeofenceUids.Count
           != updateProjectGeofenceRequest.GeofenceGuids.Count)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 104);
@@ -65,13 +66,27 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       // are any already assigned to a different project?
       if (requestedGeofenceUids
-        .Where(g => g.ProjectUID != null && g.ProjectUID != updateProjectGeofenceRequest.ProjectUid.ToString()).ToList().Any())
+        .Where(g => g.ProjectUID != null && g.ProjectUID != updateProjectGeofenceRequest.ProjectUid.ToString()).ToList()
+        .Any())
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 105);
       }
 
       try
       {
+        // dissassociate not supported. Current associations should be included in requested list.
+        var associationsMissing = allGeofencesOfTypes
+          .Where(g => (!string.IsNullOrEmpty(g.ProjectUID) && String.Compare(g.ProjectUID,
+                         updateProjectGeofenceRequest.ProjectUid.ToString(), StringComparison.OrdinalIgnoreCase) ==
+                       0) &&
+                      !updateProjectGeofenceRequest.GeofenceGuids.Contains(Guid.Parse(g.GeofenceUID))
+          ).ToList();
+
+        if (associationsMissing.Any())
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 107);
+        }
+
         // Associate any new geofences - ignore any already associated
         foreach (var newGeofenceGuid in updateProjectGeofenceRequest.GeofenceGuids)
         {
@@ -89,25 +104,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
               producer, kafkaTopicName);
           }
         }
-
-        // dissassociate any previously associated but not now included
-        var noLongerAssociated = allGeofencesOfTypes
-          .Where(g => g.ProjectUID == updateProjectGeofenceRequest.ProjectUid.ToString() &&
-                      updateProjectGeofenceRequest.GeofenceTypes.Contains(g.GeofenceType) &&
-                      !updateProjectGeofenceRequest.GeofenceGuids.Contains(Guid.Parse(g.GeofenceUID))
-          );
-        foreach (var obsoleteAssociation in noLongerAssociated)
-        {
-          var geofenceProject = new DissociateProjectGeofence()
-            {
-              GeofenceUID = Guid.Parse(obsoleteAssociation.GeofenceUID),
-              ProjectUID = updateProjectGeofenceRequest.ProjectUid,
-              ActionUTC = DateTime.UtcNow
-            };
-            await ProjectRequestHelper.DissociateGeofenceProject(geofenceProject, projectRepo,
-              log, serviceExceptionHandler,
-              producer, kafkaTopicName);
-        }
       }
       catch (Exception e)
       {
@@ -117,6 +113,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       return new ContractExecutionResult();
     }
+
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       throw new NotImplementedException();

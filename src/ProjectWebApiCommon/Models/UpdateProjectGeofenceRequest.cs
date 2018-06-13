@@ -4,6 +4,7 @@ using System.Net;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Repositories.DBModels;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
@@ -43,42 +44,44 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// Create instance of CreateProjectGeofenceRequest
     /// </summary>
     public static UpdateProjectGeofenceRequest CreateUpdateProjectGeofenceRequest(Guid projectUid,
-      List<GeofenceType> geofenceTypes, List<Guid> geofenceGuids)
+      List<GeofenceType> geofenceTypes, List<Guid> geofenceUids)
     {
       return new UpdateProjectGeofenceRequest
       {
         ProjectUid = projectUid,
         GeofenceTypes = geofenceTypes,
-        GeofenceGuids = geofenceGuids
+        GeofenceGuids = geofenceUids
       };
     }
 
     public void Validate()
     {
-      if (ProjectUid == null)
+      if (ProjectUid == null || Guid.TryParse(ProjectUid.ToString(), out var x) == false || ProjectUid == Guid.Empty)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(2005, "Missing ProjectUID."));
       }
 
-      if (GeofenceTypes == null || GeofenceTypes.Count == 0)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(2073, "Invalid geofence Types."));
-      }
+      ProjectDataValidator.ValidateGeofenceTypes(GeofenceTypes);
 
       if (GeofenceGuids == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(2103, "Invalid GeofenceUid list."));
+          new ContractExecutionResult(2103, "ProjectGeofenceAssociation: Invalid GeofenceUid list."));
+      }
+
+      if (GeofenceGuids == null || GeofenceGuids.Count == 0)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(2103, "ProjectGeofenceAssociation: Invalid GeofenceUid list."));
       }
 
       foreach (var g in GeofenceGuids)
       {
-        if (Guid.TryParse(g.ToString(), out var x) == false || g == Guid.Empty)
+        if (Guid.TryParse(g.ToString(), out var y) == false || g == Guid.Empty)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(2103, "Invalid GeofenceUid list."));
+            new ContractExecutionResult(2103, "ProjectGeofenceAssociation: Invalid GeofenceUid list."));
         }
       }
     }
