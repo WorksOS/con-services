@@ -131,8 +131,9 @@ node ('jenkinsslave-pod') {
 	
 	stage ('Publish results') {
 		sh "docker tag ${container} ${finalImage}"
+		sh "eval $(aws ecr get-login --region us-west-2)"
 		sh "docker push ${finalImage}"
-		sh "echo ${env.versionNumber} >> build.sbt"
-        archiveArtifacts artifacts: 'build.sbt', fingerprint: true 
+		sh "echo ${env.versionNumber} >> ${env.WORKSPACE}/chart/build.sbt"
+        archiveArtifacts artifacts: '${env.WORKSPACE}/chart/**/*.*', fingerprint: true 
 	}
 }
