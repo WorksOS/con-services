@@ -12,6 +12,7 @@ KAFKA_GROUP_NAME: Project-Consumer
 KAFKA_OFFSET: latest
 KAFKA_PORT: "9092"
 KAFKA_URI: localhost
+KAFKA_TOPICS: "VSS.Interfaces.Events.MasterData.IAssetEvent - blahblah"
 MYSQL_DATABASE_NAME: VSS-MasterData-Project
 MYSQL_PORT: "3306"
 MYSQL_ROOT_PASSWORD: abc123
