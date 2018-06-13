@@ -38,7 +38,7 @@ node ('jenkinsslave-pod') {
         //sh "docker run -v ${env.WORKSPACE}/TestResults:/TestResults ${building.id} /bin/sh /build/unittests.sh"
 
 		//Create results directory in workspace
-		dir("/TestResults") {}
+		dir("TestResults") {}
 		
 		// Currently we need to execute the tests like this, because the pipeline docker plugin being aware of DIND, and attempting to map
 		// the volume to the bare metal host
@@ -61,7 +61,7 @@ node ('jenkinsslave-pod') {
 		cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'TestResults/TestCoverage/*.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
 
 		//Stash results for publication to vsts after acceptance/integration tests have run
-		dir("/TestResults") {
+		dir("TestResults") {
 			stash name: "build-test-results"
 		} 
 		
@@ -101,7 +101,7 @@ node ('jenkinsslave-pod') {
 
 
 					//Unstash test results from earlier for publishing to vsts as we can only do this once
-					dir("/TestResults") {
+					dir("TestResults") {
 						unstash "build-test-results"
 						//check that we got something
 						sh ls -la
