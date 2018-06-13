@@ -60,8 +60,11 @@ node ('jenkinsslave-pod') {
 
 		cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'TestResults/TestCoverage/*.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
 
-		//Stash results for publication to vsts after acceptance/integration tests have run 
-		stash name: "build-test-results", includes: "TestResults/*"
+		//Stash results for publication to vsts after acceptance/integration tests have run
+		dir("/TestResults") {
+			stash name: "build-test-results"
+		} 
+		
 
 	}
 	
