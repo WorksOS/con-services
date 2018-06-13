@@ -1,8 +1,9 @@
+{{- $filename := printf "%s.txt" .Values.environment -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name | quote }}-config-{{ .Values.environment }}-{{ .Values.image.tag }}
+  name: {{ .Release.Name }}-config-{{ .Values.environment }}-{{ .Values.image.tag }}
 data:
-  {{- range $key, $value := .Values.variables }}
-    {{ $key }}: {{ $value | quote }}
-  {{- end }}
+  {{ range .Files.Lines $filename }}
+  {{ . }}{{ end }}
+
