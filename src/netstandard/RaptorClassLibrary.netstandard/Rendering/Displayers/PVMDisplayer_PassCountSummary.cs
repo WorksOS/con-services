@@ -23,7 +23,9 @@ namespace VSS.TRex.Rendering.Displayers
 
     public PVMDisplayer_PassCountSummary()
     {
-      ((PassCountPalette) Palette).InitSummatyColors(out AbovePassTargetRangeColour, out WithinPassTargetRangeColour, out BelowPassTargetRangeColour);
+      AbovePassTargetRangeColour = PassCountPalette.AbovePassTargetRangeColour;
+      WithinPassTargetRangeColour = PassCountPalette.WithinPassTargetRangeColour;
+      BelowPassTargetRangeColour = PassCountPalette.BelowPassTargetRangeColour;
     }
 
     protected override bool DoRenderSubGrid(ISubGrid subGrid)

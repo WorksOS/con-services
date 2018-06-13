@@ -26,12 +26,9 @@ namespace VSS.TRex.Rendering.Palettes
       new Transition(9, Color.FromArgb(0xACFDEB))
     };
 
-    public void InitSummatyColors(out Color above, out Color within, out Color below)
-    {
-      below = Transitions[0].Color;
-      within = Transitions[1].Color;
-      above = Transitions[2].Color;
-    }
+    public static Color BelowPassTargetRangeColour = Transitions[0].Color;
+    public static Color WithinPassTargetRangeColour = Transitions[1].Color;
+    public static Color AbovePassTargetRangeColour = Transitions[2].Color;
 
     public PassCountPalette() : base(Transitions)
     {
