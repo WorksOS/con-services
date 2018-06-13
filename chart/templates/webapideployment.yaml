@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name | quote }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+  labels:
+    app: {{ .Release.Name | quote }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name | quote }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name | quote }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+    spec:
+      containers:
+      - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:{{ .Values.image.tag }}
+        name: {{ .Release.Name | quote }}-{{ .Values.environment }}-{{ .Values.image.tag }}        
+      envFrom:
+      - configMapRef:
+          name: {{ .Release.Name | quote }}-config-{{ .Values.environment }}-{{ .Values.image.tag }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80

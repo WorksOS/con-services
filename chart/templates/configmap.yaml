@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name | quote }}-config-{{ .Values.environment }}-{{ .Values.image.tag }}
+data:
+  {{- range $key, $value := .Values.variables }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}

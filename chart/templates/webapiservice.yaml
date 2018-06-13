@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name | quote }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+spec:
+  externalTrafficPolicy: Local
+  selector:
+    app: {{ .Release.Name | quote }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: ClusterIP

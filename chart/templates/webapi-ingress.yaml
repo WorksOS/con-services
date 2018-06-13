@@ -1,0 +1,22 @@
+{{- $fdqn := printf "%s.%s" .Values.environment .Values.rootDomain -}}
+{{- $serviceName := printf "%s-%s-%s" .Release.Name | quote .Values.environment .Values.image.tag -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name | quote }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+  labels:
+    app: {{ .Release.Name | quote }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+  annotations:
+  {{- range $key, $value := .Values.ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+spec:
+  rules:
+    {{- range $host := .Values.ingress.hosts }}
+    - host: {{ $host }}.{{ $fdqn }}
+      http:
+        paths:
+          - backend:
+              serviceName: {{ $serviceName }} 
+              servicePort: 80
+    {{- end -}}

@@ -1,0 +1,60 @@
+# Default values for projectservice.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+environment: alpha
+rootDomain: k8s.vspengg.com
+
+replicaCount: 1
+
+image:
+  tag: latest
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+tolerations: []
+
+variables:
+  ASSOCIATESUBSPROJECT_API_URL: http://localhost:5001/dummy/
+  COORDSYSPOST_API_URL: http://localhost:5001/api/v1/mock/coordsystem
+  CREATEGEOFENCE_API_URL: http://localhost:5001/dummy/
+  CUSTOMERSERVICE_API_URL: http://localhost:5001/api/v1/mock/getcustomersforme
+  DISSOCIATESUBSPROJECT_API_URL: http://localhost:5001/dummy/
+  GEOFENCE_API_URL: http://localhost:5001/api/v1/mock/geofences/
+  RAPTOR_NOTIFICATION_API_URL: http://localhost:5001/api/v2/notification
+  RAPTOR_PROJECT_SETTINGS_API_URL: http://localhost:5001/api/v2
+  PROJECTSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IProjectEvent
+  KAFKA_TOPIC_NAME_SUFFIX: -Project
+  KAFKA_GROUP_NAME: Project-Consumer
+  KAFKA_OFFSET: latest
+  KAFKA_PORT: "9092"
+  KAFKA_URI: localhost
+  MYSQL_DATABASE_NAME: VSS-MasterData-Project
+  MYSQL_PORT: "3306"
+  MYSQL_ROOT_PASSWORD: abc123
+  MYSQL_SERVER_NAME_ReadVSPDB: localhost
+  MYSQL_SERVER_NAME_VSPDB: localhost
+  MYSQL_USERNAME: root
+  TCCBASEURL: mock
+  TCCFILESPACEID: mock
+  TCCORG: vldev
+  TCCUSERNAME: vldev
+  TCCPWD: vldev_key
+
+ingress:
+  enabled: true
+  # Used to create an Ingress record. environment name will be appended
+  hosts:
+    - project
+  annotations:
+    kubernetes.io/ingress.class: nginx
