@@ -40,6 +40,8 @@ spec:
     env:
     - name: KAFKA_TOPICS
       value: "VSS.Interfaces.Events.MasterData.IProjectEvent"
+    - name: MYSQL_DATABASE_NAME
+      value: "VSS-MasterData-Project-Only"
       
   - name: masterdataconsumergeofence
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
@@ -68,7 +70,7 @@ spec:
     - configMapRef:
         name: projectservice-testing
      
-  - name: projectschema
+  - name: projectonlyschema
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
     envFrom:
     - configMapRef:
