@@ -4,7 +4,7 @@ node ('jenkinsslave-pod') {
     def versionPrefix = ""
     def suffix = ""
     def branchName = ""
-    def prjname = env.JOB_NAME.toLowerCase() 
+    def prjname = env.JOB_BASE_NAME.toLowerCase() 
 
     if (branch.contains("release")) {
         versionPrefix = "1.0."
@@ -130,7 +130,7 @@ node ('jenkinsslave-pod') {
 	
 	stage ('Publish results') {
 		sh "docker tag ${container} ${finalImage}"
-		sh "docker push ${finaleImage}"
+		sh "docker push ${finalImage}"
 		sh "echo ${env.versionNumber} >> build.sbt"
         archiveArtifacts artifacts: 'build.sbt', fingerprint: true 
 	}
