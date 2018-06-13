@@ -134,7 +134,7 @@ node ('jenkinsslave-pod') {
 		sh "eval \$(aws ecr get-login --region us-west-2 --no-include-email)"
 		sh "docker push ${finalImage}"
 		sh "echo ${env.versionNumber} >> chart/build.sbt"
-		sh "ls -la chart/
+		sh "ls -la chart/"
         archiveArtifacts artifacts: 'chart/**/*.*', fingerprint: true 
 	}
 }
