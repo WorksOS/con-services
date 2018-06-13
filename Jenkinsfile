@@ -31,17 +31,32 @@ node ('jenkinsslave-pod') {
     stage('Build Solution') {
         checkout scm
 		// TODO use dockerfile with ENTRYPOINT instead of CMD as it is insecure
-	    def building = docker.build(container, "-f Dockerfile.build .")
+	    def build_container = docker.build(container, "-f Dockerfile.build .")
 
         // Currently we need to execute the tests like this, because the pipeline docker plugin being aware of DIND, and attempting to map
         // the volume to the bare metal host        
-        sh "docker run -v ${env.WORKSPACE}/TestResults:/TestResults ${building.id} /bin/sh /build/unittests.sh"
+        //sh "docker run -v ${env.WORKSPACE}/TestResults:/TestResults ${building.id} /bin/sh /build/unittests.sh"
+
+		//Create results directory in workspace
+		dir("/TestResults") {}
+		
+		// Currently we need to execute the tests like this, because the pipeline docker plugin being aware of DIND, and attempting to map
+		// the volume to the bare metal host
+		
+		//Do not modify this unless you know the difference between ' and " in bash
+		// (https://www.gnu.org/software/bash/manual/html_node/Quoting.html#Quoting) see (https://gist.github.com/fuhbar/d00d11297a48b892684da34360e4135a) for Jenkinsfile 
+		// specific escaping examples. One day we might be able to test solutions (and have the results go to a specific directory) rather than specific projects, negating the need for such a complex command.
+		def testCommand = $/docker run -v ${env.WORKSPACE}/TestResults:/TestResults ${build_container.id} bash -c 'cd /build/test && ls UnitTests/**/*Tests.csproj | xargs -I@ -t dotnet test @ /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutputDirectory=/TestResults/TestCoverage/ --test-adapter-path:. --logger:"xunit;LogFilePath=/TestResults/@.xml"'/$
+		
+		//Run the test command generated above
+		sh(script: testCommand)
+
         sh "ls ${env.WORKSPACE}/TestResults"
 		
 		 //See https://jenkins.io/doc/pipeline/steps/xunit/#xunit-publish-xunit-test-result-report for DSL Guide
         step([$class: 'XUnitBuilder',
                 thresholds: [[$class: 'FailedThreshold', unstableThreshold: '10']],
-                tools: [[$class: 'XUnitDotNetTestType', pattern: 'TestResults/*']]])
+                tools: [[$class: 'XUnitDotNetTestType', pattern: 'TestResults/UnitTests/**/*.xml']]])
 
 		cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'TestResults/TestCoverage/*.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
 				
@@ -50,7 +65,7 @@ node ('jenkinsslave-pod') {
         //Agent Variables -> https://docs.microsoft.com/en-us/vsts/build-release/concepts/definitions/build/variables?view=vsts&tabs=batch
         step([$class: 'TeamCollectResultsPostBuildAction', 
             requestedResults: [
-                [includes: 'TestResults/*.xml', teamResultType: 'XUNIT'],
+                [includes: 'TestResults/UnitTests/**/*.xml', teamResultType: 'XUNIT'],
 				[includes: 'TestResults/TestCoverage/*.xml', teamResultType: 'COBERTURA']
             ]
         ])
