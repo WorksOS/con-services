@@ -4,7 +4,8 @@ node ('jenkinsslave-pod') {
     def versionPrefix = ""
     def suffix = ""
     def branchName = ""
-    def prjname = env.JOB_BASE_NAME.toLowerCase() 
+	def jobnameparts = JOB_NAME.tokenize('/') as String[]
+	def prjname = jobnameparts[0].toLowerCase() 	
 
     if (branch.contains("release")) {
         versionPrefix = "1.0."
