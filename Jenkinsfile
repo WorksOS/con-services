@@ -59,16 +59,10 @@ node ('jenkinsslave-pod') {
                 tools: [[$class: 'XUnitDotNetTestType', pattern: 'TestResults/UnitTests/**/*.xml']]])
 
 		cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'TestResults/TestCoverage/*.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
-				
-		//http://javadoc.jenkins-ci.org/tfs/index.html?hudson/plugins/tfs/model/TeamResultType.html
-        //Details of the agent -> https://docs.microsoft.com/en-us/vsts/build-release/task
-        //Agent Variables -> https://docs.microsoft.com/en-us/vsts/build-release/concepts/definitions/build/variables?view=vsts&tabs=batch
-        step([$class: 'TeamCollectResultsPostBuildAction', 
-            requestedResults: [
-                [includes: 'TestResults/UnitTests/**/*.xml', teamResultType: 'XUNIT'],
-				[includes: 'TestResults/TestCoverage/*.xml', teamResultType: 'COBERTURA']
-            ]
-        ])
+
+		//Stash results for publication to vsts after acceptance/integration tests have run 
+		stash name: "build-test-results", includes: "TestResults/*"
+
 	}
 	
 	stage('Prepairing runtime image') {
@@ -102,8 +96,27 @@ node ('jenkinsslave-pod') {
 							thresholds: [[$class: 'FailedThreshold', unstableThreshold: '100']],
 							tools: [[$class: 'XUnitDotNetTestType', pattern: 'AcceptanceTests/tests/**/TestResults/*.xml']]])
 
-			        // step([$class: 'TeamCollectResultsPostBuildAction', 
-					// 	requestedResults: [[includes: 'AcceptanceTests/tests/**/TestResults/*.xml', teamResultType: 'XUNIT']]])
+
+					//Unstash test results from earlier for publishing to vsts as we can only do this once
+					dir("/TestResults") {
+						unstash "build-test-results"
+						//check that we got something
+						sh ls -la
+					}
+
+					//http://javadoc.jenkins-ci.org/tfs/index.html?hudson/plugins/tfs/model/TeamResultType.html
+					//Details of the agent -> https://docs.microsoft.com/en-us/vsts/build-release/task
+					//Agent Variables -> https://docs.microsoft.com/en-us/vsts/build-release/concepts/definitions/build/variables?view=vsts&tabs=batch
+					step([$class: 'TeamCollectResultsPostBuildAction', 
+						requestedResults: [
+							[includes: 'TestResults/UnitTests/**/*.xml', teamResultType: 'XUNIT'],
+							[includes: 'TestResults/TestCoverage/*.xml', teamResultType: 'COBERTURA'],
+							[includes: 'AcceptanceTests/tests/**/TestResults/*.xml', teamResultType: 'XUNIT']
+						]
+					])
+
+
+
 				}
 			}		
 		}
