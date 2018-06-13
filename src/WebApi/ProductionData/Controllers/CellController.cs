@@ -6,6 +6,7 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
@@ -39,7 +40,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       this.logger = logger;
     }
 
-    // POST: api/Cells
     /// <summary>
     /// Retrieve passes for a single cell and process them according to the provided filter and layer analysis parameters
     /// </summary>
@@ -57,7 +57,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       return RequestExecutorContainerFactory.Build<CellPassesExecutor>(logger, raptorClient).Process(request) as CellPassesResult;
     }
 
-    // POST: api/Cells
     /// <summary>
     /// Requests a single thematic datum value from a single cell. Examples are elevation, compaction. temperature etc. The request body contains all necessary parameters.
     /// The cell may be identified by either WGS84 lat/long coordinates or by project grid coordinates.
@@ -76,11 +75,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       return RequestExecutorContainerFactory.Build<CellDatumExecutor>(logger, raptorClient).Process(request) as CellDatumResponse;
     }
 
-    // POST: api/Patches
     /// <summary>
     /// Requests cell passes information in patches (raw Raptor data output)
     /// </summary>
-    /// <param name="request">The request body.</param>
     [PostRequestVerifier]
     [ProjectIdVerifier(AllowLandfillProjects = true)]
     [ProjectUidVerifier(AllowLandfillProjects = true)]
@@ -91,6 +88,5 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       request.Validate();
       return RequestExecutorContainerFactory.Build<PatchExecutor>(logger, raptorClient).Process(request);
     }
-
   }
 }
