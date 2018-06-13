@@ -102,9 +102,8 @@ node ('jenkinsslave-pod') {
 							thresholds: [[$class: 'FailedThreshold', unstableThreshold: '100']],
 							tools: [[$class: 'XUnitDotNetTestType', pattern: 'AcceptanceTests/tests/**/TestResults/*.xml']]])
 
-					//step([$class: 'JUnitResultArchiver', testResults: 'AcceptanceTests/tests/**/TestResults/*.xml'])
-			        step([$class: 'TeamCollectResultsPostBuildAction', 
-						requestedResults: [[includes: 'AcceptanceTests/tests/**/TestResults/*.xml', teamResultType: 'XUNIT']]])
+			        // step([$class: 'TeamCollectResultsPostBuildAction', 
+					// 	requestedResults: [[includes: 'AcceptanceTests/tests/**/TestResults/*.xml', teamResultType: 'XUNIT']]])
 				}
 			}		
 		}
