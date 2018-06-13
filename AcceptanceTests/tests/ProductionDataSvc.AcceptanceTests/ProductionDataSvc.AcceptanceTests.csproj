@@ -138,6 +138,11 @@
     </Compile>
     <Compile Include="Models\CompactionCellDatumResult.cs" />
     <Compile Include="Models\CompactionTagFile.cs" />
+    <Compile Include="Patch.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Patch.feature</DependentUpon>
+    </Compile>
     <Compile Include="ProjectThumbnails.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -402,11 +407,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>CellPasses.feature</DependentUpon>
-    </Compile>
-    <Compile Include="Patch.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Patch.feature</DependentUpon>
     </Compile>
     <Compile Include="Profile.feature.cs">
       <AutoGen>True</AutoGen>

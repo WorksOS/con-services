@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
-    [Binding, Scope(Feature = "Patch")]
+   [Binding, Scope(Feature = "Patch")]
     public class PatchSteps
     {
         private Poster<PatchRequest, PatchResultStructured> patchRequester;
