@@ -129,7 +129,7 @@ node ('jenkinsslave-pod') {
 	}
 	
 	stage ('Publish results') {
-		runtimeImage.push(runtimeImage)
+		runtimeImage.push(finalImage)
 		sh "echo ${env.versionNumber} >> build.sbt"
         archiveArtifacts artifacts: 'build.sbt', fingerprint: true 
 	}
