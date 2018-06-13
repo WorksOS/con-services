@@ -4,7 +4,7 @@ node ('jenkinsslave-pod') {
     def versionPrefix = ""
     def suffix = ""
     def branchName = ""
-	def prjname = env.JOB_NAME.toLowerCase() 
+    def prjname = env.JOB_NAME.toLowerCase() 
 
     if (branch.contains("release")) {
         versionPrefix = "1.0."
@@ -21,12 +21,14 @@ node ('jenkinsslave-pod') {
     def versionNumber = versionPrefix + buildNumber
     def fullVersion = versionNumber + suffix
 	
-	def container = "registry.k8s.vspengg.com:80/${prjname}:${fullVersion}"
-	def testContainer = "registry.k8s.vspengg.com:80/${prjname}.tests:${fullVersion}"
+    def container = "registry.k8s.vspengg.com:80/${prjname}:${fullVersion}"
+    def testContainer = "registry.k8s.vspengg.com:80/${prjname}.tests:${fullVersion}"
+    def finalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${prjname}:${versionNumber}"
 	
-	def vars = []
-	def file
-	def yaml
+    def vars = []
+    def file
+    def yaml
+	def runtimeImage
 	
     stage('Build Solution') {
         checkout scm
@@ -69,7 +71,8 @@ node ('jenkinsslave-pod') {
 	}
 	
 	stage('Prepairing runtime image') {
-		docker.build(container, "-f Dockerfile .").push()
+		runtimeImage = docker.build(container, "-f Dockerfile .")
+		runtimeImage.push()
 	}
 	
     stage('Build Acceptance tests') {	
@@ -123,5 +126,11 @@ node ('jenkinsslave-pod') {
 				}
 			}		
 		}
+	}
+	
+	stage ('Publish results') {
+		runtimeImage.push(runtimeImage)
+		sh "echo ${env.versionNumber} >> build.sbt"
+        archiveArtifacts artifacts: 'build.sbt', fingerprint: true 
 	}
 }
