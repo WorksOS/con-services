@@ -104,7 +104,7 @@ node ('jenkinsslave-pod') {
 					dir("TestResults") {
 						unstash "build-test-results"
 						//check that we got something
-						sh ls -la
+						sh "ls -la"
 					}
 
 					//http://javadoc.jenkins-ci.org/tfs/index.html?hudson/plugins/tfs/model/TeamResultType.html
