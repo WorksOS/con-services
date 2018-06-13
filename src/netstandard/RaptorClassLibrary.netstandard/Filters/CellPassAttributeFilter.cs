@@ -192,6 +192,16 @@ namespace VSS.TRex.Filters
         public BitArray MachineIDSet { get; set; }
 
         /// <summary>
+        /// Only permit cell passes for temperature values within min max range
+        /// </summary>
+        public ushort MaterialTemperatureMin { get; set; }
+
+        /// <summary>
+        /// Only permit cell passes for temperature values within min max range
+        /// </summary>
+        public ushort MaterialTemperatureMax { get; set; }
+
+        /// <summary>
         /// Default no-arg constructor the produces a filter with all aspects set to their defaults
         /// </summary>
         public CellPassAttributeFilter()
@@ -224,6 +234,7 @@ namespace VSS.TRex.Filters
             ClearCompactionMachineOnlyRestriction();
             ClearLayerID();
             ClearGPSAccuracy();
+            ClearTemperatureRange();
 
             ClearElevationRangeFilterInitialisation();
 
@@ -292,7 +303,7 @@ namespace VSS.TRex.Filters
             }
             else
             {
-                if (Result == -1) // Check the contents of the time filter
+                if (HasTimeFilter) // Check the contents of the time filter
                 {
                     Result = StartTime.CompareTo(AFilter.StartTime);
                     if (Result == 0)
@@ -308,7 +319,7 @@ namespace VSS.TRex.Filters
             if (Result != 0)
                 return Result;
 
-            if (Result == -1) // Check the contents of the design filter
+            if (HasDesignFilter) // Check the contents of the design filter
                 Result = DesignNameID.CompareTo(AFilter.DesignNameID);
 
             if (Result != 0)
@@ -319,7 +330,7 @@ namespace VSS.TRex.Filters
             if (Result != 0)
                 return Result;
 
-            if (Result == -1)  // Check the contents of the machine filter
+            if (HasMachineFilter)  // Check the contents of the machine filter
                Result = MachineIDListsComparison(MachineIDs, AFilter.MachineIDs);
 
             if (Result != 0)
@@ -330,7 +341,7 @@ namespace VSS.TRex.Filters
             if (Result != 0)
                 return Result;
 
-            if (Result == -1)  // Check the contents of the machine direction filter
+            if (HasMachineDirectionFilter)  // Check the contents of the machine direction filter
                 Result = MachineDirection.CompareTo(AFilter.MachineDirection); // CompareValue(Ord(MachineDirection), Ord(AFilter.MachineDirection));
 
             if (Result != 0)
@@ -341,7 +352,7 @@ namespace VSS.TRex.Filters
             if (Result != 0)
             return Result;
 
-            if (Result == -1)  // Check the contents of the passtype filter
+            if (HasPassTypeFilter)  // Check the contents of the passtype filter
                 if (PassTypeSet == AFilter.PassTypeSet)
                     Result = 0;
                 else
@@ -355,7 +366,7 @@ namespace VSS.TRex.Filters
             if (Result != 0)
                 return Result;
 
-            if (Result == -1)  // Check the contents of the machine filter
+            if (HasVibeStateFilter)  // Check the contents of the machine filter
                 Result = VibeState.CompareTo(AFilter.VibeState); // CompareValue(Ord(VibeState), Ord(AFilter.VibeState));
 
             if (Result != 0)
@@ -366,7 +377,7 @@ namespace VSS.TRex.Filters
             if (Result != 0)
                 return Result;
 
-            if (Result == -1)  // Check the contents of the min elevation filter
+            if (HasMinElevMappingFilter)  // Check the contents of the min elevation filter
                 Result = MinElevationMapping.CompareTo(AFilter.MinElevationMapping); // CompareValue(Ord(MinElevationMapping), Ord(AFilter.MinElevationMapping));
 
             if (Result != 0)
@@ -377,7 +388,7 @@ namespace VSS.TRex.Filters
             if (Result != 0)
                 return Result;
 
-            if (Result == -1)  // Check the contents of the elevation type filter
+            if (HasElevationTypeFilter)  // Check the contents of the elevation type filter
                 Result = ElevationType.CompareTo(AFilter.ElevationType); // CompareValue(Ord(ElevationType), Ord(AFilter.ElevationType));
 
             if (Result != 0)
@@ -394,7 +405,7 @@ namespace VSS.TRex.Filters
             if (Result != 0)
                 return Result;
 
-            if (Result == -1)  // Check the contents of the GPS guidance mode
+            if (HasGCSGuidanceModeFilter)  // Check the contents of the GPS guidance mode
                 Result = GCSGuidanceMode.CompareTo(AFilter.GCSGuidanceMode); // CompareValue(Ord(GCSGuidanceMode), Ord(AFilter.GCSGuidanceMode));
 
             if (Result != 0)
@@ -405,7 +416,7 @@ namespace VSS.TRex.Filters
             if (Result != 0)
                 return Result;
 
-            if (Result == -1)  // Check the contents of the GPS accuracy filter
+            if (HasGPSAccuracyFilter)  // Check the contents of the GPS accuracy filter
             {
                 Result = FlagCheck2(GPSAccuracyIsInclusive, AFilter.GPSAccuracyIsInclusive); // CompareValue(Ord(GPSAccuracyIsInclusive), Ord(AFilter.GPSAccuracyIsInclusive));
                 if (Result == 0)
@@ -420,7 +431,7 @@ namespace VSS.TRex.Filters
             if (Result != 0)
                 return Result;
 
-            if (Result == -1)  // Check the contents of the GPS tolerance filter
+            if (HasGPSToleranceFilter)  // Check the contents of the GPS tolerance filter
             {
                 Result = FlagCheck2(GPSToleranceIsGreaterThan, AFilter.GPSToleranceIsGreaterThan); // CompareValue(Ord(GPSToleranceIsGreaterThan), Ord(AFilter.GPSToleranceIsGreaterThan));
                 if (Result != 0)
@@ -434,7 +445,7 @@ namespace VSS.TRex.Filters
             Result = FlagCheck2(HasPositioningTechFilter, AFilter.HasPositioningTechFilter);
             if (Result != 0)
                 return Result;
-            if (Result == -1)  // Check the contents of the positioning tech filter
+            if (HasPositioningTechFilter)  // Check the contents of the positioning tech filter
                 Result = PositioningTech.CompareTo(AFilter.PositioningTech); //  CompareValue(Ord(PositioningTech), Ord(AFilter.PositioningTech));
             if (Result != 0)
                 return Result;
@@ -444,7 +455,7 @@ namespace VSS.TRex.Filters
             if (Result != 0)
                 return Result;
 
-            if (Result == -1)  // Check the contents of the elevation range filter
+            if (HasElevationRangeFilter)  // Check the contents of the elevation range filter
                 if (ElevationRangeDesignID != Guid.Empty)
                 {
                     Result = ElevationRangeDesignID.CompareTo(AFilter.ElevationRangeDesignID);
@@ -468,7 +479,7 @@ namespace VSS.TRex.Filters
             Result = FlagCheck2(HasLayerStateFilter, AFilter.HasLayerStateFilter);
             if (Result != 0)
                 return Result;
-            if (Result == -1)
+            if (HasLayerStateFilter)
                 Result = LayerState.CompareTo(AFilter.LayerState); // CompareValue(Ord(LayerState), Ord(AFilter.LayerState));
             if (Result != 0)
                 return Result;
@@ -483,10 +494,26 @@ namespace VSS.TRex.Filters
             Result = FlagCheck2(HasLayerIDFilter, AFilter.HasLayerIDFilter);
             if (Result != 0)
                 return Result;
-            if (Result == -1)
+            if (HasLayerIDFilter)
                 Result = LayerID.CompareTo(AFilter.LayerID); // CompareValue(Ord(LayerID), Ord(AFilter.LayerID));
             if (Result != 0)
                 return Result;
+
+            // TemperatureRangeFilter
+            Result = FlagCheck2(HasTemperatureRangeFilter, AFilter.HasTemperatureRangeFilter);
+            if (Result != 0)
+              return Result;
+            if (HasTemperatureRangeFilter)
+            {
+              Result = MaterialTemperatureMin.CompareTo(AFilter.MaterialTemperatureMin);
+              if (Result != 0)
+                return Result;
+              Result = MaterialTemperatureMax.CompareTo(AFilter.MaterialTemperatureMax);
+              if (Result != 0)
+                return Result;
+            }
+
+
 
             // Everything is equal!
             Result = 0;
@@ -538,6 +565,15 @@ namespace VSS.TRex.Filters
             GPSAccuracyIsInclusive = false;
         }
 
+
+        public void ClearTemperatureRange()
+        {
+          HasTemperatureRangeFilter = false;
+          MaterialTemperatureMin = CellPass.NullMaterialTemperatureValue;
+          MaterialTemperatureMax = CellPass.NullMaterialTemperatureValue;
+        }
+
+
         public void ClearGPSTolerance()
         {
             HasGPSToleranceFilter = false;
@@ -575,10 +611,27 @@ namespace VSS.TRex.Filters
             EndTime = Source.EndTime;
 
             // Machine based filtering members
-            Array.Copy(Source.MachinesList, MachinesList, Source.MachinesList.Length);
-            MachineIDSet = new BitArray(Source.MachineIDSet);
+            if (Source.MachinesList != null)
+            {
+              Array.Copy(Source.MachinesList, MachinesList, Source.MachinesList.Length);
+             // all set types below HasMachineFilter = Source.HasMachineFilter;
+            }
+            else
+            {
+              ClearMachines();
+            }
 
-            // Design based filtering member
+
+           if (Source.MachineIDSet != null)
+           {
+              MachineIDSet = new BitArray(Source.MachineIDSet);
+           }
+           else
+           {
+             MachineIDSet = null;
+           }
+
+          // Design based filtering member
             DesignNameID = Source.DesignNameID;
 
             // Auto Vibe state filtering member
@@ -623,11 +676,34 @@ namespace VSS.TRex.Filters
 
             LayerID = Source.LayerID;
 
+            MaterialTemperatureMin = Source.MaterialTemperatureMin;
+            MaterialTemperatureMax = Source.MaterialTemperatureMax;
+
             Array.Copy(Source.SurveyedSurfaceExclusionList, SurveyedSurfaceExclusionList, Source.SurveyedSurfaceExclusionList.Length);
 
             // This assignment method consciously does not "clone" or otherwise assign Elevation Range related filter state;
             // i.e. FElevationRangeIsInitialised, FElevationRangeIsLevelAndThicknessOnly, FElevationRangeTopElevationForCell,
             //      FElevationRangeBottomElevationForCell, FElevationRangeDesignElevations
+
+
+            HasTimeFilter = Source.HasTimeFilter;
+            HasMachineFilter = Source.HasMachineFilter;
+            HasMachineDirectionFilter = Source.HasMachineDirectionFilter;
+            HasDesignFilter = Source.HasDesignFilter;
+            HasVibeStateFilter = Source.HasVibeStateFilter;
+            HasLayerStateFilter = Source.HasLayerStateFilter;
+            HasMinElevMappingFilter = Source.HasMinElevMappingFilter;
+            HasElevationTypeFilter = Source.HasElevationTypeFilter;
+            HasGCSGuidanceModeFilter = Source.HasGCSGuidanceModeFilter;
+            HasGPSAccuracyFilter = Source.HasGPSAccuracyFilter;
+            HasGPSToleranceFilter = Source.HasGPSToleranceFilter;
+            HasPositioningTechFilter = Source.HasPositioningTechFilter;
+            HasLayerIDFilter = Source.HasLayerIDFilter;
+            HasElevationRangeFilter = Source.HasElevationRangeFilter;
+            HasPassTypeFilter = Source.HasPassTypeFilter;
+            HasCompactionMachinesOnlyFilter = Source.HasCompactionMachinesOnlyFilter;
+            HasTemperatureRangeFilter = Source.HasTemperatureRangeFilter;
+            
 
             Prepare();
 
@@ -888,6 +964,14 @@ FAvoidZoneUndergroundServiceZones = false;
                     return false;
             }
 
+            // TemperatureRange
+            if (HasTemperatureRangeFilter)
+            {
+              if (!FilterPassUsingTemepratureRange(ref PassValue))
+                return false;
+            }
+
+
             return true;
         }
 
@@ -1028,6 +1112,14 @@ FAvoidZoneUndergroundServiceZones = false;
                     return false;
             }
 
+            // TemperatureRange
+            if (HasTemperatureRangeFilter)
+            {
+              if (!FilterPassUsingTemepratureRange(ref PassValue.FilteredPass))
+                return false;
+            }
+
+
             return true;
         }
 
@@ -1038,7 +1130,18 @@ FAvoidZoneUndergroundServiceZones = false;
                    Range.InRange(PassValue.Height, ElevationRangeBottomElevationForCell, ElevationRangeTopElevationForCell);
         }
 
-        public bool FilterPassUsingTimeOnly(ref CellPass PassValue)
+
+      public bool FilterPassUsingTemepratureRange(ref CellPass PassValue)
+      {
+        Debug.Assert(HasTemperatureRangeFilter, "Temperature range filter being used without the temperature range data being initialised");
+        return (PassValue.MaterialTemperature != CellPass.NullMaterialTemperatureValue) &&
+               Range.InRange(PassValue.MaterialTemperature, MaterialTemperatureMin, MaterialTemperatureMax);
+      }
+
+
+
+
+    public bool FilterPassUsingTimeOnly(ref CellPass PassValue)
         {
             // TODO readd when ifopt c+ is understoof
             /*  {$IFOPT C+}
@@ -1216,6 +1319,13 @@ FAvoidZoneUndergroundServiceZones = false;
 
                 if (Machine != null && !Machine.MachineIsConpactorType())
                     return false;
+            }
+
+
+            if (HasTemperatureRangeFilter)
+            {
+              if (!FilterPassUsingTemepratureRange(ref PassValue))
+                return false;
             }
 
             return true;
