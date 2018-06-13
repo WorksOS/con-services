@@ -304,6 +304,60 @@ this.CompactionGetSummaryVolumes("FilterAndInvalidDesign", "ff91dd40-1569-4765-a
 this.CompactionGetSummaryVolumes("InvalidFilterAndDesign", "ff91dd40-1569-4765-a2bc-014321f76ace", "12e86a90-b301-446e-8e37-7879f1d8fd39", "00000000-0000-0000-0000-000000000000", "", "FilterAndInvalidDesign", "400", ((string[])(null)));
 #line hidden
         }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Summary volumes: PassCountRangeEarliestToLatest")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionSummaryVolumes")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "PassCountRangeEarliestToLatest")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "PassCountRangeEarliestToLatest")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUid", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:DesignUid", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid", "3507b523-9390-4e11-90e9-7a1263bb5cd9")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid2", "3f91916b-7cfc-4c98-9e68-0e5307ffaba5")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "PassCountRangeEarliestToLatest")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:httpCode", "200")]
+        public virtual void CompactionGetSummaryVolumes_PassCountRangeEarliestToLatest()
+        {
+#line 5
+this.CompactionGetSummaryVolumes("PassCountRangeEarliestToLatest", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "", "3507b523-9390-4e11-90e9-7a1263bb5cd9", "3f91916b-7cfc-4c98-9e68-0e5307ffaba5", "PassCountRangeEarliestToLatest", "200", ((string[])(null)));
+#line hidden
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Summary volumes: PassCountRangeDesignToLatest")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionSummaryVolumes")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "PassCountRangeDesignToLatest")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "PassCountRangeDesignToLatest")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUid", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:DesignUid", "3f91916b-7cfc-4c98-9e68-0e5307ffaba5")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid", "3d255208-8aa2-4172-9046-f97a36eff896")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid2", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "PassCountRangeDesignToLatest")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:httpCode", "200")]
+        public virtual void CompactionGetSummaryVolumes_PassCountRangeDesignToLatest()
+        {
+#line 5
+this.CompactionGetSummaryVolumes("PassCountRangeDesignToLatest", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "3f91916b-7cfc-4c98-9e68-0e5307ffaba5", "3d255208-8aa2-4172-9046-f97a36eff896", "", "PassCountRangeDesignToLatest", "200", ((string[])(null)));
+#line hidden
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Summary volumes: PassCountRangeEarliestToDesign")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionSummaryVolumes")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "PassCountRangeEarliestToDesign")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "PassCountRangeEarliestToDesign")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUid", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:DesignUid", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid", "3507b523-9390-4e11-90e9-7a1263bb5cd9")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUid2", "3d255208-8aa2-4172-9046-f97a36eff896")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "PassCountRangeEarliestToDesign")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:httpCode", "200")]
+        public virtual void CompactionGetSummaryVolumes_PassCountRangeEarliestToDesign()
+        {
+#line 5
+this.CompactionGetSummaryVolumes("PassCountRangeEarliestToDesign", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "", "3507b523-9390-4e11-90e9-7a1263bb5cd9", "3d255208-8aa2-4172-9046-f97a36eff896", "PassCountRangeEarliestToDesign", "200", ((string[])(null)));
+#line hidden
+        }
     }
 }
 #pragma warning restore

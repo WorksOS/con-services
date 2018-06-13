@@ -181,5 +181,44 @@
   "FilterAndInvalidDesign": {
     "Code": -1,
     "Message": "Invalid surface parameter(s)."
+  },
+  "PassCountRangeEarliestToLatest": {
+    "volumeSummaryData": {
+      "netVolume": 283.05944130859291,
+      "totalVolume": 972.92075781249957,
+      "totalCutVolume": 627.99009956054624,
+      "totalFillVolume": 344.93065825195333,
+      "totalMachineCoveragePlanArea": 137012.47240000003,
+      "shrinkage": 0.0,
+      "bulking": 0.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "PassCountRangeDesignToLatest": {
+    "volumeSummaryData": {
+      "netVolume": 283.05944130859336,
+      "totalVolume": 972.92075781249935,
+      "totalCutVolume": 627.99009956054635,
+      "totalFillVolume": 344.930658251953,
+      "totalMachineCoveragePlanArea": 137012.47240000003,
+      "shrinkage": 0.0,
+      "bulking": 0.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "PassCountRangeEarliestToDesign": {
+    "volumeSummaryData": {
+      "netVolume": 0,
+      "totalVolume": 0,
+      "totalCutVolume": 0,
+      "totalFillVolume": 0,
+      "totalMachineCoveragePlanArea": 137012.47240000003,
+      "shrinkage": 0,
+      "bulking": 0
+    },
+    "Code": 0,
+    "Message": "success"
   }
 }

@@ -25,3 +25,9 @@ Examples:
 | GroundToGroundNullUid            | ff91dd40-1569-4765-a2bc-014321f76ace |                                      |                                      |                                      | FilterAndInvalidDesign           | 400      |
 | FilterAndInvalidDesign           | ff91dd40-1569-4765-a2bc-014321f76ace | 00000000-0000-0000-0000-000000000000 | f07ed071-f8a1-42c3-804a-1bde7a78be5b |                                      | FilterAndInvalidDesign           | 400      |
 | InvalidFilterAndDesign           | ff91dd40-1569-4765-a2bc-014321f76ace | 12e86a90-b301-446e-8e37-7879f1d8fd39 | 00000000-0000-0000-0000-000000000000 |                                      | FilterAndInvalidDesign           | 400      |
+| PassCountRangeEarliestToLatest   | 7925f179-013d-4aaf-aff4-7b9833bb06d6 |                                      | 3507b523-9390-4e11-90e9-7a1263bb5cd9 | 3f91916b-7cfc-4c98-9e68-0e5307ffaba5 | PassCountRangeEarliestToLatest   | 200      |
+| PassCountRangeDesignToLatest     | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 3f91916b-7cfc-4c98-9e68-0e5307ffaba5 | 3d255208-8aa2-4172-9046-f97a36eff896 |                                      | PassCountRangeDesignToLatest     | 200      |
+| PassCountRangeEarliestToDesign   | 7925f179-013d-4aaf-aff4-7b9833bb06d6 |                                      | 3507b523-9390-4e11-90e9-7a1263bb5cd9 | 3d255208-8aa2-4172-9046-f97a36eff896 | PassCountRangeEarliestToDesign   | 200      |
+
+
+
