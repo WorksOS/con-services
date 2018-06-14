@@ -128,6 +128,8 @@ namespace VSS.MasterData.Project.WebAPI
       }
 #endif
 
+      app.UseMiddleware<HealthMiddleware>();
+
       app.UseFilterMiddleware<ProjectAuthentication>();
       app.UseMvc();
     }
