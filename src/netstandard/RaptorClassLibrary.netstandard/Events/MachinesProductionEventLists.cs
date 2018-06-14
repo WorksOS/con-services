@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.SiteModels;
 
@@ -11,6 +13,8 @@ namespace VSS.TRex.Events
   /// </summary>
   public class MachinesProductionEventLists : /*List<ProductionEventLists>,*/ IMachinesProductionEventLists
   {
+    private static readonly ILogger Log = Logging.Logger.CreateLogger< MachinesProductionEventLists>();
+
     /// <summary>
     /// The Sitemodel instance that owns this set of machines target values
     /// </summary>
@@ -23,6 +27,7 @@ namespace VSS.TRex.Events
     //Removed as internal machine ID are not simple indexes into the site model machines list
     //private Dictionary<short, ProductionEventLists> MachineIDMap = new Dictionary<short, ProductionEventLists>();
     private ProductionEventLists[] MachineIDMap = new ProductionEventLists[0];
+    private object[] MachinelockInterlocks = new object[0];
 
     /// <summary>
     /// Constructor for the machines events within the sitemodel supplier as owner
@@ -32,6 +37,8 @@ namespace VSS.TRex.Events
     {
       Owner = owner;
       MachineIDMap = new ProductionEventLists[owner.Machines.Count];
+      if (owner.Machines.Count > 0)
+        MachinelockInterlocks = Enumerable.Range(0, owner.Machines.Count).Select(x => new object()).ToArray();
     }
 
     /// <summary>
@@ -42,13 +49,50 @@ namespace VSS.TRex.Events
     /// <returns></returns>
     //public ProductionEventLists this[Guid MachineID] => MachineIDMap.TryGetValue(MachineID, out ProductionEventLists result) ? result : null;
 
+
+    /// <summary>
+    /// </summary>
+    /// <param name="machineID"></param>
+    /// <returns></returns>
+    private ProductionEventLists GetMachineEventLists(short machineID)
+    {
+      if (machineID >= MachineIDMap.Length)
+        return null;
+
+      if (MachineIDMap[machineID] == null)
+      {
+        // The machine events need to be loaded...
+        // Lock the list using a proxy object to prevent concurren requestors loading events simultaneously
+        lock (MachinelockInterlocks[machineID])
+        {
+          // If the map is still null then this requestor 'won the lock'
+          if (MachineIDMap[machineID] == null)
+          {
+            // Create a temp var for the events so consurrent requestors wont grab a reference to
+            // an event lsit being loaded
+            ProductionEventLists temp = new ProductionEventLists(Owner, machineID);
+
+            if (temp.LoadEventsForMachine(SiteModels.SiteModels.Instance().ImmutableStorageProxy))
+            {
+              // Everything is good, provide access to the loaded machine event lists.
+              MachineIDMap[machineID] = temp;
+            }
+            else
+              Log.LogError($"Failed to load event target lists for machine {machineID}");
+          }
+        }
+      }
+
+      return MachineIDMap[machineID];
+    }
+
     /// <summary>
     /// Default (short) indexer for the machines target values that uses the machine ID map dictionary to locate the set of 
     /// events lists for that machine.
     /// </summary>
     /// <param name="MachineID"></param>
     /// <returns></returns>
-    public ProductionEventLists this[short machineID] => machineID >= MachineIDMap.Length ? null : MachineIDMap[machineID];
+    public ProductionEventLists this[short machineID] => machineID >= MachineIDMap.Length ? null : GetMachineEventLists(machineID);
 
     /// <summary>
     /// Overrides the base List T Add() method to add the item to the local machine ID map dictionary as well as add it to the list

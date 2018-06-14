@@ -34,6 +34,9 @@ namespace VSS.TRex.SiteModels.Interfaces
     SurveyedSurfaces SurveyedSurfaces { get; }
     MachinesList Machines { get; set; }
     bool IgnoreInvalidPositions { get; set; }
+
+    string CSIB();
+
     void Include(SiteModel Source);
     void Write(BinaryWriter writer);
     bool Read(BinaryReader reader);

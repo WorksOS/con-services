@@ -1,5 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
+using VSS.TRex.CoordinateSystems;
+using VSS.TRex.CoordinateSystems.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Servers.Compute;
 using VSS.TRex.SiteModels.Interfaces;
@@ -19,6 +21,7 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Add(x => x.AddSingleton<ITFAProxy>(new TFAProxy()))
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
+        .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
         .Complete();
     }
 

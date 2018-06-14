@@ -126,7 +126,7 @@ namespace VSS.TRex.Servers.Compute
       cfg.Backups = 0;
     }
 
-        public override ICache<NonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<NonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg)
     {
       Console.WriteLine($"CacheConfig is: {CacheCfg}");
       Console.WriteLine($"immutableTRexGrid is : {immutableTRexGrid}");

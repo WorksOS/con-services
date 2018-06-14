@@ -1,12 +1,193 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using VSS.TRex.Common;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace VSS.TRex.CoordinateSystems
 {
   public class CoordinatesApiClient //: TPaasAPIClient, ICoordinatesApiClient
   {
+    private static string baseUrl = "https://api-stg.trimble.com/t/trimble.com/coordinates/1.0";
+    private static string applicationAccessToken = "3703d908e4ed0cf02f095c405fdd7182";
+
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<CoordinatesApiClient>();
+
+    public async Task<NEE> GetNEEAsync(string id, LLH llh)
+    {
+      try
+      {
+        using (var client = new HttpClient())
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", applicationAccessToken);
+
+          Uri requestUri = new Uri($"{baseUrl}/coordinates/nee/Orientated/fromLLH" +
+                                   $"?Type=ReferenceGlobal&Latitude={llh.Latitude}&Longitude={llh.Longitude}&Height={llh.Height}" +
+                                   $"&fromCoordinateSystemId={id}");
+
+          var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+          var result = await client.SendAsync(request).ConfigureAwait(false);
+
+          if (result.IsSuccessStatusCode)
+          {
+            var neeStr = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+            return JsonConvert.DeserializeObject<NEE>(neeStr);
+          }
+        }
+      }
+      catch (Exception x)
+      {
+        Log.LogError($"Failed to get NEE for lat={llh.Latitude}, lon={llh.Longitude}, height={llh.Height}, Exception: {x}");
+      }
+
+      return new NEE()
+      {
+        East = Consts.NullDouble,
+        North = Consts.NullDouble,
+        Elevation = Consts.NullDouble
+      };
+    }
+
+    public async Task<LLH> GetLLHAsync(string id, NEE nee)
+    {
+      try
+      {
+        using (var client = new HttpClient())
+        {
+          client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", applicationAccessToken);
+
+          Uri requestUri = new Uri($"{baseUrl}/coordinates/llh/ReferenceGlobal/fromNEE" +
+                                   $"?from.type=Orientated&from.northing={nee.North}&from.easting={nee.East}&from.elevation={nee.Elevation}" +
+                                   $"&fromCoordinateSystemId={id}");
+
+          var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+          var result = await client.SendAsync(request).ConfigureAwait(false);
+
+          if (result.IsSuccessStatusCode)
+          {
+            var llhStr = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+            return JsonConvert.DeserializeObject<LLH>(llhStr);
+          }
+        }
+      }
+      catch (Exception x)
+      {
+        Log.LogError($"Failed to get LLH for east={nee.East}, north={nee.North}, elevation={nee.Elevation}, Excpetion: {x}");
+      }
+
+      return new LLH()
+      {
+        Latitude = Consts.NullDouble,
+        Longitude = Consts.NullDouble,
+        Height = Consts.NullDouble
+      };
+    }
+
+    public struct CoordinateSystemWithCSIB
+    {
+      public string id; // the returned csib
+    }
+
+    public struct CoordinateSystem
+    {
+      public CoordinateSystemWithCSIB coordinateSystem;
+    }
+
+    public async Task<string> ImportFromDCAsync(string DCFilePath)
+    {
+      try
+      {
+        return ImportFromDCDataAsync(DCFilePath, File.ReadAllBytes(DCFilePath)).Result;
+      }
+      catch (Exception x)
+      {
+        Log.LogError($"Failed to import coordinate system from DC {DCFilePath}, Exception {x}");
+      }
+
+      return null;
+
+
+      /*
+      string imported = null;
+
+      try
+      {
+        using (var client = new HttpClient())
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", applicationAccessToken);
+          client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+
+          Uri requestUri = new Uri($"{baseUrl}/coordinatesystems/imports/dc/file");
+
+          using (var content = new MultipartFormDataContent("Upload----" + DateTime.Now.ToString(CultureInfo.InvariantCulture)))
+          {
+            content.Add(new StreamContent(new MemoryStream(File.ReadAllBytes(DCFilePath))), "DC", Path.GetFileName(DCFilePath));
+
+            using (var result = await client.PutAsync(requestUri, content).ConfigureAwait(false))
+            {
+              if (!result.IsSuccessStatusCode)
+                throw new Exception(result.ToString());
+
+              var json = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+              var csList = JsonConvert.DeserializeObject<IEnumerable<CoordinateSystem>>(json);
+              imported = csList?.FirstOrDefault().coordinateSystem.id;
+            }
+          }
+        }
+      }
+      catch (Exception x)
+      {
+        Log.LogError($"Failed to import coordinate system from DC {DCFilePath}, Exception (x)");
+      }
+
+      return imported;
+      */
+    }
+
+    public async Task<string> ImportFromDCDataAsync(string dCFilePath, byte[] DCFileContent)
+    {
+      string imported = null;
+
+      try
+      {
+        using (var client = new HttpClient())
+        {
+          client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", applicationAccessToken);
+          client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+
+          Uri requestUri = new Uri($"{baseUrl}/coordinatesystems/imports/dc/file");
+
+          using (var content = new MultipartFormDataContent("Upload----" + DateTime.Now.ToString(CultureInfo.InvariantCulture)))
+          {
+            content.Add(new StreamContent(new MemoryStream(DCFileContent)), "DC", Path.GetFileName(dCFilePath));
+
+            using (var result = await client.PutAsync(requestUri, content).ConfigureAwait(false))
+            {
+              if (!result.IsSuccessStatusCode)
+                throw new Exception(result.ToString());
+
+              var json = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+              var csList = JsonConvert.DeserializeObject<IEnumerable<CoordinateSystem>>(json);
+              imported = csList?.FirstOrDefault().coordinateSystem.id;
+            }
+          }
+        }
+      }
+      catch (Exception x)
+      {
+        Log.LogError($"Failed to import coordinate system from DC {dCFilePath}, Exception {x}");
+      }
+
+      return imported;
+    }
+
   }
 }
 
