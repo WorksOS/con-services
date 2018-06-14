@@ -1304,10 +1304,7 @@ namespace VSS.TRex.Profiling
       // SIGLogMessage.PublishNoODS(Nil, Format('In BuildLiftsForCell at %dx%d: Handling passcount check', [Cell.OTGCellX, Cell.OTGCellY]), slmcDebug);
 
 
-      if (PassFilter != null && PassFilter.HasPassCountRangeFilter) // Filter only wants passes that match a range
-      {
-        ApplyPassCountRangeFilter();
-      }
+      ApplyPassCountRangeFilter();
 
       // Apply the Elevation Type filter if any...
       ApplyElevationTypeFilter();

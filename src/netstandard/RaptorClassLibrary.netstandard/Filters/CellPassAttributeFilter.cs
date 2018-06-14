@@ -157,7 +157,8 @@ namespace VSS.TRex.Filters
     /// A subgrid containing sampled elevations from a benchmark surface defining the bench surface for
     /// an elevation range filter.
     /// </summary>
-    [NonSerialized] public ClientHeightLeafSubGrid ElevationRangeDesignElevations;
+    [NonSerialized]
+    public ClientHeightLeafSubGrid ElevationRangeDesignElevations;
 
     /// <summary>
     /// Denotes whether analysis of cell passes in a cell are analysed into separate layers accodring to 
