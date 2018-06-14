@@ -78,7 +78,8 @@ namespace MockProjectWebApi.Controllers
             filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.NoDataFilterElevationTypeLast);
             filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.SummaryVolumesBaseFilter20170305);
             filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.SummaryVolumesTopFilter20170621);
-
+            filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.VolumesFilterWithPassCountRangeEarliest);
+            filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.VolumesFilterWithPassCountRangeLatest);
             return filters;
           }
         case ConstantsUtil.DIMENSIONS_PROJECT_UID:
@@ -94,13 +95,17 @@ namespace MockProjectWebApi.Controllers
                 FilterDescriptors.Dimensions.DimensionsBoundaryFilter,
                 FilterDescriptors.Dimensions.DimensionsBoundaryFilterAsAtToday,
                 FilterDescriptors.Dimensions.DimensionsBoundaryMdp,
+                FilterDescriptors.Dimensions.DimensionsBoundaryMdpPassCountRange,
                 FilterDescriptors.Dimensions.DimensionsBoundaryMdpAsAtToday,
                 FilterDescriptors.Dimensions.DimensionsBoundaryCmv,
+                FilterDescriptors.Dimensions.DimensionsBoundaryCmvPassCountRange,
                 FilterDescriptors.Dimensions.DimensionsBoundaryCmvAsAtToday,
                 FilterDescriptors.Dimensions.SummaryVolumesBaseFilter,
                 FilterDescriptors.Dimensions.SummaryVolumesTopFilter,
                 FilterDescriptors.Dimensions.SummaryVolumesFilterExtentsEarliest,
                 FilterDescriptors.Dimensions.SummaryVolumesFilterExtentsLatest,
+                FilterDescriptors.Dimensions.SummaryVolumesFilterExtentsEarliestWithPassCountRange,
+                FilterDescriptors.Dimensions.SummaryVolumesFilterExtentsLatestWithPassCountRange,
                 FilterDescriptors.Dimensions.SummaryVolumesFilterToday,
                 FilterDescriptors.Dimensions.SummaryVolumesFilterNoDates,
                 FilterDescriptors.Dimensions.SummaryVolumesFilterNoLatLonToday,

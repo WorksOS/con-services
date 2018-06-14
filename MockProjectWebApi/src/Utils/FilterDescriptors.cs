@@ -28,6 +28,19 @@ namespace MockProjectWebApi.Utils
         Name = "Golden Dimensions Project Extents Filter",
         FilterJson = JsonResourceHelper.GetGoldenDimensionsFilterJson("ProjectExtentsFilterElevationTypeLast")
       };
+      public static FilterDescriptor VolumesFilterWithPassCountRangeEarliest => new FilterDescriptor
+      {
+        FilterUid = "3507b523-9390-4e11-90e9-7a1263bb5cd9",
+        Name = "Golden Dimensions Volumes Filter With Pass Count Range Earliest",
+        FilterJson = JsonResourceHelper.GetGoldenDimensionsFilterJson("VolumesWithPassCountRangeEarliest")
+      };
+
+      public static FilterDescriptor VolumesFilterWithPassCountRangeLatest => new FilterDescriptor
+      {
+        FilterUid = "3f91916b-7cfc-4c98-9e68-0e5307ffaba5",
+        Name = "Golden Dimensions Volumes Filter With Pass Count Range Latest",
+        FilterJson = JsonResourceHelper.GetGoldenDimensionsFilterJson("VolumesWithPassCountRangeLatest")
+      };
 
       #region Invalid date range filters (first -> last)
 
@@ -98,6 +111,14 @@ namespace MockProjectWebApi.Utils
         FilterJson = JsonResourceHelper.GetFilterJson("DimensionsBoundaryCMV")
       };
 
+      public static FilterDescriptor DimensionsBoundaryCmvPassCountRange => new FilterDescriptor
+      {
+        FilterUid = "026cabf4-f1b2-4211-a3df-8a314e365e80",
+        Name = "Dimensions boundary CMV with pass count range",
+        FilterType = FilterType.Persistent,
+        FilterJson = JsonResourceHelper.GetFilterJson("DimensionsBoundaryCMVPassCountRange")
+      };
+
       public static FilterDescriptor DimensionsBoundaryCmvAsAtToday => new FilterDescriptor
       {
         FilterUid = "c638018c-5026-44be-af0b-006ecad65462",
@@ -125,10 +146,19 @@ namespace MockProjectWebApi.Utils
       public static FilterDescriptor DimensionsBoundaryMdp => new FilterDescriptor
       {
         FilterUid = "3ef41e3c-d1f5-40cd-b012-99d11ff432ef",
-        Name = "Dimensions boundary mdp",
+        Name = "Dimensions boundary MDP",
         FilterType = FilterType.Persistent,
         FilterJson = JsonResourceHelper.GetFilterJson("DimensionsBoundaryMDP")
       };
+
+      public static FilterDescriptor DimensionsBoundaryMdpPassCountRange => new FilterDescriptor
+      {
+        FilterUid = "bc29dd86-015f-4e84-a29f-cbc0a2add277",
+        Name = "Dimensions boundary MDP with pass count range",
+        FilterType = FilterType.Persistent,
+        FilterJson = JsonResourceHelper.GetFilterJson("DimensionsBoundaryMDPPassCountRange")
+      };
+
 
       public static FilterDescriptor DimensionsBoundaryMdpAsAtToday => new FilterDescriptor
       {
@@ -232,6 +262,13 @@ namespace MockProjectWebApi.Utils
         FilterType = FilterType.Persistent,
         FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesFilterProjectExtentsEarliest")
       };
+      public static FilterDescriptor SummaryVolumesFilterExtentsEarliestWithPassCountRange => new FilterDescriptor
+      {
+        FilterUid = "5a130d7c-a79b-433d-a04a-094b07cfc1dd",
+        Name = "Summary Volumes Filter Extents Earliest With Pass Count Range",
+        FilterType = FilterType.Persistent,
+        FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesFilterProjectExtentsEarliestWithPassCountRange")
+      };
 
       public static FilterDescriptor SummaryVolumesFilterExtentsLatest => new FilterDescriptor
       {
@@ -239,6 +276,13 @@ namespace MockProjectWebApi.Utils
         Name = "Summary Volumes Filter Extents Latest",
         FilterType = FilterType.Persistent,
         FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesFilterProjectExtentsLatest")
+      };
+      public static FilterDescriptor SummaryVolumesFilterExtentsLatestWithPassCountRange => new FilterDescriptor
+      {
+        FilterUid = "b06996e4-4944-4d84-b2c7-e1808dd7d7d7",
+        Name = "Summary Volumes Filter Extents Latest With Pass Count Range",
+        FilterType = FilterType.Persistent,
+        FilterJson = JsonResourceHelper.GetDimensionsFilterJson("SummaryVolumesFilterProjectExtentsLatestWithPassCountRange")
       };
 
       public static FilterDescriptor SummaryVolumesFilterCustom20121101Last => new FilterDescriptor

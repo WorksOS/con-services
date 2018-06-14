@@ -1,0 +1,25 @@
+{
+  "dateRangeType": 6,
+  "polygonUID": "ca9c91c3-513b-4082-b2d7-0568899e56d5",
+  "elevationType": 0,
+  "polygonLL": [
+    {
+      "Lat": 36.207118,
+      "Lon": -115.01848
+    },
+    {
+      "Lat": 36.207334,
+      "Lon": -115.018394
+    },
+    {
+      "Lat": 36.207492,
+      "Lon": -115.019604
+    },
+    {
+      "Lat": 36.207101,
+      "Lon": -115.019478
+    }
+  ],
+  "passCountRangeMin": 15,
+  "passCountRangeMax": 15
+}
