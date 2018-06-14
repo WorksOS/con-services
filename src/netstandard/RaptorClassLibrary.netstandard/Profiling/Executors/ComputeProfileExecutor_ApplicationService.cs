@@ -3,6 +3,8 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Profiling.GridFabric.Arguments;
 using VSS.TRex.Profiling.GridFabric.Requests;
 using VSS.TRex.Profiling.GridFabric.Responses;
+using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Profiling.Executors
 {
@@ -40,8 +42,12 @@ namespace VSS.TRex.Profiling.Executors
         if (arg.PositionsAreGrid)
           arg2.NEECoords = CoordinateSystems.Convert.NullWGSLLToXY(new[] {arg.StartPoint, arg.EndPoint});
         else
+        {
+          ISiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(arg.ProjectID);
+
           arg2.NEECoords =
-            CoordinateSystems.Convert.WGS84ToCalibration(arg.ProjectID, new[] {arg.StartPoint, arg.EndPoint});
+            CoordinateSystems.Convert.WGS84ToCalibration(SiteModel.CSIB(), new[] {arg.StartPoint, arg.EndPoint});
+        }
 
         ProfileRequest_ClusterCompute request = new ProfileRequest_ClusterCompute();
         //ProfileRequestComputeFunc_ClusterCompute func = new ProfileRequestComputeFunc_ClusterCompute();

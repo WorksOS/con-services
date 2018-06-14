@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Events;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Caches;
@@ -21,7 +22,7 @@ using VSS.TRex.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.SiteModels
 {
-  [Serializable]
+//  [Serializable]
     public class SiteModel : ISiteModel
   {
         [NonSerialized]
@@ -32,6 +33,7 @@ namespace VSS.TRex.SiteModels
 
         private const int kMajorVersion = 1;
         private const int kMinorVersion = 0;
+        private const int kMinorVersionLatest = 0;
 
         public Guid ID { get; set; } = Guid.Empty;
 
@@ -58,6 +60,32 @@ namespace VSS.TRex.SiteModels
         /// </summary>
         public BoundingWorldExtent3D SiteModelExtent { get; } = BoundingWorldExtent3D.Inverted();
 
+        /// <summary>
+        /// Local cached copy of the coordiante system CSIB
+        /// </summary>
+        private string csib = null;
+
+        /// <summary>
+        /// The string serialized CSIB gained from adding a coordinate system from a DC or similar file
+        /// to the project. This getter is reponsible for accessing the information from the persistent
+        /// store and caching it in the site model
+        /// </summary>
+        public string CSIB()
+        {
+          if (csib != null)
+            return csib;
+
+          FileSystemErrorStatus readResult = SiteModels.Instance().ImmutableStorageProxy.ReadStreamFromPersistentStore(ID, CoordinateSystemConsts.kCoordinateSystemCSIBStorageKeyName, FileSystemStreamType.CoordinateSystemCSIB, out MemoryStream csibStream);
+
+          if (readResult != FileSystemErrorStatus.OK || csibStream == null || csibStream.Length == 0)
+            return null;
+
+          using (csibStream)
+          {
+            return Encoding.ASCII.GetString(csibStream.ToArray());
+          }
+        }
+  
         // ProofingRuns is the set of proofing runs that have been collected in this
         // site model
         // public SiteProofingRuns ProofingRuns;
@@ -229,7 +257,7 @@ namespace VSS.TRex.SiteModels
         {
             // Write the SiteModel attributes
             writer.Write(kMajorVersion);
-            writer.Write(kMinorVersion);
+            writer.Write(kMinorVersionLatest);
             // writer.Write(Name);
             // writer.Write(Description);
             writer.Write(ID.ToByteArray());
@@ -261,7 +289,7 @@ namespace VSS.TRex.SiteModels
             int MajorVersion = reader.ReadInt32();
             int MinorVersion = reader.ReadInt32();
 
-            if (!(MajorVersion == kMajorVersion && MinorVersion == kMinorVersion))
+            if (!(MajorVersion == kMajorVersion && (MinorVersion == kMinorVersion)))
             {
                 Log.LogError($"Unknown version number {MajorVersion}:{MinorVersion} in Read()");
                 return false;

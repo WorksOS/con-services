@@ -45,6 +45,7 @@
   <ItemGroup>
     <Folder Include="Analytics\Foundation\GridFabric\Arguments\" />
     <Folder Include="Analytics\Foundation\GridFabric\Requests\" />
+    <Folder Include="CoordinateSystems\GridFabric\Requests\" />
   </ItemGroup>
 
   <ItemGroup>

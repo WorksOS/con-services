@@ -9,6 +9,7 @@
         SubGridDirectory,
         Events,
         ProductionDataXML,
-        SubgridExistenceMap
+        SubgridExistenceMap,
+        CoordinateSystemCSIB
     }
 }

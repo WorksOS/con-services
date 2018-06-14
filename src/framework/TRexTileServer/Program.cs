@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Windows.Forms;
 using Microsoft.Extensions.DependencyInjection;
+using VSS.TRex.CoordinateSystems;
+using VSS.TRex.CoordinateSystems.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Implementations.Framework;
@@ -24,6 +26,7 @@ namespace TRexServerApplication
         .Add(x => x.AddSingleton<IRenderingFactory>(new RenderingFactory()))
 
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels()))
+        .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
         .Complete();
     }
 
