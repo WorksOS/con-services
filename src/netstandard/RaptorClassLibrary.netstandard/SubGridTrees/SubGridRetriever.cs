@@ -193,6 +193,11 @@ namespace VSS.TRex.SubGridTrees
 
     private void ProcessCellPasses()
     {
+
+      bool haveHalfPass = false;
+      int passRangeCount = 0;
+      bool takePass = false;
+
       while (CellPassIterator.MayHaveMoreFilterableCellPasses() &&
              CellPassIterator.GetNextCellPass(ref CurrentPass.FilteredPass))
       {
@@ -202,34 +207,57 @@ namespace VSS.TRex.SubGridTrees
 
         if (Filter.AttributeFilter.FilterPass(ref CurrentPass))
         {
-          if (Filter.AttributeFilter.HasElevationTypeFilter)
-            AssignmentContext.FilteredValue.PassCount = 1;
 
-          if (Filter.AttributeFilter.HasMinElevMappingFilter ||
-              (Filter.AttributeFilter.HasElevationTypeFilter &&
-               Filter.AttributeFilter.ElevationType == ElevationType.Lowest))
+          if (Filter.AttributeFilter.HasPassCountRangeFilter)
           {
-            if (!HaveFilteredPass || CurrentPass.FilteredPass.Height < TempPass.FilteredPass.Height)
-              TempPass = CurrentPass;
-            HaveFilteredPass = true;
+
+            if (CurrentPass.FilteredPass.HalfPass)
+            {
+              if (!haveHalfPass)
+                ++passRangeCount; // increase count for first half pass
+              haveHalfPass = !haveHalfPass;
+            }
+            else
+              ++passRangeCount; // increase count for first full pass
+
+            takePass = Range.InRange(passRangeCount, Filter.AttributeFilter.PasscountRangeMin, Filter.AttributeFilter.PasscountRangeMax);
           }
           else
+            takePass = true;
+
+          if (takePass)
           {
-            if (Filter.AttributeFilter.HasElevationTypeFilter &&
-                Filter.AttributeFilter.ElevationType == ElevationType.Highest)
+            if (Filter.AttributeFilter.HasElevationTypeFilter) 
+              AssignmentContext.FilteredValue.PassCount = 1;
+
+            if (Filter.AttributeFilter.HasMinElevMappingFilter ||
+                (Filter.AttributeFilter.HasElevationTypeFilter &&
+                 Filter.AttributeFilter.ElevationType == ElevationType.Lowest))
             {
-              if (!HaveFilteredPass || CurrentPass.FilteredPass.Height > TempPass.FilteredPass.Height)
+              if (!HaveFilteredPass || CurrentPass.FilteredPass.Height < TempPass.FilteredPass.Height)
                 TempPass = CurrentPass;
               HaveFilteredPass = true;
             }
             else
             {
-              AssignmentContext.FilteredValue.FilteredPassData = CurrentPass;
-              HaveFilteredPass = true;
-              AssignmentContext.FilteredValue.PassCount = -1;
-              break;
+              if (Filter.AttributeFilter.HasElevationTypeFilter &&
+                  Filter.AttributeFilter.ElevationType == ElevationType.Highest)
+              {
+                if (!HaveFilteredPass || CurrentPass.FilteredPass.Height > TempPass.FilteredPass.Height)
+                  TempPass = CurrentPass;
+                HaveFilteredPass = true;
+              }
+              else
+              {
+                AssignmentContext.FilteredValue.FilteredPassData = CurrentPass;
+                HaveFilteredPass = true;
+                AssignmentContext.FilteredValue.PassCount = -1;
+                break;
+              }
             }
           }
+
+
         }
       }
     }
