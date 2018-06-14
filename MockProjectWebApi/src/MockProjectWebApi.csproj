@@ -31,7 +31,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.2" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.24.*" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.25.*" />
     <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.0.*" />
     <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.1.*" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
@@ -45,13 +45,16 @@
     <Content Remove="Json\Filters\DimensionsAutomatics.json" />
     <Content Remove="Json\Filters\DimensionsBoundaryCMV.json" />
     <Content Remove="Json\Filters\DimensionsBoundaryCMVAsAtToday.json" />
+    <Content Remove="Json\Filters\DimensionsBoundaryCMVPassCountRange.json" />
     <Content Remove="Json\Filters\DimensionsBoundaryFilter.json" />
     <Content Remove="Json\Filters\DimensionsBoundaryFilterAsAtToday.json" />
     <Content Remove="Json\Filters\DimensionsBoundaryFilterWithMachine.json" />
     <Content Remove="Json\Filters\DimensionsBoundaryMDP.json" />
     <Content Remove="Json\Filters\DimensionsBoundaryMDPAsAtToday.json" />
+    <Content Remove="Json\Filters\DimensionsBoundaryMDPPassCountRange.json" />
     <Content Remove="Json\Filters\DimensionsPassCountRange.json" />
     <Content Remove="Json\Filters\DimensionsTemperatureRange.json" />
+    <Content Remove="Json\Filters\DimensionsTempRangeBoundary.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101First.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101Last.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterNoDates.json" />
@@ -60,7 +63,9 @@
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterNull20121101.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtents.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtentsEarliest.json" />
+    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtentsEarliestWithPassCountRange.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtentsLatest.json" />
+    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtentsLatestWithPassCountRange.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterToday.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterYesterday.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesTemperature.json" />
@@ -74,6 +79,8 @@
     <Content Remove="Json\Filters\GoldenDimensions\ProjectExtentsFilterElevationTypeLast.json" />
     <Content Remove="Json\Filters\GoldenDimensions\SummaryVolumesBaseFilter20170305.json" />
     <Content Remove="Json\Filters\GoldenDimensions\SummaryVolumesTopFilter20170621.json" />
+    <Content Remove="Json\Filters\GoldenDimensions\VolumesWithPassCountRangeEarliest.json" />
+    <Content Remove="Json\Filters\GoldenDimensions\VolumesWithPassCountRangeLatest.json" />
     <Content Remove="Json\Filters\ReportDxfTile.json" />
     <Content Remove="Json\Filters\SummaryVolumesBaseFilter.json" />
     <Content Remove="Json\Filters\SummaryVolumesBaseFilterYesterday.json" />
@@ -86,15 +93,18 @@
     <EmbeddedResource Include="Json\Filters\DimensionsAlignmentFilter0to200.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsAlignmentFilter100to200.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsAutomatics.json" />
+    <EmbeddedResource Include="Json\Filters\DimensionsBoundaryCMVPassCountRange.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryCMVAsAtToday.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryCMV.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryFilterAsAtToday.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryFilter.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryFilterWithMachine.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsAsAtCustom.json" />
+    <EmbeddedResource Include="Json\Filters\DimensionsBoundaryMDPPassCountRange.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryMDPAsAtToday.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryMDP.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsPassCountRange.json" />
+    <EmbeddedResource Include="Json\Filters\DimensionsTempRangeBoundary.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsTemperatureRange.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101First.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101Last.json" />
@@ -103,7 +113,9 @@
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterNoLatLonYesterday.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterNull20121101.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtents.json" />
+    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtentsEarliestWithPassCountRange.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtentsEarliest.json" />
+    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtentsLatestWithPassCountRange.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtentsLatest.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterToday.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterYesterday.json" />
@@ -111,6 +123,8 @@
     <EmbeddedResource Include="Json\Filters\ElevationRangeAndPaletteNoDataFilter.json" />
     <EmbeddedResource Include="Json\Filters\GoldenDimensions\InvalidDateFilterElevationTypeFirst.json" />
     <EmbeddedResource Include="Json\Filters\GoldenDimensions\NoDataFilterElevationTypeFirst.json" />
+    <EmbeddedResource Include="Json\Filters\GoldenDimensions\VolumesWithPassCountRangeLatest.json" />
+    <EmbeddedResource Include="Json\Filters\GoldenDimensions\VolumesWithPassCountRangeEarliest.json" />
     <EmbeddedResource Include="Json\Filters\GoldenDimensions\ProjectExtentsFilterElevationTypeFirst.json" />
     <EmbeddedResource Include="Json\Filters\GoldenDimensions\InvalidDateFilterElevationTypeLast.json" />
     <EmbeddedResource Include="Json\Filters\GoldenDimensions\NoDataFilterElevationTypeLast.json" />
