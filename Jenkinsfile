@@ -12,7 +12,7 @@ node ('jenkinsslave-pod') {
 	])
 
     def branch = env.BRANCH_NAME
-    def buildNumber = params.BUILD_NUMBER
+    def buildNumber = params.VSTS_BUILD_NUMBER
     def versionPrefix = ""
     def suffix = ""
     def branchName = ""
