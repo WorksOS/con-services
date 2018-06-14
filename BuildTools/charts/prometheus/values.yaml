@@ -63,13 +63,14 @@ alertmanager:
   ingress:
     ## If true, alertmanager Ingress will be created
     ##
-    enabled: false
+    enabled: true
 
     ## alertmanager Ingress annotations
     ##
-    annotations: {}
-    #   kubernetes.io/ingress.class: nginx
-    #   kubernetes.io/tls-acme: 'true'
+    annotations: 
+      kubernetes.io/ingress.class: nginx
+      external-dns.alpha.kubernetes.io/target: endpoints.k8s.vspengg.com
+    #  kubernetes.io/tls-acme: 'true'
 
     ## alertmanager Ingress additional labels
     ##
@@ -78,8 +79,8 @@ alertmanager:
     ## alertmanager Ingress hostnames with optional path
     ## Must be provided if Ingress is enabled
     ##
-    hosts: []
-    #   - alertmanager.domain.com
+    hosts: 
+      - alertmanager.k8s.vspengg.com
     #   - domain.com/alertmanager
 
     ## alertmanager Ingress TLS configuration
@@ -488,12 +489,13 @@ server:
   ingress:
     ## If true, Prometheus server Ingress will be created
     ##
-    enabled: false
+    enabled: true
 
     ## Prometheus server Ingress annotations
     ##
-    annotations: {}
-    #   kubernetes.io/ingress.class: nginx
+    annotations: 
+      kubernetes.io/ingress.class: nginx
+      external-dns.alpha.kubernetes.io/target: endpoints.k8s.vspengg.com
     #   kubernetes.io/tls-acme: 'true'
 
     ## Prometheus server Ingress additional labels
@@ -503,8 +505,8 @@ server:
     ## Prometheus server Ingress hostnames with optional path
     ## Must be provided if Ingress is enabled
     ##
-    hosts: []
-    #   - prometheus.domain.com
+    hosts: 
+      - prometheus.k8s.vspengg.com
     #   - domain.com/prometheus
 
     ## Prometheus server Ingress TLS configuration
@@ -542,7 +544,7 @@ server:
     ## If true, Prometheus server will create/use a Persistent Volume Claim
     ## If false, use emptyDir
     ##
-    enabled: false
+    enabled: true
 
     ## Prometheus server data Persistent Volume access modes
     ## Must match those of existing PV or dynamic provisioner
@@ -753,13 +755,13 @@ serverFiles:
     global:
       ## How frequently to scrape targets by default
       ##
-      scrape_interval: 1m
+      scrape_interval: 30s
       ## How long until a scrape request times out
       ##
       scrape_timeout: 10s
       ## How frequently to evaluate rules
       ##
-      evaluation_interval: 1m
+      evaluation_interval: 30s
 
     rule_files:
       - /etc/config/rules
@@ -896,6 +898,17 @@ serverFiles:
             regex: (.+)
             target_label: __metrics_path__
             replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
+        metric_relabel_configs:
+          - action: replace
+            source_labels: [id]
+            regex: '^/machine\.slice/machine-rkt\\x2d([^\\]+)\\.+/([^/]+)\.service$'
+            target_label: rkt_container_name
+            replacement: '${2}-${1}'
+          - action: replace
+            source_labels: [id]
+            regex: '^/system\.slice/(.+)\.service$'
+            target_label: systemd_service_name
+            replacement: '${1}'
 
       # Scrape config for service endpoints.
       #
