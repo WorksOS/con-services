@@ -3,7 +3,7 @@ node ('jenkinsslave-pod') {
 	// adds job parameters
 	properties([
 		parameters([
-			stringParam(
+			string(
 				defaultValue: "nothing",
 				description: 'isFoo should be false',
 				name: 'VSTS_BUILD_NUMBER'
