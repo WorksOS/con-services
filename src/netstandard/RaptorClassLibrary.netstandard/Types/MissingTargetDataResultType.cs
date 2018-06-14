@@ -3,18 +3,23 @@
   public enum MissingTargetDataResultType
   {
     /// <summary>
-    /// No problems due to missing target data could still be no data however.
+    /// 0 - No problems due to missing target data could still be no data however.
     /// </summary>
     NoProblems,
 
     /// <summary>
-    /// No result due to missing target data.
+    /// 1 - No result due to missing target data.
     /// </summary>
     NoResult,
 
     /// <summary>
-    /// Partial result due to missing target data.
+    /// 2 - Partial result due to missing target data.
     /// </summary>
-    PartialResult
+    PartialResult,
+
+    /// <summary>
+    /// 3 - Partial result with some values Missing Machine Target.
+    /// </summary>
+    PartialResultMissingTarget
   }
 }
