@@ -34,6 +34,10 @@ namespace VSS.KafkaConsumer.JsonConverters
       {
         return jObject["AssociateProjectGeofence"].ToObject<AssociateProjectGeofence>();
       }
+      if (jObject["DissociateProjectGeofence"] != null)
+      {
+        return jObject["DissociateProjectGeofence"].ToObject<DissociateProjectGeofence>();
+      }
       if (jObject["CreateImportedFileEvent"] != null)
       {
         return jObject["CreateImportedFileEvent"].ToObject<CreateImportedFileEvent>();

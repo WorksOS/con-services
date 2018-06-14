@@ -1725,8 +1725,64 @@ namespace RepositoryTests.ProjectRepositoryTests
       Assert.AreEqual(createGeofenceEvent.GeofenceType, retrievedPg.GeofenceType.ToString(), "GeofenceType is incorrect from ProjectGeofence");
     }
 
+    /// <summary>
+    /// Associate Project Geofence - then dissociate it
+    /// </summary>
+    [TestMethod]
+    public void DissociateProjectGeofence_HappyPath()
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var customerUid = Guid.NewGuid();
+      var projectUid = Guid.NewGuid();
+
+      var createGeofenceEvent = new CreateGeofenceEvent()
+      {
+        GeofenceUID = Guid.NewGuid(),
+        GeofenceName = "Test Geofence",
+        Description = "Testing 123",
+        GeofenceType = GeofenceType.Borrow.ToString(),
+        FillColor = 16744448,
+        IsTransparent = true,
+        GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
+        CustomerUID = customerUid,
+        UserUID = Guid.NewGuid(),
+        AreaSqMeters = 123.456,
+        ActionUTC = actionUtc
+      };
+
+      var associateProjectGeofenceEvent = new AssociateProjectGeofence()
+      {
+        ProjectUID = projectUid,
+        GeofenceUID = createGeofenceEvent.GeofenceUID,
+        ActionUTC = actionUtc.AddDays(1)
+      };
+
+      _geofenceContext.StoreEvent(createGeofenceEvent).Wait();
+      _projectContext.StoreEvent(associateProjectGeofenceEvent).Wait();
+
+      var p = _projectContext.GetAssociatedGeofences(projectUid.ToString());
+      p.Wait();
+      var projectGeofences = p.Result.ToList();
+      Assert.AreEqual(1, projectGeofences.Count, "Wrong number of ProjectGeofences");
+      Assert.AreEqual(createGeofenceEvent.GeofenceUID.ToString(), projectGeofences[0].GeofenceUID, "Wrong project geofence returned");
+
+      var dissociateProjectGeofenceEvent = new DissociateProjectGeofence()
+      {
+        ProjectUID = projectUid,
+        GeofenceUID = createGeofenceEvent.GeofenceUID,
+        ActionUTC = actionUtc.AddDays(2)
+      };
+
+      _projectContext.StoreEvent(dissociateProjectGeofenceEvent).Wait();
+
+      p = _projectContext.GetAssociatedGeofences(projectUid.ToString());
+      p.Wait();
+      projectGeofences = p.Result.ToList();
+      Assert.AreEqual(0, projectGeofences.Count, "Wrong number of ProjectGeofences. There should not be any");
+    }
+
     #endregion AssociateProjectWithGeofence
-    
+
 
     #region private
     private void CheckProjectHistoryCount(string projectUid, int expectedCount)
