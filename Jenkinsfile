@@ -5,7 +5,7 @@ node ('jenkinsslave-pod') {
 		parameters([
 			string(
 				defaultValue: "nothing",
-				description: 'isFoo should be false',
+				description: 'The build number supplied by VSTS',
 				name: 'VSTS_BUILD_NUMBER'
 			),
 		])
