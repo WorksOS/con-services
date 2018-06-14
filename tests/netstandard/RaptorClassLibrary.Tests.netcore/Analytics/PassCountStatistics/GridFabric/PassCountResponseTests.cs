@@ -1,14 +1,14 @@
 ﻿using System;
+using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
 using VSS.TRex.Tests.netcore.Analytics.Common;
-using VSS.TRex.Analytics.CMVStatistics.GridFabric;
 using VSS.TRex.Types;
 using Xunit;
 
-namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
+namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
 {
-  public class CMVResponseTests : BaseTests
+  public class PassCountResponseTests : BaseTests
   {
-    private CMVStatisticsResponse _response => new CMVStatisticsResponse()
+    private PassCountStatisticsResponse _response => new PassCountStatisticsResponse()
     {
       ResultStatus = RequestErrorStatus.OK,
       CellSize = CELL_SIZE,
@@ -17,18 +17,19 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
       CellsScannedUnderTarget = CELLS_UNDER_TARGET,
       SummaryCellsScanned = CELLS_OVER_TARGET + CELLS_AT_TARGET + CELLS_UNDER_TARGET,
       IsTargetValueConstant = true,
-      LastTargetCMV = 70
+      LastPassCountTargetRange = new PassCountRangeRecord(3, 10)
     };
 
     [Fact]
-    public void Test_CMVResponse_Creation()
+    public void Test_PassCountResponse_Creation()
     {
-      var response = new CMVStatisticsResponse();
+      var response = new PassCountStatisticsResponse();
 
       Assert.True(response.ResultStatus == RequestErrorStatus.Unknown, "ResultStatus invalid after creation.");
       Assert.True(response.CellSize < TOLERANCE, "CellSize invalid after creation.");
       Assert.True(response.SummaryCellsScanned == 0, "Invalid initial value for SummaryCellsScanned.");
-      Assert.True(response.LastTargetCMV == 0, "Invalid initial value for LastTargetCMV.");
+      Assert.True(response.LastPassCountTargetRange.Min == 0, "Invalid initial value for LastPassCountTargetRange.Min.");
+      Assert.True(response.LastPassCountTargetRange.Max == 0, "Invalid initial value for LastPassCountTargetRange.Max.");
       Assert.True(response.CellsScannedOverTarget == 0, "Invalid initial value for CellsScannedOverTarget.");
       Assert.True(response.CellsScannedAtTarget == 0, "Invalid initial value for CellsScannedAtTarget.");
       Assert.True(response.CellsScannedUnderTarget == 0, "Invalid initial value for CellsScannedUnderTarget.");
@@ -37,7 +38,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
     }
 
     [Fact]
-    public void Test_CMVResponse_ConstructResult_Successful()
+    public void Test_PassCountResponse_ConstructResult_Successful()
     {
       Assert.True(_response.ResultStatus == RequestErrorStatus.OK, "Invalid initial result status");
 
@@ -45,18 +46,19 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
 
       Assert.True(result.ResultStatus == RequestErrorStatus.OK, "Result status invalid, not propagaged from aggregation state");
 
-      Assert.True(result.ConstantTargetCMV ==_response.LastTargetCMV, "Invalid initial result value for ConstantTargetCMV.");
-      Assert.True(Math.Abs(result.AboveTargetPercent - _response.ValueOverTargetPercent) < TOLERANCE, "Invalid initial result value for AboveCMVPercent.");
-      Assert.True(Math.Abs(result.WithinTargetPercent - _response.ValueAtTargetPercent) < TOLERANCE, "Invalid initial result value for WithinCMVPercent.");
-      Assert.True(Math.Abs(result.BelowTargetPercent - _response.ValueUnderTargetPercent) < TOLERANCE, "Invalid initial result value for BelowCMVPercent.");
+      Assert.True(result.ConstantTargetPassCountRange.Min ==_response.LastPassCountTargetRange.Min, "Invalid initial result value for ConstantTargetPassCountRange.Min.");
+      Assert.True(result.ConstantTargetPassCountRange.Max == _response.LastPassCountTargetRange.Max, "Invalid initial result value for ConstantTargetPassCountRange.Max.");
+      Assert.True(Math.Abs(result.AboveTargetPercent - _response.ValueOverTargetPercent) < TOLERANCE, "Invalid initial result value for AbovePassCountPercent.");
+      Assert.True(Math.Abs(result.WithinTargetPercent - _response.ValueAtTargetPercent) < TOLERANCE, "Invalid initial result value for WithinPassCountPercent.");
+      Assert.True(Math.Abs(result.BelowTargetPercent - _response.ValueUnderTargetPercent) < TOLERANCE, "Invalid initial result value for BelowPassCountPercent.");
       Assert.True(Math.Abs(result.TotalAreaCoveredSqMeters - _response.SummaryProcessedArea) < TOLERANCE, "Invalid initial result value for TotalAreaCoveredSqMeters.");
-      Assert.True(result.IsTargetCMVConstant == _response.IsTargetValueConstant, "Invalid initial result value for IsTargetCMVConstant.");
+      Assert.True(result.IsTargetPassCountConstant == _response.IsTargetValueConstant, "Invalid initial result value for IsTargetPassCountConstant.");
     }
 
     [Fact]
-    public void Test_CMVResponse_AgregateWith_Successful()
+    public void Test_PassCountResponse_AgregateWith_Successful()
     {
-      var responseClone = new CMVStatisticsResponse()
+      var responseClone = new PassCountStatisticsResponse()
       {
         ResultStatus = _response.ResultStatus,
         CellSize = _response.CellSize,
@@ -65,14 +67,15 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
         CellsScannedUnderTarget = _response.CellsScannedUnderTarget,
         SummaryCellsScanned = _response.SummaryCellsScanned,
         IsTargetValueConstant = _response.IsTargetValueConstant,
-        LastTargetCMV = _response.LastTargetCMV
+        LastPassCountTargetRange = _response.LastPassCountTargetRange
       };
 
       var response = _response.AggregateWith(responseClone);
 
       Assert.True(Math.Abs(response.CellSize - _response.CellSize) < TOLERANCE, "CellSize invalid after aggregation.");
       Assert.True(response.SummaryCellsScanned == _response.SummaryCellsScanned * 2, "Invalid aggregated value for SummaryCellsScanned.");
-      Assert.True(response.LastTargetCMV == _response.LastTargetCMV, "Invalid aggregated value for LastTargetCMV.");
+      Assert.True(response.LastPassCountTargetRange.Min == _response.LastPassCountTargetRange.Min, "Invalid aggregated value for LastPassCountTargetRange.Min.");
+      Assert.True(response.LastPassCountTargetRange.Max == _response.LastPassCountTargetRange.Max, "Invalid aggregated value for LastPassCountTargetRange.Max.");
       Assert.True(response.CellsScannedOverTarget == _response.CellsScannedOverTarget * 2, "Invalid aggregated value for CellsScannedOverTarget.");
       Assert.True(response.CellsScannedAtTarget == _response.CellsScannedAtTarget * 2, "Invalid aggregated value for CellsScannedAtTarget.");
       Assert.True(response.CellsScannedUnderTarget == _response.CellsScannedUnderTarget * 2, "Invalid aggregated value for CellsScannedUnderTarget.");
