@@ -32,10 +32,10 @@ node ('jenkinsslave-pod') {
     // }
 
     def versionNumber = branchName + "-" params.VSTS_BUILD_NUMBER
-    def fullVersion = versionNumber + suffix
+    //def fullVersion = versionNumber + suffix
 	
-    def container = "registry.k8s.vspengg.com:80/${prjname}:${fullVersion}"
-    def testContainer = "registry.k8s.vspengg.com:80/${prjname}.tests:${fullVersion}"
+    def container = "registry.k8s.vspengg.com:80/${prjname}:${versionNumber}"
+    def testContainer = "registry.k8s.vspengg.com:80/${prjname}.tests:${versionNumber}"
     def finalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${prjname}:${versionNumber}"
 	
     def vars = []
