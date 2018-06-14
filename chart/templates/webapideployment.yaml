@@ -28,9 +28,9 @@ spec:
             port: 80
         resources:
 {{ toYaml .Values.resources | indent 12 }}
-      envFrom:
-      - configMapRef:
-          name: {{ .Release.Name }}-config-{{ .Values.environment }}-{{ .Values.image.tag }}
+        envFrom:
+        - configMapRef:
+            name: {{ .Release.Name }}-config-{{ .Values.environment }}-{{ .Values.image.tag }}
         imagePullPolicy: Always
         ports:
         - containerPort: 80
