@@ -3,9 +3,11 @@ using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
@@ -86,7 +88,23 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public ContractExecutionResult Post([FromBody]PatchRequest request)
     {
       request.Validate();
+
       return RequestExecutorContainerFactory.Build<PatchExecutor>(logger, raptorClient).Process(request);
+    }
+
+    /// <summary>
+    /// Requests cell passes information in patches but returning co-ordinates relative to the world origin rather than cell origins.
+    /// </summary>
+    [PostRequestVerifier]
+    [ProjectIdVerifier(AllowLandfillProjects = true)]
+    [ProjectUidVerifier(AllowLandfillProjects = true)]
+    [Route("api/v1/productiondata/patches/worldorigin")]
+    [HttpPost]
+    public ContractExecutionResult GetSubGridPatchesAsWorldOrigins([FromBody]PatchRequest request)
+    {
+      request.Validate();
+
+      return RequestExecutorContainerFactory.Build<CompactionPatchExecutor>(logger, raptorClient).Process(request);
     }
   }
 }

@@ -1,8 +1,8 @@
-﻿Feature: Patch
+﻿Feature: CompactionPatch
     I should be able to request Production Data Patch
 
 Background: 
-    Given the Patch service URI "/api/v1/productiondata/patches", request repo "PatchRequest.json" and result repo "PatchResponse.json"
+    Given the Patch service URI "/api/v1/productiondata/patches/worldorigin", request repo "CompactionPatchRequest.json" and result repo "CompactionPatchResponse.json"
 
 Scenario Outline: Patch - Good Request
     When I request Production Data Patch supplying "<ParameterName>" paramters from the repository

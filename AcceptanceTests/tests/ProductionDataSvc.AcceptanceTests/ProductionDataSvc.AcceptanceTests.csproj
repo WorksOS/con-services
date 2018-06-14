@@ -135,6 +135,11 @@
     <Compile Include="Models\CompactionTagFile.cs" />
     <Compile Include="Models\GetMachineDesignDetailsResult.cs" />
     <Compile Include="Models\MachineDesignDetails.cs" />
+    <Compile Include="CompactionPatch.feature.cs">
+      <DependentUpon>CompactionPatch.feature</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="StepDefinitions\CompactionCellDatumSteps.cs" />
     <Compile Include="CompactionCmv.feature.cs">
       <AutoGen>True</AutoGen>
@@ -465,6 +470,7 @@
     <Compile Include="StepDefinitions\NotificationSteps.cs" />
     <Compile Include="StepDefinitions\PassCountDetailSteps.cs" />
     <Compile Include="StepDefinitions\PassCountSummarySteps.cs" />
+    <Compile Include="StepDefinitions\CompactionPatchSteps.cs" />
     <Compile Include="StepDefinitions\ProjectSettingsPostSteps.cs" />
     <Compile Include="StepDefinitions\ProjectSettingsSteps.cs" />
     <Compile Include="StepDefinitions\ProjectStatisticsSteps.cs" />
@@ -698,6 +704,10 @@
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>PassCountSummary.feature.cs</LastGenOutput>
     </None>
+    <None Include="CompactionPatch.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>CompactionPatch.feature.cs</LastGenOutput>
+    </None>
     <None Include="Patch.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>Patch.feature.cs</LastGenOutput>
@@ -827,6 +837,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\GetMachineDesignsResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CompactionPatchRequest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CompactionPatchResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\Profiles\ProfileSummaryResponse.json">
