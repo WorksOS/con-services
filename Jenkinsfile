@@ -4,9 +4,9 @@ node ('jenkinsslave-pod') {
 	properties([
 		parameters([
 			stringParam(
-				defaultValue: env.BUILD_NUMBER,
+				defaultValue: "nothing",
 				description: 'isFoo should be false',
-				name: 'BUILD_NUMBER'
+				name: 'VSTS_BUILD_NUMBER'
 			),
 		])
 	])
