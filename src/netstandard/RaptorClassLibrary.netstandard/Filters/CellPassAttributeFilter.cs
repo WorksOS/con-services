@@ -258,7 +258,7 @@ namespace VSS.TRex.Filters
         /// <param name="Left"></param>
         /// <param name="Right"></param>
         /// <returns></returns>
-        private static int FlagCheck2(bool Left, bool Right) => Left ? Right ? 0 : -1 : Right ? 1 : 0;
+        private static int FlagCheck(bool Left, bool Right) => Left ? Right ? 0 : -1 : Right ? 1 : 0;
 
         /// <summary>
         /// Compare two lists of machine IDs for ordering
@@ -296,7 +296,7 @@ namespace VSS.TRex.Filters
             int Result;
 
             // Time
-            Result = FlagCheck2(HasTimeFilter, AFilter.HasTimeFilter);
+            Result = FlagCheck(HasTimeFilter, AFilter.HasTimeFilter);
             if (Result != 0)
             {
                 return Result;
@@ -315,7 +315,7 @@ namespace VSS.TRex.Filters
                 return Result;
 
             // Designs
-            Result = FlagCheck2(HasDesignFilter, AFilter.HasDesignFilter);
+            Result = FlagCheck(HasDesignFilter, AFilter.HasDesignFilter);
             if (Result != 0)
                 return Result;
 
@@ -326,7 +326,7 @@ namespace VSS.TRex.Filters
                 return Result;
 
             // Machines
-            Result = FlagCheck2(HasMachineFilter, AFilter.HasMachineFilter);
+            Result = FlagCheck(HasMachineFilter, AFilter.HasMachineFilter);
             if (Result != 0)
                 return Result;
 
@@ -337,7 +337,7 @@ namespace VSS.TRex.Filters
                 return Result;
 
             // Machine direction filter
-            Result = FlagCheck2(HasMachineDirectionFilter, AFilter.HasMachineDirectionFilter);
+            Result = FlagCheck(HasMachineDirectionFilter, AFilter.HasMachineDirectionFilter);
             if (Result != 0)
                 return Result;
 
@@ -348,7 +348,7 @@ namespace VSS.TRex.Filters
                 return Result;
 
             // Pass Type filter
-            Result = FlagCheck2(HasPassTypeFilter, AFilter.HasPassTypeFilter);
+            Result = FlagCheck(HasPassTypeFilter, AFilter.HasPassTypeFilter);
             if (Result != 0)
             return Result;
 
@@ -362,7 +362,7 @@ namespace VSS.TRex.Filters
                 return Result;
 
             // Vibe state filter
-            Result = FlagCheck2(HasVibeStateFilter, AFilter.HasVibeStateFilter);
+            Result = FlagCheck(HasVibeStateFilter, AFilter.HasVibeStateFilter);
             if (Result != 0)
                 return Result;
 
@@ -373,7 +373,7 @@ namespace VSS.TRex.Filters
                 return Result;
 
             // Min elev mapping
-            Result = FlagCheck2(HasMinElevMappingFilter, AFilter.HasMinElevMappingFilter);
+            Result = FlagCheck(HasMinElevMappingFilter, AFilter.HasMinElevMappingFilter);
             if (Result != 0)
                 return Result;
 
@@ -384,7 +384,7 @@ namespace VSS.TRex.Filters
                 return Result;
 
             // Elevation type
-            Result = FlagCheck2(HasElevationTypeFilter, AFilter.HasElevationTypeFilter);
+            Result = FlagCheck(HasElevationTypeFilter, AFilter.HasElevationTypeFilter);
             if (Result != 0)
                 return Result;
 
@@ -395,13 +395,13 @@ namespace VSS.TRex.Filters
                 return Result;
 
             // Exclusion of surveyed surfaces from query
-            Result = FlagCheck2(ExcludeSurveyedSurfaces(), AFilter.ExcludeSurveyedSurfaces());
+            Result = FlagCheck(ExcludeSurveyedSurfaces(), AFilter.ExcludeSurveyedSurfaces());
             if (Result != 0)
               return Result;
 
 
             // GCS Guidance mode
-            Result = FlagCheck2(HasGCSGuidanceModeFilter, AFilter.HasGCSGuidanceModeFilter);
+            Result = FlagCheck(HasGCSGuidanceModeFilter, AFilter.HasGCSGuidanceModeFilter);
             if (Result != 0)
                 return Result;
 
@@ -412,13 +412,13 @@ namespace VSS.TRex.Filters
                 return Result;
 
             // GPS Accuracy
-            Result = FlagCheck2(HasGPSAccuracyFilter, AFilter.HasGPSAccuracyFilter);
+            Result = FlagCheck(HasGPSAccuracyFilter, AFilter.HasGPSAccuracyFilter);
             if (Result != 0)
                 return Result;
 
             if (HasGPSAccuracyFilter)  // Check the contents of the GPS accuracy filter
             {
-                Result = FlagCheck2(GPSAccuracyIsInclusive, AFilter.GPSAccuracyIsInclusive); // CompareValue(Ord(GPSAccuracyIsInclusive), Ord(AFilter.GPSAccuracyIsInclusive));
+                Result = FlagCheck(GPSAccuracyIsInclusive, AFilter.GPSAccuracyIsInclusive); // CompareValue(Ord(GPSAccuracyIsInclusive), Ord(AFilter.GPSAccuracyIsInclusive));
                 if (Result == 0)
                     Result = GPSAccuracy.CompareTo(AFilter.GPSAccuracy); // CompareValue(Ord(GPSAccuracy), Ord(AFilter.GPSAccuracy));
             }
@@ -427,13 +427,13 @@ namespace VSS.TRex.Filters
                 return Result;
 
             // GPS Tolerance
-            Result = FlagCheck2(HasGPSToleranceFilter, AFilter.HasGPSToleranceFilter);
+            Result = FlagCheck(HasGPSToleranceFilter, AFilter.HasGPSToleranceFilter);
             if (Result != 0)
                 return Result;
 
             if (HasGPSToleranceFilter)  // Check the contents of the GPS tolerance filter
             {
-                Result = FlagCheck2(GPSToleranceIsGreaterThan, AFilter.GPSToleranceIsGreaterThan); // CompareValue(Ord(GPSToleranceIsGreaterThan), Ord(AFilter.GPSToleranceIsGreaterThan));
+                Result = FlagCheck(GPSToleranceIsGreaterThan, AFilter.GPSToleranceIsGreaterThan); // CompareValue(Ord(GPSToleranceIsGreaterThan), Ord(AFilter.GPSToleranceIsGreaterThan));
                 if (Result != 0)
                     Result = GPSTolerance.CompareTo(AFilter.GPSTolerance); // CompareValue(GPSTolerance, AFilter.GPSTolerance);
             }
@@ -442,7 +442,7 @@ namespace VSS.TRex.Filters
                 return Result;
 
             // Positioning Tech
-            Result = FlagCheck2(HasPositioningTechFilter, AFilter.HasPositioningTechFilter);
+            Result = FlagCheck(HasPositioningTechFilter, AFilter.HasPositioningTechFilter);
             if (Result != 0)
                 return Result;
             if (HasPositioningTechFilter)  // Check the contents of the positioning tech filter
@@ -451,7 +451,7 @@ namespace VSS.TRex.Filters
                 return Result;
 
             // Elevation Range
-            Result = FlagCheck2(HasElevationRangeFilter, AFilter.HasElevationRangeFilter);
+            Result = FlagCheck(HasElevationRangeFilter, AFilter.HasElevationRangeFilter);
             if (Result != 0)
                 return Result;
 
@@ -476,7 +476,7 @@ namespace VSS.TRex.Filters
             if (Result != 0)
                 return Result;
 
-            Result = FlagCheck2(HasLayerStateFilter, AFilter.HasLayerStateFilter);
+            Result = FlagCheck(HasLayerStateFilter, AFilter.HasLayerStateFilter);
             if (Result != 0)
                 return Result;
             if (HasLayerStateFilter)
@@ -484,14 +484,14 @@ namespace VSS.TRex.Filters
             if (Result != 0)
                 return Result;
 
-            Result = FlagCheck2(HasCompactionMachinesOnlyFilter, AFilter.HasCompactionMachinesOnlyFilter);
+            Result = FlagCheck(HasCompactionMachinesOnlyFilter, AFilter.HasCompactionMachinesOnlyFilter);
             // Note: The compaction machines only filter is fully described by having
             // that state in the filter - there are no additional attributes to check
             if (Result != 0)
                 return Result;
 
             // LayerID
-            Result = FlagCheck2(HasLayerIDFilter, AFilter.HasLayerIDFilter);
+            Result = FlagCheck(HasLayerIDFilter, AFilter.HasLayerIDFilter);
             if (Result != 0)
                 return Result;
             if (HasLayerIDFilter)
@@ -500,7 +500,7 @@ namespace VSS.TRex.Filters
                 return Result;
 
             // TemperatureRangeFilter
-            Result = FlagCheck2(HasTemperatureRangeFilter, AFilter.HasTemperatureRangeFilter);
+            Result = FlagCheck(HasTemperatureRangeFilter, AFilter.HasTemperatureRangeFilter);
             if (Result != 0)
               return Result;
             if (HasTemperatureRangeFilter)
