@@ -118,6 +118,9 @@ namespace VSS.MasterData.Project.WebAPI
       serviceCollection.AddSingleton(loggerFactory);
       serviceCollection.BuildServiceProvider();
 
+      //HealthMiddleware must be before Common
+      app.UseMiddleware<HealthMiddleware>();
+
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCommon(SERVICE_TITLE);
 
@@ -128,7 +131,7 @@ namespace VSS.MasterData.Project.WebAPI
       }
 #endif
 
-      app.UseMiddleware<HealthMiddleware>();
+
 
       app.UseFilterMiddleware<ProjectAuthentication>();
       app.UseMvc();
