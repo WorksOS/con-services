@@ -5,7 +5,7 @@ node ('jenkinsslave-pod') {
 		parameters([
 			string(
 				defaultValue: "nothing",
-				description: 'The build number supplied by VSTS',
+				description: 'The build number supplied by VSTS perhaps fail build if this is nothing to prevent unrequested builds during multibranch scan',
 				name: 'VSTS_BUILD_NUMBER'
 			),
 		])
@@ -19,19 +19,19 @@ node ('jenkinsslave-pod') {
 	def jobnameparts = JOB_NAME.tokenize('/') as String[]
 	def prjname = jobnameparts[0].toLowerCase() 	
 
-    if (branch.contains("release")) {
-        versionPrefix = "1.0."
-        branchName = ""
-    } else if (branch.contains("Dev")) {
-        versionPrefix = "0.99."
-        branchName = "Dev"
-    } else {
-        branchName = branch.substring(branch.lastIndexOf("/") + 1)
-        suffix = "-" + branchName
-        versionPrefix = "0.98."
-    }
+    // if (branch.contains("release")) {
+    //     versionPrefix = "1.0."
+    //     branchName = ""
+    // } else if (branch.contains("Dev")) {
+    //     versionPrefix = "0.99."
+    //     branchName = "Dev"
+    // } else {
+    //     branchName = branch.substring(branch.lastIndexOf("/") + 1)
+    //     suffix = "-" + branchName
+    //     versionPrefix = "0.98."
+    // }
 
-    def versionNumber = versionPrefix + buildNumber
+    def versionNumber = branchName + "-" params.VSTS_BUILD_NUMBER
     def fullVersion = versionNumber + suffix
 	
     def container = "registry.k8s.vspengg.com:80/${prjname}:${fullVersion}"
