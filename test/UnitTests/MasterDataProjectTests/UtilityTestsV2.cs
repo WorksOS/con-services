@@ -47,8 +47,10 @@ namespace VSS.MasterData.ProjectTests
     [TestMethod]
     public void MapCreateProjectV2RequestToEvent()
     {
+      var requestedProjectType = ProjectType.ProjectMonitoring;
+      var expectedProjectType = ProjectType.Standard;
       var request = CreateProjectV2Request.CreateACreateProjectV2Request
-        (ProjectType.Standard, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
+        (requestedProjectType, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
         "New Zealand Standard Time", _boundaryLL, _businessCenterFile);
       var kafkaEvent = MapV2Models.MapCreateProjectV2RequestToEvent(request, _customerUid);
 
@@ -56,7 +58,7 @@ namespace VSS.MasterData.ProjectTests
       Guid.TryParse(kafkaEvent.CustomerUID.ToString(), out var customerUidOut);
       Assert.AreEqual(_customerUid, customerUidOut.ToString(), "CustomerUID has not been mapped correctly");
       Assert.AreEqual(0, kafkaEvent.CustomerID, "CustomerID has not been mapped correctly");
-      Assert.AreEqual(request.ProjectType, kafkaEvent.ProjectType, "ProjectType has not been mapped correctly");
+      Assert.AreEqual(expectedProjectType, kafkaEvent.ProjectType, "ProjectType has not been mapped correctly");
       Assert.AreEqual(request.ProjectName, kafkaEvent.ProjectName, "ProjectName has not been mapped correctly");
       Assert.IsNull(kafkaEvent.Description, "Description has not been mapped correctly");
       Assert.AreEqual(request.ProjectStartDate, kafkaEvent.ProjectStartDate, "ProjectStartDate has not been mapped correctly");
