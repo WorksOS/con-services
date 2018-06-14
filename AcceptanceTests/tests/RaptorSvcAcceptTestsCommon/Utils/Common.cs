@@ -20,17 +20,18 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     {
       byte[] output;
 
-      FileStream sourceFile = new FileStream(input, FileMode.Open, FileAccess.Read); // Open streamer...
-
-      BinaryReader binReader = new BinaryReader(sourceFile);
-      try
+      using (var sourceFile = new FileStream(input, FileMode.Open, FileAccess.Read))
+      using (var binReader = new BinaryReader(sourceFile))
       {
-        output = binReader.ReadBytes((int)sourceFile.Length);
-      }
-      finally
-      {
-        sourceFile.Close(); // Dispose streamer...          
-        binReader.Close(); // Dispose reader
+        try
+        {
+          output = binReader.ReadBytes((int)sourceFile.Length);
+        }
+        finally
+        {
+          sourceFile.Close();
+          binReader.Close();
+        }
       }
 
       return output;
@@ -106,8 +107,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     /// <param name="rowCount">row index</param>
     /// <param name="precision">number of decimal places</param>
     /// <returns>false if they don't match, true if they match</returns>
-    public static bool CompareDouble(double expectedDouble, double actualDouble, string field, int rowCount,
-      int precision = 6)
+    public static bool CompareDouble(double expectedDouble, double actualDouble, string field, int rowCount, int precision = 6)
     {
       if (Math.Abs(expectedDouble - actualDouble) < precision)
       {

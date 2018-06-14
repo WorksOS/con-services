@@ -1,11 +1,10 @@
-﻿using ASNodeDecls;
-using Microsoft.Extensions.Logging;
-using SVOICFilterSettings;
-using SVOICVolumeCalculationsDecls;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using ASNodeDecls;
+using Microsoft.Extensions.Logging;
+using SVOICVolumeCalculationsDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -14,7 +13,7 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 {
   public class PatchExecutor : RequestExecutorContainer
   {
@@ -25,51 +24,50 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
     {
       ProcessErrorCodes();
     }
+
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result = null;
+      ContractExecutionResult result;
       PatchRequest request = item as PatchRequest;
 
       // Note: The numPatches out parameter is ignored in favour of the same value returned in the PatchResult proper. This will be removed
       // in due course once the breaking modifications process is agreed with BC.
       try
       {
-        TICFilterSettings filter1 =
-          RaptorConverters.ConvertFilter(request.filterId1, request.filter1, request.ProjectId);
-        TICFilterSettings filter2 =
-          RaptorConverters.ConvertFilter(request.filterId2, request.filter2, request.ProjectId);
-        TComputeICVolumesType volType = RaptorConverters.ConvertVolumesType(request.computeVolType);
+        var filter1 = RaptorConverters.ConvertFilter(request.filterId1, request.filter1, request.ProjectId);
+        var filter2 = RaptorConverters.ConvertFilter(request.filterId2, request.filter2, request.ProjectId);
+        var volType = RaptorConverters.ConvertVolumesType(request.computeVolType);
 
         if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
+        {
           RaptorConverters.AdjustFilterToFilter(ref filter1, filter2);
+        }
 
         RaptorConverters.reconcileTopFilterAndVolumeComputationMode(ref filter1, ref filter2, request.mode, request.computeVolType);
 
-        MemoryStream patch;
-        int numPatches;
-        TASNodeErrorStatus raptorResult = raptorClient.RequestDataPatchPage(request.ProjectId ?? -1,
-                ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0,
-                        TASNodeCancellationDescriptorType.cdtDataPatches),
-                RaptorConverters.convertDisplayMode(request.mode),
-                RaptorConverters.convertColorPalettes(request.palettes, request.mode),
-                request.renderColorValues,
-                filter1,
-                filter2,
-                RaptorConverters.convertOptions(null, request.liftBuildSettings,
-                        request.computeVolNoChangeTolerance, request.filterLayerMethod, request.mode, request.setSummaryDataLayersVisibility),
-                RaptorConverters.DesignDescriptor(request.designDescriptor),
-                volType,
-                request.patchNumber,
-                request.patchSize,
-                out patch,
-                out numPatches);
+        var raptorResult = raptorClient.RequestDataPatchPage(request.ProjectId ?? -1,
+          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0,
+            TASNodeCancellationDescriptorType.cdtDataPatches),
+          RaptorConverters.convertDisplayMode(request.mode),
+          RaptorConverters.convertColorPalettes(request.palettes, request.mode),
+          request.renderColorValues,
+          filter1,
+          filter2,
+          RaptorConverters.convertOptions(null, request.liftBuildSettings,
+                  request.computeVolNoChangeTolerance, request.filterLayerMethod, request.mode, request.setSummaryDataLayersVisibility),
+          RaptorConverters.DesignDescriptor(request.designDescriptor),
+          volType,
+          request.patchNumber,
+          request.patchSize,
+          out var patch,
+          out var numPatches);
 
         if (raptorResult == TASNodeErrorStatus.asneOK)
         {
           if (patch != null)
           {
-            PatchResult rawResult = PatchResult.CreatePatchResult(patch.ToArray());
-            result = convertPatchResult(rawResult);
+            var rawResult = PatchResult.CreatePatchResult(patch.ToArray());
+            result = ConvertPatchResult(rawResult);
           }
           else
           {
@@ -79,13 +77,14 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
         else
         {
           throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-            $"Failed to get requested patch with error: {ContractExecutionStates.FirstNameWithOffset((int) raptorResult)}."));
+            $"Failed to get requested patch with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}."));
         }
       }
       finally
       {
         ContractExecutionStates.ClearDynamic();
       }
+
       return result;
     }
 
@@ -94,7 +93,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
       RaptorResult.AddErrorMessages(ContractExecutionStates);
     }
 
-    private PatchResultStructured convertPatchResult(PatchResult patch)
+    private PatchResultStructured ConvertPatchResult(PatchResult patch)
     {
       MemoryStream ms = new MemoryStream(patch.PatchData);
 
@@ -102,8 +101,6 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
       bool valuesRenderedToColors = StreamUtils.__Global.ReadBooleanFromStream(ms);
       int numSubgridsInPatch = StreamUtils.__Global.ReadIntegerFromStream(ms);
       double cellSize = StreamUtils.__Global.ReadDateTimeFromStream(ms);
-
-      //log.IfDebugFormat("[{4}] Patch {0},{5} bytes of {1} contains {2} subgrids, cellsize={3}", patchNum, numPatches, numSubgridsInPatch, cellSize, DateTime.Now, patch.Length);
 
       List<PatchSubgridResult> subgrids = new List<PatchSubgridResult>();
       for (int i = 0; i < numSubgridsInPatch; i++)
@@ -127,20 +124,21 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
           {
             for (int k = 0; k < 32; k++)
             {
-              float _elevation = -100000;
+              float elevation = -100000;
 
               ushort elevOffset = StreamUtils.__Global.ReadWordFromStream(ms);
               if (elevOffset != 0xffff)
-                _elevation = (float)(elevationOrigin + (elevOffset / 1000.0));
+                elevation = (float)(elevationOrigin + (elevOffset / 1000.0));
 
-              uint _colour = valuesRenderedToColors ? StreamUtils.__Global.ReadLongWordFromStream(ms) : 0;
+              uint colour = valuesRenderedToColors ? StreamUtils.__Global.ReadLongWordFromStream(ms) : 0;
 
-              log.LogDebug("Cell {0}:{1}, elevation: {2}, colour: {3}", j, k, _elevation, _colour);
+              log.LogDebug("Cell {0}:{1}, elevation: {2}, colour: {3}", j, k, elevation, colour);
 
-              cells[j, k] = PatchCellResult.CreatePatchCellResult(_elevation, 0, valuesRenderedToColors ? _colour : 0);
+              cells[j, k] = PatchCellResult.CreatePatchCellResult(elevation, 0, valuesRenderedToColors ? colour : 0);
             }
           }
         }
+
         subgrids.Add(PatchSubgridResult.CreatePatchSubgridResult(cellOriginX, cellOriginY, isNull, elevationOrigin, cells));
       }
 
@@ -148,6 +146,4 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
           valuesRenderedToColors, subgrids.ToArray());
     }
   }
-
-
 }
