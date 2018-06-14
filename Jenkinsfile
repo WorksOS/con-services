@@ -31,7 +31,7 @@ node ('jenkinsslave-pod') {
     //     versionPrefix = "0.98."
     // }
 
-    def versionNumber = branchName + "-" params.VSTS_BUILD_NUMBER
+    def versionNumber = branchName + "-" + params.VSTS_BUILD_NUMBER
     //def fullVersion = versionNumber + suffix
 	
     def container = "registry.k8s.vspengg.com:80/${prjname}:${versionNumber}"
