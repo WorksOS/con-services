@@ -1,6 +1,18 @@
 node ('jenkinsslave-pod') {
+
+	// adds job parameters
+	properties([
+		parameters([
+			stringParam(
+				defaultValue: env.BUILD_NUMBER,
+				description: 'isFoo should be false',
+				name: 'BUILD_NUMBER'
+			),
+		])
+	])
+
     def branch = env.BRANCH_NAME
-    def buildNumber = env.VSTS_BUILD_NUMBER ?: env.BUILD_NUMBER
+    def buildNumber = params.BUILD_NUMBER
     def versionPrefix = ""
     def suffix = ""
     def branchName = ""
