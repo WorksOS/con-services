@@ -606,6 +606,30 @@ namespace TestUtility
       return projectDescriptorResult?.ProjectDescriptor;
     }
 
+    public GeofenceV4DescriptorsListResult GetAvailableLandfillGeofencesViaWebApiV4(Guid customerUid, string geofenceTypeString) 
+    {
+      // http://localhost:5000/api/v4/geofences?geofenceType=Landfill&geofenceType=0&projectUid={projectUid}
+      var response = CallProjectWebApiV4("api/v4/geofences" + geofenceTypeString, HttpMethod.Get.ToString(), null, customerUid.ToString());
+      Log.Info($"GetAvailableLandfillSitesViaWebApiV4. response: {JsonConvert.SerializeObject(response)}", Log.ContentType.ApiSend);
+
+      if (!string.IsNullOrEmpty(response))
+      {
+        return JsonConvert.DeserializeObject<GeofenceV4DescriptorsListResult>(response);
+      }
+      return null;
+    }
+
+    public GeofenceV4DescriptorsListResult GetAssociatedLandfillGeofencesViaWebApiV4(Guid customerUid, string geofenceTypeString, string projectUidString )
+    {
+      var response = CallProjectWebApiV4("api/v4/geofences" + geofenceTypeString + projectUidString, HttpMethod.Get.ToString(), null, customerUid.ToString());
+      Log.Info($"GetAvailableLandfillSitesViaWebApiV4. response: {JsonConvert.SerializeObject(response)}", Log.ContentType.ApiSend);
+
+      if (!string.IsNullOrEmpty(response))
+      {
+        return JsonConvert.DeserializeObject<GeofenceV4DescriptorsListResult>(response);
+      }
+      return null;
+    }
 
     /// <summary>
     /// Compare the two lists of projects

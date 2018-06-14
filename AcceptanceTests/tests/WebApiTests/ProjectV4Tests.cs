@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestUtility;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Repositories.DBModels;
 
 namespace WebApiTests
@@ -943,5 +945,65 @@ namespace WebApiTests
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, projectEventArray, true);
       //ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, ts.ProjectUid.ToString(), projectEventArray, true);
     }
+
+    [TestMethod]
+    public void CreateLandfillGeofencesThenQueryForAvailable()
+    {
+      msg.Title("Project v4 test 26",
+        "Create landfill sites, then query available for customer and associated for project");
+
+      var mysql = new MySqlHelper();
+      var ts = new TestSupport();
+      var legacyProjectId = ts.SetLegacyProjectId();
+      var projectUid = Guid.NewGuid().ToString();
+      var customerUid = Guid.NewGuid();
+      Guid.NewGuid();
+      var subscriptionUid = Guid.NewGuid();
+      var startDateTime = ts.FirstEventDate;
+      var endDateTime = new DateTime(9999, 12, 31);
+      var endDateTime2 = DateTime.Now.Date.AddYears(2);
+      var startDate = startDateTime.ToString("yyyy-MM-dd");
+      var endDate = endDateTime.ToString("yyyy-MM-dd");
+      const string geometryWkt =
+        "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+      var eventsArray = new[]
+      {
+        "| TableName           | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
+       $"| Customer            | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                   |                |                  |             |                |               |          |                    |",
+       $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |"
+      };
+      ts.PublishEventCollection(eventsArray);
+      ts.IsPublishToWebApi = true;
+      var projectEventArray = new[]
+      {
+        "| EventType            | EventDate   | ProjectUID   | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem         |",
+       $"| CreateProjectRequest | 0d+09:00:00 | {projectUid} | Boundary Test 24 | LandFill    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc    |"
+      };
+      ts.PublishEventCollection(projectEventArray);
+      ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
+      ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid,
+        projectEventArray, true);
+      var geofenceUidProject = mysql.VerifyProjectGeofence(projectUid, 1);
+      var geofenceUidLandfillSite1 = Guid.NewGuid();
+      var geofenceUidLandfillSite2 = Guid.NewGuid();
+      var geofenceEventArray = new[]
+      {
+        "| TableName  | EventType           | EventDate   | fk_CustomerUID | Description   | FillColor | GeofenceName  | fk_GeofenceTypeID            | GeofenceUID                 | GeometryWKT   | IsTransparent | Name | UserUID        | IsDeleted | LastActionedUTC |",
+        $"| Geofence   | CreateGeofenceEvent | 0d+09:00:00 | {customerUid}  | Project       | 1         | Project       | {(int) GeofenceType.Project}  | {geofenceUidProject}        | {geometryWkt} | {false}       | Blah | {customerUid}  | {false}   | 0d+09:00:00     |",
+        $"| Geofence   | CreateGeofenceEvent | 0d+09:00:00 | {customerUid}  | LandfillSite1 | 1         | LandfillSite1 | {(int) GeofenceType.Landfill} | {geofenceUidLandfillSite1}  | {geometryWkt} | {false}       | Blah | {customerUid}  | {false}   | 0d+09:00:00     |",
+        $"| Geofence   | CreateGeofenceEvent | 0d+09:00:00 | {customerUid}  | LandfillSite2 | 1         | LandfillSite2 | {(int) GeofenceType.Landfill} | {geofenceUidLandfillSite2}  | {geometryWkt} | {false}       | Blah | {customerUid}  | {false}   | 0d+09:00:00     |"
+      };
+      ts.IsPublishToWebApi = false;
+      ts.PublishEventCollection(geofenceEventArray);
+
+      var availableGeofences = ts.GetAvailableLandfillGeofencesViaWebApiV4(customerUid, "?geofenceType=Landfill");
+      Assert.IsNotNull(availableGeofences);
+      Assert.AreEqual(2, availableGeofences.GeofenceDescriptors.Count, "Incorrect number of available Geofences.");
+
+      var associatedGeofences = ts.GetAssociatedLandfillGeofencesViaWebApiV4(customerUid, "?geofenceType=Landfill", $"&projectUid={projectUid}");
+      Assert.IsNotNull(associatedGeofences);
+      Assert.AreEqual(0, associatedGeofences.GeofenceDescriptors.Count, "Incorrect number of associated Geofences.");
+    }
+
   }
 }

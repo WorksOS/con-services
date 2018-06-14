@@ -4,12 +4,10 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Remotion.Linq.Clauses;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
@@ -222,7 +220,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <response code="400">Bad request</response>
     [Route("api/v4/project/{projectUid}")]
     [HttpDelete]
-    public async Task<ProjectV4DescriptorsSingleResult> DeleteProjectV4([FromUri] string projectUid)
+    public async Task<ProjectV4DescriptorsSingleResult> DeleteProjectV4([FromQuery] string projectUid)
     {
       LogCustomerDetails("DeleteProjectV4", projectUid);
       var project = new DeleteProjectEvent
@@ -282,53 +280,43 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     #region geofences
 
     /// <summary>
-    /// Gets a list of geofences for a customer, which are NOT associated with any project.
-    ///  The list includes projects of selected/all types. Empty geofences list indicates All.
-    ///  Includes only !deleted Geofences.
-    /// </summary>
-    /// <returns>A list of geofences</returns>
-    [Route("api/v4/geofences")]
-    [HttpGet]
-    public async Task<GeofenceV4DescriptorsListResult> GetGeofencesV4([FromBody] List<GeofenceType> geofenceTypes)
-    {
-      log.LogInformation("GetGeofencesV4");
-
-      ProjectDataValidator.ValidateGeofenceTypes(geofenceTypes);
-
-      var geofences =
-        (await ProjectRequestHelper.GetGeofenceList(customerUid, string.Empty, geofenceTypes, log, projectRepo));
-      return new GeofenceV4DescriptorsListResult
-      {
-        GeofenceDescriptors = geofences.Select(geofence =>
-            AutoMapperUtility.Automapper.Map<GeofenceV4Descriptor>(geofence))
-          .ToImmutableList()
-      };
-    }
-
-    /// <summary>
-    /// Gets a list of geofences associated with particular project.
-    ///  The list includes geofences of selected/all types.
-    ///  Includes only !deleted Geofences.
+    /// Note that only Landfill Projects and Landfill sites are supported.
+    /// 
+    /// If projectUid is NOT provided, 
+    ///    Returns a list of geofences for a customer, which are NOT associated with any project.
+    ///     The list includes projects of selected types. 
+    ///     Includes only !deleted Geofences.
+    /// 
+    /// If projectUid IS provided, 
+    ///   Gets a list of geofences associated with particular project.
+    ///     The list includes geofences of selected types.
+    ///     Includes only !deleted Geofences.
     /// </summary>
     /// <exception cref="NotImplementedException"></exception>
     /// <returns>A list of geofences</returns>
-    [Route("api/v4/geofences/{projectUid}")]
+    [Route("api/v4/geofences")]
     [HttpGet]
-    public async Task<GeofenceV4DescriptorsListResult> GetAssociatedGeofencesV4([FromUri] string projectUid,
-      [FromBody] List<GeofenceType> geofenceTypes)
+    public async Task<GeofenceV4DescriptorsListResult> GetAssociatedGeofencesV4([FromQuery] List<GeofenceType> geofenceType, [FromQuery] Guid? projectUid = null)
     {
       log.LogInformation("GetAssociatedGeofencesV4");
 
-      var project = await ProjectRequestHelper.GetProject(projectUid, customerUid, log, serviceExceptionHandler, projectRepo).ConfigureAwait(false);
-      if (project.ProjectType != ProjectType.LandFill)
+      if (projectUid != null)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 102);
+        var project = await ProjectRequestHelper
+          .GetProject(projectUid.ToString(), customerUid, log, serviceExceptionHandler, projectRepo).ConfigureAwait(false);
+        if (project.ProjectType != ProjectType.LandFill)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 102);
+        }
+        ProjectDataValidator.ValidateGeofenceTypes(geofenceType, project.ProjectType);
+      }
+      else
+      {
+        ProjectDataValidator.ValidateGeofenceTypes(geofenceType);
       }
 
-      ProjectDataValidator.ValidateGeofenceTypes(geofenceTypes, project.ProjectType);
-
       var geofences =
-        (await ProjectRequestHelper.GetGeofenceList(customerUid, projectUid, geofenceTypes, log, projectRepo));
+        (await ProjectRequestHelper.GetGeofenceList(customerUid, projectUid != null ? projectUid.ToString() : string.Empty, geofenceType, log, projectRepo));
       return new GeofenceV4DescriptorsListResult
       {
         GeofenceDescriptors = geofences.Select(geofence =>
@@ -338,7 +326,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     /// <summary>
-    /// Update ProjectGeofence Associations for selected geofenceTypes
+    /// Update ProjectGeofence Associations for selected geofenceType
     /// </summary>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>

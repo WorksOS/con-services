@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -200,12 +199,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
     public async Task<ImportedFileDescriptorSingleResult> CreateImportedFileV4(
       FlowFile file,
-      [FromUri] Guid projectUid, 
-      [FromUri] ImportedFileType importedFileType,
-      [FromUri] DxfUnitsType dxfUnitsType,
-      [FromUri] DateTime fileCreatedUtc, 
-      [FromUri] DateTime fileUpdatedUtc,
-      [FromUri] DateTime? surveyedUtc = null)
+      [FromQuery] Guid projectUid, 
+      [FromQuery] ImportedFileType importedFileType,
+      [FromQuery] DxfUnitsType dxfUnitsType,
+      [FromQuery] DateTime fileCreatedUtc, 
+      [FromQuery] DateTime fileUpdatedUtc,
+      [FromQuery] DateTime? surveyedUtc = null)
     {
       FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
@@ -312,12 +311,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
     public async Task<ImportedFileDescriptorSingleResult> UpsertImportedFileV4(
       FlowFile file,
-      [FromUri] Guid projectUid, 
-      [FromUri] ImportedFileType importedFileType,
-      [FromUri] DxfUnitsType dxfUnitsType,
-      [FromUri] DateTime fileCreatedUtc, 
-      [FromUri] DateTime fileUpdatedUtc,
-      [FromUri] DateTime? surveyedUtc = null)
+      [FromQuery] Guid projectUid, 
+      [FromQuery] ImportedFileType importedFileType,
+      [FromQuery] DxfUnitsType dxfUnitsType,
+      [FromQuery] DateTime fileCreatedUtc, 
+      [FromQuery] DateTime fileUpdatedUtc,
+      [FromQuery] DateTime? surveyedUtc = null)
     {
       FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
@@ -376,8 +375,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <response code="400">Bad request</response>
     [Route("api/v4/importedfile")]
     [HttpDelete]
-    public async Task<ContractExecutionResult> DeleteImportedFileV4([FromUri] Guid projectUid,
-      [FromUri] Guid importedFileUid)
+    public async Task<ContractExecutionResult> DeleteImportedFileV4([FromQuery] Guid projectUid,
+      [FromQuery] Guid importedFileUid)
     {
       log.LogInformation($"DeleteImportedFileV4. projectUid {projectUid} importedFileUid: {importedFileUid}");
 
