@@ -632,6 +632,51 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
+    /// from final passes only return passes in passcount range
+    /// </summary>
+    private void ApplyPassCountRangeFilter()
+    {
+      if (PassFilter == null || !PassFilter.HasPassCountRangeFilter)
+        return;
+
+      if (Cell.Layers.Count() < 0)
+         return;
+
+    // Note this filter only applies to processing with no layer analysis
+      int passStartIdx   = Cell.Layers[0].StartCellPassIdx;
+      int endPassIdx     = Cell.Layers[0].EndCellPassIdx;
+      int currentPassIdx = 0;
+      bool prevHalfPass = false;
+
+      for (int passIndex = passStartIdx; passIndex < endPassIdx; passIndex++)
+      {
+
+        if (Cell.FilteredPassFlags[passIndex]) // if marked as non filtered pass (good pass)
+        {
+          // if we have the second half pass or a full pass inc CurrentPassIdx. God I hate half passes
+          if ((prevHalfPass == false) || (Cell.Passes.FilteredPassData[passIndex].FilteredPass.HalfPass == false))
+          {
+            ++currentPassIdx;
+          }
+          
+          if (!Range.InRange(currentPassIdx, PassFilter.PasscountRangeMin, PassFilter.PasscountRangeMax))
+          {
+            Cell.FilteredPassFlags[passIndex] = false; // flag for removal
+          } 
+
+          // if halfpass look for twin
+          if (Cell.Passes.FilteredPassData[passIndex].FilteredPass.HalfPass)
+          {
+            prevHalfPass = !prevHalfPass; // basically keeps CurrentPassIdx at same value until two half passes are detected
+          }
+
+        }
+      }
+    }
+
+
+
+    /// <summary>
     /// Apples the 'elevation type' filter aspect to determine which cell pass of a set of filtered cell passes
     /// in a layer should be used to provide the required attribute 
     /// </summary>
@@ -1257,6 +1302,12 @@ namespace VSS.TRex.Profiling
 
       // todo ...if (Debug_ExtremeLogSwitchE)
       // SIGLogMessage.PublishNoODS(Nil, Format('In BuildLiftsForCell at %dx%d: Handling passcount check', [Cell.OTGCellX, Cell.OTGCellY]), slmcDebug);
+
+
+      if (PassFilter != null && PassFilter.HasPassCountRangeFilter) // Filter only wants passes that match a range
+      {
+        ApplyPassCountRangeFilter();
+      }
 
       // Apply the Elevation Type filter if any...
       ApplyElevationTypeFilter();

@@ -56,6 +56,7 @@ namespace VSS.TRex.Filters
         public bool HasCompactionMachinesOnlyFilter { get; set; }
 
         public bool HasTemperatureRangeFilter { get; set; }
+        public bool HasPassCountRangeFilter { get; set; }
 
         public bool ExcludeSurveyedSurfaces()
         {
@@ -134,7 +135,8 @@ namespace VSS.TRex.Filters
                 HasPositioningTechFilter ||
                 HasTimeFilter ||
                 HasVibeStateFilter ||
-                HasTemperatureRangeFilter;
+                HasTemperatureRangeFilter ||
+                HasPassCountRangeFilter;
 
             AnyMachineEventFilterSelections =
                 HasDesignFilter ||

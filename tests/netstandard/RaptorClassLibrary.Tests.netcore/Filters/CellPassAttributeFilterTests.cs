@@ -226,6 +226,15 @@ namespace VSS.TRex.Filters.Tests
         }
 
 
+        [Fact()]
+        public void Test_CellPassAttributeFilter_CompareTo_PassCountRange()
+        {
+          Test_CellPassAttributeFilter_CompareTo_Aspect("PassCountRange", x => {
+                                                                         x.HasPassCountRangeFilter = true; x.PasscountRangeMin = 1;
+                                                                         x.PasscountRangeMax = 4;
+                                                                       });
+        }
+
 
     [Fact()]
         public void Test_CellPassAttributeFilter_ClearDesigns()
