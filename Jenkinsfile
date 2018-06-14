@@ -15,7 +15,6 @@ node ('jenkinsslave-pod') {
     def buildNumber = params.VSTS_BUILD_NUMBER
     def versionPrefix = ""
     def suffix = ""
-    def branchName = ""
 	def jobnameparts = JOB_NAME.tokenize('/') as String[]
 	def prjname = jobnameparts[0].toLowerCase() 	
 
