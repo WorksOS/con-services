@@ -11,6 +11,7 @@ using Hangfire;
 using Hangfire.Common;
 using Hangfire.Server;
 using Hangfire.Storage;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
@@ -64,7 +65,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
       var context = GetMockHangfireContext(TestContext.TestName, message);
 
       Mock<IApiClient> apiClient = new Mock<IApiClient>();
-      apiClient.Setup(a => a.SendRequest<ExportResult>(scheduleRequest, customHeaders, null)).ReturnsAsync(new ExportResult { ExportData = new byte[0] });
+      apiClient.Setup(a => a.SendRequest(scheduleRequest, customHeaders)).ReturnsAsync(new MemoryStream());
 
       Mock<ITransferProxy> transferProxy = new Mock<ITransferProxy>();
       transferProxy.Setup(t => t.Upload(It.IsAny<Stream>(), It.IsAny<string>())).Verifiable();
@@ -89,7 +90,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
 
       var exception = new Exception(message);
       Mock<IApiClient> apiClient = new Mock<IApiClient>();
-      apiClient.Setup(a => a.SendRequest<ExportResult>(scheduleRequest, customHeaders, null)).Throws(exception);
+      apiClient.Setup(a => a.SendRequest(scheduleRequest, customHeaders)).Throws(exception);
 
       Mock<ITransferProxy> transferProxy = new Mock<ITransferProxy>();
       transferProxy.Setup(t => t.Upload(It.IsAny<Stream>(), It.IsAny<string>())).Verifiable();

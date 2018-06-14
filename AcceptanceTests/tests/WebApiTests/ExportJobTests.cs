@@ -21,8 +21,7 @@ namespace WebApiTests
     private const string GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1 = "7925f179-013d-4aaf-aff4-7b9833bb06d6";
     private const string SUCCESS_JOB_ID = "Test_Job_1";
     private const string FAILURE_JOB_ID = "Test_Job_2";
-    
-
+    private const string TIMEOUT_JOB_ID = "Test_Job_4";
 
     [TestInitialize]
     public void Initialize()
@@ -83,12 +82,47 @@ namespace WebApiTests
       //Get the job status...
       var statusResult = WaitForExpectedStatus(jobId, "FAILED");
       Assert.IsNotNull(statusResult.FailureDetails, "Should get details on failure");
+      Assert.AreEqual(HttpStatusCode.BadRequest, statusResult.FailureDetails.Code, "Wrong http status code");
+      Assert.AreEqual(2002, statusResult.FailureDetails.Result.Code, "Wrong failure code");
+      Assert.AreEqual("Failed to get requested export data with error: No data for export", statusResult.FailureDetails.Result.Message, "Wrong failure message");
     }
 
-    private string GetScheduledJobId(string filterUid, string filename)
+    [TestMethod]
+    public void CanDoLongRunningExport()
+    {
+      Msg.Title("Scheduler web test 4", "Schedule long running export job");
+
+      //Schedule the export job...
+      var filterUid = "81422acc-9b0c-401c-9987-0aedbf153f1d";
+      var jobId = GetScheduledJobId(filterUid, TIMEOUT_JOB_ID);
+
+      //Get the job status...
+      var statusResult = WaitForExpectedStatus(jobId, "SUCCEEDED", 180);
+      Assert.IsTrue(!string.IsNullOrEmpty(statusResult.DownloadLink), "Should get a download link on success");
+    }
+
+    [TestMethod]
+    public void CanDoExportTimeout()
+    {
+      Msg.Title("Scheduler web test 5", "Schedule export job with timeout");
+
+      //Schedule the export job...
+      var filterUid = "81422acc-9b0c-401c-9987-0aedbf153f1d";
+      var jobId = GetScheduledJobId(filterUid, TIMEOUT_JOB_ID, 100000);
+
+      //Get the job status...
+      var statusResult = WaitForExpectedStatus(jobId, "FAILED", 150);
+      Assert.IsNotNull(statusResult.FailureDetails, "Should get details on failure");
+      Assert.AreEqual(HttpStatusCode.InternalServerError, statusResult.FailureDetails.Code, "Wrong http status code");
+      Assert.AreEqual(-3, statusResult.FailureDetails.Result.Code, "Wrong failure code");
+      Assert.AreEqual("The operation has timed out.", statusResult.FailureDetails.Result.Message, "Wrong failure message");
+
+    }
+
+    private string GetScheduledJobId(string filterUid, string filename, int timeoutMillisecs= 300000)//5 mins
     {
       var url = $"{ts.tsCfg.vetaExportUrl}?projectUid={GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1}&fileName={filename}&filterUid={filterUid}";
-      var request = new ScheduleJobRequest { Url = url, Filename = filename };
+      var request = new ScheduleJobRequest { Url = url, Filename = filename, Timeout= timeoutMillisecs };
       var requestJson = JsonConvert.SerializeObject(request);
       var responseJson = ts.CallSchedulerWebApi("internal/v1/export", "POST", requestJson);
       var scheduleResult = JsonConvert.DeserializeObject<ScheduleJobResult>(responseJson,
@@ -98,12 +132,12 @@ namespace WebApiTests
       return scheduleResult.JobId;
     }
 
-    private JobStatusResult WaitForExpectedStatus(string jobId, string expectedStatus)
+    private JobStatusResult WaitForExpectedStatus(string jobId, string expectedStatus, int maxSeconds=60)
     {
       //Get the job status...
       JobStatusResult statusResult = new JobStatusResult { Status = string.Empty };
       //Avoid infinite loop if something goes wrong
-      var timeout = DateTime.Now.AddSeconds(60);
+      var timeout = DateTime.Now.AddSeconds(maxSeconds);
       while (!statusResult.Status.Equals(expectedStatus, StringComparison.OrdinalIgnoreCase) && DateTime.Now < timeout)
       {
         var responseJson = ts.CallSchedulerWebApi($"api/v1/export/{jobId}", "GET");
