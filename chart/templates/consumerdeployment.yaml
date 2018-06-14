@@ -15,7 +15,7 @@ spec:
         app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}
     spec:
       containers:
-      - image: image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:{{ .Values.consumerImage.tag }}
+      - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:{{ .Values.consumerImage.tag }}
         name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}-consumer        
         resources:
 {{ toYaml .Values.resources | indent 12 }}
