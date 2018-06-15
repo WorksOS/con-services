@@ -12,15 +12,39 @@ namespace VSS.TRex.Rendering.Displayers
   /// </summary>
   public class PVMDisplayer_PassCountSummary : PVMDisplayerBase
   {
+    /// <summary>
+    /// The flag is to indicate wehther or not the machine Pass Count target range to be user overrides.
+    /// </summary>
     private const bool UseMachineTargetPass = false;
+
+    /// <summary>
+    /// Pass Count target range.
+    /// </summary>
     private PassCountRangeRecord TargetPassCountRange = new PassCountRangeRecord(5, 10);
 
+    /// <summary>
+    /// Pass Count data holder.
+    /// </summary>
     private ClientPassCountLeafSubGrid SubGrid;
 
+    /// <summary>
+    /// The colour, which Pass Count summary data displayed in on a plan view map, where pass count values are greater than target range.
+    /// </summary>
     private Color AbovePassTargetRangeColour;
+
+    /// <summary>
+    /// The colour, which Pass Count summary data displayed in on a plan view map, where pass count values are within target range.
+    /// </summary>
     private Color WithinPassTargetRangeColour;
+
+    /// <summary>
+    /// The colour, which Pass Count summary data displayed in on a plan view map, where pass count values are less than target range.
+    /// </summary>
     private Color BelowPassTargetRangeColour;
 
+    /// <summary>
+    /// Default no-arg constructor
+    /// </summary>
     public PVMDisplayer_PassCountSummary()
     {
       AbovePassTargetRangeColour = PassCountPalette.AbovePassTargetRangeColour;
@@ -28,6 +52,11 @@ namespace VSS.TRex.Rendering.Displayers
       BelowPassTargetRangeColour = PassCountPalette.BelowPassTargetRangeColour;
     }
 
+    /// <summary>
+    /// Renders Pass Count summary data as tiles. 
+    /// </summary>
+    /// <param name="subGrid"></param>
+    /// <returns></returns>
     protected override bool DoRenderSubGrid(ISubGrid subGrid)
     {
       if (subGrid is ClientPassCountLeafSubGrid grid)
@@ -39,8 +68,16 @@ namespace VSS.TRex.Rendering.Displayers
       return false;
     }
 
+    /// <summary>
+    ///  Enables a displayer to advertise is it capable of rendering cell information in strips.
+    /// </summary>
+    /// <returns></returns>
     protected override bool SupportsCellStripRendering() => true;
 
+    /// <summary>
+    /// Queries the data at the current cell location and determines the colour that should be displayed there.
+    /// </summary>
+    /// <returns></returns>
     protected override Color DoGetDisplayColour()
     {
       var cellValue = SubGrid.Cells[east_col, north_row];

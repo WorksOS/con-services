@@ -5,28 +5,42 @@ using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Rendering.Displayers
 {
+  /// <summary>
+  /// Plan View Map displayer renderer for machine speed information presented as rendered tiles
+  /// </summary>
+  public class PVMDisplayer_CutFill : PVMDisplayerBase
+  {
     /// <summary>
-    /// Plan View Map displayer renderer for machine speed information presented as rendered tiles
+    /// Cut/Fill data holder.
+    private ClientHeightLeafSubGrid SubGrid;
+
+    /// <summary>
+    /// Renders Cut/Fill summary data as tiles. 
     /// </summary>
-    public class PVMDisplayer_CutFill : PVMDisplayerBase
+    /// <param name="subGrid"></param>
+    /// <returns></returns>
+    protected override bool DoRenderSubGrid(ISubGrid subGrid)
     {
-        private ClientHeightLeafSubGrid SubGrid;
+      SubGrid = (subGrid as ClientHeightLeafSubGrid);
 
-        protected override bool DoRenderSubGrid(ISubGrid subGrid)
-        {
-            SubGrid = (subGrid as ClientHeightLeafSubGrid);
-
-            return SubGrid != null && base.DoRenderSubGrid(SubGrid);
-        }
-
-        protected override bool SupportsCellStripRendering() => true;
-
-        protected override Color DoGetDisplayColour()
-        {
-            float value = SubGrid.Cells[east_col, north_row];
-
-            return value == CellPass.NullHeight ? Color.Empty : Palette.ChooseColour(value);
-        }
+      return SubGrid != null && base.DoRenderSubGrid(SubGrid);
     }
+
+    /// <summary>
+    ///  Enables a displayer to advertise is it capable of rendering cell information in strips.
+    /// </summary>
+    /// <returns></returns>
+    protected override bool SupportsCellStripRendering() => true;
+
+    /// <summary>
+    /// Queries the data at the current cell location and determines the colour that should be displayed there.
+    /// </summary>
+    /// <returns></returns>
+    protected override Color DoGetDisplayColour()
+    {
+      float value = SubGrid.Cells[east_col, north_row];
+
+      return value == CellPass.NullHeight ? Color.Empty : Palette.ChooseColour(value);
+    }
+  }
 }
- 

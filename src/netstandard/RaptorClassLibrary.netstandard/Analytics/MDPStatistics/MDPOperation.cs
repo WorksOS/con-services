@@ -6,6 +6,9 @@ using VSS.TRex.Analytics.MDPStatistics.GridFabric;
 
 namespace VSS.TRex.Analytics.MDPStatistics
 {
+  /// <summary>
+  /// Provides a client onsumable operation for performing MDP analytics that returns a client model space MDP result.
+  /// </summary>
   public class MDPOperation : AnalyticsOperation<MDPStatisticsRequest_ApplicationService, MDPStatisticsArgument, MDPStatisticsResponse, MDPResult>
   {
   }

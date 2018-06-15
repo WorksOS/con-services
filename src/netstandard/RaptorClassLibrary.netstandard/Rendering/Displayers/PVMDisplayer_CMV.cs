@@ -11,13 +11,31 @@ namespace VSS.TRex.Rendering.Displayers
   /// </summary>
   public class PVMDisplayer_CMV : PVMDisplayerBase
   {
+    /// <summary>
+    /// The default colour that is used to display decoupled CMV data.
+    /// </summary>
     private Color DefaultDecoupledCMVColour = Color.Black;
+
+    /// <summary>
+    /// The flag is to indicate wehther or not the machine CMV target to be user overrides.
+    /// </summary>
     private const bool UseMachineTargetCMV = false;
+
+    /// <summary>
+    /// Default overriding CMV target value.
+    /// </summary>
     private const short AbsoluteTargetCMV = 70;
 
-
+    /// <summary>
+    /// CMV data holder.
+    /// </summary>
     private ClientCMVLeafSubGrid SubGrid;
 
+    /// <summary>
+    /// Renders CMV summary data as tiles. 
+    /// </summary>
+    /// <param name="subGrid"></param>
+    /// <returns></returns>
     protected override bool DoRenderSubGrid(ISubGrid subGrid)
     {
       if (subGrid is ClientCMVLeafSubGrid grid)
@@ -29,8 +47,16 @@ namespace VSS.TRex.Rendering.Displayers
       return false;
     }
 
+    /// <summary>
+    ///  Enables a displayer to advertise is it capable of rendering cell information in strips.
+    /// </summary>
+    /// <returns></returns>
     protected override bool SupportsCellStripRendering() => true;
 
+    /// <summary>
+    /// Queries the data at the current cell location and determines the colour that should be displayed there.
+    /// </summary>
+    /// <returns></returns>
     protected override Color DoGetDisplayColour()
     {
       var cellValue = SubGrid.Cells[east_col, north_row];
