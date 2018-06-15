@@ -12,6 +12,7 @@ using System.Threading;
 using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using TestUtility.Model.WebApi;
 using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Repositories.DBModels;
@@ -606,11 +607,11 @@ namespace TestUtility
       return projectDescriptorResult?.ProjectDescriptor;
     }
 
-    public GeofenceV4DescriptorsListResult GetAvailableLandfillGeofencesViaWebApiV4(Guid customerUid, string geofenceTypeString) 
+    public GeofenceV4DescriptorsListResult GetProjectGeofencesViaWebApiV4(string customerUid, string geofenceTypeString, string projectUidString )
     {
-      // http://localhost:5000/api/v4/geofences?geofenceType=Landfill&geofenceType=0&projectUid={projectUid}
-      var response = CallProjectWebApiV4("api/v4/geofences" + geofenceTypeString, HttpMethod.Get.ToString(), null, customerUid.ToString());
-      Log.Info($"GetAvailableLandfillSitesViaWebApiV4. response: {JsonConvert.SerializeObject(response)}", Log.ContentType.ApiSend);
+      var routeSuffix = "api/v4/geofences" + geofenceTypeString + projectUidString;
+      var response = CallProjectWebApiV4(routeSuffix, HttpMethod.Get.ToString(), null, customerUid);
+      Log.Info($"GetProjectGeofencesViaWebApiV4. response: {JsonConvert.SerializeObject(response)}", Log.ContentType.ApiSend);
 
       if (!string.IsNullOrEmpty(response))
       {
@@ -619,14 +620,18 @@ namespace TestUtility
       return null;
     }
 
-    public GeofenceV4DescriptorsListResult GetAssociatedLandfillGeofencesViaWebApiV4(Guid customerUid, string geofenceTypeString, string projectUidString )
+    public ContractExecutionResult AssociateProjectGeofencesViaWebApiV4(string customerUid, string projectUid, List<GeofenceType> geofenceTypes, List<Guid> geofenceGuids)
     {
-      var response = CallProjectWebApiV4("api/v4/geofences" + geofenceTypeString + projectUidString, HttpMethod.Get.ToString(), null, customerUid.ToString());
-      Log.Info($"GetAvailableLandfillSitesViaWebApiV4. response: {JsonConvert.SerializeObject(response)}", Log.ContentType.ApiSend);
+      var updateProjectGeofenceRequest =
+        UpdateProjectGeofenceRequest.CreateUpdateProjectGeofenceRequest
+            (ProjectUid = Guid.Parse(projectUid), geofenceTypes, geofenceGuids);
+      var messagePayload = JsonConvert.SerializeObject(updateProjectGeofenceRequest);
+      var response = CallProjectWebApiV4("api/v4/geofences", HttpMethod.Put.ToString(), messagePayload, customerUid);
+      Log.Info($"AssociateProjectGeofencesViaWebApiV4. response: {JsonConvert.SerializeObject(response)}", Log.ContentType.ApiSend);
 
       if (!string.IsNullOrEmpty(response))
       {
-        return JsonConvert.DeserializeObject<GeofenceV4DescriptorsListResult>(response);
+        return JsonConvert.DeserializeObject<ContractExecutionResult>(response);
       }
       return null;
     }

@@ -71,7 +71,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       this.DynamicAddwithOffset("Unable to update project.", 62);
       this.DynamicAddwithOffset("Unable to associate project with customer.", 63);
       this.DynamicAddwithOffset("Unable to disassociate project from customer.", 64);
-      this.DynamicAddwithOffset("Unable to associate project with geofence.", 65);
+      this.DynamicAddwithOffset("Unable to store project-geofence associate in database.", 65);
       this.DynamicAddwithOffset("Unable to delete project.", 66);
       this.DynamicAddwithOffset("FileImport AddFile in RaptorServices failed. Reason: {0} {1}.", 67);
       this.DynamicAddwithOffset("Invalid parameters.", 68);
