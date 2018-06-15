@@ -295,28 +295,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         });
     }
 
-    ///// <summary>
-    ///// Associates the geofence project.
-    ///// </summary>
-    ///// <param name="geofenceProject">The geofence project.</param>
-    ///// <returns></returns>
-    //private async Task AssociateGeofenceProject(AssociateProjectGeofence geofenceProject)
-    //{
-    //  ProjectDataValidator.Validate(geofenceProject, projectRepo, serviceExceptionHandler);
-    //  geofenceProject.ReceivedUTC = DateTime.UtcNow;
-
-    //  var isUpdated = await projectRepo.StoreEvent(geofenceProject).ConfigureAwait(false);
-    //  if (isUpdated == 0)
-    //    serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 65);
-
-    //  var messagePayload = JsonConvert.SerializeObject(new { AssociateProjectGeofence = geofenceProject });
-    //  producer.Send(kafkaTopicName,
-    //    new List<KeyValuePair<string, string>>()
-    //    {
-    //      new KeyValuePair<string, string>(geofenceProject.ProjectUID.ToString(), messagePayload)
-    //    });
-    //}
-
     /// <summary>
     /// Deletes the project.
     /// </summary>
