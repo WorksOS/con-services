@@ -4,6 +4,8 @@ namespace VSS.TRex.Common
 {
   public static class Consts
   {
+    public const double TOLERANCE = 0.00001;
+
     public const double NullReal = 1E308;
 
     /// <summary>

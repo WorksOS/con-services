@@ -9,8 +9,6 @@ namespace VSS.TRex.Rendering.Palettes
   /// </summary>
   public class PassCountPalette : PaletteBase
   {
-    private const double TOLERANCE = 0.00001;
-
     private Color _targetPassCountColour = Color.Blue;
 
     private static Transition[] Transitions =

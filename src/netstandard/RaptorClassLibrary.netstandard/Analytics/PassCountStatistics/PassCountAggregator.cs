@@ -28,7 +28,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics
     /// <summary>
     /// Holds last known good target Pass Count range values.
     /// </summary>
-    public PassCountRangeRecord LastPassCountTargetRange { get; set; } = new PassCountRangeRecord(CellPass.NullPassCountValue, CellPass.NullPassCountValue);
+    public PassCountRangeRecord LastPassCountTargetRange;
 
     /// <summary>
     /// Default no-arg constructor
@@ -36,6 +36,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics
     public PassCountAggregator()
     {
       OverridingTargetPassCountRange.Clear();
+      LastPassCountTargetRange.Clear();
     }
 
     protected override void DataCheck(DataStatisticsAggregator other)

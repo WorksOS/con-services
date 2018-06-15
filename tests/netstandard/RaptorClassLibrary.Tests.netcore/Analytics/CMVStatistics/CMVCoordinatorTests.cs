@@ -2,6 +2,7 @@
 using VSS.TRex.Tests.netcore.Analytics.Common;
 using VSS.TRex.Analytics.CMVStatistics;
 using VSS.TRex.Analytics.CMVStatistics.GridFabric;
+using VSS.TRex.Common;
 using VSS.TRex.Filters;
 using VSS.TRex.Types;
 using Xunit;
@@ -46,7 +47,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
 
       Assert.True(aggregator.RequiresSerialisation, "Invalid aggregator value for RequiresSerialisation.");
       Assert.True(aggregator.SiteModelID == Arg.ProjectID, "Invalid aggregator value for SiteModelID.");
-      Assert.True(Math.Abs(aggregator.CellSize - _siteModel.Grid.CellSize) < TOLERANCE, "Invalid aggregator value for CellSize.");
+      Assert.True(Math.Abs(aggregator.CellSize - _siteModel.Grid.CellSize) < Consts.TOLERANCE, "Invalid aggregator value for CellSize.");
       Assert.True(aggregator.OverrideMachineCMV == Arg.OverrideMachineCMV, "Invalid aggregator value for OverrideMachineCMV.");
       Assert.True(aggregator.OverridingMachineCMV == Arg.OverridingMachineCMV, "Invalid aggregator value for OverridingMachineCMV.");
     }
@@ -77,7 +78,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
 
       coordinator.ReadOutResults(aggregator, response);
 
-      Assert.True(Math.Abs(response.CellSize - aggregator.CellSize) < TOLERANCE, "CellSize invalid after result read-out.");
+      Assert.True(Math.Abs(response.CellSize - aggregator.CellSize) < Consts.TOLERANCE, "CellSize invalid after result read-out.");
       Assert.True(response.SummaryCellsScanned == aggregator.SummaryCellsScanned, "Invalid read-out value for SummaryCellsScanned.");
       Assert.True(response.LastTargetCMV == aggregator.LastTargetCMV, "Invalid read-out value for LastTargetCMV.");
       Assert.True(response.CellsScannedOverTarget == aggregator.CellsScannedOverTarget, "Invalid read-out value for CellsScannedOverTarget.");

@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
+using VSS.TRex.Common;
 using VSS.TRex.Tests.netcore.Analytics.Common;
 using VSS.TRex.Types;
 using Xunit;
@@ -26,7 +27,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
       var response = new PassCountStatisticsResponse();
 
       Assert.True(response.ResultStatus == RequestErrorStatus.Unknown, "ResultStatus invalid after creation.");
-      Assert.True(response.CellSize < TOLERANCE, "CellSize invalid after creation.");
+      Assert.True(response.CellSize < Consts.TOLERANCE, "CellSize invalid after creation.");
       Assert.True(response.SummaryCellsScanned == 0, "Invalid initial value for SummaryCellsScanned.");
       Assert.True(response.LastPassCountTargetRange.Min == 0, "Invalid initial value for LastPassCountTargetRange.Min.");
       Assert.True(response.LastPassCountTargetRange.Max == 0, "Invalid initial value for LastPassCountTargetRange.Max.");
@@ -48,10 +49,10 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
 
       Assert.True(result.ConstantTargetPassCountRange.Min ==_response.LastPassCountTargetRange.Min, "Invalid initial result value for ConstantTargetPassCountRange.Min.");
       Assert.True(result.ConstantTargetPassCountRange.Max == _response.LastPassCountTargetRange.Max, "Invalid initial result value for ConstantTargetPassCountRange.Max.");
-      Assert.True(Math.Abs(result.AboveTargetPercent - _response.ValueOverTargetPercent) < TOLERANCE, "Invalid initial result value for AbovePassCountPercent.");
-      Assert.True(Math.Abs(result.WithinTargetPercent - _response.ValueAtTargetPercent) < TOLERANCE, "Invalid initial result value for WithinPassCountPercent.");
-      Assert.True(Math.Abs(result.BelowTargetPercent - _response.ValueUnderTargetPercent) < TOLERANCE, "Invalid initial result value for BelowPassCountPercent.");
-      Assert.True(Math.Abs(result.TotalAreaCoveredSqMeters - _response.SummaryProcessedArea) < TOLERANCE, "Invalid initial result value for TotalAreaCoveredSqMeters.");
+      Assert.True(Math.Abs(result.AboveTargetPercent - _response.ValueOverTargetPercent) < Consts.TOLERANCE, "Invalid initial result value for AbovePassCountPercent.");
+      Assert.True(Math.Abs(result.WithinTargetPercent - _response.ValueAtTargetPercent) < Consts.TOLERANCE, "Invalid initial result value for WithinPassCountPercent.");
+      Assert.True(Math.Abs(result.BelowTargetPercent - _response.ValueUnderTargetPercent) < Consts.TOLERANCE, "Invalid initial result value for BelowPassCountPercent.");
+      Assert.True(Math.Abs(result.TotalAreaCoveredSqMeters - _response.SummaryProcessedArea) < Consts.TOLERANCE, "Invalid initial result value for TotalAreaCoveredSqMeters.");
       Assert.True(result.IsTargetPassCountConstant == _response.IsTargetValueConstant, "Invalid initial result value for IsTargetPassCountConstant.");
     }
 
@@ -72,7 +73,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
 
       var response = _response.AggregateWith(responseClone);
 
-      Assert.True(Math.Abs(response.CellSize - _response.CellSize) < TOLERANCE, "CellSize invalid after aggregation.");
+      Assert.True(Math.Abs(response.CellSize - _response.CellSize) < Consts.TOLERANCE, "CellSize invalid after aggregation.");
       Assert.True(response.SummaryCellsScanned == _response.SummaryCellsScanned * 2, "Invalid aggregated value for SummaryCellsScanned.");
       Assert.True(response.LastPassCountTargetRange.Min == _response.LastPassCountTargetRange.Min, "Invalid aggregated value for LastPassCountTargetRange.Min.");
       Assert.True(response.LastPassCountTargetRange.Max == _response.LastPassCountTargetRange.Max, "Invalid aggregated value for LastPassCountTargetRange.Max.");

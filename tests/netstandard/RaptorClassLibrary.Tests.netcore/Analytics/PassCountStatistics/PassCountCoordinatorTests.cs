@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.TRex.Analytics.PassCountStatistics;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
+using VSS.TRex.Common;
 using VSS.TRex.Filters;
 using VSS.TRex.Tests.netcore.Analytics.Common;
 using VSS.TRex.Types;
@@ -46,7 +47,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
 
       Assert.True(aggregator.RequiresSerialisation, "Invalid aggregator value for RequiresSerialisation.");
       Assert.True(aggregator.SiteModelID == Arg.ProjectID, "Invalid aggregator value for SiteModelID.");
-      Assert.True(Math.Abs(aggregator.CellSize - _siteModel.Grid.CellSize) < TOLERANCE, "Invalid aggregator value for CellSize.");
+      Assert.True(Math.Abs(aggregator.CellSize - _siteModel.Grid.CellSize) < Consts.TOLERANCE, "Invalid aggregator value for CellSize.");
       Assert.True(aggregator.OverrideTargetPassCount == Arg.OverrideTargetPassCount, "Invalid aggregator value for OverrideTargetPassCount.");
       Assert.True(aggregator.OverridingTargetPassCountRange.Min == Arg.OverridingTargetPassCountRange.Min, "Invalid aggregator value for OverridingTargetPassCountRange.Min.");
       Assert.True(aggregator.OverridingTargetPassCountRange.Max == Arg.OverridingTargetPassCountRange.Max, "Invalid aggregator value for OverridingTargetPassCountRange.Max.");
@@ -78,7 +79,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
 
       coordinator.ReadOutResults(aggregator, response);
 
-      Assert.True(Math.Abs(response.CellSize - aggregator.CellSize) < TOLERANCE, "CellSize invalid after result read-out.");
+      Assert.True(Math.Abs(response.CellSize - aggregator.CellSize) < Consts.TOLERANCE, "CellSize invalid after result read-out.");
       Assert.True(response.SummaryCellsScanned == aggregator.SummaryCellsScanned, "Invalid read-out value for SummaryCellsScanned.");
       Assert.True(response.LastPassCountTargetRange.Min == aggregator.LastPassCountTargetRange.Min, "Invalid read-out value for LastPassCountTargetRange.Min.");
       Assert.True(response.LastPassCountTargetRange.Max == aggregator.LastPassCountTargetRange.Max, "Invalid read-out value for LastPassCountTargetRange.Max.");

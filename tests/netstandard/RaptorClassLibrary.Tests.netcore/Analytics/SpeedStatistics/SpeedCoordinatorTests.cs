@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.TRex.Analytics.SpeedStatistics;
 using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
+using VSS.TRex.Common;
 using VSS.TRex.Filters;
 using VSS.TRex.Tests.netcore.Analytics.Common;
 using VSS.TRex.Types;
@@ -45,7 +46,7 @@ namespace VSS.TRex.Tests.netcore.Analytics.SpeedStatistics
 
       Assert.True(aggregator.RequiresSerialisation, "Invalid aggregator value for RequiresSerialisation.");
       Assert.True(aggregator.SiteModelID == Arg.ProjectID, "Invalid aggregator value for SiteModelID.");
-      Assert.True(Math.Abs(aggregator.CellSize - _siteModel.Grid.CellSize) < TOLERANCE, "Invalid aggregator value for CellSize.");
+      Assert.True(Math.Abs(aggregator.CellSize - _siteModel.Grid.CellSize) < Consts.TOLERANCE, "Invalid aggregator value for CellSize.");
       Assert.True(aggregator.TargetMachineSpeed.Max == Arg.TargetMachineSpeed.Max, "Invalid aggregator value for TargetMachineSpeed.Max.");
       Assert.True(aggregator.TargetMachineSpeed.Min == Arg.TargetMachineSpeed.Min, "Invalid aggregator value for TargetMachineSpeed.Min.");
     }
@@ -76,7 +77,7 @@ namespace VSS.TRex.Tests.netcore.Analytics.SpeedStatistics
 
       coordinator.ReadOutResults(aggregator, response);
 
-      Assert.True(Math.Abs(response.CellSize - aggregator.CellSize) < TOLERANCE, "CellSize invalid after result read-out.");
+      Assert.True(Math.Abs(response.CellSize - aggregator.CellSize) < Consts.TOLERANCE, "CellSize invalid after result read-out.");
       Assert.True(response.SummaryCellsScanned == aggregator.SummaryCellsScanned, "Invalid read-out value for SummaryCellsScanned.");
       Assert.True(response.CellsScannedOverTarget == aggregator.CellsScannedOverTarget, "Invalid read-out value for CellsScannedOverTarget.");
       Assert.True(response.CellsScannedAtTarget == aggregator.CellsScannedAtTarget, "Invalid read-out value for CellsScannedAtTarget.");

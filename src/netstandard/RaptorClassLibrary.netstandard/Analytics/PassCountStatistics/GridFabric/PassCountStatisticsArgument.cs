@@ -15,9 +15,9 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
     /// </summary>
     public bool OverrideTargetPassCount { get; set; }
 
-   /// <summary>
+    /// <summary>
     /// Pass Count target range.
     /// </summary>
-    public PassCountRangeRecord OverridingTargetPassCountRange { get; set; }
+    public PassCountRangeRecord OverridingTargetPassCountRange;
   }
 }

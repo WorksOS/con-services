@@ -16,7 +16,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics
     /// <summary>
     /// The Pass Count target range values applied to all processed cells.
     /// </summary>
-    public PassCountRangeRecord ConstantTargetPassCountRange { get; set; }
+    public PassCountRangeRecord ConstantTargetPassCountRange;
 
     /// <summary>
     /// The internal result code of the request. Documented elsewhere.

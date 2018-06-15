@@ -9,7 +9,5 @@ namespace VSS.TRex.Tests.netcore.Analytics.Common
     protected const int CELLS_OVER_TARGET = 25;
     protected const int CELLS_AT_TARGET = 45;
     protected const int CELLS_UNDER_TARGET = 85;
-    protected const double TOLERANCE = 0.00001;
-
   }
 }

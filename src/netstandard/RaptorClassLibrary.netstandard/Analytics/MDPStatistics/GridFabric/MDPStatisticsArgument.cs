@@ -25,6 +25,6 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
     /// <summary>
     /// MDP percentage range.
     /// </summary>
-    public MDPRangePercentageRecord MDPPercentageRange { get; set; }
+    public MDPRangePercentageRecord MDPPercentageRange;
   }
 }
