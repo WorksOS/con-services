@@ -45,7 +45,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
         TotalAreaCoveredSqMeters = SummaryProcessedArea,
 
         ReturnCode = MissingTargetValue ?
-          (!(ValueOverTargetPercent < Consts.TOLERANCE) && ValueAtTargetPercent < Consts.TOLERANCE && ValueUnderTargetPercent < Consts.TOLERANCE) ? MissingTargetDataResultType.PartialResult : MissingTargetDataResultType.PartialResultMissingTarget :
+          (!(ValueOverTargetPercent < Consts.TOLERANCE_PERCENTAGE) && ValueAtTargetPercent < Consts.TOLERANCE_PERCENTAGE && ValueUnderTargetPercent < Consts.TOLERANCE_PERCENTAGE) ? MissingTargetDataResultType.PartialResult : MissingTargetDataResultType.PartialResultMissingTarget :
           SummaryCellsScanned == 0 ? MissingTargetDataResultType.NoProblems : MissingTargetDataResultType.NoResult,
 
         ResultStatus = ResultStatus

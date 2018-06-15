@@ -18,7 +18,7 @@ namespace VSS.TRex.Tests.netcore.Analytics.SpeedStatistics
       var aggregator = new SpeedAggregator();
 
       Assert.True(aggregator.SiteModelID == Guid.Empty, "Invalid initial value for SiteModelID.");
-      Assert.True(aggregator.CellSize < Consts.TOLERANCE, "Invalid initial value for CellSize.");
+      Assert.True(aggregator.CellSize < Consts.TOLERANCE_DIMENSION, "Invalid initial value for CellSize.");
       Assert.True(aggregator.SummaryCellsScanned == 0, "Invalid initial value for SummaryCellsScanned.");
       Assert.True(aggregator.CellsScannedOverTarget == 0, "Invalid initial value for CellsScannedOverTarget.");
       Assert.True(aggregator.CellsScannedAtTarget == 0, "Invalid initial value for CellsScannedAtTarget.");
@@ -48,7 +48,7 @@ namespace VSS.TRex.Tests.netcore.Analytics.SpeedStatistics
       aggregator.ProcessSubgridResult(subGrids);
 
       Assert.True(aggregator.SummaryCellsScanned == dLength, "Invalid value for SummaryCellsScanned.");
-      Assert.True(Math.Abs(aggregator.SummaryProcessedArea - dLength * Math.Pow(aggregator.CellSize, 2)) < Consts.TOLERANCE, "Invalid value for SummaryProcessedArea.");
+      Assert.True(Math.Abs(aggregator.SummaryProcessedArea - dLength * Math.Pow(aggregator.CellSize, 2)) < Consts.TOLERANCE_DIMENSION, "Invalid value for SummaryProcessedArea.");
       Assert.True(aggregator.CellsScannedAtTarget == length, "Invalid value for CellsScannedAtTarget.");
       Assert.True(aggregator.CellsScannedOverTarget == (dLength - length) / 2, "Invalid value for CellsScannedOverTarget.");
       Assert.True(aggregator.CellsScannedUnderTarget == (dLength - length) / 2, "Invalid value for CellsScannedUnderTarget.");
@@ -83,7 +83,7 @@ namespace VSS.TRex.Tests.netcore.Analytics.SpeedStatistics
       aggregator.AggregateWith(otherAggregator);
 
       Assert.True(aggregator.SummaryCellsScanned == dLength * 2, "Invalid value for SummaryCellsScanned.");
-      Assert.True(Math.Abs(aggregator.SummaryProcessedArea - 2 * dLength * Math.Pow(aggregator.CellSize, 2)) < Consts.TOLERANCE, "Invalid value for SummaryProcessedArea.");
+      Assert.True(Math.Abs(aggregator.SummaryProcessedArea - 2 * dLength * Math.Pow(aggregator.CellSize, 2)) < Consts.TOLERANCE_DIMENSION, "Invalid value for SummaryProcessedArea.");
       Assert.True(aggregator.CellsScannedAtTarget == length * 2, "Invalid value for CellsScannedAtTarget.");
       Assert.True(aggregator.CellsScannedOverTarget == dLength - length, "Invalid value for CellsScannedOverTarget.");
       Assert.True(aggregator.CellsScannedUnderTarget == dLength - length, "Invalid value for CellsScannedUnderTarget.");

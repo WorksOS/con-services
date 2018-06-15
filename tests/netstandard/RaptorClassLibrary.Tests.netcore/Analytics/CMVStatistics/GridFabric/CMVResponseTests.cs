@@ -27,7 +27,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
       var response = new CMVStatisticsResponse();
 
       Assert.True(response.ResultStatus == RequestErrorStatus.Unknown, "ResultStatus invalid after creation.");
-      Assert.True(response.CellSize < Consts.TOLERANCE, "CellSize invalid after creation.");
+      Assert.True(response.CellSize < Consts.TOLERANCE_DIMENSION, "CellSize invalid after creation.");
       Assert.True(response.SummaryCellsScanned == 0, "Invalid initial value for SummaryCellsScanned.");
       Assert.True(response.LastTargetCMV == 0, "Invalid initial value for LastTargetCMV.");
       Assert.True(response.CellsScannedOverTarget == 0, "Invalid initial value for CellsScannedOverTarget.");
@@ -47,10 +47,10 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
       Assert.True(result.ResultStatus == RequestErrorStatus.OK, "Result status invalid, not propagaged from aggregation state");
 
       Assert.True(result.ConstantTargetCMV ==_response.LastTargetCMV, "Invalid initial result value for ConstantTargetCMV.");
-      Assert.True(Math.Abs(result.AboveTargetPercent - _response.ValueOverTargetPercent) < Consts.TOLERANCE, "Invalid initial result value for AboveCMVPercent.");
-      Assert.True(Math.Abs(result.WithinTargetPercent - _response.ValueAtTargetPercent) < Consts.TOLERANCE, "Invalid initial result value for WithinCMVPercent.");
-      Assert.True(Math.Abs(result.BelowTargetPercent - _response.ValueUnderTargetPercent) < Consts.TOLERANCE, "Invalid initial result value for BelowCMVPercent.");
-      Assert.True(Math.Abs(result.TotalAreaCoveredSqMeters - _response.SummaryProcessedArea) < Consts.TOLERANCE, "Invalid initial result value for TotalAreaCoveredSqMeters.");
+      Assert.True(Math.Abs(result.AboveTargetPercent - _response.ValueOverTargetPercent) < Consts.TOLERANCE_PERCENTAGE, "Invalid initial result value for AboveCMVPercent.");
+      Assert.True(Math.Abs(result.WithinTargetPercent - _response.ValueAtTargetPercent) < Consts.TOLERANCE_PERCENTAGE, "Invalid initial result value for WithinCMVPercent.");
+      Assert.True(Math.Abs(result.BelowTargetPercent - _response.ValueUnderTargetPercent) < Consts.TOLERANCE_PERCENTAGE, "Invalid initial result value for BelowCMVPercent.");
+      Assert.True(Math.Abs(result.TotalAreaCoveredSqMeters - _response.SummaryProcessedArea) < Consts.TOLERANCE_DIMENSION, "Invalid initial result value for TotalAreaCoveredSqMeters.");
       Assert.True(result.IsTargetCMVConstant == _response.IsTargetValueConstant, "Invalid initial result value for IsTargetCMVConstant.");
     }
 
@@ -71,7 +71,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
 
       var response = _response.AggregateWith(responseClone);
 
-      Assert.True(Math.Abs(response.CellSize - _response.CellSize) < Consts.TOLERANCE, "CellSize invalid after aggregation.");
+      Assert.True(Math.Abs(response.CellSize - _response.CellSize) < Consts.TOLERANCE_DIMENSION, "CellSize invalid after aggregation.");
       Assert.True(response.SummaryCellsScanned == _response.SummaryCellsScanned * 2, "Invalid aggregated value for SummaryCellsScanned.");
       Assert.True(response.LastTargetCMV == _response.LastTargetCMV, "Invalid aggregated value for LastTargetCMV.");
       Assert.True(response.CellsScannedOverTarget == _response.CellsScannedOverTarget * 2, "Invalid aggregated value for CellsScannedOverTarget.");
