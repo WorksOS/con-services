@@ -11,6 +11,7 @@ node ('jenkinsslave-pod') {
 		])
 	])
 
+	// We may need to rename the branch to conform to DNS name spec
     def branchName = env.BRANCH_NAME.substring(env.BRANCH_NAME.lastIndexOf("/") + 1)
     def buildNumber = params.VSTS_BUILD_NUMBER
     def versionPrefix = ""
