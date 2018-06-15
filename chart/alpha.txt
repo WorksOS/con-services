@@ -1,11 +1,11 @@
 MYSQL_SERVER_NAME_VSPDB: rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
 MYSQL_SERVER_NAME_ReadVSPDB: rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
 MYSQL_DATABASE_NAME: VSS-MasterData-Project-Alpha
-MYSQL_PORT: 3306
+MYSQL_PORT: "3306"
 MYSQL_USERNAME: root
 MYSQL_ROOT_PASSWORD: d3vRDS1234_
 KAFKA_URI: 10.97.97.96
-KAFKA_PORT: 9092
+KAFKA_PORT: "9092"
 KAFKA_GROUP_NAME: ProjectMasterData-Consumer-Alpha-3
 KAFKA_TOPICS: VSS.Interfaces.Events.MasterData.IProjectEvent.V1
 KAFKA_TOPIC_NAME_SUFFIX: -Alpha
