@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -135,7 +136,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <response code="400">Bad request</response>
     [Route("api/v3/project/{projectUid}")]
     [HttpDelete]
-    public async Task DeleteProjectV3([FromQuery] Guid projectUid)
+    public async Task DeleteProjectV3([FromUri] Guid projectUid)
     {
       log.LogInformation("DeleteProjectV3. project: {0}", projectUid);
       var project = new DeleteProjectEvent
