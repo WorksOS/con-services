@@ -33,6 +33,7 @@ namespace VSS.TRex.SubGridTrees.Client
         instance.RegisterClientLeafSubGridType(GridDataType.MachineSpeedTarget, typeof(ClientMachineTargetSpeedLeafSubGrid));
         instance.RegisterClientLeafSubGridType(GridDataType.CCV, typeof(ClientCMVLeafSubGrid));
         instance.RegisterClientLeafSubGridType(GridDataType.MDP, typeof(ClientMDPLeafSubGrid));
+        instance.RegisterClientLeafSubGridType(GridDataType.PassCount, typeof(ClientPassCountLeafSubGrid));
         instance.RegisterClientLeafSubGridType(GridDataType.Temperature, typeof(ClientTemperatureLeafSubGrid));
         instance.RegisterClientLeafSubGridType(GridDataType.TemperatureDetail, typeof(ClientTemperatureLeafSubGrid));
       }

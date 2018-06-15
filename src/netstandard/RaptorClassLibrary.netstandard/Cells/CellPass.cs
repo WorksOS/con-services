@@ -69,6 +69,11 @@ namespace VSS.TRex.Cells
     public const short NullCCV = short.MaxValue;
 
     /// <summary>
+    /// Null Pass Count value
+    /// </summary>
+    public const ushort NullPassCountValue = ushort.MinValue;
+
+    /// <summary>
     /// Null radio correction latency value
     /// </summary>
     public const byte NullRadioLatency = byte.MaxValue; // This is the same value as kSVOAsBuiltNullRadio

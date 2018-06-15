@@ -612,7 +612,7 @@ namespace VSS.TRex.SubGridTrees
           if (HaveFilteredPass)
           {
             if (_GridDataType == GridDataType.PassCount || _GridDataType == GridDataType.CellProfile)
-              AssignmentContext.FilteredValue.PassCount = TopMostLayerCompactionHalfPassCount % 2;
+              AssignmentContext.FilteredValue.PassCount = TopMostLayerCompactionHalfPassCount / 2;
 
             // If we are displaying a CCV summary view or are displaying a summary of only
             // the top layer in the cell pass stack, then we need to make additional checks to

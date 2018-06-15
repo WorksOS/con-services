@@ -11,11 +11,26 @@ namespace VSS.TRex.Rendering.Displayers
   /// </summary>
   public class PVMDisplayer_MDP : PVMDisplayerBase
   {
+    /// <summary>
+    /// The flag is to indicate wehther or not the machine MDP target to be user overrides.
+    /// </summary>
     private const bool UseMachineTargetMDP = false;
+
+    /// <summary>
+    /// Default overriding MDP target value.
+    /// </summary>
     private const short AbsoluteTargetMDP = 50;
 
+    /// <summary>
+    /// MDP data holder.
+    /// </summary>
     private ClientMDPLeafSubGrid SubGrid;
 
+    /// <summary>
+    /// Renders MDP summary data as tiles. 
+    /// </summary>
+    /// <param name="subGrid"></param>
+    /// <returns></returns>
     protected override bool DoRenderSubGrid(ISubGrid subGrid)
     {
       if (subGrid is ClientMDPLeafSubGrid grid)
@@ -27,8 +42,16 @@ namespace VSS.TRex.Rendering.Displayers
       return false;
     }
 
+    /// <summary>
+    ///  Enables a displayer to advertise is it capable of rendering cell information in strips.
+    /// </summary>
+    /// <returns></returns>
     protected override bool SupportsCellStripRendering() => true;
 
+    /// <summary>
+    /// Queries the data at the current cell location and determines the colour that should be displayed there.
+    /// </summary>
+    /// <returns></returns>
     protected override Color DoGetDisplayColour()
     {
       var cellValue = SubGrid.Cells[east_col, north_row];

@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.TRex.Tests.netcore.Analytics.Common;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
+using VSS.TRex.Common;
 using VSS.TRex.Types;
 using Xunit;
 
@@ -27,7 +28,7 @@ namespace VSS.TRex.Tests.netcore.Analytics.TemperatureStatistics.GridFabric
       var response = new TemperatureStatisticsResponse();
 
 	    Assert.True(response.ResultStatus == RequestErrorStatus.Unknown, "ResultStatus invalid after creation.");
-      Assert.True(response.CellSize < TOLERANCE, "CellSize invalid after creation.");
+      Assert.True(response.CellSize < Consts.TOLERANCE_DIMENSION, "CellSize invalid after creation.");
 	    Assert.True(response.SummaryCellsScanned == 0, "Invalid initial value for SummaryCellsScanned.");
 	    Assert.True(response.LastTempRangeMax == 0, "Invalid initial value for LastTempRangeMax.");
 	    Assert.True(response.LastTempRangeMin == 0, "Invalid initial value for LastTempRangeMin.");
@@ -47,12 +48,12 @@ namespace VSS.TRex.Tests.netcore.Analytics.TemperatureStatistics.GridFabric
 
 			Assert.True(result.ResultStatus == RequestErrorStatus.OK, "Result status invalid, not propagaged from aggregation state");
 
-			Assert.True(Math.Abs(result.MaximumTemperature - _response.LastTempRangeMax) < TOLERANCE, "Invalid initial result value for MaximumTemperature.");
-			Assert.True(Math.Abs(result.MinimumTemperature - _response.LastTempRangeMin) < TOLERANCE, "Invalid initial result value for MinimumTemperature.");
-			Assert.True(Math.Abs(result.AboveTargetPercent - _response.ValueOverTargetPercent) < TOLERANCE, "Invalid initial result value for AboveTemperaturePercent.");
-			Assert.True(Math.Abs(result.WithinTargetPercent - _response.ValueAtTargetPercent) < TOLERANCE, "Invalid initial result value for WithinTemperaturePercent.");
-			Assert.True(Math.Abs(result.BelowTargetPercent - _response.ValueUnderTargetPercent) < TOLERANCE, "Invalid initial result value for BelowTemperaturePercent.");
-			Assert.True(Math.Abs(result.TotalAreaCoveredSqMeters - _response.SummaryProcessedArea) < TOLERANCE, "Invalid initial result value for TotalAreaCoveredSqMeters.");
+			Assert.True(Math.Abs(result.MaximumTemperature - _response.LastTempRangeMax) < Consts.TOLERANCE_TEMPERATURE, "Invalid initial result value for MaximumTemperature.");
+			Assert.True(Math.Abs(result.MinimumTemperature - _response.LastTempRangeMin) < Consts.TOLERANCE_TEMPERATURE, "Invalid initial result value for MinimumTemperature.");
+			Assert.True(Math.Abs(result.AboveTargetPercent - _response.ValueOverTargetPercent) < Consts.TOLERANCE_PERCENTAGE, "Invalid initial result value for AboveTemperaturePercent.");
+			Assert.True(Math.Abs(result.WithinTargetPercent - _response.ValueAtTargetPercent) < Consts.TOLERANCE_PERCENTAGE, "Invalid initial result value for WithinTemperaturePercent.");
+			Assert.True(Math.Abs(result.BelowTargetPercent - _response.ValueUnderTargetPercent) < Consts.TOLERANCE_PERCENTAGE, "Invalid initial result value for BelowTemperaturePercent.");
+			Assert.True(Math.Abs(result.TotalAreaCoveredSqMeters - _response.SummaryProcessedArea) < Consts.TOLERANCE_DIMENSION, "Invalid initial result value for TotalAreaCoveredSqMeters.");
 			Assert.True(result.IsTargetTemperatureConstant == _response.IsTargetValueConstant, "Invalid initial result value for IsTargetValueConstant.");
 		}
 
@@ -74,7 +75,7 @@ namespace VSS.TRex.Tests.netcore.Analytics.TemperatureStatistics.GridFabric
 
       var response = _response.AggregateWith(responseClone);
 
-	    Assert.True(Math.Abs(response.CellSize - _response.CellSize) < TOLERANCE, "CellSize invalid after aggregation.");
+	    Assert.True(Math.Abs(response.CellSize - _response.CellSize) < Consts.TOLERANCE_DIMENSION, "CellSize invalid after aggregation.");
 	    Assert.True(response.SummaryCellsScanned == _response.SummaryCellsScanned * 2, "Invalid aggregated value for SummaryCellsScanned.");
       Assert.True(response.LastTempRangeMax ==_response.LastTempRangeMax, "Invalid aggregated value for LastTempRangeMax.");
 	    Assert.True(response.LastTempRangeMin ==_response.LastTempRangeMin, "Invalid aggregated value for LastTempRangeMin.");

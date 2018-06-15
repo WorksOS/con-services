@@ -22,6 +22,8 @@ using VSS.TRex.Analytics.GridFabric.Arguments;
 using VSS.TRex.Analytics.MDPStatistics;
 using VSS.TRex.Analytics.MDPStatistics.GridFabric;
 using VSS.TRex.Analytics.Models;
+using VSS.TRex.Analytics.PassCountStatistics;
+using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
 using VSS.TRex.Analytics.SpeedStatistics;
 using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
 using VSS.TRex.Analytics.TemperatureStatistics;
@@ -1225,6 +1227,38 @@ namespace VSS.TRex.IgnitePOC.TestApp
                           $"Above MDP Percentage: {result.AboveTargetPercent} \n " +
                           $"Within MDP Percentage Range: {result.WithinTargetPercent} \n " +
                           $"Below MDP Percentage: {result.BelowTargetPercent} \n " +
+                          $"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
+      }
+      finally
+      {
+        sw.Stop();
+      }
+    }
+
+    private void PassCountSummaryButton_Click(object sender, EventArgs e)
+    {
+      var siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+
+      Stopwatch sw = new Stopwatch();
+      sw.Start();
+      try
+      {
+        PassCountOperation operation = new PassCountOperation();
+        PassCountResult result = operation.Execute(
+          new PassCountStatisticsArgument()
+          {
+            ProjectID = siteModel.ID,
+            Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+            OverridingTargetPassCountRange = new PassCountRangeRecord(3, 10),
+            OverrideTargetPassCount = false
+          }
+        );
+
+        if (result != null)
+          MessageBox.Show($"Pass Count Summary Results (in {sw.Elapsed}) :\n " +
+                          $"Above Pass Count Percentage: {result.AboveTargetPercent} \n " +
+                          $"Within Pass Count Percentage Range: {result.WithinTargetPercent} \n " +
+                          $"Below Pass Count Percentage: {result.BelowTargetPercent} \n " +
                           $"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
       }
       finally

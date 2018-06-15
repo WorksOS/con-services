@@ -6,8 +6,10 @@ using VSS.TRex.Analytics.Models;
 
 namespace VSS.TRex.Analytics.Operations
 {
-
-    public class CutFillOperation : AnalyticsOperation<CutFillStatisticsRequest_ApplicationService, CutFillStatisticsArgument, CutFillStatisticsResponse, CutFillResult>
+  /// <summary>
+  /// Provides a client onsumable operation for performing cut fill analytics that returns a client model space cut fill result.
+  /// </summary>
+  public class CutFillOperation : AnalyticsOperation<CutFillStatisticsRequest_ApplicationService, CutFillStatisticsArgument, CutFillStatisticsResponse, CutFillResult>
     { }
 
     /*

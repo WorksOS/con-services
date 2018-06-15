@@ -25,6 +25,6 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
     /// <summary>
     /// CMV percentage range.
     /// </summary>
-    public CMVRangePercentageRecord CMVPercentageRange { get; set; }
+    public CMVRangePercentageRecord CMVPercentageRange;
   }
 }

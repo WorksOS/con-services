@@ -2,6 +2,7 @@
 using VSS.TRex.Tests.netcore.Analytics.Common;
 using VSS.TRex.Analytics.SpeedStatistics;
 using VSS.TRex.Cells;
+using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
@@ -17,7 +18,7 @@ namespace VSS.TRex.Tests.netcore.Analytics.SpeedStatistics
       var aggregator = new SpeedAggregator();
 
       Assert.True(aggregator.SiteModelID == Guid.Empty, "Invalid initial value for SiteModelID.");
-      Assert.True(aggregator.CellSize < TOLERANCE, "Invalid initial value for CellSize.");
+      Assert.True(aggregator.CellSize < Consts.TOLERANCE_DIMENSION, "Invalid initial value for CellSize.");
       Assert.True(aggregator.SummaryCellsScanned == 0, "Invalid initial value for SummaryCellsScanned.");
       Assert.True(aggregator.CellsScannedOverTarget == 0, "Invalid initial value for CellsScannedOverTarget.");
       Assert.True(aggregator.CellsScannedAtTarget == 0, "Invalid initial value for CellsScannedAtTarget.");
@@ -37,7 +38,8 @@ namespace VSS.TRex.Tests.netcore.Analytics.SpeedStatistics
 
       clientGrid.FillWithTestPattern();
 
-      var length = (short)Math.Sqrt(clientGrid.Cells.Length);
+      var dLength = clientGrid.Cells.Length;
+      var length = (short)Math.Sqrt(dLength);
       aggregator.CellSize = CELL_SIZE;
       aggregator.TargetMachineSpeed = new MachineSpeedExtendedRecord((ushort)(length - 1), (ushort)(length - 1));
 
@@ -45,11 +47,11 @@ namespace VSS.TRex.Tests.netcore.Analytics.SpeedStatistics
 
       aggregator.ProcessSubgridResult(subGrids);
 
-      Assert.True(aggregator.SummaryCellsScanned == 1024, "Invalid value for SummaryCellsScanned.");
-      Assert.True(Math.Abs(aggregator.SummaryProcessedArea - 1024 * Math.Pow(aggregator.CellSize, 2)) < TOLERANCE, "Invalid value for SummaryProcessedArea.");
+      Assert.True(aggregator.SummaryCellsScanned == dLength, "Invalid value for SummaryCellsScanned.");
+      Assert.True(Math.Abs(aggregator.SummaryProcessedArea - dLength * Math.Pow(aggregator.CellSize, 2)) < Consts.TOLERANCE_DIMENSION, "Invalid value for SummaryProcessedArea.");
       Assert.True(aggregator.CellsScannedAtTarget == length, "Invalid value for CellsScannedAtTarget.");
-      Assert.True(aggregator.CellsScannedOverTarget == (1024 - length) / 2, "Invalid value for CellsScannedOverTarget.");
-      Assert.True(aggregator.CellsScannedUnderTarget == (1024 - length) / 2, "Invalid value for CellsScannedUnderTarget.");
+      Assert.True(aggregator.CellsScannedOverTarget == (dLength - length) / 2, "Invalid value for CellsScannedOverTarget.");
+      Assert.True(aggregator.CellsScannedUnderTarget == (dLength - length) / 2, "Invalid value for CellsScannedUnderTarget.");
     }
 
     [Fact]
@@ -61,7 +63,8 @@ namespace VSS.TRex.Tests.netcore.Analytics.SpeedStatistics
 
       clientGrid.FillWithTestPattern();
 
-      var length = (short)Math.Sqrt(clientGrid.Cells.Length);
+      var dLength = clientGrid.Cells.Length;
+      var length = (short)Math.Sqrt(dLength);
       aggregator.CellSize = CELL_SIZE;
       aggregator.TargetMachineSpeed = new MachineSpeedExtendedRecord((ushort)(length - 1), (ushort)(length - 1));
 
@@ -79,11 +82,11 @@ namespace VSS.TRex.Tests.netcore.Analytics.SpeedStatistics
 
       aggregator.AggregateWith(otherAggregator);
 
-      Assert.True(aggregator.SummaryCellsScanned == 2048, "Invalid value for SummaryCellsScanned.");
-      Assert.True(Math.Abs(aggregator.SummaryProcessedArea - 2048 * Math.Pow(aggregator.CellSize, 2)) < TOLERANCE, "Invalid value for SummaryProcessedArea.");
+      Assert.True(aggregator.SummaryCellsScanned == dLength * 2, "Invalid value for SummaryCellsScanned.");
+      Assert.True(Math.Abs(aggregator.SummaryProcessedArea - 2 * dLength * Math.Pow(aggregator.CellSize, 2)) < Consts.TOLERANCE_DIMENSION, "Invalid value for SummaryProcessedArea.");
       Assert.True(aggregator.CellsScannedAtTarget == length * 2, "Invalid value for CellsScannedAtTarget.");
-      Assert.True(aggregator.CellsScannedOverTarget == 1024 - length, "Invalid value for CellsScannedOverTarget.");
-      Assert.True(aggregator.CellsScannedUnderTarget == 1024 - length, "Invalid value for CellsScannedUnderTarget.");
+      Assert.True(aggregator.CellsScannedOverTarget == dLength - length, "Invalid value for CellsScannedOverTarget.");
+      Assert.True(aggregator.CellsScannedUnderTarget == dLength - length, "Invalid value for CellsScannedUnderTarget.");
     }
   }
 }
