@@ -5,28 +5,37 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace VSS.TRex.CoordinateSystems
 {
+  /// <summary>
+  /// Implements a proxy client to the Trimble Coordinates service
+  /// </summary>
   public class CoordinatesApiClient //: TPaasAPIClient, ICoordinatesApiClient
   {
     private static string baseUrl = "https://api-stg.trimble.com/t/trimble.com/coordinates/1.0";
-    private static string applicationAccessToken = "3703d908e4ed0cf02f095c405fdd7182";
+    private static string applicationAccessToken = "726bca09144f00fd1859be4c5883d650";
 
     private static readonly ILogger Log = Logging.Logger.CreateLogger<CoordinatesApiClient>();
 
+    /// <summary>
+    /// Converts a single LLH coordinate to a NEE corrdinate via an asynchronous service call
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="llh"></param>
+    /// <returns></returns>
     public async Task<NEE> GetNEEAsync(string id, LLH llh)
     {
       try
       {
         using (var client = new HttpClient())
         {
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", applicationAccessToken);
+          client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", applicationAccessToken);
 
           Uri requestUri = new Uri($"{baseUrl}/coordinates/nee/Orientated/fromLLH" +
                                    $"?Type=ReferenceGlobal&Latitude={llh.Latitude}&Longitude={llh.Longitude}&Height={llh.Height}" +
@@ -55,6 +64,94 @@ namespace VSS.TRex.CoordinateSystems
       };
     }
 
+    /// <summary>
+    /// Encodes the state to transform into the JSON Post body for a multi LLH->NEE coordinate conversion request
+    /// </summary>
+    private struct GetNEEsAsyncJSON
+    {
+//      [JsonProperty("neeType")]
+//      public string neeType;
+//      [JsonProperty("fromCoordinateSystemId")]
+//      public string fromCoordinateSystemId;
+      [JsonProperty("from")]
+      public double[] fromLLHOrdinates;
+//      [JsonProperty("fromType")]
+//      public string fromType;
+
+      public static GetNEEsAsyncJSON LLHToNEERquest(string csib, LLH[] llhs)
+      {
+        GetNEEsAsyncJSON result = new GetNEEsAsyncJSON
+        {
+//          neeType = "Orientated", 
+//          fromCoordinateSystemId = csib,
+          fromLLHOrdinates = new double[llhs.Length * 3]
+//          fromType = "ReferenceGlobal"
+        };
+
+        // Fill in the ordinate array
+        int count = 0;
+        for (int i = 0; i < llhs.Length; i++)
+        {
+          result.fromLLHOrdinates[count++] = llhs[i].Latitude;
+          result.fromLLHOrdinates[count++] = llhs[i].Longitude;
+          result.fromLLHOrdinates[count++] = llhs[i].Height;
+        }
+
+        return result;
+      }
+    }
+
+    /// <summary>
+    /// Converts an array of LLH coordinates to a NEE corrdinates via an asynchronous service call
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="llh"></param>
+    /// <returns></returns>
+    public async Task<NEE[]> GetNEEsAsync(string id, LLH[] llhs)
+    {
+      try
+      {
+        using (var client = new HttpClient())
+        {
+          client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", applicationAccessToken);
+
+          Uri requestUri = new Uri($"{baseUrl}/coordinates/nee/Orientated/fromLLH" +
+                                   $"?fromCoordinateSystemId={id}&Type=ReferenceGlobal");
+//          Uri requestUri = new Uri($"{baseUrl}/coordinates/nee/Orientated/fromLLH");
+          GetNEEsAsyncJSON body = GetNEEsAsyncJSON.LLHToNEERquest(id, llhs);
+
+          string s = JsonConvert.SerializeObject(body.fromLLHOrdinates);
+          var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
+          request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json"); 
+          
+          var result = await client.SendAsync(request).ConfigureAwait(false);
+
+          if (result.IsSuccessStatusCode)
+          {
+            var neeStr = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+            return JsonConvert.DeserializeObject<NEE[]>(neeStr);
+          }
+        }
+      }
+      catch (Exception x)
+      {
+        Log.LogError($"Failed to get NEE for lat array, Exception: {x}");
+      }
+
+      return new NEE[]
+      { new NEE { 
+        East = Consts.NullDouble,
+        North = Consts.NullDouble,
+        Elevation = Consts.NullDouble }
+      };
+    }
+
+    /// <summary>
+    /// Converts a single NEE coordinate to a LLH corrdinate via an asynchronous service call
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="nee"></param>
+    /// <returns></returns>
     public async Task<LLH> GetLLHAsync(string id, NEE nee)
     {
       try
@@ -90,21 +187,29 @@ namespace VSS.TRex.CoordinateSystems
       };
     }
 
-    public struct CoordinateSystemWithCSIB
+    /// <summary>
+    /// Private struct to aid JSON deserialisation of coordinate system CSIB extraction from a file
+    /// </summary>
+    private struct CoordinateSystemWithCSIB
     {
       public string id; // the returned csib
     }
 
-    public struct CoordinateSystem
+    private struct CoordinateSystem
     {
       public CoordinateSystemWithCSIB coordinateSystem;
     }
 
+    /// <summary>
+    /// Imported a DC file (presnted as a filename reference in a file system) and extracts a CSIB from it
+    /// </summary>
+    /// <param name="DCFilePath"></param>
+    /// <returns></returns>
     public async Task<string> ImportFromDCAsync(string DCFilePath)
     {
       try
       {
-        return ImportFromDCDataAsync(DCFilePath, File.ReadAllBytes(DCFilePath)).Result;
+        return ImportFromDCContentAsync(DCFilePath, File.ReadAllBytes(DCFilePath)).Result;
       }
       catch (Exception x)
       {
@@ -112,46 +217,15 @@ namespace VSS.TRex.CoordinateSystems
       }
 
       return null;
-
-
-      /*
-      string imported = null;
-
-      try
-      {
-        using (var client = new HttpClient())
-        {
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", applicationAccessToken);
-          client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
-
-          Uri requestUri = new Uri($"{baseUrl}/coordinatesystems/imports/dc/file");
-
-          using (var content = new MultipartFormDataContent("Upload----" + DateTime.Now.ToString(CultureInfo.InvariantCulture)))
-          {
-            content.Add(new StreamContent(new MemoryStream(File.ReadAllBytes(DCFilePath))), "DC", Path.GetFileName(DCFilePath));
-
-            using (var result = await client.PutAsync(requestUri, content).ConfigureAwait(false))
-            {
-              if (!result.IsSuccessStatusCode)
-                throw new Exception(result.ToString());
-
-              var json = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
-              var csList = JsonConvert.DeserializeObject<IEnumerable<CoordinateSystem>>(json);
-              imported = csList?.FirstOrDefault().coordinateSystem.id;
-            }
-          }
-        }
-      }
-      catch (Exception x)
-      {
-        Log.LogError($"Failed to import coordinate system from DC {DCFilePath}, Exception (x)");
-      }
-
-      return imported;
-      */
     }
 
-    public async Task<string> ImportFromDCDataAsync(string dCFilePath, byte[] DCFileContent)
+    /// <summary>
+    /// Extracts a CSIB from a DC file presented as a byte array
+    /// </summary>
+    /// <param name="dCFilePath"></param>
+    /// <param name="DCFileContent"></param>
+    /// <returns></returns>
+    public async Task<string> ImportFromDCContentAsync(string dCFilePath, byte[] DCFileContent)
     {
       string imported = null;
 

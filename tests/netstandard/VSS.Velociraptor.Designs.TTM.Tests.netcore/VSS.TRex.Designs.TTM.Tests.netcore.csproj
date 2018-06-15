@@ -20,4 +20,14 @@
     <ProjectReference Include="..\..\..\src\netstandard\VSS.Velociraptor.Designs.TTM.netstandard\VSS.Velociraptor.Designs.TTM.netstandard.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="TestData\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="TestData\Bug36372.ttm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

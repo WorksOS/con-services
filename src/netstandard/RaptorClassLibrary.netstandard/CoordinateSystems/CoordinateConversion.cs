@@ -51,6 +51,6 @@ namespace VSS.TRex.CoordinateSystems
 
     public string DCFileToCSIB(string DCFileName) => serviceClient.ImportFromDCAsync(DCFileName).Result;
 
-    public string DCFileContentToCSIB(string DCFileName, byte[] fileContent) => serviceClient.ImportFromDCDataAsync(DCFileName, fileContent).Result;
+    public string DCFileContentToCSIB(string DCFileName, byte[] fileContent) => serviceClient.ImportFromDCContentAsync(DCFileName, fileContent).Result;
   }
 }

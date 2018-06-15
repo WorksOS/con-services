@@ -21,4 +21,10 @@
     <ProjectReference Include="..\RaptorClassLibrary.Tests.netcore\TRexClassLibrary.Tests.netcore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="TestData\Bug36372.ttm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

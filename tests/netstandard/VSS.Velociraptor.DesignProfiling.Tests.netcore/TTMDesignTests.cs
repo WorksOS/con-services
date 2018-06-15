@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using VSS.TRex.Designs;
 using VSS.TRex.Tests.netcore.TestFixtures;
 using Xunit;
@@ -16,7 +17,7 @@ namespace VSS.TRex.DesignProfiling.Tests
             if (design == null)
             {
               design = new TTMDesign(SubGridTree.DefaultCellSize);
-              design.LoadFromFile(@"C:\Temp\Bug36372.ttm");
+              design.LoadFromFile(Path.Combine("TestData", "Bug36372.ttm"));
             }
           }
         }

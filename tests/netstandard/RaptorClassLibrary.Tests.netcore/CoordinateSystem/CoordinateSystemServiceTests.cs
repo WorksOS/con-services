@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using VSS.TRex.CoordinateSystems;
 using Xunit;
@@ -31,6 +33,26 @@ namespace VSS.TRex.Tests.CoordinateSystem
     }
 
     [Fact]
+    public void Test_CoordinateConversionService_ManyLLHToNEE_Dimensions_2012()
+    {
+      CoordinatesApiClient client = new CoordinatesApiClient();
+
+      Task<NEE[]> nee = client.GetNEEsAsync(J_Dimensions_2012,
+        new LLH[]
+        { new LLH {
+          // Results from NEE = 1204, 2313, 609, in test below
+          Latitude = 36.2073144965672,
+          Longitude = -115.024944388223,
+          Height = 550.96678869192408}
+        });
+
+      Assert.True(Math.Abs(nee.Result[0].North - 1204) < 0.001 &&
+                  Math.Abs(nee.Result[0].East - 2313) < 0.001 &&
+                  Math.Abs(nee.Result[0].Elevation - 609) < 0.001,
+        $"Coordinates not as expected NEE(1204, 2313, 609), versus NEE({nee.Result[0].North}, {nee.Result[0].East}, {nee.Result[0].Elevation})");
+    }
+
+    [Fact]
     public void Test_CoordinateConversionService_SimpleNEEToLLH_Dimensions_2012()
     {
       CoordinatesApiClient client = new CoordinatesApiClient();
@@ -58,5 +80,17 @@ namespace VSS.TRex.Tests.CoordinateSystem
 
       Assert.True(csib.Result != "");
     }
+
+    [Fact]
+    public void Test_CoordinateConversionService_ImportFromDCContentAsync_Dimensions()
+    {
+      CoordinatesApiClient client = new CoordinatesApiClient();
+
+      Task<string> csib = client.ImportFromDCContentAsync(@"J:\PP\Construction\Office software\SiteVision Office\Test Files\VisionLink Data\Dimensions 2012\BC Data\Sites\BootCamp 2012\BootCamp 2012.dc",
+        File.ReadAllBytes(@"J:\PP\Construction\Office software\SiteVision Office\Test Files\VisionLink Data\Dimensions 2012\BC Data\Sites\BootCamp 2012\BootCamp 2012.dc"));
+
+      Assert.True(csib.Result != "");
+    }
+
   }
 }
