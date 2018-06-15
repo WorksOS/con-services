@@ -71,31 +71,33 @@ namespace VSS.MasterData.Project.WebAPI
         .OutputMetrics.AsPrometheusProtobuf()
         .Build();
       var host = new WebHostBuilder()
-          .UseKestrel()
-          .UseLibuv(opts =>
+        .UseKestrel()
+        .UseLibuv(opts =>
+        {
+          opts.ThreadCount = 32;
+        })
+        .UseContentRoot(Directory.GetCurrentDirectory())
+        .UseIISIntegration()
+        .ConfigureLogging(builder =>
+        {
+          Log4NetProvider.RepoName = Startup.LoggerRepoName;
+          builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
+          builder.SetMinimumLevel(LogLevel.Trace);
+        })
+        .ConfigureMetrics(Metrics)
+        .UseMetrics(
+          options =>
           {
-            opts.ThreadCount = 32;
-          })
-          .UseContentRoot(Directory.GetCurrentDirectory())
-          .UseIISIntegration()
-          .ConfigureLogging(builder =>
-          {
-            Log4NetProvider.RepoName = Startup.LoggerRepoName;
-            builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
-            builder.SetMinimumLevel(LogLevel.Trace);
-          })
-          .ConfigureMetrics(Metrics)
-          .UseMetrics(
-            options =>
+            options.EndpointOptions = endpointsOptions =>
             {
-              options.EndpointOptions = endpointsOptions =>
-              {
-                endpointsOptions.MetricsTextEndpointOutputFormatter = Metrics.OutputMetricsFormatters.GetType<MetricsPrometheusTextOutputFormatter>();
-                endpointsOptions.MetricsEndpointOutputFormatter = Metrics.OutputMetricsFormatters.GetType<MetricsPrometheusProtobufOutputFormatter>();
-              };
-            })
-          .UseStartup<Startup>()
-          .Build();
+              endpointsOptions.MetricsTextEndpointOutputFormatter =
+                Metrics.OutputMetricsFormatters.GetType<MetricsPrometheusTextOutputFormatter>();
+              endpointsOptions.MetricsEndpointOutputFormatter =
+                Metrics.OutputMetricsFormatters.GetType<MetricsPrometheusProtobufOutputFormatter>();
+            };
+          })
+        .UseStartup<Startup>()
+        .Build();
 
       ThreadPool.SetMaxThreads(1024, 2048);
       ThreadPool.SetMinThreads(1024, 2048);
