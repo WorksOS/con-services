@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Log4Net.Extensions;
+using VSS.WebApi.Common;
 
 #if NET_4_7
 using Topshelf;
@@ -66,10 +67,6 @@ namespace VSS.MasterData.Project.WebAPI
         });
       });
 #else
-      IMetricsRoot Metrics = AppMetrics.CreateDefaultBuilder()
-        .OutputMetrics.AsPrometheusPlainText()
-        .OutputMetrics.AsPrometheusProtobuf()
-        .Build();
       var host = new WebHostBuilder()
         .UseKestrel()
         .UseLibuv(opts =>
@@ -84,18 +81,7 @@ namespace VSS.MasterData.Project.WebAPI
           builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
           builder.SetMinimumLevel(LogLevel.Trace);
         })
-        .ConfigureMetrics(Metrics)
-        .UseMetrics(
-          options =>
-          {
-            options.EndpointOptions = endpointsOptions =>
-            {
-              endpointsOptions.MetricsTextEndpointOutputFormatter =
-                Metrics.OutputMetricsFormatters.GetType<MetricsPrometheusTextOutputFormatter>();
-              endpointsOptions.MetricsEndpointOutputFormatter =
-                Metrics.OutputMetricsFormatters.GetType<MetricsPrometheusProtobufOutputFormatter>();
-            };
-          })
+        .UsePrometheus()
         .UseStartup<Startup>()
         .Build();
 
