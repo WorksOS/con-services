@@ -5,37 +5,36 @@ node ('jenkinsslave-pod') {
 		parameters([
 			string(
 				defaultValue: "nothing",
-				description: 'The build number supplied by VSTS',
+				description: 'The build number supplied by VSTS perhaps fail build if this is nothing to prevent unrequested builds during multibranch scan',
 				name: 'VSTS_BUILD_NUMBER'
 			),
 		])
 	])
 
-    def branch = env.BRANCH_NAME
+    def branchName = env.BRANCH_NAME.substring(env.BRANCH_NAME.lastIndexOf("/") + 1)
     def buildNumber = params.VSTS_BUILD_NUMBER
     def versionPrefix = ""
     def suffix = ""
-    def branchName = ""
 	def jobnameparts = JOB_NAME.tokenize('/') as String[]
 	def prjname = jobnameparts[0].toLowerCase() 	
 
-    if (branch.contains("release")) {
-        versionPrefix = "1.0."
-        branchName = ""
-    } else if (branch.contains("Dev")) {
-        versionPrefix = "0.99."
-        branchName = "Dev"
-    } else {
-        branchName = branch.substring(branch.lastIndexOf("/") + 1)
-        suffix = "-" + branchName
-        versionPrefix = "0.98."
-    }
+    // if (branch.contains("release")) {
+    //     versionPrefix = "1.0."
+    //     branchName = ""
+    // } else if (branch.contains("Dev")) {
+    //     versionPrefix = "0.99."
+    //     branchName = "Dev"
+    // } else {
+    //     branchName = branch.substring(branch.lastIndexOf("/") + 1)
+    //     suffix = "-" + branchName
+    //     versionPrefix = "0.98."
+    // }
 
-    def versionNumber = versionPrefix + buildNumber
-    def fullVersion = versionNumber + suffix
+    def versionNumber = branchName + "-" + params.VSTS_BUILD_NUMBER
+    //def fullVersion = versionNumber + suffix
 	
-    def container = "registry.k8s.vspengg.com:80/${prjname}:${fullVersion}"
-    def testContainer = "registry.k8s.vspengg.com:80/${prjname}.tests:${fullVersion}"
+    def container = "registry.k8s.vspengg.com:80/${prjname}:${versionNumber}"
+    def testContainer = "registry.k8s.vspengg.com:80/${prjname}.tests:${versionNumber}"
     def finalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${prjname}:${versionNumber}"
 	
     def vars = []
