@@ -19,6 +19,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       createProjectEvent.ProjectUID = Guid.NewGuid();
       createProjectEvent.CustomerUID = Guid.Parse(customerUid);
       createProjectEvent.ProjectBoundary = GeofenceValidation.GetWicketFromPoints(GeofenceValidation.MakingValidPoints(source.BoundaryLL));
+      createProjectEvent.ProjectType = ProjectType.Standard;
       return createProjectEvent;
     }
   }

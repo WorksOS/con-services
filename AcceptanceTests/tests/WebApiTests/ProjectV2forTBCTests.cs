@@ -24,11 +24,7 @@ namespace WebApiTests
       var mysql = new MySqlHelper();
       var ts = new TestSupport();
 
-      DateTime startDate = ts.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00", ts.FirstEventDate);
-      DateTime endDate = ts.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00", ts.FirstEventDate);
-      ts.CreateMockSubscription(ServiceTypeEnum.ProjectMonitoring, ts.SubscriptionUid.ToString(), ts.CustomerUid.ToString(), startDate, endDate);
-
-      var response = CreateProjectV2(ts, mysql, "project 1", ProjectType.ProjectMonitoring);
+     var response = CreateProjectV2(ts, mysql, "project 1", ProjectType.ProjectMonitoring);
 
       var createProjectV2Result = JsonConvert.DeserializeObject<ReturnLongV2Result>(response);
       
