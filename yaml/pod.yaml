@@ -7,7 +7,7 @@ spec:
 
   - name: mysql-container
     image: mysql/mysql-server:5.7.15
-    command: ["sh", "-c", "mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci"]
+    command: "mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci"
     ports:
     - containerPort: 3306
     livenessProbe:
