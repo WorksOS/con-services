@@ -70,7 +70,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 
             // Need to ignore assetID in validation
             GetMachinesResult expectedFirstDotMachineStatus = machineStatusGetter.ResponseRepo[resultName];
-            expectedFirstDotMachineStatus.MachineStatuses[0].assetID = firstDotMachineStatus.MachineStatuses[0].assetID;
+            expectedFirstDotMachineStatus.MachineStatuses[0].AssetId = firstDotMachineStatus.MachineStatuses[0].AssetId;
 
             Assert.AreEqual(expectedFirstDotMachineStatus, firstDotMachineStatus);
         }
@@ -83,7 +83,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 
             // Need to ignore assetID in validation
             GetMachinesResult expectedSecondDotMachineStatus = machineStatusGetter.ResponseRepo[resultName];
-            expectedSecondDotMachineStatus.MachineStatuses[0].assetID = secondDotMachineStatus.MachineStatuses[0].assetID;
+            expectedSecondDotMachineStatus.MachineStatuses[0].AssetId = secondDotMachineStatus.MachineStatuses[0].AssetId;
 
             Assert.AreEqual(machineStatusGetter.ResponseRepo[resultName], secondDotMachineStatus);
         }

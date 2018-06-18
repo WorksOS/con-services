@@ -154,12 +154,12 @@ this.FeatureBackground();
                         "minY",
                         "minZ"});
             table2.AddRow(new string[] {
-                        "2913.2900000000004",
-                        "1250.69",
-                        "624.1365966796875",
-                        "0",
-                        "0",
-                        "0"});
+                        "2989.1663015263803",
+                        "1325.9072715855209",
+                        "631.9852294921875",
+                        "2184.3218844638031",
+                        "1088.3172778947385",
+                        "591.953857421875"});
 #line 20
  testRunner.Then("the following Bounding Box ThreeD Grid values should be returned", ((string)(null)), table2, "Then ");
 #line hidden

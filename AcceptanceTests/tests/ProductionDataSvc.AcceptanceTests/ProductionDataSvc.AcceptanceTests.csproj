@@ -136,6 +136,13 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>EditData.feature</DependentUpon>
     </Compile>
+    <Compile Include="GetMachineDesignDetailsResult.cs" />
+    <Compile Include="GetMachineDesigns.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GetMachineDesigns.feature</DependentUpon>
+    </Compile>
+    <Compile Include="MachineDesignDetails.cs" />
     <Compile Include="Models\CompactionCellDatumResult.cs" />
     <Compile Include="Models\CompactionTagFile.cs" />
     <Compile Include="Patch.feature.cs">
@@ -338,7 +345,7 @@
     <Compile Include="Models\CoordinateConversion.cs" />
     <Compile Include="Models\CoordinateSystemFile.cs" />
     <Compile Include="Models\DesignNameRequest.cs" />
-    <Compile Include="Models\DesignNames.cs" />
+    <Compile Include="Models\DesignName.cs" />
     <Compile Include="Models\DesignResult.cs" />
     <Compile Include="Models\ElevationStatistics.cs" />
     <Compile Include="Models\ExportGriddedCSV.cs" />
@@ -654,6 +661,10 @@
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>GetLifts.feature.cs</LastGenOutput>
     </None>
+    <None Include="GetMachineDesigns.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>GetMachineDesigns.feature.cs</LastGenOutput>
+    </None>
     <None Include="GetProjectExtents.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>GetProjectExtents.feature.cs</LastGenOutput>
@@ -813,6 +824,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\CompactionTagFileRequest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\GetMachineDesignsResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\Profiles\ProfileSummaryResponse.json">
