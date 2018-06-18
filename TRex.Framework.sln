@@ -75,9 +75,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TRexTileServer", "src\framework\TRexTileServer\TRexTileServer.csproj", "{6EAD2931-5828-4D38-B141-ECF8A76E4347}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TRexGateway", "TRexGateway\TRexGateway.csproj", "{3C1DC948-C3B3-472F-A118-C8093E2D671B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Gateway.WebApi", "VSS.TRex.Gateway.WebApi\VSS.TRex.Gateway.WebApi.csproj", "{3C1DC948-C3B3-472F-A118-C8093E2D671B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TRex.Common.Classes", "src\netstandard\TRex.Common.Classes\TRex.Common.Classes.csproj", "{71039164-6AEF-42EC-9926-7647BE46E7AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TRex.Common.Classes", "src\netstandard\TRex.Common.Classes\TRex.Common.Classes.csproj", "{71039164-6AEF-42EC-9926-7647BE46E7AC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.TRex.Gateway.Common", "VSS.TRex.Gateway.Common\VSS.TRex.Gateway.Common.csproj", "{8B1C67E3-FECE-40CF-B979-817592CE535A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -311,6 +313,14 @@ Global
 		{71039164-6AEF-42EC-9926-7647BE46E7AC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{71039164-6AEF-42EC-9926-7647BE46E7AC}.Release|x64.ActiveCfg = Release|Any CPU
 		{71039164-6AEF-42EC-9926-7647BE46E7AC}.Release|x64.Build.0 = Release|Any CPU
+		{8B1C67E3-FECE-40CF-B979-817592CE535A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B1C67E3-FECE-40CF-B979-817592CE535A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B1C67E3-FECE-40CF-B979-817592CE535A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8B1C67E3-FECE-40CF-B979-817592CE535A}.Debug|x64.Build.0 = Debug|Any CPU
+		{8B1C67E3-FECE-40CF-B979-817592CE535A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B1C67E3-FECE-40CF-B979-817592CE535A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B1C67E3-FECE-40CF-B979-817592CE535A}.Release|x64.ActiveCfg = Release|Any CPU
+		{8B1C67E3-FECE-40CF-B979-817592CE535A}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
