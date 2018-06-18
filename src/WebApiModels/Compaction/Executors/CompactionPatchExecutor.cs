@@ -13,14 +13,14 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
-namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
+namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
-  public class PatchExecutor : RequestExecutorContainer
+  public class CompactionPatchExecutor : RequestExecutorContainer
   {
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
-    public PatchExecutor()
+    public CompactionPatchExecutor()
     {
       ProcessErrorCodes();
     }
@@ -101,15 +101,18 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       var valuesRenderedToColors = StreamUtils.__Global.ReadBooleanFromStream(ms);
       var numSubgridsInPatch = StreamUtils.__Global.ReadIntegerFromStream(ms);
       double cellSize = StreamUtils.__Global.ReadDateTimeFromStream(ms);
-      var subgrids = new List<PatchSubgridResult>(numSubgridsInPatch);
+      var subgrids = new List<PatchSubgridResultBase>(numSubgridsInPatch);
+
+      // From Raptor: 1 << ((FNumLevels * kSubGridIndexBitsPerLevel) -1)
+      const int indexOriginOffset = 1 << 29;
 
       for (var i = 0; i < numSubgridsInPatch; i++)
       {
-        var cellOriginX = StreamUtils.__Global.ReadIntegerFromStream(ms);
-        var cellOriginY = StreamUtils.__Global.ReadIntegerFromStream(ms);
+        var worldOriginX = (StreamUtils.__Global.ReadIntegerFromStream(ms) - indexOriginOffset) * cellSize;
+        var worldOriginY = (StreamUtils.__Global.ReadIntegerFromStream(ms) - indexOriginOffset) * cellSize;
         var isNull = StreamUtils.__Global.ReadBooleanFromStream(ms);
 
-        log.LogDebug($"Subgrid {i + 1} in patch has cell origin of {cellOriginX}:{cellOriginY}. IsNull?:{isNull}");
+        log.LogDebug($"Subgrid {i + 1} in patch has world origin of {worldOriginX}:{worldOriginY}. IsNull?:{isNull}");
 
         float elevationOrigin = 0;
         PatchCellResult[,] cells = null;
@@ -135,7 +138,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           }
         }
 
-        subgrids.Add(PatchSubgridResult.Create(cellOriginX, cellOriginY, isNull, elevationOrigin, cells));
+        subgrids.Add(WorldOriginPatchSubgridResult.Create(worldOriginX, worldOriginY, isNull, elevationOrigin, cells));
       }
 
       return PatchResultStructured.CreatePatchResultStructured(cellSize, numSubgridsInPatch, totalNumPatchesRequired,

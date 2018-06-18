@@ -54,7 +54,10 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     public void GivenFilterUid(string filterUid)
     {
       if (operation == "ElevationRange")
-        elevationRangeRequester.QueryString.Add("filterUid", filterUid);
+      {
+        if (!string.IsNullOrEmpty(filterUid))
+          elevationRangeRequester.QueryString.Add("filterUid", filterUid);
+      }
       else
         Assert.Fail(TEST_FAIL_MESSAGE);
     }

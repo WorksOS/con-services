@@ -94,7 +94,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
         ReportTemperature = reportTemperature,
         ReportCutFill = reportCutFill,
         DesignFile = designFile,
-        GridInterval = gridInerval ?? ValidationConstants.DEFAULT_SPACING_INERVAL,
+        GridInterval = gridInerval ?? ValidationConstants3D.DEFAULT_SPACING_INERVAL,
         GridReportOption = gridReportOption,
         StartNorthing = startNorthing,
         StartEasting = startEasting,
@@ -121,7 +121,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
             $"Report option for gridded report type must be 1 ('Automatic'), 2 ('Direction') or 3 (EndPoint). Actual value supplied: {GridReportOption}"));
       }
 
-      if (GridInterval < ValidationConstants.MIN_SPACING_INTERVAL || GridInterval > ValidationConstants.MAX_SPACING_INTERVAL)
+      if (GridInterval < ValidationConstants3D.MIN_SPACING_INTERVAL || GridInterval > ValidationConstants3D.MAX_SPACING_INTERVAL)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

@@ -55,7 +55,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .Returns((MemoryStream)null);
 
       var request = CompactionProfileDesignRequest.CreateCompactionProfileDesignRequest(
-        1234, null,  null, -1, null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION);
+        1234, null,  null, -1, null, null, null, ValidationConstants3D.MIN_STATION, ValidationConstants3D.MIN_STATION);
 
       var executor = RequestExecutorContainerFactory
         .Build<CompactionDesignProfileExecutor>(logger, raptorClient.Object);
@@ -132,7 +132,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .Returns(ms);
 
       var request = CompactionProfileDesignRequest.CreateCompactionProfileDesignRequest(
-        1234, null, null, -1, null, null, null, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION);
+        1234, null, null, -1, null, null, null, ValidationConstants3D.MIN_STATION, ValidationConstants3D.MIN_STATION);
 
       var executor = RequestExecutorContainerFactory
         .Build<CompactionDesignProfileExecutor>(logger, raptorClient.Object);

@@ -1,9 +1,11 @@
-﻿namespace VSS.Productivity3D.Common.Utilities
+﻿using VSS.MasterData.Models.Utilities;
+
+namespace VSS.Productivity3D.Common.Utilities
 {
   /// <summary>
   /// Utility class that defines constants used by data validation.
   /// </summary>
-  public class ValidationConstants
+  public class ValidationConstants3D : ValidationConstants
   {
     /// <summary>
     /// Minimum station value.
@@ -34,16 +36,6 @@
     /// Maximum elevation value.
     /// </summary>
     public const double MAX_ELEVATION = 10000;
-
-    /// <summary>
-    /// Minimum production data layer number.
-    /// </summary>
-    public const int MIN_LAYER_NUMBER = -1000;
-
-    /// <summary>
-    /// Maximum production data layer number.
-    /// </summary>
-    public const int MAX_LAYER_NUMBER = 1000;
 
     /// <summary>
     /// Maximum production data thickness.

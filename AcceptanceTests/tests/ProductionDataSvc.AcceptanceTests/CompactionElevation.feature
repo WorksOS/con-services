@@ -2,27 +2,6 @@
 I should be able to request compaction elevation and project statistics
 
 ######################################################## Elevation Range ########################################################
-Scenario Outline: Compaction Get Elevation Range - No Design Filter
-Given the Compaction service URI "/api/v2/elevationrange" for operation "ElevationRange"
-And the result file "CompactionGetElevationAndProjectStatisticsDataResponse.json"
-And projectUid "<ProjectUID>"
-When I request result
-Then the result should match the "<ResultName>" from the repository
-Examples: 
-| RequestName | ProjectUID                           | ResultName        |
-|             | ff91dd40-1569-4765-a2bc-014321f76ace | NoDesignFilter_ER |
-  
-Scenario Outline: Compaction Get Elevation Range - No Data
-Given the Compaction service URI "/api/v2/elevationrange" for operation "ElevationRange"
-And the result file "CompactionGetElevationAndProjectStatisticsDataResponse.json"
-And projectUid "<ProjectUID>"
-And filterUid "<FilterUid>"
-When I request result
-Then the result should match the "<ResultName>" from the repository
-Examples: 
-| RequestName | ProjectUID                           | FilterUid                            | ResultName |
-|             | ff91dd40-1569-4765-a2bc-014321f76ace | 200c7b47-b5e6-48ee-a731-7df6623412da | NoData_ER  |
-
 Scenario Outline: Compaction Get Elevation Range
 Given the Compaction service URI "/api/v2/elevationrange" for operation "ElevationRange"
 And the result file "CompactionGetElevationAndProjectStatisticsDataResponse.json"
@@ -31,8 +10,11 @@ And filterUid "<FilterUid>"
 When I request result
 Then the result should match the "<ResultName>" from the repository
 Examples: 
-| RequestName      | ProjectUID                           | FilterUid                            | ResultName      |
-| AlignmentFilter  | ff91dd40-1569-4765-a2bc-014321f76ace | 2811c7c3-d270-4d63-97e2-fc3340bf6c7a | AlignmentFilter |
+| RequestName      | ProjectUID                           | FilterUid                            | ResultName          |
+| NoDesignFilter   | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | NoDesignFilter_ER   |
+| NoData           | ff91dd40-1569-4765-a2bc-014321f76ace | 200c7b47-b5e6-48ee-a731-7df6623412da | NoData_ER           |
+| AutomaticsFilter | ff91dd40-1569-4765-a2bc-014321f76ace | 887f90a6-56b9-4266-9d62-ff99e7d346f0 | AutomaticsFilter_ER |
+| AlignmentFilter  | ff91dd40-1569-4765-a2bc-014321f76ace | 2811c7c3-d270-4d63-97e2-fc3340bf6c7a | AlignmentFilter     |
 
 ######################################################## Project Statistics #####################################################
 Scenario Outline: Compaction Get Project Statistics - Good Request

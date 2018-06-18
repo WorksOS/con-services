@@ -52,7 +52,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
           new List<MachineDetails>(),
           new List<long>(),
           false, GPSAccuracy.Medium, false, null, null, null,
-          DesignDescriptor.CreateDesignDescriptor(1, FileDescriptor.EmptyFileDescriptor, 0));
+          DesignDescriptor.CreateDesignDescriptor(1, FileDescriptor.EmptyFileDescriptor, 0), null, null, null, null, null);
 
       cpRequest = CellPassesRequest.CreateCellPassRequest(544, cellAddress, point, wgsPoint, settings,
                                                           0, 0, filter);

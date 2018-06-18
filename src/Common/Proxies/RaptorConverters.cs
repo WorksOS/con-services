@@ -11,6 +11,7 @@ using SVOICFilterSettings;
 using SVOICLiftBuildSettings;
 using SVOICOptionsDecls;
 using SVOICVolumeCalculationsDecls;
+using SVOSiteVisionDecls;
 using VLPDDecls;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
@@ -680,6 +681,26 @@ namespace VSS.Productivity3D.Common.Proxies
       }
 
       filter.ReturnEarliestFilteredCellPass = (pdf != null) && pdf.ReturnEarliest.HasValue && pdf.ReturnEarliest.Value;
+
+      if (pdf.AutomaticsType.HasValue)
+      {
+        filter.GCSGuidanceMode = (TGCSAutomaticsMode)pdf.AutomaticsType.Value;
+        filter.SetGCSGuidanceModeCellpassState(true);
+      }
+
+      if (pdf.TemperatureRangeMin.HasValue && pdf.TemperatureRangeMax.HasValue)
+      {
+        filter.TemperatureRangeMin = (ushort)(pdf.TemperatureRangeMin.Value * 10);
+        filter.TemperatureRangeMax = (ushort)(pdf.TemperatureRangeMax.Value * 10);
+        filter.SetTemperatureRangeState(true);
+      }
+
+      if (pdf.PassCountRangeMin.HasValue && pdf.PassCountRangeMax.HasValue)
+      {
+        filter.PassCountRangeMin = pdf.PassCountRangeMin.Value;
+        filter.PassCountRangeMax = pdf.PassCountRangeMax.Value;
+        filter.SetPassCountRangeState(true);
+      }
 
       //  log?.LogDebug($"Filter to be sent to Raptor: {JsonConvert.SerializeObject(filter)}");
 

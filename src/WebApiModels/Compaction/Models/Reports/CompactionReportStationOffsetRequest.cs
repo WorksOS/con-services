@@ -101,11 +101,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
       }
       AlignmentFile?.Validate();
 
-      if (this.CrossSectionInterval < ValidationConstants.MIN_SPACING_INTERVAL || this.CrossSectionInterval > ValidationConstants.MAX_SPACING_INTERVAL)
+      if (this.CrossSectionInterval < ValidationConstants3D.MIN_SPACING_INTERVAL || this.CrossSectionInterval > ValidationConstants3D.MAX_SPACING_INTERVAL)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            $"Interval must be >= {ValidationConstants.MIN_SPACING_INTERVAL}m and <= {ValidationConstants.MAX_SPACING_INTERVAL}m. Actual value: {this.CrossSectionInterval}"));
+            $"Interval must be >= {ValidationConstants3D.MIN_SPACING_INTERVAL}m and <= {ValidationConstants3D.MAX_SPACING_INTERVAL}m. Actual value: {this.CrossSectionInterval}"));
       }
 
       if (Offsets == null || Offsets.Length == 0)

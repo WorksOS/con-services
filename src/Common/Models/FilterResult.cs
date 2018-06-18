@@ -112,14 +112,14 @@ namespace VSS.Productivity3D.Common.Models
     /// <summary>
     /// The starting station position on a alignment being used as a spatial filter. The value is expressed in meters.
     /// </summary>
-    [Range(ValidationConstants.MIN_STATION, ValidationConstants.MAX_STATION)]
+    [Range(ValidationConstants3D.MIN_STATION, ValidationConstants3D.MAX_STATION)]
     [JsonProperty(PropertyName = "startStation", Required = Required.Default)]
     public double? StartStation { get; private set; }
 
     /// <summary>
     /// The ending station position on a alignment being used as a spatial filter. The value is expressed in meters.
     /// </summary>
-    [Range(ValidationConstants.MIN_STATION, ValidationConstants.MAX_STATION)]
+    [Range(ValidationConstants3D.MIN_STATION, ValidationConstants3D.MAX_STATION)]
     [JsonProperty(PropertyName = "endStation", Required = Required.Default)]
     public double? EndStation { get; private set; }
 
@@ -127,7 +127,7 @@ namespace VSS.Productivity3D.Common.Models
     /// The left offset position on a alignment being used as a spatial filter. The value is expressed in meters.
     /// This value may be negative, in which case it will be to the right of the alignment.
     /// </summary>
-    [Range(ValidationConstants.MIN_OFFSET, ValidationConstants.MAX_OFFSET)]
+    [Range(ValidationConstants3D.MIN_OFFSET, ValidationConstants3D.MAX_OFFSET)]
     [JsonProperty(PropertyName = "leftOffset", Required = Required.Default)]
     public double? LeftOffset { get; private set; }
 
@@ -135,7 +135,7 @@ namespace VSS.Productivity3D.Common.Models
     /// The right offset position on a alignment being used as a spatial filter. The value is expressed in meters.
     /// This value may be negative, in which case it will be to the left of the alignment.
     /// </summary>
-    [Range(ValidationConstants.MIN_OFFSET, ValidationConstants.MAX_OFFSET)]
+    [Range(ValidationConstants3D.MIN_OFFSET, ValidationConstants3D.MAX_OFFSET)]
     [JsonProperty(PropertyName = "rightOffset", Required = Required.Default)]
     public double? RightOffset { get; private set; }
 
@@ -163,7 +163,7 @@ namespace VSS.Productivity3D.Common.Models
     /// <summary>
     /// The elevation of the bench to be used as the datum elevation for LayerBenchElevation filter layer type. The value is expressed in meters.
     /// </summary>
-    [Range(ValidationConstants.MIN_ELEVATION, ValidationConstants.MAX_ELEVATION)]
+    [Range(ValidationConstants3D.MIN_ELEVATION, ValidationConstants3D.MAX_ELEVATION)]
     [JsonProperty(PropertyName = "benchElevation", Required = Required.Default)]
     public double? BenchElevation { get; private set; }
 
@@ -171,14 +171,14 @@ namespace VSS.Productivity3D.Common.Models
     /// The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file) to be used as the layer type filter. Layer 3 is then the third layer from the
     /// datum elevation where each layer has a thickness defined by the layerThickness member.
     /// </summary>
-    [Range(ValidationConstants.MIN_LAYER_NUMBER, ValidationConstants.MAX_LAYER_NUMBER)]
+    [Range(ValidationConstants3D.MIN_LAYER_NUMBER, ValidationConstants3D.MAX_LAYER_NUMBER)]
     [JsonProperty(PropertyName = "layerNumber", Required = Required.Default)]
     public int? LayerNumber { get; private set; }
 
     /// <summary>
     /// The layer thickness to be used for layers determined spatially vie the layerType member. The value is expressed in meters.
     /// </summary>
-    [Range(ValidationConstants.MIN_THICKNESS, ValidationConstants.MAX_THICKNESS)]
+    [Range(ValidationConstants3D.MIN_THICKNESS, ValidationConstants3D.MAX_THICKNESS)]
     [JsonProperty(PropertyName = "layerThickness", Required = Required.Default)]
     public double? LayerThickness { get; private set; }
 
@@ -251,6 +251,42 @@ namespace VSS.Productivity3D.Common.Models
     [JsonProperty(PropertyName = "designFile", Required = Required.Default)]
     public DesignDescriptor DesignFile { get; private set; }
 
+    /// <summary>
+    /// Filter cell passes recorded when the guidance mode is automatics, manual or unknown.
+    /// If set to null, returns all cell passes.  If set to an automatics type, returns only cell passes with the 
+    /// guidance mode set to the specified automatics type.  
+    /// </summary>
+    [JsonProperty(PropertyName = "automaticsType", Required = Required.Default)]
+    public AutomaticsType? AutomaticsType { get; protected set; }
+
+    /// <summary>
+    /// The minimum temperature in °C for a temperature range filter. Only cell passes within the range will be selected.
+    /// </summary>
+    [Range(ValidationConstants3D.MIN_TEMPERATURE, ValidationConstants3D.MAX_TEMPERATURE)]
+    [JsonProperty(PropertyName = "temperatureRangeMin", Required = Required.Default)]
+    public double? TemperatureRangeMin { get; private set; }
+
+    /// <summary>
+    /// The maximum temperature in °C for a temperature range filter. Only cell passes within the range will be selected.
+    /// </summary>
+    [Range(ValidationConstants3D.MIN_TEMPERATURE, ValidationConstants3D.MAX_TEMPERATURE)]
+    [JsonProperty(PropertyName = "temperatureRangeMax", Required = Required.Default)]
+    public double? TemperatureRangeMax { get; private set; }
+
+    /// <summary>
+    /// The minimum pass count for a  pass count range filter. Only cell passes within the range will be selected.
+    /// </summary>
+    [Range(ValidationConstants3D.MIN_PASS_COUNT, ValidationConstants3D.MAX_PASS_COUNT)]
+    [JsonProperty(PropertyName = "passCountRangeMin", Required = Required.Default)]
+    public int? PassCountRangeMin { get; private set; }
+
+    /// <summary>
+    /// The maximum pass count for a  pass count range filter. Only cell passes within the range will be selected.
+    /// </summary>
+    [Range(ValidationConstants3D.MIN_PASS_COUNT, ValidationConstants3D.MAX_PASS_COUNT)]
+    [JsonProperty(PropertyName = "passCountRangeMax", Required = Required.Default)]
+    public int? PassCountRangeMax { get; private set; }
+
     public bool isFilterContainsSSOnly { get; private set; } = false;
 
     public bool IsFilterEmpty => isFilterEmpty();
@@ -299,7 +335,13 @@ namespace VSS.Productivity3D.Common.Models
         !BladeOnGround.HasValue &&
         !TrackMapping.HasValue &&
         !WheelTracking.HasValue &&
-        DesignFile == null) return true;
+        DesignFile == null &&
+        !AutomaticsType.HasValue &&
+        !TemperatureRangeMin.HasValue &&
+        !TemperatureRangeMax.HasValue &&
+        !PassCountRangeMin.HasValue &&
+        !PassCountRangeMax.HasValue
+        ) return true;
       return false;
     }
 
@@ -364,7 +406,12 @@ namespace VSS.Productivity3D.Common.Models
         bool? bladeOnGround,
         bool? trackMapping,
         bool? wheelTracking,
-        DesignDescriptor designFile
+        DesignDescriptor designFile,
+        AutomaticsType? automaticsType,
+        double? temperatureRangeMin,
+        double? temperatureRangeMax,
+        int? passCountRangeMin,
+        int? passCountRangeMax
         )
     {
       return new FilterResult
@@ -401,7 +448,12 @@ namespace VSS.Productivity3D.Common.Models
         BladeOnGround = bladeOnGround,
         TrackMapping = trackMapping,
         WheelTracking = wheelTracking,
-        DesignFile = designFile
+        DesignFile = designFile,
+        AutomaticsType = automaticsType,
+        TemperatureRangeMin = temperatureRangeMin,
+        TemperatureRangeMax = temperatureRangeMax,
+        PassCountRangeMin = passCountRangeMin,
+        PassCountRangeMax = passCountRangeMax
       };
     }
 
@@ -450,7 +502,12 @@ namespace VSS.Productivity3D.Common.Models
         ReturnEarliest = returnEarliest,
         DesignFile = designFile,
         DateRangeType = filter.DateRangeType,
-        AsAtDate = filter.AsAtDate
+        AsAtDate = filter.AsAtDate,
+        AutomaticsType = filter.AutomaticsType,
+        TemperatureRangeMin = filter.TemperatureRangeMin,
+        TemperatureRangeMax = filter.TemperatureRangeMax,
+        PassCountRangeMin = filter.PassCountRangeMin,
+        PassCountRangeMax = filter.PassCountRangeMax
       };
     }
 
@@ -609,6 +666,54 @@ namespace VSS.Productivity3D.Common.Models
                  new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                      "Only one type of filter boundary can be defined at one time"));
       }
+
+      if (TemperatureRangeMin.HasValue != TemperatureRangeMax.HasValue)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Invalid temperature range filter. Both minimum and maximum must be provided."));
+      }
+
+      if (TemperatureRangeMin.HasValue && TemperatureRangeMax.HasValue)
+      {
+        if (TemperatureRangeMin.Value > TemperatureRangeMax.Value)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "Invalid temperature range filter. Minimum must be less than maximum."));
+        }
+        if (TemperatureRangeMin.Value < ValidationConstants3D.MIN_TEMPERATURE || TemperatureRangeMin.Value > ValidationConstants3D.MAX_TEMPERATURE ||
+            TemperatureRangeMax.Value < ValidationConstants3D.MIN_TEMPERATURE || TemperatureRangeMax.Value > ValidationConstants3D.MAX_TEMPERATURE)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              $"Invalid temperature range filter. Range must be between {ValidationConstants3D.MIN_TEMPERATURE} and {ValidationConstants3D.MAX_TEMPERATURE}."));
+        }
+      }
+
+      if (PassCountRangeMin.HasValue != PassCountRangeMax.HasValue)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Invalid pass count range filter. Both minimum and maximum must be provided."));
+      }
+
+      if (PassCountRangeMin.HasValue && PassCountRangeMax.HasValue)
+      {
+        if (PassCountRangeMin.Value > PassCountRangeMax.Value)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "Invalid pass count range filter. Minimum must be less than maximum."));
+        }
+        if (PassCountRangeMin.Value < ValidationConstants3D.MIN_TEMPERATURE || PassCountRangeMin.Value > ValidationConstants3D.MAX_TEMPERATURE ||
+            PassCountRangeMax.Value < ValidationConstants3D.MIN_TEMPERATURE || PassCountRangeMax.Value > ValidationConstants3D.MAX_TEMPERATURE)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              $"Invalid pass count range filter. Range must be between {ValidationConstants3D.MIN_PASS_COUNT} and {ValidationConstants3D.MAX_PASS_COUNT}."));
+        }
+      }
     }
 
     #region IEquatable
@@ -651,6 +756,11 @@ namespace VSS.Productivity3D.Common.Models
              TrackMapping.Equals(other.TrackMapping) &&
              WheelTracking.Equals(other.WheelTracking) &&
              (DesignFile == null ? other.DesignFile == null : DesignFile.Equals(other.DesignFile)) &&
+             AutomaticsType == other.AutomaticsType &&
+             TemperatureRangeMin.Equals(other.TemperatureRangeMin) && 
+             TemperatureRangeMax.Equals(other.TemperatureRangeMax) &&
+             PassCountRangeMin.Equals(other.PassCountRangeMin) && 
+             PassCountRangeMax.Equals(other.PassCountRangeMax) &&
              isFilterContainsSSOnly == other.isFilterContainsSSOnly;
     }
 
@@ -700,7 +810,11 @@ namespace VSS.Productivity3D.Common.Models
         hashCode = GetHashCode(hashCode, GetNullableHashCode(TrackMapping));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(WheelTracking));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(DesignFile));
-
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(AutomaticsType));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(TemperatureRangeMin));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(TemperatureRangeMax));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(PassCountRangeMin));
+        hashCode = GetHashCode(hashCode, GetNullableHashCode(PassCountRangeMax));
         return hashCode;
       }
     }

@@ -48,25 +48,18 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       this.volumesSummaryRequester.DoInvalidRequest(url, (HttpStatusCode)httpCode);
     }
 
-    [Given(@"filter ""(.*)""")]
-    public void GivenFilterUid(string filterUid)
+    [Given(@"baseUid ""(.*)""")]
+    public void GivenBaseUid(string baseUid)
     {
-      if (!string.IsNullOrEmpty(filterUid))
-      { volumesSummaryRequester.QueryString.Add("baseUid", filterUid); }
+      if (!string.IsNullOrEmpty(baseUid))
+        volumesSummaryRequester.QueryString.Add("baseUid", baseUid);
     }
 
-    [Given(@"design ""(.*)""")]
-    public void GivenDesign(string designUid)
+    [Given(@"topUid ""(.*)""")]
+    public void GivenTopUid(string topUid)
     {
-      if (!string.IsNullOrEmpty(designUid))
-      { volumesSummaryRequester.QueryString.Add("topUid", designUid); }
-    }
-
-    [Given(@"to filter ""(.*)""")]
-    public void GivenToFilter(string filterUid)
-    {
-      if (!string.IsNullOrEmpty(filterUid))
-      { volumesSummaryRequester.QueryString.Add("topUid", filterUid); }
-    }
+      if (!string.IsNullOrEmpty(topUid))
+        volumesSummaryRequester.QueryString.Add("topUid", topUid);
+    }  
   }
 }

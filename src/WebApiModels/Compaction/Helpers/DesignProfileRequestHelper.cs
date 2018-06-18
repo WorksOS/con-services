@@ -45,8 +45,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         null,
         null,
         llPoints,
-        ValidationConstants.MIN_STATION,
-        ValidationConstants.MIN_STATION);
+        ValidationConstants3D.MIN_STATION,
+        ValidationConstants3D.MIN_STATION);
     }
   }
 }
