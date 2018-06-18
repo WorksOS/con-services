@@ -7,6 +7,8 @@ spec:
 
   - name: mysql-container
     image: mysql/mysql-server:5.7.15
+    command: ["/entrypoint.sh"]
+    args: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
     ports:
     - containerPort: 3306
     livenessProbe:
@@ -125,11 +127,14 @@ spec:
     ports:
     - containerPort: 80
     livenessProbe:
-      tcpSocket:
+      httpGet:
+        scheme: HTTP
+        path: /ping
         port: 80
-    readinessProbe:
-      tcpSocket:
-        port: 80
+      readinessProbe:
+        httpGet:
+          path: /ping
+          port: 80
     tty: true
     envFrom:
     - configMapRef:
