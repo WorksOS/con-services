@@ -128,11 +128,11 @@ spec:
     livenessProbe:
       httpGet:
         scheme: HTTP
-        path: /health
+        path: /ping
         port: 80
       readinessProbe:
         httpGet:
-          path: /health
+          path: /ping
           port: 80
     tty: true
     envFrom:
