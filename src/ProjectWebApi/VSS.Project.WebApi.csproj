@@ -32,6 +32,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="App.Metrics.AspNetCore" Version="2.0.0" />
+    <PackageReference Include="App.Metrics.Formatters.Prometheus" Version="2.0.0" />
     <PackageReference Include="AutoMapper" Version="6.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.*" />
     <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="2.0.*" />
@@ -51,7 +53,7 @@
     <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.33.*" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.11.*" />
     <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.10.*" />
-    <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.0.*" />
+    <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.1.*" />
   </ItemGroup>
 
   <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
