@@ -126,11 +126,14 @@ spec:
     ports:
     - containerPort: 80
     livenessProbe:
-      tcpSocket:
+      httpGet:
+        scheme: HTTP
+        path: /health
         port: 80
-    readinessProbe:
-      tcpSocket:
-        port: 80
+      readinessProbe:
+        httpGet:
+          path: /health
+          port: 80
     tty: true
     envFrom:
     - configMapRef:

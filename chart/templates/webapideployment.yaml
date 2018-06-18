@@ -20,11 +20,11 @@ spec:
         livenessProbe:
           httpGet:
             scheme: HTTP
-            path: /areyouok
+            path: /health
             port: 80
         readinessProbe:
           httpGet:
-            path: /areyouok
+            path: /health
             port: 80
         resources:
 {{ toYaml .Values.resources | indent 12 }}
