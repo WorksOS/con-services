@@ -91,7 +91,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       this.DynamicAddwithOffset("CreateProjectV2: Missing BusinessCentreFile.", 82);
       this.DynamicAddwithOffset("CreateProjectV2: Invalid businessCentreFile path.", 83);
       this.DynamicAddwithOffset("CreateProjectV2: Invalid businessCentreFile fileSpaceId.", 84);
-      this.DynamicAddwithOffset("UpdateProjectV4: Invalid ProjectType. Canot be changed to standard.", 85);
+      this.DynamicAddwithOffset("UpdateProjectV4: Invalid ProjectType. Can ony be changed from Standard to Landfill/Civil.", 85);
       this.DynamicAddwithOffset("ValidateTCCAuthorization: Invalid Request: {0}.", 86);
       this.DynamicAddwithOffset("ValidateTCCAuthorization: Exception getting list of organizations from TCC: {0}.", 87);
       this.DynamicAddwithOffset("ValidateTCCAuthorization: Unable to locate orgShortName in TCC {0}.", 88);

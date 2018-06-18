@@ -53,7 +53,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       if (existing != null && existing.ProjectType != updateProjectEvent.ProjectType)
       {
-        if (updateProjectEvent.ProjectType == ProjectType.Standard)
+        if (existing.ProjectType != ProjectType.Standard || updateProjectEvent.ProjectType == ProjectType.Standard)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 85);
         }
