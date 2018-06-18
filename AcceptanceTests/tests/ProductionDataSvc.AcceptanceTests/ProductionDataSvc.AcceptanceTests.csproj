@@ -136,13 +136,13 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>EditData.feature</DependentUpon>
     </Compile>
-    <Compile Include="GetMachineDesignDetailsResult.cs" />
+    <Compile Include="Models\GetMachineDesignDetailsResult.cs" />
     <Compile Include="GetMachineDesigns.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>GetMachineDesigns.feature</DependentUpon>
     </Compile>
-    <Compile Include="MachineDesignDetails.cs" />
+    <Compile Include="Models\MachineDesignDetails.cs" />
     <Compile Include="Models\CompactionCellDatumResult.cs" />
     <Compile Include="Models\CompactionTagFile.cs" />
     <Compile Include="Patch.feature.cs">

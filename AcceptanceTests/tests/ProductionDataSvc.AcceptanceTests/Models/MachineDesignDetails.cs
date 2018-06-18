@@ -1,8 +1,9 @@
 ﻿using System;
 using Newtonsoft.Json;
+using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Models;
 
-namespace ProductionDataSvc.AcceptanceTests.Models
+namespace ProductionDataSvc.AcceptanceTests
 {
   public class MachineDesignDetails : MachineDetails, IEquatable<MachineDesignDetails>
   {
