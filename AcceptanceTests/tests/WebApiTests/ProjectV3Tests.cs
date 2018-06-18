@@ -203,42 +203,43 @@ namespace WebApiTests
       ts.AssociateCustomerProjectViaWebApi(ts.ProjectUid, ts.CustomerUid, 0, DateTime.UtcNow, HttpStatusCode.BadRequest);
     }
 
-    [TestMethod]
-    public void Dissociate_Customer_Project_After_Associate()
-    {
-      var msg = new Msg();
-      msg.Title("projects 14", "Dissociate a customer from a project after associate");
-      var mysql = new MySqlHelper();
-      var ts = new TestSupport();
-      ts.AssociateCustomerProjectViaWebApi(ts.ProjectUid, ts.CustomerUid, 111111111, DateTime.UtcNow, HttpStatusCode.OK);
-      mysql.VerifyTestResultDatabaseRecordCount("CustomerProject", "fk_ProjectUID", 1, ts.ProjectUid);
-      ts.DissociateProjectViaWebApi(ts.ProjectUid, ts.CustomerUid, DateTime.UtcNow, HttpStatusCode.NotImplemented);
-      //At the moment, dissociate is not stored in the web api database so don't check database
-    }
+    // Dissociating projects from customers is not supported 
+    //[TestMethod]
+    //public void Dissociate_Customer_Project_After_Associate()
+    //{
+    //  var msg = new Msg();
+    //  msg.Title("projects 14", "Dissociate a customer from a project after associate");
+    //  var mysql = new MySqlHelper();
+    //  var ts = new TestSupport();
+    //  ts.AssociateCustomerProjectViaWebApi(ts.ProjectUid, ts.CustomerUid, 111111111, DateTime.UtcNow, HttpStatusCode.OK);
+    //  mysql.VerifyTestResultDatabaseRecordCount("CustomerProject", "fk_ProjectUID", 1, ts.ProjectUid);
+    //  ts.DissociateProjectViaWebApi(ts.ProjectUid, ts.CustomerUid, DateTime.UtcNow, HttpStatusCode.NotImplemented);
+    //  //At the moment, dissociate is not stored in the web api database so don't check database
+    //}
 
-    [TestMethod]
-    public void Dissociate_Customer_Project_Before_Associate()
-    {
-      var msg = new Msg();
-      msg.Title("projects 15", "Dissociate a customer from a project before associate");
-      var ts = new TestSupport();
-      ts.DissociateProjectViaWebApi(ts.ProjectUid, ts.CustomerUid, DateTime.UtcNow, HttpStatusCode.NotImplemented);
-    }
+    //[TestMethod]
+    //public void Dissociate_Customer_Project_Before_Associate()
+    //{
+    //  var msg = new Msg();
+    //  msg.Title("projects 15", "Dissociate a customer from a project before associate");
+    //  var ts = new TestSupport();
+    //  ts.DissociateProjectViaWebApi(ts.ProjectUid, ts.CustomerUid, DateTime.UtcNow, HttpStatusCode.NotImplemented);
+    //}
 
-    [TestMethod]
-    public void Dissociate_Customer_Project_Bad_Data()
-    {
-      var msg = new Msg();
-      msg.Title("projects 16", "Dissociate a customer and a project with bad data");
-      var ts = new TestSupport();
-      //   var projectId = ts.SetLegacyProjectId();
-      //No action UTC
-      ts.DissociateProjectViaWebApi(ts.ProjectUid, ts.CustomerUid, DateTime.MinValue, HttpStatusCode.BadRequest);
-      //No project UID
-      ts.DissociateProjectViaWebApi(Guid.Empty, ts.CustomerUid, DateTime.UtcNow, HttpStatusCode.BadRequest);
-      //No customer UID
-      ts.DissociateProjectViaWebApi(ts.ProjectUid, Guid.Empty, DateTime.UtcNow, HttpStatusCode.NotImplemented);
-    }
+    //[TestMethod]
+    //public void Dissociate_Customer_Project_Bad_Data()
+    //{
+    //  var msg = new Msg();
+    //  msg.Title("projects 16", "Dissociate a customer and a project with bad data");
+    //  var ts = new TestSupport();
+    //  //   var projectId = ts.SetLegacyProjectId();
+    //  //No action UTC
+    //  ts.DissociateProjectViaWebApi(ts.ProjectUid, ts.CustomerUid, DateTime.MinValue, HttpStatusCode.BadRequest);
+    //  //No project UID
+    //  ts.DissociateProjectViaWebApi(Guid.Empty, ts.CustomerUid, DateTime.UtcNow, HttpStatusCode.BadRequest);
+    //  //No customer UID
+    //  ts.DissociateProjectViaWebApi(ts.ProjectUid, Guid.Empty, DateTime.UtcNow, HttpStatusCode.NotImplemented);
+    //}
 
     [TestMethod]
     public void Associate_Geofence_Project_After_Create()

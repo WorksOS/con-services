@@ -296,7 +296,7 @@ namespace TestUtility
           response = CallProjectWebApiV4("api/v4/project/", HttpMethod.Put.ToString(), jsonString, customerUid);
           break;
         case "DeleteProjectEvent":
-          response = CallProjectWebApiV4("api/v4/project/" + ProjectUid, HttpMethod.Delete.ToString(), jsonString, customerUid);
+          response = CallProjectWebApiV4("api/v4/project/" + ProjectUid, HttpMethod.Delete.ToString(), string.Empty, customerUid);
           break;
       }
       //Thread.Sleep(500);

@@ -328,32 +328,33 @@ namespace IntegrationTests
     }
 
 
-    [TestMethod]
-    public void Create_Project_Then_DissociateCustomer()
-    {
-      //TODO: This currently does nothing need to confirm that this is the intention.
-      var msg = new Msg();
-      var ts = new TestSupport { IsPublishToKafka = true};
-      var mysql = new MySqlHelper();
-      var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
-      var projectGuid = Guid.NewGuid();
-      var customerGuid = Guid.NewGuid();
-      var projectId = ts.SetLegacyProjectId();
-      string projectName = $"Integration Test Project 9";
-      DateTime startDate = ts.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00",ts.FirstEventDate);
-      DateTime endDate = ts.ConvertTimeStampAndDayOffSetToDateTime("400d+00:00:00",ts.FirstEventDate);
+    // Dissociating projects from customers is not supported 
+    //[Ignore]
+    //[TestMethod]
+    //public void Create_Project_Then_DissociateCustomer()
+    //{
+    //  var msg = new Msg();
+    //  var ts = new TestSupport { IsPublishToKafka = true};
+    //  var mysql = new MySqlHelper();
+    //  var projectConsumerMysql = new MySqlHelper();
+    //  projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
+    //  var projectGuid = Guid.NewGuid();
+    //  var customerGuid = Guid.NewGuid();
+    //  var projectId = ts.SetLegacyProjectId();
+    //  string projectName = $"Integration Test Project 9";
+    //  DateTime startDate = ts.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00",ts.FirstEventDate);
+    //  DateTime endDate = ts.ConvertTimeStampAndDayOffSetToDateTime("400d+00:00:00",ts.FirstEventDate);
 
-      Create_Customer_Then_Project_And_Subscriptions(ts, customerGuid, projectGuid, projectId, projectName, startDate, endDate, 1);
+    //  Create_Customer_Then_Project_And_Subscriptions(ts, customerGuid, projectGuid, projectId, projectName, startDate, endDate, 1);
 
-      var expectedProjects = new string[] {
-      "| IsArchived | ProjectName   | ProjectTimezone           | ProjectType            | ProjectStartDate | ProjectEndDate | ProjectUID    | ProjectID   | CustomerUID    | LegacyCustomerId | ProjectBoundary | ",
-     $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate:O}    | {endDate:O}    | {projectGuid} | {projectId} | {customerGuid} | 1                | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |" };
+    //  var expectedProjects = new string[] {
+    //  "| IsArchived | ProjectName   | ProjectTimezone           | ProjectType            | ProjectStartDate | ProjectEndDate | ProjectUID    | ProjectID   | CustomerUID    | LegacyCustomerId | ProjectBoundary | ",
+    // $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate:O}    | {endDate:O}    | {projectGuid} | {projectId} | {customerGuid} | 1                | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |" };
 
-      ts.GetProjectsViaWebApiV3AndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
-      ts.DissociateProjectViaWebApi(projectGuid, customerGuid, DateTime.Now, HttpStatusCode.NotImplemented);
-      ts.GetProjectsViaWebApiV3AndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
-    }
+    //  ts.GetProjectsViaWebApiV3AndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
+    //  ts.DissociateProjectViaWebApi(projectGuid, customerGuid, DateTime.Now, HttpStatusCode.NotImplemented);
+    //  ts.GetProjectsViaWebApiV3AndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
+    //}
 
 
     [TestMethod]
