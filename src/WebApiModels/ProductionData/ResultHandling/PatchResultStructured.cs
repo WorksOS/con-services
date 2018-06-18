@@ -40,12 +40,12 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// The collection of subgrids returned in this patch request result.
     /// </summary>
     [JsonProperty(PropertyName = "subgrids")]
-    public PatchSubgridResult[] Subgrids { get; private set; }
+    public PatchSubgridResultBase[] Subgrids { get; private set; }
 
     /// <summary>
     /// Static constructor.
     /// </summary>
-    public static PatchResultStructured CreatePatchResultStructured(double cellSize, int numSubgridsInPatch, int totalNumPatchesRequired, bool valuesRenderedToColors, PatchSubgridResult[] subgrids)
+    public static PatchResultStructured CreatePatchResultStructured(double cellSize, int numSubgridsInPatch, int totalNumPatchesRequired, bool valuesRenderedToColors, PatchSubgridResultBase[] subgrids)
     {
       return new PatchResultStructured
       {
