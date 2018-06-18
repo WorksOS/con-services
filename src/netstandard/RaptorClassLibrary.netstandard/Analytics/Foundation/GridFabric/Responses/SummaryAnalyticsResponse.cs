@@ -6,7 +6,7 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.Responses
 	/// <summary>
 	/// Base class for summary analytics response.
 	/// </summary>
-  public class SummaryAnalyticsResponse : BaseAnalyticsResponse, IAggregateWith<SummaryAnalyticsResponse>
+  public class SummaryAnalyticsResponse : StatisticAnalyticsResponse, IAggregateWith<SummaryAnalyticsResponse>
   {
 	  /// <summary>
 	  /// The cell size of the site model the aggregation is being performed over
@@ -53,35 +53,34 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.Responses
     public double SummaryProcessedArea => SummaryCellsScanned * (CellSize * CellSize);
 
     /// <summary>
-    /// /// Aggregate a set of summary data statistics into this set and return the result.
+    /// Aggregate a set of summary data statistics into this set and return the result.
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
     public SummaryAnalyticsResponse AggregateWith(SummaryAnalyticsResponse other)
     {
-      AggregateBaseDataWith(other);
-
-      return this;
+      return base.AggregateWith(other) as SummaryAnalyticsResponse;
     }
 
     /// <summary>
     /// Aggregate a set of generic data statistics into this set and return the result.
     /// </summary>
     /// <param name="other"></param>
-    protected virtual void AggregateBaseDataWith(SummaryAnalyticsResponse other)
+    protected override void AggregateBaseDataWith(StatisticAnalyticsResponse other)
     {
-      CellSize = other.CellSize;
-      SummaryCellsScanned += other.SummaryCellsScanned;
+      var otherResponse = (SummaryAnalyticsResponse) other;
 
-      CellsScannedOverTarget += other.CellsScannedOverTarget;
-      CellsScannedUnderTarget += other.CellsScannedUnderTarget;
-      CellsScannedAtTarget += other.CellsScannedAtTarget;
-      //CoverageArea += other.CoverageArea;
+      CellSize = otherResponse.CellSize;
+      SummaryCellsScanned += otherResponse.SummaryCellsScanned;
 
-      if (other.SummaryCellsScanned > 0)
+      CellsScannedOverTarget += otherResponse.CellsScannedOverTarget;
+      CellsScannedUnderTarget += otherResponse.CellsScannedUnderTarget;
+      CellsScannedAtTarget += otherResponse.CellsScannedAtTarget;
+
+      if (otherResponse.SummaryCellsScanned > 0)
       {
-        IsTargetValueConstant &= other.IsTargetValueConstant;
-        MissingTargetValue |= other.MissingTargetValue;
+        IsTargetValueConstant &= otherResponse.IsTargetValueConstant;
+        MissingTargetValue |= otherResponse.MissingTargetValue;
       }
     }
   }

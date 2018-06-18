@@ -2,13 +2,13 @@
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Types;
 
-namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
+namespace VSS.TRex.Analytics.CMVStatistics.GridFabric.Summary
 {
   /// <summary>
-  /// Argument containing the parameters required for a CMV statistics request
+  /// Argument containing the parameters required for a CMV summary request
   /// </summary>    
   [Serializable]
-  public class CMVStatisticsArgument : BaseApplicationServiceRequestArgument
+  public class CMVSummaryArgument : BaseApplicationServiceRequestArgument
   {
     // TODO If desired: ExternalDescriptor :TASNodeRequestDescriptor, which should be moved to the base class;
 

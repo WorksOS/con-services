@@ -1,14 +1,16 @@
-﻿using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
+﻿using System.Diagnostics;
+using VSS.TRex.Analytics.CMVStatistics.Summary;
+using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.Analytics.Foundation.Interfaces;
 using VSS.TRex.GridFabric.Requests.Interfaces;
 using VSS.TRex.Types;
 
-namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
+namespace VSS.TRex.Analytics.CMVStatistics.GridFabric.Summary
 {
   /// <summary>
-  /// The response state returned from a CMV statistics request
+  /// The response state returned from a CMV summary request
   /// </summary>
-  public class CMVStatisticsResponse : SummaryAnalyticsResponse, IAggregateWith<CMVStatisticsResponse>, IAnalyticsOperationResponseResultConversion<CMVResult>
+  public class CMVSummaryResponse : SummaryAnalyticsResponse, IAggregateWith<CMVSummaryResponse>, IAnalyticsOperationResponseResultConversion<CMVSummaryResult>
   {
     /// <summary>
     /// Holds last known good target CMV value.
@@ -16,25 +18,25 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
     public short LastTargetCMV { get; set; }
 
     /// <summary>
-    /// Aggregate a set of CMV statistics into this set and return the result.
+    /// Aggregate a set of CMV summary into this set and return the result.
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    protected override void AggregateBaseDataWith(SummaryAnalyticsResponse other)
+    protected override void AggregateBaseDataWith(StatisticAnalyticsResponse other)
     {
       base.AggregateBaseDataWith(other);
 
-      LastTargetCMV = ((CMVStatisticsResponse)other).LastTargetCMV;
+      LastTargetCMV = ((CMVSummaryResponse)other).LastTargetCMV;
     }
 
-    public CMVStatisticsResponse AggregateWith(CMVStatisticsResponse other)
+    public CMVSummaryResponse AggregateWith(CMVSummaryResponse other)
     {
-      return base.AggregateWith(other) as CMVStatisticsResponse;
+      return base.AggregateWith(other) as CMVSummaryResponse;
     }
 
-    public CMVResult ConstructResult()
+    public CMVSummaryResult ConstructResult()
     {
-      return new CMVResult
+      return new CMVSummaryResult
       {
         IsTargetCMVConstant = IsTargetValueConstant,
         ConstantTargetCMV = LastTargetCMV,

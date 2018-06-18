@@ -6,12 +6,12 @@ using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.Types;
 
-namespace VSS.TRex.Analytics.CMVStatistics
+namespace VSS.TRex.Analytics.CMVStatistics.Summary
 {
   /// <summary>
-  /// Implements the specific business rules for calculating a CMV summary and details
+  /// Implements the specific business rules for calculating a CMV summary
   /// </summary>
-  public class CMVAggregator : DataStatisticsAggregator
+  public class CMVSummaryAggregator : DataStatisticsAggregator
   {
     /// <summary>
     /// The flag is to indicate wehther or not the machine CMV target to be user overrides.
@@ -33,10 +33,11 @@ namespace VSS.TRex.Analytics.CMVStatistics
     /// </summary>
     public short LastTargetCMV { get; private set; } = CellPass.NullCCV;
 
+
     /// <summary>
     /// Default no-arg constructor
     /// </summary>
-    public CMVAggregator()
+    public CMVSummaryAggregator()
     {
       OverridingMachineCMV = CellPass.NullCCV;
       CMVPercentageRange.Clear();
@@ -44,7 +45,7 @@ namespace VSS.TRex.Analytics.CMVStatistics
 
     protected override void DataCheck(DataStatisticsAggregator other)
     {
-      var aggregator = (CMVAggregator) other;
+      var aggregator = (CMVSummaryAggregator) other;
 
       if (IsTargetValueConstant && other.SummaryCellsScanned > 0) // if we need to check for a difference
       {

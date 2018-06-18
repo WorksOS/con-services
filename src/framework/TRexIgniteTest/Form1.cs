@@ -10,8 +10,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using VSS.TRex.Analytics.CMVStatistics;
-using VSS.TRex.Analytics.CMVStatistics.GridFabric;
+using VSS.TRex.Analytics.CMVStatistics.GridFabric.Summary;
+using VSS.TRex.Analytics.CMVStatistics.Summary;
 using VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
@@ -1177,9 +1177,9 @@ namespace VSS.TRex.IgnitePOC.TestApp
       sw.Start();
       try
       {
-        CMVOperation operation = new CMVOperation();
-        CMVResult result = operation.Execute(
-          new CMVStatisticsArgument()
+        CMVSummaryOperation operation = new CMVSummaryOperation();
+        CMVSummaryResult result = operation.Execute(
+          new CMVSummaryArgument()
           {
             ProjectID = siteModel.ID,
             Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
