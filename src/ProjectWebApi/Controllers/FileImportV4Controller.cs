@@ -218,7 +218,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 55);
       }
 
-      var project = await GetProject(projectUid.ToString());
+      var project = await ProjectRequestHelper.GetProject(projectUid.ToString(), customerUid, log, serviceExceptionHandler, projectRepo);
 
       var importedFileList = await ImportedFileRequestHelper.GetImportedFileList(projectUid.ToString(), log, userId, projectRepo).ConfigureAwait(false);
       ImportedFileDescriptor importedFileDescriptor = null;
@@ -330,7 +330,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
 
       // this also validates that this customer has access to the projectUid
-      var project = await GetProject(projectUid.ToString());
+      var project = await ProjectRequestHelper.GetProject(projectUid.ToString(), customerUid, log, serviceExceptionHandler, projectRepo);
 
       FileDescriptor fileDescriptor = null;
       using (var fileStream = new FileStream(file.path, FileMode.Open))
@@ -377,7 +377,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [Route("api/v4/importedfile")]
     [HttpDelete]
     public async Task<ContractExecutionResult> DeleteImportedFileV4([FromUri] Guid projectUid,
-      [FromUri] Guid importedFileUid)
+      [FromQuery] Guid importedFileUid)
     {
       log.LogInformation($"DeleteImportedFileV4. projectUid {projectUid} importedFileUid: {importedFileUid}");
 

@@ -12,6 +12,7 @@ using System.Threading;
 using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using TestUtility.Model.WebApi;
 using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Repositories.DBModels;
@@ -606,6 +607,34 @@ namespace TestUtility
       return projectDescriptorResult?.ProjectDescriptor;
     }
 
+    public GeofenceV4DescriptorsListResult GetProjectGeofencesViaWebApiV4(string customerUid, string geofenceTypeString, string projectUidString )
+    {
+      var routeSuffix = "api/v4/geofences" + geofenceTypeString + projectUidString;
+      var response = CallProjectWebApiV4(routeSuffix, HttpMethod.Get.ToString(), null, customerUid);
+      Log.Info($"GetProjectGeofencesViaWebApiV4. response: {JsonConvert.SerializeObject(response)}", Log.ContentType.ApiSend);
+
+      if (!string.IsNullOrEmpty(response))
+      {
+        return JsonConvert.DeserializeObject<GeofenceV4DescriptorsListResult>(response);
+      }
+      return null;
+    }
+
+    public ContractExecutionResult AssociateProjectGeofencesViaWebApiV4(string customerUid, string projectUid, List<GeofenceType> geofenceTypes, List<Guid> geofenceGuids)
+    {
+      var updateProjectGeofenceRequest =
+        UpdateProjectGeofenceRequest.CreateUpdateProjectGeofenceRequest
+            (ProjectUid = Guid.Parse(projectUid), geofenceTypes, geofenceGuids);
+      var messagePayload = JsonConvert.SerializeObject(updateProjectGeofenceRequest);
+      var response = CallProjectWebApiV4("api/v4/geofences", HttpMethod.Put.ToString(), messagePayload, customerUid);
+      Log.Info($"AssociateProjectGeofencesViaWebApiV4. response: {JsonConvert.SerializeObject(response)}", Log.ContentType.ApiSend);
+
+      if (!string.IsNullOrEmpty(response))
+      {
+        return JsonConvert.DeserializeObject<ContractExecutionResult>(response);
+      }
+      return null;
+    }
 
     /// <summary>
     /// Compare the two lists of projects
