@@ -7,11 +7,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
@@ -37,6 +39,7 @@ namespace VSS.MasterData.ProjectTests
     private static ILoggerFactory _logger;
     private static IServiceExceptionHandler _serviceExceptionHandler;
     private static Mock<IKafka> _producer;
+    private static Mock<IGeofenceProxy> _geofenceProxy;
 
 
     [ClassInitialize]
@@ -62,36 +65,46 @@ namespace VSS.MasterData.ProjectTests
       _producer = new Mock<IKafka>();
       _producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
       _producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
+
+      var geofence = new GeofenceData()
+      {
+        GeofenceUID = _geofenceUid,
+        GeofenceType = GeofenceType.Project.ToString(),
+        GeometryWKT = _boundaryString
+      };
+
+      _geofenceProxy = new Mock<IGeofenceProxy>();
+      _geofenceProxy
+        .Setup(gp =>
+          gp.GetGeofenceForCustomer(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
+        .ReturnsAsync(geofence);
+      _geofenceProxy.Setup(gp => gp.UpdateGeofence(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
+          It.IsAny<string>(),
+          It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<Guid>(),
+          It.IsAny<double>(), It.IsAny<Dictionary<string, string>>()))
+        .ReturnsAsync(_geofenceUid);
     }
 
     [TestMethod]
     public async Task UpdateProjectExecutor_HappyPath()
     {
-      var createProjectRequest = CreateProjectRequest.CreateACreateProjectRequest
-      (Guid.NewGuid(), Guid.NewGuid(),
-        ProjectType.Standard, "projectName", "this is the description",
-        new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "NZ whatsup",
-        _boundaryString, 456, null, null);
-      var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(createProjectRequest);
-      createProjectEvent.ActionUTC = createProjectEvent.ReceivedUTC = DateTime.UtcNow;
-
       _configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
       _logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       _serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-      
-      await CreateProject(createProjectRequest);
 
-      if (createProjectRequest.ProjectUID != null)
+      var projectUid = Guid.NewGuid();
+      var projectType = ProjectType.Standard;
+      var existingProject = await CreateProject(projectUid, projectType);
+
+      if (existingProject.ProjectUID != null)
       {
         var updateProjectRequest = UpdateProjectRequest.CreateUpdateProjectRequest
-        (createProjectRequest.ProjectUID.Value, createProjectEvent.ProjectType, createProjectRequest.ProjectName, createProjectRequest.Description,
-          createProjectEvent.ProjectEndDate,
-          createProjectEvent.CoordinateSystemFileName, createProjectEvent.CoordinateSystemFileContent,
+        (projectUid, existingProject.ProjectType, existingProject.Name, existingProject.Description,
+          existingProject.EndDate,
+          existingProject.CoordinateSystemFileName, null,
           _updatedBoundaryString);
         var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(updateProjectRequest);
         updateProjectEvent.ActionUTC = updateProjectEvent.ReceivedUTC = DateTime.UtcNow;
-
-        var existingProject = AutoMapperUtility.Automapper.Map<Repositories.DBModels.Project>(createProjectEvent);
 
         var projectRepo = new Mock<IProjectRepository>();
         projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<UpdateProjectEvent>())).ReturnsAsync(1);
@@ -109,19 +122,60 @@ namespace VSS.MasterData.ProjectTests
         };
         projectRepo.Setup(pr => pr.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync(projectGeofence);
 
-        var geofence = new GeofenceData()
-        {
-          GeofenceUID = _geofenceUid,
-          GeofenceType = GeofenceType.Project.ToString(),
-          GeometryWKT = updateProjectEvent.ProjectBoundary
-        };
+        var subscriptionRepo = new Mock<ISubscriptionRepository>();
+        var raptorProxy = new Mock<IRaptorProxy>();
+        raptorProxy.Setup(rp =>
+            rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
+          .ReturnsAsync(new CoordinateSystemSettingsResult());
 
-        var geofenceProxy = new Mock<IGeofenceProxy>();
-        geofenceProxy.Setup(gp => gp.GetGeofenceForCustomer(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>())).ReturnsAsync(geofence);
-        geofenceProxy.Setup(gp => gp.UpdateGeofence(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(),
-            It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<Guid>(),
-            It.IsAny<double>(), It.IsAny<Dictionary<string, string>>()))
-          .ReturnsAsync(_geofenceUid);
+        var updateExecutor = RequestExecutorContainerFactory.Build<UpdateProjectExecutor>
+        (_logger, _configStore, _serviceExceptionHandler,
+          _customerUid, _userId, null, _customHeaders,
+          _producer.Object, KafkaTopicName,
+          _geofenceProxy.Object, raptorProxy.Object, null,
+          projectRepo.Object, subscriptionRepo.Object, null, null, null);
+        await updateExecutor.ProcessAsync(updateProjectEvent);
+      }
+    }
+
+
+    [TestMethod]
+    public async Task UpdateProjectExecutor_ChangeTypeToLandfill_Invalid_NoSubscription()
+    {
+      _configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      _logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      _serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
+
+      var projectUid = Guid.NewGuid();
+      var projectType = ProjectType.Standard;
+      var existingProject = await CreateProject(projectUid, projectType);
+
+      if (existingProject.ProjectUID != null)
+      {
+        var updateProjectRequest = UpdateProjectRequest.CreateUpdateProjectRequest
+        (projectUid, ProjectType.LandFill, existingProject.Name,
+          existingProject.Description,
+          existingProject.EndDate,
+          existingProject.CoordinateSystemFileName, null,
+          _updatedBoundaryString);
+        var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(updateProjectRequest);
+        updateProjectEvent.ActionUTC = updateProjectEvent.ReceivedUTC = DateTime.UtcNow;
+
+        var projectRepo = new Mock<IProjectRepository>();
+        projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<UpdateProjectEvent>())).ReturnsAsync(1);
+        projectRepo.Setup(pr => pr.GetProject(It.IsAny<string>()))
+          .ReturnsAsync(existingProject);
+
+        var projectGeofence = new List<ProjectGeofence>()
+        {
+          new ProjectGeofence()
+          {
+            GeofenceType = GeofenceType.Project,
+            GeofenceUID = _geofenceUid.ToString(),
+            ProjectUID = updateProjectRequest.ProjectUid.ToString()
+          }
+        };
+        projectRepo.Setup(pr => pr.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync(projectGeofence);
 
         var subscriptionRepo = new Mock<ISubscriptionRepository>();
         var raptorProxy = new Mock<IRaptorProxy>();
@@ -133,33 +187,178 @@ namespace VSS.MasterData.ProjectTests
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          geofenceProxy.Object, raptorProxy.Object, null,
+          _geofenceProxy.Object, raptorProxy.Object, null,
           projectRepo.Object, subscriptionRepo.Object, null, null, null);
-        await updateExecutor.ProcessAsync(updateProjectEvent);
+        var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
+          await updateExecutor.ProcessAsync(updateProjectEvent));
+
+        var projectErrorCodesProvider = ServiceProvider.GetRequiredService<IErrorCodesProvider>();
+        Assert.AreNotEqual(-1,
+          ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(37), StringComparison.Ordinal));
       }
     }
 
     [TestMethod]
-    private async Task CreateProject(CreateProjectRequest createProjectRequest)
+    public async Task UpdateProjectExecutor_ChangeTypeToLandfill_HappyPath()
     {
-      var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(createProjectRequest);
-      createProjectEvent.ActionUTC = createProjectEvent.ReceivedUTC = DateTime.UtcNow;
+      _configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      _logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      _serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
 
-      //var configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
-      //var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
-      //var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-      //var producer = new Mock<IKafka>();
-      //producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
-      //producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
+      var projectUid = Guid.NewGuid();
+      var projectType = ProjectType.Standard;
+      var existingProject = await CreateProject(projectUid, projectType);
+
+      if (existingProject.ProjectUID != null)
+      {
+        var updateProjectRequest = UpdateProjectRequest.CreateUpdateProjectRequest
+        (projectUid, ProjectType.LandFill, existingProject.Name,
+          existingProject.Description,
+          existingProject.EndDate,
+          existingProject.CoordinateSystemFileName, null,
+          _updatedBoundaryString);
+        var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(updateProjectRequest);
+        updateProjectEvent.ActionUTC = updateProjectEvent.ReceivedUTC = DateTime.UtcNow;
+
+        var projectRepo = new Mock<IProjectRepository>();
+        projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<UpdateProjectEvent>())).ReturnsAsync(1);
+        projectRepo.Setup(pr => pr.GetProject(It.IsAny<string>()))
+          .ReturnsAsync(existingProject);
+
+        var projectGeofence = new List<ProjectGeofence>()
+        {
+          new ProjectGeofence()
+          {
+            GeofenceType = GeofenceType.Project,
+            GeofenceUID = _geofenceUid.ToString(),
+            ProjectUID = updateProjectRequest.ProjectUid.ToString()
+          }
+        };
+        projectRepo.Setup(pr => pr.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync(projectGeofence);
+
+        var availSubs = new List<Subscription>()
+        {
+          new Subscription()
+          {
+            SubscriptionUID = Guid.NewGuid().ToString(),
+            ServiceTypeID = (int) ServiceTypeEnum.Landfill,
+            StartDate = DateTime.UtcNow.AddDays(-1),
+            EndDate = DateTime.UtcNow.AddDays(1)
+          }
+        };
+
+        var subscriptionRepo = new Mock<ISubscriptionRepository>();
+        subscriptionRepo.Setup(sr =>
+            sr.GetFreeProjectSubscriptionsByCustomer(It.IsAny<string>(), It.IsAny<DateTime>()))
+          .ReturnsAsync(availSubs);
+        var raptorProxy = new Mock<IRaptorProxy>();
+        raptorProxy.Setup(rp =>
+            rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(),
+              It.IsAny<Dictionary<string, string>>()))
+          .ReturnsAsync(new CoordinateSystemSettingsResult());
+
+        var subscriptionProxy = new Mock<ISubscriptionProxy>();
+        subscriptionProxy.Setup(sp =>
+            sp.AssociateProjectSubscription(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Dictionary<string, string>>()))
+          .Returns(Task.FromResult(default(int)));
+
+        var updateExecutor = RequestExecutorContainerFactory.Build<UpdateProjectExecutor>
+        (_logger, _configStore, _serviceExceptionHandler,
+          _customerUid, _userId, null, _customHeaders,
+          _producer.Object, KafkaTopicName,
+          _geofenceProxy.Object, raptorProxy.Object, subscriptionProxy.Object,
+          projectRepo.Object, subscriptionRepo.Object);
+        await updateExecutor.ProcessAsync(updateProjectEvent);
+      }
+    }
+
+
+    [TestMethod]
+    public async Task UpdateProjectExecutor_ChangeTypeToStandard_Invalid()
+    {
+      _configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      _logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      _serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
+
+      var projectUid = Guid.NewGuid();
+      var projectType = ProjectType.ProjectMonitoring;
+      var existingProject = await CreateProject(projectUid, projectType);
+
+      if (existingProject.ProjectUID != null)
+      {
+        var updateProjectRequest = UpdateProjectRequest.CreateUpdateProjectRequest
+        (projectUid, ProjectType.Standard, existingProject.Name,
+          existingProject.Description,
+          existingProject.EndDate,
+          existingProject.CoordinateSystemFileName, null,
+          _updatedBoundaryString);
+        var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(updateProjectRequest);
+        updateProjectEvent.ActionUTC = updateProjectEvent.ReceivedUTC = DateTime.UtcNow;
+
+        var projectRepo = new Mock<IProjectRepository>();
+        projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<UpdateProjectEvent>())).ReturnsAsync(1);
+        projectRepo.Setup(pr => pr.GetProject(It.IsAny<string>())).ReturnsAsync(existingProject);
+
+        var projectGeofence = new List<ProjectGeofence>()
+        {
+          new ProjectGeofence()
+          {
+            GeofenceType = GeofenceType.Project,
+            GeofenceUID = _geofenceUid.ToString(),
+            ProjectUID = updateProjectRequest.ProjectUid.ToString()
+          }
+        };
+        projectRepo.Setup(pr => pr.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync(projectGeofence);
+
+        var subscriptionRepo = new Mock<ISubscriptionRepository>();
+        var raptorProxy = new Mock<IRaptorProxy>();
+        raptorProxy.Setup(rp =>
+            rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
+          .ReturnsAsync(new CoordinateSystemSettingsResult());
+
+        var updateExecutor = RequestExecutorContainerFactory.Build<UpdateProjectExecutor>
+        (_logger, _configStore, _serviceExceptionHandler,
+          _customerUid, _userId, null, _customHeaders,
+          _producer.Object, KafkaTopicName,
+          _geofenceProxy.Object, raptorProxy.Object, null,
+          projectRepo.Object, subscriptionRepo.Object, null, null, null);
+        var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
+          await updateExecutor.ProcessAsync(updateProjectEvent));
+
+        var projectErrorCodesProvider = ServiceProvider.GetRequiredService<IErrorCodesProvider>();
+        Assert.AreNotEqual(-1,
+          ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(85), StringComparison.Ordinal));
+      }
+    }
+
+    [TestMethod]
+    private async Task<Repositories.DBModels.Project> CreateProject(Guid projectUid, ProjectType projectType)
+    {
+      var createProjectEvent = new CreateProjectEvent()
+      {
+        ProjectUID = projectUid,
+        ProjectType = projectType,
+        CustomerUID = Guid.NewGuid(),
+        CustomerID = 456,
+        ProjectName = "projectName",
+        Description = "this is the description",
+        ProjectStartDate = new DateTime(2017, 01, 20),
+        ProjectEndDate = new DateTime(2017, 02, 15),
+        ProjectTimezone = "NZ whatsup",
+        ProjectBoundary = _boundaryString,
+        ActionUTC = DateTime.UtcNow,
+        ReceivedUTC = DateTime.UtcNow
+      };
 
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<CreateProjectEvent>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectCustomer>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<AssociateProjectGeofence>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.GetProjectOnly(It.IsAny<string>()))
-        .ReturnsAsync(new Repositories.DBModels.Project() { LegacyProjectID = 999 });
+        .ReturnsAsync(new Repositories.DBModels.Project() {LegacyProjectID = 999});
       projectRepo.Setup(pr =>
-          pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>()))
+          pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(),
+            It.IsAny<string>()))
         .ReturnsAsync(false);
       var subscriptionRepo = new Mock<ISubscriptionRepository>();
       subscriptionRepo.Setup(sr =>
@@ -170,7 +369,7 @@ namespace VSS.MasterData.ProjectTests
             {ServiceTypeID = (int) ServiceTypeEnum.ProjectMonitoring, SubscriptionUID = Guid.NewGuid().ToString()}
         });
 
-      var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
+      var httpContextAccessor = new HttpContextAccessor {HttpContext = new DefaultHttpContext()};
       httpContextAccessor.HttpContext.Request.Path = new PathString("/api/v4/projects");
 
       var geofenceProxy = new Mock<IGeofenceProxy>();
@@ -204,6 +403,7 @@ namespace VSS.MasterData.ProjectTests
         projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor);
       await createExecutor.ProcessAsync(createProjectEvent);
 
+      return AutoMapperUtility.Automapper.Map<Repositories.DBModels.Project>(createProjectEvent);
     }
 
   }

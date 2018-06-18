@@ -21,6 +21,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
   public class UpdateProjectExecutor : RequestExecutorContainer
   {
     /// <summary>
+    /// Save for potential rollback
+    /// </summary>
+    protected string subscriptionUidAssigned;
+
+    /// <summary>
     /// Processes the UpdateProjectEvent
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -38,7 +43,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       await ProjectRequestHelper.ValidateCoordSystemInRaptor(updateProjectEvent,
         serviceExceptionHandler, customHeaders, raptorProxy).ConfigureAwait(false);
       
-      log.LogDebug($"Testing if there are overlapping projects for project {updateProjectEvent.ProjectName}");
       var existing = await projectRepo.GetProject(updateProjectEvent.ProjectUID.ToString());
       if (!string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary) && String.Compare(existing.GeometryWKT, updateProjectEvent.ProjectBoundary, StringComparison.OrdinalIgnoreCase) != 0)
       {
@@ -46,6 +50,17 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           existing.StartDate, updateProjectEvent.ProjectEndDate, updateProjectEvent.ProjectBoundary,
           log, serviceExceptionHandler, projectRepo);
       }
+
+      if (existing != null && existing.ProjectType != updateProjectEvent.ProjectType)
+      {
+        if (updateProjectEvent.ProjectType == ProjectType.Standard)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 85);
+        }
+        await ProjectDataValidator.ValidateFreeSub(customerUid, updateProjectEvent.ProjectType,
+          log, serviceExceptionHandler, subscriptionRepo);
+      }
+      log.LogDebug($"UpdateProject: passed validation {updateProjectEvent.ProjectUID}");
 
       /*** now making changes, potentially needing rollback ***/
       if (!string.IsNullOrEmpty(updateProjectEvent.CoordinateSystemFileName))
@@ -56,6 +71,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           log, serviceExceptionHandler, customerUid, customHeaders,
           projectRepo, raptorProxy, configStore, fileRepo).ConfigureAwait(false);
       }
+
+      if (existing != null && existing.ProjectType == ProjectType.Standard &&
+          ( updateProjectEvent.ProjectType == ProjectType.LandFill || updateProjectEvent.ProjectType == ProjectType.ProjectMonitoring))
+        {
+          subscriptionUidAssigned = await ProjectRequestHelper.AssociateProjectSubscriptionInSubscriptionService(
+              updateProjectEvent.ProjectUID.ToString(), updateProjectEvent.ProjectType, customerUid,
+              log, serviceExceptionHandler, customHeaders, subscriptionProxy, subscriptionRepo, projectRepo, false)
+            .ConfigureAwait(false);
+        }
 
       var isUpdated = await projectRepo.StoreEvent(updateProjectEvent).ConfigureAwait(false);
       if (isUpdated == 0)
