@@ -75,10 +75,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TRexTileServer", "src\framework\TRexTileServer\TRexTileServer.csproj", "{6EAD2931-5828-4D38-B141-ECF8A76E4347}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TRexGateway", "TRexGateway\TRexGateway.csproj", "{3C1DC948-C3B3-472F-A118-C8093E2D671B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TRex.Common.Classes", "src\netstandard\TRex.Common.Classes\TRex.Common.Classes.csproj", "{71039164-6AEF-42EC-9926-7647BE46E7AC}"
+EndProject
 Global
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
@@ -294,6 +295,22 @@ Global
 		{6EAD2931-5828-4D38-B141-ECF8A76E4347}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6EAD2931-5828-4D38-B141-ECF8A76E4347}.Release|x64.ActiveCfg = Release|x64
 		{6EAD2931-5828-4D38-B141-ECF8A76E4347}.Release|x64.Build.0 = Release|x64
+		{3C1DC948-C3B3-472F-A118-C8093E2D671B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C1DC948-C3B3-472F-A118-C8093E2D671B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C1DC948-C3B3-472F-A118-C8093E2D671B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3C1DC948-C3B3-472F-A118-C8093E2D671B}.Debug|x64.Build.0 = Debug|Any CPU
+		{3C1DC948-C3B3-472F-A118-C8093E2D671B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C1DC948-C3B3-472F-A118-C8093E2D671B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C1DC948-C3B3-472F-A118-C8093E2D671B}.Release|x64.ActiveCfg = Release|Any CPU
+		{3C1DC948-C3B3-472F-A118-C8093E2D671B}.Release|x64.Build.0 = Release|Any CPU
+		{71039164-6AEF-42EC-9926-7647BE46E7AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71039164-6AEF-42EC-9926-7647BE46E7AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71039164-6AEF-42EC-9926-7647BE46E7AC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{71039164-6AEF-42EC-9926-7647BE46E7AC}.Debug|x64.Build.0 = Debug|Any CPU
+		{71039164-6AEF-42EC-9926-7647BE46E7AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71039164-6AEF-42EC-9926-7647BE46E7AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71039164-6AEF-42EC-9926-7647BE46E7AC}.Release|x64.ActiveCfg = Release|Any CPU
+		{71039164-6AEF-42EC-9926-7647BE46E7AC}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -327,9 +344,13 @@ Global
 		{F48663EA-1F7F-402D-9A3A-7697FE4E4C3C} = {092D16FE-E2F5-4B82-B51F-443F728F3F09}
 		{BEAD32E3-AB58-4A6D-9D6F-65BD623E760A} = {092D16FE-E2F5-4B82-B51F-443F728F3F09}
 		{6EAD2931-5828-4D38-B141-ECF8A76E4347} = {092D16FE-E2F5-4B82-B51F-443F728F3F09}
+		{71039164-6AEF-42EC-9926-7647BE46E7AC} = {60739A56-DAB5-4BDD-B54E-1ACA0FF82092}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C2E7378F-4D70-4EA4-8A6C-A96934CBABD8}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true
