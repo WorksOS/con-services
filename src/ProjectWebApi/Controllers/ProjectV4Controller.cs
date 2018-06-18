@@ -22,7 +22,6 @@ using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using System.Web.Http;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -233,7 +232,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       };
       ProjectDataValidator.Validate(project, projectRepo, serviceExceptionHandler);
 
-      var messagePayload = JsonConvert.SerializeObject(new {DeleteProjectEvent = project});
+      var messagePayload = JsonConvert.SerializeObject(new { DeleteProjectEvent = project });
       var isDeleted = await projectRepo.StoreEvent(project).ConfigureAwait(false);
       if (isDeleted == 0)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 66);
