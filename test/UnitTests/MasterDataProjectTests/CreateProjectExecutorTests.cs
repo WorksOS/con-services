@@ -84,7 +84,6 @@ namespace VSS.MasterData.ProjectTests
     {
       var userId = Guid.NewGuid().ToString();
       var customHeaders = new Dictionary<string, string>();
-      var geofenceUid = Guid.NewGuid();
 
       var request = CreateProjectV2Request.CreateACreateProjectV2Request
       (ProjectType.ProjectMonitoring, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -9,6 +10,7 @@ using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Repositories;
+using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -34,6 +36,38 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(2),
             projectErrorCodesProvider.FirstNameWithOffset(2)));
+    }
+
+    /// <summary>
+    /// Validate list of geofenceTypes
+    /// </summary>
+    /// <param name="geofenceTypes">FileName</param>
+    /// <param name="projectType"></param>
+    public static bool ValidateGeofenceTypes(List<GeofenceType> geofenceTypes, ProjectType? projectType = null)
+    {
+      if (geofenceTypes == null || geofenceTypes.Count == 0 )
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(73),
+            projectErrorCodesProvider.FirstNameWithOffset(73)));
+      }
+
+      if (geofenceTypes.Count != 1 || geofenceTypes[0] != GeofenceType.Landfill)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(102),
+            projectErrorCodesProvider.FirstNameWithOffset(102)));
+      }
+
+      // future-proofing here, geofence types will be dependant on projectType
+      if (projectType != null && projectType != ProjectType.LandFill )
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(102),
+            projectErrorCodesProvider.FirstNameWithOffset(102)));
+      }
+
+      return true;
     }
 
     /// <summary>

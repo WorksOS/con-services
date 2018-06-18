@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
+using Newtonsoft.Json;
 using VSS.ConfigurationStore;
+using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.MasterData.Repositories.DBModels;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -27,6 +28,89 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
   /// </summary>
   public class ProjectRequestHelper
   {
+    /// <summary>
+    /// Gets the project.
+    /// </summary>
+    /// <param name="projectUid">The project uid.</param>
+    /// <param name="customerUid"></param>
+    /// <param name="log"></param>
+    /// <param name="serviceExceptionHandler"></param>
+    /// <param name="projectRepo"></param>
+    public static async Task<Repositories.DBModels.Project> GetProject(string projectUid, string customerUid,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
+    {
+      var project =
+        (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
+          p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
+
+      if (project == null)
+      {
+        log.LogWarning($"Customer doesn't have access to projectUid: {projectUid}");
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 1);
+      }
+
+      log.LogInformation($"Project projectUid: {projectUid} retrieved");
+      return project;
+    }
+
+    /// <summary>
+    /// Associates the geofence to the project.
+    /// </summary>
+    /// <param name="geofenceProject">The geofence project.</param>
+    /// <param name="log"></param>
+    /// <param name="serviceExceptionHandler"></param>
+    /// <param name="projectRepo"></param>
+    /// <param name="producer"></param>
+    /// <param name="kafkaTopicName"></param>
+    /// <returns></returns>
+    public static async Task AssociateGeofenceProject(AssociateProjectGeofence geofenceProject,
+      IProjectRepository projectRepo,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler,
+      IKafka producer, string kafkaTopicName)
+    {
+      geofenceProject.ReceivedUTC = DateTime.UtcNow;
+
+      var isUpdated = await projectRepo.StoreEvent(geofenceProject).ConfigureAwait(false);
+      if (isUpdated == 0)
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 65);
+
+      var messagePayload = JsonConvert.SerializeObject(new {AssociateProjectGeofence = geofenceProject});
+      producer.Send(kafkaTopicName,
+        new List<KeyValuePair<string, string>>()
+        {
+          new KeyValuePair<string, string>(geofenceProject.ProjectUID.ToString(), messagePayload)
+        });
+    }
+
+    /// <summary>
+    /// Associates the geofence to the project.
+    /// </summary>
+    /// <param name="geofenceProject">The geofence project.</param>
+    /// <param name="log"></param>
+    /// <param name="serviceExceptionHandler"></param>
+    /// <param name="projectRepo"></param>
+    /// <param name="producer"></param>
+    /// <param name="kafkaTopicName"></param>
+    /// <returns></returns>
+    public static async Task DissociateGeofenceProject(DissociateProjectGeofence geofenceProject,
+      IProjectRepository projectRepo,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler,
+      IKafka producer, string kafkaTopicName)
+    {
+      geofenceProject.ReceivedUTC = DateTime.UtcNow;
+
+      var isUpdated = await projectRepo.StoreEvent(geofenceProject).ConfigureAwait(false);
+      if (isUpdated == 0)
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 107);
+
+      var messagePayload = JsonConvert.SerializeObject(new {DissociateProjectGeofence = geofenceProject});
+      producer.Send(kafkaTopicName,
+        new List<KeyValuePair<string, string>>()
+        {
+          new KeyValuePair<string, string>(geofenceProject.ProjectUID.ToString(), messagePayload)
+        });
+    }
+
     /// <summary>
     /// validate CordinateSystem if provided
     /// </summary>
@@ -105,7 +189,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       }
     }
 
-    public static async Task<bool> DoesProjectOverlap(string customerUid, string projectUid, DateTime projectStartDate, DateTime projectEndDate, string databaseProjectBoundary,
+    public static async Task<bool> DoesProjectOverlap(string customerUid, string projectUid, DateTime projectStartDate,
+      DateTime projectEndDate, string databaseProjectBoundary,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
     {
       var overlaps =
@@ -121,10 +206,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <summary>
     /// Create CoordinateSystem in Raptor and save a copy of the file in TCC
     /// </summary>
-    public static async Task CreateCoordSystemInRaptorAndTcc(Guid projectUid, int legacyProjectId, string coordinateSystemFileName,
+    public static async Task CreateCoordSystemInRaptorAndTcc(Guid projectUid, int legacyProjectId,
+      string coordinateSystemFileName,
       byte[] coordinateSystemFileContent, bool isCreate,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, string customerUid, IDictionary<string, string> customHeaders, 
-      IProjectRepository projectRepo, IRaptorProxy raptorProxy, IConfigurationStore configStore, IFileRepository fileRepo)
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, string customerUid,
+      IDictionary<string, string> customHeaders,
+      IProjectRepository projectRepo, IRaptorProxy raptorProxy, IConfigurationStore configStore,
+      IFileRepository fileRepo)
     {
       if (!string.IsNullOrEmpty(coordinateSystemFileName))
       {
@@ -147,18 +235,22 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
               coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
           {
             if (isCreate)
-              await ProjectRequestHelper.DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid, log, projectRepo).ConfigureAwait(false);
+              await ProjectRequestHelper
+                .DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid, log, projectRepo)
+                .ConfigureAwait(false);
 
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 41,
               (coordinateSystemSettingsResult?.Code ?? -1).ToString(),
               coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
           }
+
           //and save copy of file in TCC
           var fileSpaceId = configStore.GetValueString("TCCFILESPACEID");
           if (string.IsNullOrEmpty(fileSpaceId))
           {
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 48);
           }
+
           using (var ms = new MemoryStream(coordinateSystemFileContent))
           {
             var fileDescriptor = await ProjectRequestHelper.WriteFileToTCCRepository(
@@ -171,7 +263,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         catch (Exception e)
         {
           if (isCreate)
-            await ProjectRequestHelper.DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid, log, projectRepo).ConfigureAwait(false);
+            await ProjectRequestHelper
+              .DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid, log, projectRepo)
+              .ConfigureAwait(false);
 
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57,
             "raptorProxy.CoordinateSystemPost", e.Message);
@@ -202,13 +296,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         if (memStream != null && memStream.CanRead && memStream.Length > 0)
         {
           coordSystemFileContent = new byte[memStream.Length];
-          int numBytesToRead = (int)memStream.Length;
+          int numBytesToRead = (int) memStream.Length;
           numBytesRead = memStream.Read(coordSystemFileContent, 0, numBytesToRead);
         }
         else
         {
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
-              80, $" isAbleToRead: {memStream != null && memStream.CanRead} bytesReturned: {memStream?.Length ?? 0}");
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
+            80, $" isAbleToRead: {memStream != null && memStream.CanRead} bytesReturned: {memStream?.Length ?? 0}");
         }
       }
       catch (Exception e)
@@ -240,7 +334,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       string tccFileName = Path.GetFileName(pathAndFileName);
 
       if (isSurveyedSurface && surveyedUtc != null) // validation should prevent this
-          tccFileName = ImportedFileUtils.IncludeSurveyedUtcInName(tccFileName, surveyedUtc.Value);
+        tccFileName = ImportedFileUtils.IncludeSurveyedUtcInName(tccFileName, surveyedUtc.Value);
 
       bool ccPutFileResult = false;
       bool folderAlreadyExists = false;
@@ -273,6 +367,45 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       return FileDescriptor.CreateFileDescriptor(fileSpaceId, tccPath, tccFileName);
     }
 
+    public static async Task<IEnumerable<GeofenceWithAssociation>> GetCustomerGeofenceList(string customerUid,
+      List<GeofenceType> geofenceTypes,
+      ILogger log, IProjectRepository projectRepo)
+    {
+      return (await projectRepo.GetCustomerGeofences(customerUid).ConfigureAwait(false))
+        .Where(g => geofenceTypes.Contains(g.GeofenceType));
+    }
+
+    /// <summary>
+    /// Gets the geofence list available for a customer, 
+    ///    or those associated with a project
+    /// </summary>
+    /// <returns></returns>
+    public static async Task<List<GeofenceWithAssociation>> GetGeofenceList(string customerUid, string projectUid,
+      List<GeofenceType> geofenceTypes,
+      ILogger log, IProjectRepository projectRepo)
+    {
+      log.LogInformation(
+        $"GetGeofenceList: customerUid {customerUid}, projectUid {projectUid}, {JsonConvert.SerializeObject(geofenceTypes)}");
+
+      var geofencesWithAssociation = await GetCustomerGeofenceList(customerUid, geofenceTypes, log, projectRepo);
+
+      if (!string.IsNullOrEmpty(projectUid))
+      {
+        var geofencesAssociated = geofencesWithAssociation
+          .Where(g => g.ProjectUID == projectUid).ToList();
+
+        var associated = geofencesAssociated.ToList();
+        log.LogInformation(
+          $"Geofence list contains {associated.Count} geofences associated to project {projectUid}");
+        return associated;
+      }
+
+      // geofences which are not associated with ANY project
+      var notAssociated = geofencesWithAssociation
+        .Where(g => string.IsNullOrEmpty(g.ProjectUID)).ToList();
+      log.LogInformation($"Geofence list contains {notAssociated.Count} available geofences");
+      return notAssociated;
+    }
 
     #region rollback
 
@@ -287,7 +420,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <param name="log"></param>
     /// <param name="projectRepo"></param>
     /// <returns></returns>
-    public static async Task DeleteProjectPermanentlyInDb(Guid customerUid, Guid projectUid, ILogger log, IProjectRepository projectRepo)
+    public static async Task DeleteProjectPermanentlyInDb(Guid customerUid, Guid projectUid, ILogger log,
+      IProjectRepository projectRepo)
     {
       log.LogDebug($"DeleteProjectPermanentlyInDB: {projectUid}");
       var deleteProjectEvent = new DeleteProjectEvent

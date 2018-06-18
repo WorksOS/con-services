@@ -71,7 +71,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       this.DynamicAddwithOffset("Unable to update project.", 62);
       this.DynamicAddwithOffset("Unable to associate project with customer.", 63);
       this.DynamicAddwithOffset("Unable to disassociate project from customer.", 64);
-      this.DynamicAddwithOffset("Unable to associate project with geofence.", 65);
+      this.DynamicAddwithOffset("Unable to store project-geofence associate in database.", 65);
       this.DynamicAddwithOffset("Unable to delete project.", 66);
       this.DynamicAddwithOffset("FileImport AddFile in RaptorServices failed. Reason: {0} {1}.", 67);
       this.DynamicAddwithOffset("Invalid parameters.", 68);
@@ -79,7 +79,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       this.DynamicAddwithOffset("Unable to validate project settings with raptor. Reason: {0} {1}.", 70);
       this.DynamicAddwithOffset("Unable to update project settings with raptor. Reason: {0} {1}.", 71);
       this.DynamicAddwithOffset("Unable to create Kafka event. Reason: {0}.", 72);
-      this.DynamicAddwithOffset("this string is available", 73);
+      this.DynamicAddwithOffset("Invalid geofence Types.", 73);
       this.DynamicAddwithOffset("Landfill projects are not supported.", 74);
       this.DynamicAddwithOffset("CreateImportedFileV4. DxfUnitsType is an unrecognized type.", 75);
       this.DynamicAddwithOffset("CreateImportedFileV4. DxfUnitsType is not supported at present.", 76);
@@ -108,6 +108,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       this.DynamicAddwithOffset("UpdateGeofenceInGeofenceService: Unable update the projects Geofence.", 99);
       this.DynamicAddwithOffset("UpdateGeofenceInGeofenceService: Unable update the projects Geofence. Exception: {0}", 100);
       this.DynamicAddwithOffset("UpdateGeofenceInGeofenceService: Unable to find a project-geofence association for the project.", 101);
+      this.DynamicAddwithOffset("ProjectGeofenceAssociation: Only landfill project and site types are supported at present.", 102);
+      this.DynamicAddwithOffset("ProjectGeofenceAssociation: Invalid GeofenceUid list.", 103);
+      this.DynamicAddwithOffset("ProjectGeofenceAssociation: Unable to find GeofenceUid/s.", 104);
+      this.DynamicAddwithOffset("ProjectGeofenceAssociation: Geofence is assigned to a different project.", 105);
+      this.DynamicAddwithOffset("ProjectGeofenceAssociation: Error accessing database. Exception: {0}", 106);
+      this.DynamicAddwithOffset("ProjectGeofenceAssociation: Already associated geofence is missing from request.", 107);
     }
   }
 }

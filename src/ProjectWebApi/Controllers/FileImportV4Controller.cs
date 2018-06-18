@@ -199,10 +199,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
     public async Task<ImportedFileDescriptorSingleResult> CreateImportedFileV4(
       FlowFile file,
-      [FromQuery] Guid projectUid, 
+      [FromQuery] Guid projectUid,
       [FromQuery] ImportedFileType importedFileType,
       [FromQuery] DxfUnitsType dxfUnitsType,
-      [FromQuery] DateTime fileCreatedUtc, 
+      [FromQuery] DateTime fileCreatedUtc,
       [FromQuery] DateTime fileUpdatedUtc,
       [FromQuery] DateTime? surveyedUtc = null)
     {
@@ -217,7 +217,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 55);
       }
 
-      var project = await GetProject(projectUid.ToString());
+      var project = await ProjectRequestHelper.GetProject(projectUid.ToString(), customerUid, log, serviceExceptionHandler, projectRepo);
 
       var importedFileList = await ImportedFileRequestHelper.GetImportedFileList(projectUid.ToString(), log, userId, projectRepo).ConfigureAwait(false);
       ImportedFileDescriptor importedFileDescriptor = null;
@@ -311,10 +311,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
     public async Task<ImportedFileDescriptorSingleResult> UpsertImportedFileV4(
       FlowFile file,
-      [FromQuery] Guid projectUid, 
+      [FromQuery] Guid projectUid,
       [FromQuery] ImportedFileType importedFileType,
       [FromQuery] DxfUnitsType dxfUnitsType,
-      [FromQuery] DateTime fileCreatedUtc, 
+      [FromQuery] DateTime fileCreatedUtc,
       [FromQuery] DateTime fileUpdatedUtc,
       [FromQuery] DateTime? surveyedUtc = null)
     {
@@ -329,7 +329,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
 
       // this also validates that this customer has access to the projectUid
-      var project = await GetProject(projectUid.ToString());
+      var project = await ProjectRequestHelper.GetProject(projectUid.ToString(), customerUid, log, serviceExceptionHandler, projectRepo);
 
       FileDescriptor fileDescriptor = null;
       using (var fileStream = new FileStream(file.path, FileMode.Open))

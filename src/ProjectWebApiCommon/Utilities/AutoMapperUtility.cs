@@ -117,6 +117,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ProjectID, opt => opt.UseValue(0))
             .ForMember(dest => dest.ProjectUID, opt => opt.Ignore())
             .ForMember(dest => dest.Description, opt => opt.Ignore());
+
+          // ProjectGeofenceAssociations
+          cfg.CreateMap<GeofenceWithAssociation, GeofenceV4Descriptor>();
         }
       );
 
