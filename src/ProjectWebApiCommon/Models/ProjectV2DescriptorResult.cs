@@ -66,7 +66,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
              && otherProject.Name == this.Name
              && otherProject.StartDate == this.StartDate
              && otherProject.EndDate == this.EndDate
-             && otherProject.ProjectType == this.ProjectType
           ;
     }
 
