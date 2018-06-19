@@ -81,7 +81,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [Route("api/v2/projects/{projectId}/importedfiles")]
     [HttpPut]
     public async Task<ReturnLongV2Result> UpsertImportedFileV2(
-      [FromQuery] long projectId,
+      [FromRoute] long projectId,
       [FromBody] ImportedFileTbc importedFileTbc)
     {
       // MobileLinework .kml/.kmz files are sent along with linework files
