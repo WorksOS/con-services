@@ -42,6 +42,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       }
 
       ProjectRequestHelper.ValidateGeofence(createProjectEvent.ProjectBoundary, serviceExceptionHandler);
+
+      ProjectRequestHelper.ValidateCoordSystemFile(null, createProjectEvent, serviceExceptionHandler);
+
       await ProjectRequestHelper.ValidateCoordSystemInRaptor(createProjectEvent,
         serviceExceptionHandler, customHeaders, raptorProxy).ConfigureAwait(false);
 
@@ -67,6 +70,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
 
       // now making changes, potentially needing rollback 
+      //  order changes to minimise rollback
+      //    if CreateProjectInDb fails then nothing is done
+      //    if CreateCoordSystem fails then project is deleted
+      //    if AssociateProjectSubscription fails ditto
+      //    if CreateGeofenceInGeofenceService fails then project is deleted; ProjectSubscription is Dissassociated
+      //    if AssociateProjectGeofence fails then project is deleted; ProjectSubscription is Dissassociated; Geofence is deleted
       createProjectEvent = await CreateProjectInDb(createProjectEvent, customerProject).ConfigureAwait(false);
       await ProjectRequestHelper.CreateCoordSystemInRaptorAndTcc(
         createProjectEvent.ProjectUID, createProjectEvent.ProjectID, createProjectEvent.CoordinateSystemFileName, 
@@ -172,7 +181,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       catch (Exception e)
       {
         await ProjectRequestHelper.DeleteProjectPermanentlyInDb(project.CustomerUID, project.ProjectUID, log, projectRepo).ConfigureAwait(false);
-        await DissociateProjectSubscription(project.ProjectUID, Guid.Parse(subscriptionUidAssigned)).ConfigureAwait(false);
+        await ProjectRequestHelper.DissociateProjectSubscription(project.ProjectUID, Guid.Parse(subscriptionUidAssigned), customHeaders, subscriptionProxy).ConfigureAwait(false);
 
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57,
           "geofenceProxy.CreateGeofenceInGeofenceService", e.Message);
@@ -181,7 +190,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       if (geofenceUidCreated == Guid.Empty)
       {
         await ProjectRequestHelper.DeleteProjectPermanentlyInDb(project.CustomerUID, project.ProjectUID, log, projectRepo).ConfigureAwait(false);
-        await DissociateProjectSubscription(project.ProjectUID, Guid.Parse(subscriptionUidAssigned)).ConfigureAwait(false);
+        await ProjectRequestHelper.DissociateProjectSubscription(project.ProjectUID, Guid.Parse(subscriptionUidAssigned), customHeaders, subscriptionProxy).ConfigureAwait(false);
 
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 59);
       }
@@ -255,22 +264,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           });
       }
     }
-
-    #region rollback
-    /// <summary>
-    /// rolls back the ProjectSubscription association made, due to a subsequent error
-    /// </summary>
-    /// <returns></returns>
-    protected async Task DissociateProjectSubscription(Guid projectUid, Guid subscriptionUidAssigned)
-    {
-      if (subscriptionUidAssigned != Guid.Empty)
-      {
-        await subscriptionProxy.DissociateProjectSubscription(subscriptionUidAssigned,
-          projectUid, customHeaders).ConfigureAwait(false);
-      }
-    }
-
-    #endregion rollback
 
   }
 }

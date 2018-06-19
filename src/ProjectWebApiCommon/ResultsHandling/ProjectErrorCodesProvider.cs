@@ -60,7 +60,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       this.DynamicAddwithOffset("CreateImportedFileV4. Unable to store updated Imported File event to database.", 52);
       this.DynamicAddwithOffset("WriteFileToRepository: Unable to write file to TCC.", 53);
       this.DynamicAddwithOffset("Unable to put delete fileDescriptor from TCC. TCC code {0} message {1}", 54);
-      this.DynamicAddwithOffset("FileImport DeleteFile in RaptorServices failed. Reason: {0} {1}.", 54);
       this.DynamicAddwithOffset("CreateImportedFileV4. The uploaded file is not accessible.", 55);
       this.DynamicAddwithOffset("DeleteImportedFileV4. The importedFileUid doesn't exist under this project.", 56);
       this.DynamicAddwithOffset("A problem occurred at the {0} endpoint. Exception: {1}", 57);
@@ -114,6 +113,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       this.DynamicAddwithOffset("ProjectGeofenceAssociation: Geofence is assigned to a different project.", 105);
       this.DynamicAddwithOffset("ProjectGeofenceAssociation: Error accessing database. Exception: {0}", 106);
       this.DynamicAddwithOffset("ProjectGeofenceAssociation: Already associated geofence is missing from request.", 107);
+      this.DynamicAddwithOffset("FileImport DeleteFile in RaptorServices failed. Reason: {0} {1}.", 108);
     }
   }
 }

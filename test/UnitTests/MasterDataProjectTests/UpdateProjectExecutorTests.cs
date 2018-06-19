@@ -101,7 +101,7 @@ namespace VSS.MasterData.ProjectTests
         var updateProjectRequest = UpdateProjectRequest.CreateUpdateProjectRequest
         (projectUid, existingProject.ProjectType, existingProject.Name, existingProject.Description,
           existingProject.EndDate,
-          existingProject.CoordinateSystemFileName, null,
+          null, null,
           _updatedBoundaryString);
         var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(updateProjectRequest);
         updateProjectEvent.ActionUTC = updateProjectEvent.ReceivedUTC = DateTime.UtcNow;
@@ -140,7 +140,7 @@ namespace VSS.MasterData.ProjectTests
 
 
     [TestMethod]
-    public async Task UpdateProjectExecutor_ChangeTypeToLandfill_Invalid_NoSubscription()
+    public async Task UpdateProjectExecutor_ChangeTypeToLandfill_Invalid_NoCoordinateSystem()
     {
       _configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
       _logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
@@ -149,6 +149,65 @@ namespace VSS.MasterData.ProjectTests
       var projectUid = Guid.NewGuid();
       var projectType = ProjectType.Standard;
       var existingProject = await CreateProject(projectUid, projectType);
+
+      if (existingProject.ProjectUID != null)
+      {
+        var updateProjectRequest = UpdateProjectRequest.CreateUpdateProjectRequest
+        (projectUid, ProjectType.LandFill, existingProject.Name,
+          existingProject.Description,
+          existingProject.EndDate,
+          null, null,
+          _updatedBoundaryString);
+        var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(updateProjectRequest);
+        updateProjectEvent.ActionUTC = updateProjectEvent.ReceivedUTC = DateTime.UtcNow;
+
+        var projectRepo = new Mock<IProjectRepository>();
+        projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<UpdateProjectEvent>())).ReturnsAsync(1);
+        projectRepo.Setup(pr => pr.GetProject(It.IsAny<string>()))
+          .ReturnsAsync(existingProject);
+
+        var projectGeofence = new List<ProjectGeofence>()
+        {
+          new ProjectGeofence()
+          {
+            GeofenceType = GeofenceType.Project,
+            GeofenceUID = _geofenceUid.ToString(),
+            ProjectUID = updateProjectRequest.ProjectUid.ToString()
+          }
+        };
+        projectRepo.Setup(pr => pr.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync(projectGeofence);
+
+        var subscriptionRepo = new Mock<ISubscriptionRepository>();
+        var raptorProxy = new Mock<IRaptorProxy>();
+        raptorProxy.Setup(rp =>
+            rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
+          .ReturnsAsync(new CoordinateSystemSettingsResult());
+
+        var updateExecutor = RequestExecutorContainerFactory.Build<UpdateProjectExecutor>
+        (_logger, _configStore, _serviceExceptionHandler,
+          _customerUid, _userId, null, _customHeaders,
+          _producer.Object, KafkaTopicName,
+          _geofenceProxy.Object, raptorProxy.Object, null,
+          projectRepo.Object, subscriptionRepo.Object, null, null, null);
+        var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
+          await updateExecutor.ProcessAsync(updateProjectEvent));
+
+        var projectErrorCodesProvider = ServiceProvider.GetRequiredService<IErrorCodesProvider>();
+        Assert.AreNotEqual(-1,
+          ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(45), StringComparison.Ordinal));
+      }
+    }
+
+    [TestMethod]
+    public async Task UpdateProjectExecutor_ChangeTypeToLandfill_Invalid_NoSubscription()
+    {
+      _configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      _logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      _serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
+
+      var projectUid = Guid.NewGuid();
+      var projectType = ProjectType.Standard;
+      var existingProject = await CreateProject(projectUid, projectType, "TheCoordSysFile.dc", new byte[] { 0, 1, 2, 3, 4 });
 
       if (existingProject.ProjectUID != null)
       {
@@ -207,7 +266,7 @@ namespace VSS.MasterData.ProjectTests
 
       var projectUid = Guid.NewGuid();
       var projectType = ProjectType.Standard;
-      var existingProject = await CreateProject(projectUid, projectType);
+      var existingProject = await CreateProject(projectUid, projectType, "TheCoordSysFile.dc", new byte[] { 0, 1, 2, 3, 4 });
 
       if (existingProject.ProjectUID != null)
       {
@@ -215,7 +274,7 @@ namespace VSS.MasterData.ProjectTests
         (projectUid, ProjectType.LandFill, existingProject.Name,
           existingProject.Description,
           existingProject.EndDate,
-          existingProject.CoordinateSystemFileName, null,
+          null, null,
           _updatedBoundaryString);
         var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(updateProjectRequest);
         updateProjectEvent.ActionUTC = updateProjectEvent.ReceivedUTC = DateTime.UtcNow;
@@ -268,6 +327,88 @@ namespace VSS.MasterData.ProjectTests
           _producer.Object, KafkaTopicName,
           _geofenceProxy.Object, raptorProxy.Object, subscriptionProxy.Object,
           projectRepo.Object, subscriptionRepo.Object);
+        await updateExecutor.ProcessAsync(updateProjectEvent);
+      }
+    }
+
+    [TestMethod]
+    public async Task UpdateProjectExecutor_ChangeTypeToLandfill_HappyPath_CoordSystemProvidedOnUpdate()
+    {
+      _configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      _logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      _serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
+
+      var projectUid = Guid.NewGuid();
+      var projectType = ProjectType.Standard;
+      var existingProject = await CreateProject(projectUid, projectType);
+
+      if (existingProject.ProjectUID != null)
+      {
+        var updateProjectRequest = UpdateProjectRequest.CreateUpdateProjectRequest
+        (projectUid, ProjectType.LandFill, existingProject.Name,
+          existingProject.Description,
+          existingProject.EndDate,
+          "TheCoordSysFile.dc", new byte[] { 1, 2, 3 },
+          _updatedBoundaryString);
+        var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(updateProjectRequest);
+        updateProjectEvent.ActionUTC = updateProjectEvent.ReceivedUTC = DateTime.UtcNow;
+
+        var projectRepo = new Mock<IProjectRepository>();
+        projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<UpdateProjectEvent>())).ReturnsAsync(1);
+        projectRepo.Setup(pr => pr.GetProject(It.IsAny<string>()))
+          .ReturnsAsync(existingProject);
+
+        var projectGeofence = new List<ProjectGeofence>()
+        {
+          new ProjectGeofence()
+          {
+            GeofenceType = GeofenceType.Project,
+            GeofenceUID = _geofenceUid.ToString(),
+            ProjectUID = updateProjectRequest.ProjectUid.ToString()
+          }
+        };
+        projectRepo.Setup(pr => pr.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync(projectGeofence);
+
+        var availSubs = new List<Subscription>()
+        {
+          new Subscription()
+          {
+            SubscriptionUID = Guid.NewGuid().ToString(),
+            ServiceTypeID = (int) ServiceTypeEnum.Landfill,
+            StartDate = DateTime.UtcNow.AddDays(-1),
+            EndDate = DateTime.UtcNow.AddDays(1)
+          }
+        };
+
+        var subscriptionRepo = new Mock<ISubscriptionRepository>();
+        subscriptionRepo.Setup(sr =>
+            sr.GetFreeProjectSubscriptionsByCustomer(It.IsAny<string>(), It.IsAny<DateTime>()))
+          .ReturnsAsync(availSubs);
+        var raptorProxy = new Mock<IRaptorProxy>();
+        raptorProxy.Setup(rp =>
+            rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(),
+              It.IsAny<Dictionary<string, string>>()))
+          .ReturnsAsync(new CoordinateSystemSettingsResult());
+        raptorProxy.Setup(rp => rp.CoordinateSystemPost(It.IsAny<long>(), It.IsAny<byte[]>(), It.IsAny<string>(),
+            It.IsAny<Dictionary<string, string>>()))
+          .ReturnsAsync(new CoordinateSystemSettingsResult());
+
+        var subscriptionProxy = new Mock<ISubscriptionProxy>();
+        subscriptionProxy.Setup(sp =>
+            sp.AssociateProjectSubscription(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Dictionary<string, string>>()))
+          .Returns(Task.FromResult(default(int)));
+
+        var fileRepo = new Mock<IFileRepository>();
+        fileRepo.Setup(f => f.FolderExists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
+        fileRepo.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
+          It.IsAny<Stream>(), It.IsAny<long>())).ReturnsAsync(true);
+
+        var updateExecutor = RequestExecutorContainerFactory.Build<UpdateProjectExecutor>
+        (_logger, _configStore, _serviceExceptionHandler,
+          _customerUid, _userId, null, _customHeaders,
+          _producer.Object, KafkaTopicName,
+          _geofenceProxy.Object, raptorProxy.Object, subscriptionProxy.Object,
+          projectRepo.Object, subscriptionRepo.Object, fileRepo.Object);
         await updateExecutor.ProcessAsync(updateProjectEvent);
       }
     }
@@ -340,7 +481,7 @@ namespace VSS.MasterData.ProjectTests
 
       var projectUid = Guid.NewGuid();
       var projectType = ProjectType.ProjectMonitoring;
-      var existingProject = await CreateProject(projectUid, projectType);
+      var existingProject = await CreateProject(projectUid, projectType, "TheCoordSysFile.dc", new byte[] { 0, 1, 2, 3, 4 });
 
       if (existingProject.ProjectUID != null)
       {
@@ -390,12 +531,14 @@ namespace VSS.MasterData.ProjectTests
     }
 
     [TestMethod]
-    private async Task<Repositories.DBModels.Project> CreateProject(Guid projectUid, ProjectType projectType)
+    private async Task<Repositories.DBModels.Project> CreateProject(Guid projectUid, ProjectType projectType, string coordinateSystemFileName = null, byte[] coordinateSystemFileContent = null)
     {
       var createProjectEvent = new CreateProjectEvent()
       {
         ProjectUID = projectUid,
         ProjectType = projectType,
+        CoordinateSystemFileName = coordinateSystemFileName,
+        CoordinateSystemFileContent = coordinateSystemFileContent,
         CustomerUID = Guid.NewGuid(),
         CustomerID = 456,
         ProjectName = "projectName",

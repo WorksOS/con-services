@@ -39,11 +39,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
       }
 
+      var existing = await projectRepo.GetProject(updateProjectEvent.ProjectUID.ToString());
       ProjectRequestHelper.ValidateGeofence(updateProjectEvent.ProjectBoundary, serviceExceptionHandler);
+
+      // if updating  type from Standard to Landfill, or creating Landfill, then must have a CoordSystem
+      ProjectRequestHelper.ValidateCoordSystemFile(existing, updateProjectEvent, serviceExceptionHandler);
+
       await ProjectRequestHelper.ValidateCoordSystemInRaptor(updateProjectEvent,
         serviceExceptionHandler, customHeaders, raptorProxy).ConfigureAwait(false);
       
-      var existing = await projectRepo.GetProject(updateProjectEvent.ProjectUID.ToString());
       if (!string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary) && String.Compare(existing.GeometryWKT, updateProjectEvent.ProjectBoundary, StringComparison.OrdinalIgnoreCase) != 0)
       {
         await ProjectRequestHelper.DoesProjectOverlap(existing.CustomerUID, updateProjectEvent.ProjectUID.ToString(),
@@ -63,10 +67,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       log.LogDebug($"UpdateProject: passed validation {updateProjectEvent.ProjectUID}");
 
       /*** now making changes, potentially needing rollback ***/
+      //  order changes to minimise rollback
+      //    if CreateCoordSystemInRaptorAndTcc fails then nothing is done
+      //    if AssociateProjectSubscription fails then nothing is done
+      //    if UpdateProjectEvent fails then ProjectSubscription is Dissassociated
+      //    if UpdateGeofenceInGeofenceService fails then ProjectSubscription is Dissassociated 
       if (!string.IsNullOrEmpty(updateProjectEvent.CoordinateSystemFileName))
       {
-        var projectWithLegacyProjectId = projectRepo.GetProjectOnly(updateProjectEvent.ProjectUID.ToString()).Result;
-        await ProjectRequestHelper.CreateCoordSystemInRaptorAndTcc(updateProjectEvent.ProjectUID, projectWithLegacyProjectId.LegacyProjectID,
+        await ProjectRequestHelper.CreateCoordSystemInRaptorAndTcc(updateProjectEvent.ProjectUID, existing.LegacyProjectID,
           updateProjectEvent.CoordinateSystemFileName, updateProjectEvent.CoordinateSystemFileContent, false,
           log, serviceExceptionHandler, customerUid, customHeaders,
           projectRepo, raptorProxy, configStore, fileRepo).ConfigureAwait(false);
@@ -83,19 +91,19 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       var isUpdated = await projectRepo.StoreEvent(updateProjectEvent).ConfigureAwait(false);
       if (isUpdated == 0)
+      {
+        if (!string.IsNullOrEmpty(subscriptionUidAssigned))
+          await ProjectRequestHelper.DissociateProjectSubscription(updateProjectEvent.ProjectUID, Guid.Parse(subscriptionUidAssigned), customHeaders, subscriptionProxy).ConfigureAwait(false);
+
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 62);
+      }
 
       if (!string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary) && String.Compare(existing.GeometryWKT, updateProjectEvent.ProjectBoundary, StringComparison.OrdinalIgnoreCase) != 0)
       {
         await UpdateGeofenceInGeofenceService(updateProjectEvent);
+        if (!string.IsNullOrEmpty(subscriptionUidAssigned))
+          await ProjectRequestHelper.DissociateProjectSubscription(updateProjectEvent.ProjectUID, Guid.Parse(subscriptionUidAssigned), customHeaders, subscriptionProxy).ConfigureAwait(false);
       }
-
-      var messagePayload = JsonConvert.SerializeObject(new { UpdateProjectEvent = updateProjectEvent });
-      producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>
-        {
-          new KeyValuePair<string, string>(updateProjectEvent.ProjectUID.ToString(), messagePayload)
-        });
 
       log.LogDebug("CreateProjectV4. completed succesfully");
       return new ContractExecutionResult();
@@ -119,10 +127,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       var projectGeofence = await GetProjectGeofence(project.ProjectUID.ToString()).ConfigureAwait(false);
       if (projectGeofence == null)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 96,
-          "UpdateGeofenceInGeofenceService: Unable to find the project-geofence association.");
-      }
+        if (!string.IsNullOrEmpty(subscriptionUidAssigned))
+          await ProjectRequestHelper.DissociateProjectSubscription(project.ProjectUID, Guid.Parse(subscriptionUidAssigned), customHeaders, subscriptionProxy).ConfigureAwait(false);
 
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 96, "UpdateGeofenceInGeofenceService: Unable to find the project-geofence association.");
+      }
 
       GeofenceData geofence = null;
       try
@@ -130,13 +139,17 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         geofence = await geofenceProxy.GetGeofenceForCustomer(customerUid, projectGeofence.GeofenceUID, customHeaders).ConfigureAwait(false);
         if (geofence == null)
         {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 97,
-            "UpdateGeofenceInGeofenceService: Unable to find the projects Geofence.");
+          if (!string.IsNullOrEmpty(subscriptionUidAssigned))
+            await ProjectRequestHelper.DissociateProjectSubscription(project.ProjectUID, Guid.Parse(subscriptionUidAssigned), customHeaders, subscriptionProxy).ConfigureAwait(false);
+
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 97, "UpdateGeofenceInGeofenceService: Unable to find the projects Geofence.");
         }
       }
       catch (Exception e)
       {
-        await ProjectRequestHelper.DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), project.ProjectUID, log, projectRepo).ConfigureAwait(false);
+        if (!string.IsNullOrEmpty(subscriptionUidAssigned))
+          await ProjectRequestHelper.DissociateProjectSubscription(project.ProjectUID, Guid.Parse(subscriptionUidAssigned), customHeaders, subscriptionProxy).ConfigureAwait(false);
+
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 98, e.Message);
       }
 
@@ -151,13 +164,17 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       }
       catch (Exception e)
       {
-        await ProjectRequestHelper.DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), project.ProjectUID, log, projectRepo).ConfigureAwait(false);
+        if (!string.IsNullOrEmpty(subscriptionUidAssigned))
+          await ProjectRequestHelper.DissociateProjectSubscription(project.ProjectUID, Guid.Parse(subscriptionUidAssigned), customHeaders, subscriptionProxy).ConfigureAwait(false);
+
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 100, e.Message);
       }
 
       if (geofenceUidUpdated == Guid.Empty)
       {
-        await ProjectRequestHelper.DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), project.ProjectUID, log, projectRepo).ConfigureAwait(false);
+        if (!string.IsNullOrEmpty(subscriptionUidAssigned))
+          await ProjectRequestHelper.DissociateProjectSubscription(project.ProjectUID, Guid.Parse(subscriptionUidAssigned), customHeaders, subscriptionProxy).ConfigureAwait(false);
+
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 99);
       }
     }
@@ -172,8 +189,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       
       if (projectGeofence == null)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 101,
-          "geofenceProxy.GetProjectGeofence failed");
+        if (!string.IsNullOrEmpty(subscriptionUidAssigned))
+          await ProjectRequestHelper.DissociateProjectSubscription(Guid.Parse(projectUid), Guid.Parse(subscriptionUidAssigned), customHeaders, subscriptionProxy).ConfigureAwait(false);
+
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 101, "geofenceProxy.GetProjectGeofence failed");
       }
 
       log.LogInformation($"Project geofenceUid: {projectGeofence.GeofenceUID} retrieved");
