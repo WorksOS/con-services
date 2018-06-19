@@ -106,7 +106,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       this.DynamicAddwithOffset("UpdateGeofenceInGeofenceService: Unable to find the projects Geofence. Exception: {0}", 98);
       this.DynamicAddwithOffset("UpdateGeofenceInGeofenceService: Unable update the projects Geofence.", 99);
       this.DynamicAddwithOffset("UpdateGeofenceInGeofenceService: Unable update the projects Geofence. Exception: {0}", 100);
-      this.DynamicAddwithOffset("UpdateGeofenceInGeofenceService: Unable to find a project-geofence association for the project.", 101);
+      this.DynamicAddwithOffset("UpdateGeofenceInGeofenceService: Unable to find the project-geofence association. Exception: {0}", 101);
       this.DynamicAddwithOffset("ProjectGeofenceAssociation: Only landfill project and site types are supported at present.", 102);
       this.DynamicAddwithOffset("ProjectGeofenceAssociation: Invalid GeofenceUid list.", 103);
       this.DynamicAddwithOffset("ProjectGeofenceAssociation: Unable to find GeofenceUid/s.", 104);
