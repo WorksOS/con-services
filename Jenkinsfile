@@ -144,6 +144,7 @@ node ('jenkinsslave-pod') {
 		sh "docker push ${finalImage}"
 		sh "echo ${env.versionNumber} >> chart/build.sbt"
 		sh "ls -la chart/"
-        archiveArtifacts artifacts: 'chart/**/*.*', '/app/testresults/accepttest.log', fingerprint: true
+        archiveArtifacts artifacts: 'chart/**/*.*', fingerprint: true
+		publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: ''/app/testresults/',', reportFiles: 'accepttest.log', reportName: 'AcceptanceTests logs'])
 	}
 }
