@@ -130,10 +130,11 @@ namespace ExecutorTests
     protected bool CreateProjectSettings(string projectUid, string userId, string settings, ProjectSettingsType settingsType)
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-
+      var projectGuidParseResult = Guid.TryParse(projectUid, out Guid projectGuid);
+      Console.WriteLine($"Guid Parsed {projectGuidParseResult} Creating project settings for {projectGuid}");
       var createProjectSettingsEvent = new UpdateProjectSettingsEvent()
       {
-        ProjectUID = Guid.Parse(projectUid),
+        ProjectUID = projectGuid,
         UserID = userId,
         Settings = settings,
         ProjectSettingsType = settingsType,
