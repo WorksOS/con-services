@@ -761,7 +761,7 @@ namespace TestUtility
           {
             continue;
           }
-          if (expectedValue.ToString() == "0" || expectedValue.ToString().Contains("1/01/0001"))
+          if (expectedValue.ToString() == "0" || expectedValue.ToString().Contains("1/01/0001") || expectedValue.ToString().Contains("1/1/01"))
           {
             continue;
           }
