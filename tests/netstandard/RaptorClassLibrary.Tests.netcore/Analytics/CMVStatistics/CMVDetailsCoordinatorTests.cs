@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.TRex.Analytics.CMVStatistics.Details;
 using VSS.TRex.Analytics.CMVStatistics.GridFabric.Details;
+using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.Common;
 using VSS.TRex.Filters;
 using VSS.TRex.Tests.netcore.Analytics.Common;
@@ -75,7 +76,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
       var aggregator = _getCMVAggregator();
       var coordinator = _getCoordinator();
 
-      var response = new CMVDetailsResponse();
+      var response = new DetailsAnalyticsResponse();
 
       coordinator.ReadOutResults(aggregator, response);
 

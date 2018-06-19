@@ -15,6 +15,7 @@ using VSS.TRex.Analytics.CMVStatistics.GridFabric.Details;
 using VSS.TRex.Analytics.CMVStatistics.GridFabric.Summary;
 using VSS.TRex.Analytics.CMVStatistics.Summary;
 using VSS.TRex.Analytics.CutFillStatistics;
+using VSS.TRex.Analytics.Foundation.Models;
 using VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
@@ -1281,7 +1282,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
       try
       {
         CMVDetailsOperation operation = new CMVDetailsOperation();
-        CMVDetailsResult result = operation.Execute(
+        DetailsAnalyticsResult result = operation.Execute(
           new CMVDetailsArgument()
           {
             ProjectID = siteModel.ID,
