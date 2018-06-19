@@ -133,9 +133,6 @@ node ('jenkinsslave-pod') {
 							[includes: 'AcceptanceTests/tests/**/TestResults/*.xml', teamResultType: 'XUNIT']
 						]
 					])
-
-
-
 				}
 			}		
 		}
@@ -147,6 +144,6 @@ node ('jenkinsslave-pod') {
 		sh "docker push ${finalImage}"
 		sh "echo ${env.versionNumber} >> chart/build.sbt"
 		sh "ls -la chart/"
-        archiveArtifacts artifacts: 'chart/**/*.*', fingerprint: true 
+        archiveArtifacts artifacts: 'chart/**/*.*', '/app/testresults/accepttest.log', fingerprint: true
 	}
 }
