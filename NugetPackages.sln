@@ -39,6 +39,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.AWS.TransferProxy", "AW
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.AWS.TransferProxy.UnitTests", "AWS.TransferProxy\test\UnitTests\VSS.AWS.TransferProxy.UnitTests.csproj", "{65E55C57-0B3E-4CB8-A8AB-62639629F72F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Productivity3D.Models", "Productivity3DModels\src\VSS.Productivity3D.Models.csproj", "{8CA7E0D6-B0AC-47D2-AC62-34EAADBABE98}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -113,6 +115,10 @@ Global
 		{65E55C57-0B3E-4CB8-A8AB-62639629F72F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65E55C57-0B3E-4CB8-A8AB-62639629F72F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65E55C57-0B3E-4CB8-A8AB-62639629F72F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CA7E0D6-B0AC-47D2-AC62-34EAADBABE98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CA7E0D6-B0AC-47D2-AC62-34EAADBABE98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CA7E0D6-B0AC-47D2-AC62-34EAADBABE98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CA7E0D6-B0AC-47D2-AC62-34EAADBABE98}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
