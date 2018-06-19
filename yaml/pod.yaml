@@ -66,14 +66,14 @@ spec:
       value: "VSS.Interfaces.Events.MasterData.ISubscriptionEvent"
 
   - name: masterdataschema
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest
     tty: true
     envFrom:
     - configMapRef:
         name: projectservice-testing
      
   - name: projectonlyschema
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest
     envFrom:
     - configMapRef:
         name: projectservice-testing
