@@ -123,6 +123,11 @@ node ('jenkinsslave-pod') {
 						sh "ls -la"
 					}
 
+					dir("testresults") {
+						sh "ls -la"
+						stash name: "acceptanceTestLogs"
+					}
+					
 					//http://javadoc.jenkins-ci.org/tfs/index.html?hudson/plugins/tfs/model/TeamResultType.html
 					//Details of the agent -> https://docs.microsoft.com/en-us/vsts/build-release/task
 					//Agent Variables -> https://docs.microsoft.com/en-us/vsts/build-release/concepts/definitions/build/variables?view=vsts&tabs=batch
@@ -146,6 +151,6 @@ node ('jenkinsslave-pod') {
 		sh "ls -la chart/"
 		sh "ls -la"
         archiveArtifacts artifacts: 'chart/**/*.*', fingerprint: true
-		publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: '/app/testresults/', reportFiles: 'accepttest.log', reportName: 'AcceptanceTests logs'])
+		//publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: '/app/testresults/', reportFiles: 'accepttest.log', reportName: 'AcceptanceTests logs'])
 	}
 }
