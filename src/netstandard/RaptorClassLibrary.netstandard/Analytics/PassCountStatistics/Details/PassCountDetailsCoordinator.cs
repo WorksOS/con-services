@@ -45,7 +45,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics.Details
       Aggregator = aggregator,
       Filters = argument.Filters,
       IncludeSurveyedSurfaces = true,
-      RequestedGridDataType = GridDataType.CCV
+      RequestedGridDataType = GridDataType.PassCount
     };
 
     /// <summary>

@@ -71,6 +71,7 @@
       this.tabPage1 = new System.Windows.Forms.TabPage();
       this.btnZoomAll = new System.Windows.Forms.Button();
       this.tabPage2 = new System.Windows.Forms.TabPage();
+      this.CMVDetailsButton = new System.Windows.Forms.Button();
       this.PassCountSummaryButton = new System.Windows.Forms.Button();
       this.MDPSummaryButton = new System.Windows.Forms.Button();
       this.CMVSummaryButton = new System.Windows.Forms.Button();
@@ -96,7 +97,7 @@
       this.tabPage4 = new System.Windows.Forms.TabPage();
       this.btnKill = new System.Windows.Forms.Button();
       this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-      this.CMVDetailsButton = new System.Windows.Forms.Button();
+      this.PassCountDetailsButton = new System.Windows.Forms.Button();
       this.panel1.SuspendLayout();
       this.panel2.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -150,7 +151,7 @@
       // 
       // btnCalcAll
       // 
-      this.btnCalcAll.Location = new System.Drawing.Point(167, 76);
+      this.btnCalcAll.Location = new System.Drawing.Point(165, 76);
       this.btnCalcAll.Name = "btnCalcAll";
       this.btnCalcAll.Size = new System.Drawing.Size(143, 20);
       this.btnCalcAll.TabIndex = 45;
@@ -547,6 +548,7 @@
       // 
       // tabPage2
       // 
+      this.tabPage2.Controls.Add(this.PassCountDetailsButton);
       this.tabPage2.Controls.Add(this.CMVDetailsButton);
       this.tabPage2.Controls.Add(this.PassCountSummaryButton);
       this.tabPage2.Controls.Add(this.MDPSummaryButton);
@@ -574,6 +576,16 @@
       this.tabPage2.TabIndex = 1;
       this.tabPage2.Text = "Tests";
       this.tabPage2.UseVisualStyleBackColor = true;
+      // 
+      // CMVDetailsButton
+      // 
+      this.CMVDetailsButton.Location = new System.Drawing.Point(165, 230);
+      this.CMVDetailsButton.Name = "CMVDetailsButton";
+      this.CMVDetailsButton.Size = new System.Drawing.Size(140, 21);
+      this.CMVDetailsButton.TabIndex = 51;
+      this.CMVDetailsButton.Text = "CM&V Details";
+      this.CMVDetailsButton.UseVisualStyleBackColor = true;
+      this.CMVDetailsButton.Click += new System.EventHandler(this.CMVDetailsButton_Click);
       // 
       // PassCountSummaryButton
       // 
@@ -823,15 +835,15 @@
       this.openFileDialog1.InitialDirectory = "@\"c:\\\"";
       this.openFileDialog1.RestoreDirectory = true;
       // 
-      // CMVDetailsButton
+      // PassCountDetailsButton
       // 
-      this.CMVDetailsButton.Location = new System.Drawing.Point(165, 230);
-      this.CMVDetailsButton.Name = "CMVDetailsButton";
-      this.CMVDetailsButton.Size = new System.Drawing.Size(140, 21);
-      this.CMVDetailsButton.TabIndex = 51;
-      this.CMVDetailsButton.Text = "CM&V Details";
-      this.CMVDetailsButton.UseVisualStyleBackColor = true;
-      this.CMVDetailsButton.Click += new System.EventHandler(this.CMVDetailsButton_Click);
+      this.PassCountDetailsButton.Location = new System.Drawing.Point(165, 257);
+      this.PassCountDetailsButton.Name = "PassCountDetailsButton";
+      this.PassCountDetailsButton.Size = new System.Drawing.Size(140, 21);
+      this.PassCountDetailsButton.TabIndex = 52;
+      this.PassCountDetailsButton.Text = "P&ass Count Details";
+      this.PassCountDetailsButton.UseVisualStyleBackColor = true;
+      this.PassCountDetailsButton.Click += new System.EventHandler(this.PassCountDetailsButton_Click);
       // 
       // Form1
       // 
@@ -933,6 +945,7 @@
     private System.Windows.Forms.Button MDPSummaryButton;
     private System.Windows.Forms.Button PassCountSummaryButton;
     private System.Windows.Forms.Button CMVDetailsButton;
+    private System.Windows.Forms.Button PassCountDetailsButton;
   }
 }
 

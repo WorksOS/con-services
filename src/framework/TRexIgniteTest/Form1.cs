@@ -27,6 +27,8 @@ using VSS.TRex.Analytics.MDPStatistics;
 using VSS.TRex.Analytics.MDPStatistics.GridFabric;
 using VSS.TRex.Analytics.Models;
 using VSS.TRex.Analytics.PassCountStatistics;
+using VSS.TRex.Analytics.PassCountStatistics.Details;
+using VSS.TRex.Analytics.PassCountStatistics.GridFabric.Details;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric.Summary;
 using VSS.TRex.Analytics.PassCountStatistics.Summary;
 using VSS.TRex.Analytics.SpeedStatistics;
@@ -1299,6 +1301,41 @@ namespace VSS.TRex.IgnitePOC.TestApp
             tempStr += $"{cmvBands[i] / 10} - {result.Percents[i]:##0.#0}% \n";
 
           MessageBox.Show($"CMV Details Results (in {sw.Elapsed}) :\n " + tempStr);
+        }
+      }
+      finally
+      {
+        sw.Stop();
+      }
+    }
+
+    private void PassCountDetailsButton_Click(object sender, EventArgs e)
+    {
+      var siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+      var passCountBands = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+      Stopwatch sw = new Stopwatch();
+      sw.Start();
+      try
+      {
+        PassCountDetailsOperation operation = new PassCountDetailsOperation();
+        DetailsAnalyticsResult result = operation.Execute(
+          new PassCountDetailsArgument()
+          {
+            ProjectID = siteModel.ID,
+            Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+            PassCountDetailValues = passCountBands
+          }
+        );
+
+        if (result != null)
+        {
+          string tempStr = String.Empty;
+
+          for (int i = 0; i < passCountBands.Length; i++)
+            tempStr += $"{passCountBands[i]} - {result.Percents[i]:##0.#0}% \n";
+
+          MessageBox.Show($"Pass Count Details Results (in {sw.Elapsed}) :\n " + tempStr);
         }
       }
       finally
