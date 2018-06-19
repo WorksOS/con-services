@@ -211,7 +211,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       }
 
       log.LogDebug($"Creating a geofence for project: {project.ProjectName}");
-
+      log.LogDebug($"Creating a geofence for customer: {project.CustomerUID}");
+      log.LogDebug($"Creating a geofence for userId: {userId}");
       try
       {
         var area = GeofenceValidation.CalculateAreaSqMeters(project.ProjectBoundary);
