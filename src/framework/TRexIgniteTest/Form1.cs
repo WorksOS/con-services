@@ -10,8 +10,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using VSS.TRex.Analytics.CMVStatistics.Details;
+using VSS.TRex.Analytics.CMVStatistics.GridFabric.Details;
 using VSS.TRex.Analytics.CMVStatistics.GridFabric.Summary;
 using VSS.TRex.Analytics.CMVStatistics.Summary;
+using VSS.TRex.Analytics.CutFillStatistics;
 using VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
@@ -1260,6 +1263,41 @@ namespace VSS.TRex.IgnitePOC.TestApp
                           $"Within Pass Count Percentage Range: {result.WithinTargetPercent} \n " +
                           $"Below Pass Count Percentage: {result.BelowTargetPercent} \n " +
                           $"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
+      }
+      finally
+      {
+        sw.Stop();
+      }
+    }
+
+    private void CMVDetailsButton_Click(object sender, EventArgs e)
+    {
+      var siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+      var cmvBands = new[] { 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700 };
+
+      Stopwatch sw = new Stopwatch();
+      sw.Start();
+      try
+      {
+        CMVDetailsOperation operation = new CMVDetailsOperation();
+        CMVDetailsResult result = operation.Execute(
+          new CMVDetailsArgument()
+          {
+            ProjectID = siteModel.ID,
+            Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+            CMVDetailValues = cmvBands
+          }
+        );
+
+        if (result != null)
+        {
+          string tempStr = String.Empty;
+
+          for (int i = 0; i < cmvBands.Length; i++)
+            tempStr += $"{cmvBands[i] / 10} - {result.Percents[i]:##0.#0}% \n";
+
+          MessageBox.Show($"CMV Details Results (in {sw.Elapsed}) :\n " + tempStr);
+        }
       }
       finally
       {

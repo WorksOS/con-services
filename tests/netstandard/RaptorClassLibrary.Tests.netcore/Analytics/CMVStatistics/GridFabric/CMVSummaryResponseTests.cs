@@ -7,7 +7,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
 {
-  public class CMVResponseTests : BaseTests
+  public class CMVSummaryResponseTests : BaseTests
   {
     private CMVSummaryResponse _response => new CMVSummaryResponse()
     {
@@ -22,7 +22,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
     };
 
     [Fact]
-    public void Test_CMVResponse_Creation()
+    public void Test_CMVSummaryResponse_Creation()
     {
       var response = new CMVSummaryResponse();
 
@@ -38,7 +38,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
     }
 
     [Fact]
-    public void Test_CMVResponse_ConstructResult_Successful()
+    public void Test_CMVSummaryResponse_ConstructResult_Successful()
     {
       Assert.True(_response.ResultStatus == RequestErrorStatus.OK, "Invalid initial result status");
 
@@ -55,7 +55,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
     }
 
     [Fact]
-    public void Test_CMVResponse_AgregateWith_Successful()
+    public void Test_CMVSummaryResponse_AgregateWith_Successful()
     {
       var responseClone = new CMVSummaryResponse()
       {

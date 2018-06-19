@@ -10,10 +10,10 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.CMVStatistics
 {
-  public class CMVAggregatorTests : BaseTests
+  public class CMVSummaryAggregatorTests : BaseTests
   {
     [Fact]
-    public void Test_CMVAggregator_Creation()
+    public void Test_CMVSummaryAggregator_Creation()
     {
       var aggregator = new CMVSummaryAggregator();
 
@@ -31,7 +31,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
     }
 
     [Fact]
-    public void Test_CMVAggregator_ProcessResult_NoAggregation()
+    public void Test_CMVSummaryAggregator_ProcessResult_NoAggregation()
     {
       var aggregator = new CMVSummaryAggregator();
 
@@ -58,7 +58,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
     }
 
     [Fact]
-    public void Test_CMVAggregator_ProcessResult_WithAggregation()
+    public void Test_CMVSummaryAggregator_ProcessResult_WithAggregation()
     {
       var aggregator = new CMVSummaryAggregator();
 

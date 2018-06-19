@@ -45,9 +45,9 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric.Details
     {
       return new CMVDetailsResult()
       {
-        ResultStatus = ResultStatus
+        ResultStatus = ResultStatus,
+        Counts = Counts
       };
-
     }
   }
 }

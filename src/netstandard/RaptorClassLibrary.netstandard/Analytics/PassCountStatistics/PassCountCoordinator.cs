@@ -57,7 +57,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics
     /// <param name="response"></param>
     public override void ReadOutResults(AggregatorBase aggregator, PassCountStatisticsResponse response)
     {
-      var tempAggregator = (DataStatisticsAggregator)aggregator;
+      var tempAggregator = (SummaryDataAggregator)aggregator;
 
       response.CellSize = tempAggregator.CellSize;
       response.SummaryCellsScanned = tempAggregator.SummaryCellsScanned;

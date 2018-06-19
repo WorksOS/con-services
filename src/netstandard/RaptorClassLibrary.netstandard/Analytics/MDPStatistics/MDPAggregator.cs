@@ -11,7 +11,7 @@ namespace VSS.TRex.Analytics.MDPStatistics
   /// <summary>
   /// Implements the specific business rules for calculating a MDP summary and details
   /// </summary>
-  public class MDPAggregator : DataStatisticsAggregator
+  public class MDPAggregator : SummaryDataAggregator
   {
     /// <summary>
     /// The flag is to indicate wehther or not the machine MDP target to be user overrides.
@@ -46,7 +46,7 @@ namespace VSS.TRex.Analytics.MDPStatistics
     {
       var aggregator = (MDPAggregator) other;
 
-      if (IsTargetValueConstant && other.SummaryCellsScanned > 0) // if we need to check for a difference
+      if (IsTargetValueConstant && aggregator.SummaryCellsScanned > 0) // if we need to check for a difference
       {
         // compare grouped results to determine if target varies
         if (aggregator.LastTargetMDP != CellPass.NullMDP && LastTargetMDP != CellPass.NullMDP) // if data valid

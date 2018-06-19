@@ -56,7 +56,7 @@ namespace VSS.TRex.Analytics.CMVStatistics.Summary
     /// <param name="response"></param>
     public override void ReadOutResults(AggregatorBase aggregator, CMVSummaryResponse response)
     {
-      var tempAggregator = (DataStatisticsAggregator) aggregator;
+      var tempAggregator = (SummaryDataAggregator) aggregator;
 
       response.CellSize = tempAggregator.CellSize;
       response.SummaryCellsScanned = tempAggregator.SummaryCellsScanned;

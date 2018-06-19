@@ -9,7 +9,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.CMVStatistics
 {
-  public class CMVCoordinatorTests : BaseCoordinatorTests
+  public class CMVSummaryCoordinatorTests : BaseCoordinatorTests
   {
     private CMVSummaryArgument Arg => new CMVSummaryArgument()
     {
@@ -32,7 +32,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
     }
 
     [Fact]
-    public void Test_CMVCoordinator_Creation()
+    public void Test_CMVSummaryCoordinator_Creation()
     {
       var coordinator = new CMVSummaryCoordinator();
 
@@ -41,7 +41,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
     }
 
     [Fact]
-    public void Test_CMVCoordinator_ConstructAggregator_Successful()
+    public void Test_CMVSummaryCoordinator_ConstructAggregator_Successful()
     {
       var aggregator = _getCMVAggregator();
 
@@ -53,7 +53,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
     }
 
     [Fact]
-    public void Test_CMVCoordinator_ConstructComputor_Successful()
+    public void Test_CMVSummaryCoordinator_ConstructComputor_Successful()
     {
       var aggregator = _getCMVAggregator();
       var coordinator = _getCoordinator();
@@ -69,7 +69,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
     }
 
     [Fact]
-    public void Test_CMVCoordinator_ReadOutResults_Successful()
+    public void Test_CMVSummaryCoordinator_ReadOutResults_Successful()
     {
       var aggregator = _getCMVAggregator();
       var coordinator = _getCoordinator();

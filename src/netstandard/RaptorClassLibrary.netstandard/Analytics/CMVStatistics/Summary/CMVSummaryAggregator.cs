@@ -11,7 +11,7 @@ namespace VSS.TRex.Analytics.CMVStatistics.Summary
   /// <summary>
   /// Implements the specific business rules for calculating a CMV summary
   /// </summary>
-  public class CMVSummaryAggregator : DataStatisticsAggregator
+  public class CMVSummaryAggregator : SummaryDataAggregator
   {
     /// <summary>
     /// The flag is to indicate wehther or not the machine CMV target to be user overrides.
@@ -47,7 +47,7 @@ namespace VSS.TRex.Analytics.CMVStatistics.Summary
     {
       var aggregator = (CMVSummaryAggregator) other;
 
-      if (IsTargetValueConstant && other.SummaryCellsScanned > 0) // if we need to check for a difference
+      if (IsTargetValueConstant && aggregator.SummaryCellsScanned > 0) // if we need to check for a difference
       {
         // compare grouped results to determine if target varies
         if (aggregator.LastTargetCMV != CellPass.NullCCV && LastTargetCMV != CellPass.NullCCV) // if data valid

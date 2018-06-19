@@ -23,7 +23,12 @@ namespace VSS.TRex.Analytics.CMVStatistics.Details
     /// <returns></returns>
     public override AggregatorBase ConstructAggregator(CMVDetailsArgument argument) => new CMVDetailsAggregator()
     {
-      CMVDetailValues = argument.CMVDetailValues
+      RequiresSerialisation = true,
+      SiteModelID = argument.ProjectID,
+      //LiftBuildSettings := LiftBuildSettings;
+      CellSize = SiteModel.Grid.CellSize,
+      DetailsDataValues = argument.CMVDetailValues,
+      Counts = new long[argument.CMVDetailValues.Length]
     };
 
     /// <summary>

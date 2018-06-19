@@ -10,35 +10,24 @@ namespace VSS.TRex.Analytics.CMVStatistics.Details
   /// <summary>
   /// Implements the specific business rules for calculating a CMV details
   /// </summary>
-  public class CMVDetailsAggregator : DataStatisticsAggregator
+  public class CMVDetailsAggregator : DetailsDataAggregator
   {
-    /// <summary>
-    /// CMV details values.
-    /// </summary>
-    public int[] CMVDetailValues { get; set; }
-
-    /// <summary>
-    /// An array values representing the counts of cells within each of the CMV details bands defined in the request.
-    /// The array's size is the same as the number of the CMV details bands.
-    /// </summary>
-    public long[] Counts { get; set; }
-
     /// <summary>
     /// Default no-arg constructor
     /// </summary>
     public CMVDetailsAggregator()
     {
-      Counts = new long[0];
+      // ...
     }
 
     public void IncrementCountOfTransition(double cmvValue)
     {
-      Debug.Assert(CMVDetailValues.Length == Counts.Length, "Invalid size of the Counts array.");
+      Debug.Assert(DetailsDataValues.Length == Counts.Length, "Invalid size of the Counts array.");
 
-      for (int i = 0; i < CMVDetailValues.Length; i++)
+      for (int i = 0; i < DetailsDataValues.Length; i++)
       {
-        var startTransitionValue = CMVDetailValues[i];
-        var endTransitionValue = i < CMVDetailValues.Length - 1 ? CMVDetailValues[i + 1] : CellPass.NullCCV;
+        var startTransitionValue = DetailsDataValues[i];
+        var endTransitionValue = i < DetailsDataValues.Length - 1 ? DetailsDataValues[i + 1] : CellPass.NullCCV;
 
         if (cmvValue >= startTransitionValue && cmvValue < endTransitionValue)
         {
