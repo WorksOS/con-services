@@ -1,6 +1,6 @@
 ﻿using System;
-using VSS.TRex.Analytics.PassCountStatistics;
-using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
+using VSS.TRex.Analytics.PassCountStatistics.GridFabric.Summary;
+using VSS.TRex.Analytics.PassCountStatistics.Summary;
 using VSS.TRex.Common;
 using VSS.TRex.Filters;
 using VSS.TRex.Tests.netcore.Analytics.Common;
@@ -11,7 +11,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
 {
   public class PassCountCoordinatorTests : BaseCoordinatorTests
   {
-    private PassCountStatisticsArgument Arg => new PassCountStatisticsArgument()
+    private PassCountSummaryArgument Arg => new PassCountSummaryArgument()
     {
       ProjectID = _siteModel.ID,
       Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
@@ -19,22 +19,22 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
       OverridingTargetPassCountRange = new PassCountRangeRecord(3, 10)
     };
 
-    private PassCountCoordinator _getCoordinator()
+    private PassCountSummaryCoordinator _getCoordinator()
     {
-      return new PassCountCoordinator() { RequestDescriptor = Guid.NewGuid(), SiteModel = _siteModel };
+      return new PassCountSummaryCoordinator() { RequestDescriptor = Guid.NewGuid(), SiteModel = _siteModel };
     }
 
-    private PassCountAggregator _getPassCountAggregator()
+    private PassCountSummaryAggregator _getPassCountAggregator()
     {
       var coordinator = _getCoordinator();
 
-      return coordinator.ConstructAggregator(Arg) as PassCountAggregator;
+      return coordinator.ConstructAggregator(Arg) as PassCountSummaryAggregator;
     }
 
     [Fact]
     public void Test_PassCountCoordinator_Creation()
     {
-      var coordinator = new PassCountCoordinator();
+      var coordinator = new PassCountSummaryCoordinator();
 
       Assert.True(coordinator.SiteModel == null, "Invalid initial value for SiteModel.");
       Assert.True(coordinator.RequestDescriptor == Guid.Empty, "Invalid initial value for RequestDescriptor.");
@@ -75,7 +75,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
       var aggregator = _getPassCountAggregator();
       var coordinator = _getCoordinator();
 
-      var response = new PassCountStatisticsResponse();
+      var response = new PassCountSummaryResponse();
 
       coordinator.ReadOutResults(aggregator, response);
 

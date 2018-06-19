@@ -1,5 +1,5 @@
 ﻿using System;
-using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
+using VSS.TRex.Analytics.PassCountStatistics.GridFabric.Summary;
 using VSS.TRex.Common;
 using VSS.TRex.Tests.netcore.Analytics.Common;
 using VSS.TRex.Types;
@@ -9,7 +9,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
 {
   public class PassCountResponseTests : BaseTests
   {
-    private PassCountStatisticsResponse _response => new PassCountStatisticsResponse()
+    private PassCountSummaryResponse _response => new PassCountSummaryResponse()
     {
       ResultStatus = RequestErrorStatus.OK,
       CellSize = CELL_SIZE,
@@ -24,7 +24,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
     [Fact]
     public void Test_PassCountResponse_Creation()
     {
-      var response = new PassCountStatisticsResponse();
+      var response = new PassCountSummaryResponse();
 
       Assert.True(response.ResultStatus == RequestErrorStatus.Unknown, "ResultStatus invalid after creation.");
       Assert.True(response.CellSize < Consts.TOLERANCE_DIMENSION, "CellSize invalid after creation.");
@@ -59,7 +59,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
     [Fact]
     public void Test_PassCountResponse_AgregateWith_Successful()
     {
-      var responseClone = new PassCountStatisticsResponse()
+      var responseClone = new PassCountSummaryResponse()
       {
         ResultStatus = _response.ResultStatus,
         CellSize = _response.CellSize,

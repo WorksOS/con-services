@@ -1,15 +1,16 @@
 ﻿using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.Analytics.Foundation.Interfaces;
+using VSS.TRex.Analytics.PassCountStatistics.Summary;
 using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Requests.Interfaces;
 using VSS.TRex.Types;
 
-namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
+namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric.Summary
 {
   /// <summary>
-  /// The response state returned from a Pass Count statistics request
+  /// The response state returned from a Pass Count summary request
   /// </summary>
-  public class PassCountStatisticsResponse : SummaryAnalyticsResponse, IAggregateWith<PassCountStatisticsResponse>, IAnalyticsOperationResponseResultConversion<PassCountResult>
+  public class PassCountSummaryResponse : SummaryAnalyticsResponse, IAggregateWith<PassCountSummaryResponse>, IAnalyticsOperationResponseResultConversion<PassCountSummaryCountResult>
   {
     /// <summary>
     /// Holds last known good target Pass Count range values.
@@ -17,7 +18,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
     public PassCountRangeRecord LastPassCountTargetRange;
 
     /// <summary>
-    /// Aggregate a set of Pass Count statistics into this set and return the result.
+    /// Aggregate a set of Pass Count summary into this set and return the result.
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
@@ -25,17 +26,17 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
     {
       base.AggregateBaseDataWith(other);
 
-      LastPassCountTargetRange = ((PassCountStatisticsResponse) other).LastPassCountTargetRange;
+      LastPassCountTargetRange = ((PassCountSummaryResponse) other).LastPassCountTargetRange;
     }
 
-    public PassCountStatisticsResponse AggregateWith(PassCountStatisticsResponse other)
+    public PassCountSummaryResponse AggregateWith(PassCountSummaryResponse other)
     {
-      return base.AggregateWith(other) as PassCountStatisticsResponse;
+      return base.AggregateWith(other) as PassCountSummaryResponse;
     }
 
-    public PassCountResult ConstructResult()
+    public PassCountSummaryCountResult ConstructResult()
     {
-      return new PassCountResult
+      return new PassCountSummaryCountResult
       {
         IsTargetPassCountConstant = IsTargetValueConstant,
         ConstantTargetPassCountRange = LastPassCountTargetRange,

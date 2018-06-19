@@ -1,5 +1,5 @@
 ﻿using System;
-using VSS.TRex.Analytics.PassCountStatistics;
+using VSS.TRex.Analytics.PassCountStatistics.Summary;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Client;
@@ -15,7 +15,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
     [Fact]
     public void Test_PassCountAggregator_Creation()
     {
-      var aggregator = new PassCountAggregator();
+      var aggregator = new PassCountSummaryAggregator();
 
       Assert.True(aggregator.SiteModelID == Guid.Empty, "Invalid initial value for SiteModelID.");
       Assert.True(aggregator.CellSize < Consts.TOLERANCE_DIMENSION, "Invalid initial value for CellSize.");
@@ -35,7 +35,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
     [Fact]
     public void Test_PassCountAggregator_ProcessResult_NoAggregation()
     {
-      var aggregator = new PassCountAggregator();
+      var aggregator = new PassCountSummaryAggregator();
 
       var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.PassCount) as ClientPassCountLeafSubGrid;
 
@@ -61,7 +61,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
     [Fact]
     public void Test_PassCountAggregator_ProcessResult_WithAggregation()
     {
-      var aggregator = new PassCountAggregator();
+      var aggregator = new PassCountSummaryAggregator();
 
       var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.PassCount) as ClientPassCountLeafSubGrid;
 
@@ -78,7 +78,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
       aggregator.ProcessSubgridResult(subGrids);
 
       // Other aggregator...
-      var otherAggregator = new PassCountAggregator();
+      var otherAggregator = new PassCountSummaryAggregator();
 
       otherAggregator.CellSize = CELL_SIZE;
       otherAggregator.OverrideTargetPassCount = true;

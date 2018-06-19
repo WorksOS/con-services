@@ -45,6 +45,8 @@
   <ItemGroup>
     <Folder Include="Analytics\Foundation\GridFabric\Arguments\" />
     <Folder Include="Analytics\Foundation\GridFabric\Requests\" />
+    <Folder Include="Analytics\PassCountStatistics\Details\" />
+    <Folder Include="Analytics\PassCountStatistics\GridFabric\Details\" />
     <Folder Include="CoordinateSystems\GridFabric\Requests\" />
   </ItemGroup>
 

@@ -26,7 +26,8 @@ using VSS.TRex.Analytics.MDPStatistics;
 using VSS.TRex.Analytics.MDPStatistics.GridFabric;
 using VSS.TRex.Analytics.Models;
 using VSS.TRex.Analytics.PassCountStatistics;
-using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
+using VSS.TRex.Analytics.PassCountStatistics.GridFabric.Summary;
+using VSS.TRex.Analytics.PassCountStatistics.Summary;
 using VSS.TRex.Analytics.SpeedStatistics;
 using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
 using VSS.TRex.Analytics.TemperatureStatistics;
@@ -1246,9 +1247,9 @@ namespace VSS.TRex.IgnitePOC.TestApp
       sw.Start();
       try
       {
-        PassCountOperation operation = new PassCountOperation();
-        PassCountResult result = operation.Execute(
-          new PassCountStatisticsArgument()
+        PassCountSummaryOperation operation = new PassCountSummaryOperation();
+        PassCountSummaryCountResult result = operation.Execute(
+          new PassCountSummaryArgument()
           {
             ProjectID = siteModel.ID,
             Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
