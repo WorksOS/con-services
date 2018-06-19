@@ -146,6 +146,6 @@ node ('jenkinsslave-pod') {
 		sh "ls -la chart/"
 		sh "ls -la"
         archiveArtifacts artifacts: 'chart/**/*.*', fingerprint: true
-		publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: '/app/testresults/',', reportFiles: 'accepttest.log', reportName: 'AcceptanceTests logs'])
+		publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: '/app/testresults/, reportFiles: 'accepttest.log', reportName: 'AcceptanceTests logs'])
 	}
 }
