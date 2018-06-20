@@ -4,7 +4,7 @@ node ('jenkinsslave-pod') {
 	properties([
 		parameters([
 			string(
-				defaultValue: "nothing",
+				defaultValue: null,
 				description: 'The build number supplied by VSTS perhaps fail build if this is nothing to prevent unrequested builds during multibranch scan',
 				name: 'VSTS_BUILD_NUMBER'
 			),
@@ -13,45 +13,35 @@ node ('jenkinsslave-pod') {
 
 	// We may need to rename the branch to conform to DNS name spec
     def branchName = env.BRANCH_NAME.substring(env.BRANCH_NAME.lastIndexOf("/") + 1)
-    def buildNumber = params.VSTS_BUILD_NUMBER
-    def versionPrefix = ""
-    def suffix = ""
 	def jobnameparts = JOB_NAME.tokenize('/') as String[]
-	def prjname = jobnameparts[0].toLowerCase() 	
-
-    // if (branch.contains("release")) {
-    //     versionPrefix = "1.0."
-    //     branchName = ""
-    // } else if (branch.contains("Dev")) {
-    //     versionPrefix = "0.99."
-    //     branchName = "Dev"
-    // } else {
-    //     branchName = branch.substring(branch.lastIndexOf("/") + 1)
-    //     suffix = "-" + branchName
-    //     versionPrefix = "0.98."
-    // }
-
+	def project_name = jobnameparts[0].toLowerCase() 	
     def versionNumber = branchName + "-" + params.VSTS_BUILD_NUMBER
-    //def fullVersion = versionNumber + suffix
-	
-    def container = "registry.k8s.vspengg.com:80/${prjname}:${versionNumber}"
-    def testContainer = "registry.k8s.vspengg.com:80/${prjname}.tests:${versionNumber}"
-    def finalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${prjname}:${versionNumber}"
+    def container = "registry.k8s.vspengg.com:80/${project_name}:${versionNumber}"
+    def testContainer = "registry.k8s.vspengg.com:80/${project_name}.tests:${versionNumber}"
+    def finalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}:${versionNumber}"
 	
     def vars = []
-    def file
-    def yaml
+    def acceptance_testing_yaml
 	def runtimeImage
+
+	//Set the build name so it is consistant with VSTS
+	currentBuild.displayName = versionNumber
+
+	stage("Prebuild Checks") {
+		if (params.VSTS_BUILD_NUMBER == null) {
+			currentBuild.result = 'ABORTED'
+			error("Build stopping, no valid build number supplied")
+		}
+	}
 	
     stage('Build Solution') {
         checkout scm
-		// TODO use dockerfile with ENTRYPOINT instead of CMD as it is insecure
+		
 	    def build_container = docker.build(container, "-f Dockerfile.build .")
 
         // Currently we need to execute the tests like this, because the pipeline docker plugin being aware of DIND, and attempting to map
         // the volume to the bare metal host        
-        //sh "docker run -v ${env.WORKSPACE}/TestResults:/TestResults ${building.id} /bin/sh /build/unittests.sh"
-
+        
 		//Create results directory in workspace
 		dir("TestResults") {}
 		
@@ -68,9 +58,13 @@ node ('jenkinsslave-pod') {
 
         sh "ls ${env.WORKSPACE}/TestResults"
 		
-		 //See https://jenkins.io/doc/pipeline/steps/xunit/#xunit-publish-xunit-test-result-report for DSL Guide
+		//Publish test results to Jenkins, set build stability according to configured thresholds
+		//See https://jenkins.io/doc/pipeline/steps/xunit/#xunit-publish-xunit-test-result-report for DSL Guide
         step([$class: 'XUnitBuilder',
-                thresholds: [[$class: 'FailedThreshold', unstableThreshold: '10']],
+                thresholds: [
+					[$class: 'FailedThreshold', failureThreshold: '4', unstableThreshold: '1'],
+					[$class: 'SkippedThreshold', unstableThreshold: '1']
+				],
                 tools: [[$class: 'XUnitDotNetTestType', pattern: 'TestResults/UnitTests/**/*.xml']]])
 
 		cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'TestResults/TestCoverage/*.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
@@ -101,18 +95,18 @@ node ('jenkinsslave-pod') {
 				def (key, value) = line.split('=')
 				vars.add(envVar(key: key, value: value))
 				}
-			file = readFile("pod.yaml")
-			yaml = file.replace('!container!', "${container}")
+			acceptance_testing_yaml = readFile("pod.yaml")
+			acceptance_testing_yaml = acceptance_testing_yaml.replace('!container!', "${container}")
 		}
 			def label = "testingpod-${UUID.randomUUID().toString()}"
-		podTemplate(label: label, namespace: "testing", yaml: yaml, containers: [containerTemplate(name: "jnlp", image: testContainer, ttyEnabled: true,  envVars: vars)])
+		podTemplate(label: label, namespace: "testing", yaml: acceptance_testing_yaml, containers: [containerTemplate(name: "jnlp", image: testContainer, ttyEnabled: true,  envVars: vars)])
 		{
 			node (label) {
 				dir ("/app") {
 					sh "/bin/sh runtests.sh"
 
 					step([$class: 'XUnitBuilder',
-							thresholds: [[$class: 'FailedThreshold', unstableThreshold: '100']],
+							thresholds: [[$class: 'FailedThreshold', unstableThreshold: '1']],
 							tools: [[$class: 'XUnitDotNetTestType', pattern: 'AcceptanceTests/tests/**/TestResults/*.xml']]])
 
 
@@ -123,11 +117,9 @@ node ('jenkinsslave-pod') {
 						sh "ls -la"
 					}
 
-					dir("testresults") {
-						sh "ls -la"
-						stash name: "acceptanceTestLogs"
-					}
-					
+					//Archive test logs
+					archiveArtifacts artifacts: 'testresults/*.*', fingerprint: true
+                    				
 					//http://javadoc.jenkins-ci.org/tfs/index.html?hudson/plugins/tfs/model/TeamResultType.html
 					//Details of the agent -> https://docs.microsoft.com/en-us/vsts/build-release/task
 					//Agent Variables -> https://docs.microsoft.com/en-us/vsts/build-release/concepts/definitions/build/variables?view=vsts&tabs=batch
@@ -149,12 +141,6 @@ node ('jenkinsslave-pod') {
 		sh "docker push ${finalImage}"
 		sh "echo ${env.versionNumber} >> chart/build.sbt"
 		sh "ls -la chart/"
-		dir("testresults") {
-			unstash "acceptanceTestLogs"
-			sh "ls -la"				
-		}
         archiveArtifacts artifacts: 'chart/**/*.*', fingerprint: true
-	    archiveArtifacts artifacts: 'testresults/*.*', fingerprint: true
-		//publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: '/app/testresults/', reportFiles: 'accepttest.log', reportName: 'AcceptanceTests logs'])
 	}
 }
