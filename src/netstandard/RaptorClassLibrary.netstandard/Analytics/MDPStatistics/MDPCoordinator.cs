@@ -34,7 +34,7 @@ namespace VSS.TRex.Analytics.MDPStatistics
     };
 
     /// <summary>
-    /// Constructs the computer from the supplied argument and aggregator for the MDP statistics analytics request
+    /// Constructs the computor from the supplied argument and aggregator for the MDP statistics analytics request
     /// </summary>
     /// <param name="argument"></param>
     /// <param name="aggregator"></param>
@@ -56,7 +56,7 @@ namespace VSS.TRex.Analytics.MDPStatistics
     /// <param name="response"></param>
     public override void ReadOutResults(AggregatorBase aggregator, MDPStatisticsResponse response)
     {
-      var tempAggregator = (DataStatisticsAggregator)aggregator;
+      var tempAggregator = (SummaryDataAggregator)aggregator;
 
       response.CellSize = tempAggregator.CellSize;
       response.SummaryCellsScanned = tempAggregator.SummaryCellsScanned;

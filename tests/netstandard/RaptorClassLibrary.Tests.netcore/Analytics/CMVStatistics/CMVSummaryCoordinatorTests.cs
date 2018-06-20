@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.TRex.Tests.netcore.Analytics.Common;
-using VSS.TRex.Analytics.CMVStatistics;
-using VSS.TRex.Analytics.CMVStatistics.GridFabric;
+using VSS.TRex.Analytics.CMVStatistics.GridFabric.Summary;
+using VSS.TRex.Analytics.CMVStatistics.Summary;
 using VSS.TRex.Common;
 using VSS.TRex.Filters;
 using VSS.TRex.Types;
@@ -9,9 +9,9 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.CMVStatistics
 {
-  public class CMVCoordinatorTests : BaseCoordinatorTests
+  public class CMVSummaryCoordinatorTests : BaseCoordinatorTests
   {
-    private CMVStatisticsArgument Arg => new CMVStatisticsArgument()
+    private CMVSummaryArgument Arg => new CMVSummaryArgument()
     {
       ProjectID = _siteModel.ID,
       Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
@@ -19,29 +19,29 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
       OverridingMachineCMV = 70
     };
 
-    private CMVCoordinator _getCoordinator()
+    private CMVSummaryCoordinator _getCoordinator()
     {
-      return new CMVCoordinator() { RequestDescriptor = Guid.NewGuid(), SiteModel = _siteModel };
+      return new CMVSummaryCoordinator() { RequestDescriptor = Guid.NewGuid(), SiteModel = _siteModel };
     }
 
-    private CMVAggregator _getCMVAggregator()
+    private CMVSummaryAggregator _getCMVAggregator()
     {
       var coordinator = _getCoordinator();
 
-      return coordinator.ConstructAggregator(Arg) as CMVAggregator;
+      return coordinator.ConstructAggregator(Arg) as CMVSummaryAggregator;
     }
 
     [Fact]
-    public void Test_CMVCoordinator_Creation()
+    public void Test_CMVSummaryCoordinator_Creation()
     {
-      var coordinator = new CMVCoordinator();
+      var coordinator = new CMVSummaryCoordinator();
 
       Assert.True(coordinator.SiteModel == null, "Invalid initial value for SiteModel.");
       Assert.True(coordinator.RequestDescriptor == Guid.Empty, "Invalid initial value for RequestDescriptor.");
     }
 
     [Fact]
-    public void Test_CMVCoordinator_ConstructAggregator_Successful()
+    public void Test_CMVSummaryCoordinator_ConstructAggregator_Successful()
     {
       var aggregator = _getCMVAggregator();
 
@@ -53,7 +53,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
     }
 
     [Fact]
-    public void Test_CMVCoordinator_ConstructComputor_Successful()
+    public void Test_CMVSummaryCoordinator_ConstructComputor_Successful()
     {
       var aggregator = _getCMVAggregator();
       var coordinator = _getCoordinator();
@@ -69,12 +69,12 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
     }
 
     [Fact]
-    public void Test_CMVCoordinator_ReadOutResults_Successful()
+    public void Test_CMVSummaryCoordinator_ReadOutResults_Successful()
     {
       var aggregator = _getCMVAggregator();
       var coordinator = _getCoordinator();
 
-      var response = new CMVStatisticsResponse();
+      var response = new CMVSummaryResponse();
 
       coordinator.ReadOutResults(aggregator, response);
 

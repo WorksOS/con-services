@@ -13,7 +13,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics
   /// <summary>
   /// Implements the specific business rules for calculating a Pass Count summary and details
   /// </summary>
-  public class PassCountAggregator : DataStatisticsAggregator
+  public class PassCountAggregator : SummaryDataAggregator
   {
     /// <summary>
     /// The flag is to indicate wehther or not the machine Pass Count target range to be user overrides.

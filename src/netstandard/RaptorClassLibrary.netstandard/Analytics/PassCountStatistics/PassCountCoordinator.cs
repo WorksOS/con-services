@@ -35,7 +35,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics
     };
 
     /// <summary>
-    /// Constructs the computer from the supplied argument and aggregator for the Pass Count statistics analytics request
+    /// Constructs the computor from the supplied argument and aggregator for the Pass Count statistics analytics request
     /// </summary>
     /// <param name="argument"></param>
     /// <param name="aggregator"></param>
@@ -57,7 +57,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics
     /// <param name="response"></param>
     public override void ReadOutResults(AggregatorBase aggregator, PassCountStatisticsResponse response)
     {
-      var tempAggregator = (DataStatisticsAggregator)aggregator;
+      var tempAggregator = (SummaryDataAggregator)aggregator;
 
       response.CellSize = tempAggregator.CellSize;
       response.SummaryCellsScanned = tempAggregator.SummaryCellsScanned;

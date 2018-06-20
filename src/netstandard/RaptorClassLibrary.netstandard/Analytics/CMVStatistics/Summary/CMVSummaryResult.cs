@@ -1,12 +1,12 @@
 ﻿using VSS.TRex.Analytics.Foundation.Models;
 using VSS.TRex.Types;
 
-namespace VSS.TRex.Analytics.CMVStatistics
+namespace VSS.TRex.Analytics.CMVStatistics.Summary
 {
   /// <summary>
-  /// The result obtained from performing a CMV analytics request
+  /// The result obtained from performing a CMV summary analytics request
   /// </summary>
-  public class CMVResult : SummaryAnalyticsResult
+  public class CMVSummaryResult : SummaryAnalyticsResult
   {
     /// <summary>
     /// Is the CMV target value applying to all processed cells constant?

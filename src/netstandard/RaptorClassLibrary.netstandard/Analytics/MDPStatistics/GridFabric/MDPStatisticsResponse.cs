@@ -20,7 +20,7 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    protected override void AggregateBaseDataWith(SummaryAnalyticsResponse other)
+    protected override void AggregateBaseDataWith(StatisticAnalyticsResponse other)
     {
       base.AggregateBaseDataWith(other);
 

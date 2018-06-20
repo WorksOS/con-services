@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
+using VSS.TRex.Analytics.CutFillStatistics;
 using VSS.TRex.Analytics.Foundation.Interfaces;
-using VSS.TRex.Analytics.Models;
 using VSS.TRex.GridFabric.Requests.Interfaces;
 
 namespace VSS.TRex.Analytics.GridFabric.Responses

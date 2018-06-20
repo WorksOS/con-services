@@ -1,15 +1,15 @@
 ﻿using System;
 using VSS.TRex.Tests.netcore.Analytics.Common;
-using VSS.TRex.Analytics.CMVStatistics.GridFabric;
+using VSS.TRex.Analytics.CMVStatistics.GridFabric.Summary;
 using VSS.TRex.Common;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
 {
-  public class CMVResponseTests : BaseTests
+  public class CMVSummaryResponseTests : BaseTests
   {
-    private CMVStatisticsResponse _response => new CMVStatisticsResponse()
+    private CMVSummaryResponse _response => new CMVSummaryResponse()
     {
       ResultStatus = RequestErrorStatus.OK,
       CellSize = CELL_SIZE,
@@ -22,9 +22,9 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
     };
 
     [Fact]
-    public void Test_CMVResponse_Creation()
+    public void Test_CMVSummaryResponse_Creation()
     {
-      var response = new CMVStatisticsResponse();
+      var response = new CMVSummaryResponse();
 
       Assert.True(response.ResultStatus == RequestErrorStatus.Unknown, "ResultStatus invalid after creation.");
       Assert.True(response.CellSize < Consts.TOLERANCE_DIMENSION, "CellSize invalid after creation.");
@@ -38,7 +38,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
     }
 
     [Fact]
-    public void Test_CMVResponse_ConstructResult_Successful()
+    public void Test_CMVSummaryResponse_ConstructResult_Successful()
     {
       Assert.True(_response.ResultStatus == RequestErrorStatus.OK, "Invalid initial result status");
 
@@ -55,9 +55,9 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
     }
 
     [Fact]
-    public void Test_CMVResponse_AgregateWith_Successful()
+    public void Test_CMVSummaryResponse_AgregateWith_Successful()
     {
-      var responseClone = new CMVStatisticsResponse()
+      var responseClone = new CMVSummaryResponse()
       {
         ResultStatus = _response.ResultStatus,
         CellSize = _response.CellSize,

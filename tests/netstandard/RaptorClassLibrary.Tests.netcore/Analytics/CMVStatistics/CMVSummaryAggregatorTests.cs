@@ -1,6 +1,6 @@
 ﻿using System;
 using VSS.TRex.Tests.netcore.Analytics.Common;
-using VSS.TRex.Analytics.CMVStatistics;
+using VSS.TRex.Analytics.CMVStatistics.Summary;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Client;
@@ -10,12 +10,12 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.CMVStatistics
 {
-  public class CMVAggregatorTests : BaseTests
+  public class CMVSummaryAggregatorTests : BaseTests
   {
     [Fact]
-    public void Test_CMVAggregator_Creation()
+    public void Test_CMVSummaryAggregator_Creation()
     {
-      var aggregator = new CMVAggregator();
+      var aggregator = new CMVSummaryAggregator();
 
       Assert.True(aggregator.SiteModelID == Guid.Empty, "Invalid initial value for SiteModelID.");
       Assert.True(aggregator.CellSize < Consts.TOLERANCE_DIMENSION, "Invalid initial value for CellSize.");
@@ -31,9 +31,9 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
     }
 
     [Fact]
-    public void Test_CMVAggregator_ProcessResult_NoAggregation()
+    public void Test_CMVSummaryAggregator_ProcessResult_NoAggregation()
     {
-      var aggregator = new CMVAggregator();
+      var aggregator = new CMVSummaryAggregator();
 
       var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.CCV) as ClientCMVLeafSubGrid;
 
@@ -58,9 +58,9 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
     }
 
     [Fact]
-    public void Test_CMVAggregator_ProcessResult_WithAggregation()
+    public void Test_CMVSummaryAggregator_ProcessResult_WithAggregation()
     {
-      var aggregator = new CMVAggregator();
+      var aggregator = new CMVSummaryAggregator();
 
       var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.CCV) as ClientCMVLeafSubGrid;
 
@@ -78,7 +78,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
       aggregator.ProcessSubgridResult(subGrids);
 
       // Other aggregator...
-      var otherAggregator = new CMVAggregator();
+      var otherAggregator = new CMVSummaryAggregator();
 
       otherAggregator.CellSize = CELL_SIZE;
       otherAggregator.OverrideMachineCMV = true;
