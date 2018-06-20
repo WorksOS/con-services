@@ -20,6 +20,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="App.Metrics.AspNetCore" Version="2.0.0" />
+    <PackageReference Include="App.Metrics.AspNetCore.Health" Version="2.0.0" />
+    <PackageReference Include="App.Metrics.Formatters.Prometheus" Version="2.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.2" />
