@@ -130,6 +130,43 @@ this.FeatureBackground();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("GetProjectExtents - Including Surveyed Surfaces")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "GetProjectExtents")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireSurveyedSurfaceLargerThanProductionData")]
+        public virtual void GetProjectExtents_IncludingSurveyedSurfaces()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("GetProjectExtents - Including Surveyed Surfaces", new string[] {
+                        "requireSurveyedSurfaceLargerThanProductionData"});
+#line 17
+this.ScenarioSetup(scenarioInfo);
+#line 4
+this.FeatureBackground();
+#line 18
+ testRunner.Given("a GetProjectExtents project id 1001158", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 19
+ testRunner.When("I try to get the extents", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+            TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
+                        "maxX",
+                        "maxY",
+                        "maxZ",
+                        "minX",
+                        "minY",
+                        "minZ"});
+            table2.AddRow(new string[] {
+                        "2989.1663015263803",
+                        "1325.9072715855209",
+                        "631.9852294921875",
+                        "2184.3218844638031",
+                        "1088.3172778947385",
+                        "591.953857421875"});
+#line 20
+ testRunner.Then("the following Bounding Box ThreeD Grid values should be returned", ((string)(null)), table2, "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("GetProjectExtents - Bad Request (Null Project ID)")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "GetProjectExtents")]
         public virtual void GetProjectExtents_BadRequestNullProjectID()

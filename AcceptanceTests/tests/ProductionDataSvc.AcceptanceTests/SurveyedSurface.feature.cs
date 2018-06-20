@@ -97,16 +97,18 @@ namespace ProductionDataSvc.AcceptanceTests
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("SurveyedSurface - Get Stored Surface")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "SurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         public virtual void SurveyedSurface_GetStoredSurface()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("SurveyedSurface - Get Stored Surface", ((string[])(null)));
-#line 9
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("SurveyedSurface - Get Stored Surface", new string[] {
+                        "ignore"});
+#line 10
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 10
- testRunner.Given("a project Id 1001151", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 11
+ testRunner.Given("a project Id 1001151", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 12
  testRunner.When("I request surveyd SurveyedSurfaces", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
             TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
@@ -124,7 +126,7 @@ this.FeatureBackground();
                         "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
                         "ML3 - Marylands Road - Marylands.ttm",
                         "2014-12-02T02:14:33.115"});
-#line 12
+#line 13
  testRunner.Then("the following machine designs should be returned", ((string)(null)), table1, "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -133,18 +135,20 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("SurveyedSurface - Delete Stored Surveyd Surface")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "SurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         public virtual void SurveyedSurface_DeleteStoredSurveydSurface()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("SurveyedSurface - Delete Stored Surveyd Surface", ((string[])(null)));
-#line 17
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("SurveyedSurface - Delete Stored Surveyd Surface", new string[] {
+                        "ignore"});
+#line 19
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 18
- testRunner.Given("a project Id 1001151", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 19
- testRunner.When("I delete surveyd SurveyedSurfaces", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 20
+ testRunner.Given("a project Id 1001151", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 21
+ testRunner.When("I delete surveyd SurveyedSurfaces", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 22
   testRunner.And("I request surveyd SurveyedSurfaces", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
@@ -157,11 +161,11 @@ this.FeatureBackground();
                         "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
                         "110411 Topo Haul Road_2011-04-10T110000Z.TTM",
                         "2011-04-10T11:00:00"});
-#line 21
+#line 23
  testRunner.Then("the following machine designs should be returned", ((string)(null)), table2, "Then ");
-#line 24
+#line 26
  testRunner.When("I post surveyd surface", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 25
+#line 27
   testRunner.And("I request surveyd SurveyedSurfaces", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
@@ -179,7 +183,7 @@ this.FeatureBackground();
                         "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
                         "ML3 - Marylands Road - Marylands.ttm",
                         "2014-12-02T02:14:33.115"});
-#line 26
+#line 28
  testRunner.Then("the following machine designs should be returned", ((string)(null)), table3, "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -188,18 +192,20 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("SurveyedSurface - Bad Request (Duplicate Surveyed Surface)")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "SurveyedSurface")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         public virtual void SurveyedSurface_BadRequestDuplicateSurveyedSurface()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("SurveyedSurface - Bad Request (Duplicate Surveyed Surface)", ((string[])(null)));
-#line 36
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("SurveyedSurface - Bad Request (Duplicate Surveyed Surface)", new string[] {
+                        "ignore"});
+#line 38
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 37
- testRunner.Given("a project Id 1001151", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 38
- testRunner.When("I Post Surveyd Surface \"PostStandardFile\" expecting Bad Request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 39
+ testRunner.Given("a project Id 1001151", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 40
+ testRunner.When("I Post Surveyd Surface \"PostStandardFile\" expecting Bad Request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 41
  testRunner.Then("the Post response should contain Code -3 and Message \"Failed to process Surveyed " +
                     "Surface data request.\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden

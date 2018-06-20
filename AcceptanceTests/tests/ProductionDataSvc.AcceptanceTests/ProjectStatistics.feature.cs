@@ -138,6 +138,51 @@ this.FeatureBackground();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ProjectStatistics - Including Surveyed Surfaces")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ProjectStatistics")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireSurveyedSurfaceLargerThanProductionData")]
+        public virtual void ProjectStatistics_IncludingSurveyedSurfaces()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ProjectStatistics - Including Surveyed Surfaces", new string[] {
+                        "requireSurveyedSurfaceLargerThanProductionData"});
+#line 17
+this.ScenarioSetup(scenarioInfo);
+#line 4
+this.FeatureBackground();
+#line 18
+ testRunner.Given("a Project Statistics project id 1001158", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 19
+ testRunner.When("I request the project statistics", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+            TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
+                        "startTime",
+                        "endTime",
+                        "cellSize",
+                        "indexOriginOffset",
+                        "maxX",
+                        "maxY",
+                        "maxZ",
+                        "minX",
+                        "minY",
+                        "minZ"});
+            table2.AddRow(new string[] {
+                        "2012-10-30T00:12:09.109",
+                        "2015-03-15T18:13:09.265",
+                        "0.34",
+                        "536870912",
+                        "2989.1663015263803",
+                        "1325.9072715855209",
+                        "631.9852294921875",
+                        "2184.3218844638031",
+                        "1088.3172778947385",
+                        "591.953857421875"});
+#line 20
+ testRunner.Then("I should get the following project statistics", ((string)(null)), table2, "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ProjectStatistics - Bad Request (Invalid Project)")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ProjectStatistics")]
         public virtual void ProjectStatistics_BadRequestInvalidProject()
