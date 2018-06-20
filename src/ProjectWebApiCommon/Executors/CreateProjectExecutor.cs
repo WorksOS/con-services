@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -10,7 +8,6 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
@@ -23,10 +20,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     /// Save for potential rollback
     /// </summary>
-    protected Guid subscriptionUidAssigned = Guid.Empty;
+    protected string subscriptionUidAssigned;
 
     /// <summary>
-    ///
+    /// Save for potential rollback
     /// </summary>
     protected Guid geofenceUidCreated = Guid.Empty;
 
@@ -43,14 +40,18 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
       }
-      
+
       ProjectRequestHelper.ValidateGeofence(createProjectEvent.ProjectBoundary, serviceExceptionHandler);
+
+      ProjectRequestHelper.ValidateCoordSystemFile(null, createProjectEvent, serviceExceptionHandler);
+
       await ProjectRequestHelper.ValidateCoordSystemInRaptor(createProjectEvent,
         serviceExceptionHandler, customHeaders, raptorProxy).ConfigureAwait(false);
 
       log.LogDebug($"Testing if there are overlapping projects for project {createProjectEvent.ProjectName}");
-      await ProjectRequestHelper.DoesProjectOverlap(createProjectEvent.CustomerUID.ToString(), createProjectEvent.ProjectUID.ToString(), 
-        createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate, createProjectEvent.ProjectBoundary, 
+      await ProjectRequestHelper.DoesProjectOverlap(createProjectEvent.CustomerUID.ToString(),
+        createProjectEvent.ProjectUID.ToString(),
+        createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate, createProjectEvent.ProjectBoundary,
         log, serviceExceptionHandler, projectRepo);
 
       AssociateProjectCustomer customerProject = new AssociateProjectCustomer
@@ -63,15 +64,26 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         ReceivedUTC = createProjectEvent.ReceivedUTC
       };
       ProjectDataValidator.Validate(customerProject, projectRepo, serviceExceptionHandler);
+      await ProjectDataValidator.ValidateFreeSub(customerUid, createProjectEvent.ProjectType,
+        log, serviceExceptionHandler, subscriptionRepo);
+      log.LogDebug($"CreateProject: passed validation {createProjectEvent.ProjectUID}");
+
 
       // now making changes, potentially needing rollback 
+      //  order changes to minimise rollback
+      //    if CreateProjectInDb fails then nothing is done
+      //    if CreateCoordSystem fails then project is deleted
+      //    if AssociateProjectSubscription fails ditto
+      //    if CreateGeofenceInGeofenceService fails then project is deleted; ProjectSubscription is Dissassociated
+      //    if AssociateProjectGeofence fails then project is deleted; ProjectSubscription is Dissassociated; Geofence is deleted
       createProjectEvent = await CreateProjectInDb(createProjectEvent, customerProject).ConfigureAwait(false);
       await ProjectRequestHelper.CreateCoordSystemInRaptorAndTcc(
         createProjectEvent.ProjectUID, createProjectEvent.ProjectID, createProjectEvent.CoordinateSystemFileName, 
         createProjectEvent.CoordinateSystemFileContent, true, log, serviceExceptionHandler, customerUid, customHeaders,
         projectRepo, raptorProxy, configStore, fileRepo).ConfigureAwait(false);
 
-      await AssociateProjectSubscriptionInSubscriptionService(createProjectEvent).ConfigureAwait(false);
+      subscriptionUidAssigned = await ProjectRequestHelper.AssociateProjectSubscriptionInSubscriptionService(createProjectEvent.ProjectUID.ToString(), createProjectEvent.ProjectType, customerUid,
+        log, serviceExceptionHandler, customHeaders, subscriptionProxy,subscriptionRepo, projectRepo, true).ConfigureAwait(false);
       var geofenceUid = await CreateGeofenceInGeofenceService(createProjectEvent).ConfigureAwait(false);
       AssociateProjectGeofence associateProjectGeofence = null;
       if (geofenceUid != Guid.Empty) // TBC work-around 
@@ -139,62 +151,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       log.LogDebug($"Created CustomerProject in DB {JsonConvert.SerializeObject(customerProject)}");
       return project; // legacyID may have been added
     }
-
-    /// <summary>
-    /// Validates if there any subscriptions available for the request create project event
-    /// </summary>
-    /// <param name="project">The project.</param>
-    /// <returns></returns>
-    private async Task AssociateProjectSubscriptionInSubscriptionService(CreateProjectEvent project)
-    {
-      if (project.ProjectType == ProjectType.LandFill || project.ProjectType == ProjectType.ProjectMonitoring)
-      {
-        subscriptionUidAssigned = Guid.Parse((await GetFreeSubs(customerUid, project.ProjectType, project.ProjectUID))
-          .First().SubscriptionUID);
-        log.LogDebug($"Received {subscriptionUidAssigned} subscription");
-        
-        //Assign the new project to a subscription
-        try
-        {
-          // rethrows any exception
-          await subscriptionProxy.AssociateProjectSubscription(subscriptionUidAssigned,
-            project.ProjectUID, customHeaders).ConfigureAwait(false);
-        }
-        catch (Exception e)
-        {
-          // this is only called from a Create, so no need to consider Update
-          await ProjectRequestHelper.DeleteProjectPermanentlyInDb(project.CustomerUID, project.ProjectUID, log, projectRepo).ConfigureAwait(false);
-
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57,
-            "SubscriptionProxy.AssociateProjectSubscriptionInSubscriptionService", e.Message);
-        }
-      }
-    }
-
-    /// <summary>
-    /// Gets the free subs for a project type
-    /// </summary>
-    /// <param name="customerUid">The customer uid.</param>
-    /// <param name="type">The type.</param>
-    /// <param name="projectUid"></param>
-    /// <returns></returns>
-    private async Task<ImmutableList<Subscription>> GetFreeSubs(string customerUid, ProjectType type, Guid projectUid)
-    {
-      var availableFreSub =
-        (await subscriptionRepo.GetFreeProjectSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date)
-          .ConfigureAwait(false))
-        .Where(s => s.ServiceTypeID == (int)type.MatchSubscriptionType()).ToImmutableList();
-
-      log.LogDebug($"We have {availableFreSub.Count} free subscriptions for the selected project type {type}");
-      if (!availableFreSub.Any())
-      {
-        await ProjectRequestHelper.DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid, log, projectRepo).ConfigureAwait(false);
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 37);
-      }
-
-      return availableFreSub;
-    }
-
+    
+ 
     /// <summary>
     /// Creates a geofence from the projects boundary
     /// </summary>
@@ -223,7 +181,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       catch (Exception e)
       {
         await ProjectRequestHelper.DeleteProjectPermanentlyInDb(project.CustomerUID, project.ProjectUID, log, projectRepo).ConfigureAwait(false);
-        await DissociateProjectSubscription(project.ProjectUID, subscriptionUidAssigned).ConfigureAwait(false);
+        await ProjectRequestHelper.DissociateProjectSubscription(project.ProjectUID, Guid.Parse(subscriptionUidAssigned), customHeaders, subscriptionProxy).ConfigureAwait(false);
 
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57,
           "geofenceProxy.CreateGeofenceInGeofenceService", e.Message);
@@ -232,7 +190,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       if (geofenceUidCreated == Guid.Empty)
       {
         await ProjectRequestHelper.DeleteProjectPermanentlyInDb(project.CustomerUID, project.ProjectUID, log, projectRepo).ConfigureAwait(false);
-        await DissociateProjectSubscription(project.ProjectUID, subscriptionUidAssigned).ConfigureAwait(false);
+        await ProjectRequestHelper.DissociateProjectSubscription(project.ProjectUID, Guid.Parse(subscriptionUidAssigned), customHeaders, subscriptionProxy).ConfigureAwait(false);
 
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 59);
       }
@@ -306,22 +264,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           });
       }
     }
-
-    #region rollback
-    /// <summary>
-    /// rolls back the ProjectSubscription association made, due to a subsequent error
-    /// </summary>
-    /// <returns></returns>
-    protected async Task DissociateProjectSubscription(Guid projectUid, Guid subscriptionUidAssigned)
-    {
-      if (subscriptionUidAssigned != Guid.Empty)
-      {
-        await subscriptionProxy.DissociateProjectSubscription(subscriptionUidAssigned,
-          projectUid, customHeaders).ConfigureAwait(false);
-      }
-    }
-
-    #endregion rollback
 
   }
 }

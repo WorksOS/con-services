@@ -534,9 +534,10 @@ namespace WebApiTests
     }
 
     [TestMethod] 
-    public void CreateLandfillProjectThenUpdateProjectTypeAndCorordinateFile()
+    public void CreateLandfillProjectThenUpdateProjectTypeToStandard()
     {
-      msg.Title("Project v4 test 17", "Create landfill project and customer then update project type and cordinate system file");
+      var msgNumber = "17a";
+      msg.Title($"Project v4 test {msgNumber}", "Create landfill project and customer then update project type and cordinate system file");
       var ts = new TestSupport();
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
@@ -560,7 +561,6 @@ namespace WebApiTests
        "| EventType          | EventDate   | ProjectUID   | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | ",
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | Boundary Test 17 | LandFill    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc |" };
       ts.PublishEventCollection(projectEventArray);
-      //Thread.Sleep(3000);
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
 
@@ -568,8 +568,48 @@ namespace WebApiTests
        "| EventType            | EventDate   | ProjectUID   | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description       |",
       $"| UpdateProjectRequest | 0d+10:00:00 | {projectUid} | Boundary Test 17 | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | ChangeCordinatesystem | dummy description |" };
       var response = ts.PublishEventToWebApi(projectEventArray2);
+      var expectedErrorMessage =
+        "UpdateProjectV4: Invalid ProjectType. Can ony be changed from Standard to Landfill/Civil.";
+      Assert.IsTrue(response == expectedErrorMessage, $"Response is unexpected. Should be: {expectedErrorMessage} Response: " + response);
+    }
+
+    [TestMethod]
+    public void CreateStandardProjectThenUpdateProjectTypeAndCorordinateFile()
+    {
+      var msgNumber = "17a";
+      msg.Title($"Project v4 test {msgNumber}", "Create standard project and customer then update project type and cordinate system file");
+      var ts = new TestSupport();
+      var legacyProjectId = ts.SetLegacyProjectId();
+      var projectUid = Guid.NewGuid().ToString();
+      var customerUid = Guid.NewGuid();
+      var tccOrg = Guid.NewGuid();
+      var subscriptionUid = Guid.NewGuid();
+      var startDateTime = ts.FirstEventDate;
+      var endDateTime = new DateTime(9999, 12, 31);
+      var endDateTime2 = DateTime.Now.Date.AddYears(2);
+      var startDate = startDateTime.ToString("yyyy-MM-dd");
+      var endDate = endDateTime.ToString("yyyy-MM-dd");
+      const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+      var eventsArray = new[] {
+       "| TableName           | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
+      $"| Customer            | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                   |                |                  |             |                |               |          |                    |",
+      $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |           |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
+      $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |"};
+      ts.PublishEventCollection(eventsArray);
+      ts.IsPublishToWebApi = true;
+      var projectName = $"Boundary Test {msgNumber}";
+      var projectEventArray = new[] {
+       "| EventType          | EventDate   | ProjectUID   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | ",
+      $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {projectName} | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc |" };
+      ts.PublishEventCollection(projectEventArray);
+      ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
+      ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
+
+      var projectEventArray2 = new[] {
+       "| EventType            | EventDate   | ProjectUID   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description       |",
+      $"| UpdateProjectRequest | 0d+10:00:00 | {projectUid} | {projectName} | LandFill    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | ChangeCordinatesystem | dummy description |" };
+      var response = ts.PublishEventToWebApi(projectEventArray2);
       Assert.IsTrue(response == "success", "Response is unexpected. Should be a success. Response: " + response);
-      //Thread.Sleep(3000);
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray2, true);
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray2, true);
     }
