@@ -7,7 +7,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
 {
-  public class PassCountResponseTests : BaseTests
+  public class PassCountSummaryResponseTests : BaseTests
   {
     private PassCountSummaryResponse _response => new PassCountSummaryResponse()
     {
@@ -22,7 +22,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
     };
 
     [Fact]
-    public void Test_PassCountResponse_Creation()
+    public void Test_PassCountSummaryResponse_Creation()
     {
       var response = new PassCountSummaryResponse();
 
@@ -39,7 +39,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
     }
 
     [Fact]
-    public void Test_PassCountResponse_ConstructResult_Successful()
+    public void Test_PassCountSummaryResponse_ConstructResult_Successful()
     {
       Assert.True(_response.ResultStatus == RequestErrorStatus.OK, "Invalid initial result status");
 
@@ -57,7 +57,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
     }
 
     [Fact]
-    public void Test_PassCountResponse_AgregateWith_Successful()
+    public void Test_PassCountSummaryResponse_AgregateWith_Successful()
     {
       var responseClone = new PassCountSummaryResponse()
       {

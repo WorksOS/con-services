@@ -3,9 +3,9 @@ using VSS.TRex.Tests.netcore.Analytics.Common;
 using VSS.TRex.Types;
 using Xunit;
 
-namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
+namespace VSS.TRex.Tests.Analytics.Foundation
 {
-  public class CMVDetailsResponseTests : BaseTests
+  public class DetailsAnalyticsResponseTests : BaseTests
   {
     private DetailsAnalyticsResponse _response => new DetailsAnalyticsResponse()
     {
@@ -14,7 +14,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
     };
 
     [Fact]
-    public void Test_CMVDetailsResponse_Creation()
+    public void Test_DetailsAnalyticsResponse_Creation()
     {
       var response = new DetailsAnalyticsResponse();
 
@@ -23,7 +23,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
     }
 
     [Fact]
-    public void Test_CMVDetailsResponse_ConstructResult_Successful()
+    public void Test_DetailsAnalyticsResponse_ConstructResult_Successful()
     {
       Assert.True(_response.ResultStatus == RequestErrorStatus.OK, "Invalid initial result status");
 
@@ -39,7 +39,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
     }
 
     [Fact]
-    public void Test_CMVDetailsResponse_AgregateWith_Successful()
+    public void Test_DetailsAnalyticsResponse_AgregateWith_Successful()
     {
       var responseClone = new DetailsAnalyticsResponse()
       {

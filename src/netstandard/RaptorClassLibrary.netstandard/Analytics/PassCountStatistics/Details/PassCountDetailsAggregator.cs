@@ -27,7 +27,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics.Details
       for (int i = 0; i < DetailsDataValues.Length; i++)
       {
         var startTransitionValue = DetailsDataValues[i];
-        var endTransitionValue = i < DetailsDataValues.Length - 1 ? DetailsDataValues[i + 1] : CellPass.NullPassCountValue;
+        var endTransitionValue = i < DetailsDataValues.Length - 1 ? DetailsDataValues[i + 1] : CellPass.MaxPassCountValue;
 
         if (passCountValue >= startTransitionValue && passCountValue < endTransitionValue)
         {

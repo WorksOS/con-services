@@ -10,10 +10,10 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.PassCountStatistics
 {
-  public class PassCountAggregatorTests : BaseTests
+  public class PassCountSummaryAggregatorTests : BaseTests
   {
     [Fact]
-    public void Test_PassCountAggregator_Creation()
+    public void Test_PassCountSummaryAggregator_Creation()
     {
       var aggregator = new PassCountSummaryAggregator();
 
@@ -33,7 +33,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
     }
 
     [Fact]
-    public void Test_PassCountAggregator_ProcessResult_NoAggregation()
+    public void Test_PassCountSummaryAggregator_ProcessResult_NoAggregation()
     {
       var aggregator = new PassCountSummaryAggregator();
 
@@ -59,7 +59,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
     }
 
     [Fact]
-    public void Test_PassCountAggregator_ProcessResult_WithAggregation()
+    public void Test_PassCountSummaryAggregator_ProcessResult_WithAggregation()
     {
       var aggregator = new PassCountSummaryAggregator();
 

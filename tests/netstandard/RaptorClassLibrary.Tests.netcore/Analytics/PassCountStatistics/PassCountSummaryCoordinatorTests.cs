@@ -9,7 +9,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.PassCountStatistics
 {
-  public class PassCountCoordinatorTests : BaseCoordinatorTests
+  public class PassCountSummaryCoordinatorTests : BaseCoordinatorTests
   {
     private PassCountSummaryArgument Arg => new PassCountSummaryArgument()
     {
@@ -32,7 +32,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
     }
 
     [Fact]
-    public void Test_PassCountCoordinator_Creation()
+    public void Test_PassCountSummaryCoordinator_Creation()
     {
       var coordinator = new PassCountSummaryCoordinator();
 
@@ -41,7 +41,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
     }
 
     [Fact]
-    public void Test_PassCountCoordinator_ConstructAggregator_Successful()
+    public void Test_PassCountSummaryCoordinator_ConstructAggregator_Successful()
     {
       var aggregator = _getPassCountAggregator();
 
@@ -54,7 +54,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
     }
 
     [Fact]
-    public void Test_PassCountCoordinator_ConstructComputor_Successful()
+    public void Test_PassCountSummaryCoordinator_ConstructComputor_Successful()
     {
       var aggregator = _getPassCountAggregator();
       var coordinator = _getCoordinator();
@@ -70,7 +70,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
     }
 
     [Fact]
-    public void Test_PassCountCoordinator_ReadOutResults_Successful()
+    public void Test_PassCountSummaryCoordinator_ReadOutResults_Successful()
     {
       var aggregator = _getPassCountAggregator();
       var coordinator = _getCoordinator();
