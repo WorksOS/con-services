@@ -35,7 +35,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics
     };
 
     /// <summary>
-    /// Constructs the computer from the supplied argument and aggregator for the Pass Count statistics analytics request
+    /// Constructs the computor from the supplied argument and aggregator for the Pass Count statistics analytics request
     /// </summary>
     /// <param name="argument"></param>
     /// <param name="aggregator"></param>

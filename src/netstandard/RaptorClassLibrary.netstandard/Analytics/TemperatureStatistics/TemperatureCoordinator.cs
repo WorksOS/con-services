@@ -33,7 +33,7 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 		};
 
 		/// <summary>
-		/// Constructs the computer from the supplied argument and aggregator for the Temperature statistics analytics request
+		/// Constructs the computor from the supplied argument and aggregator for the Temperature statistics analytics request
 		/// </summary>
 		/// <param name="argument"></param>
 		/// <param name="aggregator"></param>

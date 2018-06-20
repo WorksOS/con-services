@@ -32,7 +32,7 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 		};
 
 		/// <summary>
-		/// Constructs the computer from the supplied argument and aggregator for the Speed statistics analytics request
+		/// Constructs the computor from the supplied argument and aggregator for the Speed statistics analytics request
 		/// </summary>
 		/// <param name="argument"></param>
 		/// <param name="aggregator"></param>
