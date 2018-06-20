@@ -4,7 +4,7 @@ node ('jenkinsslave-pod') {
 	properties([
 		parameters([
 			string(
-				defaultValue: "nothing",
+				defaultValue: null,
 				description: 'The build number supplied by VSTS perhaps fail build if this is nothing to prevent unrequested builds during multibranch scan',
 				name: 'VSTS_BUILD_NUMBER'
 			),
@@ -13,7 +13,7 @@ node ('jenkinsslave-pod') {
 
 	// We may need to rename the branch to conform to DNS name spec
     def branchName = env.BRANCH_NAME.substring(env.BRANCH_NAME.lastIndexOf("/") + 1)
-    def buildNumber = params.VSTS_BUILD_NUMBER
+    //def buildNumber = params.VSTS_BUILD_NUMBER
     def versionPrefix = ""
     def suffix = ""
 	def jobnameparts = JOB_NAME.tokenize('/') as String[]
@@ -30,6 +30,13 @@ node ('jenkinsslave-pod') {
 
 	//Set the build name so it is consistant with VSTS
 	currentBuild.displayName = versionNumber
+
+	stage("Prebuild Checks") {
+		if (params.VSTS_BUILD_NUMBER == null) {
+			currentBuild.result = 'ABORTED'
+			error("Build stopping, no valid build number supplied")
+		}
+	}
 	
     stage('Build Solution') {
         checkout scm
