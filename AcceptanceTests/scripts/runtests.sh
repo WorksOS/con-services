@@ -11,11 +11,11 @@ sleep 55s
 
 
 cd /app
-dotnet vstest ExecutorTests/ExecutorTests.dll --logger:\"xunit;LogFilePath=/TestResults/ExecutorTestsTestResults.xml\"
-dotnet vstest IntegrationTests/IntegrationTests.dll --logger:\"xunit;LogFilePath=/TestResults/IntegrationTestsResults.xml\"
-dotnet vstest WebApiTests/WebApiTests.dll --logger:\"xunit;LogFilePath=/TestResults/WebApiTestsTestResults.xml\"
+dotnet vstest ExecutorTests/ExecutorTests.dll --logger:trx;LogFileName=ExecutorTestsTestResults --ResultsDirectory:/app/testresults
+dotnet vstest IntegrationTests/IntegrationTests.dll --logger:trx;LogFileName=IntegrationTestsResults --ResultsDirectory:/app/testresults
+dotnet vstest WebApiTests/WebApiTests.dll --logger:trx;LogFileName=WebApiTestsTestResults --ResultsDirectory:/app/testresults
 echo " "
 echo " All acceptance tests completed"
 echo " "
-sleep 300s
+sleep 500s
 
