@@ -27,6 +27,9 @@ node ('jenkinsslave-pod') {
     def file
     def yaml
 	def runtimeImage
+
+	//Set the build name so it is consistant with VSTS
+	build.displayName = versionNumber;
 	
     stage('Build Solution') {
         checkout scm
