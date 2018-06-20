@@ -1,30 +1,28 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Analytics.Aggregators;
-using VSS.TRex.Analytics.CMVStatistics;
 using VSS.TRex.Analytics.Coordinators;
 using VSS.TRex.Analytics.Foundation.Aggregators;
-using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
+using VSS.TRex.Analytics.PassCountStatistics.GridFabric.Summary;
 using VSS.TRex.Types;
 
-namespace VSS.TRex.Analytics.PassCountStatistics
+namespace VSS.TRex.Analytics.PassCountStatistics.Summary
 {
   /// <summary>
-  /// Computes Pass Clount statistics. Executes in the 'application service' layer and acts as the coordinator
+  /// Computes Pass Clount summary. Executes in the 'application service' layer and acts as the coordinator
   /// for the request onto the cluster compute layer.
   /// </summary>
-  public class PassCountCoordinator : BaseAnalyticsCoordinator<PassCountStatisticsArgument, PassCountStatisticsResponse>
+  public class PassCountSummaryCoordinator : BaseAnalyticsCoordinator<PassCountSummaryArgument, PassCountSummaryResponse>
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
     /// <summary>
-    /// Constructs the aggregator from the supplied argument to be used for the Pass Count statistics analytics request
+    /// Constructs the aggregator from the supplied argument to be used for the Pass Count summary analytics request
     /// Create the aggregator to collect and reduce the results.
     /// </summary>
     /// <param name="argument"></param>
     /// <returns></returns>
-    public override AggregatorBase ConstructAggregator(PassCountStatisticsArgument argument) => new PassCountAggregator()
+    public override AggregatorBase ConstructAggregator(PassCountSummaryArgument argument) => new PassCountSummaryAggregator()
     {
       RequiresSerialisation = true,
       SiteModelID = argument.ProjectID,
@@ -40,7 +38,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics
     /// <param name="argument"></param>
     /// <param name="aggregator"></param>
     /// <returns></returns>
-    public override AnalyticsComputor ConstructComputor(PassCountStatisticsArgument argument, AggregatorBase aggregator) => new AnalyticsComputor()
+    public override AnalyticsComputor ConstructComputor(PassCountSummaryArgument argument, AggregatorBase aggregator) => new AnalyticsComputor()
     {
       RequestDescriptor = RequestDescriptor,
       SiteModel = SiteModel,
@@ -55,7 +53,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics
     /// </summary>
     /// <param name="aggregator"></param>
     /// <param name="response"></param>
-    public override void ReadOutResults(AggregatorBase aggregator, PassCountStatisticsResponse response)
+    public override void ReadOutResults(AggregatorBase aggregator, PassCountSummaryResponse response)
     {
       var tempAggregator = (SummaryDataAggregator)aggregator;
 
@@ -69,7 +67,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics
       response.IsTargetValueConstant = tempAggregator.IsTargetValueConstant;
       response.MissingTargetValue = tempAggregator.MissingTargetValue;
 
-      response.LastPassCountTargetRange = ((PassCountAggregator)aggregator).LastPassCountTargetRange;
+      response.LastPassCountTargetRange = ((PassCountSummaryAggregator)aggregator).LastPassCountTargetRange;
     }
   }
 }

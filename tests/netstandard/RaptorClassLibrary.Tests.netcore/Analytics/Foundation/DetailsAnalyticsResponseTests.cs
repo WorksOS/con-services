@@ -1,31 +1,29 @@
-﻿using System;
-using VSS.TRex.Analytics.CMVStatistics.GridFabric.Details;
-using VSS.TRex.Analytics.CMVStatistics.GridFabric.Summary;
+﻿using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.Tests.netcore.Analytics.Common;
 using VSS.TRex.Types;
 using Xunit;
 
-namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
+namespace VSS.TRex.Tests.Analytics.Foundation
 {
-  public class CMVDetailsResponseTests : BaseTests
+  public class DetailsAnalyticsResponseTests : BaseTests
   {
-    private CMVDetailsResponse _response => new CMVDetailsResponse()
+    private DetailsAnalyticsResponse _response => new DetailsAnalyticsResponse()
     {
       ResultStatus = RequestErrorStatus.OK,
       Counts = new long[]{52, 15, 24, 35, 5, 84, 125 }
     };
 
     [Fact]
-    public void Test_CMVDetailsResponse_Creation()
+    public void Test_DetailsAnalyticsResponse_Creation()
     {
-      var response = new CMVDetailsResponse();
+      var response = new DetailsAnalyticsResponse();
 
       Assert.True(response.ResultStatus == RequestErrorStatus.Unknown, "ResultStatus invalid after creation.");
       Assert.True(response.Counts == null, "Invalid initial value for Counts.");
     }
 
     [Fact]
-    public void Test_CMVDetailsResponse_ConstructResult_Successful()
+    public void Test_DetailsAnalyticsResponse_ConstructResult_Successful()
     {
       Assert.True(_response.ResultStatus == RequestErrorStatus.OK, "Invalid initial result status");
 
@@ -41,9 +39,9 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
     }
 
     [Fact]
-    public void Test_CMVDetailsResponse_AgregateWith_Successful()
+    public void Test_DetailsAnalyticsResponse_AgregateWith_Successful()
     {
-      var responseClone = new CMVDetailsResponse()
+      var responseClone = new DetailsAnalyticsResponse()
       {
         ResultStatus = _response.ResultStatus,
         Counts = _response.Counts

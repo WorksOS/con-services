@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using VSS.TRex.Analytics.Foundation.Aggregators;
+﻿using VSS.TRex.Analytics.Foundation.Aggregators;
 using VSS.TRex.Cells;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.Types;
 
-namespace VSS.TRex.Analytics.PassCountStatistics
+namespace VSS.TRex.Analytics.PassCountStatistics.Summary
 {
   /// <summary>
-  /// Implements the specific business rules for calculating a Pass Count summary and details
+  /// Implements the specific business rules for calculating a Pass Count summary
   /// </summary>
-  public class PassCountAggregator : SummaryDataAggregator
+  public class PassCountSummaryAggregator : SummaryDataAggregator
   {
     /// <summary>
     /// The flag is to indicate wehther or not the machine Pass Count target range to be user overrides.
@@ -33,7 +30,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics
     /// <summary>
     /// Default no-arg constructor
     /// </summary>
-    public PassCountAggregator()
+    public PassCountSummaryAggregator()
     {
       OverridingTargetPassCountRange.Clear();
       LastPassCountTargetRange.Clear();
@@ -41,7 +38,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics
 
     protected override void DataCheck(DataStatisticsAggregator other)
     {
-      var aggregator = (PassCountAggregator) other;
+      var aggregator = (PassCountSummaryAggregator) other;
 
       if (IsTargetValueConstant && aggregator.SummaryCellsScanned > 0) // If we need to check for a difference...
       { 

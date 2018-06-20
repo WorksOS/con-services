@@ -1,6 +1,6 @@
 ﻿using System;
-using VSS.TRex.Analytics.PassCountStatistics;
-using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
+using VSS.TRex.Analytics.PassCountStatistics.GridFabric.Summary;
+using VSS.TRex.Analytics.PassCountStatistics.Summary;
 using VSS.TRex.Common;
 using VSS.TRex.Filters;
 using VSS.TRex.Tests.netcore.Analytics.Common;
@@ -9,9 +9,9 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.PassCountStatistics
 {
-  public class PassCountCoordinatorTests : BaseCoordinatorTests
+  public class PassCountSummaryCoordinatorTests : BaseCoordinatorTests
   {
-    private PassCountStatisticsArgument Arg => new PassCountStatisticsArgument()
+    private PassCountSummaryArgument Arg => new PassCountSummaryArgument()
     {
       ProjectID = _siteModel.ID,
       Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
@@ -19,29 +19,29 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
       OverridingTargetPassCountRange = new PassCountRangeRecord(3, 10)
     };
 
-    private PassCountCoordinator _getCoordinator()
+    private PassCountSummaryCoordinator _getCoordinator()
     {
-      return new PassCountCoordinator() { RequestDescriptor = Guid.NewGuid(), SiteModel = _siteModel };
+      return new PassCountSummaryCoordinator() { RequestDescriptor = Guid.NewGuid(), SiteModel = _siteModel };
     }
 
-    private PassCountAggregator _getPassCountAggregator()
+    private PassCountSummaryAggregator _getPassCountAggregator()
     {
       var coordinator = _getCoordinator();
 
-      return coordinator.ConstructAggregator(Arg) as PassCountAggregator;
+      return coordinator.ConstructAggregator(Arg) as PassCountSummaryAggregator;
     }
 
     [Fact]
-    public void Test_PassCountCoordinator_Creation()
+    public void Test_PassCountSummaryCoordinator_Creation()
     {
-      var coordinator = new PassCountCoordinator();
+      var coordinator = new PassCountSummaryCoordinator();
 
       Assert.True(coordinator.SiteModel == null, "Invalid initial value for SiteModel.");
       Assert.True(coordinator.RequestDescriptor == Guid.Empty, "Invalid initial value for RequestDescriptor.");
     }
 
     [Fact]
-    public void Test_PassCountCoordinator_ConstructAggregator_Successful()
+    public void Test_PassCountSummaryCoordinator_ConstructAggregator_Successful()
     {
       var aggregator = _getPassCountAggregator();
 
@@ -54,7 +54,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
     }
 
     [Fact]
-    public void Test_PassCountCoordinator_ConstructComputor_Successful()
+    public void Test_PassCountSummaryCoordinator_ConstructComputor_Successful()
     {
       var aggregator = _getPassCountAggregator();
       var coordinator = _getCoordinator();
@@ -70,12 +70,12 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
     }
 
     [Fact]
-    public void Test_PassCountCoordinator_ReadOutResults_Successful()
+    public void Test_PassCountSummaryCoordinator_ReadOutResults_Successful()
     {
       var aggregator = _getPassCountAggregator();
       var coordinator = _getCoordinator();
 
-      var response = new PassCountStatisticsResponse();
+      var response = new PassCountSummaryResponse();
 
       coordinator.ReadOutResults(aggregator, response);
 
