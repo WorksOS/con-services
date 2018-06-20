@@ -18,22 +18,7 @@ node ('jenkinsslave-pod') {
     def suffix = ""
 	def jobnameparts = JOB_NAME.tokenize('/') as String[]
 	def prjname = jobnameparts[0].toLowerCase() 	
-
-    // if (branch.contains("release")) {
-    //     versionPrefix = "1.0."
-    //     branchName = ""
-    // } else if (branch.contains("Dev")) {
-    //     versionPrefix = "0.99."
-    //     branchName = "Dev"
-    // } else {
-    //     branchName = branch.substring(branch.lastIndexOf("/") + 1)
-    //     suffix = "-" + branchName
-    //     versionPrefix = "0.98."
-    // }
-
     def versionNumber = branchName + "-" + params.VSTS_BUILD_NUMBER
-    //def fullVersion = versionNumber + suffix
-	
     def container = "registry.k8s.vspengg.com:80/${prjname}:${versionNumber}"
     def testContainer = "registry.k8s.vspengg.com:80/${prjname}.tests:${versionNumber}"
     def finalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${prjname}:${versionNumber}"
@@ -45,13 +30,12 @@ node ('jenkinsslave-pod') {
 	
     stage('Build Solution') {
         checkout scm
-		// TODO use dockerfile with ENTRYPOINT instead of CMD as it is insecure
+		
 	    def build_container = docker.build(container, "-f Dockerfile.build .")
 
         // Currently we need to execute the tests like this, because the pipeline docker plugin being aware of DIND, and attempting to map
         // the volume to the bare metal host        
-        //sh "docker run -v ${env.WORKSPACE}/TestResults:/TestResults ${building.id} /bin/sh /build/unittests.sh"
-
+        
 		//Create results directory in workspace
 		dir("TestResults") {}
 		
@@ -68,9 +52,13 @@ node ('jenkinsslave-pod') {
 
         sh "ls ${env.WORKSPACE}/TestResults"
 		
-		 //See https://jenkins.io/doc/pipeline/steps/xunit/#xunit-publish-xunit-test-result-report for DSL Guide
+		//Publish test results to Jenkins, set build stability according to configured thresholds
+		//See https://jenkins.io/doc/pipeline/steps/xunit/#xunit-publish-xunit-test-result-report for DSL Guide
         step([$class: 'XUnitBuilder',
-                thresholds: [[$class: 'FailedThreshold', unstableThreshold: '10']],
+                thresholds: [
+					[$class: 'FailedThreshold' failureThreshold: '4', unstableThreshold: '1'],
+					[$class: 'SkippedThreshold', unstableThreshold: '1']
+				],
                 tools: [[$class: 'XUnitDotNetTestType', pattern: 'TestResults/UnitTests/**/*.xml']]])
 
 		cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'TestResults/TestCoverage/*.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
@@ -112,7 +100,7 @@ node ('jenkinsslave-pod') {
 					sh "/bin/sh runtests.sh"
 
 					step([$class: 'XUnitBuilder',
-							thresholds: [[$class: 'FailedThreshold', unstableThreshold: '100']],
+							thresholds: [[$class: 'FailedThreshold', unstableThreshold: '1']],
 							tools: [[$class: 'XUnitDotNetTestType', pattern: 'AcceptanceTests/tests/**/TestResults/*.xml']]])
 
 
