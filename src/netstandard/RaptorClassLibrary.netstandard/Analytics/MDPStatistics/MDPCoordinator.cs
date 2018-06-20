@@ -34,7 +34,7 @@ namespace VSS.TRex.Analytics.MDPStatistics
     };
 
     /// <summary>
-    /// Constructs the computer from the supplied argument and aggregator for the MDP statistics analytics request
+    /// Constructs the computor from the supplied argument and aggregator for the MDP statistics analytics request
     /// </summary>
     /// <param name="argument"></param>
     /// <param name="aggregator"></param>
