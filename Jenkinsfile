@@ -56,7 +56,7 @@ node ('jenkinsslave-pod') {
 		//See https://jenkins.io/doc/pipeline/steps/xunit/#xunit-publish-xunit-test-result-report for DSL Guide
         step([$class: 'XUnitBuilder',
                 thresholds: [
-					[$class: 'FailedThreshold' failureThreshold: '4', unstableThreshold: '1'],
+					[$class: 'FailedThreshold', failureThreshold: '4', unstableThreshold: '1'],
 					[$class: 'SkippedThreshold', unstableThreshold: '1']
 				],
                 tools: [[$class: 'XUnitDotNetTestType', pattern: 'TestResults/UnitTests/**/*.xml']]])
