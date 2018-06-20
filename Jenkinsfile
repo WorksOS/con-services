@@ -21,7 +21,6 @@ node ('jenkinsslave-pod') {
     def finalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}:${versionNumber}"
 	
     def vars = []
-    //def acceptance_testing_yaml_file
     def acceptance_testing_yaml
 	def runtimeImage
 
@@ -118,11 +117,9 @@ node ('jenkinsslave-pod') {
 						sh "ls -la"
 					}
 
-					dir("testresults") {
-						sh "ls -la"
-						stash name: "acceptanceTestLogs"
-					}
-					
+					//Archive test logs
+					archiveArtifacts artifacts: 'testresults/*.*', fingerprint: true
+                    				
 					//http://javadoc.jenkins-ci.org/tfs/index.html?hudson/plugins/tfs/model/TeamResultType.html
 					//Details of the agent -> https://docs.microsoft.com/en-us/vsts/build-release/task
 					//Agent Variables -> https://docs.microsoft.com/en-us/vsts/build-release/concepts/definitions/build/variables?view=vsts&tabs=batch
@@ -144,11 +141,6 @@ node ('jenkinsslave-pod') {
 		sh "docker push ${finalImage}"
 		sh "echo ${env.versionNumber} >> chart/build.sbt"
 		sh "ls -la chart/"
-		dir("testresults") {
-			unstash "acceptanceTestLogs"
-			sh "ls -la"				
-		}
         archiveArtifacts artifacts: 'chart/**/*.*', fingerprint: true
-        archiveArtifacts artifacts: 'testresults/*.*', fingerprint: true
 	}
 }
