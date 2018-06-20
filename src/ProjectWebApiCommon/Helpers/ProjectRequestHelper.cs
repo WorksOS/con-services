@@ -217,7 +217,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     {
       var overlaps =
         await projectRepo.DoesPolygonOverlap(customerUid, databaseProjectBoundary,
-          projectStartDate, projectEndDate).ConfigureAwait(false);
+          projectStartDate, projectEndDate, projectUid).ConfigureAwait(false);
       if (overlaps)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 43);
 
