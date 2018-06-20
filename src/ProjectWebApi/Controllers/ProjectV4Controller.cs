@@ -22,7 +22,6 @@ using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using System.Web.Http;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -221,7 +220,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <response code="400">Bad request</response>
     [Route("api/v4/project/{projectUid}")]
     [HttpDelete]
-    public async Task<ProjectV4DescriptorsSingleResult> DeleteProjectV4([FromUri] string projectUid)
+    public async Task<ProjectV4DescriptorsSingleResult> DeleteProjectV4([FromRoute] string projectUid)
     {
       LogCustomerDetails("DeleteProjectV4", projectUid);
       var project = new DeleteProjectEvent
