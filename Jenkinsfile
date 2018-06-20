@@ -13,19 +13,16 @@ node ('jenkinsslave-pod') {
 
 	// We may need to rename the branch to conform to DNS name spec
     def branchName = env.BRANCH_NAME.substring(env.BRANCH_NAME.lastIndexOf("/") + 1)
-    //def buildNumber = params.VSTS_BUILD_NUMBER
-    def versionPrefix = ""
-    def suffix = ""
 	def jobnameparts = JOB_NAME.tokenize('/') as String[]
-	def prjname = jobnameparts[0].toLowerCase() 	
+	def project_name = jobnameparts[0].toLowerCase() 	
     def versionNumber = branchName + "-" + params.VSTS_BUILD_NUMBER
-    def container = "registry.k8s.vspengg.com:80/${prjname}:${versionNumber}"
-    def testContainer = "registry.k8s.vspengg.com:80/${prjname}.tests:${versionNumber}"
-    def finalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${prjname}:${versionNumber}"
+    def container = "registry.k8s.vspengg.com:80/${project_name}:${versionNumber}"
+    def testContainer = "registry.k8s.vspengg.com:80/${project_name}.tests:${versionNumber}"
+    def finalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}:${versionNumber}"
 	
     def vars = []
-    def file
-    def yaml
+    //def acceptance_testing_yaml_file
+    def acceptance_testing_yaml
 	def runtimeImage
 
 	//Set the build name so it is consistant with VSTS
@@ -99,11 +96,11 @@ node ('jenkinsslave-pod') {
 				def (key, value) = line.split('=')
 				vars.add(envVar(key: key, value: value))
 				}
-			file = readFile("pod.yaml")
-			yaml = file.replace('!container!', "${container}")
+			acceptance_testing_yaml = readFile("pod.yaml")
+			acceptance_testing_yaml = acceptance_testing_yaml.replace('!container!', "${container}")
 		}
 			def label = "testingpod-${UUID.randomUUID().toString()}"
-		podTemplate(label: label, namespace: "testing", yaml: yaml, containers: [containerTemplate(name: "jnlp", image: testContainer, ttyEnabled: true,  envVars: vars)])
+		podTemplate(label: label, namespace: "testing", yaml: acceptance_testing_yaml, containers: [containerTemplate(name: "jnlp", image: testContainer, ttyEnabled: true,  envVars: vars)])
 		{
 			node (label) {
 				dir ("/app") {
@@ -152,7 +149,6 @@ node ('jenkinsslave-pod') {
 			sh "ls -la"				
 		}
         archiveArtifacts artifacts: 'chart/**/*.*', fingerprint: true
-	    archiveArtifacts artifacts: 'testresults/*.*', fingerprint: true
-		//publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: '/app/testresults/', reportFiles: 'accepttest.log', reportName: 'AcceptanceTests logs'])
+        archiveArtifacts artifacts: 'testresults/*.*', fingerprint: true
 	}
 }
