@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using VSS.MasterData.Models;
+using System.Runtime.Serialization;
 
 namespace VSS.Productivity3D.Models.Models
 {
@@ -9,6 +10,7 @@ namespace VSS.Productivity3D.Models.Models
   /// A point specified in WGS 84 latitude/longtitude coordinates
   /// </summary>
   [Obsolete("This should be aligned with the models package")]
+  [DataContract(Name = "WGSPoint")]
   public class WGSPoint3D 
   {
     private WGSPoint3D()
