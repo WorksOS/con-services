@@ -21,6 +21,10 @@ namespace VSS.KafkaConsumer.JsonConverters
       {
         return jObject["AssociateProjectSubscriptionEvent"].ToObject<AssociateProjectSubscriptionEvent>();
       }
+      if (jObject["DissociateProjectSubscriptionEvent"] != null)
+      {
+        return jObject["DissociateProjectSubscriptionEvent"].ToObject<DissociateProjectSubscriptionEvent>();
+      }
       if (jObject["CreateCustomerSubscriptionEvent"] != null)
       {
         return jObject["CreateCustomerSubscriptionEvent"].ToObject<CreateCustomerSubscriptionEvent>();

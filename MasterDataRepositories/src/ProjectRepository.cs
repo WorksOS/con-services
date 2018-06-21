@@ -1085,7 +1085,7 @@ namespace VSS.MasterData.Repositories
         @"INSERT ProjectSettings
                  (fk_ProjectUID, fk_ProjectSettingsTypeID, Settings, UserID, LastActionedUTC)
             VALUES
-              (@ProjectUID, @ProjectSettingsType, @Settings, @UserID, @LastActionedUTC)
+              (@ProjectUid, @ProjectSettingsType, @Settings, @UserID, @LastActionedUtc)
             ON DUPLICATE KEY UPDATE
               LastActionedUTC =
                 IF ( VALUES(LastActionedUTC) >= LastActionedUTC, 
