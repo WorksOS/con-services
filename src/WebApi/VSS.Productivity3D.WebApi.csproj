@@ -68,7 +68,7 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.2" />
     <PackageReference Include="System.Net.Primitives" Version="4.3.0" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.*" />
-    <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.1.*" />
+    <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.*" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net471' ">
