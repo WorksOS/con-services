@@ -95,12 +95,18 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           ActionUTC = DateTime.UtcNow
         };
         await AssociateProjectGeofence(associateProjectGeofence).ConfigureAwait(false);
+        log.LogDebug("CreateProject. associateProjectGeofence: {associateProjectGeofence}");
       }
+      else
+      {
+        log.LogDebug("CreateProject. No GeofenceUID so not associated with project. This should only be ok for TBC: {geofenceUid}");
+      }
+      
 
       // doing this as late as possible in case something fails. We can't cleanup kafka que.
       CreateKafkaEvents(createProjectEvent, customerProject, associateProjectGeofence);
 
-      log.LogDebug("CreateProjectV4. completed succesfully");
+      log.LogDebug("CreateProject. completed succesfully");
       return new ContractExecutionResult();
     }
 
@@ -177,6 +183,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         geofenceUidCreated = await geofenceProxy.CreateGeofence(project.CustomerUID, project.ProjectName, "", "Project",
           project.ProjectBoundary,
           0, true, Guid.Parse(userId), area, customHeaders).ConfigureAwait(false);
+        log.LogDebug($"CreatingProject: geofenceSvc created geofenceUidCreated: {geofenceUidCreated}");
       }
       catch (Exception e)
       {
