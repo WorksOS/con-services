@@ -35,6 +35,7 @@
     <PackageReference Include="App.Metrics.AspNetCore" Version="2.0.0" />
     <PackageReference Include="App.Metrics.Formatters.Prometheus" Version="2.0.0" />
     <PackageReference Include="AutoMapper" Version="6.1.1" />
+    <PackageReference Include="Jaeger" Version="0.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.*" />
     <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="2.0.*" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.0.*" />
@@ -44,6 +45,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.*" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.*" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.0.0" />
+    <PackageReference Include="OpenTracing.Contrib.NetCore" Version="0.4.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.1" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.*" />
