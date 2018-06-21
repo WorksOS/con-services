@@ -258,6 +258,56 @@ namespace VSS.MasterData.ProjectTests
     }
 
     [TestMethod]
+    public async Task UpdateProjectExecutor_ChangeName_Invalid_NoprojectGeofence()
+    {
+      _configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      _logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      _serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
+
+      var projectUid = Guid.NewGuid();
+      var projectType = ProjectType.Standard;
+      var existingProject = await CreateProject(projectUid, projectType);
+
+      if (existingProject.ProjectUID != null)
+      {
+        var updateProjectRequest = UpdateProjectRequest.CreateUpdateProjectRequest
+        (projectUid, ProjectType.Standard, "a new project name",
+          existingProject.Description,
+          existingProject.EndDate,
+          existingProject.CoordinateSystemFileName, null,
+          _updatedBoundaryString);
+        var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(updateProjectRequest);
+        updateProjectEvent.ActionUTC = updateProjectEvent.ReceivedUTC = DateTime.UtcNow;
+
+        var projectRepo = new Mock<IProjectRepository>();
+        projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<UpdateProjectEvent>())).ReturnsAsync(1);
+        projectRepo.Setup(pr => pr.GetProject(It.IsAny<string>()))
+          .ReturnsAsync(existingProject);
+
+        projectRepo.Setup(pr => pr.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync((List <ProjectGeofence> )null);
+
+        var subscriptionRepo = new Mock<ISubscriptionRepository>();
+        var raptorProxy = new Mock<IRaptorProxy>();
+        raptorProxy.Setup(rp =>
+            rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
+          .ReturnsAsync(new CoordinateSystemSettingsResult());
+
+        var updateExecutor = RequestExecutorContainerFactory.Build<UpdateProjectExecutor>
+        (_logger, _configStore, _serviceExceptionHandler,
+          _customerUid, _userId, null, _customHeaders,
+          _producer.Object, KafkaTopicName,
+          _geofenceProxy.Object, raptorProxy.Object, null,
+          projectRepo.Object, subscriptionRepo.Object, null, null, null);
+        var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
+          await updateExecutor.ProcessAsync(updateProjectEvent));
+
+        var projectErrorCodesProvider = ServiceProvider.GetRequiredService<IErrorCodesProvider>();
+        Assert.AreNotEqual(-1,
+          ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(96), StringComparison.Ordinal));
+      }
+    }
+
+    [TestMethod]
     public async Task UpdateProjectExecutor_ChangeTypeToLandfill_HappyPath()
     {
       _configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();

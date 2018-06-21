@@ -516,13 +516,18 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// rolls back the ProjectSubscription association made, due to a subsequent error
     /// </summary>
     /// <returns></returns>
-    public static async Task DissociateProjectSubscription(Guid projectUid, Guid subscriptionUidAssigned, 
-      IDictionary<string, string> customHeaders, ISubscriptionProxy subscriptionProxy)
+    public static async Task DissociateProjectSubscription(Guid projectUid, string subscriptionUidAssigned,
+      ILogger log, IDictionary<string, string> customHeaders, ISubscriptionProxy subscriptionProxy)
     {
-      if (subscriptionUidAssigned != Guid.Empty)
+      log.LogDebug($"DissociateProjectSubscription projectUid: {projectUid} subscriptionUidAssigned: {subscriptionUidAssigned}");
+
+      if (!string.IsNullOrEmpty(subscriptionUidAssigned) && Guid.TryParse(subscriptionUidAssigned, out var subscriptionUidAssignedGuid))
       {
-        await subscriptionProxy.DissociateProjectSubscription(subscriptionUidAssigned,
-          projectUid, customHeaders).ConfigureAwait(false);
+        if (subscriptionUidAssignedGuid != Guid.Empty)
+        {
+          await subscriptionProxy.DissociateProjectSubscription(subscriptionUidAssignedGuid,
+            projectUid, customHeaders).ConfigureAwait(false);
+        }
       }
     }
     #endregion rollback

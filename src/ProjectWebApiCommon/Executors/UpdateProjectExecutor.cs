@@ -102,7 +102,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       var isUpdated = await projectRepo.StoreEvent(updateProjectEvent).ConfigureAwait(false);
       if (isUpdated == 0)
       {
-        RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 62, string.Empty);
+        await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 62, string.Empty);
       }
       log.LogDebug($"UpdateProject: Project updated successfully");
 
@@ -138,18 +138,25 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       ProjectGeofence projectGeofence = null;
       try
       {
-        projectGeofence =
-          (await projectRepo.GetAssociatedGeofences(updateProjectEvent.ProjectUID.ToString()).ConfigureAwait(false))
-          .FirstOrDefault(
-            p => p.GeofenceType == GeofenceType.Project);
+        var projectGeofences = (await projectRepo.GetAssociatedGeofences(updateProjectEvent.ProjectUID.ToString())
+          .ConfigureAwait(false));
+
+        if (projectGeofences != null)
+        {
+          var enumerable = projectGeofences.ToList();
+          if (enumerable.Any())
+          {
+            projectGeofence = enumerable.FirstOrDefault(p => p.GeofenceType == GeofenceType.Project);
+          }
+        }
       }
       catch (Exception e)
       {
-        RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 101, e.Message, existing);
+        await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 101, e.Message, existing);
       }
       if (projectGeofence == null)
       {
-        RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 96, string.Empty, existing);
+        await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 96, string.Empty, existing);
       }
       log.LogDebug($"UpdateProject: Got the ProjectGeofence association: {JsonConvert.SerializeObject(projectGeofence)}");
 
@@ -162,11 +169,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       }
       catch (Exception e)
       {
-        RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 98, e.Message, existing);
+        await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 98, e.Message, existing);
       }
       if (geofence == null)
       {
-        RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 97, string.Empty, existing);
+        await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 97, string.Empty, existing);
       }
       log.LogDebug($"UpdateProject: Got the geofence: {JsonConvert.SerializeObject(geofence)}");
 
@@ -183,25 +190,21 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       }
       catch (Exception e)
       {
-        RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 100, e.Message, existing);
+        await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 100, e.Message, existing);
       }
       if (geofenceUidUpdated == Guid.Empty)
       {
-        RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 99, String.Empty, existing);
+        await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 99, String.Empty, existing);
       }
       log.LogDebug($"UpdateProject: geoFence has been updated: {geofenceUidUpdated}");
 
     }
 
-    private async void RollbackAndThrow(UpdateProjectEvent updateProjectEvent, HttpStatusCode httpStatusCode, int errorCode, string exceptionMessage, Repositories.DBModels.Project existing = null)
+    private async Task RollbackAndThrow(UpdateProjectEvent updateProjectEvent, HttpStatusCode httpStatusCode, int errorCode, string exceptionMessage, Repositories.DBModels.Project existing = null)
     {
       log.LogDebug($"Rolling back the Project Update for updateProjectEvent: {updateProjectEvent.ProjectUID.ToString()} subscriptionUidAssigned: {subscriptionUidAssigned}");
 
-      if (!string.IsNullOrEmpty(subscriptionUidAssigned))
-      {
-        await ProjectRequestHelper.DissociateProjectSubscription(updateProjectEvent.ProjectUID,
-          Guid.Parse(subscriptionUidAssigned), customHeaders, subscriptionProxy).ConfigureAwait(false);
-      }
+      await ProjectRequestHelper.DissociateProjectSubscription(updateProjectEvent.ProjectUID, subscriptionUidAssigned, log, customHeaders, subscriptionProxy).ConfigureAwait(false);
 
       if (existing != null)
       {

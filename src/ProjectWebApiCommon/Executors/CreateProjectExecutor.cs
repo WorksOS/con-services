@@ -81,10 +81,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         createProjectEvent.ProjectUID, createProjectEvent.ProjectID, createProjectEvent.CoordinateSystemFileName, 
         createProjectEvent.CoordinateSystemFileContent, true, log, serviceExceptionHandler, customerUid, customHeaders,
         projectRepo, raptorProxy, configStore, fileRepo).ConfigureAwait(false);
+      log.LogDebug($"CreateProject: Created project {createProjectEvent.ProjectUID}");
 
       subscriptionUidAssigned = await ProjectRequestHelper.AssociateProjectSubscriptionInSubscriptionService(createProjectEvent.ProjectUID.ToString(), createProjectEvent.ProjectType, customerUid,
         log, serviceExceptionHandler, customHeaders, subscriptionProxy,subscriptionRepo, projectRepo, true).ConfigureAwait(false);
+      log.LogDebug($"CreateProject: Was projectSubscription Associated? subscriptionUidAssigned: {subscriptionUidAssigned}");
+
       var geofenceUid = await CreateGeofenceInGeofenceService(createProjectEvent).ConfigureAwait(false);
+      log.LogDebug($"CreateProject: Was geofence created by GeofenceSvc? geofenceUid: {geofenceUid}");
+
       AssociateProjectGeofence associateProjectGeofence = null;
       if (geofenceUid != Guid.Empty) // TBC work-around 
       {
@@ -183,21 +188,21 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         geofenceUidCreated = await geofenceProxy.CreateGeofence(project.CustomerUID, project.ProjectName, "", "Project",
           project.ProjectBoundary,
           0, true, Guid.Parse(userId), area, customHeaders).ConfigureAwait(false);
-        log.LogDebug($"CreatingProject: geofenceSvc created geofenceUidCreated: {geofenceUidCreated}");
       }
       catch (Exception e)
       {
         await ProjectRequestHelper.DeleteProjectPermanentlyInDb(project.CustomerUID, project.ProjectUID, log, projectRepo).ConfigureAwait(false);
-        await ProjectRequestHelper.DissociateProjectSubscription(project.ProjectUID, Guid.Parse(subscriptionUidAssigned), customHeaders, subscriptionProxy).ConfigureAwait(false);
+        await ProjectRequestHelper.DissociateProjectSubscription(project.ProjectUID, subscriptionUidAssigned, log, customHeaders, subscriptionProxy).ConfigureAwait(false);
 
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57,
           "geofenceProxy.CreateGeofenceInGeofenceService", e.Message);
       }
+      log.LogDebug($"CreatingProject: Has geofenceSvc created the geofence? geofenceUidCreated: {geofenceUidCreated}");
 
       if (geofenceUidCreated == Guid.Empty)
       {
         await ProjectRequestHelper.DeleteProjectPermanentlyInDb(project.CustomerUID, project.ProjectUID, log, projectRepo).ConfigureAwait(false);
-        await ProjectRequestHelper.DissociateProjectSubscription(project.ProjectUID, Guid.Parse(subscriptionUidAssigned), customHeaders, subscriptionProxy).ConfigureAwait(false);
+        await ProjectRequestHelper.DissociateProjectSubscription(project.ProjectUID, subscriptionUidAssigned, log, customHeaders, subscriptionProxy).ConfigureAwait(false);
 
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 59);
       }
