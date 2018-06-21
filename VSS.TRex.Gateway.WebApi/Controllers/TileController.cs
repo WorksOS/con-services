@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Local.ResultHandling;
 using VSS.TRex.Gateway.Common.Executors;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
@@ -15,10 +16,12 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     {     
     }
 
-    [HttpGet]
+    [HttpPost]
     [Route("api/v1/tile")]
-    public async Task<FileResult> GetTile()
+    public async Task<FileResult> GetTile(/*[FromBody] TileRequest request*/)
     {
+
+      //TileRequest will contain a FilterResult and other parameters 
       Log.LogDebug("GetTile: " + Request.QueryString);
 
       //TODO: Validate request parameters
