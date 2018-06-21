@@ -8,7 +8,7 @@ namespace VSS.MasterData.Models.Utilities
 {
   public class GeofenceValidation
   {
-    public const string POLYGON_WKT = "POLYGON((";
+    public const string POLYGON_WKT = "POLYGON(("; // this constant is referenced from ProjectSvc etal
     public const string ValidationOk = "";
     public const string ValidationNoBoundary = "NoBoundary";
     public const string ValidationLessThan3Points = "LessThan3Points";

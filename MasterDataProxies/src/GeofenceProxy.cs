@@ -97,17 +97,27 @@ namespace VSS.MasterData.Proxies
       };
       await SendRequest<OkResult>("GEOFENCE_API_URL", JsonConvert.SerializeObject(payLoadToSend),
         customHeaders, String.Empty, method, String.Empty);
-      return geofenceGuid;
+
+      ClearCacheItem<GeofenceDataResult>(customerGuid.ToString(), userUid.ToString());
+
+      // potentally another user could have created a geofence, so
+      //    can'y rely on just retrieving one extra Geofence, and it being our new one.
+      //    Ensure the comparer in  GeofenceData only includes the fields we want e.g. NOT GeofenceUid
+      var updatedGeofences = await GetGeofences(customerGuid.ToString(), customHeaders);
+      var geofence = updatedGeofences.FirstOrDefault(g => g.GeofenceUID == geofenceGuid || Equals(g, payLoadToSend));
+      if (geofence == null)
+        return Guid.Empty;
+      return geofence.GeofenceUID;
     }
 
     /// <summary>
     /// Clears an item from the cache
     /// </summary>
-    /// <param name="geofenceUid">The geofenceUid of the item to remove from the cache</param>
+    /// <param name="customerUid">The customerUid of the items to remove from the cache</param>
     /// <param name="userId">The user ID</param>
-    public void ClearCacheItem(string geofenceUid, string userId = null)
+    public void ClearCacheItem(string customerUid, string userId = null)
     {
-      ClearCacheItem<GeofenceData>(geofenceUid, userId);
+      ClearCacheItem<GeofenceDataResult>(customerUid, userId);
     }
 
     public async Task<GeofenceData> GetGeofenceForCustomer(string customerUid, string geofenceUid,
