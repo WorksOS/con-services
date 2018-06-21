@@ -13,6 +13,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
@@ -20,7 +21,7 @@ using VSS.Productivity3D.WebApiModels.Coord.Executors;
 using VSS.Productivity3D.WebApiModels.Coord.Models;
 using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
 using Point = VSS.MasterData.Models.Models.Point;
-using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
+using WGSPoint = VSS.Productivity3D.Models.Models.WGSPoint3D;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {

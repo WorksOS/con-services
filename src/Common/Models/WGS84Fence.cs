@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
+using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.Common.Models
 {
@@ -18,13 +19,13 @@ namespace VSS.Productivity3D.Common.Models
     [MoreThanTwoPoints]
     [JsonProperty(PropertyName = "points", Required = Required.Always)]
     [Required]
-    public WGSPoint[] Points { get; private set; }
+    public WGSPoint3D[] Points { get; private set; }
 
     /// <summary>
     /// Creates the WSG84 fence object.
     /// </summary>
     /// <param name="wgsPoints">The WGS points.</param>
-    public static WGS84Fence CreateWGS84Fence(WGSPoint[] wgsPoints)
+    public static WGS84Fence CreateWGS84Fence(WGSPoint3D[] wgsPoints)
     {
       return new WGS84Fence { Points = wgsPoints };
     }

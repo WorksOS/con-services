@@ -13,6 +13,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
@@ -72,7 +73,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     public void CompactionCellDatumExecutorSuccessNoNECoordinates()
     {
       var request =
-        CellDatumRequest.CreateCellDatumRequest(0, DisplayMode.CCV, WGSPoint.CreatePoint(0.84, -1.75), null, null, -1, null, null);
+        CellDatumRequest.CreateCellDatumRequest(0, DisplayMode.CCV, WGSPoint3D.CreatePoint(0.84, -1.75), null, null, -1, null, null);
 
       TCellProductionData data = new TCellProductionData
       {

@@ -5,6 +5,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApi.Models.Factories.ProductionData

@@ -7,6 +7,7 @@ using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
@@ -45,7 +46,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         _easting);
     }
 
-    private TCoordPointList GetGridCoordinates(long projectId, WGSPoint latLon)
+    private TCoordPointList GetGridCoordinates(long projectId, WGSPoint3D latLon)
     {
       TWGS84FenceContainer latLongs = new TWGS84FenceContainer { FencePoints = new TWGS84Point[] { RaptorConverters.convertWGSPoint(latLon) } };
 

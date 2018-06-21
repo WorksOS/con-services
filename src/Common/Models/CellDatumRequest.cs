@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.Common.Models
 {
@@ -23,7 +24,7 @@ namespace VSS.Productivity3D.Common.Models
       /// May be null.
       /// </summary>       
       [JsonProperty(PropertyName = "llPoint", Required = Required.Default)]
-      public WGSPoint llPoint { get; private set; }
+      public WGSPoint3D llPoint { get; private set; }
 
       /// <summary>
       /// If defined, the grid point in the project coordinate system to identify the cell from.
@@ -66,7 +67,7 @@ namespace VSS.Productivity3D.Common.Models
       public static CellDatumRequest CreateCellDatumRequest(
         long projectId, 
         DisplayMode displayMode, 
-        WGSPoint llPoint, 
+        WGSPoint3D llPoint, 
         Point gridPoint,
         FilterResult filter, 
         long filterId, 

@@ -2,8 +2,9 @@
 using System.Drawing;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Extensions;
-using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
@@ -40,7 +41,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         {
           foreach (var alignmentDescriptor in alignmentDescriptors)
           {
-            IEnumerable<WGSPoint> alignmentPoints = boundingBoxService.GetAlignmentPoints(
+            IEnumerable<WGSPoint3D> alignmentPoints = boundingBoxService.GetAlignmentPoints(
               projectId, alignmentDescriptor);
 
             if (alignmentPoints != null && alignmentPoints.Any())

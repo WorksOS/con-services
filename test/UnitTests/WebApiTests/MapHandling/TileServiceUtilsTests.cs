@@ -2,11 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 using Point = VSS.MasterData.Models.Models.Point;
 using VSS.MasterData.Models.Models;
-using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
+using WGSPoint = VSS.Productivity3D.Models.Models.WGSPoint3D;
 
 namespace VSS.Productivity3D.WebApiTests.MapHandling
 {

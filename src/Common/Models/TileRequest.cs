@@ -4,9 +4,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.Utilities;
+using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Utilities;
 
 namespace VSS.Productivity3D.Common.Models
 {

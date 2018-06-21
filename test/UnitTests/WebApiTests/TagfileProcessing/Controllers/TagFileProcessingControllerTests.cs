@@ -10,6 +10,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models;
 
@@ -20,12 +21,12 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
   {
     private WGS84Fence CreateAFence()
     {
-      List<WGSPoint> points = new List<WGSPoint>
+      List<WGSPoint3D> points = new List<WGSPoint3D>
       {
-        WGSPoint.CreatePoint(0.631986074660308, -2.00757760231466),
-        WGSPoint.CreatePoint(0.631907507374149, -2.00758733949739),
-        WGSPoint.CreatePoint(0.631904485465203, -2.00744352879854),
-        WGSPoint.CreatePoint(0.631987283352491, -2.00743753668608)
+        WGSPoint3D.CreatePoint(0.631986074660308, -2.00757760231466),
+        WGSPoint3D.CreatePoint(0.631907507374149, -2.00758733949739),
+        WGSPoint3D.CreatePoint(0.631904485465203, -2.00744352879854),
+        WGSPoint3D.CreatePoint(0.631987283352491, -2.00743753668608)
       };
 
       return WGS84Fence.CreateWGS84Fence(points.ToArray());

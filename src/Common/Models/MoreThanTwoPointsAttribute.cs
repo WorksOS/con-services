@@ -1,5 +1,6 @@
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
+using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.Common.Models
 {
@@ -19,7 +20,7 @@ namespace VSS.Productivity3D.Common.Models
     /// </returns>
     protected override ValidationResult IsValid(object value, ValidationContext validationContext)
     {
-      WGSPoint[] pointList = (WGSPoint[]) value;
+      WGSPoint3D[] pointList = (WGSPoint3D[]) value;
       if (pointList.Length < 3)
       {
         return new ValidationResult("A polygon boundary must contain at least 3 points.");
