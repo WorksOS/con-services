@@ -13,7 +13,7 @@ Scenario: ProjectStatistics - Excluding Surveyed Surfaces
 		| startTime               | endTime                 | cellSize | indexOriginOffset | maxX      | maxY    | maxZ     | minX    | minY      | minZ     |
 		| 2012-10-30T00:12:09.109 | 2012-11-08T01:00:08.756 | 0.34     | 536870912         | 2913.2900 | 1250.69 | 624.1365 | 2306.05 | 1125.2300 | 591.9538 |
 
-@requireSurveyedSurfaceLargerThanProductionData
+@ignore @requireSurveyedSurfaceLargerThanProductionData
 Scenario: ProjectStatistics - Including Surveyed Surfaces
 	Given a Project Statistics project id 1001158
 	When I request the project statistics
