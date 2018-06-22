@@ -215,7 +215,7 @@ namespace MockProjectWebApi.Controllers
       new ProjectData {LegacyProjectId = 1001210, ProjectUid = "d0a0410e-9fcc-44b1-bf1a-378c891d2ddb"},
       new ProjectData {LegacyProjectId = 1001214, ProjectUid = "8aed6003-b8eb-47b1-941f-096a17468bf0"},
       new ProjectData {LegacyProjectId = 1001276, ProjectUid = Guid.NewGuid().ToString()},
-      new ProjectData {LegacyProjectId = 1001280, ProjectUid = Guid.NewGuid().ToString()},
+      new ProjectData {LegacyProjectId = 1001280, ProjectUid = "04c94921-6343-4ffb-9d35-db9d281743fc"},
       new ProjectData {LegacyProjectId = 1001285, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1001388, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1001544, ProjectUid = Guid.NewGuid().ToString()},
