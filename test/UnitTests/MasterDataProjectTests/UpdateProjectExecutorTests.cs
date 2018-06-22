@@ -580,7 +580,6 @@ namespace VSS.MasterData.ProjectTests
       }
     }
 
-    [TestMethod]
     private async Task<Repositories.DBModels.Project> CreateProject(Guid projectUid, ProjectType projectType, string coordinateSystemFileName = null, byte[] coordinateSystemFileContent = null)
     {
       var createProjectEvent = new CreateProjectEvent()
@@ -656,6 +655,5 @@ namespace VSS.MasterData.ProjectTests
 
       return AutoMapperUtility.Automapper.Map<Repositories.DBModels.Project>(createProjectEvent);
     }
-
   }
 }
