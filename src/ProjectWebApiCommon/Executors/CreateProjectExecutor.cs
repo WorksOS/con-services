@@ -184,7 +184,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       try
       {
         var area = GeofenceValidation.CalculateAreaSqMeters(project.ProjectBoundary);
-
+        log.LogDebug($"CreateProject: Going to create Geofence. Area: {area}, customerUid: {customerUid}");
         geofenceUidCreated = await geofenceProxy.CreateGeofence(project.CustomerUID, project.ProjectName, "", "Project",
           project.ProjectBoundary,
           0, true, Guid.Parse(userId), area, customHeaders).ConfigureAwait(false);

@@ -182,6 +182,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       try
       {
         var area = GeofenceValidation.CalculateAreaSqMeters(updateProjectEvent.ProjectBoundary);
+        log.LogDebug($"UpdateProject: Going to update Geofence. Area: {area}, customerUid: {customerUid}");
         geofenceUidUpdated = await geofenceProxy.UpdateGeofence(geofence.GeofenceUID, Guid.Parse(customerUid),
           geofence.GeofenceName,
           geofence.Description, geofence.GeofenceType,
