@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Newtonsoft.Json;
 using VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
 {
   public class MachineLiftDetails : MachineDetails
   {
-    public LiftDetails[] lifts { get; private set; }
+    [JsonProperty(PropertyName = "lifts")]
+    public LiftDetails[] Lifts { get; private set; }
 
     /// <summary>
     /// Static constructor.
@@ -17,14 +18,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
         AssetId = assetId,
         MachineName = machineName,
         IsJohnDoe = isJohnDoe,
-        lifts = lifts
+        Lifts = lifts
       };
     }
-  }
-
-  public class LiftDetails
-  {
-    public long layerId { get; set; }
-    public DateTime endUtc { get; set; }
   }
 }

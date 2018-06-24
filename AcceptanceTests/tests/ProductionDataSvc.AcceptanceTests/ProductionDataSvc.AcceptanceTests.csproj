@@ -131,6 +131,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CompactionCellDatum.feature</DependentUpon>
     </Compile>
+    <Compile Include="CompactionMachineLiftIds.feature.cs">
+      <DependentUpon>CompactionMachineLiftIds.feature</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="EditData.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -439,6 +444,7 @@
     <Compile Include="StepDefinitions\CompactionCmvSteps.cs" />
     <Compile Include="StepDefinitions\CompactionCutFillSteps.cs" />
     <Compile Include="StepDefinitions\CompactionElevationSteps.cs" />
+    <Compile Include="StepDefinitions\CompactionMachineLiftIdsSteps.cs" />
     <Compile Include="StepDefinitions\CompactionMdpSteps.cs" />
     <Compile Include="StepDefinitions\CompactionPaletteSteps.cs" />
     <Compile Include="StepDefinitions\CompactionPassCountSteps.cs" />
@@ -658,6 +664,10 @@
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>GetDesignBoundaries.feature.cs</LastGenOutput>
     </None>
+    <None Include="CompactionMachineLiftIds.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>CompactionMachineLiftIds.feature.cs</LastGenOutput>
+    </None>
     <None Include="GetLifts.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>GetLifts.feature.cs</LastGenOutput>
@@ -820,6 +830,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\CompactionGetTemperatureDataResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CompactionMachineLiftIdsResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\CompactionReportTileResponse.json">

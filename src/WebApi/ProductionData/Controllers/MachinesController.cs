@@ -308,7 +308,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         {
           liftDetailsList.Add(MachineLiftDetails.CreateMachineLiftDetails(
               machine.AssetId, machine.MachineName, machine.IsJohnDoe,
-              filteredLayers.Select(f => new LiftDetails { layerId = f.LayerId, endUtc = f.EndDate }).ToArray()));
+              filteredLayers.Select(f => new LiftDetails { LayerId = f.LayerId, EndUtc = f.EndDate }).ToArray()));
         }
       }
 

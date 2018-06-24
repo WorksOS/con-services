@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
 using TechTalk.SpecFlow;
@@ -30,13 +29,6 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     {
       mdpSummaryRequester.QueryString.Add("ProjectUid", projectUid);
     }
-    /*
-    [Given(@"designUid ""(.*)""")]
-    public void GivenDesignUid(string designUid)
-    {
-      mdpSummaryRequester.QueryString.Add("designUid", designUid);
-    }
-    */
 
     [Given(@"filterUid ""(.*)""")]
     public void GivenDesignUid(string filterUid)
