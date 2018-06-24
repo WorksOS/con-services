@@ -17,7 +17,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// retrieved from the server.
     /// </summary>
     [Serializable]
-    public class ClientLeafSubGrid : SubGrid, IClientLeafSubGrid
+    public abstract class ClientLeafSubGrid : SubGrid, IClientLeafSubGrid
     {
         /// <summary>
         /// Enumeration indicating type of grid data held in this client leaf sub grid
@@ -45,6 +45,10 @@ namespace VSS.TRex.SubGridTrees.Client
         /// Is data extraction limited to the top identified layer of materials in each cell
         /// </summary>
         public bool TopLayerOnly { get; set; }
+
+        public abstract void FillWithTestPattern();
+
+        public abstract bool LeafContentEquals(IClientLeafSubGrid other);
 
         /// <summary>
         /// The requested display mode driving the request of these subgrids of data
@@ -142,7 +146,10 @@ namespace VSS.TRex.SubGridTrees.Client
             return false;
         }
 
-      public PopulationControlFlags EventPopulationFlags { get; set; } = PopulationControlFlags.None;
+        /// <summary>
+        /// The set of population control flags this client wants enabled in the course of servicing requests
+        /// </summary>
+        public PopulationControlFlags EventPopulationFlags { get; set; } = PopulationControlFlags.None;
 
         public virtual bool WantsLiftProcessingResults() => false;
 

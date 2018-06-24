@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.SubGridTrees
@@ -11,14 +10,13 @@ namespace VSS.TRex.SubGridTrees
     /// <typeparam name="T"></typeparam>
     public class GenericLeafSubGrid<T> : SubGrid, ILeafSubGrid
     {
-        public T[,] Items;
+        public T[,] Items = new T[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
 
         /// <summary>
         /// Default no-arg constructor
         /// </summary>
         public GenericLeafSubGrid()
         {
-            Clear();
         }
 
         /// <summary>
@@ -29,7 +27,6 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="level"></param>
         public GenericLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level) : base(owner, parent, level)
         {
-            Clear();
         }
 
         /// <summary>
@@ -45,9 +42,7 @@ namespace VSS.TRex.SubGridTrees
                 for (byte J = 0; J < SubGridTree.SubGridTreeDimension; J++)
                 {
                     if (!functor(Items[I, J]))
-                    {
                         return false;
-                    }
                 }
             }
 
@@ -56,8 +51,6 @@ namespace VSS.TRex.SubGridTrees
 
         public override void Clear()
         {
-            // Recreate the array. .Net will initialise the memory used to zero's effecting the clear
-            Items = new T[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
         }
 
         /// <summary>

@@ -65,13 +65,13 @@ namespace VSS.TRex.Tests
 
             ISubGrid leaf = factory.GetSubGrid(tree, 6);
             Assert.NotNull(leaf);
-            Assert.True(leaf is LeafSubGrid, "Factory did not create node subgrid for tree level 6.");
+            Assert.True(leaf is LeafSubGrid, "Factory did not create leaf subgrid for tree level 6.");
         }
 
         [Fact]
         public void Test_SubGridClientLeafFactory_Creation()
         {
-            IClientLeafSubgridFactory factory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
+            IClientLeafSubgridFactory factory = ClientLeafSubgridFactoryFactory.Factory();
 
             Assert.NotNull(factory);
 
@@ -87,7 +87,7 @@ namespace VSS.TRex.Tests
         [Fact]
         public void Test_SubGridClientLeafFactory_Recycling()
         {
-            IClientLeafSubgridFactory factory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
+            IClientLeafSubgridFactory factory = ClientLeafSubgridFactoryFactory.Factory();
 
             Assert.NotNull(factory);
 
@@ -105,7 +105,7 @@ namespace VSS.TRex.Tests
         [Fact]
         public void Test_SubGridClientLeafFactory_Reuse()
         {
-            IClientLeafSubgridFactory factory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
+            IClientLeafSubgridFactory factory = ClientLeafSubgridFactoryFactory.Factory();
 
             Assert.NotNull(factory);
 

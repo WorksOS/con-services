@@ -7,12 +7,27 @@ using VSS.TRex.SubGridTrees.Utilities;
 namespace VSS.TRex.SubGridTrees.Client
 {
   [Serializable]
-    public class GenericClientLeafSubGrid<T> : ClientLeafSubGrid, IGenericClientLeafSubGrid<T>
+    public abstract class GenericClientLeafSubGrid<T> : ClientLeafSubGrid, IGenericClientLeafSubGrid<T>
   {
         private static ILogger Log = Logging.Logger.CreateLogger("GenericClientLeafSubGrid");
 
-        public T[,] Cells { get; set; }
-  
+        /// <summary>
+        /// The array of cell values this subgrid client class maintains
+        /// </summary>
+        public T[,] Cells { get; set; } = new T[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+
+        /// <summary>
+        /// The array of null values to be used to set all cell values to their client grid respective value
+        /// It is the responsibility of the derived class to proved a class constructor to initialise the
+        /// values NullCells to the correct nu ll values
+        /// </summary>
+        protected static T[,] NullCells = new T[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+
+        /// <summary>
+        /// Represented a T element configured as the null value for cells is this client leafe subgrid
+        /// </summary>
+        public abstract T NullCell(); // => default(T);
+
         /// <summary>
         /// Main constructor. Creates the local generic Items[,] array and delegates to base(...)
         /// </summary>
@@ -23,7 +38,6 @@ namespace VSS.TRex.SubGridTrees.Client
         /// <param name="indexOriginOffset"></param>
         public GenericClientLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
         {
-            Clear();
         }
 
         /// <summary>
@@ -66,50 +80,44 @@ namespace VSS.TRex.SubGridTrees.Client
             }
         }
 
-        /// <summary>
-        /// Iterates over all the cells in the leaf subgrid calling functor on each of them.
-        /// Both non-null and null values are presented to functor.
-        /// </summary>
-        /// <param name="functor"></param>
-        /// <returns></returns>
-        public static void ForEach(Action<byte, byte> functor) => SubGridUtilities.SubGridDimensionalIterator((x, y) => functor((byte)x, (byte)y));
-
         public override void Clear()
         {
-            // Recreate the array. .Net will initialise the memory used to zero's effecting the clear
-            Cells = new T[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+          Array.Copy(NullCells, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid);
+
+          // Recreate the array. .Net will initialise the memory used to zero's effecting the clear
+          // Cells = new T[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
         }
 
-/*
-        /// <summary>
-        /// Write the contents of leaf sub grid using the supplied formatter
-        /// </summary>
-        /// <param name="formatter"></param>
-        /// <param name="stream"></param>
-        public override void Write(BinaryFormatter formatter, Stream stream)
-        {
-            base.Write(formatter, stream);
+    /*
+            /// <summary>
+            /// Write the contents of leaf sub grid using the supplied formatter
+            /// </summary>
+            /// <param name="formatter"></param>
+            /// <param name="stream"></param>
+            public override void Write(BinaryFormatter formatter, Stream stream)
+            {
+                base.Write(formatter, stream);
 
-            formatter.Serialize(stream, Cells);
-        }
+                formatter.Serialize(stream, Cells);
+            }
 
-        /// <summary>
-        /// Fill the contents of the leaf sub grid reading the binary representation using the provided formatter
-        /// </summary>
-        /// <param name="formatter"></param>
-        /// <param name="stream"></param>
-        public override void Read(BinaryFormatter formatter, Stream stream)
-        {
-            base.Read(formatter, stream);
+            /// <summary>
+            /// Fill the contents of the leaf sub grid reading the binary representation using the provided formatter
+            /// </summary>
+            /// <param name="formatter"></param>
+            /// <param name="stream"></param>
+            public override void Read(BinaryFormatter formatter, Stream stream)
+            {
+                base.Read(formatter, stream);
 
-            Cells = (T[,])formatter.Deserialize(stream);
-        }
-*/
+                Cells = (T[,])formatter.Deserialize(stream);
+            }
+    */
 
-        /// <summary>
-        /// Dumps the contents of this client leaf subgrid into the log in a human readable form
-        /// </summary>
-        public override void DumpToLog(string title)
+    /// <summary>
+    /// Dumps the contents of this client leaf subgrid into the log in a human readable form
+    /// </summary>
+    public override void DumpToLog(string title)
         {
           Log.LogDebug($"Subgrid {Moniker()}: {title}");
         }
@@ -125,5 +133,5 @@ namespace VSS.TRex.SubGridTrees.Client
             // Derived classes are responsible for performing assignation of the Cells structure as they can use optimal methods such as BlockCopy()
             // ForEach((x, y) => Cells[x, y] = source.Cells[x, y]);
         }
-    }
+  }
 }

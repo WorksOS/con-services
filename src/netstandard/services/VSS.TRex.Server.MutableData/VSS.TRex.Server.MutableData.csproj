@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\RaptorClassLibrary.netstandard\RaptorClassLibrary.netstandard.csproj" />
+    <ProjectReference Include="..\..\RaptorClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj" />
   </ItemGroup>
 
   <ItemGroup>

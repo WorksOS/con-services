@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Filters;
@@ -80,7 +79,7 @@ namespace VSS.TRex.Profiling
     /// </summary>
     public FilteredMultiplePassInfo Passes;
 
-    public bool[] FilteredPassFlags;
+    public bool[] FilteredPassFlags = new bool[0];
     public int FilteredPassCount;
     public int FilteredHalfPassCount;
     public ProfileCellAttributeExistenceFlags AttributeExistenceFlags;
@@ -119,7 +118,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Constructs a profiler from a given set of filtered passes and the location of the cell on the profile line
+    /// Constructs a profiler layer from a given set of filtered passes and the location of the cell on the profile line
     /// </summary>
     /// <param name="filteredPassInfo"></param>
     /// <param name="oTGX"></param>
@@ -157,10 +156,17 @@ namespace VSS.TRex.Profiling
       }
     }
 
+    /// <summary>
+    /// Determines if the internal layer contains no cell passes from the internal stack of cell passes.
+    /// Note: Thsi count is derived from teh start and stop index within the list of cells; layers do
+    /// not separately contain the cell passes themselves.
+    /// </summary>
+    /// <returns></returns>
     public bool IsEmpty()
     {
       try
       {
+        // ReSharper disable once UseMethodAny.2
         return Layers.Count() == 0;
       }
       catch
@@ -169,8 +175,16 @@ namespace VSS.TRex.Profiling
       }
     }
 
+    /// <summary>
+    /// Returns the height of the top most (latest in time) cell pass within the cell passes in this layer
+    /// </summary>
+    /// <returns></returns>
     public float TopMostHeight() => IsEmpty() ? 0 : Layers.Last().Height;
 
+    /// <summary>
+    /// Constructs a new layer from the set of cell passes contained in a multiple cell pass filtering result
+    /// </summary>
+    /// <param name="filteredPassValues"></param>
     public void AddLayer(FilteredMultiplePassInfo filteredPassValues)
     {
       if (Layers.Count() != 0)
@@ -192,6 +206,11 @@ namespace VSS.TRex.Profiling
       AddLayer(NewLayer, LayerRecycledIndex);
     }
 
+    /// <summary>
+    /// Adds a new layer to the layers collection for this cell
+    /// </summary>
+    /// <param name="layer"></param>
+    /// <param name="layerRecycledIndex"></param>
     public void AddLayer(ProfileLayer layer, int layerRecycledIndex)
     {
       // ReSharper disable once UseMethodAny.2
@@ -206,7 +225,11 @@ namespace VSS.TRex.Profiling
       Layers.Add(layer, layerRecycledIndex);
     }
 
-
+    /// <summary>
+    /// Requests a new layer, which may be provision from the recycle list in the layer
+    /// </summary>
+    /// <param name="layerRecycledIndex"></param>
+    /// <returns></returns>
     public ProfileLayer RequestNewLayer(out int layerRecycledIndex)
     {
       ProfileLayer result = Layers.GetRecycledLayer(out layerRecycledIndex);
@@ -219,10 +242,14 @@ namespace VSS.TRex.Profiling
       return result;
     }
 
-    public void SetFirstLastHighestLowestElevations(bool hasElevationTypeFilter, Types.ElevationType elevationType)
+    /// <summary>
+    /// Compute the first, last, lowest and highest elevations for the set of cell passes in the layer
+    /// </summary>
+    /// <param name="hasElevationTypeFilter"></param>
+    /// <param name="elevationType"></param>
+    public void SetFirstLastHighestLowestElevations(bool hasElevationTypeFilter, ElevationType elevationType)
     {
       for (int j = 0; j < Layers.Count(); j++) // from oldest to newest
-        //with FLayers[j] do
       {
         if (FilteredPassCount > 0)
         {
@@ -243,33 +270,32 @@ namespace VSS.TRex.Profiling
         }
       }
 
-      if (hasElevationTypeFilter
-      ) // this means we are only interested in one pass so other results should match elev type selected
-      {
+      if (hasElevationTypeFilter)
+      { // this means we are only interested in one pass so other results should match elev type selected
         switch (elevationType)
         {
-          case Types.ElevationType.Last:
+          case ElevationType.Last:
           {
             CellLowestElev = CellLastElev;
             CellHighestElev = CellLastElev;
             CellFirstElev = CellLastElev;
             break;
           }
-          case Types.ElevationType.First:
+          case ElevationType.First:
           {
             CellLowestElev = CellFirstElev;
             CellHighestElev = CellFirstElev;
             CellLastElev = CellFirstElev;
             break;
           }
-          case Types.ElevationType.Highest:
+          case ElevationType.Highest:
           {
             CellLowestElev = CellHighestElev;
             CellFirstElev = CellHighestElev;
             CellLastElev = CellHighestElev;
             break;
           }
-          case Types.ElevationType.Lowest:
+          case ElevationType.Lowest:
           {
             CellHighestElev = CellLowestElev;
             CellFirstElev = CellLowestElev;
@@ -280,6 +306,9 @@ namespace VSS.TRex.Profiling
       }
     }
 
+    /// <summary>
+    /// Clears all layers in this cell
+    /// </summary>
     public void ClearLayers() => Layers.Clear();
 
     /// <summary>
@@ -290,9 +319,6 @@ namespace VSS.TRex.Profiling
     public void CheckLiftCompaction(ProfileLayer layer, /*todo const LiftBuildSettings :TICLiftBuildSettings; */
       GridDataType gridDataType)
     {
-      short ATargetCCV;
-      short ATargetMDP;
-
       // CCA tracking vars
       int Tolerance = Dummy_LiftBuildSettings.CCATolerance;
       bool TargetMeet = false;
@@ -304,16 +330,14 @@ namespace VSS.TRex.Profiling
       bool IsMDP = gridDataType == GridDataType.MDP || gridDataType == GridDataType.MDPPercent;
       bool IsCCA = gridDataType == GridDataType.CCA || gridDataType == GridDataType.CCAPercent;
 
-      ATargetCCV = Dummy_LiftBuildSettings.OverrideMachineCCV
+      short ATargetCCV = Dummy_LiftBuildSettings.OverrideMachineCCV
         ? Dummy_LiftBuildSettings.OverridingMachineCCV
         : CellPass.NullCCV;
-      ATargetMDP = Dummy_LiftBuildSettings.OverrideMachineMDP
+      short ATargetMDP = Dummy_LiftBuildSettings.OverrideMachineMDP
         ? Dummy_LiftBuildSettings.OverridingMachineMDP
         : CellPass.NullMDP;
 
-//  with Layer do
       for (int I = layer.EndCellPassIdx; I >= layer.StartCellPassIdx; I--)
-        //with Passes.FilteredPassData[I] do
       {
         if (Passes.FilteredPassData[I].FilteredPass.CCV == CellPass.NullCCV &&
             Passes.FilteredPassData[I].FilteredPass.MDP == CellPass.NullMDP &&
@@ -404,6 +428,10 @@ namespace VSS.TRex.Profiling
       }
     }
 
+    /// <summary>
+    /// Checks and modifies the min and max speed values for the cell based on a supplied speed value from a cell pass.
+    /// </summary>
+    /// <param name="speed"></param>
     public void AnalyzeSpeedTargets(ushort speed)
     {
       if (CellMinSpeed > speed)
@@ -411,7 +439,6 @@ namespace VSS.TRex.Profiling
       if (CellMaxSpeed < speed)
         CellMaxSpeed = speed;
     }
-
   }
 
   //procedure ReadFromStream(const Stream : TStream; APassesPackager : TICFilteredMultiplePassInfoPackager);

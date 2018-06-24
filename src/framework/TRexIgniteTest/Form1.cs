@@ -10,6 +10,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using VSS.TRex.Analytics.CMVStatistics.Details;
+using VSS.TRex.Analytics.CMVStatistics.GridFabric.Details;
+using VSS.TRex.Analytics.CMVStatistics.GridFabric.Summary;
+using VSS.TRex.Analytics.CMVStatistics.Summary;
+using VSS.TRex.Analytics.CutFillStatistics;
+using VSS.TRex.Analytics.Foundation.Models;
 using VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
@@ -17,7 +23,14 @@ using VSS.TRex.TAGFiles.GridFabric.Requests;
 using VSS.TRex.DesignProfiling;
 using VSS.TRex.Analytics.Operations;
 using VSS.TRex.Analytics.GridFabric.Arguments;
+using VSS.TRex.Analytics.MDPStatistics;
+using VSS.TRex.Analytics.MDPStatistics.GridFabric;
 using VSS.TRex.Analytics.Models;
+using VSS.TRex.Analytics.PassCountStatistics;
+using VSS.TRex.Analytics.PassCountStatistics.Details;
+using VSS.TRex.Analytics.PassCountStatistics.GridFabric.Details;
+using VSS.TRex.Analytics.PassCountStatistics.GridFabric.Summary;
+using VSS.TRex.Analytics.PassCountStatistics.Summary;
 using VSS.TRex.Analytics.SpeedStatistics;
 using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
 using VSS.TRex.Analytics.TemperatureStatistics;
@@ -34,6 +47,9 @@ using VSS.TRex.GridFabric.Caches;
 using VSS.TRex.GridFabric.Events;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Queues;
+using VSS.TRex.Profiling.GridFabric.Arguments;
+using VSS.TRex.Profiling.GridFabric.Responses;
+using VSS.TRex.Profiling.Servers.Client;
 using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.Servers.Client;
 using VSS.TRex.Servers;
@@ -60,6 +76,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 		TileRenderingServer tileRenderServer;
 		SimpleVolumesServer simpleVolumesServer;
 		MutableClientServer mutableClient;
+	  ProfilingServer profilingServer;
 
 		SiteModelAttributesChangedEventListener SiteModelAttrubutesChanged;
 
@@ -83,7 +100,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 		{
 				// Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
 				// SiteModel siteModel = GenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
-            ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+        ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
 
 				if (siteModel == null)
 				{
@@ -93,7 +110,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 
 				try
 				{
-						CellPassAttributeFilter AttributeFilter = new CellPassAttributeFilter(/*siteModel*/)
+						CellPassAttributeFilter AttributeFilter = new CellPassAttributeFilter
 						{
 								ReturnEarliestFilteredCellPass = returnEarliestFilteredCellPass,
 								HasElevationTypeFilter = true,
@@ -101,7 +118,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 								SurveyedSurfaceExclusionList = GetSurveyedSurfaceExclusionList(siteModel)
 						};
 
-						CellSpatialFilter SpatialFilter = new CellSpatialFilter()
+						CellSpatialFilter SpatialFilter = new CellSpatialFilter
 						{
 								CoordsAreGrid = true,
 								IsSpatial = true,
@@ -120,6 +137,9 @@ namespace VSS.TRex.IgnitePOC.TestApp
 							(cmbDesigns.Items.Count == 0) ? Guid.Empty : (cmbDesigns.SelectedValue as Design).ID// DesignDescriptor
 						)) as TileRenderResponse_Framework;
 
+        //TEST: compute profile first (reduces churn in other branches
+				 // PerformProfile();
+
 						return response?.TileBitmap;
 				}
 				catch (Exception E)
@@ -129,9 +149,36 @@ namespace VSS.TRex.IgnitePOC.TestApp
 				}
 		}
 
-		private BoundingWorldExtent3D GetZoomAllExtents()
+	  private void PerformProfile()
+	  {
+	    ProfileRequestArgument_ApplicationService arg = new ProfileRequestArgument_ApplicationService
+	    {
+	      ProjectID = ID(),
+	      ProfileTypeRequired = GridDataType.Height,
+	      PositionsAreGrid = true,
+	      Filters = new FilterSet(new[] {new CombinedFilter()}),
+	      CutFillDesignID = Guid.Empty,
+	      StartPoint = new WGS84Point(lon: extents.MinX, lat: extents.MinY),
+	      EndPoint = new WGS84Point(lon: extents.MaxX, lat: extents.MaxY),
+	      ReturnAllPassesAndLayers = false,
+	      DesignDescriptor = DesignDescriptor.Null()
+	    };
+
+      // Compute a profile from the bottom left of the screen extents to the top right 
+      ProfileRequestResponse Response = profilingServer.ComputeProfile(arg);
+
+	    if (Response == null)
+	      MessageBox.Show("Profile response is null");
+	    else
+	    if (Response.ProfileCells == null)
+	      MessageBox.Show("Profile response contains no profile cells");
+	    else
+	      MessageBox.Show($"Profile line returned a profile result of {Response?.ResultStatus} and {Response?.ProfileCells?.Count ?? 0} cells");
+	  }
+
+	  private BoundingWorldExtent3D GetZoomAllExtents()
 		{
-            ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+        ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
 
 				if (siteModel != null)
 				{
@@ -156,6 +203,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 				tileRenderServer = TileRenderingServer.NewInstance(new[] { ApplicationServiceServer.DEFAULT_ROLE_CLIENT, ServerRoles.TILE_RENDERING_NODE });
 				simpleVolumesServer = SimpleVolumesServer.NewInstance(new [] { ApplicationServiceServer.DEFAULT_ROLE_CLIENT });
 				mutableClient = new MutableClientServer("TestApplication");
+        profilingServer = ProfilingServer.NewInstance(new[] { ApplicationServiceServer.DEFAULT_ROLE_CLIENT, ServerRoles.ASNODE_PROFILER});
 
 				// Instantiate a site model changed listener to catch changes to site model attributes
 				SiteModelAttrubutesChanged = new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName());
@@ -163,11 +211,15 @@ namespace VSS.TRex.IgnitePOC.TestApp
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
+		  textBoxTest.AutoSize = false;
+		  textBoxTest.Visible = false;
+		  textBoxTest.Height = pictureBox1.Height;
+		  textBoxTest.Width = pictureBox1.Width;
 		}
 
 		private void fitExtentsToView(int width, int height)
 		{
-				double Aspect = (1.0 * height) / (1.0 * width);
+				double Aspect = height / (double)width;
 
 				if ((extents.SizeX / extents.SizeY) > Aspect)
 				{
@@ -635,42 +687,51 @@ namespace VSS.TRex.IgnitePOC.TestApp
 		/// <param name="e"></param>
 		private void button2_Click(object sender, EventArgs e)
 		{
-				if (MessageBox.Show("This may take some time...", "Confirmation", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
-				{
-						return;
-				}
+			if (MessageBox.Show("This may take some time...", "Confirmation", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
+				return;
+      
+			try
+			{
+			  PriorProcessingMessage();
 
-				try
-				{
-						IIgnite ignite = TRexGridFactory.Grid(TRexGrids.MutableGridName());
+        IIgnite ignite = TRexGridFactory.Grid(TRexGrids.MutableGridName());
 
-						if (ignite != null)
-						{
-								string result = CalculateCacheStatistics(TRexCaches.MutableNonSpatialCacheName(), ignite.GetCache<object, byte[]>(TRexCaches.MutableNonSpatialCacheName())) + "\n" +
-																CalculateCacheStatistics(TRexCaches.MutableSpatialCacheName(), ignite.GetCache<object, byte[]>(TRexCaches.MutableSpatialCacheName()));
-								MessageBox.Show(result, "Mutable Statistics");
-						}
-						else
-						{
-								MessageBox.Show("No Ignite referece for mutable Statistics");
-						}
-
-						ignite = TRexGridFactory.Grid(TRexGrids.ImmutableGridName());
-						if (ignite != null)
-						{
-								string result = CalculateCacheStatistics(TRexCaches.ImmutableNonSpatialCacheName(), ignite.GetCache<object, byte[]>(TRexCaches.ImmutableNonSpatialCacheName())) + "\n" +
-																CalculateCacheStatistics(TRexCaches.ImmutableSpatialCacheName(), ignite.GetCache<object, byte[]>(TRexCaches.ImmutableSpatialCacheName()));
-								MessageBox.Show(result, "Immutable Statistics");
-						}
-						else
-						{
-								MessageBox.Show("No Ignite referece for immutable Statistics");
-						}
-				}
-				catch (Exception ee)
+        textBoxTest.Text = String.Empty;
+			  
+				if (ignite != null)
 				{
-						MessageBox.Show(ee.ToString(), "An error occurred");
-				}
+				  string result1 = CalculateCacheStatistics(TRexCaches.MutableNonSpatialCacheName(), ignite.GetCache<object, byte[]>(TRexCaches.MutableNonSpatialCacheName()));
+				  string result2 = CalculateCacheStatistics(TRexCaches.MutableSpatialCacheName(), ignite.GetCache<object, byte[]>(TRexCaches.MutableSpatialCacheName()));
+
+				  AppendTextBoxWothNewLine("Mutable Statistics");
+          AppendTextBoxWothNewLine("==================================================");
+          AppendTextBoxWothNewLine(result1);
+				  AppendTextBoxWothNewLine(result2);
+        }
+				else
+					AppendTextBoxWothNewLine("No Ignite referece for mutable Statistics");
+
+				ignite = TRexGridFactory.Grid(TRexGrids.ImmutableGridName());
+				if (ignite != null)
+				{
+				  string result1 = CalculateCacheStatistics(TRexCaches.ImmutableNonSpatialCacheName(), ignite.GetCache<object, byte[]>(TRexCaches.ImmutableNonSpatialCacheName()));
+					string result2 = CalculateCacheStatistics(TRexCaches.ImmutableSpatialCacheName(), ignite.GetCache<object, byte[]>(TRexCaches.ImmutableSpatialCacheName()));
+
+				  AppendTextBoxWothNewLine("Immutable Statistics");
+				  AppendTextBoxWothNewLine("==================================================");
+				  AppendTextBoxWothNewLine(result1);
+				  AppendTextBoxWothNewLine(result2);
+        }
+        else
+				  AppendTextBoxWothNewLine("No Ignite referece for immutable Statistics");
+			}
+			catch (Exception ee)
+			{
+			  textBoxTest.Text = String.Empty;
+			  AppendTextBoxWothNewLine("An error occurred:");
+			  AppendTextBoxWothNewLine("==============================================================================================================================================");
+        AppendTextBoxWothNewLine(ee.ToString());
+			}
 		}
 
 		/// <summary>
@@ -746,16 +807,23 @@ namespace VSS.TRex.IgnitePOC.TestApp
 		{
 	// Calculate a simple volume based on a filter to filter, earliest to latest context, for the visible extents on the screen
 				Cursor.Current = Cursors.WaitCursor;
+
+        PriorProcessingMessage();
+
 				SimpleVolumesResponse volume = PerformVolume(true);
+
+        textBoxTest.Text = String.Empty;
 
 				if (volume == null)
 				{
-						MessageBox.Show("Volume retuned no response");
-						return;
+				  textBoxTest.Text = "Volume retuned no response";
+					return;
 				}
 			Cursor.Current = Cursors.Default;
 
-			MessageBox.Show($"Simple Volume Response [Screen Extents]:\n{volume}");
+      AppendTextBoxWothNewLine("Simple Volume Response [Screen Extents]:");
+		  AppendTextBoxWothNewLine("================================================");
+      AppendTextBoxWothNewLine($"{volume}");
 		}
 
 		private void pictureBox1_Click(object sender, EventArgs e)
@@ -813,17 +881,30 @@ namespace VSS.TRex.IgnitePOC.TestApp
 			Stopwatch sw = new Stopwatch();
 			sw.Start();
 
+      PriorProcessingMessage();
+
 			CutFillOperation operation = new CutFillOperation();
 			CutFillResult result = operation.Execute(new CutFillStatisticsArgument()
 			{
-					DataModelID = siteModel.ID,
+			    ProjectID = siteModel.ID,
 					Filters = new FilterSet {Filters = new [] { new CombinedFilter() } },
 					DesignID = (cmbDesigns.Items.Count == 0) ? Guid.Empty : (cmbDesigns.SelectedValue as Design).ID,
 					Offsets = offsets
 			});
 
-			// Show the list of percentages calculated by the request
-			MessageBox.Show($"Results (in {sw.Elapsed}) [Cut/Fill:{offsets.Aggregate("", (a, v) => a + $"{ v.ToString("F1")}, ")}]: {(result?.Percents == null ? "No Result" : result.Percents?.Aggregate("", (a, v) => a + $"{v.ToString("F1")}% "))}");
+      textBoxTest.Text = String.Empty;
+
+		  if (result != null)
+		  {
+		    // Show the list of percentages calculated by the request
+		    AppendTextBoxWothNewLine($"Cut/Fill details Results (in {sw.Elapsed}");
+		    AppendTextBoxWothNewLine("================================================");
+		    for (int i = 0; i < offsets.Length; i++)
+		      AppendTextBoxWothNewLine($"{offsets[i]} - {result.Percents[i]:##0.#0}%");
+
+      }
+      else
+		    AppendTextBoxWothNewLine("No Result");
 		}
 
 		private void TemperatureSummaryButton_Click(object sender, EventArgs e)
@@ -834,26 +915,35 @@ namespace VSS.TRex.IgnitePOC.TestApp
 			sw. Start();
 			try
 			{
+        PriorProcessingMessage();
+
 				TemperatureOperation operation = new TemperatureOperation();
 				TemperatureResult result = operation.Execute(
 					new TemperatureStatisticsArgument()
 					{
-						DataModelID = siteModel.ID, 
+					  ProjectID = siteModel.ID, 
 						Filters = new FilterSet() { Filters = new []{new CombinedFilter() }},
 						OverrideTemperatureWarningLevels = true,
 						OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(10, 150)
 					}
 				);
 
-				if (result != null)
-					MessageBox.Show($"Temperature Summary Results (in {sw.Elapsed}) :\n " +
-					                $"Minimum Temperature: {result.MinimumTemperature} \n " +
-					                $"Maximum Temperature: {result.MaximumTemperature} \n " +
-													$"Above Temperature Percentage: {result.AboveTargetPercent} \n " +
-													$"Within Temperature Percentage Range: {result.WithinTargetPercent} \n " +
-													$"Below Temperature Percentage: {result.BelowTargetPercent} \n " +
-													$"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters} \n " +
-													$"Is Target Temperature Constant: {result.IsTargetTemperatureConstant}");
+        textBoxTest.Text = String.Empty;
+
+			  if (result != null)
+			  {
+			    AppendTextBoxWothNewLine($"Temperature Summary Results (in {sw.Elapsed}) :");
+			    AppendTextBoxWothNewLine("================================================");
+          AppendTextBoxWothNewLine($"Minimum Temperature: {result.MinimumTemperature}");
+			    AppendTextBoxWothNewLine($"Maximum Temperature: {result.MaximumTemperature}");
+			    AppendTextBoxWothNewLine($"Above Temperature Percentage: {result.AboveTargetPercent}");
+			    AppendTextBoxWothNewLine($"Within Temperature Percentage Range: {result.WithinTargetPercent}");
+			    AppendTextBoxWothNewLine($"Below Temperature Percentage: {result.BelowTargetPercent}");
+			    AppendTextBoxWothNewLine($"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
+          AppendTextBoxWothNewLine($"Is Target Temperature Constant: {result.IsTargetTemperatureConstant}");
+			  }
+			  else
+          AppendTextBoxWothNewLine("No result");
 			}
 			finally
 			{
@@ -901,18 +991,25 @@ namespace VSS.TRex.IgnitePOC.TestApp
 
 		private void btnCalcAll_Click(object sender, EventArgs e)
 		{
-				// Calculate a simple volume based on a filter to filter, earliest to latest context for the entire model
-				Cursor.Current = Cursors.WaitCursor;
-				SimpleVolumesResponse volume = PerformVolume(false);
+			// Calculate a simple volume based on a filter to filter, earliest to latest context for the entire model
+			Cursor.Current = Cursors.WaitCursor;
 
-				if (volume == null)
-				{
-						MessageBox.Show("Volume retuned no response");
-						return;
-				}
-				Cursor.Current = Cursors.Default;
+      PriorProcessingMessage();
 
-				MessageBox.Show($"Simple Volume Response [Model Extents]:\n{volume}");
+			SimpleVolumesResponse volume = PerformVolume(false);
+
+      textBoxTest.Text = String.Empty;
+
+			if (volume == null)
+			{
+			  textBoxTest.Text = "Volume retuned no response";
+					return;
+			}
+			Cursor.Current = Cursors.Default;
+
+		  AppendTextBoxWothNewLine("Simple Volume Response [Model Extents]:");
+		  AppendTextBoxWothNewLine("================================================");
+      AppendTextBoxWothNewLine($"{volume}");
 		}
 
 		private void btnFileOpen_Click(object sender, EventArgs e)
@@ -1020,7 +1117,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
                 Guid TheAsset = (this.edtAssetID.Text == String.Empty) ? Guid.Empty : Guid.Parse(this.edtAssetID.Text);
                 string TheFileName = Path.GetFileName(fileName);
 
-                TagfileDetail td = new TagfileDetail()
+                TagFileDetail td = new TagFileDetail()
                                    {
                                            projectId = TheProject,
                                            assetId = TheAsset,
@@ -1029,7 +1126,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
                                            tagFileContent = new byte[0]
                                   };
 
-                td = TagfileReposity.GetTagfile(td);
+                td = TagFileRepository.GetTagfile(td);
                 MessageBox.Show(String.Format("ProjectID:{0}, Asset:{1}, TCCOrg:{2},IsJohnDoe:{3}, FileLenght:{4}",
                         td.projectId, td.assetId,td.tccOrgId,td.IsJohnDoe,td.tagFileContent.Length));
 
@@ -1055,7 +1152,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 
       PatchResult result = server.Execute(new PatchRequestArgument()
       {
-        DataModelID = ID(),
+        ProjectID = ID(),
         DataPatchNumber = 0,
         DataPatchSize = 10,
         Mode = DisplayMode.Height,
@@ -1105,27 +1202,260 @@ namespace VSS.TRex.IgnitePOC.TestApp
       sw.Start();
       try
       {
+        PriorProcessingMessage();
+
         SpeedOperation operation = new SpeedOperation();
         SpeedResult result = operation.Execute(
           new SpeedStatisticsArgument()
           {
-            DataModelID = siteModel.ID,
+            ProjectID = siteModel.ID,
             Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
             TargetMachineSpeed = new MachineSpeedExtendedRecord(5, 50)
           }
         );
 
+        textBoxTest.Text = String.Empty;
+
         if (result != null)
-          MessageBox.Show($"Machine Speed Summary Results (in {sw.Elapsed}) :\n " +
-                          $"Above Temperature Percentage: {result.AboveTargetPercent} \n " +
-                          $"Within Temperature Percentage Range: {result.WithinTargetPercent} \n " +
-                          $"Below Temperature Percentage: {result.BelowTargetPercent} \n " +
-                          $"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
+        {
+          AppendTextBoxWothNewLine($"Machine Speed Summary Results (in {sw.Elapsed}) :");
+          AppendTextBoxWothNewLine("================================================");
+          AppendTextBoxWothNewLine($"Above Machine Speed Percentage: {result.AboveTargetPercent}");
+          AppendTextBoxWothNewLine($"Within Machine Speed Percentage Range: {result.WithinTargetPercent}");
+          AppendTextBoxWothNewLine($"Below Machine Speed Percentage: {result.BelowTargetPercent}");
+          AppendTextBoxWothNewLine($"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
+        }
+        else
+          AppendTextBoxWothNewLine("No Result");
       }
       finally
       {
         sw.Stop();
       }
     }
+
+    private void CMVSummaryButton_Click(object sender, EventArgs e)
+    {
+      var siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+
+      Stopwatch sw = new Stopwatch();
+      sw.Start();
+      try
+      {
+        PriorProcessingMessage();
+
+        CMVSummaryOperation operation = new CMVSummaryOperation();
+
+        CMVSummaryResult result = operation.Execute(
+          new CMVSummaryArgument(){
+            ProjectID = siteModel.ID,
+            Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+            CMVPercentageRange = new CMVRangePercentageRecord(80, 120),
+            OverrideMachineCMV = false,
+            OverridingMachineCMV = 50
+          }
+        );
+
+        textBoxTest.Text = String.Empty;
+
+        if (result != null)
+        {
+          AppendTextBoxWothNewLine($"CMV Summary Results (in {sw.Elapsed}):");
+          AppendTextBoxWothNewLine("================================================");
+          AppendTextBoxWothNewLine($"Above CMV Percentage: {result.AboveTargetPercent}");
+          AppendTextBoxWothNewLine($"Within CMV Percentage Range: {result.WithinTargetPercent}");
+          AppendTextBoxWothNewLine($"Below CMV Percentage: {result.BelowTargetPercent}");
+          AppendTextBoxWothNewLine($"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
+        }
+        else
+          textBoxTest.AppendText("No result");
+      }
+      finally
+      {
+        sw.Stop();
+      }
+    }
+
+    private void MDPSummaryButton_Click(object sender, EventArgs e)
+    {
+      var siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+
+      Stopwatch sw = new Stopwatch();
+      sw.Start();
+      try
+      {
+        PriorProcessingMessage();
+
+        MDPOperation operation = new MDPOperation();
+        MDPResult result = operation.Execute(
+          new MDPStatisticsArgument()
+          {
+            ProjectID = siteModel.ID,
+            Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+            MDPPercentageRange = new MDPRangePercentageRecord(80, 120),
+            OverrideMachineMDP = false,
+            OverridingMachineMDP = 1000
+          }
+        );
+
+        textBoxTest.Text = String.Empty;
+
+        if (result != null)
+        {
+          AppendTextBoxWothNewLine($"MDP Summary Results (in {sw.Elapsed}) :");
+          AppendTextBoxWothNewLine("================================================");
+          AppendTextBoxWothNewLine($"Above MDP Percentage: {result.AboveTargetPercent}");
+          AppendTextBoxWothNewLine($"Within MDP Percentage Range: {result.WithinTargetPercent}");
+          AppendTextBoxWothNewLine($"Below MDP Percentage: {result.BelowTargetPercent}");
+          AppendTextBoxWothNewLine($"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
+        }
+        else
+          AppendTextBoxWothNewLine("No Result");
+      }
+      finally
+      {
+        sw.Stop();
+      }
+    }
+
+    private void PassCountSummaryButton_Click(object sender, EventArgs e)
+    {
+      var siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+
+      Stopwatch sw = new Stopwatch();
+      sw.Start();
+      try
+      {
+        PriorProcessingMessage();
+
+        PassCountSummaryOperation operation = new PassCountSummaryOperation();
+        PassCountSummaryCountResult result = operation.Execute(
+          new PassCountSummaryArgument()
+          {
+            ProjectID = siteModel.ID,
+            Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+            OverridingTargetPassCountRange = new PassCountRangeRecord(3, 10),
+            OverrideTargetPassCount = false
+          }
+        );
+
+        textBoxTest.Text = String.Empty;
+
+        if (result != null)
+        {
+          AppendTextBoxWothNewLine($"Pass Count Summary Results (in {sw.Elapsed}) :");
+          AppendTextBoxWothNewLine("================================================");
+          AppendTextBoxWothNewLine($"Above Pass Count Percentage: {result.AboveTargetPercent}");
+          AppendTextBoxWothNewLine($"Within Pass Count Percentage Range: {result.WithinTargetPercent}");
+          AppendTextBoxWothNewLine($"Below Pass Count Percentage: {result.BelowTargetPercent}");
+          AppendTextBoxWothNewLine($"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
+        }
+        else
+          textBoxTest.AppendText("No result");
+      }
+      finally
+      {
+        sw.Stop();
+      }
+    }
+
+    private void CMVDetailsButton_Click(object sender, EventArgs e)
+    {
+      var siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+      var cmvBands = new[] { 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700 };
+
+      Stopwatch sw = new Stopwatch();
+      sw.Start();
+      try
+      {
+        PriorProcessingMessage();
+
+        CMVDetailsOperation operation = new CMVDetailsOperation();
+        DetailsAnalyticsResult result = operation.Execute(
+          new CMVDetailsArgument()
+          {
+            ProjectID = siteModel.ID,
+            Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+            CMVDetailValues = cmvBands
+          }
+        );
+
+        textBoxTest.Text = String.Empty;
+
+        if (result != null)
+        {
+          AppendTextBoxWothNewLine($"CMV Details Results (in {sw.Elapsed}) :");
+          AppendTextBoxWothNewLine("================================================");
+
+          for (int i = 0; i < cmvBands.Length; i++)
+            AppendTextBoxWothNewLine($"{cmvBands[i] / 10} - {result.Percents[i]:##0.#0}%");
+        }
+        else
+          textBoxTest.AppendText("No result");
+      }
+      finally
+      {
+        sw.Stop();
+      }
+    }
+
+    private void PassCountDetailsButton_Click(object sender, EventArgs e)
+    {
+      var siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+      var passCountBands = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+      Stopwatch sw = new Stopwatch();
+      sw.Start();
+      try
+      {
+        PriorProcessingMessage();
+
+        PassCountDetailsOperation operation = new PassCountDetailsOperation();
+        DetailsAnalyticsResult result = operation.Execute(
+          new PassCountDetailsArgument()
+          {
+            ProjectID = siteModel.ID,
+            Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+            PassCountDetailValues = passCountBands
+          }
+        );
+
+        textBoxTest.Text = String.Empty;
+
+        if (result != null)
+        {
+          AppendTextBoxWothNewLine($"Pass Count Details Results (in {sw.Elapsed}) :");
+          AppendTextBoxWothNewLine("================================================");
+
+          for (int i = 0; i < passCountBands.Length; i++)
+            AppendTextBoxWothNewLine($"{passCountBands[i]} - {result.Percents[i]:##0.#0}%");
+        }
+        else
+          textBoxTest.AppendText("No result");
+      }
+      finally
+      {
+        sw.Stop();
+      }
+    }
+
+    private void tabControl1_Selected(object sender, TabControlEventArgs e)
+    {
+      textBoxTest.Visible = (sender as TabControl)?.SelectedTab == tabPageTest;
+      pictureBox1.Visible = (sender as TabControl)?.SelectedTab == tabPageRender;
+    }
+
+    #region Helpers
+	  private void AppendTextBoxWothNewLine(string newLine)
+	  {
+	    textBoxTest.AppendText(newLine + Environment.NewLine);
+	  }
+
+	  private void PriorProcessingMessage()
+	  {
+	    textBoxTest.Text = String.Empty;
+	    textBoxTest.AppendText("Processing data and getting result...");
+    }
+    #endregion
   }
 }

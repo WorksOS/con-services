@@ -2,13 +2,13 @@
 using VSS.TRex.Analytics.Foundation.Aggregators;
 using Xunit;
 
-namespace RaptorClassLibrary.Tests.netcore.Analytics.Foundation
+namespace VSS.TRex.Tests.netcore.Analytics.Foundation
 {
   public class SummaryAggregatorTests
   {
     private const double Epsilon = 0.00001;
 
-    private bool AggregatorStateIsDefault(SummaryAggregator Aggregator)
+    private bool AggregatorStateIsDefault(SummaryDataAggregator Aggregator)
     {
       return Math.Abs(Aggregator.CellSize) < Epsilon &&
               Aggregator.CellsScannedAtTarget == 0 &&
@@ -28,7 +28,7 @@ namespace RaptorClassLibrary.Tests.netcore.Analytics.Foundation
     [Fact]
     public void Test_AggregatorBase_Creation()
     {
-      SummaryAggregator aggregator = new SummaryAggregator();
+      SummaryDataAggregator aggregator = new SummaryDataAggregator();
 
       Assert.True(AggregatorStateIsDefault(aggregator), "Unexpected initialisation state");               
     }
@@ -37,8 +37,8 @@ namespace RaptorClassLibrary.Tests.netcore.Analytics.Foundation
     public void Test_AggregatorBase_Aggregation()
     {
       // Test base level aggregation
-      SummaryAggregator aggregator1 = new SummaryAggregator();
-      SummaryAggregator aggregator2 = new SummaryAggregator();
+      SummaryDataAggregator aggregator1 = new SummaryDataAggregator();
+      SummaryDataAggregator aggregator2 = new SummaryDataAggregator();
 
       aggregator1.AggregateWith(aggregator2);
       Assert.True(AggregatorStateIsDefault(aggregator1), "Unexpected state after default aggregation on default state");

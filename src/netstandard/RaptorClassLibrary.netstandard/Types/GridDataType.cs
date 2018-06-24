@@ -22,8 +22,8 @@ namespace VSS.TRex.Types
         Moisture = 0x00000007,
         Temperature = 0x00000008,
         RMV = 0x00000009,
-        CCVPercent = 0x0000000B,
         GPSMode = 0x0000000A,
+        CCVPercent = 0x0000000B,
         SimpleVolumeOverlay = 0x0000000C,
         HeightAndTime = 0x0000000D,
         CompositeHeights = 0x0000000E,
@@ -38,8 +38,14 @@ namespace VSS.TRex.Types
         CCA = 0x00000017,
         CCAPercent = 0x00000018,
         TemperatureDetail = 0x00000019,
+        Unused1 = 0x0000001A,
+        Unused2 = 0x0000001B,
+        Unused3 = 0x0000001C,
+        Unused4 = 0x0000001D,
+        Unused5 = 0x0000001E,
+        Unused6 = 0x0000001F,
         CutFill = 0x00000020
-  }
+    }
 
     public static class GridDataFromModeConverter
     {

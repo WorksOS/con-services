@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using VSS.TRex.Cells;
+using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
@@ -11,25 +12,21 @@ namespace VSS.TRex.Rendering.Displayers
   /// </summary>
   public class PVMDisplayer_MachineSpeedSummary : PVMDisplayerBase
   {
+    /// <summary>
+    /// Machine Speed targets data holder.
+    /// </summary>
     private ClientMachineTargetSpeedLeafSubGrid SubGrid;
 
+    /// <summary>
+    /// Machine Speed target range.
+    /// </summary>
     public MachineSpeedExtendedRecord machineSpeedTarget;
 
-    private Color ChooseColour(MachineSpeedExtendedRecord measuredSpeed, MachineSpeedExtendedRecord targetSpeed)
-    {
-      if (targetSpeed.Max == CellPass.NullMachineSpeed)
-        return Color.Empty;
-      else
-      {
-        if (measuredSpeed.Max > targetSpeed.Max)
-          return Color.Purple;
-        else if (measuredSpeed.Min < targetSpeed.Min && measuredSpeed.Max < targetSpeed.Min)
-          return Color.Lime;
-        else
-          return Color.Aqua;
-      }
-    }
-
+    /// <summary>
+    /// Renders Machine Speed summary data as tiles. 
+    /// </summary>
+    /// <param name="subGrid"></param>
+    /// <returns></returns>
     protected override bool DoRenderSubGrid(ISubGrid subGrid)
     {
       if (subGrid is ClientMachineTargetSpeedLeafSubGrid grid)
@@ -41,13 +38,21 @@ namespace VSS.TRex.Rendering.Displayers
       return false;
     }
 
+    /// <summary>
+    ///  Enables a displayer to advertise is it capable of rendering cell information in strips.
+    /// </summary>
+    /// <returns></returns>
     protected override bool SupportsCellStripRendering() => true;
 
+    /// <summary>
+    /// Queries the data at the current cell location and determines the colour that should be displayed there.
+    /// </summary>
+    /// <returns></returns>
     protected override Color DoGetDisplayColour()
     {
       var value = SubGrid.Cells[east_col, north_row];
 
-      return value.Max == CellPass.NullMachineSpeed ? Color.Empty : ChooseColour(value, machineSpeedTarget);
+      return value.Max == CellPass.NullMachineSpeed ? Color.Empty : ((SpeedSummaryPalette) Palette).ChooseColour(value, machineSpeedTarget);
     }
 
   }

@@ -9,7 +9,7 @@ using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.Types;
 
-namespace RaptorClassLibrary.Tests.netcore.Profiling
+namespace VSS.TRex.Tests.netcore.Profiling
 {
 
 

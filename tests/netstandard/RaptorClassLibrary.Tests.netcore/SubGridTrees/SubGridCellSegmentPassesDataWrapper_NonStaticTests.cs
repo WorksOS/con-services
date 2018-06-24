@@ -10,7 +10,7 @@ using Xunit;
 
 namespace VSS.TRex.SubGridTrees.Server.Tests
 {
-        public class SubGridCellSegmentPassesDataWrapper_NonStaticTests
+    public class SubGridCellSegmentPassesDataWrapper_NonStaticTests
     {
         /// <summary>
         /// A handy test cell pass for the unit tests below to use

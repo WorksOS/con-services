@@ -5,9 +5,9 @@ VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "netstandard", "netstandard", "{60739A56-DAB5-4BDD-B54E-1ACA0FF82092}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Raptor.Common.netstandard", "src\netstandard\Raptor.Common.netstandard\Raptor.Common.netstandard.csproj", "{737BFD08-031B-4506-8205-947B82C6D2BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Common.netstandard", "src\netstandard\Raptor.Common.netstandard\VSS.TRex.Common.netstandard.csproj", "{737BFD08-031B-4506-8205-947B82C6D2BA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RaptorClassLibrary.netstandard", "src\netstandard\RaptorClassLibrary.netstandard\RaptorClassLibrary.netstandard.csproj", "{40DB7CF3-5817-45A5-9F90-29BAA80E2C7A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TRexClassLibrary.netstandard", "src\netstandard\RaptorClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj", "{40DB7CF3-5817-45A5-9F90-29BAA80E2C7A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Velociraptor.Geometry.netstandard", "src\netstandard\VSS.Velociraptor.Geometry.netstandard\VSS.Velociraptor.Geometry.netstandard.csproj", "{BAC0B22F-B4FD-406A-9196-2E864416EF4E}"
 EndProject
@@ -15,11 +15,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Velociraptor.Designs.TT
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{34164EB1-38C2-4301-AEF3-83E3A0DFA8F3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Velociraptor.Designs.TTM.Tests.netcore", "tests\netstandard\VSS.Velociraptor.Designs.TTM.Tests.netcore\VSS.Velociraptor.Designs.TTM.Tests.netcore.csproj", "{13EB6387-02E9-460B-AAC2-BC5F670661D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Designs.TTM.Tests.netcore", "tests\netstandard\VSS.Velociraptor.Designs.TTM.Tests.netcore\VSS.TRex.Designs.TTM.Tests.netcore.csproj", "{13EB6387-02E9-460B-AAC2-BC5F670661D3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Velociraptor.DesignProfiling.Tests.netcore", "tests\netstandard\VSS.Velociraptor.DesignProfiling.Tests.netcore\VSS.Velociraptor.DesignProfiling.Tests.netcore.csproj", "{F375B5F3-84C4-4385-85D0-EAA6A5855C3B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.DesignProfiling.Tests.netcore", "tests\netstandard\VSS.Velociraptor.DesignProfiling.Tests.netcore\VSS.TRex.DesignProfiling.Tests.netcore.csproj", "{F375B5F3-84C4-4385-85D0-EAA6A5855C3B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RaptorClassLibrary.Tests.netcore", "tests\netstandard\RaptorClassLibrary.Tests.netcore\RaptorClassLibrary.Tests.netcore.csproj", "{4E32CCC0-47C1-4CC1-AD8E-14A9FD5C1ED0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TRexClassLibrary.Tests.netcore", "tests\netstandard\RaptorClassLibrary.Tests.netcore\TRexClassLibrary.Tests.netcore.csproj", "{4E32CCC0-47C1-4CC1-AD8E-14A9FD5C1ED0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TAGFiles.Tests.netcore", "tests\netstandard\TAGFiles.Tests.netcore\TAGFiles.Tests.netcore.csproj", "{56FB1D16-1B1E-428A-B9AA-CF486A5917E0}"
 EndProject
@@ -62,8 +62,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TRexMutableDataServer", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TRexImmutableDataServer", "src\framework\TRexImmutableDataServer\TRexImmutableDataServer.csproj", "{52BDC39B-A978-454B-8725-A0A887A263E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TRexTileServer", "src\framework\TRexServerApplication\TRexTileServer.csproj", "{6EAD2931-5828-4D38-B141-ECF8A76E4347}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TRexTAGFileSubmittor", "src\framework\TRexTAGFileSubmittor\TRexTAGFileSubmittor.csproj", "{7DD49C6B-042D-40CE-8E8E-430146E3AF97}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurveyedSurfaceManager", "src\framework\SurveyedSurfaceManager\SurveyedSurfaceManager.csproj", "{F48663EA-1F7F-402D-9A3A-7697FE4E4C3C}"
@@ -75,7 +73,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TRexTileServer", "src\framework\TRexTileServer\TRexTileServer.csproj", "{6EAD2931-5828-4D38-B141-ECF8A76E4347}"
+EndProject
 Global
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
@@ -259,14 +262,6 @@ Global
 		{52BDC39B-A978-454B-8725-A0A887A263E3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{52BDC39B-A978-454B-8725-A0A887A263E3}.Release|x64.ActiveCfg = Release|x64
 		{52BDC39B-A978-454B-8725-A0A887A263E3}.Release|x64.Build.0 = Release|x64
-		{6EAD2931-5828-4D38-B141-ECF8A76E4347}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6EAD2931-5828-4D38-B141-ECF8A76E4347}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6EAD2931-5828-4D38-B141-ECF8A76E4347}.Debug|x64.ActiveCfg = Debug|x64
-		{6EAD2931-5828-4D38-B141-ECF8A76E4347}.Debug|x64.Build.0 = Debug|x64
-		{6EAD2931-5828-4D38-B141-ECF8A76E4347}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6EAD2931-5828-4D38-B141-ECF8A76E4347}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6EAD2931-5828-4D38-B141-ECF8A76E4347}.Release|x64.ActiveCfg = Release|x64
-		{6EAD2931-5828-4D38-B141-ECF8A76E4347}.Release|x64.Build.0 = Release|x64
 		{7DD49C6B-042D-40CE-8E8E-430146E3AF97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7DD49C6B-042D-40CE-8E8E-430146E3AF97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7DD49C6B-042D-40CE-8E8E-430146E3AF97}.Debug|x64.ActiveCfg = Debug|x64
@@ -291,6 +286,14 @@ Global
 		{BEAD32E3-AB58-4A6D-9D6F-65BD623E760A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BEAD32E3-AB58-4A6D-9D6F-65BD623E760A}.Release|x64.ActiveCfg = Release|x64
 		{BEAD32E3-AB58-4A6D-9D6F-65BD623E760A}.Release|x64.Build.0 = Release|x64
+		{6EAD2931-5828-4D38-B141-ECF8A76E4347}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EAD2931-5828-4D38-B141-ECF8A76E4347}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EAD2931-5828-4D38-B141-ECF8A76E4347}.Debug|x64.ActiveCfg = Debug|x64
+		{6EAD2931-5828-4D38-B141-ECF8A76E4347}.Debug|x64.Build.0 = Debug|x64
+		{6EAD2931-5828-4D38-B141-ECF8A76E4347}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EAD2931-5828-4D38-B141-ECF8A76E4347}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6EAD2931-5828-4D38-B141-ECF8A76E4347}.Release|x64.ActiveCfg = Release|x64
+		{6EAD2931-5828-4D38-B141-ECF8A76E4347}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -320,13 +323,16 @@ Global
 		{E351A35B-6C94-4287-9410-D3936C5DC959} = {092D16FE-E2F5-4B82-B51F-443F728F3F09}
 		{309905EF-7F3F-4086-B166-E01D055820FF} = {092D16FE-E2F5-4B82-B51F-443F728F3F09}
 		{52BDC39B-A978-454B-8725-A0A887A263E3} = {092D16FE-E2F5-4B82-B51F-443F728F3F09}
-		{6EAD2931-5828-4D38-B141-ECF8A76E4347} = {092D16FE-E2F5-4B82-B51F-443F728F3F09}
 		{7DD49C6B-042D-40CE-8E8E-430146E3AF97} = {092D16FE-E2F5-4B82-B51F-443F728F3F09}
 		{F48663EA-1F7F-402D-9A3A-7697FE4E4C3C} = {092D16FE-E2F5-4B82-B51F-443F728F3F09}
 		{BEAD32E3-AB58-4A6D-9D6F-65BD623E760A} = {092D16FE-E2F5-4B82-B51F-443F728F3F09}
+		{6EAD2931-5828-4D38-B141-ECF8A76E4347} = {092D16FE-E2F5-4B82-B51F-443F728F3F09}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C2E7378F-4D70-4EA4-8A6C-A96934CBABD8}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true

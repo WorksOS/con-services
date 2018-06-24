@@ -9,7 +9,7 @@ namespace VSS.TRex.SubGridTrees.Utilities
 {
     public static partial class SubGridUtilities
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// GetOTGLeafSubGridCellIndex determines the local in-subgrid X/Y location of a

@@ -1,14 +1,26 @@
-﻿using Xunit;
+﻿using System;
+using VSS.TRex.Common;
+using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.Types;
+using Xunit;
 
 namespace VSS.TRex.Tests
 {
-        public class HeightAndTimeClientLeafSubgridTests
+  /// <summary>
+  /// Includes tests not covered in GenericClientLeafSibgriTests
+  /// </summary>
+  public class HeightAndTimeClientLeafSubgridTests
+  {
+    [Fact]
+    public void Test_NullCells()
     {
-        [Fact(Skip = "Not Implemented")]
+      long minDateTime = DateTime.MinValue.ToBinary();
 
-        public void Test_HeightAndTimeClientLeafSubgrid_Creation()
-        {
-            Assert.True(false,"Not implemented");
-        }
+      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.HeightAndTime) as ClientHeightAndTimeLeafSubGrid;
+
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => Assert.True(clientGrid.Cells[x, y] == Consts.NullHeight, "Cell not set to correct null value"));
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => Assert.True(clientGrid.Times[x, y] == minDateTime, "Cell time not set to correct null value"));
     }
+  }
 }

@@ -1506,7 +1506,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Tests
             var matcher = new TAGDirectionValueMatcher(sink, state);
             var dictItem = new TAGDictionaryItem("", TAGDataType.t4bitUInt, 0);
 
-            // Note: Machien direction values from the machine are 1-based
+            // Note: Machine direction values from the machine are 1-based
             Assert.True(matcher.ProcessUnsignedIntegerValue(dictItem, 1), // Forwards
                 "Matcher process function returned false");
             Assert.Equal(MachineDirection.Forward, sink.MachineDirection);

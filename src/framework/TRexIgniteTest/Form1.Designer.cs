@@ -61,6 +61,7 @@
       this.btnZoomOut = new System.Windows.Forms.Button();
       this.bntTranslateNorth = new System.Windows.Forms.Button();
       this.panel2 = new System.Windows.Forms.Panel();
+      this.textBoxTest = new System.Windows.Forms.TextBox();
       this.pictureBox1 = new System.Windows.Forms.PictureBox();
       this.panel3 = new System.Windows.Forms.Panel();
       this.cmbSurveyedSurfaces = new System.Windows.Forms.ComboBox();
@@ -68,9 +69,15 @@
       this.cmbDesigns = new System.Windows.Forms.ComboBox();
       this.label5 = new System.Windows.Forms.Label();
       this.tabControl1 = new System.Windows.Forms.TabControl();
-      this.tabPage1 = new System.Windows.Forms.TabPage();
+      this.tabPageRender = new System.Windows.Forms.TabPage();
       this.btnZoomAll = new System.Windows.Forms.Button();
-      this.tabPage2 = new System.Windows.Forms.TabPage();
+      this.tabPageTest = new System.Windows.Forms.TabPage();
+      this.PassCountDetailsButton = new System.Windows.Forms.Button();
+      this.CMVDetailsButton = new System.Windows.Forms.Button();
+      this.PassCountSummaryButton = new System.Windows.Forms.Button();
+      this.MDPSummaryButton = new System.Windows.Forms.Button();
+      this.CMVSummaryButton = new System.Windows.Forms.Button();
+      this.SpeedSummaryButton = new System.Windows.Forms.Button();
       this.TemperatureSummaryButton = new System.Windows.Forms.Button();
       this.button7 = new System.Windows.Forms.Button();
       this.tabPage3 = new System.Windows.Forms.TabPage();
@@ -92,14 +99,13 @@
       this.tabPage4 = new System.Windows.Forms.TabPage();
       this.btnKill = new System.Windows.Forms.Button();
       this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-      this.SpeedSummaryButton = new System.Windows.Forms.Button();
       this.panel1.SuspendLayout();
       this.panel2.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
       this.panel3.SuspendLayout();
       this.tabControl1.SuspendLayout();
-      this.tabPage1.SuspendLayout();
-      this.tabPage2.SuspendLayout();
+      this.tabPageRender.SuspendLayout();
+      this.tabPageTest.SuspendLayout();
       this.tabPage3.SuspendLayout();
       this.tabPage4.SuspendLayout();
       this.SuspendLayout();
@@ -146,7 +152,7 @@
       // 
       // btnCalcAll
       // 
-      this.btnCalcAll.Location = new System.Drawing.Point(167, 76);
+      this.btnCalcAll.Location = new System.Drawing.Point(165, 76);
       this.btnCalcAll.Name = "btnCalcAll";
       this.btnCalcAll.Size = new System.Drawing.Size(143, 20);
       this.btnCalcAll.TabIndex = 45;
@@ -166,7 +172,7 @@
       // 
       // button6
       // 
-      this.button6.Location = new System.Drawing.Point(20, 280);
+      this.button6.Location = new System.Drawing.Point(20, 361);
       this.button6.Name = "button6";
       this.button6.Size = new System.Drawing.Size(158, 20);
       this.button6.TabIndex = 43;
@@ -186,7 +192,7 @@
       // 
       // button4
       // 
-      this.button4.Location = new System.Drawing.Point(20, 255);
+      this.button4.Location = new System.Drawing.Point(20, 336);
       this.button4.Name = "button4";
       this.button4.Size = new System.Drawing.Size(225, 20);
       this.button4.TabIndex = 41;
@@ -196,7 +202,7 @@
       // 
       // button3
       // 
-      this.button3.Location = new System.Drawing.Point(20, 230);
+      this.button3.Location = new System.Drawing.Point(20, 311);
       this.button3.Name = "button3";
       this.button3.Size = new System.Drawing.Size(140, 20);
       this.button3.TabIndex = 40;
@@ -421,20 +427,29 @@
       this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+      this.panel2.Controls.Add(this.textBoxTest);
       this.panel2.Controls.Add(this.pictureBox1);
       this.panel2.Location = new System.Drawing.Point(2, 58);
       this.panel2.Name = "panel2";
-      this.panel2.Size = new System.Drawing.Size(865, 609);
+      this.panel2.Size = new System.Drawing.Size(865, 607);
       this.panel2.TabIndex = 16;
+      // 
+      // textBoxTest
+      // 
+      this.textBoxTest.Location = new System.Drawing.Point(7, 13);
+      this.textBoxTest.Multiline = true;
+      this.textBoxTest.Name = "textBoxTest";
+      this.textBoxTest.Size = new System.Drawing.Size(100, 20);
+      this.textBoxTest.TabIndex = 3;
       // 
       // pictureBox1
       // 
       this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-      this.pictureBox1.Location = new System.Drawing.Point(4, 4);
+      this.pictureBox1.Location = new System.Drawing.Point(0, 2);
       this.pictureBox1.Name = "pictureBox1";
-      this.pictureBox1.Size = new System.Drawing.Size(857, 601);
+      this.pictureBox1.Size = new System.Drawing.Size(862, 602);
       this.pictureBox1.TabIndex = 1;
       this.pictureBox1.TabStop = false;
       this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
@@ -496,8 +511,8 @@
       // 
       this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-      this.tabControl1.Controls.Add(this.tabPage1);
-      this.tabControl1.Controls.Add(this.tabPage2);
+      this.tabControl1.Controls.Add(this.tabPageRender);
+      this.tabControl1.Controls.Add(this.tabPageTest);
       this.tabControl1.Controls.Add(this.tabPage3);
       this.tabControl1.Controls.Add(this.tabPage4);
       this.tabControl1.Location = new System.Drawing.Point(873, 49);
@@ -505,31 +520,32 @@
       this.tabControl1.SelectedIndex = 0;
       this.tabControl1.Size = new System.Drawing.Size(351, 618);
       this.tabControl1.TabIndex = 18;
+      this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
       // 
-      // tabPage1
+      // tabPageRender
       // 
-      this.tabPage1.Controls.Add(this.btnZoomAll);
-      this.tabPage1.Controls.Add(this.btmZoomIn);
-      this.tabPage1.Controls.Add(this.btnZoomOut);
-      this.tabPage1.Controls.Add(this.btnRedraw);
-      this.tabPage1.Controls.Add(this.bntTranslateNorth);
-      this.tabPage1.Controls.Add(this.bntTranslateWest);
-      this.tabPage1.Controls.Add(this.bntTranslateEast);
-      this.tabPage1.Controls.Add(this.bntTranslateSouth);
-      this.tabPage1.Controls.Add(this.chkIncludeSurveyedSurfaces);
-      this.tabPage1.Controls.Add(this.label1);
-      this.tabPage1.Controls.Add(this.displayMode);
-      this.tabPage1.Controls.Add(this.lblViewWidth);
-      this.tabPage1.Controls.Add(this.lblViewHeight);
-      this.tabPage1.Controls.Add(this.lblCellsPerPixel);
-      this.tabPage1.Controls.Add(this.chkSelectEarliestPass);
-      this.tabPage1.Location = new System.Drawing.Point(4, 22);
-      this.tabPage1.Name = "tabPage1";
-      this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPage1.Size = new System.Drawing.Size(343, 592);
-      this.tabPage1.TabIndex = 0;
-      this.tabPage1.Text = "Render";
-      this.tabPage1.UseVisualStyleBackColor = true;
+      this.tabPageRender.Controls.Add(this.btnZoomAll);
+      this.tabPageRender.Controls.Add(this.btmZoomIn);
+      this.tabPageRender.Controls.Add(this.btnZoomOut);
+      this.tabPageRender.Controls.Add(this.btnRedraw);
+      this.tabPageRender.Controls.Add(this.bntTranslateNorth);
+      this.tabPageRender.Controls.Add(this.bntTranslateWest);
+      this.tabPageRender.Controls.Add(this.bntTranslateEast);
+      this.tabPageRender.Controls.Add(this.bntTranslateSouth);
+      this.tabPageRender.Controls.Add(this.chkIncludeSurveyedSurfaces);
+      this.tabPageRender.Controls.Add(this.label1);
+      this.tabPageRender.Controls.Add(this.displayMode);
+      this.tabPageRender.Controls.Add(this.lblViewWidth);
+      this.tabPageRender.Controls.Add(this.lblViewHeight);
+      this.tabPageRender.Controls.Add(this.lblCellsPerPixel);
+      this.tabPageRender.Controls.Add(this.chkSelectEarliestPass);
+      this.tabPageRender.Location = new System.Drawing.Point(4, 22);
+      this.tabPageRender.Name = "tabPageRender";
+      this.tabPageRender.Padding = new System.Windows.Forms.Padding(3);
+      this.tabPageRender.Size = new System.Drawing.Size(343, 592);
+      this.tabPageRender.TabIndex = 0;
+      this.tabPageRender.Text = "Render";
+      this.tabPageRender.UseVisualStyleBackColor = true;
       // 
       // btnZoomAll
       // 
@@ -541,31 +557,96 @@
       this.btnZoomAll.UseVisualStyleBackColor = true;
       this.btnZoomAll.Click += new System.EventHandler(this.ZoomAll_Click);
       // 
-      // tabPage2
+      // tabPageTest
       // 
-      this.tabPage2.Controls.Add(this.SpeedSummaryButton);
-      this.tabPage2.Controls.Add(this.TemperatureSummaryButton);
-      this.tabPage2.Controls.Add(this.button7);
-      this.tabPage2.Controls.Add(this.button6);
-      this.tabPage2.Controls.Add(this.btnCalcAll);
-      this.tabPage2.Controls.Add(this.btnMultiThreadTest);
-      this.tabPage2.Controls.Add(this.button4);
-      this.tabPage2.Controls.Add(this.button5);
-      this.tabPage2.Controls.Add(this.button3);
-      this.tabPage2.Controls.Add(this.edtNumImages);
-      this.tabPage2.Controls.Add(this.label3);
-      this.tabPage2.Controls.Add(this.edtNumRuns);
-      this.tabPage2.Controls.Add(this.button2);
-      this.tabPage2.Controls.Add(this.label4);
-      this.tabPage2.Controls.Add(this.button1);
-      this.tabPage2.Controls.Add(this.btnCalculateVolumes);
-      this.tabPage2.Location = new System.Drawing.Point(4, 22);
-      this.tabPage2.Name = "tabPage2";
-      this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-      this.tabPage2.Size = new System.Drawing.Size(343, 592);
-      this.tabPage2.TabIndex = 1;
-      this.tabPage2.Text = "Tests";
-      this.tabPage2.UseVisualStyleBackColor = true;
+      this.tabPageTest.Controls.Add(this.PassCountDetailsButton);
+      this.tabPageTest.Controls.Add(this.CMVDetailsButton);
+      this.tabPageTest.Controls.Add(this.PassCountSummaryButton);
+      this.tabPageTest.Controls.Add(this.MDPSummaryButton);
+      this.tabPageTest.Controls.Add(this.CMVSummaryButton);
+      this.tabPageTest.Controls.Add(this.SpeedSummaryButton);
+      this.tabPageTest.Controls.Add(this.TemperatureSummaryButton);
+      this.tabPageTest.Controls.Add(this.button7);
+      this.tabPageTest.Controls.Add(this.button6);
+      this.tabPageTest.Controls.Add(this.btnCalcAll);
+      this.tabPageTest.Controls.Add(this.btnMultiThreadTest);
+      this.tabPageTest.Controls.Add(this.button4);
+      this.tabPageTest.Controls.Add(this.button5);
+      this.tabPageTest.Controls.Add(this.button3);
+      this.tabPageTest.Controls.Add(this.edtNumImages);
+      this.tabPageTest.Controls.Add(this.label3);
+      this.tabPageTest.Controls.Add(this.edtNumRuns);
+      this.tabPageTest.Controls.Add(this.button2);
+      this.tabPageTest.Controls.Add(this.label4);
+      this.tabPageTest.Controls.Add(this.button1);
+      this.tabPageTest.Controls.Add(this.btnCalculateVolumes);
+      this.tabPageTest.Location = new System.Drawing.Point(4, 22);
+      this.tabPageTest.Name = "tabPageTest";
+      this.tabPageTest.Padding = new System.Windows.Forms.Padding(3);
+      this.tabPageTest.Size = new System.Drawing.Size(343, 592);
+      this.tabPageTest.TabIndex = 1;
+      this.tabPageTest.Text = "Tests";
+      this.tabPageTest.UseVisualStyleBackColor = true;
+      // 
+      // PassCountDetailsButton
+      // 
+      this.PassCountDetailsButton.Location = new System.Drawing.Point(165, 257);
+      this.PassCountDetailsButton.Name = "PassCountDetailsButton";
+      this.PassCountDetailsButton.Size = new System.Drawing.Size(140, 21);
+      this.PassCountDetailsButton.TabIndex = 52;
+      this.PassCountDetailsButton.Text = "P&ass Count Details";
+      this.PassCountDetailsButton.UseVisualStyleBackColor = true;
+      this.PassCountDetailsButton.Click += new System.EventHandler(this.PassCountDetailsButton_Click);
+      // 
+      // CMVDetailsButton
+      // 
+      this.CMVDetailsButton.Location = new System.Drawing.Point(165, 230);
+      this.CMVDetailsButton.Name = "CMVDetailsButton";
+      this.CMVDetailsButton.Size = new System.Drawing.Size(140, 21);
+      this.CMVDetailsButton.TabIndex = 51;
+      this.CMVDetailsButton.Text = "CM&V Details";
+      this.CMVDetailsButton.UseVisualStyleBackColor = true;
+      this.CMVDetailsButton.Click += new System.EventHandler(this.CMVDetailsButton_Click);
+      // 
+      // PassCountSummaryButton
+      // 
+      this.PassCountSummaryButton.Location = new System.Drawing.Point(19, 257);
+      this.PassCountSummaryButton.Name = "PassCountSummaryButton";
+      this.PassCountSummaryButton.Size = new System.Drawing.Size(140, 21);
+      this.PassCountSummaryButton.TabIndex = 50;
+      this.PassCountSummaryButton.Text = "&Pass Count Summary";
+      this.PassCountSummaryButton.UseVisualStyleBackColor = true;
+      this.PassCountSummaryButton.Click += new System.EventHandler(this.PassCountSummaryButton_Click);
+      // 
+      // MDPSummaryButton
+      // 
+      this.MDPSummaryButton.Location = new System.Drawing.Point(20, 284);
+      this.MDPSummaryButton.Name = "MDPSummaryButton";
+      this.MDPSummaryButton.Size = new System.Drawing.Size(140, 21);
+      this.MDPSummaryButton.TabIndex = 49;
+      this.MDPSummaryButton.Text = "M&DP Summary";
+      this.MDPSummaryButton.UseVisualStyleBackColor = true;
+      this.MDPSummaryButton.Click += new System.EventHandler(this.MDPSummaryButton_Click);
+      // 
+      // CMVSummaryButton
+      // 
+      this.CMVSummaryButton.Location = new System.Drawing.Point(19, 230);
+      this.CMVSummaryButton.Name = "CMVSummaryButton";
+      this.CMVSummaryButton.Size = new System.Drawing.Size(140, 21);
+      this.CMVSummaryButton.TabIndex = 48;
+      this.CMVSummaryButton.Text = "&CMV Summary";
+      this.CMVSummaryButton.UseVisualStyleBackColor = true;
+      this.CMVSummaryButton.Click += new System.EventHandler(this.CMVSummaryButton_Click);
+      // 
+      // SpeedSummaryButton
+      // 
+      this.SpeedSummaryButton.Location = new System.Drawing.Point(20, 203);
+      this.SpeedSummaryButton.Name = "SpeedSummaryButton";
+      this.SpeedSummaryButton.Size = new System.Drawing.Size(140, 21);
+      this.SpeedSummaryButton.TabIndex = 47;
+      this.SpeedSummaryButton.Text = "&Machine Speed Summary";
+      this.SpeedSummaryButton.UseVisualStyleBackColor = true;
+      this.SpeedSummaryButton.Click += new System.EventHandler(this.SpeedSummaryButton_Click);
       // 
       // TemperatureSummaryButton
       // 
@@ -579,7 +660,7 @@
       // 
       // button7
       // 
-      this.button7.Location = new System.Drawing.Point(22, 306);
+      this.button7.Location = new System.Drawing.Point(22, 387);
       this.button7.Name = "button7";
       this.button7.Size = new System.Drawing.Size(120, 19);
       this.button7.TabIndex = 46;
@@ -775,16 +856,6 @@
       this.openFileDialog1.InitialDirectory = "@\"c:\\\"";
       this.openFileDialog1.RestoreDirectory = true;
       // 
-      // SpeedSummaryButton
-      // 
-      this.SpeedSummaryButton.Location = new System.Drawing.Point(20, 203);
-      this.SpeedSummaryButton.Name = "SpeedSummaryButton";
-      this.SpeedSummaryButton.Size = new System.Drawing.Size(140, 21);
-      this.SpeedSummaryButton.TabIndex = 47;
-      this.SpeedSummaryButton.Text = "&Machine Speed Summary";
-      this.SpeedSummaryButton.UseVisualStyleBackColor = true;
-      this.SpeedSummaryButton.Click += new System.EventHandler(this.SpeedSummaryButton_Click);
-      // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -800,14 +871,15 @@
       this.panel1.ResumeLayout(false);
       this.panel1.PerformLayout();
       this.panel2.ResumeLayout(false);
+      this.panel2.PerformLayout();
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
       this.panel3.ResumeLayout(false);
       this.panel3.PerformLayout();
       this.tabControl1.ResumeLayout(false);
-      this.tabPage1.ResumeLayout(false);
-      this.tabPage1.PerformLayout();
-      this.tabPage2.ResumeLayout(false);
-      this.tabPage2.PerformLayout();
+      this.tabPageRender.ResumeLayout(false);
+      this.tabPageRender.PerformLayout();
+      this.tabPageTest.ResumeLayout(false);
+      this.tabPageTest.PerformLayout();
       this.tabPage3.ResumeLayout(false);
       this.tabPage3.PerformLayout();
       this.tabPage4.ResumeLayout(false);
@@ -855,9 +927,9 @@
 				private System.Windows.Forms.Button btnSubmitTagFile;
         private System.Windows.Forms.Button btnCalcAll;
         private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tabPageRender;
         private System.Windows.Forms.Button btnZoomAll;
-        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabPage tabPageTest;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.Button btnFileOpen;
         private System.Windows.Forms.Label label10;
@@ -881,6 +953,12 @@
     private System.Windows.Forms.Button btnKill;
     private System.Windows.Forms.Button btnEmpty;
     private System.Windows.Forms.Button SpeedSummaryButton;
+    private System.Windows.Forms.Button CMVSummaryButton;
+    private System.Windows.Forms.Button MDPSummaryButton;
+    private System.Windows.Forms.Button PassCountSummaryButton;
+    private System.Windows.Forms.Button CMVDetailsButton;
+    private System.Windows.Forms.Button PassCountDetailsButton;
+    private System.Windows.Forms.TextBox textBoxTest;
   }
 }
 

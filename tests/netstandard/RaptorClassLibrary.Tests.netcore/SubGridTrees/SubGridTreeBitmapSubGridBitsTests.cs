@@ -244,7 +244,7 @@ namespace VSS.TRex.Tests
             Assert.False(bits.BitSet(0, 0));
             Assert.False(bits.BitSet(31, 31));
 
-            bits = SubGridTreeBitmapSubGridBits.FullMask;
+            bits.Fill();
 
             Assert.True(bits.BitSet(0, 0));
             Assert.True(bits.BitSet(31, 31));

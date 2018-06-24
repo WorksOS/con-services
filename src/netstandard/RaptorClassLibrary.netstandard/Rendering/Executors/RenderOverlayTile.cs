@@ -342,9 +342,9 @@ namespace VSS.TRex.Rendering.Executors
         Exit;
       */
 
-      Guid RequestDescriptor = Guid.NewGuid(); // TODO ASNodeImplInstance.NextDescriptor;
+      Guid RequestDescriptor = Guid.NewGuid();
 
-      /* TODO Readd wen logging available
+      /* TODO Readd when logging available
     if VLPDSvcLocations.Debug_EmitTileRenderRequestParametersToLog then
       begin
         if FCoordsAreGrid then
@@ -448,9 +448,7 @@ namespace VSS.TRex.Rendering.Executors
 
       RotatedTileBoundingExtents.SetInverted();
       foreach (XYZ xyz in NEECoords)
-      {
         RotatedTileBoundingExtents.Include(xyz.X, xyz.Y);
-      }
 
       // TODO [Put it back]: Temporarily remove tile pruning on intersection test
       // Intersect the site model extents with the extents requested by the caller

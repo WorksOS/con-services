@@ -23,8 +23,9 @@ namespace VSS.TRex.DesignProfiling
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         private TrimbleTINModel FData;
-        private GenericSubGridTree<List<Triangle>> FSpatialIndex;
-        public TTMQuadTree QuadTreeSpatialIndex; 
+
+       // Removed, this is the old quadtree spatial index, not performant enough
+       // public TTMQuadTree QuadTreeSpatialIndex; 
 
         private double FMinHeight;
         private double FMaxHeight;
@@ -33,9 +34,11 @@ namespace VSS.TRex.DesignProfiling
 
         private void SwapVertices(ref TriVertex A, ref TriVertex B) => MinMax.Swap(ref A, ref B);
 
-
         public TrimbleTINModel Data { get { return FData; } }
-        public GenericSubGridTree<List<Triangle>> SpatialIndex { get { return FSpatialIndex; } }
+
+        // Removed, this is the 'list of triangles per subgrid' spatial index model
+        // private GenericSubGridTree<List<Triangle>> FSpatialIndex;
+        // public GenericSubGridTree<List<Triangle>> SpatialIndex { get { return FSpatialIndex; } }
 
         public struct TriangleArrayReference
         {
@@ -46,10 +49,7 @@ namespace VSS.TRex.DesignProfiling
         private Triangle[] FSpatialIndexOptimisedTriangles;
 
         private GenericSubGridTree<TriangleArrayReference> FSpatialIndexOptimised;
-        public GenericSubGridTree<TriangleArrayReference> SpatialIndexOptimised { get { return FSpatialIndexOptimised; } }
-
-        
-
+        public GenericSubGridTree<TriangleArrayReference> SpatialIndexOptimised { get { return FSpatialIndexOptimised; } }  
 
         private void AddTrianglePieceToElevationPatch(TriVertex H1, TriVertex H2, TriVertex V,
                                                       Triangle Tri,
@@ -303,9 +303,7 @@ namespace VSS.TRex.DesignProfiling
 
                 // Ensure H1 is left of H2 and take local copies of the vertex ordinates
                 if (H1.X > H2.X)
-                {
                     SwapVertices(ref H1, ref H2);
-                }
 
                 double H1X = H1.X;
                 double H1Y = H1.Y;
@@ -367,9 +365,7 @@ namespace VSS.TRex.DesignProfiling
                     index.CalculateIndexOfCellContainingPosition(H2X, H2Y, out uint RightSubGridX, out _);
 
                     if (LeftSubGridX > RightSubGridX)
-                    {
                         MinMax.Swap(ref LeftSubGridX, ref RightSubGridX);
-                    }
 
                     // Bracket the calculate left and right subgrid indices with the previous left and
                     // right subgrid indices to ensure subgrids included via shallow grazing
@@ -389,9 +385,7 @@ namespace VSS.TRex.DesignProfiling
                             Extents = index.GetCellExtents(I, OverrideSubGridY);
 
                             if (SubGridIntersectsTriangle(Extents, H1, H2, V))
-                            {
                                 includeTriangleInLeaf(index, I, OverrideSubGridY, sourceTriangle);
-                            }
                         }
                     }
 
@@ -404,14 +398,10 @@ namespace VSS.TRex.DesignProfiling
                         Extents = index.GetCellExtents(SubGridX, OverrideSubGridY);
 
                         if (!SubGridIntersectsTriangle(Extents, H1, H2, V))
-                        {
                             break;
-                        }
 
                         if (!leafSatisfied(index, SubGridX, OverrideSubGridY))
-                        {
                             includeTriangleInLeaf(index, SubGridX, OverrideSubGridY, sourceTriangle);
-                        }
                     } while (true);
 
                     // Scan to the right from the right most point until subgrids no longer intersect the triangle
@@ -423,14 +413,10 @@ namespace VSS.TRex.DesignProfiling
                         Extents = index.GetCellExtents(SubGridX, OverrideSubGridY);
 
                         if (!SubGridIntersectsTriangle(Extents, H1, H2, V))
-                        {
                             break;
-                        }
 
                         if (!leafSatisfied(index, SubGridX, OverrideSubGridY))
-                        {
                             includeTriangleInLeaf(index, SubGridX, OverrideSubGridY, sourceTriangle);
-                        }
                     } while (true);
 
                     FirstRow = false;
@@ -625,7 +611,8 @@ namespace VSS.TRex.DesignProfiling
             };
 
             // Create a subgrid tree spatial index for triangles in the TTM
-            FSpatialIndex = new GenericSubGridTree<List<Triangle>>(SubGridTree.SubGridTreeLevels - 1, SubGridTree.SubGridTreeDimension * ACellSize);
+            // Removed, this is the 'list of triangles per subgrid' spatial index model
+            // FSpatialIndex = new GenericSubGridTree<List<Triangle>>(SubGridTree.SubGridTreeLevels - 1, SubGridTree.SubGridTreeDimension * ACellSize);
 
             // Create the optimised subgrid tree spatial index that minmises the number of allocations in the final result.
             FSpatialIndexOptimised = new GenericSubGridTree<TriangleArrayReference>(SubGridTree.SubGridTreeLevels - 1, SubGridTree.SubGridTreeDimension * ACellSize);
@@ -746,6 +733,8 @@ namespace VSS.TRex.DesignProfiling
                                        double Offset,
                                        out double Z)
         {
+            // Member added for compilation only
+            GenericSubGridTree<List<Triangle>> FSpatialIndex = null;
             if (CheckHint(ref Hint, X, Y, Offset, out Z))
                 return true;
 
@@ -787,10 +776,10 @@ namespace VSS.TRex.DesignProfiling
         /// <param name="Offset"></param>
         /// <param name="Z"></param>
         /// <returns></returns>
-        public bool InterpolateHeight3(ref object Hint,
-                                       double X, double Y,
-                                       double Offset,
-                                       out double Z)
+        public override bool InterpolateHeight(ref object Hint,
+                                      double X, double Y,
+                                      double Offset,
+                                      out double Z)
         {
             if (CheckHint(ref Hint, X, Y, Offset, out Z))
                 return true;
@@ -830,23 +819,6 @@ namespace VSS.TRex.DesignProfiling
         /// <summary>
         /// Interpolates a single spot height fromn the design
         /// </summary>
-        /// <param name="Hint"></param>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <param name="Offset"></param>
-        /// <param name="Z"></param>
-        /// <returns></returns>
-        public override bool InterpolateHeight(ref object Hint,
-                                               double X, double Y,
-                                               double Offset,
-                                               out double Z)
-        {
-            return InterpolateHeight3(ref Hint, X, Y, Offset, out Z);
-        }
-
-        /// <summary>
-        /// Interpolates a single spot height fromn the design
-        /// </summary>
         /// <param name="SearchState"></param>
         /// <param name="Hint"></param>
         /// <param name="X"></param>
@@ -860,6 +832,9 @@ namespace VSS.TRex.DesignProfiling
                                        double Offset,
                                        out double Z)
         {
+            // Local var added to allow compilation only - shadows the class scope member of same name
+            TTMQuadTree QuadTreeSpatialIndex = null;
+
             if (CheckHint(ref Hint, X, Y, Offset, out Z))
                 return true;
             
@@ -886,6 +861,7 @@ namespace VSS.TRex.DesignProfiling
             return false;
         }
 
+      /*
         /// <summary>
         /// Interpolates heights from the design for all the cells in a subgrid
         /// </summary>
@@ -902,6 +878,7 @@ namespace VSS.TRex.DesignProfiling
         {
             return InterpolateHeights3(Patch, OriginX, OriginY, CellSize, Offset);
         }
+        */
 
         /// <summary>
         /// Interpolates heights from the design for all the cells in a subgrid
@@ -1010,10 +987,10 @@ namespace VSS.TRex.DesignProfiling
         /// <param name="CellSize"></param>
         /// <param name="Offset"></param>
         /// <returns></returns>
-        public bool InterpolateHeights3(float[,] Patch,
-                                        double OriginX, double OriginY,
-                                        double CellSize,
-                                        double Offset)
+        public override bool InterpolateHeights(float[,] Patch,
+                                                double OriginX, double OriginY,
+                                                double CellSize,
+                                                double Offset)
         {
             int ValueCount = 0;
             object Hint = null;
@@ -1025,10 +1002,10 @@ namespace VSS.TRex.DesignProfiling
             {
                 SubGridUtilities.SubGridDimensionalIterator((x, y) =>
                 {
-                    if (InterpolateHeight3(ref Hint,
-                                           OriginXPlusHalfCellSize + (CellSize * x),
-                                           OriginYPlusHalfCellSize + (CellSize * y),
-                                           Offset, out double Z))
+                    if (InterpolateHeight(ref Hint,
+                                          OriginXPlusHalfCellSize + (CellSize * x),
+                                          OriginYPlusHalfCellSize + (CellSize * y),
+                                          Offset, out double Z))
                     {
                         Patch[x, y] = (float)Z;
                         ValueCount++;
@@ -1074,9 +1051,7 @@ namespace VSS.TRex.DesignProfiling
 
             // Add the triangle to the cell, but not if it is already there
             if (!triangles.Any(t => t.Tag == tri.Tag))
-            {
                 triangles.Add(tri);
-            }
         }
 
         /// <summary>
@@ -1089,6 +1064,8 @@ namespace VSS.TRex.DesignProfiling
             // determine which subgrids in the index intersect it and add it to those subgrids
             try
             {
+                var FSpatialIndex = new GenericSubGridTree<List<Triangle>>(SubGridTree.SubGridTreeLevels - 1, SubGridTree.SubGridTreeDimension * FCellSize);
+
                 Log.LogInformation($"In: Constructing subgrid index for design containing {FData.Triangles.Count} triangles");
                 try
                 {
@@ -1197,17 +1174,15 @@ namespace VSS.TRex.DesignProfiling
                 ConstructSpatialIndex();
 
                 if (!LoadSubgridIndexFile(fileName + Consts.kDesignSubgridIndexFileExt))
-                {
                     return DesignLoadResult.UnableToLoadSubgridIndex;
-                }
 
                 Log.LogInformation($"Area: ({FData.Header.MinimumEasting}, {FData.Header.MinimumNorthing}) -> ({FData.Header.MaximumEasting}, {FData.Header.MaximumNorthing}): [{FData.Header.MaximumEasting - FData.Header.MinimumEasting} x {FData.Header.MaximumNorthing - FData.Header.MinimumNorthing}]");
 
                 // Build the quadtree based spatial index
-                QuadTreeSpatialIndex = new TTMQuadTree();
-                QuadTreeSpatialIndex.Initialise(FData, false);
-
-                Log.LogInformation($"Constructed quadtree spatial index using {QuadTreeSpatialIndex.BATree.Count} BTree blocks");
+                // Removed, this is the old quadtree spatial index, not performant enough
+                //QuadTreeSpatialIndex = new TTMQuadTree();
+                //QuadTreeSpatialIndex.Initialise(FData, false);
+                //Log.LogInformation($"Constructed quadtree spatial index using {QuadTreeSpatialIndex.BATree.Count} BTree blocks");
 
                 return DesignLoadResult.Success;
             }
@@ -1237,10 +1212,8 @@ namespace VSS.TRex.DesignProfiling
                         }
                     }
                 }
-                else
-                {
-                    return false;
-                }
+
+                return false;
             }
             catch (Exception e)
             {
@@ -1268,18 +1241,12 @@ namespace VSS.TRex.DesignProfiling
                 if (Result)
                 {
                     if (SaveSubgridIndex(SubgridIndexFileName))
-                    {
                         Log.LogInformation($"Saved constructed subgrid index file {SubgridIndexFileName}");
-                    }
                     else
-                    {
                         Log.LogError($"Unable to save subgrid index file {SubgridIndexFileName} - continuing with unsaved index");
-                    }
                 }
                 else
-                {
                     Log.LogError($"Unable to create and save subgrid index file {SubgridIndexFileName}");
-                }
             }
 
             return Result;
@@ -1292,8 +1259,6 @@ namespace VSS.TRex.DesignProfiling
         /// <returns></returns>
         protected bool SaveSubgridIndex(string SubgridIndexFileName)
         {
-            bool Result = false;
-
             try
             {
                 // Write the index out to a file
@@ -1328,14 +1293,14 @@ namespace VSS.TRex.DesignProfiling
                 }
                 */
 
-                Result = true;
+              return true;
             }
             catch (Exception e)
             {
                 Log.LogError($"Exception {e} SaveSubgridIndex");
             }
 
-            return Result;
+            return false;
         }
 
         /// <summary>

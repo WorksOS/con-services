@@ -33,7 +33,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// This field is used as the affinity key map that determines which mutable server will
         /// store this TAG file.
         /// </summary>
-        [AffinityKeyMapped]
         public Guid ProjectID;
 
         /// <summary>

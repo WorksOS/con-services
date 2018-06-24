@@ -179,7 +179,7 @@ namespace VSS.TRex.Servers.Compute
       // Replicate the maps across nodes
       cfg.CacheMode = CacheMode.Partitioned;
 
-            cfg.AffinityFunction = new MutableNonSpatialAffinityFunction();
+      cfg.AffinityFunction = new MutableNonSpatialAffinityFunction();
 
       // No backups for now
       cfg.Backups = 0;

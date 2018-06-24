@@ -32,7 +32,7 @@ namespace VSS.TRex.Events
         PositioningTech = 0x00000013,
         InAvoidZone2DStateChange = 0x00000014,
         InAvoidZoneUSStateChange = 0x00000015,
-        BladeOnGroundStateChange = 0x00000016,
+        //BladeOnGroundStateChange = 0x00000016, Obsolete, not used and removed
         TempWarningLevelMinChange = 0x00000017,
         TempWarningLevelMaxChange = 0x00000018,
         TargetMDP = 0x00000019,

@@ -25,14 +25,14 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 		public override AggregatorBase ConstructAggregator(SpeedStatisticsArgument argument) => new SpeedAggregator
 		{
 			RequiresSerialisation = true,
-			SiteModelID = argument.DataModelID,
+			SiteModelID = argument.ProjectID,
 			//LiftBuildSettings := LiftBuildSettings;
 			CellSize = SiteModel.Grid.CellSize,
 			TargetMachineSpeed = argument.TargetMachineSpeed
 		};
 
 		/// <summary>
-		/// Constructs the computer from the supplied argument and aggregator for the Speed statistics analytics request
+		/// Constructs the computor from the supplied argument and aggregator for the Speed statistics analytics request
 		/// </summary>
 		/// <param name="argument"></param>
 		/// <param name="aggregator"></param>
@@ -44,7 +44,7 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 			Aggregator = aggregator,
 			Filters = argument.Filters,
 			IncludeSurveyedSurfaces = true,
-			RequestedGridDataType = GridDataType.MachineSpeed
+			RequestedGridDataType = GridDataType.MachineSpeedTarget
 		};
 
 		/// <summary>
@@ -54,15 +54,17 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 		/// <param name="response"></param>
 		public override void ReadOutResults(AggregatorBase aggregator, SpeedStatisticsResponse response)
 		{
-		  response.CellSize = ((SummaryAggregator)aggregator).CellSize;
-		  response.SummaryCellsScanned = ((SummaryAggregator)aggregator).SummaryCellsScanned;
+		  var tempAggregator = (SummaryDataAggregator)aggregator;
 
-		  response.CellsScannedOverTarget = ((SummaryAggregator)aggregator).CellsScannedOverTarget;
-		  response.CellsScannedUnderTarget = ((SummaryAggregator)aggregator).CellsScannedUnderTarget;
-		  response.CellsScannedAtTarget = ((SummaryAggregator)aggregator).CellsScannedAtTarget;
+      response.CellSize = tempAggregator.CellSize;
+		  response.SummaryCellsScanned = tempAggregator.SummaryCellsScanned;
 
-		  response.IsTargetValueConstant = ((SummaryAggregator)aggregator).IsTargetValueConstant;
-		  response.MissingTargetValue = ((SummaryAggregator)aggregator).MissingTargetValue;
+		  response.CellsScannedOverTarget = tempAggregator.CellsScannedOverTarget;
+		  response.CellsScannedUnderTarget = tempAggregator.CellsScannedUnderTarget;
+		  response.CellsScannedAtTarget = tempAggregator.CellsScannedAtTarget;
+
+		  response.IsTargetValueConstant = tempAggregator.IsTargetValueConstant;
+		  response.MissingTargetValue = tempAggregator.MissingTargetValue;
 		}
 	}
 }

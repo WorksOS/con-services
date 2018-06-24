@@ -9,18 +9,18 @@ namespace VSS.TRex.SubGridTrees.Types
 	/// </summary>
 	public struct SubGridCellPassDataTemperatureEntryRecord
   {
-	  /// <summary>
-	  /// Minimum machine speed value.
-	  /// </summary>
-	  public ushort MeasuredTemperature { get; set; }
+    /// <summary>
+    /// Measured temperature value.
+    /// </summary>
+    public ushort MeasuredTemperature { get; set; }
 
     /// <summary>
-    /// Maximum machine speed value.
+    /// Temperature warning levels.
     /// </summary>
     public TemperatureWarningLevelsRecord TemperatureLevels;
 
 		/// <summary>
-		/// /// Constractor with arguments.
+		/// Constractor with arguments.
 		/// </summary>
 		/// <param name="measuredTemperature"></param>
 		/// <param name="temperatureLevels"></param>
@@ -31,13 +31,29 @@ namespace VSS.TRex.SubGridTrees.Types
 	  }
 
 		/// <summary>
-		/// Initialises the Min and Max properties with null values.
+		/// Initialises the measured temperature and its warning leveles with null values.
 		/// </summary>
 		public void Clear()
 	  {
 		  MeasuredTemperature = CellPass.NullMaterialTemperatureValue;
 			TemperatureLevels.Clear();
 	  }
+
+    /// <summary>
+    /// Defines a publically accessible null value for this cell value type
+    /// </summary>
+    public static SubGridCellPassDataTemperatureEntryRecord NullValue = SubGridCellPassDataTemperatureEntryRecord.Null();
+
+    /// <summary>
+    /// Implements the business logic to create the null value for this cell valuye type
+    /// </summary>
+    /// <returns></returns>
+    public static SubGridCellPassDataTemperatureEntryRecord Null()
+    {
+      SubGridCellPassDataTemperatureEntryRecord Result = new SubGridCellPassDataTemperatureEntryRecord();
+      Result.Clear();
+      return Result;
+    }
 
     /// <summary>
     /// Serialises content of the cell to the writer
@@ -57,6 +73,11 @@ namespace VSS.TRex.SubGridTrees.Types
     {
       MeasuredTemperature = reader.ReadUInt16();
       TemperatureLevels.Read(reader);
+    }
+
+    public bool Equals(SubGridCellPassDataTemperatureEntryRecord other)
+    {
+      return MeasuredTemperature == other.MeasuredTemperature && TemperatureLevels.Equals(other.TemperatureLevels);
     }
   }
 }

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 using VSS.TRex.Cells;
-using VSS.TRex.Common;
 
 namespace VSS.TRex.Types
 {
@@ -60,6 +56,27 @@ namespace VSS.TRex.Types
 	  {
 	    Min = reader.ReadUInt16();
 	    Max = reader.ReadUInt16();
+	  }
+
+	  /// <summary>
+	  /// Defines a publically accessible null value for this cell value type
+	  /// </summary>
+	  public static MachineSpeedExtendedRecord NullValue = MachineSpeedExtendedRecord.Null();
+
+	  /// <summary>
+	  /// Implements the business logic to create the null value for this cell valuye type
+	  /// </summary>
+	  /// <returns></returns>
+	  public static MachineSpeedExtendedRecord Null()
+	  {
+	    MachineSpeedExtendedRecord Result = new MachineSpeedExtendedRecord();
+	    Result.Clear();
+	    return Result;
+	  }
+
+	  public bool Equals(MachineSpeedExtendedRecord other)
+	  {
+	    return Min == other.Min && Max == other.Max;
 	  }
   }
 }

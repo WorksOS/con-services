@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Windows.Forms;
 using Microsoft.Extensions.DependencyInjection;
+using VSS.TRex.CoordinateSystems;
+using VSS.TRex.CoordinateSystems.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
@@ -19,7 +21,8 @@ namespace TRexMutableDataServer
         .AddLogging()
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels()))
-        .Add(x => x.AddSingleton<ITFAProxy>(new TFAProxy()))        
+        .Add(x => x.AddSingleton<ITFAProxy>(new TFAProxy()))
+        .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
         .Complete();
     }
 

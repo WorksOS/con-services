@@ -24,11 +24,10 @@ namespace VSS.TRex.Filters
     WantsEventInAvoidZoneStateValues = 0x1000,
     WantsEventGPSAccuracyValues = 0x2000,
     WantsEventPositioningTechValues = 0x4000,
-    WantsEventOnGroundValues = 0x8000,
-    WantsTempWarningLevelMinValues = 0x10000,
-    WantsTempWarningLevelMaxValues = 0x20000,
-    WantsTargetMDPValues = 0x40000,
-    WantsLayerIDValues = 0x80000,
-    WantsTargetCCAValues = 0x100000
+    WantsTempWarningLevelMinValues = 0x08000,
+    WantsTempWarningLevelMaxValues = 0x10000,
+    WantsTargetMDPValues = 0x20000,
+    WantsLayerIDValues = 0x40000,
+    WantsTargetCCAValues = 0x080000
   }
 }

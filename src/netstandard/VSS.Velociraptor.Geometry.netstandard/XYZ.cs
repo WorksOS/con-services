@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.TRex.Common;
 
 /*
@@ -66,7 +62,10 @@ namespace VSS.TRex.Geometry
         /// <returns></returns>
         public override string ToString()
         {
-            return string.Format("X:{0:F3}, Y:{1:F3}, Z:{2:F3}", X, Y, Z);
+          if (Z == Consts.NullDouble)
+            return $"X:{X:F3}, Y:{Y:F3}, Z:Null";
+
+          return $"X:{X:F3}, Y:{Y:F3}, Z:{Z:F3}";
         }
 
         /// <summary>
@@ -190,7 +189,7 @@ namespace VSS.TRex.Geometry
         /// <param name="p1"></param>
         /// <param name="p2"></param>
         /// <returns></returns>
-        public static double Get3DLength(XYZ p1, XYZ p2) => Math.Sqrt(Math.Pow(p2.X - p1.X, 2) + Math.Pow(p2.Y - p1.Y, 2) + Math.Pow(p2.Z - p1.Y, 2));
+        public static double Get3DLength(XYZ p1, XYZ p2) => Math.Sqrt(Math.Pow(p2.X - p1.X, 2) + Math.Pow(p2.Y - p1.Y, 2) + Math.Pow(p2.Z - p1.Z, 2));
 
         /// <summary>
         /// Calculate dot product of two vectors from Origin to Pt1 and Origin to Pt2

@@ -1,6 +1,7 @@
 ﻿using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.Analytics.Foundation.Interfaces;
 using VSS.TRex.GridFabric.Requests.Interfaces;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
 {
@@ -24,7 +25,7 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    protected override void AggregateBaseDataWith(SummaryAnalyticsResponse other)
+    protected override void AggregateBaseDataWith(StatisticAnalyticsResponse other)
     {
       base.AggregateBaseDataWith(other);
 
@@ -44,11 +45,7 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
         AboveTargetPercent = ValueOverTargetPercent,
         TotalAreaCoveredSqMeters = SummaryProcessedArea,
 
-        // 0 : No problems due to missing target data could still be no data however... 
-        // 1 : No result due to missing target data...
-        // 2 : Partial result due to missing target data...
-
-        ReturnCode = MissingTargetValue ? SummaryCellsScanned == 0 ? (short)1 : (short)2 : (short)0,
+        ReturnCode = MissingTargetValue ? SummaryCellsScanned == 0 ? MissingTargetDataResultType.NoResult : MissingTargetDataResultType.PartialResult : MissingTargetDataResultType.NoProblems,
 
         ResultStatus = ResultStatus
       };

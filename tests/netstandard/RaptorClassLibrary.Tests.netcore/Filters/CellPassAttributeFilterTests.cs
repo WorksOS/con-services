@@ -216,7 +216,27 @@ namespace VSS.TRex.Filters.Tests
             Test_CellPassAttributeFilter_CompareTo_Aspect("VibeState On", x => { x.HasVibeStateFilter = true; x.VibeState = VibrationState.On; });
         }
 
+
         [Fact()]
+        public void Test_CellPassAttributeFilter_CompareTo_Temperature()
+        {
+          Test_CellPassAttributeFilter_CompareTo_Aspect("Temperature", x => { x.HasTemperatureRangeFilter = true; x.MaterialTemperatureMin = 10;
+                                                                         x.MaterialTemperatureMax = 40;
+                                                                       });
+        }
+
+
+        [Fact()]
+        public void Test_CellPassAttributeFilter_CompareTo_PassCountRange()
+        {
+          Test_CellPassAttributeFilter_CompareTo_Aspect("PassCountRange", x => {
+                                                                         x.HasPassCountRangeFilter = true; x.PasscountRangeMin = 1;
+                                                                         x.PasscountRangeMax = 4;
+                                                                       });
+        }
+
+
+    [Fact()]
         public void Test_CellPassAttributeFilter_ClearDesigns()
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("Designs",
@@ -312,11 +332,20 @@ namespace VSS.TRex.Filters.Tests
                                                             x => !x.HasLayerStateFilter);
         }
 
-        [Fact(Skip = "Not Implemented")]
+        [Fact()]
         public void Test_CellPassAttributeFilter_Assign()
         {
-            Assert.True(false);
-        }
+          CellPassAttributeFilter filter1 = new CellPassAttributeFilter(/*null*/);
+          CellPassAttributeFilter filter2 = new CellPassAttributeFilter(/*null*/);
+          filter1.ClearFilter();
+          filter2.ClearFilter();
+          filter1.MaterialTemperatureMin = 10;
+          filter1.MaterialTemperatureMax = 30;
+          filter1.HasTemperatureRangeFilter = true;
+          Assert.Equal(-1, filter1.CompareTo(filter2));
+          filter2.Assign(filter1);
+          Assert.Equal(0, filter1.CompareTo(filter2));
+    }
 
         [Fact()]
         public void Test_CellPassAttributeFilter_ClearCompactionMachineOnlyRestriction()

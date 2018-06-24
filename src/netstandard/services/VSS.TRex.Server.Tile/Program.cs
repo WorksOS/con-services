@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.CoordinateSystems;
+using VSS.TRex.CoordinateSystems.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Implementations.Core2;
@@ -23,6 +25,7 @@ namespace VSS.TRex.Server.Application
         // The renderer factory that allows tile rendering services access Bitmap etc platform dependent constructs
         .Add(x => x.AddSingleton<IRenderingFactory>(new RenderingFactory()))
 
+        .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
         .Complete();
     }
 

@@ -26,14 +26,14 @@ namespace VSS.TRex.Analytics.Coordinators
         public override AggregatorBase ConstructAggregator(CutFillStatisticsArgument argument) => new CutFillAggregator
             {
                 RequiresSerialisation = true,
-                SiteModelID = argument.DataModelID,
+                SiteModelID = argument.ProjectID,
                 //LiftBuildSettings := LiftBuildSettings;
                 CellSize = SiteModel.Grid.CellSize,
                 Offsets = argument.Offsets
             };
 
         /// <summary>
-        /// Constructs the computer from the supplied argument and aggregator for the cut fill statistics analytics request
+        /// Constructs the computor from the supplied argument and aggregator for the cut fill statistics analytics request
         /// </summary>
         /// <param name="argument"></param>
         /// <param name="aggregator"></param>

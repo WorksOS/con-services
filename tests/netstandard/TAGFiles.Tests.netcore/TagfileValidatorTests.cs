@@ -34,7 +34,7 @@ namespace TAGFiles.Tests.netcore
         public void Test_TagfileValidator_TestInvalidTagFileTooSmall()
         {
 
-            TagfileDetail td = new TagfileDetail()
+            TagFileDetail td = new TagFileDetail()
                                {
                                        assetId = Guid.NewGuid(),
                                        projectId = Guid.NewGuid(),
@@ -54,7 +54,7 @@ namespace TAGFiles.Tests.netcore
         public void Test_TagfileValidator_TestInvalidEmptyTagFile()
         {
 
-            TagfileDetail td = new TagfileDetail()
+            TagFileDetail td = new TagFileDetail()
                                {
                                        assetId = Guid.NewGuid(),
                                        projectId = Guid.NewGuid(),
@@ -84,7 +84,7 @@ namespace TAGFiles.Tests.netcore
                 tagFileStream.Read(tagContent, 0, (int)tagFileStream.Length);
             }
 
-            TagfileDetail td = new TagfileDetail()
+            TagFileDetail td = new TagFileDetail()
                                {
                                        assetId = Guid.NewGuid(),
                                        projectId = Guid.NewGuid(),
@@ -114,7 +114,7 @@ namespace TAGFiles.Tests.netcore
                 tagFileStream.Read(tagContent, 0, (int)tagFileStream.Length);
             }
 
-            TagfileDetail td = new TagfileDetail()
+            TagFileDetail td = new TagFileDetail()
                                {
                                        assetId =  Guid.Parse("{00000000-0000-0000-0000-000000000001}"),
                                        projectId = Guid.Parse("{00000000-0000-0000-0000-000000000001}"),
@@ -124,7 +124,7 @@ namespace TAGFiles.Tests.netcore
                                        IsJohnDoe = false
                                };
 
-            Assert.True(TagfileReposity.ArchiveTagfile(td), "Failed to archive tagfile");
+            Assert.True(TagFileRepository.ArchiveTagfile(td), "Failed to archive tagfile");
         }
         
         // Possibly have a future test with a mocked TFAProxy

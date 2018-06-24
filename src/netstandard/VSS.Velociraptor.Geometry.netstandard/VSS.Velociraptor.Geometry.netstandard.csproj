@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Raptor.Common.netstandard\Raptor.Common.netstandard.csproj" />
+    <ProjectReference Include="..\Raptor.Common.netstandard\VSS.TRex.Common.netstandard.csproj" />
   </ItemGroup>
 
 </Project>

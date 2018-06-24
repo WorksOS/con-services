@@ -75,8 +75,6 @@ namespace VSS.TRex.Events
 
     public void RecordEventState(int stamp, ProductionEvents<T> eventList)
     {
-      // TODO NumFullEventLookups -> Place into context where this is called
-
       Stamp = stamp;
       int EventListCount = eventList.Events.Count;
 

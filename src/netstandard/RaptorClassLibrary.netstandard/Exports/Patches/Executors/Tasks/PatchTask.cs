@@ -13,8 +13,7 @@ namespace VSS.TRex.Exports.Patches.Executors.Tasks
   /// </summary>
   public class PatchTask : PipelinedSubGridTask
   {
-    private static readonly ILogger
-      Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     /// <summary>
     /// The collection of subgrids being collected for a patch response

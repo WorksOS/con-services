@@ -1,6 +1,7 @@
 ﻿using VSS.TRex.Designs.TTM;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -47,9 +48,9 @@ namespace VSS.TRex.Designs.TTM.Tests
         [Fact()]
         public void LoadFromFileTest()
         {
-            TrimbleTINModel TTM = new TrimbleTINModel();
+            TrimbleTINModel TTM = new TrimbleTINModel();          
 
-            TTM.LoadFromFile(@"C:\Temp\Bug36372.ttm");
+            TTM.LoadFromFile(Path.Combine("TestData", "Bug36372.ttm"));
 
             Assert.True(TTM.Vertices.Count > 0, "No vertices loaded from TTM file");
             Assert.True(TTM.Triangles.Count > 0, "No triangles loaded from TTM file");
@@ -83,7 +84,7 @@ namespace VSS.TRex.Designs.TTM.Tests
         [Fact()]
         public void IsTTMFileTest()
         {
-            Assert.True(TrimbleTINModel.IsTTMFile(@"C:\Temp\Bug36372.ttm", out string error),
+            Assert.True(TrimbleTINModel.IsTTMFile(Path.Combine("TestData", "Bug36372.ttm"), out string error),
                 $"File is not a TTM file when it should be with error='{error}'");
         }
 

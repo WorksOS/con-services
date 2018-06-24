@@ -2,102 +2,137 @@
 using System.IO;
 using VSS.TRex.Cells;
 using VSS.TRex.Filters;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Client
 {
+  /// <summary>
+  /// The content of each cell in a height client leaf sub grid. Each cell stores an elevation only.
+  /// </summary>
+  public class ClientMachineSpeedLeafSubGrid : GenericClientLeafSubGrid<ushort>
+  {
     /// <summary>
-    /// The content of each cell in a height client leaf sub grid. Each cell stores an elevation only.
+    /// First pass map records which cells hold cell pass machine speeds that were derived
+    /// from the first pass a machine made over the corresponding cell
     /// </summary>
-    public class ClientMachineSpeedLeafSubGrid : GenericClientLeafSubGrid<ushort>
+    public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+
+    /// <summary>
+    /// Initilise the null cell values for the client subgrid
+    /// </summary>
+    static ClientMachineSpeedLeafSubGrid()
     {
-        /// <summary>
-        /// First pass map records which cells hold cell pass machine speeds that were derived
-        /// from the first pass a machine made over the corresponding cell
-        /// </summary>
-        public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y] = CellPass.NullMachineSpeed);
+    }
 
-        /// <summary>
-        /// Constructor. Set the grid to MachineSpeed.
-        /// </summary>
-        /// <param name="owner"></param>
-        /// <param name="parent"></param>
-        /// <param name="level"></param>
-        /// <param name="cellSize"></param>
-        /// <param name="indexOriginOffset"></param>
-        public ClientMachineSpeedLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
-        {
-            _gridDataType = GridDataType.MachineSpeed;
-        }
+    /// <summary>
+    /// Constructor. Set the grid to MachineSpeed.
+    /// </summary>
+    /// <param name="owner"></param>
+    /// <param name="parent"></param>
+    /// <param name="level"></param>
+    /// <param name="cellSize"></param>
+    /// <param name="indexOriginOffset"></param>
+    public ClientMachineSpeedLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
+    {
+      _gridDataType = GridDataType.MachineSpeed;
+    }
 
-        /// <summary>
-        /// Determine if a filtered machine speed is valid (not null)
-        /// </summary>
-        /// <param name="filteredValue"></param>
-        /// <returns></returns>
-        public override bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue) => filteredValue.FilteredPass.MachineSpeed == CellPass.NullMachineSpeed;
+    /// <summary>
+    /// Determine if a filtered machine speed is valid (not null)
+    /// </summary>
+    /// <param name="filteredValue"></param>
+    /// <returns></returns>
+    public override bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue) => filteredValue.FilteredPass.MachineSpeed == CellPass.NullMachineSpeed;
 
-        /// <summary>
-        /// Assign filtered height value from a filtered pass to a cell
-        /// </summary>
-        /// <param name="cellX"></param>
-        /// <param name="cellY"></param>
-        /// <param name="Context"></param>
-        public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext Context)
-        {
-            Cells[cellX, cellY] = Context.FilteredValue.FilteredPassData.FilteredPass.MachineSpeed;
-        }
+    /// <summary>
+    /// Assign filtered height value from a filtered pass to a cell
+    /// </summary>
+    /// <param name="cellX"></param>
+    /// <param name="cellY"></param>
+    /// <param name="Context"></param>
+    public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext Context)
+    {
+      Cells[cellX, cellY] = Context.FilteredValue.FilteredPassData.FilteredPass.MachineSpeed;
+    }
 
-        /// <summary>
-        /// Determines if the height at the cell location is null or not.
-        /// </summary>
-        /// <param name="cellX"></param>
-        /// <param name="cellY"></param>
-        /// <returns></returns>
-        public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY] != CellPass.NullMachineSpeed;
+    /// <summary>
+    /// Fills the contents of the client leaf subgrid with a known, non-null test pattern of values
+    /// </summary>
 
-        /// <summary>
-        /// Sets all cell heights to null and clears the first pass and sureyed surface pass maps
-        /// </summary>
-        public override void Clear()
-        {
-            base.Clear();
+    public override void FillWithTestPattern() => ForEach((x, y) => Cells[x, y] = (ushort)(x + y));
 
-            ForEach((x, y) => Cells[x, y] = CellPass.NullMachineSpeed); // TODO: Optimisation: Use PassData_MachineSpeed_Null assignment as in current gen;
+    /// <summary>
+    /// Determines if the height at the cell location is null or not.
+    /// </summary>
+    /// <param name="cellX"></param>
+    /// <param name="cellY"></param>
+    /// <returns></returns>
+    public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY] != CellPass.NullMachineSpeed;
 
-            FirstPassMap.Clear();
-        }
+    /// <summary>
+    /// Provides a copy of the null value defined for cells in thie client leaf subgrid
+    /// </summary>
+    /// <returns></returns>
+    public override ushort NullCell() => CellPass.NullMachineSpeed;
 
-        /// <summary>
-        /// Dumps elevations from subgrid to the log
-        /// </summary>
-        /// <param name="title"></param>
-        public override void DumpToLog(string title)
-        {
-            base.DumpToLog(title);
-            /*
-             * var
-              I, J : Integer;
-              S : String;
-            begin
-              SIGLogMessage.PublishNoODS(Nil, Format('Dump of machine speed map for subgrid %s', [Moniker]) , slmcDebug);
+    /// <summary>
+    /// Sets all cell heights to null and clears the first pass and sureyed surface pass maps
+    /// </summary>
+    public override void Clear()
+    {
+      base.Clear();
 
-              for I := 0 to kSubGridTreeDimension - 1 do
-                begin
-                  S := Format('%2d:', [I]);
+      FirstPassMap.Clear();
+    }
 
-                  for J := 0 to kSubGridTreeDimension - 1 do
-                    if CellHasValue(I, J) then
-                      S := S + Format('%9.3f', [Cells[I, J]])
-                    else
-                      S := S + '     Null';
+    /// <summary>
+    /// Dumps elevations from subgrid to the log
+    /// </summary>
+    /// <param name="title"></param>
+    public override void DumpToLog(string title)
+    {
+      base.DumpToLog(title);
+      /*
+       * var
+        I, J : Integer;
+        S : String;
+      begin
+        SIGLogMessage.PublishNoODS(Nil, Format('Dump of machine speed map for subgrid %s', [Moniker]) , slmcDebug);
 
-                  SIGLogMessage.PublishNoODS(Nil, S, slmcDebug);
-                end;
-            end;
-            */
-        }
+        for I := 0 to kSubGridTreeDimension - 1 do
+          begin
+            S := Format('%2d:', [I]);
+
+            for J := 0 to kSubGridTreeDimension - 1 do
+              if CellHasValue(I, J) then
+                S := S + Format('%9.3f', [Cells[I, J]])
+              else
+                S := S + '     Null';
+
+            SIGLogMessage.PublishNoODS(Nil, S, slmcDebug);
+          end;
+      end;
+      */
+    }
+
+    /// <summary>
+    /// Determines if the leaf content of this subgrid is equal to 'other'
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public override bool LeafContentEquals(IClientLeafSubGrid other)
+    {
+      bool result = true;
+
+      IGenericClientLeafSubGrid<ushort> _other = (IGenericClientLeafSubGrid<ushort>)other;
+      ForEach((x, y) => result &= Cells[x, y] == _other.Cells[x, y]);
+
+      return result;
+    }
 
 /*
         /// <summary>
@@ -125,42 +160,42 @@ namespace VSS.TRex.SubGridTrees.Client
         }
 */
 
-        /// <summary>
-        /// Write the contents of the Items array using the supplied writer
-        /// This is an unimplemented override; a generic BinaryReader based implementation is not provided. 
-        /// Override to implement if needed.
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="buffer"></param>
-        public override void Write(BinaryWriter writer, byte [] buffer)
-        {
-            base.Write(writer, buffer);
+    /// <summary>
+    /// Write the contents of the Items array using the supplied writer
+    /// This is an unimplemented override; a generic BinaryReader based implementation is not provided. 
+    /// Override to implement if needed.
+    /// </summary>
+    /// <param name="writer"></param>
+    /// <param name="buffer"></param>
+    public override void Write(BinaryWriter writer, byte[] buffer)
+    {
+      base.Write(writer, buffer);
 
-            FirstPassMap.Write(writer, buffer);
+      FirstPassMap.Write(writer, buffer);
 
-            Buffer.BlockCopy(Cells, 0, buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(ushort));
-            writer.Write(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(ushort));
+      Buffer.BlockCopy(Cells, 0, buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(ushort));
+      writer.Write(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(ushort));
 
-            //SubGridUtilities.SubGridDimensionalIterator((x, y) => writer.Write(Cells[x, y]));
-        }
-
-        /// <summary>
-        /// Fill the items array by reading the binary representation using the provided reader. 
-        /// This is an unimplemented override; a generic BinaryReader based implementation is not provided. 
-        /// Override to implement if needed.
-        /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="buffer"></param>
-        public override void Read(BinaryReader reader, byte[] buffer)
-        {
-            base.Read(reader, buffer);
-
-            FirstPassMap.Read(reader, buffer);
-
-            reader.Read(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(ushort));
-            Buffer.BlockCopy(buffer, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(ushort));
-
-            //SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y] = reader.ReadUInt16());
-        }
+      //SubGridUtilities.SubGridDimensionalIterator((x, y) => writer.Write(Cells[x, y]));
     }
+
+    /// <summary>
+    /// Fill the items array by reading the binary representation using the provided reader. 
+    /// This is an unimplemented override; a generic BinaryReader based implementation is not provided. 
+    /// Override to implement if needed.
+    /// </summary>
+    /// <param name="reader"></param>
+    /// <param name="buffer"></param>
+    public override void Read(BinaryReader reader, byte[] buffer)
+    {
+      base.Read(reader, buffer);
+
+      FirstPassMap.Read(reader, buffer);
+
+      reader.Read(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(ushort));
+      Buffer.BlockCopy(buffer, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(ushort));
+
+      //SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y] = reader.ReadUInt16());
+    }
+  }
 }

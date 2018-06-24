@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using VSS.TRex.Cells;
 using VSS.TRex.Filters;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.SubGridTrees.Utilities;
@@ -19,17 +20,27 @@ namespace VSS.TRex.SubGridTrees.Client
         /// </summary>
         public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-        /// <summary>
-        /// Constructor. Set the grid to Temperature.
-        /// </summary>
-        /// <param name="owner"></param>
-        /// <param name="parent"></param>
-        /// <param name="level"></param>
-        /// <param name="cellSize"></param>
-        /// <param name="indexOriginOffset"></param>
-        public ClientTemperatureLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
+      /// <summary>
+      /// Initialise the null cell values for the client subgrid
+      /// </summary>
+      static ClientTemperatureLeafSubGrid()
+      {
+        SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y] = SubGridCellPassDataTemperatureEntryRecord.NullValue);
+      } 
+
+    /// <summary>
+    /// Constructor. Set the grid to Temperature.
+    /// </summary>
+    /// <param name="owner"></param>
+    /// <param name="parent"></param>
+    /// <param name="level"></param>
+    /// <param name="cellSize"></param>
+    /// <param name="indexOriginOffset"></param>
+    public ClientTemperatureLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
         {
-            _gridDataType = GridDataType.Temperature;
+          EventPopulationFlags |= PopulationControlFlags.WantsTempWarningLevelMinValues | PopulationControlFlags.WantsTempWarningLevelMaxValues;
+
+          _gridDataType = GridDataType.Temperature;
         }
 
         /// <summary>
@@ -52,7 +63,25 @@ namespace VSS.TRex.SubGridTrees.Client
 	        Cells[cellX, cellY].TemperatureLevels.Max = Context.FilteredValue.FilteredPassData.TargetValues.TempWarningLevelMax;
 				}
 
-        /// <summary>
+      /// <summary>
+      /// Fills the contents of the client leaf subgrid with a known, non-null test pattern of values
+      /// </summary>
+      public override void FillWithTestPattern()
+      {
+        ForEach((x, y) =>
+        {
+          Cells[x, y] = new SubGridCellPassDataTemperatureEntryRecord
+          {
+            MeasuredTemperature = x,
+            TemperatureLevels = new TemperatureWarningLevelsRecord
+            {
+              Min = x, Max = (ushort)(x + y) 
+            }
+          };
+        });
+      }
+
+      /// <summary>
         /// Determines if the height at the cell location is null or not.
         /// </summary>
         /// <param name="cellX"></param>
@@ -61,18 +90,18 @@ namespace VSS.TRex.SubGridTrees.Client
         public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY].MeasuredTemperature != CellPass.NullMaterialTemperatureValue;
 
         /// <summary>
+        /// Provides a copy of the null value defined for cells in thie client leaf subgrid
+        /// </summary>
+        /// <returns></returns>
+        public override SubGridCellPassDataTemperatureEntryRecord NullCell() => SubGridCellPassDataTemperatureEntryRecord.NullValue;
+
+        /// <summary>
         /// Sets all cell heights to null and clears the first pass and sureyed surface pass maps
         /// </summary>
         public override void Clear()
         {
 					base.Clear();
-
-	        // TODO: Optimisation: Use PassData_MachineSpeed_Null assignment as in current gen;
-					ForEach((x, y) =>
-          {
-							Cells[x, y].MeasuredTemperature = CellPass.NullMaterialTemperatureValue;
-          }); 
-	        
+       
 					FirstPassMap.Clear();
         }
 
@@ -105,6 +134,21 @@ namespace VSS.TRex.SubGridTrees.Client
             end;
             */
         }
+
+      /// <summary>
+      /// Determines if the leaf content of this subgrid is equal to 'other'
+      /// </summary>
+      /// <param name="other"></param>
+      /// <returns></returns>
+      public override bool LeafContentEquals(IClientLeafSubGrid other)
+      {
+        bool result = true;
+
+        IGenericClientLeafSubGrid<SubGridCellPassDataTemperatureEntryRecord> _other = (IGenericClientLeafSubGrid<SubGridCellPassDataTemperatureEntryRecord>)other;
+        ForEach((x, y) => result &= Cells[x, y] .Equals(_other.Cells[x, y]));
+
+        return result;
+      }
 
 /*
         /// <summary>

@@ -4,8 +4,21 @@ using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Profiling
 {
+  /// <summary>
+  /// Contains core logic for determining masks for applying to subgrids to effect various restrictions
+  /// imposed on the request by a filter
+  /// </summary>
   public static class ProfileFilterMask
   {
+    /// <summary>
+    /// Constructs a mask using polygonal and positional spatial filtering aspects of a fitler.
+    /// </summary>
+    /// <param name="currentSubGridOrigin"></param>
+    /// <param name="Intercepts"></param>
+    /// <param name="fromProfileCellIndex"></param>
+    /// <param name="Mask"></param>
+    /// <param name="cellFilter"></param>
+    /// <param name="SubGridTree"></param>
     public static void ConstructSubgridSpatialAndPositionalMask(SubGridCellAddress currentSubGridOrigin,
       InterceptList Intercepts,
       int fromProfileCellIndex,
@@ -44,6 +57,16 @@ namespace VSS.TRex.Profiling
       }
     }
 
+    /// <summary>
+    /// Constructs a mask using all spatial fitlering elements active in the supplied filter
+    /// </summary>
+    /// <param name="currentSubGridOrigin"></param>
+    /// <param name="Intercepts"></param>
+    /// <param name="fromProfileCellIndex"></param>
+    /// <param name="Mask"></param>
+    /// <param name="cellFilter"></param>
+    /// <param name="SubGridTree"></param>
+    /// <returns></returns>
     public static bool ConstructSubgridCellFilterMask(SubGridCellAddress currentSubGridOrigin,
       InterceptList Intercepts,
       int fromProfileCellIndex,

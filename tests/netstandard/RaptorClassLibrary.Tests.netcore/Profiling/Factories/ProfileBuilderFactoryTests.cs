@@ -1,11 +1,12 @@
 ﻿using VSS.TRex.Profiling.Factories;
 using VSS.TRex.Profiling.Interfaces;
+using VSS.TRex.Tests.netcore.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
-namespace RaptorClassLibrary.Tests.netcore.Profiling.Factories
+namespace VSS.TRex.Tests.netcore.Profiling.Factories
 {
-    public class ProfileBuilderFactoryTests
+    public class ProfileBuilderFactoryTests : IClassFixture<DILoggingFixture>
     {
       [Fact]
       public void Test_ProfileBuilderFactory_Creation()
@@ -28,7 +29,7 @@ namespace RaptorClassLibrary.Tests.netcore.Profiling.Factories
       {
         IProfilerBuilderFactory factory = new ProfilerBuilderFactory();
 
-        Assert.True(factory.NewCellProfileBuilder(null, null, null) != null, "Failed to construct new cell profile builder");
+        Assert.True(factory.NewCellProfileBuilder(null, null, null, true) != null, "Failed to construct new cell profile builder");
       }
 
       [Fact]

@@ -160,9 +160,7 @@ namespace VSS.TRex.Compression
             NumBits = reader.ReadUInt32();
 
             if (NumBits == 0)
-            {
                 return;
-            }
 
             Storage = NewStorage();
 
@@ -172,16 +170,14 @@ namespace VSS.TRex.Compression
 
             /*
             for (int i = 0; i < NumStorageElements(); i++)
-            {
-                Storage[i] = reader.ReadUInt64();
-            }
+               Storage[i] = reader.ReadUInt64();
             */
         }
 
-        /// <summary>
-        /// StreamWriteStart initialise the bit field array for streamed writing from the start of the allocated memory
-        /// </summary>
-        public void StreamWriteStart()
+    /// <summary>
+    /// StreamWriteStart initialise the bit field array for streamed writing from the start of the allocated memory
+    /// </summary>
+    public void StreamWriteStart()
         {
             StreamWriteBitPos = 0;
         }

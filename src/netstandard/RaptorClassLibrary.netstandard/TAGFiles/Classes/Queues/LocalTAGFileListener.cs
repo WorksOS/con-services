@@ -39,7 +39,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 catch (Exception e)
                 {
                     Log.LogError(
-                        $"Exception {e} occurred addign TAG file item {evt.Key} to the grouper");
+                        $"Exception {e} occurred adding TAG file item {evt.Key} to the grouper");
                 }
             }
 

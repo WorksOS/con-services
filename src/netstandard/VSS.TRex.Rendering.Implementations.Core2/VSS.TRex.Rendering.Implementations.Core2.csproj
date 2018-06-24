@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\interfaces\VSS.TRex.Rendering.Abstractions\VSS.TRex.Rendering.Abstractions.csproj" />
-    <ProjectReference Include="..\RaptorClassLibrary.netstandard\RaptorClassLibrary.netstandard.csproj" />
+    <ProjectReference Include="..\RaptorClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj" />
   </ItemGroup>
 
 </Project>

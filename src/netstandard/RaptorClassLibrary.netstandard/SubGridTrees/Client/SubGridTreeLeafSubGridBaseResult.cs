@@ -6,7 +6,7 @@ namespace VSS.TRex.SubGridTrees.Client
 {
     public class SubGridTreeLeafSubGridBaseResult
     {
-        private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
+        private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.Factory();
 
         public IClientLeafSubGrid SubGrid;
         public int SubgridResultCode;

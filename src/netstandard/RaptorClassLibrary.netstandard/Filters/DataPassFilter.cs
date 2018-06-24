@@ -53,13 +53,16 @@ namespace VSS.TRex.Filters
 
         public virtual bool IsTimeRangeFilter() => false;
 
-        public bool HasCompactionMachinesOnlyFilter { get; set; } 
+        public bool HasCompactionMachinesOnlyFilter { get; set; }
+
+        public bool HasTemperatureRangeFilter { get; set; }
+        public bool HasPassCountRangeFilter { get; set; }
 
         public bool ExcludeSurveyedSurfaces()
         {
             return HasDesignFilter || HasMachineFilter || HasMachineDirectionFilter ||
             HasVibeStateFilter || HasCompactionMachinesOnlyFilter ||
-            HasGPSAccuracyFilter || HasPassTypeFilter;
+            HasGPSAccuracyFilter || HasPassTypeFilter || HasTemperatureRangeFilter;
         }
 
         public string ActiveFiltersText() => "Not implemented";
@@ -131,7 +134,9 @@ namespace VSS.TRex.Filters
                 HasPassTypeFilter ||
                 HasPositioningTechFilter ||
                 HasTimeFilter ||
-                HasVibeStateFilter;
+                HasVibeStateFilter ||
+                HasTemperatureRangeFilter ||
+                HasPassCountRangeFilter;
 
             AnyMachineEventFilterSelections =
                 HasDesignFilter ||
@@ -150,7 +155,8 @@ namespace VSS.TRex.Filters
                 HasTimeFilter ||
                 HasMachineFilter ||
                 HasElevationRangeFilter ||
-                HasCompactionMachinesOnlyFilter;
+                HasCompactionMachinesOnlyFilter ||
+                HasTemperatureRangeFilter;
         }
 
         // FilterSinglePass selects a single passes from the list of passes in
