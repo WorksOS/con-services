@@ -20,8 +20,8 @@ node ('jenkinsslave-pod') {
 
 	
 	//The runtimeContainerTag will need to updated when we want to push this to ecr
-	def buildContainerTag = "${project_name}:${versionNumber}"
-	def runtimeContainerTag = "${project_name}:${fullVersion}"
+	def buildContainerTag = "registry.k8s.vspengg.com:80/${project_name}:${versionNumber}"
+	def runtimeContainerTag = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}:${versionNumber}"
 
     //Set the build name so it is consistant with VSTS
 	currentBuild.displayName = versionNumber
