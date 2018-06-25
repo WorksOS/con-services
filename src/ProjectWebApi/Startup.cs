@@ -105,20 +105,42 @@ namespace VSS.MasterData.Project.WebAPI
       {
         ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-        ISampler sampler = new ConstSampler(sample: true);
-        Configuration jagerConfig = Jaeger.Configuration.FromEnv(loggerFactory);
+        ITracer tracer;
+        if (!String.IsNullOrEmpty(Environment.GetEnvironmentVariable("JAEGER_AGENT_HOST")) && 
+            !String.IsNullOrEmpty(Environment.GetEnvironmentVariable("JAEGER_AGENT_PORT")) && 
+            !String.IsNullOrEmpty(Environment.GetEnvironmentVariable("JAEGER_SAMPLER_TYPE")) &&
+            !String.IsNullOrEmpty(Environment.GetEnvironmentVariable("JAEGER_SERVICE_NAME"))) {
+
+          Configuration jagerConfig = Jaeger.Configuration.FromEnv(loggerFactory);
+          //ISender sender = new UdpSender(jagerConfig.GetTracerBuilder )
+
+          //IReporter reporter = new RemoteReporter.Builder()
+          //  .WithSender();
+
+          //By default this sends the tracing results to localhost:6831
+          //to test locallay run this docker run -d -p 6831:5775/udp -p 16686:16686 jaegertracing/all-in-one:latest
+          tracer = jagerConfig.GetTracerBuilder()
+              .Build();
+
+        } else
+        {
+          //Use default tracer
+
+          ISampler sampler = new ConstSampler(sample: true);
+
+          //By default this sends the tracing results to localhost:6831
+          //to test locallay run this docker run -d -p 6831:5775/udp -p 16686:16686 jaegertracing/all-in-one:latest
+          tracer = new Tracer.Builder(SERVICE_TITLE)
+              .WithLoggerFactory(loggerFactory)
+              .WithSampler(sampler)
+              .Build();
+        }
+
+
 
         
 
-        //ISender sender = new UdpSender(jagerConfig.GetTracerBuilder )
 
-        //IReporter reporter = new RemoteReporter.Builder()
-        //  .WithSender();
-
-        //By default this sends the tracing results to localhost:6831
-        //to test locallay run this docker run -d -p 6831:5775/udp -p 16686:16686 jaegertracing/all-in-one:latest
-        ITracer tracer = jagerConfig.GetTracerBuilder()
-            .Build();
 
         GlobalTracer.Register(tracer);
 
