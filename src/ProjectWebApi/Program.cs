@@ -79,7 +79,7 @@ namespace VSS.MasterData.Project.WebAPI
         {
           Log4NetProvider.RepoName = Startup.LoggerRepoName;
           builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
-          builder.SetMinimumLevel(LogLevel.Trace);
+          builder.SetMinimumLevel(LogLevel.Debug);
         })
         .UsePrometheus()
         .UseStartup<Startup>()
