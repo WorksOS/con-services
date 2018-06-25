@@ -1,13 +1,9 @@
-﻿using System.IO;
-using System.Diagnostics;
-using System.Reflection;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Swashbuckle.AspNetCore.Swagger;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
@@ -35,7 +31,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
     /// <summary>
     /// Log4net repository logger name.
     /// </summary>
-    public const string LOGGER_REPO_NAME = "WebApi";
+    public const string LoggerRepoName = "WebApi";
 
     /// <summary>
     /// Gets the root configuration object.
@@ -54,7 +50,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
         .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
         .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
-      env.ConfigureLog4Net("log4net.xml", LOGGER_REPO_NAME);
+      env.ConfigureLog4Net("log4net.xml", LoggerRepoName);
 
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
@@ -67,7 +63,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddCommon<Startup>(SERVICE_TITLE, "API for 3D Tag File Auth");
-      services.AddLogging();
 
       //Configure CORS
       services.AddCors(options =>
@@ -108,7 +103,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
       serviceCollection.BuildServiceProvider();
 
       loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(LOGGER_REPO_NAME);
+      loggerFactory.AddLog4Net(LoggerRepoName);
 
       app.UseCommon(SERVICE_TITLE);
 

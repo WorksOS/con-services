@@ -25,16 +25,13 @@ namespace WebApiTests.Executors
     protected SubscriptionRepository subscriptionRepository;
     protected static ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
     protected string kafkaTopicName;
+    private readonly string loggerRepoName = "UnitTestLogTest";
 
     [TestInitialize]
     public virtual void InitTest()
     {
-      const string loggerRepoName = "UnitTestLogTest";
       Log4NetProvider.RepoName = loggerRepoName;
-      var logPath = Directory.GetCurrentDirectory();
-
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
-
+      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
