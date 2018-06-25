@@ -2,8 +2,8 @@ MYSQL_SERVER_NAME_VSPDB: rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
 MYSQL_SERVER_NAME_ReadVSPDB: rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
 MYSQL_DATABASE_NAME: VSS-MasterData-Project
 MYSQL_PORT: "3306"
-MYSQL_USERNAME: root
-MYSQL_ROOT_PASSWORD: d3vRDS1234_
+MYSQL_USERNAME: Merino
+MYSQL_ROOT_PASSWORD: R58Kper%5
 KAFKA_URI: 10.97.97.32
 KAFKA_PORT: "9092"
 KAFKA_GROUP_NAME: Project-Consumer
@@ -25,7 +25,7 @@ TCCORG: vldev
 TCCUSERNAME: vldev
 TCCPWD: vldev_key
 TCCFILESPACEID: u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01
-JAEGER_AGENT_HOST: jaeger-agent.jager
-JAEGER_AGENT_PORT: 6831
+JAEGER_AGENT_HOST: jaeger-agent.jaeger
+JAEGER_AGENT_PORT: "6831"
 JAEGER_SAMPLER_TYPE: const
-JAEGER_SERVICE_NAME: Project Service API
+JAEGER_SERVICE_NAME: Dev Project Service API 
