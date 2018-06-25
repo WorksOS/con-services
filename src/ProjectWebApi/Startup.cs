@@ -107,6 +107,8 @@ namespace VSS.MasterData.Project.WebAPI
 
         ISampler sampler = new ConstSampler(sample: true);
 
+        //By default this sends the tracing results to localhost:6831
+        //to test locallay run this docker run -d -p 6831:5775/udp -p 16686:16686 jaegertracing/all-in-one:latest
         ITracer tracer = new Tracer.Builder(SERVICE_TITLE)
             .WithLoggerFactory(loggerFactory)
             .WithSampler(sampler)
