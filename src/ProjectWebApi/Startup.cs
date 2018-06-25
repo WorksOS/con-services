@@ -1,6 +1,7 @@
 using Jaeger;
 using Jaeger.Reporters;
 using Jaeger.Samplers;
+using Jaeger.Senders;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -102,16 +103,21 @@ namespace VSS.MasterData.Project.WebAPI
       //Add Jaegar tracing
       services.AddSingleton<ITracer>(serviceProvider =>
       {
-        
         ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
         ISampler sampler = new ConstSampler(sample: true);
+        Configuration jagerConfig = Jaeger.Configuration.FromEnv(loggerFactory);
+
+        
+
+        //ISender sender = new UdpSender(jagerConfig.GetTracerBuilder )
+
+        //IReporter reporter = new RemoteReporter.Builder()
+        //  .WithSender();
 
         //By default this sends the tracing results to localhost:6831
         //to test locallay run this docker run -d -p 6831:5775/udp -p 16686:16686 jaegertracing/all-in-one:latest
-        ITracer tracer = new Tracer.Builder(SERVICE_TITLE)
-            .WithLoggerFactory(loggerFactory)
-            .WithSampler(sampler)
+        ITracer tracer = jagerConfig.GetTracerBuilder()
             .Build();
 
         GlobalTracer.Register(tracer);
@@ -124,6 +130,7 @@ namespace VSS.MasterData.Project.WebAPI
       {
         options.IgnorePatterns.Add(request => _jaegerUri.IsBaseOf(request.RequestUri));
       });
+
 
 
       //GlobalTracer.Register();
