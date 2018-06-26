@@ -11,7 +11,7 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 	/// <summary>
 	/// Implements the specific business rules for calculating a Temperature summary
 	/// </summary>
-	public class TemperatureAggregator : DataStatisticsAggregator
+	public class TemperatureAggregator : SummaryDataAggregator
 	{
 		/// <summary>
 		/// The flag is to indicate wehther or not the temperature warning levels to be user overrides.
@@ -45,7 +45,7 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 		{
 			var aggregator = (TemperatureAggregator) other;
 
-			if (IsTargetValueConstant && other.SummaryCellsScanned > 0) // if we need to check for a difference
+			if (IsTargetValueConstant && aggregator.SummaryCellsScanned > 0) // if we need to check for a difference
 			{
 				// Compare grouped results to determine if target varies
 				if (aggregator.LastTempRangeMax != CellPass.NullMaterialTemperatureValue && LastTempRangeMax != CellPass.NullMaterialTemperatureValue) // If the data is valid...

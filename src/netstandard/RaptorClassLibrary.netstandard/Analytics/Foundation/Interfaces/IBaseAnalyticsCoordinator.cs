@@ -36,7 +36,7 @@ namespace VSS.TRex.Analytics.Foundation.Interfaces
         AggregatorBase ConstructAggregator(TArgument argument);
 
         /// <summary>
-        /// Constructs the computer responsible for orchestrating information requests, essentially the map part of the MapReduceReduce computation
+        /// Constructs the computor responsible for orchestrating information requests, essentially the map part of the MapReduceReduce computation
         /// </summary>
         /// <param name="argument"></param>
         /// <param name="aggregator"></param>
