@@ -5,7 +5,7 @@ namespace VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses
 {
     public class TileRenderResponse_Core2 : TileRenderResponse
     {
-        public System.Drawing.Bitmap TileBitmap { get; set; }
+        public Bitmap TileBitmap { get; set; }
 
         public override ITileRenderResponse AggregateWith(ITileRenderResponse other)
         {
@@ -18,7 +18,7 @@ namespace VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses
 
         public override void SetBitmap(object bitmap)
         {
-            TileBitmap = (System.Drawing.Bitmap) bitmap;
+            TileBitmap = (Bitmap) bitmap;
         }
     }
 }

@@ -1,11 +1,20 @@
 ﻿using System;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Local.ResultHandling;
+using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.TRex.Gateway.Common.Executors;
+using VSS.TRex.Gateway.Common.Models;
+using VSS.TRex.Gateway.Common.ResultHandling;
+using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
@@ -18,25 +27,26 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
     [HttpPost]
     [Route("api/v1/tile")]
-    public async Task<FileResult> GetTile(/*[FromBody] TileRequest request*/)
+    public FileResult GetTile([FromBody] TileRequest request)
     {
-
       //TileRequest will contain a FilterResult and other parameters 
       Log.LogDebug("GetTile: " + Request.QueryString);
+      
+      request.Validate();
 
-      //TODO: Validate request parameters
-      //TODO set up request and call TRex
-
-      /*
-      var tileResult = WithServiceExceptionTryExecuteAsync(async () =>
+      var tileResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
           .Build<TileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .ProcessAsync(tileRequest) as TileResult);
-         
+          .Process(request)) as TileResult;
 
-      return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
-      */
-      throw new NotImplementedException();
+      if (tileResult?.TileData == null )
+        tileResult = TileResult.EmptyTile(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE);
+
+      var memStream = new MemoryStream();
+      ((System.Drawing.Bitmap) tileResult.TileData.GetBitmap()).Save(memStream, ImageFormat.Png);
+      memStream.Position = 0;
+
+      return new FileStreamResult(memStream, "image/png");
     }
   }
 }
