@@ -43,6 +43,9 @@
       DynamicAddwithOffset("Unable to identify RadioSerial in the 3dPM system", 33);
       DynamicAddwithOffset("Failed to get project uid", 34);
       DynamicAddwithOffset("GetProjectUid internal error", 35);
+      DynamicAddwithOffset("ProjectUid is present, but invalid", 36);
+      DynamicAddwithOffset("Either Radio Serial or TCCOrgId must be provided", 37);
+      DynamicAddwithOffset("Unable to find the Project requested", 38);
     }
 
     /// <summary>

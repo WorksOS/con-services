@@ -65,5 +65,33 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       _log.LogResult(ToString(), request, result);
       return result;
     }
+
+    /// <summary>
+    /// This endpoint is used by TRex,
+    ///      it is called for each tag file, with as much information as is available.
+    ///      Attempts to identify a unique projectUid and AssetUid, which tag file could be applied to
+    ///         or an error which is/may be, preventing identifying one.
+    ///      This step tries to identify a unique projectUid and/or AssetUId and/or error.
+    /// </summary>
+    /// <param name="request">Details of the project, asset and tccOrgId. Also location and its date time</param>
+    /// <returns>
+    /// The project Uid and possibly assetUid
+    ///      otherwise a returnCode.
+    /// </returns>
+    /// <executor>GetProjectAndAssetUidsExecutor</executor>
+    [Route("api/v2/project/getUids")]
+    [HttpPost]
+    public async Task<GetProjectAndAssetUidsResult> GetProjectAndAssetUids([FromBody]GetProjectAndAssetUidsRequest request)
+    {
+      _log.LogDebug("GetProjectAndAssetUids: request:{0}", JsonConvert.SerializeObject(request));
+      request.Validate();
+
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(_log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
+      var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
+
+      _log.LogResult(ToString(), request, result);
+      return result;
+    }
+
   }
 }

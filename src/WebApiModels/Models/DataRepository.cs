@@ -70,6 +70,27 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return project;
     }
 
+    public async Task<Project> LoadProject(string projectUid)
+    {
+      Project project = null;
+
+      try
+      {
+        if (!string.IsNullOrEmpty(projectUid))
+        {
+          var p = await projectRepository.GetProject(projectUid).ConfigureAwait(false);
+          if (p != null) project = p;
+        }
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine(e);
+        throw; // todo re-tryable
+      }
+
+      return project;
+    }
+
     public async Task<IEnumerable<Project>> LoadProjects(string customerUid, DateTime validAtDate)
     {
       IEnumerable<Project> projects = null;
@@ -90,12 +111,22 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       double longitude, DateTime timeOfPosition)
     {
       IEnumerable<Project> projects = null;
-      if (customerUid != null)
+      try
       {
-        var p = await projectRepository.GetStandardProject(customerUid, latitude, longitude, timeOfPosition).ConfigureAwait(false);
+        if (customerUid != null)
+        {
+          var p = await projectRepository.GetStandardProject(customerUid, latitude, longitude, timeOfPosition)
+            .ConfigureAwait(false);
 
-        if (p != null) projects = p;
+          if (p != null) projects = p;
+        }
       }
+      catch (Exception e)
+      {
+        Console.WriteLine(e);
+        throw; // todo re-tryable
+      }
+
       return projects;
     }
 
@@ -104,15 +135,24 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       int projectType, int serviceType)
     {
       IEnumerable<Project> projects = null;
-      if (customerUid != null)
+      try
       {
-        var p = await projectRepository.GetProjectMonitoringProject(customerUid,
-          latitude, longitude, timeOfPosition,
-          projectType,
-          serviceType).ConfigureAwait(false);
+        if (customerUid != null)
+        {
+          var p = await projectRepository.GetProjectMonitoringProject(customerUid,
+            latitude, longitude, timeOfPosition,
+            projectType,
+            serviceType).ConfigureAwait(false);
 
-        if (p != null) projects = p;
+          if (p != null) projects = p;
+        }
       }
+      catch (Exception e)
+      {
+        Console.WriteLine(e);
+        throw; // todo re-tryable
+      }
+
       return projects;
     }
 
@@ -120,12 +160,21 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     public async Task<AssetDeviceIds> LoadAssetDevice(string radioSerial, string deviceType)
     {
       AssetDeviceIds assetDevice = null;
-      if (!string.IsNullOrEmpty(radioSerial) && !string.IsNullOrEmpty(deviceType))
+      try
       {
-        var a = await deviceRepository.GetAssociatedAsset(radioSerial, deviceType).ConfigureAwait(false);
-        if (a != null)
-          assetDevice = a;
+        if (!string.IsNullOrEmpty(radioSerial) && !string.IsNullOrEmpty(deviceType))
+        {
+          var a = await deviceRepository.GetAssociatedAsset(radioSerial, deviceType).ConfigureAwait(false);
+          if (a != null)
+            assetDevice = a;
+        }
       }
+      catch (Exception e)
+      {
+        Console.WriteLine(e);
+        throw; // todo re-tryable
+      }
+
       return assetDevice;
     }
 
@@ -148,15 +197,25 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     {
       // TFA is only interested in customer and dealer types
       CustomerTccOrg customer = null;
-      if (!string.IsNullOrEmpty(tccOrgUid))
+      try
       {
-        var customerTccOrg = await customerRepository.GetCustomerWithTccOrg(tccOrgUid).ConfigureAwait(false);
-        if (customerTccOrg != null &&
-            (customerTccOrg.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer ||
-             customerTccOrg.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
-        )
-          customer = customerTccOrg;
+        if (!string.IsNullOrEmpty(tccOrgUid))
+        {
+          var customerTccOrg = await customerRepository.GetCustomerWithTccOrg(tccOrgUid).ConfigureAwait(false);
+          if (customerTccOrg != null &&
+              (customerTccOrg.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer ||
+               customerTccOrg.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
+          )
+            customer = customerTccOrg;
+        }
+
       }
+      catch (Exception e)
+      {
+        Console.WriteLine(e);
+        throw; // todo re-tryable
+      }
+
       return customer;
     }
 
@@ -185,6 +244,25 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       }
       return asset;
     }
+
+    //public async Task<Asset> LoadAsset(string assetUid)
+    //{
+    //  Asset asset = null;
+    //  try
+    //  {
+    //    if (!string.IsNullOrEmpty(assetUid))
+    //  {
+    //    var a = await assetRepository.GetAsset(assetUid).ConfigureAwait(false);
+    //    if (a != null) asset = a;
+    //  }
+    //  }
+    //  catch (Exception e)
+    //  {
+    //    Console.WriteLine(e);
+    //    throw; // todo re-tryable
+    //  }
+    //  return asset;
+    //}
 
 
     // customer Man3Dpm(18-15)
