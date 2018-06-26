@@ -61,27 +61,8 @@ namespace VSS.MasterData.Proxies
         IDictionary<string, string> customHeaders = null)
     {
       var geofenceGuid = Guid.NewGuid();
-      geofenceGuid = await UpsertGeofence(geofenceGuid, customerGuid, geofenceName, description,
-        geofenceType, geometryWKT, fillColor, isTransparent, userUid, areaSqMeters,
-        "POST", customHeaders);
-      return geofenceGuid;
-    }
 
-    public async Task<Guid> UpdateGeofence(Guid geofenceGuid, Guid customerGuid, string geofenceName, string description,
-      string geofenceType, string geometryWKT, int fillColor, bool isTransparent, Guid userUid, double areaSqMeters,
-      IDictionary<string, string> customHeaders = null)
-    {
-      geofenceGuid = await UpsertGeofence(geofenceGuid, customerGuid, geofenceName, description,
-      geofenceType, geometryWKT, fillColor, isTransparent, userUid, areaSqMeters,
-      "PUT", customHeaders);
-
-      return geofenceGuid;
-    }
-
-    private async Task<Guid> UpsertGeofence(Guid geofenceGuid, Guid customerGuid, string geofenceName, string description,
-      string geofenceType, string geometryWKT, int fillColor, bool isTransparent, Guid userUid, double areaSqMeters,
-      string method = "POST", IDictionary<string, string> customHeaders = null)
-    {
+      // as of this writing, GeofenceSvc ignores this geofenceGuid for User-context, but not application-context
       var payLoadToSend = new GeofenceData()
       {
         CustomerUID = customerGuid,
@@ -96,18 +77,52 @@ namespace VSS.MasterData.Proxies
         AreaSqMeters = areaSqMeters
       };
       await SendRequest<OkResult>("GEOFENCE_API_URL", JsonConvert.SerializeObject(payLoadToSend),
-        customHeaders, String.Empty, method, String.Empty);
+        customHeaders, String.Empty, "POST", String.Empty);
+
+      ClearCacheItem<GeofenceDataResult>(customerGuid.ToString(), userUid.ToString());
+
+      // potentally another user could have created a geofence, so
+      //    can'y rely on just retrieving one extra Geofence, and it being our new one.
+      //    Ensure the comparer in  GeofenceData only includes the fields we want e.g. NOT GeofenceUid
+      var updatedGeofences = await GetGeofences(customerGuid.ToString(), customHeaders);
+      var geofence = updatedGeofences.FirstOrDefault(g => g.GeofenceUID == geofenceGuid || Equals(g, payLoadToSend));
+      if (geofence == null)
+        return Guid.Empty;
+      return geofence.GeofenceUID;
+    }
+
+    public async Task<Guid> UpdateGeofence(Guid geofenceGuid, Guid customerGuid, string geofenceName, string description,
+      string geofenceType, string geometryWKT, int fillColor, bool isTransparent, Guid userUid, double areaSqMeters,
+      IDictionary<string, string> customHeaders = null)
+    {
+      var payLoadToSend = new GeofenceDataForUpdate()
+      {
+        GeofenceName = geofenceName,
+        Description = description,
+        GeofenceType = geofenceType,
+        GeometryWKT = geometryWKT,
+        FillColor = fillColor,
+        IsTransparent = isTransparent,
+        GeofenceUID = geofenceGuid,
+        UserUID = userUid,
+        AreaSqMeters = areaSqMeters
+      };
+      await SendRequest<OkResult>("GEOFENCE_API_URL", JsonConvert.SerializeObject(payLoadToSend),
+        customHeaders, String.Empty, "PUT", String.Empty);
+
       return geofenceGuid;
     }
+
+   
 
     /// <summary>
     /// Clears an item from the cache
     /// </summary>
-    /// <param name="geofenceUid">The geofenceUid of the item to remove from the cache</param>
+    /// <param name="customerUid">The customerUid of the items to remove from the cache</param>
     /// <param name="userId">The user ID</param>
-    public void ClearCacheItem(string geofenceUid, string userId = null)
+    public void ClearCacheItem(string customerUid, string userId = null)
     {
-      ClearCacheItem<GeofenceData>(geofenceUid, userId);
+      ClearCacheItem<GeofenceDataResult>(customerUid, userId);
     }
 
     public async Task<GeofenceData> GetGeofenceForCustomer(string customerUid, string geofenceUid,

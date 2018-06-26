@@ -94,6 +94,20 @@ namespace VSS.MasterData.Repositories
         upsertedCount =
           await UpsertProjectSubscriptionDetail(projectSubscription, "AssociateProjectSubscriptionEvent");
       }
+      else if (evt is DissociateProjectSubscriptionEvent)
+      {
+        var subscriptionEvent = (DissociateProjectSubscriptionEvent)evt;
+        var projectSubscription =
+          new ProjectSubscription
+          {
+            SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString(),
+            ProjectUID = subscriptionEvent.ProjectUID.ToString(),
+            EffectiveDate = subscriptionEvent.EffectiveDate,
+            LastActionedUTC = subscriptionEvent.ActionUTC
+          };
+        upsertedCount =
+          await UpsertProjectSubscriptionDetail(projectSubscription, "DissociateProjectSubscriptionEvent");
+      }
       else if (evt is CreateCustomerSubscriptionEvent)
       {
         var subscriptionEvent = (CreateCustomerSubscriptionEvent) evt;
@@ -309,6 +323,9 @@ namespace VSS.MasterData.Repositories
       if (eventType == "AssociateProjectSubscriptionEvent")
         upsertedCount = await AssociateProjectSubscription(projectSubscription, existing);
 
+      if (eventType == "DissociateProjectSubscriptionEvent")
+        upsertedCount = await DissociateProjectSubscription(projectSubscription, existing);
+
       return upsertedCount;
     }
 
@@ -336,6 +353,37 @@ namespace VSS.MasterData.Repositories
       log.LogDebug("SubscriptionRepository/AssociateProjectSubscription: can't create as already exists.");
       return upsertedCount;
     }
+
+    private async Task<int> DissociateProjectSubscription(ProjectSubscription projectSubscription,
+      ProjectSubscription existing)
+    {
+      var upsertedCount = 0;
+
+      if (existing != null)
+      {
+        if (projectSubscription.LastActionedUTC >= existing.LastActionedUTC)
+        {
+          const string delete =
+            @"DELETE FROM ProjectSubscription
+                WHERE fk_SubscriptionUID = @SubscriptionUID 
+                  AND fk_ProjectUID = @ProjectUID";
+          upsertedCount = await ExecuteWithAsyncPolicy(delete, projectSubscription);
+          log.LogDebug(
+            $"SubscriptionRepository/DissociateProjectSubscription: upserted {upsertedCount} rows for: subscriptionUid:{projectSubscription.SubscriptionUID}");
+          return upsertedCount;
+        }
+
+        // may have been associated again since, so don't delete
+        log.LogDebug("SubscriptionRepository/DissociateProjectSubscription: old delete event ignored");
+      }
+      else
+      {
+        log.LogDebug("SubscriptionRepository/DissociateProjectSubscription: can't delete as none existing");
+      }
+
+      return upsertedCount;
+    }
+
 
     private async Task<int> UpsertAssetSubscriptionDetail(AssetSubscription assetSubscription)
     {
