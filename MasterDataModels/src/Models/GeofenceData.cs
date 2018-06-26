@@ -31,7 +31,8 @@ namespace VSS.MasterData.Models.Models
     public override bool Equals(object obj)
     {
       // jcm: this is used by GeofenceProxy
-      //       I intentionally didn't include geofenceUID or AreaSqMetres
+      //       I intentionally didn't include geofenceUID
+      //       others I found that GeofenceSvc may not write e.g. UserUid
       var otherGeofenceData = obj as GeofenceData;
       if (otherGeofenceData == null) return false;
       return otherGeofenceData.CustomerUID == this.CustomerUID
@@ -39,9 +40,6 @@ namespace VSS.MasterData.Models.Models
              && otherGeofenceData.Description == this.Description
              && otherGeofenceData.GeofenceType == this.GeofenceType
              && otherGeofenceData.GeometryWKT == this.GeometryWKT
-             && otherGeofenceData.FillColor == this.FillColor
-             && otherGeofenceData.IsTransparent == this.IsTransparent
-             && otherGeofenceData.UserUID == this.UserUID
         ;
     }
     public override int GetHashCode()

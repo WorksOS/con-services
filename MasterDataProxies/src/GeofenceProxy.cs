@@ -61,27 +61,8 @@ namespace VSS.MasterData.Proxies
         IDictionary<string, string> customHeaders = null)
     {
       var geofenceGuid = Guid.NewGuid();
-      geofenceGuid = await UpsertGeofence(geofenceGuid, customerGuid, geofenceName, description,
-        geofenceType, geometryWKT, fillColor, isTransparent, userUid, areaSqMeters,
-        "POST", customHeaders);
-      return geofenceGuid;
-    }
 
-    public async Task<Guid> UpdateGeofence(Guid geofenceGuid, Guid customerGuid, string geofenceName, string description,
-      string geofenceType, string geometryWKT, int fillColor, bool isTransparent, Guid userUid, double areaSqMeters,
-      IDictionary<string, string> customHeaders = null)
-    {
-      geofenceGuid = await UpsertGeofence(geofenceGuid, customerGuid, geofenceName, description,
-      geofenceType, geometryWKT, fillColor, isTransparent, userUid, areaSqMeters,
-      "PUT", customHeaders);
-
-      return geofenceGuid;
-    }
-
-    private async Task<Guid> UpsertGeofence(Guid geofenceGuid, Guid customerGuid, string geofenceName, string description,
-      string geofenceType, string geometryWKT, int fillColor, bool isTransparent, Guid userUid, double areaSqMeters,
-      string method = "POST", IDictionary<string, string> customHeaders = null)
-    {
+      // as of this writing, GeofenceSvc ignores this geofenceGuid for User-context, but not application-context
       var payLoadToSend = new GeofenceData()
       {
         CustomerUID = customerGuid,
@@ -96,7 +77,7 @@ namespace VSS.MasterData.Proxies
         AreaSqMeters = areaSqMeters
       };
       await SendRequest<OkResult>("GEOFENCE_API_URL", JsonConvert.SerializeObject(payLoadToSend),
-        customHeaders, String.Empty, method, String.Empty);
+        customHeaders, String.Empty, "POST", String.Empty);
 
       ClearCacheItem<GeofenceDataResult>(customerGuid.ToString(), userUid.ToString());
 
@@ -109,6 +90,30 @@ namespace VSS.MasterData.Proxies
         return Guid.Empty;
       return geofence.GeofenceUID;
     }
+
+    public async Task<Guid> UpdateGeofence(Guid geofenceGuid, Guid customerGuid, string geofenceName, string description,
+      string geofenceType, string geometryWKT, int fillColor, bool isTransparent, Guid userUid, double areaSqMeters,
+      IDictionary<string, string> customHeaders = null)
+    {
+      var payLoadToSend = new GeofenceDataForUpdate()
+      {
+        GeofenceName = geofenceName,
+        Description = description,
+        GeofenceType = geofenceType,
+        GeometryWKT = geometryWKT,
+        FillColor = fillColor,
+        IsTransparent = isTransparent,
+        GeofenceUID = geofenceGuid,
+        UserUID = userUid,
+        AreaSqMeters = areaSqMeters
+      };
+      await SendRequest<OkResult>("GEOFENCE_API_URL", JsonConvert.SerializeObject(payLoadToSend),
+        customHeaders, String.Empty, "PUT", String.Empty);
+
+      return geofenceGuid;
+    }
+
+   
 
     /// <summary>
     /// Clears an item from the cache
