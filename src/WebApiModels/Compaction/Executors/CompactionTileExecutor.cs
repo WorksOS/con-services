@@ -42,11 +42,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         var baseFilter = RaptorConverters.ConvertFilter(request.FilterId1, request.Filter1, request.ProjectId);
         var topFilter = RaptorConverters.ConvertFilter(request.FilterId2, request.Filter2, request.ProjectId);
         var designDescriptor = RaptorConverters.DesignDescriptor(request.DesignDescriptor);
-        var volType = RaptorConverters.ConvertVolumesType(request.ComputeVolumesType);
 
-        if (volType == TComputeICVolumesType.ic_cvtBetween2Filters && request.IsSummaryVolumeCutFillRequest)
+        var volType = RaptorConverters.ConvertVolumesType(request.ComputeVolumesType);
+        if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
         {
-          RaptorConverters.AdjustBaseFilter(baseFilter);
+          RaptorConverters.AdjustFilterToFilter(ref baseFilter, topFilter);
         }
 
         if ((baseFilter == null || topFilter == null) && designDescriptor.IsNull() ||
@@ -57,20 +57,20 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Invalid surface configuration."));
         }
 
-        TASNodeErrorStatus raptorResult = raptorClient.GetRenderedMapTileWithRepresentColor
-        (request.ProjectId ?? -1,
+        var raptorResult = raptorClient.GetRenderedMapTileWithRepresentColor(
+          request.ProjectId ?? -1,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
             TASNodeCancellationDescriptorType.cdtWMSTile),
-          RaptorConverters.convertDisplayMode(request.mode),
-          RaptorConverters.convertColorPalettes(request.Palettes, request.mode),
+          RaptorConverters.convertDisplayMode(request.Mode),
+          RaptorConverters.convertColorPalettes(request.Palettes, request.Mode),
           bottomLeftPoint, topRightPoint,
           coordsAreGrid,
           request.Width,
-          request.height,
+          request.Height,
           baseFilter,
           topFilter,
           RaptorConverters.convertOptions(null, request.LiftBuildSettings, request.ComputeVolNoChangeTolerance,
-            request.FilterLayerMethod, request.mode, request.setSummaryDataLayersVisibility),
+            request.FilterLayerMethod, request.Mode, request.setSummaryDataLayersVisibility),
           designDescriptor,
           volType,
           request.RepresentationalDisplayColor,
