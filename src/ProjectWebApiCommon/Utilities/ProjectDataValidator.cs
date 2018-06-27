@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -287,6 +290,35 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(22),
               projectErrorCodesProvider.FirstNameWithOffset(22)));
+        }
+      }
+    }
+
+
+    /// <summary>
+    /// Seee if any free subs for a project type
+    /// </summary>
+    /// <param name="customerUid">The customer uid.</param>
+    /// <param name="projectType"></param>
+    /// <param name="log"></param>
+    /// <param name="serviceExceptionHandler"></param>
+    /// <param name="subscriptionRepo"></param>
+    /// <returns></returns>
+    public static async Task ValidateFreeSub(string customerUid, ProjectType projectType,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler,
+      ISubscriptionRepository subscriptionRepo)
+    {
+      if (projectType == ProjectType.LandFill || projectType == ProjectType.ProjectMonitoring)
+      {
+        var availableFreeSub =
+          (await subscriptionRepo.GetFreeProjectSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date)
+            .ConfigureAwait(false))
+          .Where(s => s.ServiceTypeID == (int)projectType.MatchSubscriptionType()).ToImmutableList();
+
+        if (!availableFreeSub.Any())
+        {
+          log.LogInformation($"There are no free subscriptions for project type {projectType}");
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 37);
         }
       }
     }

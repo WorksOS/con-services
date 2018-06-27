@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -112,14 +113,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     }
 
     /// <summary>
-    /// validate CordinateSystem if provided
+    /// validate if Coord sys file name and content are required
     /// </summary>
-    public static async Task<bool> ValidateCoordSystemInRaptor(IProjectEvent project,
-      IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders,
-      IRaptorProxy raptorProxy)
+    public static void ValidateCoordSystemFile(Repositories.DBModels.Project existing, IProjectEvent project,
+      IServiceExceptionHandler serviceExceptionHandler)
     {
-      // a Creating a landfill must have a CS, else optional
-      //  if updating a landfill, or other then May have one. Note that a null one doesn't overwrite any existing.
+      // Creating project:
+      //    if landfill then must have a CS, else optional
+      // Updating a landfill, or other then May have one. Note that a null one doesn't overwrite any existing in the DBRepo.
+      // Changing the projectType from standard to Landfill,
+      //    must have CS in existing, or one added in the update
       if (project is CreateProjectEvent)
       {
         var projectEvent = (CreateProjectEvent) project;
@@ -130,6 +133,25 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 45);
       }
 
+      if (project is UpdateProjectEvent)
+      {
+        var projectEvent = (UpdateProjectEvent) project;
+        if (projectEvent.ProjectType == ProjectType.LandFill
+            && (string.IsNullOrEmpty(existing.CoordinateSystemFileName)
+                && (string.IsNullOrEmpty(projectEvent.CoordinateSystemFileName) || projectEvent.CoordinateSystemFileContent == null))
+            && string.IsNullOrEmpty(existing.CoordinateSystemFileName)
+        )
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 45);
+      }
+    }
+
+    /// <summary>
+      /// validate CordinateSystem if provided
+      /// </summary>
+      public static async Task<bool> ValidateCoordSystemInRaptor(IProjectEvent project,
+      IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders,
+      IRaptorProxy raptorProxy)
+    {
       var csFileName = project is CreateProjectEvent
         ? ((CreateProjectEvent) project).CoordinateSystemFileName
         : ((UpdateProjectEvent) project).CoordinateSystemFileName;
@@ -195,7 +217,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     {
       var overlaps =
         await projectRepo.DoesPolygonOverlap(customerUid, databaseProjectBoundary,
-          projectStartDate, projectEndDate).ConfigureAwait(false);
+          projectStartDate, projectEndDate, projectUid).ConfigureAwait(false);
       if (overlaps)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 43);
 
@@ -235,9 +257,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
               coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
           {
             if (isCreate)
-              await ProjectRequestHelper
-                .DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid, log, projectRepo)
-                .ConfigureAwait(false);
+              await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid, log, projectRepo).ConfigureAwait(false);
 
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 41,
               (coordinateSystemSettingsResult?.Code ?? -1).ToString(),
@@ -263,12 +283,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         catch (Exception e)
         {
           if (isCreate)
-            await ProjectRequestHelper
-              .DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid, log, projectRepo)
-              .ConfigureAwait(false);
+            await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid, log, projectRepo).ConfigureAwait(false);
 
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57,
-            "raptorProxy.CoordinateSystemPost", e.Message);
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "raptorProxy.CoordinateSystemPost", e.Message);
         }
       }
     }
@@ -407,6 +424,60 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       return notAssociated;
     }
 
+
+    /// <summary>
+    /// Validates if there any subscriptions available for the request create project event
+    /// </summary>
+    /// <param name="serviceExceptionHandler"></param>
+    /// <param name="customHeaders"></param>
+    /// <param name="subscriptionProxy"></param>
+    /// <param name="subscriptionRepo"></param>
+    /// <param name="projectRepo"></param>
+    /// <param name="projectUid"></param>
+    /// <param name="projectType"></param>
+    /// <param name="customerUid"></param>
+    /// <param name="viaCreateProject"></param>
+    /// <returns></returns>
+    public static async Task<string> AssociateProjectSubscriptionInSubscriptionService(string projectUid, ProjectType projectType, string customerUid,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders,
+      ISubscriptionProxy subscriptionProxy, ISubscriptionRepository subscriptionRepo, IProjectRepository projectRepo,
+      bool isCreate)
+    {
+      string subscriptionUidAssigned = null;
+      if (projectType == ProjectType.LandFill || projectType == ProjectType.ProjectMonitoring)
+      {
+        subscriptionUidAssigned = (await subscriptionRepo.GetFreeProjectSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date)
+            .ConfigureAwait(false))
+          .FirstOrDefault(s => s.ServiceTypeID == (int)projectType.MatchSubscriptionType())
+          ?.SubscriptionUID;
+
+        if (String.IsNullOrEmpty(subscriptionUidAssigned))
+        {
+          log.LogInformation($"There are no free subscriptions for project type {projectType}");
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 37);
+        }
+
+        //Assign the new project to a subscription
+        try
+        {
+          // rethrows any exception
+          await subscriptionProxy.AssociateProjectSubscription(Guid.Parse(subscriptionUidAssigned),
+            Guid.Parse(projectUid), customHeaders).ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+          if (isCreate)
+            await ProjectRequestHelper.DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), Guid.Parse(projectUid), log, projectRepo).ConfigureAwait(false);
+
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57,
+            "SubscriptionProxy.AssociateProjectSubscriptionInSubscriptionService", e.Message);
+        }
+      }
+
+      return subscriptionUidAssigned;
+    }
+    
+
     #region rollback
 
     /// <summary>
@@ -440,6 +511,25 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       }).ConfigureAwait(false);
     }
 
+
+    /// <summary>
+    /// rolls back the ProjectSubscription association made, due to a subsequent error
+    /// </summary>
+    /// <returns></returns>
+    public static async Task DissociateProjectSubscription(Guid projectUid, string subscriptionUidAssigned,
+      ILogger log, IDictionary<string, string> customHeaders, ISubscriptionProxy subscriptionProxy)
+    {
+      log.LogDebug($"DissociateProjectSubscription projectUid: {projectUid} subscriptionUidAssigned: {subscriptionUidAssigned}");
+
+      if (!string.IsNullOrEmpty(subscriptionUidAssigned) && Guid.TryParse(subscriptionUidAssigned, out var subscriptionUidAssignedGuid))
+      {
+        if (subscriptionUidAssignedGuid != Guid.Empty)
+        {
+          await subscriptionProxy.DissociateProjectSubscription(subscriptionUidAssignedGuid,
+            projectUid, customHeaders).ConfigureAwait(false);
+        }
+      }
+    }
     #endregion rollback
 
   }
