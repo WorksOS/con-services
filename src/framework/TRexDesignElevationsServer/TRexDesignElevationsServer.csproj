@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -31,6 +32,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Apache.Ignite, Version=2.4.0.27085, Culture=neutral, PublicKeyToken=6e15f083b9518446, processorArchitecture=MSIL">
@@ -38,9 +40,6 @@
     </Reference>
     <Reference Include="Apache.Ignite.Core, Version=2.4.0.27085, Culture=neutral, PublicKeyToken=a487a7ff0b2aaa4a, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Apache.Ignite.2.4.0\lib\net40\Apache.Ignite.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="log4net.netcore, Version=1.2.15.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\log4net.netcore.3.0.0\lib\net45\log4net.netcore.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNetCore.Http.Abstractions, Version=2.0.3.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Microsoft.AspNetCore.Http.Abstractions.2.0.3\lib\netstandard2.0\Microsoft.AspNetCore.Http.Abstractions.dll</HintPath>
