@@ -140,12 +140,7 @@ namespace VSS.Productivity3D.Common.Interfaces
     MemoryStream GetSummaryVolumesAlignmentProfile(
       TASNodeServiceRPCVerb_RequestSummaryVolumesAlignmentProfile_Args Args);
 
-    /// <summary>
-    /// Gets the onmachine designs.
-    /// </summary>
-    /// <param name="DataModelID">The data model identifier.</param>
-    /// <returns></returns>
-    TDesignName[] GetOnMachineDesigns(long DataModelID);
+    TDesignName[] GetOnMachineDesignEvents(long dataModelId);
 
     TDesignName[] GetOverriddenDesigns(long projectId, long assetId);
     TDesignLayer[] GetOverriddenLayers(long projectId, long assetId);

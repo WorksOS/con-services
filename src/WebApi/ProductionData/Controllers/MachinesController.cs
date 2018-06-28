@@ -12,6 +12,7 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
@@ -156,7 +157,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     private MachineDesignsExecutionResult CreateUniqueDesignList(MachineDesignsExecutionResult result)
     {
-      return MachineDesignsExecutionResult.CreateMachineExecutionResult(RemoveDuplicateDesigns(result.Designs));
+      return MachineDesignsExecutionResult.Create(RemoveDuplicateDesigns(result.Designs));
     }
 
     /// <summary>
@@ -166,7 +167,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       return designNames.Distinct().OrderBy(d => d.Id).ToList();
     }
-
 
     /// <summary>
     /// Gets On Machine designs by machine and date range for the selected project
