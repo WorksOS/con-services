@@ -90,7 +90,6 @@ node ('jenkinsslave-pod') {
 	//This is where we would push at the moment just list available images to verify we have built containers
 	
 	sh "eval \$(aws ecr get-login --region us-west-2 --no-include-email)"
-		sh "docker push ${finalImage}"
 	sh "docker images"
 	runtime_container.push()
 	}	
