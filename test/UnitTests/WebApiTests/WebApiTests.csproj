@@ -24,7 +24,6 @@
     <ApplicationIcon />
     <OutputTypeEx>library</OutputTypeEx>
     <StartupObject />
-
   </PropertyGroup>
 
   <ItemGroup>

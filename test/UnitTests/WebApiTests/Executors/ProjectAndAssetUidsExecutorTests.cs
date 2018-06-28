@@ -104,18 +104,96 @@ namespace WebApiTests.Executors
     }
 
     [TestMethod]
-    public async Task ProjectUidExecutor_NoAssetDeviceAssociation()
+    public async Task ProjectAndAssetUidsExecutor_ManualImport_HappyPath_ProjectHasManualSub()
     {
-      _deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync((AssetDeviceIds)null);
+      var customerUid = Guid.NewGuid().ToString();
+      var projectUid = Guid.NewGuid().ToString();
+      var assetUid = Guid.NewGuid().ToString();
+      var latitude = 89.777;
+      var longitude = 34.555;
+      var timeOfLocationUtc = DateTime.UtcNow;
+      
+      //"Manual 3D Project Monitoring"
+      var projectCustomerSubs = new List<Subscription>()
+        { new Subscription() { ServiceTypeID = (int)ServiceTypeEnum.Manual3DProjectMonitoring }};
+
+      var projectCustomerUid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
+
+      //"Manual 3D Project Monitoring"
+      var assetCustomerSubs = new List<Subscription>(){};
+      var projectTypes = new int[]{(int)ProjectType.LandFill, (int)ProjectType.Standard, (int)ProjectType.ProjectMonitoring }; // projectTypes. += ProjectType.LandFill;
+      var projects = new List<Project>() { }; projects.Add(new Project(){ProjectUID = projectUid, CustomerUID = customerUid, ProjectType = ProjectType.Standard});
+      IEnumerable<Project> pp = projects.AsEnumerable();
+
+      //"3D Project Monitoring"
+      var assetSubs = new List<Subscription>();
+      // HttpStatusCode httpStatusCode = HttpStatusCode.OK;
+      var resultCode = 0;
+      var resultMessage = string.Empty;
+
+      _projectRepo.Setup(p => p.GetProject(It.IsAny<string>())).ReturnsAsync(new Project() { ProjectUID = projectUid, ProjectType = ProjectType.Standard, CustomerUID = projectCustomerUid});
+      _projectRepo.Setup(p => p.GetIntersectingProjects(It.IsAny<string>(), projectTypes, latitude, longitude, timeOfLocationUtc)).ReturnsAsync(pp);
+
+      _deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync( new AssetDeviceIds() {AssetUID = assetUid});
+
+      _subscriptionRepo.Setup(d => d.GetSubscriptionsByCustomer(projectCustomerUid, timeOfLocationUtc)).ReturnsAsync(projectCustomerSubs);
+      _subscriptionRepo.Setup(d => d.GetSubscriptionsByCustomer(assetCustomerUid, timeOfLocationUtc)).ReturnsAsync(assetCustomerSubs);
+
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorTests>(), configStore,
-        assetRepository, _deviceRepo.Object, customerRepository, projectRepository, subscriptionRepository);
+        _assetRepo.Object, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
 
-      var projectAndAssetUidsRequest = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest("", 6, "radSer45", "", 91, 181, DateTime.UtcNow);
+      var projectAndAssetUidsRequest = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", "SNM940", 91, 181, DateTime.UtcNow);
       var result = await executor.ProcessAsync(projectAndAssetUidsRequest) as GetProjectAndAssetUidsResult;
 
-      ValidateResult(result, string.Empty, string.Empty, 3033);
+      ValidateResult(result, projectUid, assetUid, resultCode, resultMessage);
     }
+
+    ///// <summary>
+    /////     Gets any project of the specified type/s (or all),
+    /////     which the lat/long is within
+    ///// </summary>
+    ///// <param name="customerUid"></param>
+    ///// <param name="projectTypes"></param>
+    ///// <param name="latitude"></param>
+    ///// <param name="longitude"></param>
+    ///// <param name="timeOfPosition"></param>
+    ///// <returns>The project</returns>
+    //public async Task<IEnumerable<Project>> GetIntersectingProjects(string customerUid, int[] projectTypes,
+    //  double latitude, double longitude, DateTime timeOfPosition)
+    //{
+    //  var point = $"ST_GeomFromText('POINT({longitude} {latitude})')";
+    //  var projectTypesString = string.Empty;
+    //  if (projectTypes.Any())
+    //  {
+    //    projectTypesString += " p.fk_ProjectTypeID IN ( ";
+    //    for (int i = 0; i < projectTypes.Length; i++)
+    //    {
+    //      projectTypesString += projectTypes[i] + ((i < projectTypes.Length - 1) ? "," : "");
+    //    }
+
+    //    projectTypesString += " ) AND ";
+    //  }
+
+    //  var select = "SELECT DISTINCT " +
+    //               "        p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, " +
+    //               "        p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT, " +
+    //               "        p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC, " +
+    //               "        cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID " +
+    //               "      FROM Project p " +
+    //               "        INNER JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID " +
+    //               $"      WHERE {projectTypesString} " +
+    //               "            p.IsDeleted = 0 " +
+    //               "        AND @timeOfPosition BETWEEN p.StartDate AND p.EndDate " +
+    //               "        AND cp.fk_CustomerUID = @customerUID " +
+    //               $"        AND st_Intersects({point}, PolygonST) = 1";
+
+    //  var projects =
+    //    await QueryWithAsyncPolicy<Project>(select, new { customerUID = customerUid, timeOfPosition = timeOfPosition.Date });
+
+    //  return projects;
+    //}
 
     //[TestMethod]
     //public async Task ProjectUidExecutor_StandardProjectAnd3dPmSubscription()
@@ -242,12 +320,13 @@ namespace WebApiTests.Executors
     //  ValidateResult(result, string.Empty, 3032);
     //}
 
-    private void ValidateResult(GetProjectAndAssetUidsResult result, string expectedProjectUid, string expectedAssetUid, int expectedCode)
+    private void ValidateResult(GetProjectAndAssetUidsResult result, string expectedProjectUid, string expectedAssetUid, int resultCode, string resultMessage)
     {
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(expectedProjectUid, result.ProjectUid, "executor returned incorrect ProjectUid");
       Assert.AreEqual(expectedAssetUid, result.AssetUid, "executor returned incorrect AssetUid");
-      Assert.AreEqual(expectedCode, result.Code, "executor returned incorrect result code");
+      Assert.AreEqual(resultCode, result.Code, "executor returned incorrect result code");
+      Assert.AreEqual(resultMessage, result.Message, "executor returned incorrect result message");
     }
   }
 }
