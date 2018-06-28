@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ProductionDataSvc.AcceptanceTests.Models;
+using Newtonsoft.Json.Linq;
 using RaptorSvcAcceptTestsCommon.Utils;
 using TechTalk.SpecFlow;
 
@@ -9,7 +9,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
   [Binding, Scope(Feature = "CompactionTile")]
   public class CompactionTileSteps
   {
-    private Getter<TileResult> tileRequester;
+    private Getter<JObject> tileRequester;
     private string url;
 
     [Given(@"the Compaction service URI ""(.*)""")]
@@ -21,7 +21,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [Given(@"the result file ""(.*)""")]
     public void GivenTheResultFile(string resultFileName)
     {
-      tileRequester = new Getter<TileResult>(url, resultFileName);
+      tileRequester = new Getter<JObject>(url, resultFileName);
     }
 
     [Given(@"projectUid ""(.*)""")]
@@ -48,13 +48,10 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     public void ThenTheResultTileShouldMatchTheFromTheRepositoryWithin(string resultName, string difference = "0")
     {
       var imageDifference = Convert.ToDouble(difference) / 100;
-
-      var expectedTileData = tileRequester.ResponseRepo[resultName].TileData;
-      var actualTileData = tileRequester.CurrentResponse.TileData;
-
+      var expectedTileData = (byte[])tileRequester.ResponseRepo[resultName]["TileData"];
+      var actualTileData = (byte[])tileRequester.CurrentResponse["tileData"];
       var expFileName = "Expected_" + ScenarioContext.Current.ScenarioInfo.Title + resultName + ".jpg";
       var actFileName = "Actual_" + ScenarioContext.Current.ScenarioInfo.Title + resultName + ".jpg";
-
       var diff = Common.CompareImagesAndGetDifferencePercent(expectedTileData, actualTileData, expFileName, actFileName);
 
       Console.WriteLine("Actual Difference % = " + diff * 100);
