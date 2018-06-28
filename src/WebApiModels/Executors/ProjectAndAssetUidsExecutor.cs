@@ -24,7 +24,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     //protected int ServiceType;
     //protected bool IsJohnDoeAsset;
     //protected List<Subscriptions> ProjectCustomerSubs;
-    //protected List<Subscriptions> AssetCustomerSubs;
+    protected List<Subscriptions> AssetCustomerSubs;
     protected List<Subscriptions> AssetSubs;
     //protected string ProjectOwningCustomer;
     protected string AssetOwningCustomerUid;
@@ -74,24 +74,26 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       string projectUid = string.Empty;
       string assetUid = string.Empty;
 
-      //ServiceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "Unknown").NGEnum;
+      var MostSignificantServiceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "Unknown").NGEnum;
       var isJohnDoeAsset = false;
       var projectCustomerSubs = new List<Subscriptions>();
-      //AssetCustomerSubs = new List<Subscriptions>();
+      AssetCustomerSubs = new List<Subscriptions>();
       AssetSubs = new List<Subscriptions>();
       //ProjectOwningCustomer = string.Empty;
       AssetOwningCustomerUid = string.Empty;
       string tccCustomerUid = string.Empty;
+      Project project = null;
 
       // presence of projectUid indicates a manual Import
       //     can exist with or without a radioSerial
       if (!string.IsNullOrEmpty(request.ProjectUid))
       {
-        var project = await dataRepository.LoadProject(request.ProjectUid);
+        project = await dataRepository.LoadProject(request.ProjectUid);
         log.LogDebug($"ProjectAndAssetUidsExecutor: Loaded project? {JsonConvert.SerializeObject(project)}");
 
         if (project != null)
         {
+          projectUid = project.ProjectUID;
           projectCustomerSubs =
             (await dataRepository.LoadManual3DCustomerBasedSubs(project.CustomerUID, DateTime.UtcNow)).ToList();
           log.LogDebug(
@@ -102,18 +104,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
           return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(projectUid, "", 38); // non-recoverable
         }
       }
-
-      // must be able to find one or other customer for a) tccOrgUid b) radioSerial
-      if (!string.IsNullOrEmpty(request.TccOrgUid))
-      {
-        var customerTccOrg = await dataRepository.LoadCustomerByTccOrgId(request.TccOrgUid);
-        log.LogDebug(
-          $"ProjectAndAssetUidsExecutor: Loaded CustomerByTccOrgId? {JsonConvert.SerializeObject(customerTccOrg)}");
-        tccCustomerUid = customerTccOrg?.CustomerUID ?? string.Empty;
-
-        // todo information message that tccorg not found? this is only significant if the customer has landfill/PM type projects
-      }
-
 
       // setup AssetUid to return. Assemble ServicePlans for assetCustomer and/or TCCOrgID customer
 
@@ -148,17 +138,81 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
           // get any assetSubs ("3D Project Monitoring") 
           AssetSubs = (await dataRepository.LoadAssetSubs(assetUid, DateTime.UtcNow)).ToList();
           log.LogDebug($"ProjectAndAssetUidsExecutor: Loaded assetSubs? {JsonConvert.SerializeObject(AssetSubs)}");
-
-          // todo do we need assetOwningCustomer 3dpm 9"Manual 3D Project Monitoring") subscriptions
-          //AssetCustomerSubs = await dataRepository.LoadManual3DCustomerBasedSubs(AssetOwningCustomerUid, DateTime.UtcNow);
-          //log.LogDebug(
-          //  $"ProjectAndAssetUidsExecutor: Loaded assetsCustomerSubs? {JsonConvert.SerializeObject(AssetCustomerSubs)}");
         }
         else
         {
           isJohnDoeAsset = IsJohnDoe(request.ProjectUid, projectCustomerSubs);
         }
 
+      }
+      
+      int uniqueCode = 0;
+      // Manual Import, just confirm the project we are provided with
+      if (!string.IsNullOrEmpty(request.ProjectUid))
+      {
+        // todo something with MostSignificantServiceType
+
+        if (!projectCustomerSubs.Any())
+        {
+          // see if we can use the assetCustomerSub 3dpm?
+          if (string.IsNullOrEmpty(assetUid))
+          {
+            // todo do we need assetOwningCustomer and MostSignificantServiceType  3dpm 9"Manual 3D Project Monitoring") subscriptions
+            //  yes I think so for Manual import to determine if assetCustomer == projectCustomer stuff
+            AssetCustomerSubs = (await dataRepository.LoadManual3DCustomerBasedSubs(AssetOwningCustomerUid, DateTime.UtcNow)).ToList();
+            log.LogDebug($"ProjectAndAssetUidsExecutor: Loaded assetsCustomerSubs? {JsonConvert.SerializeObject(AssetCustomerSubs)}");
+            
+            MostSignificantServiceType =
+              GetMostSignificantServiceType(assetUid,
+                (string.IsNullOrEmpty(project?.CustomerUID) ? String.Empty : project?.CustomerUID), projectCustomerSubs,
+                AssetCustomerSubs, AssetSubs);
+            log.LogDebug(
+              "ProjectAndAssetUidsExecutor: after GetMostSignificantServiceType(). AssetUID {0} project{1} custSubs {2} assetSubs {3}",
+              assetUid, JsonConvert.SerializeObject(project),
+              JsonConvert.SerializeObject(projectCustomerSubs),
+              JsonConvert.SerializeObject(AssetSubs));
+
+            if (MostSignificantServiceType == serviceTypeMappings.serviceTypes.Find(st => st.name == "Unknown").NGEnum)
+            {
+              throw new ServiceException(HttpStatusCode.BadRequest,
+                GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(projectUid, assetUid, 99 /* todo no sub for manual import for project or asset */));
+            }
+          }
+          else
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(projectUid, assetUid, 99 /* todo no sub for manual import for project, and no asset available */));
+          }
+        }
+
+        var intersectingProjects = (await dataRepository.GetIntersectingProjects(project.CustomerUID,
+          new int[] {(int) project.ProjectType},
+          request.Latitude, request.Longitude, request.TimeOfPosition)).ToList();
+
+        log.LogDebug(
+          $"ProjectAndAssetUidsExecutor: Projects which intersect with manual project {JsonConvert.SerializeObject(intersectingProjects)}");
+
+        if (intersectingProjects
+          .Select(p => string.Compare(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase)).Any())
+        {
+          return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(projectUid, assetUid);
+        }
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(projectUid, assetUid, 99 /* todo */));
+      }
+      else
+      // Auto Import, search for appropriate project
+      {
+
+        // must be able to find one or other customer for a) tccOrgUid b) radioSerial
+        if (!string.IsNullOrEmpty(request.TccOrgUid))
+      {
+        var customerTccOrg = await dataRepository.LoadCustomerByTccOrgId(request.TccOrgUid);
+        log.LogDebug(
+          $"ProjectAndAssetUidsExecutor: Loaded CustomerByTccOrgId? {JsonConvert.SerializeObject(customerTccOrg)}");
+        tccCustomerUid = customerTccOrg?.CustomerUID ?? string.Empty;
+
+        // todo information message that tccorg not found? this is only significant if the customer has landfill/PM type projects
       }
 
       var potentialProjects = new List<Project>();
@@ -174,7 +228,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       //If zero found then If manualAsset returns -3 else returns -1
       //If one found then returns its id
       //If > 1 found then returns -2
-      int uniqueCode = 0;
       if (!potentialProjects.Any())
       {
         if (!string.IsNullOrEmpty(projectUid))  // Manual Import
@@ -203,7 +256,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       }
       else
         projectUid = potentialProjects.ToList()[0].ProjectUID;
-      
+
+      }
+
       log.LogDebug(
         $"ProjectAndAssetUidsExecutor: returning uniqueCode: {uniqueCode} projectUid: {projectUid}  assetUid: {assetUid}.");
 
@@ -299,58 +354,60 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     //  return assetUid;
     //}
 
-    //private int GetMostSignificantServiceType(string assetUid)
-    //{
-    //  List<Subscriptions> subs = new List<Subscriptions>();
-    //  if (ProjectCustomerSubs.Any()) subs = subs.Concat(ProjectCustomerSubs.Select(s => s)).ToList();
-    //  if (AssetCustomerSubs.Any()) subs = subs.Concat(AssetCustomerSubs.Select(s => s)).ToList();
-    //  if (AssetSubs.Any()) subs = subs.Concat(AssetSubs.Select(s => s)).ToList();
+    private int GetMostSignificantServiceType(string assetUid, string projectCustomerUid, 
+      List<Subscriptions> projectCustomerSubs, List<Subscriptions> assetCustomerSubs, List<Subscriptions> assetSubs)
+    {
+      var serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "Unknown").NGEnum;
+      var subs = new List<Subscriptions>();
+      if (projectCustomerSubs.Any()) subs = subs.Concat(projectCustomerSubs.Select(s => s)).ToList();
+      if (assetCustomerSubs.Any()) subs = subs.Concat(assetCustomerSubs.Select(s => s)).ToList();
+      if (assetSubs.Any()) subs = subs.Concat(assetSubs.Select(s => s)).ToList();
 
-    //  log.LogDebug(
-    //    $"ProjectAndAssetUidsExecutor: GetMostSignificantServiceType() for assetUid: {assetUid} projectCustomer: {ProjectOwningCustomer}, subs: {JsonConvert.SerializeObject(subs)})");
+      log.LogDebug(
+        $"ProjectAndAssetUidsExecutor: GetMostSignificantServiceType() for assetUid: {assetUid} projectCustomer: {projectCustomerUid}, subs: {JsonConvert.SerializeObject(subs)})");
 
-    //  if (subs.Any())
-    //  {
-    //    //Look for highest level machine subscription which is current
-    //    foreach (var sub in subs)
-    //    {
-    //      // Manual3d is least significant
-    //      if (sub.serviceTypeId == serviceTypeMappings.serviceTypes
-    //            .Find(st => st.name == "Manual 3D Project Monitoring").NGEnum)
-    //      {
-    //        if (ServiceType != serviceTypeMappings.serviceTypes.Find(st => st.name == "3D Project Monitoring").NGEnum)
-    //        {
-    //          log.LogDebug(
-    //            $"ProjectAndAssetUidsExecutor: GetMostSignificantServiceType() found Manual3DProjectMonitoring for assetUid {assetUid}");
-    //          ServiceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "Manual 3D Project Monitoring").NGEnum;
-    //        }
-    //      }
+      if (subs.Any())
+      {
+        //Look for highest level machine subscription which is current
+        foreach (var sub in subs)
+        {
+          // Manual3d is least significant
+          if (sub.serviceTypeId == serviceTypeMappings.serviceTypes
+                .Find(st => st.name == "Manual 3D Project Monitoring").NGEnum)
+          {
+            if (serviceType != serviceTypeMappings.serviceTypes.Find(st => st.name == "3D Project Monitoring").NGEnum)
+            {
+              log.LogDebug(
+                $"ProjectAndAssetUidsExecutor: GetMostSignificantServiceType() found Manual3DProjectMonitoring for assetUid {assetUid}");
+              serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "Manual 3D Project Monitoring").NGEnum;
+            }
+          }
 
-    //      // 3D PM is most significant
-    //      // if 3D asset-based, the assets customer must be the same as the Projects customer 
-    //      if (sub.serviceTypeId ==
-    //          serviceTypeMappings.serviceTypes.Find(st => st.name == "3D Project Monitoring").NGEnum)
-    //      {
-    //        if (ServiceType != serviceTypeMappings.serviceTypes.Find(st => st.name == "3D Project Monitoring").NGEnum)
-    //        {
-    //          //Allow manual tag file import for customer who has the 3D subscription for the asset
-    //          //and allow automatic tag file processing in all cases (can't tell customer for automatic)
-    //          log.LogDebug(
-    //            $"ProjectAndAssetUidsExecutor: GetMostSignificantServiceType() found e3DProjectMonitoring for assetUid {assetUid} sub.customerUid {sub.customerUid}");
-    //          if (string.IsNullOrEmpty(ProjectOwningCustomer) || sub.customerUid == ProjectOwningCustomer)
-    //          {
-    //            ServiceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "3D Project Monitoring").NGEnum;
-    //            break;
-    //          }
-    //        }
-    //      }
-    //    }
-    //  }
+          // 3D PM is most significant
+          // if 3D asset-based, the assets customer must be the same as the Projects customer 
+          if (sub.serviceTypeId ==
+              serviceTypeMappings.serviceTypes.Find(st => st.name == "3D Project Monitoring").NGEnum)
+          {
+            if (serviceType != serviceTypeMappings.serviceTypes.Find(st => st.name == "3D Project Monitoring").NGEnum)
+            {
+              //Allow manual tag file import for customer who has the 3D subscription for the asset
+              //and allow automatic tag file processing in all cases (can't tell customer for automatic)
+              log.LogDebug(
+                $"ProjectAndAssetUidsExecutor: GetMostSignificantServiceType() found e3DProjectMonitoring for assetUid {assetUid} sub.customerUid {sub.customerUid}");
+              if (string.IsNullOrEmpty(projectCustomerUid) || sub.customerUid == projectCustomerUid)
+              {
+                serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "3D Project Monitoring").NGEnum;
+                break;
+              }
+            }
+          }
+        }
+      }
 
-    //  log.LogDebug(
-    //    $"ProjectAndAssetUidsExecutor: GetMostSignificantServiceType() for assetUid {assetUid}, returning serviceTypeNG {ServiceType}.");
-    //  return ServiceType;
-    //}
+      log.LogDebug(
+        $"ProjectAndAssetUidsExecutor: GetMostSignificantServiceType() for assetUid {assetUid}, returning serviceTypeNG {serviceType}.");
+      return serviceType;
+    }
 
     private async Task<List<Project>> GetPotentialProjects
           (string assetOwningCustomerUid, List<Subscriptions> assetSubs, string tccCustomerUid,

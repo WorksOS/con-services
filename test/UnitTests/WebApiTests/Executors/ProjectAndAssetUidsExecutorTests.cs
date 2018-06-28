@@ -106,7 +106,6 @@ namespace WebApiTests.Executors
     [TestMethod]
     public async Task ProjectAndAssetUidsExecutor_ManualImport_HappyPath_ProjectHasManualSub()
     {
-      var customerUid = Guid.NewGuid().ToString();
       var projectUid = Guid.NewGuid().ToString();
       var assetUid = Guid.NewGuid().ToString();
       var latitude = 89.777;
@@ -122,8 +121,8 @@ namespace WebApiTests.Executors
 
       //"Manual 3D Project Monitoring"
       var assetCustomerSubs = new List<Subscription>(){};
-      var projectTypes = new int[]{(int)ProjectType.LandFill, (int)ProjectType.Standard, (int)ProjectType.ProjectMonitoring }; // projectTypes. += ProjectType.LandFill;
-      var projects = new List<Project>() { }; projects.Add(new Project(){ProjectUID = projectUid, CustomerUID = customerUid, ProjectType = ProjectType.Standard});
+      // var projectTypes = new int[]{(int)ProjectType.LandFill, (int)ProjectType.Standard, (int)ProjectType.ProjectMonitoring }; // projectTypes. += ProjectType.LandFill;
+      var projects = new List<Project>() { }; projects.Add(new Project(){ProjectUID = projectUid, CustomerUID = projectCustomerUid, ProjectType = ProjectType.Standard});
       IEnumerable<Project> pp = projects.AsEnumerable();
 
       //"3D Project Monitoring"
@@ -133,18 +132,18 @@ namespace WebApiTests.Executors
       var resultMessage = string.Empty;
 
       _projectRepo.Setup(p => p.GetProject(It.IsAny<string>())).ReturnsAsync(new Project() { ProjectUID = projectUid, ProjectType = ProjectType.Standard, CustomerUID = projectCustomerUid});
-      _projectRepo.Setup(p => p.GetIntersectingProjects(It.IsAny<string>(), projectTypes, latitude, longitude, timeOfLocationUtc)).ReturnsAsync(pp);
+      _projectRepo.Setup(p => p.GetIntersectingProjects(It.IsAny<string>(), It.IsAny<int[]>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<DateTime>())).ReturnsAsync(pp);
 
-      _deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync( new AssetDeviceIds() {AssetUID = assetUid});
+      _deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync( new AssetDeviceIds() {AssetUID = assetUid, OwningCustomerUID = assetCustomerUid});
 
-      _subscriptionRepo.Setup(d => d.GetSubscriptionsByCustomer(projectCustomerUid, timeOfLocationUtc)).ReturnsAsync(projectCustomerSubs);
-      _subscriptionRepo.Setup(d => d.GetSubscriptionsByCustomer(assetCustomerUid, timeOfLocationUtc)).ReturnsAsync(assetCustomerSubs);
+      _subscriptionRepo.Setup(d => d.GetSubscriptionsByCustomer(projectCustomerUid, It.IsAny<DateTime>())).ReturnsAsync(projectCustomerSubs);
+      _subscriptionRepo.Setup(d => d.GetSubscriptionsByCustomer(assetCustomerUid, It.IsAny<DateTime>())).ReturnsAsync(assetCustomerSubs);
 
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorTests>(), configStore,
         _assetRepo.Object, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
 
-      var projectAndAssetUidsRequest = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", "SNM940", 91, 181, DateTime.UtcNow);
+      var projectAndAssetUidsRequest = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", "", 91, 181, DateTime.UtcNow);
       var result = await executor.ProcessAsync(projectAndAssetUidsRequest) as GetProjectAndAssetUidsResult;
 
       ValidateResult(result, projectUid, assetUid, resultCode, resultMessage);

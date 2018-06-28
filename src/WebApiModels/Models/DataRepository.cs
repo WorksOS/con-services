@@ -156,6 +156,28 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return projects;
     }
 
+    public async Task<IEnumerable<Project>> GetIntersectingProjects(string customerUid, int[] projectTypes, 
+      double latitude, double longitude, DateTime timeOfPosition)
+    {
+      IEnumerable<Project> projects = null;
+      try
+      {
+        if (customerUid != null)
+        {
+          var p = await projectRepository.GetIntersectingProjects(customerUid, projectTypes,
+            latitude, longitude, timeOfPosition).ConfigureAwait(false);
+
+          if (p != null) projects = p;
+        }
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine(e);
+        throw; // todo re-tryable
+      }
+
+      return projects;
+    }
 
     public async Task<AssetDeviceIds> LoadAssetDevice(string radioSerial, string deviceType)
     {
