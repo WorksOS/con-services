@@ -1,10 +1,9 @@
-﻿using ASNodeDecls;
-using Microsoft.Extensions.Logging;
-using SVOICFilterSettings;
-using SVOICVolumeCalculationsDecls;
-using System;
+﻿using System;
 using System.IO;
 using System.Net;
+using ASNodeDecls;
+using Microsoft.Extensions.Logging;
+using SVOICVolumeCalculationsDecls;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -26,11 +25,8 @@ namespace VSS.Productivity3D.Common.Executors
     }
 
     /// <summary>
-    ///   Processes the xxx request
+    /// Processes the request for type T.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item">Request to process</param>
-    /// <returns>a xxxResult if successful</returns>
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       ContractExecutionResult result;
@@ -38,41 +34,43 @@ namespace VSS.Productivity3D.Common.Executors
 
       try
       {
-        RaptorConverters.convertGridOrLLBoundingBox(request.BoundBoxGrid, request.BoundBoxLatLon, out TWGS84Point bl, out TWGS84Point tr,
-  out bool coordsAreGrid);
-        TICFilterSettings filter1 =
-          RaptorConverters.ConvertFilter(request.FilterId1, request.Filter1, request.ProjectId);
-        TICFilterSettings filter2 =
-          RaptorConverters.ConvertFilter(request.FilterId2, request.Filter2, request.ProjectId);
-        TComputeICVolumesType volType = RaptorConverters.ConvertVolumesType(request.ComputeVolumesType);
+        RaptorConverters.convertGridOrLLBoundingBox(
+          request.BoundBoxGrid, request.BoundBoxLatLon, out TWGS84Point bl, out TWGS84Point tr, out bool coordsAreGrid);
+
+        var filter1 = RaptorConverters.ConvertFilter(request.FilterId1, request.Filter1, request.ProjectId);
+        var filter2 = RaptorConverters.ConvertFilter(request.FilterId2, request.Filter2, request.ProjectId);
+        var volType = RaptorConverters.ConvertVolumesType(request.ComputeVolumesType);
+
         if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
+        {
           RaptorConverters.AdjustFilterToFilter(ref filter1, filter2);
+        }
 
-        RaptorConverters.reconcileTopFilterAndVolumeComputationMode(ref filter1, ref filter2, request.mode, request.ComputeVolumesType);
+        RaptorConverters.reconcileTopFilterAndVolumeComputationMode(ref filter1, ref filter2, request.Mode, request.ComputeVolumesType);
 
-        TASNodeErrorStatus raptorResult = raptorClient.GetRenderedMapTileWithRepresentColor
-(request.ProjectId ?? -1,
-  ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.CallId ?? Guid.NewGuid()), 0,
-    TASNodeCancellationDescriptorType.cdtWMSTile),
-  RaptorConverters.convertDisplayMode(request.mode),
-  RaptorConverters.convertColorPalettes(request.Palettes, request.mode),
-  bl, tr,
-  coordsAreGrid,
-  request.Width,
-  request.height,
-  filter1,
-  filter2,
-  RaptorConverters.convertOptions(null, request.LiftBuildSettings, request.ComputeVolNoChangeTolerance,
-    request.FilterLayerMethod, request.mode, request.setSummaryDataLayersVisibility),
-  RaptorConverters.DesignDescriptor(request.DesignDescriptor),
-  volType,
-  request.RepresentationalDisplayColor,
-  out MemoryStream tile);
+        TASNodeErrorStatus raptorResult = raptorClient.GetRenderedMapTileWithRepresentColor(
+          request.ProjectId ?? -1,
+          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
+            TASNodeCancellationDescriptorType.cdtWMSTile),
+          RaptorConverters.convertDisplayMode(request.Mode),
+          RaptorConverters.convertColorPalettes(request.Palettes, request.Mode),
+          bl, tr,
+          coordsAreGrid,
+          request.Width,
+          request.Height,
+          filter1,
+          filter2,
+          RaptorConverters.convertOptions(null, request.LiftBuildSettings, request.ComputeVolNoChangeTolerance,
+            request.FilterLayerMethod, request.Mode, request.setSummaryDataLayersVisibility),
+          RaptorConverters.DesignDescriptor(request.DesignDescriptor),
+          volType,
+          request.RepresentationalDisplayColor,
+          out MemoryStream tile);
 
         log.LogTrace($"Received {raptorResult} as a result of execution and tile is {tile == null}");
 
-        if ((raptorResult == TASNodeErrorStatus.asneOK) ||
-            (raptorResult == TASNodeErrorStatus.asneInvalidCoordinateRange))
+        if (raptorResult == TASNodeErrorStatus.asneOK ||
+            raptorResult == TASNodeErrorStatus.asneInvalidCoordinateRange)
         {
           if (tile != null)
           {
@@ -87,11 +85,11 @@ namespace VSS.Productivity3D.Common.Executors
         else
         {
           log.LogTrace(
-            $"Failed to get requested tile with error: {ContractExecutionStates.FirstNameWithOffset((int) raptorResult)}.");
+            $"Failed to get requested tile with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}.");
 
           throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
             ContractExecutionStatesEnum.InternalProcessingError,
-            $"Failed to get requested tile with error: {ContractExecutionStates.FirstNameWithOffset((int) raptorResult)}."));
+            $"Failed to get requested tile with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}."));
         }
 
       }
