@@ -44,10 +44,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         var designDescriptor = RaptorConverters.DesignDescriptor(request.DesignDescriptor);
 
         var volType = RaptorConverters.ConvertVolumesType(request.ComputeVolumesType);
-        if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
-        {
-          RaptorConverters.AdjustFilterToFilter(ref baseFilter, topFilter);
-        }
+        //if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
+        //{
+        //  RaptorConverters.AdjustFilterToFilter(ref baseFilter, topFilter);
+        //}
 
         if ((baseFilter == null || topFilter == null) && designDescriptor.IsNull() ||
              baseFilter == null && topFilter == null)
