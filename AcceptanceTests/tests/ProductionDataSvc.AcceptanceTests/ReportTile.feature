@@ -1,7 +1,7 @@
 ﻿Feature: ReportTile
 I should be able to request report tiles
 
-@ignore
+@Ignore
 Scenario Outline: Report Tiles
 Given the Report Tile service URI "/api/v2/reporttiles" 
 And a projectUid "<ProjectUID>"

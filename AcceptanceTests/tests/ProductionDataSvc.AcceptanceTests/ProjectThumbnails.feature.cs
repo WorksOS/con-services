@@ -85,7 +85,7 @@ testRunner.And("the expected response is in the \"ProjectThumbnailResponse.json\
         public virtual void WithProductionData()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("WithProductionData", new string[] {
-                        "ignore"});
+                        "Ignore"});
 #line 8
 this.ScenarioSetup(scenarioInfo);
 #line 3
@@ -106,7 +106,7 @@ this.FeatureBackground();
         public virtual void WithoutProductionData()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("WithoutProductionData", new string[] {
-                        "ignore"});
+                        "Ignore"});
 #line 13
 this.ScenarioSetup(scenarioInfo);
 #line 3

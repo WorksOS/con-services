@@ -71,7 +71,7 @@ namespace ProductionDataSvc.AcceptanceTests
         public virtual void ReportTiles(string resultName, string projectUID, string filterUID, string overlayType, string mapType, string mode, string difference, string language, string[] exampleTags)
         {
             string[] @__tags = new string[] {
-                    "ignore"};
+                    "Ignore"};
             if ((exampleTags != null))
             {
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
