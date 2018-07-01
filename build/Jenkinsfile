@@ -37,7 +37,7 @@ node ('jenkinsslave-pod') {
     stage('Build Solution') {
         checkout scm
 		
-	    def build_container = docker.build(container, "-f Dockerfile.build .")
+	    def build_container = docker.build(container, "-f /build/Dockerfile.build .")
 
         // Currently we need to execute the tests like this, because the pipeline docker plugin being aware of DIND, and attempting to map
         // the volume to the bare metal host        
@@ -78,12 +78,12 @@ node ('jenkinsslave-pod') {
 	}
 	
 	stage('Prepairing runtime image') {
-		runtimeImage = docker.build(container, "-f Dockerfile .")
+		runtimeImage = docker.build(container, "-f /build/Dockerfile .")
 		runtimeImage.push()
 	}
 	
     stage('Build Acceptance tests') {	
-	    docker.build(testContainer, "-f Dockerfile.tests .").push()
+	    docker.build(testContainer, "-f /build/Dockerfile.tests .").push()
 	}
 
 	
