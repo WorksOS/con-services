@@ -2,7 +2,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{ template "trex.fullname" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}-psn
+  name: {{ template "trex.fullname" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}-as
   labels:
     app: {{ template "trex.name" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}
     chart: {{ template "trex.chart" . }}
@@ -33,7 +33,7 @@ spec:
         image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-trex:{{ .Values.image.tag }}
         
         command: ["dotnet"]
-        args: ["/trex/VSS.TRex.Server.PSNode.dll"]
+        args: ["/trex/VSS.TRex.Server.Application.dll"]
 
         #env:
         # Ignite's Docker image parameter. Adding the jar file that

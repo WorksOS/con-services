@@ -5,6 +5,7 @@ using Apache.Ignite.Core.Communication.Tcp;
 using Apache.Ignite.Core.Configuration;
 using Apache.Ignite.Core.Discovery.Tcp;
 using Apache.Ignite.Core.Discovery.Tcp.Static;
+using Apache.Ignite.Core.Discovery.Tcp.Multicast;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -18,131 +19,131 @@ using VSS.TRex.Storage;
 
 namespace VSS.TRex.Servers.Client
 {
+  /// <summary>
+  /// Defines a representation of a client able to request TRex related compute operations using
+  /// the Ignite In Memory Data Grid. All client type server classes should descend from this class.
+  /// </summary>
+  public class ImmutableClientServer : IgniteServer
+  {
+    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+
     /// <summary>
-    /// Defines a representation of a client able to request TRex related compute operations using
-    /// the Ignite In Memory Data Grid. All client type server classes should descend from this class.
+    /// Constructor that creates a new server instance with a single role
     /// </summary>
-    public class ImmutableClientServer : IgniteServer
+    /// <param name="role"></param>
+    public ImmutableClientServer(string role) : this(new[] { role })
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    }
 
-        /// <summary>
-        /// Constructor that creates a new server instance with a single role
-        /// </summary>
-        /// <param name="role"></param>
-        public ImmutableClientServer(string role) : this(new [] { role })
+    /// <summary>
+    /// Constructor that creates a new server instance with a set of roles
+    /// </summary>
+    /// <param name="roles"></param>
+    public ImmutableClientServer(string[] roles)
+    {
+      if (immutableTRexGrid == null)
+      {
+        // Attempt to attach to an already existing Ignite instance
+        immutableTRexGrid = TRexGridFactory.Grid(TRexGrids.ImmutableGridName());
+
+        // If there was no connection obtained, attempt to create a new instance
+        if (immutableTRexGrid == null)
         {
-        }
+          string roleNames = roles.Aggregate("|", (s1, s2) => s1 + s2 + "|");
 
-        /// <summary>
-        /// Constructor that creates a new server instance with a set of roles
-        /// </summary>
-        /// <param name="roles"></param>
-        public ImmutableClientServer(string [] roles)
-        {
-            if (immutableTRexGrid == null)
-            {
-                // Attempt to attach to an already existing Ignite instance
-                immutableTRexGrid = TRexGridFactory.Grid(TRexGrids.ImmutableGridName());
+          TRexNodeID = Guid.NewGuid().ToString();
 
-                // If there was no connection obtained, attempt to create a new instance
-                if (immutableTRexGrid == null)
-                {
-                    string roleNames = roles.Aggregate("|", (s1, s2) => s1 + s2 + "|");
+          Log.LogInformation($"Creating new Ignite node with Roles = {roleNames} & TRexNodeId = {TRexNodeID}");
 
-                    TRexNodeID = Guid.NewGuid().ToString();
+         IgniteConfiguration cfg = new IgniteConfiguration
+          {
+            SpringConfigUrl = @".\igniteKubeConfig.xml",
 
-                    Log.LogInformation($"Creating new Ignite node with Roles = {roleNames} & TRexNodeId = {TRexNodeID}");
+            IgniteInstanceName = TRexGrids.ImmutableGridName(),
+            ClientMode = true,
 
-                    IgniteConfiguration cfg = new IgniteConfiguration
-                    {
-                        // SpringConfigUrl = @".\TRexIgniteConfig.xml",
+            JvmInitialMemoryMb = 512, // Set to minimum advised memory for Ignite grid JVM of 512Mb
+            JvmMaxMemoryMb = 1 * 1024, // Set max to 1Gb
 
-                        IgniteInstanceName = TRexGrids.ImmutableGridName(),
-                        ClientMode = true,
-
-                        JvmInitialMemoryMb = 512, // Set to minimum advised memory for Ignite grid JVM of 512Mb
-                        JvmMaxMemoryMb = 1 * 1024, // Set max to 1Gb
-
-                        UserAttributes = new Dictionary<string, object>()
+            UserAttributes = new Dictionary<string, object>()
                         {
                             { "TRexNodeId", TRexNodeID }
                         },
+            
+            // Enforce using only the LocalHost interface
+            //DiscoverySpi = new TcpDiscoverySpi()
+            //{
+            //  LocalAddress = "127.0.0.1",
+            //  LocalPort = 47500,
 
-                        // Enforce using only the LocalHost interface
-                        DiscoverySpi = new TcpDiscoverySpi()
-                        {
-                            LocalAddress = "127.0.0.1",
-                            LocalPort = 47500, 
+            //  IpFinder = new TcpDiscoveryStaticIpFinder()
+            //  {
+            //    Endpoints = new[] { "127.0.0.1:47500..47509" }
+            //  }
+            //},
 
-                            IpFinder = new TcpDiscoveryStaticIpFinder()
-                            {
-                                Endpoints = new [] { "127.0.0.1:47500..47509" }
-                            }
-                        },
+            //CommunicationSpi = new TcpCommunicationSpi()
+            //{
+            //  LocalAddress = "127.0.0.1",
+            //  LocalPort = 47100,
+            //},
 
-                        CommunicationSpi = new TcpCommunicationSpi()
-                        {
-                            LocalAddress = "127.0.0.1",
-                            LocalPort = 47100,
-                        },
+            Logger = new TRexIgniteLogger(Logger.CreateLogger("ImmutableClientServer")),
 
-                        Logger = new TRexIgniteLogger(Logger.CreateLogger("ImmutableClientServer")),
+            // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
+            DataStorageConfiguration = new DataStorageConfiguration
+            {
+              PageSize = DataRegions.DEFAULT_IMMUTABLE_DATA_REGION_PAGE_SIZE,
 
-                        // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
-                        DataStorageConfiguration = new DataStorageConfiguration
-                        {
-                            PageSize = DataRegions.DEFAULT_IMMUTABLE_DATA_REGION_PAGE_SIZE,
+              DefaultDataRegionConfiguration = new DataRegionConfiguration
+              {
+                Name = DataRegions.DEFAULT_IMMUTABLE_DATA_REGION_NAME,
+                InitialSize = 128 * 1024 * 1024,  // 128 MB
+                MaxSize = 256 * 1024 * 1024,  // 256 Mb    
+                PersistenceEnabled = false
+              },
+            },
 
-                            DefaultDataRegionConfiguration = new DataRegionConfiguration
-                            {
-                                Name = DataRegions.DEFAULT_IMMUTABLE_DATA_REGION_NAME,
-                                InitialSize = 128 * 1024 * 1024,  // 128 MB
-                                MaxSize = 256 * 1024 * 1024,  // 256 Mb    
-                                PersistenceEnabled = false
-                            },
-                        },
+            // Set an Ignite metrics heartbeat of 10 seconds 
+            MetricsLogFrequency = new TimeSpan(0, 0, 0, 10),
 
-                        // Set an Ignite metrics heartbeat of 10 seconds 
-                        MetricsLogFrequency = new TimeSpan(0, 0, 0, 10),
+            PublicThreadPoolSize = 50,
 
-                        PublicThreadPoolSize = 50,
+            PeerAssemblyLoadingMode = PeerAssemblyLoadingMode.Disabled
 
-                        PeerAssemblyLoadingMode = PeerAssemblyLoadingMode.Disabled
+            // BinaryConfiguration = new BinaryConfiguration(typeof(TestQueueItem))
+          };
 
-                        // BinaryConfiguration = new BinaryConfiguration(typeof(TestQueueItem))
-                    };
+          foreach (string roleName in roles)
+          {
+            cfg.UserAttributes.Add($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{roleName}", "True");
+          }
 
-                    foreach (string roleName in roles)
-                    {
-                        cfg.UserAttributes.Add($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{roleName}", "True");
-                    }
-
-                    try
-                    {
-                        immutableTRexGrid = Ignition.Start(cfg);
-                    }
-                    catch (Exception e)
-                    {
-                        Log.LogInformation($"Creation of new Ignite node with Role = {roleNames} & TRexNodeId = {TRexNodeID} failed with exception {e}");
-                        throw;
-                    }
-                    finally
-                    {
-                        Log.LogInformation($"Completed creation of new Ignite node with Role = {roleNames} & TRexNodeId = {TRexNodeID}");
-                    }
-                }
-            }
+          try
+          {
+            immutableTRexGrid = Ignition.Start(cfg);
+          }
+          catch (Exception e)
+          {
+            Log.LogInformation($"Creation of new Ignite node with Role = {roleNames} & TRexNodeId = {TRexNodeID} failed with exception {e}");
+            throw;
+          }
+          finally
+          {
+            Log.LogInformation($"Completed creation of new Ignite node with Role = {roleNames} & TRexNodeId = {TRexNodeID}");
+          }
         }
-
-        public override ICache<NonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg)
-        {
-            return immutableTRexGrid.GetCache<NonSpatialAffinityKey, byte[]>(CacheCfg.Name);
-        }
-
-        public override ICache<SubGridSpatialAffinityKey, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
-        {
-            return immutableTRexGrid.GetCache<SubGridSpatialAffinityKey, byte[]>(CacheCfg.Name);
-        }       
+      }
     }
+
+    public override ICache<NonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg)
+    {
+      return immutableTRexGrid.GetCache<NonSpatialAffinityKey, byte[]>(CacheCfg.Name);
+    }
+
+    public override ICache<SubGridSpatialAffinityKey, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
+    {
+      return immutableTRexGrid.GetCache<SubGridSpatialAffinityKey, byte[]>(CacheCfg.Name);
+    }
+  }
 }

@@ -25,7 +25,7 @@ namespace VSS.TRex.Servers.Compute
   /// Defines a representation of a server responsible for performing TRex related compute operations using
   /// the Ignite In Memory Data Grid
   /// </summary>
-    public class ImmutableCacheComputeServer : IgniteServer
+  public class ImmutableCacheComputeServer : IgniteServer
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
@@ -47,6 +47,8 @@ namespace VSS.TRex.Servers.Compute
     public override void ConfigureTRexGrid(IgniteConfiguration cfg)
     {
       base.ConfigureTRexGrid(cfg);
+
+      cfg.SpringConfigUrl = @".\igniteKubeConfig.xml";
 
       cfg.IgniteInstanceName = TRexGrids.ImmutableGridName();
 
@@ -77,28 +79,30 @@ namespace VSS.TRex.Servers.Compute
         }
       };
 
-        Log.LogInformation($"cfg.DataStorageConfiguration.StoragePath={cfg.DataStorageConfiguration.StoragePath}");
-        Log.LogInformation($"cfg.DataStorageConfiguration.WalArchivePath={cfg.DataStorageConfiguration.WalArchivePath}");
-        Log.LogInformation($"cfg.DataStorageConfiguration.WalPath={cfg.DataStorageConfiguration.WalPath}");
-      
-        //cfg.JvmOptions = new List<string>() { "-DIGNITE_QUIET=false" };
+      Log.LogInformation($"cfg.DataStorageConfiguration.StoragePath={cfg.DataStorageConfiguration.StoragePath}");
+      Log.LogInformation($"cfg.DataStorageConfiguration.WalArchivePath={cfg.DataStorageConfiguration.WalArchivePath}");
+      Log.LogInformation($"cfg.DataStorageConfiguration.WalPath={cfg.DataStorageConfiguration.WalPath}");
 
-            cfg.DiscoverySpi = new TcpDiscoverySpi()
-      {
-        LocalAddress = "127.0.0.1",
-        LocalPort = 47500,
+      //cfg.JvmOptions = new List<string>() { "-DIGNITE_QUIET=false" };
 
-        IpFinder = new TcpDiscoveryStaticIpFinder()
-        {
-          Endpoints = new[] { "127.0.0.1:47500..47509" }
-        }
-      };
+      cfg.SpringConfigUrl = @".\igniteKubeConfig.xml";
 
-      cfg.CommunicationSpi = new TcpCommunicationSpi()
-      {
-        LocalAddress = "127.0.0.1",
-        LocalPort = 47100,
-      };
+      //cfg.DiscoverySpi = new TcpDiscoverySpi()
+      //{
+      //  LocalAddress = "127.0.0.1",
+      //  LocalPort = 47500,
+
+      //  IpFinder = new TcpDiscoveryStaticIpFinder()
+      //  {
+      //    Endpoints = new[] { "127.0.0.1:47500..47509" }
+      //  }
+      //};
+
+      //cfg.CommunicationSpi = new TcpCommunicationSpi()
+      //{
+      //  LocalAddress = "127.0.0.1",
+      //  LocalPort = 47100,
+      //};
 
       cfg.Logger = new TRexIgniteLogger(Logger.CreateLogger("ImmutableCacheComputeServer"));
 

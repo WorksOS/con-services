@@ -26,10 +26,10 @@ namespace VSS.TRex.Servers.Compute
   /// Defines a representation of a server responsible for performing TRex related compute operations using
   /// the Ignite In Memory Data Grid
   /// </summary>
-    public class MutableCacheComputeServer : IgniteServer
+  public class MutableCacheComputeServer : IgniteServer
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
-    
+
     /// <summary>
     /// Constructor for the TRex cache compute server node. Responsible for starting all Ignite services and creating the grid
     /// and cache instance in preparation for client access by business logic running on the node.
@@ -50,7 +50,7 @@ namespace VSS.TRex.Servers.Compute
       cfg.IgniteInstanceName = TRexGrids.MutableGridName();
 
       cfg.JvmInitialMemoryMb = 512; // Set to minimum advised memory for Ignite grid JVM of 512Mb
-            cfg.JvmMaxMemoryMb = 2 * 1024; // Set max to 2Gb
+      cfg.JvmMaxMemoryMb = 2 * 1024; // Set max to 2Gb
       cfg.UserAttributes = new Dictionary<string, object>
             {
                 { "Owner", TRexGrids.MutableGridName() }
@@ -70,7 +70,7 @@ namespace VSS.TRex.Servers.Compute
         {
           Name = DataRegions.DEFAULT_MUTABLE_DATA_REGION_NAME,
           InitialSize = 128 * 1024 * 1024,  // 128 MB
-                    MaxSize = 2L * 1024 * 1024 * 1024,  // 2 GB                               
+          MaxSize = 2L * 1024 * 1024 * 1024,  // 2 GB                               
 
           PersistenceEnabled = true
         },
@@ -89,28 +89,30 @@ namespace VSS.TRex.Servers.Compute
                 }
       };
 
-        Log.LogInformation($"cfg.DataStorageConfiguration.StoragePath={cfg.DataStorageConfiguration.StoragePath}");
-        Log.LogInformation($"cfg.DataStorageConfiguration.WalArchivePath={cfg.DataStorageConfiguration.WalArchivePath}");
-        Log.LogInformation($"cfg.DataStorageConfiguration.WalPath={cfg.DataStorageConfiguration.WalPath}");
+      Log.LogInformation($"cfg.DataStorageConfiguration.StoragePath={cfg.DataStorageConfiguration.StoragePath}");
+      Log.LogInformation($"cfg.DataStorageConfiguration.WalArchivePath={cfg.DataStorageConfiguration.WalArchivePath}");
+      Log.LogInformation($"cfg.DataStorageConfiguration.WalPath={cfg.DataStorageConfiguration.WalPath}");
 
-            //cfg.JvmOptions = new List<string>() { "-DIGNITE_QUIET=false" };
+      //cfg.JvmOptions = new List<string>() { "-DIGNITE_QUIET=false" };
 
-            cfg.DiscoverySpi = new TcpDiscoverySpi()
-      {
-        LocalAddress = "127.0.0.1",
-        LocalPort = 48500,
+      cfg.SpringConfigUrl = @".\igniteKubeConfig.xml";
 
-        IpFinder = new TcpDiscoveryStaticIpFinder()
-        {
-          Endpoints = new[] { "127.0.0.1:48500..48509" }
-        }
-      };
+      //cfg.DiscoverySpi = new TcpDiscoverySpi()
+      //{
+      //  LocalAddress = "127.0.0.1",
+      //  LocalPort = 48500,
 
-      cfg.CommunicationSpi = new TcpCommunicationSpi()
-      {
-        LocalAddress = "127.0.0.1",
-        LocalPort = 48100,
-      };
+      //  IpFinder = new TcpDiscoveryStaticIpFinder()
+      //  {
+      //    Endpoints = new[] { "127.0.0.1:48500..48509" }
+      //  }
+      //};
+
+      //cfg.CommunicationSpi = new TcpCommunicationSpi()
+      //{
+      //  LocalAddress = "127.0.0.1",
+      //  LocalPort = 48100,
+      //};
 
       cfg.Logger = new TRexIgniteLogger(Logger.CreateLogger("MutableCacheComputeServer"));
 
@@ -133,19 +135,19 @@ namespace VSS.TRex.Servers.Compute
       cfg.KeepBinaryInStore = false;
 
       // Non-spatial (event) data is replicated to all nodes for local access
-            cfg.CacheMode = CacheMode.Partitioned;
+      cfg.CacheMode = CacheMode.Partitioned;
 
-            // Note: The AffinityFunction is longer supplied as the ProjectID (Guid) member of the 
-            // NonSpatialAffinityKey struct is marked with the [AffinityKeyMapped] attribute. For Partitioned caches
-            // this means the values are spread amongst the servers per the default 
-            cfg.AffinityFunction = new MutableNonSpatialAffinityFunction();
+      // Note: The AffinityFunction is longer supplied as the ProjectID (Guid) member of the 
+      // NonSpatialAffinityKey struct is marked with the [AffinityKeyMapped] attribute. For Partitioned caches
+      // this means the values are spread amongst the servers per the default 
+      cfg.AffinityFunction = new MutableNonSpatialAffinityFunction();
 
       cfg.Backups = 0;
     }
 
-        public override ICache<NonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<NonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg)
     {
-            return mutableTRexGrid.GetOrCreateCache<NonSpatialAffinityKey, byte[]>(CacheCfg);
+      return mutableTRexGrid.GetOrCreateCache<NonSpatialAffinityKey, byte[]>(CacheCfg);
     }
 
     public override void ConfigureMutableSpatialCache(CacheConfiguration cfg)
