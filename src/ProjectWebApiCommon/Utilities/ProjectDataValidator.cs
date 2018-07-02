@@ -4,8 +4,10 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -321,6 +323,36 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 37);
         }
       }
+    }
+
+    /// <summary>
+    /// Validates a projectname. Must be unique amoungst active projects for the Customer.
+    /// </summary>
+    /// <param name="customerUid"></param>
+    /// <param name="projectName"></param>
+    /// <param name="projectUid">The project uid.</param>
+    /// <param name="log"></param>
+    /// <param name="serviceExceptionHandler"></param>
+    /// <param name="projectRepo"></param>
+    /// <returns></returns>
+    public static async Task ValidateProjectName(string customerUid, string projectName, string projectUid,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler,
+      IProjectRepository projectRepo)
+    {
+      log.LogInformation($"ValidateProjectName projectName: {projectName} projectUid: {projectUid}");
+      var duplicateProjectNames =
+        (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false))
+        .Where(
+          p => p.IsDeleted == false &&
+                string.Equals(p.Name, projectName, StringComparison.OrdinalIgnoreCase) &&
+               !string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase))
+        .ToList();
+      if (duplicateProjectNames.Any())
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 109, $"Count:{duplicateProjectNames.Count} projectUid: {duplicateProjectNames[0].ProjectUID}");
+      }
+
+      log.LogInformation($"ValidateProjectName Any duplicateProjectNames? {JsonConvert.SerializeObject(duplicateProjectNames)} retrieved");
     }
   }
 }
