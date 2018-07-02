@@ -15,6 +15,7 @@ RUN \
 # #Need these for ignite to work
 ENV JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk
 ENV LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/amd64/server
+ENV IGNITE_HOME=/trex/
 
 # # Copy built artifacts from last stage into runtime container
 # # TRex still cannot run in 

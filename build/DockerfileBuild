@@ -9,9 +9,11 @@ COPY . /build/
 #publish TRex
 RUN dotnet publish /build/TRex.netstandard.sln --output /trex
 
-#Gather dependencies - kubernetes support has to be injected here as its not part of the nuget package
+#Gather dependencies - kubernetes support (and its dependencies) have to be injected here as its not part of the nuget package
 RUN cp -r /root/.nuget/packages/apache.ignite/2.4.0/libs/ /trex/libs/
 WORKDIR /trex/libs/
 RUN wget https://search.maven.org/remotecontent?filepath=org/apache/ignite/ignite-kubernetes/2.4.0/ignite-kubernetes-2.4.0.jar
+RUN wget http://central.maven.org/maven2/org/codehaus/jackson/jackson-core-asl/1.9.13/jackson-core-asl-1.9.13.jar
+RUN wget http://central.maven.org/maven2/org/codehaus/jackson/jackson-mapper-asl/1.9.13/jackson-mapper-asl-1.9.13.jar
 
 #TRex unit tests will be tested by the jenkins file as host directory mounts cannot be specified in the dockerfile
