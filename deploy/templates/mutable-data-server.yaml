@@ -33,7 +33,7 @@ spec:
         image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-trex:{{ .Values.image.tag }}
         
         command: ["dotnet"]
-        args: ["/trex/VSS.TRex.Server.MutableData.dll"]
+        args: ["VSS.TRex.Server.MutableData.dll"]
 
         #env:
         # Ignite's Docker image parameter. Adding the jar file that
