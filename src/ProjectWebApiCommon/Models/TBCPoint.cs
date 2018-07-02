@@ -1,32 +1,26 @@
-﻿using System;
+﻿using Newtonsoft.Json;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
 {
-  public class TBCPoint : IEquatable<TBCPoint>
+  public class TBCPoint
   {
-    public double x;
-    public double y;
+    /// <summary>
+    /// Gets or sets the latitude
+    /// </summary>
+    [JsonProperty(PropertyName = "Latitude", Required = Required.Always)]
+    public double Latitude { get; set; }
+    /// <summary>
+    /// Gets or sets the longitude
+    /// </summary>
+    [JsonProperty(PropertyName = "Longitude", Required = Required.Always)]
+    public double Longitude { get; set; }
 
     public TBCPoint(double latitude, double longitude)
     {
-      this.x = longitude;
-      this.y = latitude;
-    }
-
-    public double Latitude
-    {
-      get { return y; }
-    }
-
-    public double Longitude
-    {
-      get { return x; }
-    }
-
-    public bool Equals(TBCPoint other)
-    {
-      return other != null ? (this.Latitude == other.Latitude && this.Longitude == other.Longitude) : false;
+      this.Latitude = latitude;
+      this.Longitude = longitude;
     }
   }
 }
+
 

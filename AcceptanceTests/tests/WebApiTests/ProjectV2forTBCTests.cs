@@ -35,8 +35,10 @@ namespace WebApiTests
       var mysql = new MySqlHelper();
       var ts = new TestSupport();
 
-     var response = CreateProjectV2(ts, mysql, "project 1", ProjectType.ProjectMonitoring);
+      var serialized = JsonConvert.SerializeObject(_boundaryLL);
+      Assert.AreEqual(@"[{""Latitude"":-43.5,""Longitude"":172.6},{""Latitude"":-43.5003,""Longitude"":172.6},{""Latitude"":-43.5003,""Longitude"":172.603},{""Latitude"":-43.5,""Longitude"":172.603}]", serialized, "TBCPoint not serialized correctly.");
 
+      var response = CreateProjectV2(ts, mysql, "project 1", ProjectType.ProjectMonitoring);
       var createProjectV2Result = JsonConvert.DeserializeObject<ReturnLongV2Result>(response);
       
       Assert.AreEqual(HttpStatusCode.Created, createProjectV2Result.Code, "Not created ok.");

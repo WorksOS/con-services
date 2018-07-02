@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
@@ -83,6 +84,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(2103, "ProjectGeofenceAssociation: Invalid GeofenceUid list."));
         }
+      }
+      if (GeofenceGuids.Count != GeofenceGuids.Distinct().Count())
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(2110, "ProjectGeofenceAssociation: Duplicate GeofenceUids appear in the request body."));
+
       }
     }
   }
