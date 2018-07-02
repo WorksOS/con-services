@@ -36,6 +36,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\MerinoSandbox\FlowJSMVC\src\VSS.FlowJSHandler.csproj" />
+    <ProjectReference Include="..\..\..\..\MerinoSandbox\KafkaConsumer\src\VSS.KafkaConsumer.Local.csproj" />
     <ProjectReference Include="..\..\..\src\ProjectWebApiCommon\VSS.Project.WebApi.Common.Local.csproj" />
   </ItemGroup>
 

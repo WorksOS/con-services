@@ -150,6 +150,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 18);
       }
+      await ProjectDataValidator.ValidateProjectName(customerUid, createProjectEvent.ProjectName, createProjectEvent.ProjectUID.ToString(), log, serviceExceptionHandler, projectRepo);
 
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
@@ -192,6 +193,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       // validation includes check that project must exist - otherwise there will be a null legacyID.
       ProjectDataValidator.Validate(project, projectRepo, serviceExceptionHandler);
+      await ProjectDataValidator.ValidateProjectName(customerUid, projectRequest.ProjectName, projectRequest.ProjectUid.ToString(), log, serviceExceptionHandler, projectRepo);
 
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory

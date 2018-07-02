@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Exceptions;
@@ -229,7 +232,128 @@ namespace VSS.MasterData.ProjectTests
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2073", StringComparison.Ordinal), "Expected error number 2073");
     }
 
+    [TestMethod]
+    public async Task ValidateUpsertProjectV4Request_DuplicateProjectName_NoneHappyPath()
+    {
+      var log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ProjectValidationTests>();
+      string projectName = "the projectName";
+      var request = UpdateProjectRequest.CreateUpdateProjectRequest
+      (Guid.NewGuid(), ProjectType.Standard, projectName, "the project description",
+        new DateTime(2017, 01, 20), null, null, _validBoundary);
 
+      var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
+      updateProjectEvent.ActionUTC = DateTime.UtcNow;
 
+      var projectList = new List<Repositories.DBModels.Project>();
+      var projectRepo = new Mock<IProjectRepository>();
+      projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
+
+      await ProjectDataValidator.ValidateProjectName(_customerUid, projectName, request.ProjectUid.ToString(),
+        log, ServiceExceptionHandler, projectRepo.Object);
+    }
+
+    [TestMethod]
+    public async Task ValidateUpsertProjectV4Request_DuplicateProjectName_SameProjectHappyPath()
+    {
+      var log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ProjectValidationTests>();
+      string projectName = "the projectName";
+      var request = UpdateProjectRequest.CreateUpdateProjectRequest
+      (Guid.NewGuid(), ProjectType.Standard, projectName, "the project description",
+        new DateTime(2017, 01, 20), null, null, _validBoundary);
+
+      var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
+      updateProjectEvent.ActionUTC = DateTime.UtcNow;
+
+      var projectList = new List<Repositories.DBModels.Project>(){ new Repositories.DBModels.Project() {Name = request.ProjectName, ProjectUID = request.ProjectUid.ToString()} };
+      var projectRepo = new Mock<IProjectRepository>();
+      projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
+
+      await ProjectDataValidator.ValidateProjectName(_customerUid, projectName, request.ProjectUid.ToString(),
+        log, ServiceExceptionHandler, projectRepo.Object);
+    }
+
+    [TestMethod]
+    public async Task ValidateUpsertProjectV4Request_DuplicateProjectName_OtherProject()
+    {
+      var log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ProjectValidationTests>();
+      string projectName = "the projectName";
+      var request = UpdateProjectRequest.CreateUpdateProjectRequest
+      (Guid.NewGuid(), ProjectType.Standard, projectName, "the project description",
+        new DateTime(2017, 01, 20), null, null, _validBoundary);
+
+      var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
+      updateProjectEvent.ActionUTC = DateTime.UtcNow;
+
+      var projectList = new List<Repositories.DBModels.Project>()
+      {
+        new Repositories.DBModels.Project() { Name = request.ProjectName, ProjectUID = Guid.NewGuid().ToString() }
+      };
+      var projectRepo = new Mock<IProjectRepository>();
+      projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
+
+      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(
+        () => ProjectDataValidator.ValidateProjectName(_customerUid, projectName, request.ProjectUid.ToString(),
+          log, ServiceExceptionHandler, projectRepo.Object));
+
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2109", StringComparison.Ordinal), "Expected error number 2109");
+    }
+
+    [TestMethod]
+    public async Task ValidateUpsertProjectV4Request_DuplicateProjectName_SameProjectAndOther()
+    {
+      var log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ProjectValidationTests>();
+      string projectName = "the projectName";
+      var request = UpdateProjectRequest.CreateUpdateProjectRequest
+      (Guid.NewGuid(), ProjectType.Standard, projectName, "the project description",
+        new DateTime(2017, 01, 20), null, null, _validBoundary);
+
+      var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
+      updateProjectEvent.ActionUTC = DateTime.UtcNow;
+
+      var projectList = new List<Repositories.DBModels.Project>()
+      {
+        new Repositories.DBModels.Project(){Name = request.ProjectName, ProjectUID = Guid.NewGuid().ToString()},
+        new Repositories.DBModels.Project() { Name = request.ProjectName, ProjectUID = request.ProjectUid.ToString()}
+      };
+      var projectRepo = new Mock<IProjectRepository>();
+      projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
+
+      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(
+        () => ProjectDataValidator.ValidateProjectName(_customerUid, projectName, request.ProjectUid.ToString(),
+          log, ServiceExceptionHandler, projectRepo.Object));
+
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2109", StringComparison.Ordinal), "Expected error number 2109");
+      Assert.IsTrue(ex.GetContent.Contains("Not allowed duplicate, active projectnames: Count:1"), "should be 1 duplicate");
+    }
+
+    [TestMethod]
+    public async Task ValidateUpsertProjectV4Request_DuplicateProjectName_MultiMatch()
+    {
+      // note that this should NEVER occur as the first duplicate shouldn't have been allowed
+      var log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ProjectValidationTests>();
+      string projectName = "the projectName";
+      var request = UpdateProjectRequest.CreateUpdateProjectRequest
+      (Guid.NewGuid(), ProjectType.Standard, projectName, "the project description",
+        new DateTime(2017, 01, 20), null, null, _validBoundary);
+
+      var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
+      updateProjectEvent.ActionUTC = DateTime.UtcNow;
+
+      var projectList = new List<Repositories.DBModels.Project>()
+      {
+        new Repositories.DBModels.Project(){Name = request.ProjectName, ProjectUID = Guid.NewGuid().ToString()},
+        new Repositories.DBModels.Project(){Name = request.ProjectName, ProjectUID = Guid.NewGuid().ToString()},
+        new Repositories.DBModels.Project() { Name = request.ProjectName, ProjectUID = request.ProjectUid.ToString()}
+      };
+      var projectRepo = new Mock<IProjectRepository>();
+      projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
+
+      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(
+        () => ProjectDataValidator.ValidateProjectName(_customerUid, projectName, request.ProjectUid.ToString(),
+          log, ServiceExceptionHandler, projectRepo.Object));
+
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2109", StringComparison.Ordinal), "Expected error number 2109");
+      Assert.IsTrue(ex.GetContent.Contains("Not allowed duplicate, active projectnames: Count:2"), "should be 2 duplicate2");
+    }
   }
 }
