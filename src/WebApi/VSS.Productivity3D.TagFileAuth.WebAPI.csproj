@@ -47,7 +47,7 @@
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
     <PackageReference Include="System.Net.Security" Version="4.3.2" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
-    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.2.0" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.*" />
     <PackageReference Include="log4net.netcore" Version="3.0.0" />
     <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.0.3" />
   </ItemGroup>
