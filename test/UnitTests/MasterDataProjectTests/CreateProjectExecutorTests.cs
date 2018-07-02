@@ -30,7 +30,7 @@ namespace VSS.MasterData.ProjectTests
   [TestClass]
   public class CreateProjectExecutorTests : ExecutorBaseTests
   {
-    protected static List<Point> _boundaryLL;
+    protected static List<TBCPoint> _boundaryLL;
     private static BusinessCenterFile _businessCenterFile;
     private static string _checkBoundaryString;
 
@@ -40,12 +40,12 @@ namespace VSS.MasterData.ProjectTests
     public static void ClassInitialize(TestContext testContext)
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
-      _boundaryLL = new List<Point>()
+      _boundaryLL = new List<TBCPoint>()
       {
-        new Point(-43.5, 172.6),
-        new Point(-43.5003, 172.6),
-        new Point(-43.5003, 172.603),
-        new Point(-43.5, 172.603)
+        new TBCPoint(-43.5, 172.6),
+        new TBCPoint(-43.5003, 172.6),
+        new TBCPoint(-43.5003, 172.603),
+        new TBCPoint(-43.5, 172.603)
       };
 
       _checkBoundaryString = "POLYGON((172.6 -43.5,172.6 -43.5003,172.603 -43.5003,172.603 -43.5,172.6 -43.5))";

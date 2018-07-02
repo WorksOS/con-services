@@ -449,11 +449,10 @@ namespace TestUtility
     /// <param name="actionUtc">timestamp of the event</param>
     /// <param name="boundary"></param>
     /// <param name="statusCode">expected status code from web api call</param>
-    public string CreateProjectViaWebApiV2(string name, DateTime startDate, DateTime endDate, string timezone, ProjectType projectType, DateTime actionUtc, string boundary, HttpStatusCode statusCode)
+    public string CreateProjectViaWebApiV2(string name, DateTime startDate, DateTime endDate, string timezone, ProjectType projectType, DateTime actionUtc, List<TBCPoint> boundary, HttpStatusCode statusCode)
     {
       var createProjectV2Request = CreateProjectV2Request.CreateACreateProjectV2Request(
-      projectType, startDate, endDate, name, timezone,
-        GeofenceValidation.ParseGeometryDataPointLL(boundary).ToList(),
+      projectType, startDate, endDate, name, timezone, boundary,
         new BusinessCenterFile() { FileSpaceId = "u3bdc38d-1afe-470e-8c1c-fc241d4c5e01", Name = "CTCTSITECAL.dc", Path = "/BC Data/Sites/Chch Test Site" }
       );
       string requestJson;

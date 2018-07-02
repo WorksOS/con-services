@@ -8,7 +8,6 @@ using Moq;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
@@ -19,8 +18,7 @@ namespace VSS.MasterData.ProjectTests
   [TestClass]
   public class ProjectValidationTests : ExecutorBaseTests
   {
-    protected ProjectErrorCodesProvider projectErrorCodesProvider = new ProjectErrorCodesProvider();
-    private static List<Point> _boundaryLL;
+    private static List<TBCPoint> _boundaryLL;
     private static BusinessCenterFile _businessCenterFile;
     private static string _checkBoundaryString;
     private readonly string _validBoundary;
@@ -39,12 +37,12 @@ namespace VSS.MasterData.ProjectTests
     public static void ClassInitialize(TestContext testContext)
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
-      _boundaryLL = new List<Point>()
+      _boundaryLL = new List<TBCPoint>()
       {
-        new Point(-43.5, 172.6),
-        new Point(-43.5003, 172.6),
-        new Point(-43.5003, 172.603),
-        new Point(-43.5, 172.603)
+        new TBCPoint(-43.5, 172.6),
+        new TBCPoint(-43.5003, 172.6),
+        new TBCPoint(-43.5003, 172.603),
+        new TBCPoint(-43.5, 172.603)
       };
 
       _checkBoundaryString = "POLYGON((172.6 -43.5,172.6 -43.5003,172.603 -43.5003,172.603 -43.5,172.6 -43.5))";
@@ -79,14 +77,14 @@ namespace VSS.MasterData.ProjectTests
     [TestMethod]
     public void ValidateCreateProjectV2Request_BoundaryTooFewPoints()
     {
-      var invalidBoundaryLL = new List<Point>()
+      var invalidBoundaryLl = new List<TBCPoint>()
       {
-        new Point(-43.5, 172.6)
+        new TBCPoint(-43.5, 172.6)
       };
 
       var request = CreateProjectV2Request.CreateACreateProjectV2Request
       (ProjectType.Standard, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
-        "New Zealand Standard Time", invalidBoundaryLL, _businessCenterFile);
+        "New Zealand Standard Time", invalidBoundaryLl, _businessCenterFile);
       var createProjectEvent = MapV2Models.MapCreateProjectV2RequestToEvent(request, _customerUid);
 
       var projectRepo = new Mock<IProjectRepository>();
