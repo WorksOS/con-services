@@ -20,7 +20,8 @@ ENV LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/amd64/server
 # # TRex still cannot run in 
 COPY --from=build_container /trex/ /trex/
 #Get the ignite libs as these are ignored by dotnet publish
-COPY --from=build_container /root/.nuget/packages/apache.ignite/2.4.0/libs/ /trex/libs/
+#COPY --from=build_container /root/.nuget/packages/apache.ignite/2.4.0/libs/ /trex/libs/
+WORKDIR /trex
 
 
 
