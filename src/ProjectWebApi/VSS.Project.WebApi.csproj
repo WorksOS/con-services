@@ -50,6 +50,7 @@
     <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.1.*" />
     <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.0.*" />
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.25.*" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.1" />
   </ItemGroup>
 
   <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">

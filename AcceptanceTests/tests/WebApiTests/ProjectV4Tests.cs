@@ -438,14 +438,14 @@ namespace WebApiTests
       ts.PublishEventCollection(eventsArray);
       ts.IsPublishToWebApi = true;
       var projectEventArray1 = new[] {
-       "| EventType          | EventDate   | ProjectUID    | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary  | CustomerUID   | CustomerID         | IsArchived | CoordinateSystem      | ",
-      $"| CreateProjectEvent | 0d+09:00:00 | {projectUid1} | Boundary Test 14 | LandFill    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt1}   | {customerUid} | {legacyProjectId1} | false      | BootCampDimensions.dc |" };
+       "| EventType          | EventDate   | ProjectUID    | ProjectName       | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary  | CustomerUID   | CustomerID         | IsArchived | CoordinateSystem      | ",
+      $"| CreateProjectEvent | 0d+09:00:00 | {projectUid1} | Boundary Test 14  | LandFill    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt1}   | {customerUid} | {legacyProjectId1} | false      | BootCampDimensions.dc |" };
       var response1 = ts.PublishEventToWebApi(projectEventArray1);
       Assert.IsTrue(response1 == "success", "Response is unexpected. Should be a success. Response: " + response1);
 
       var projectEventArray2 = new[] {
-       "| EventType          | EventDate   | ProjectUID    | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary  | CustomerUID   | CustomerID         | IsArchived | CoordinateSystem      | ",
-      $"| CreateProjectEvent | 1d+09:00:00 | {projectUid2} | Boundary Test 14 | LandFill    | W. Europe Standard Time   | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt2}   | {customerUid} | {legacyProjectId1} | false      | BootCampDimensions.dc |" };
+       "| EventType          | EventDate   | ProjectUID    | ProjectName       | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary  | CustomerUID   | CustomerID         | IsArchived | CoordinateSystem      | ",
+      $"| CreateProjectEvent | 1d+09:00:00 | {projectUid2} | Boundary Test 14a | LandFill    | W. Europe Standard Time   | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt2}   | {customerUid} | {legacyProjectId1} | false      | BootCampDimensions.dc |" };
       var response2 = ts.PublishEventToWebApi(projectEventArray2);
       Assert.IsTrue(response2 == "Project boundary overlaps another project, for this customer and time span.", "Response is unexpected. Should be a Project boundary overlaps another project, for this customer and time span. Response: " + response2);
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray1, true);
