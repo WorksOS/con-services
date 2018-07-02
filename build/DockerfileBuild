@@ -1,6 +1,6 @@
 FROM microsoft/dotnet:2.1-sdk-alpine3.7
 
-RUN apk --no-cache add bash
+RUN apk --no-cache add bash nodejs nodejs-npm
 	
 
 #Copy files from scm into build container and build

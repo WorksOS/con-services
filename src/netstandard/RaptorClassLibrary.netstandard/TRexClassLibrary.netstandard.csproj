@@ -46,4 +46,13 @@
     <Folder Include="CoordinateSystems\GridFabric\Requests\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Servers\Client\igniteKubeConfig.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Servers\Compute\igniteKubeConfig.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
