@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
@@ -179,7 +180,7 @@ namespace VSS.MasterData.ProjectTests
     {
       var projectUid = Guid.NewGuid();
       var geofenceTypes = new List<GeofenceType>() {GeofenceType.CutZone};
-      var geofences = new List<Guid>() {Guid.NewGuid()};
+      var geofences = new List<Guid>() {Guid.NewGuid(), Guid.NewGuid() };
       var request =
         UpdateProjectGeofenceRequest.CreateUpdateProjectGeofenceRequest(projectUid, geofenceTypes, geofences);
 
@@ -228,5 +229,39 @@ namespace VSS.MasterData.ProjectTests
       Assert.AreNotEqual(-1,
         ex.GetContent.IndexOf(_projectErrorCodesProvider.FirstNameWithOffset(103), StringComparison.Ordinal));
     }
+
+    [TestMethod]
+    public void ValidateUpdateProjectGeofenceRequest_DuplicateGeofenceUids()
+    {
+      var projectUid = Guid.NewGuid();
+      var geofenceTypes = new List<GeofenceType>() { GeofenceType.Landfill };
+      var geofenceUid1 = Guid.NewGuid();
+      var geofenceUid2 = Guid.NewGuid();
+      var geofences = new List<Guid>() { geofenceUid1, geofenceUid2, geofenceUid1 };
+      var request =
+        UpdateProjectGeofenceRequest.CreateUpdateProjectGeofenceRequest(projectUid, geofenceTypes, geofences);
+
+      var ex = Assert.ThrowsException<ServiceException>(() => request.Validate());
+      Assert.AreNotEqual(-1,
+        ex.GetContent.IndexOf(_projectErrorCodesProvider.FirstNameWithOffset(110), StringComparison.Ordinal));
+    }
+
+
+    [TestMethod]
+    public void ValidateGeodList()
+    {
+
+      var boundaryLL = new List<TBCPoint>()
+      {
+        new TBCPoint(-43.5, 172.6),
+        new TBCPoint(-43.5003, 172.6),
+        new TBCPoint(-43.5003, 172.603),
+        new TBCPoint(-43.5, 172.603)
+      };
+      var serialized = JsonConvert.SerializeObject(boundaryLL);
+      Assert.AreEqual(@"[{""Latitude"":-43.5,""Longitude"":172.6},{""Latitude"":-43.5003,""Longitude"":172.6},{""Latitude"":-43.5003,""Longitude"":172.603},{""Latitude"":-43.5,""Longitude"":172.603}]", serialized, "TBCPoint not serialized correctly.");
+    }
+
+
   }
 }

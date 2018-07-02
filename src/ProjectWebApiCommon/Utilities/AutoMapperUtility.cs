@@ -119,8 +119,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ProjectUID, opt => opt.Ignore())
             .ForMember(dest => dest.Description, opt => opt.Ignore());
           cfg.CreateMap<TBCPoint, VSS.MasterData.Models.Models.Point>()
-            .ForMember(dest => dest.Latitude, opt => opt.MapFrom((src => src.y)))
-            .ForMember(dest => dest.Longitude, opt => opt.MapFrom((src => src.x)));
+            .ForMember(dest => dest.y, opt => opt.MapFrom((src => src.Latitude)))
+            .ForMember(dest => dest.x, opt => opt.MapFrom((src => src.Longitude)));
 
           // ProjectGeofenceAssociations
           cfg.CreateMap<GeofenceWithAssociation, GeofenceV4Descriptor>();

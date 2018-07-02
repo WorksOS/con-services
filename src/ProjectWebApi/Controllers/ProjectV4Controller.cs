@@ -340,6 +340,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       log.LogInformation("UpdateProjectGeofencesV4");
 
       updateProjectGeofenceRequest.Validate();
+      log.LogInformation($"UpdateProjectGeofencesV4 validation passed: {updateProjectGeofenceRequest}");
 
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory

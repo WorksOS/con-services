@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
@@ -49,6 +51,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         allGeofencesOfTypes =
           (await ProjectRequestHelper.GetCustomerGeofenceList(customerUid, updateProjectGeofenceRequest.GeofenceTypes,
             log, projectRepo)).ToList();
+        log.LogInformation($"UpdateProjectGeofenceExecutor() allGeofencesOfTypes: {JsonConvert.SerializeObject(allGeofencesOfTypes)}");
       }
       catch (Exception e)
       {
