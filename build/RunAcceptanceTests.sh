@@ -15,7 +15,7 @@ echo "Check the database and kafka to see if port is available"
 #sleep 20s
 
 echo "Run the AcceptanceTests solution"
-cd ../AcceptanceTests
+cd AcceptanceTests
 #dotnet publish --force VSS.TagFileAuth.Service.AcceptanceTests.sln
 dotnet test VSS.TagFileAuth.Service.AcceptanceTests.sln --logger \"xunit;LogFileName=acceptancetestresults.xml\"
 
