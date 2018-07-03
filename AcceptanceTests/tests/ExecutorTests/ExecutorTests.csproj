@@ -23,7 +23,7 @@
     <PackageReference Include="System.Linq" Version="4.3.0" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.0" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.2.0" />
-    <PackageReference Include="log4net.netcore" Version="3.0.*" />
+    <PackageReference Include="XunitXml.TestLogger" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>

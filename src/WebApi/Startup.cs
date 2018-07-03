@@ -1,6 +1,12 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Diagnostics;
 using System.Reflection;
+using OpenTracing;
+using OpenTracing.Contrib.NetCore.CoreFx;
+using OpenTracing.Util;
+using Jaeger;
+using Jaeger.Samplers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -37,12 +43,16 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
     /// </summary>
     public const string LOGGER_REPO_NAME = "WebApi";
 
+    private IServiceCollection serviceCollection;
+
+    private static readonly Uri _jaegerUri = new Uri("http://localhost:14268/api/traces");
+
     /// <summary>
     /// Gets the root configuration object.
     /// </summary>
     public IConfigurationRoot Configuration { get; }
 
-    private IServiceCollection serviceCollection;
+
 
     /// <summary>
     /// Default constructor.
@@ -95,8 +105,59 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
           config.Filters.Add(new ValidationFilterAttribute());
         });
 
+      //Add Jaegar tracing
+      services.AddSingleton<ITracer>(serviceProvider =>
+      {
+        ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+
+        ITracer tracer;
+        if (!String.IsNullOrEmpty(Environment.GetEnvironmentVariable("JAEGER_AGENT_HOST")) &&
+            !String.IsNullOrEmpty(Environment.GetEnvironmentVariable("JAEGER_AGENT_PORT")) &&
+            !String.IsNullOrEmpty(Environment.GetEnvironmentVariable("JAEGER_SAMPLER_TYPE")) &&
+            !String.IsNullOrEmpty(Environment.GetEnvironmentVariable("JAEGER_SERVICE_NAME")))
+        {
+
+          Configuration jagerConfig = Jaeger.Configuration.FromEnv(loggerFactory);
+          //ISender sender = new UdpSender(jagerConfig.GetTracerBuilder )
+
+          //IReporter reporter = new RemoteReporter.Builder()
+          //  .WithSender();
+
+          //By default this sends the tracing results to localhost:6831
+          //to test locallay run this docker run -d -p 6831:5775/udp -p 16686:16686 jaegertracing/all-in-one:latest
+          tracer = jagerConfig.GetTracerBuilder()
+            .Build();
+
+        }
+        else
+        {
+          //Use default tracer
+
+          ISampler sampler = new ConstSampler(sample: true);
+
+          //By default this sends the tracing results to localhost:6831
+          //to test locallay run this docker run -d -p 6831:5775/udp -p 16686:16686 jaegertracing/all-in-one:latest
+          tracer = new Tracer.Builder(SERVICE_TITLE)
+            .WithLoggerFactory(loggerFactory)
+            .WithSampler(sampler)
+            .Build();
+        }
+
+        GlobalTracer.Register(tracer);
+        return tracer;
+      });
+
+      // Prevent endless loops when OpenTracing is tracking HTTP requests to Jaeger.
+      services.Configure<HttpHandlerDiagnosticOptions>(options =>
+      {
+        options.IgnorePatterns.Add(request => _jaegerUri.IsBaseOf(request.RequestUri));
+      });
+      services.AddOpenTracing();
+
+
       serviceCollection = services;
     }
+
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
     /// <summary>
