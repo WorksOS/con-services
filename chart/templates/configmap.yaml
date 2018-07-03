@@ -1,0 +1,12 @@
+{{- $filename := printf "%s.txt" .Values.environment -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config-{{ .Values.environment }}-{{ .Values.image.tag }}
+  labels:
+    app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+    release: "{{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}"
+data:
+  {{ range .Files.Lines $filename }}
+  {{ . }}{{ end }}
+
