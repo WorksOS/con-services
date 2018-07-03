@@ -15,7 +15,7 @@ bld/
 [Oo]bj/
 [Pp]ackages/
 *.boltdata/
-[Dd]eploy/
+AcceptanceTests/[Dd]eploy/
 [Tt]ests/[Ww]ork/
 
 
