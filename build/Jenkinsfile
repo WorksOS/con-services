@@ -107,7 +107,7 @@ node ('jenkinsslave-pod') {
 
 					step([$class: 'XUnitBuilder',
 							thresholds: [[$class: 'FailedThreshold', unstableThreshold: '1']],
-							tools: [[$class: 'XUnitDotNetTestType', pattern: 'AcceptanceTests/tests/**/TestResults/*.xml']]])
+							tools: [[$class: 'XUnitDotNetTestType', pattern: './AcceptanceTests/tests/**/TestResults/*.xml']]])
 
 
 					//Unstash test results from earlier for publishing to vsts as we can only do this once
