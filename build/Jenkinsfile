@@ -103,7 +103,7 @@ node ('jenkinsslave-pod') {
 		{
 			node (label) {
 				dir ("/app") {
-					sh "/bin/sh runtests.sh"
+					sh "/bin/sh ./build/RunAcceptanceTests.sh"
 
 					step([$class: 'XUnitBuilder',
 							thresholds: [[$class: 'FailedThreshold', unstableThreshold: '1']],
