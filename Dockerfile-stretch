@@ -1,8 +1,0 @@
-FROM microsoft/dotnet:2.1.300-rc1-sdk-stretch
-RUN \
-  apt-get update && \
-  apt-get install openjdk-8-jre-headless -y
-
-#ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
-COPY . /build/
-RUN dotnet build /build/TRex.Framework.netstandard.sln --output /artifacts
