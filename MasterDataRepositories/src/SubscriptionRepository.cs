@@ -225,8 +225,8 @@ namespace VSS.MasterData.Repositories
       (@"SELECT 
                 SubscriptionUID, fk_CustomerUID AS CustomerUID, StartDate, EndDate, fk_ServiceTypeID AS ServiceTypeID, LastActionedUTC 
               FROM Subscription
-              WHERE SubscriptionUID = @subscriptionUID",
-        new {subscriptionUID = subscription.SubscriptionUID}
+              WHERE SubscriptionUID = @SubscriptionUID",
+        new { SubscriptionUID = subscription.SubscriptionUID}
       )).FirstOrDefault();
 
       if (eventType == "CreateProjectSubscriptionEvent" || eventType == "CreateCustomerSubscriptionEvent" ||
@@ -316,8 +316,8 @@ namespace VSS.MasterData.Repositories
       (@"SELECT 
                 fk_SubscriptionUID AS SubscriptionUID, fk_ProjectUID AS ProjectUID, EffectiveDate, LastActionedUTC
               FROM ProjectSubscription
-              WHERE fk_ProjectUID = @projectUID AND fk_SubscriptionUID = @subscriptionUID",
-        new {projectUID = projectSubscription.ProjectUID, subscriptionUID = projectSubscription.SubscriptionUID}
+              WHERE fk_ProjectUID = @ProjectUID AND fk_SubscriptionUID = @SubscriptionUID",
+        new { ProjectUID = projectSubscription.ProjectUID, SubscriptionUID = projectSubscription.SubscriptionUID}
       )).FirstOrDefault();
 
       if (eventType == "AssociateProjectSubscriptionEvent")
@@ -393,8 +393,9 @@ namespace VSS.MasterData.Repositories
       (@"SELECT 
                 fk_SubscriptionUID AS SubscriptionUID, fk_AssetUID AS AssetUID, EffectiveDate, LastActionedUTC
               FROM AssetSubscription
-              WHERE fk_AssetUID = @assetUID AND fk_SubscriptionUID = @subscriptionUID",
-        new {assetUID = assetSubscription.AssetUID, subscriptionUID = assetSubscription.SubscriptionUID}
+              WHERE fk_AssetUID = @AssetUID 
+                AND fk_SubscriptionUID = @SubscriptionUID",
+        new { AssetUID = assetSubscription.AssetUID, SubscriptionUID = assetSubscription.SubscriptionUID}
       )).FirstOrDefault();
 
       upsertedCount = await AssociateAssetSubscription(assetSubscription, existing);
@@ -470,8 +471,8 @@ namespace VSS.MasterData.Repositories
       (@"SELECT 
                 SubscriptionUID, fk_CustomerUID AS CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, LastActionedUTC
               FROM Subscription
-              WHERE SubscriptionUID = @subscriptionUid"
-        , new {subscriptionUid}
+              WHERE SubscriptionUID = @SubscriptionUID"
+        , new { SubscriptionUID = subscriptionUid }
       )).FirstOrDefault();
 
       return subscription;
@@ -483,9 +484,9 @@ namespace VSS.MasterData.Repositories
       (@"SELECT 
                 SubscriptionUID, fk_CustomerUID AS CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, LastActionedUTC
               FROM Subscription
-              WHERE fk_CustomerUID = @customerUid
+              WHERE fk_CustomerUID = @CustomerUID
                 AND @validAtDate BETWEEN StartDate AND EndDate"
-        , new {customerUid, validAtDate}
+        , new { CustomerUID = customerUid, validAtDate}
       );
 
       return subscription;
@@ -500,11 +501,11 @@ namespace VSS.MasterData.Repositories
               s.SubscriptionUID, s.fk_CustomerUID AS CustomerUID, s.fk_ServiceTypeID AS ServiceTypeID, s.StartDate, s.EndDate, s.LastActionedUTC
             FROM Subscription s
               LEFT OUTER JOIN ProjectSubscription ps ON ps.fk_SubscriptionUID = s.SubscriptionUID
-            WHERE fk_CustomerUID = @customerUid
+            WHERE fk_CustomerUID = @CustomerUID
               AND @validAtDate BETWEEN StartDate AND EndDate
               AND fk_ServiceTypeID IN (19, 20)
               AND ps.fk_SubscriptionUID IS NULL"
-        , new {customerUid, validAtDate}
+        , new { CustomerUID = customerUid, validAtDate}
       );
 
       return subscription;
@@ -531,8 +532,8 @@ namespace VSS.MasterData.Repositories
       (@"SELECT 
                 SubscriptionUID, fk_CustomerUID AS CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, LastActionedUTC
               FROM Subscription
-              WHERE SubscriptionUID = @subscriptionUid"
-        , new {subscriptionUid}
+              WHERE SubscriptionUID = @SubscriptionUID"
+        , new { SubscriptionUID = subscriptionUid }
       );
 
       return subscriptions;
@@ -544,8 +545,8 @@ namespace VSS.MasterData.Repositories
       (@"SELECT 
               fk_SubscriptionUID AS SubscriptionUID, fk_ProjectUID AS ProjectUID, EffectiveDate, LastActionedUTC
             FROM ProjectSubscription
-            WHERE fk_SubscriptionUID = @subscriptionUID"
-        , new {subscriptionUid}
+            WHERE fk_SubscriptionUID = @SubscriptionUID"
+        , new { SubscriptionUID = subscriptionUid }
       );
 
       return projectSubscriptions;

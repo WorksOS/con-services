@@ -100,7 +100,7 @@ namespace VSS.MasterData.Repositories
                               AssetUID, Name, LegacyAssetID, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted, 
                               LastActionedUTC AS LastActionedUtc
                             FROM Asset
-                            WHERE AssetUID = @assetUid", new {assetUid = asset.AssetUID})).FirstOrDefault();
+                            WHERE AssetUID = @AssetUID", new { AssetUID = asset.AssetUID})).FirstOrDefault();
 
             if (existing == null || existing.IsDeleted == false)
             {
@@ -263,8 +263,8 @@ namespace VSS.MasterData.Repositories
                         AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset
-                      WHERE AssetUID = @assetUid 
-                        AND IsDeleted = 0", new {assetUid})).FirstOrDefault();
+                      WHERE AssetUID = @AssetUID 
+                        AND IsDeleted = 0", new { AssetUID = assetUid })).FirstOrDefault();
         }
 
         public async Task<Asset> GetAsset(long legacyAssetId)
@@ -273,9 +273,9 @@ namespace VSS.MasterData.Repositories
                         AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset
-                      WHERE LegacyAssetId = @legacyAssetId 
+                      WHERE LegacyAssetId = @LegacyAssetID 
                         AND IsDeleted = 0"
-                , new {legacyAssetId}
+                , new { LegacyAssetID = legacyAssetId }
             )).FirstOrDefault();
         }
 

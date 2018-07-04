@@ -114,8 +114,8 @@ namespace VSS.MasterData.Repositories
             DeviceUID, DeviceSerialNumber, DeviceType, DeviceState, DeregisteredUTC, ModuleType, MainboardSoftwareVersion, RadioFirmwarePartNumber, GatewayFirmwarePartNumber, DataLinkType, OwningCustomerUID,
             LastActionedUTC AS LastActionedUtc
           FROM Device
-          WHERE DeviceUID = @deviceUid"
-        , new {deviceUid = device.DeviceUID}
+          WHERE DeviceUID = @DeviceUID"
+        , new { DeviceUID = device.DeviceUID}
       )).FirstOrDefault();
 
       if (eventType == "CreateDeviceEvent")
@@ -273,8 +273,8 @@ namespace VSS.MasterData.Repositories
       var existing = (await QueryWithAsyncPolicy<AssetDevice>
       (@"SELECT fk_DeviceUID AS DeviceUID, fk_AssetUID AS AssetUID, LastActionedUTC
           FROM AssetDevice
-          WHERE fk_DeviceUID = @deviceUid"
-        , new {deviceUid = assetDevice.DeviceUID}
+          WHERE fk_DeviceUID = @DeviceUID"
+        , new { DeviceUID = assetDevice.DeviceUID}
       )).FirstOrDefault();
 
       if (eventType == "AssociateDeviceAssetEvent")
@@ -353,8 +353,8 @@ namespace VSS.MasterData.Repositories
               DeviceUID, DeviceSerialNumber, DeviceType, DeviceState, DeregisteredUTC, ModuleType, MainboardSoftwareVersion, RadioFirmwarePartNumber, GatewayFirmwarePartNumber, DataLinkType, OwningCustomerUID,
               LastActionedUTC AS LastActionedUtc
             FROM Device
-            WHERE DeviceUID = @deviceUid"
-          , new {deviceUid}
+            WHERE DeviceUID = @DeviceUID"
+          , new { DeviceUID = deviceUid }
         )).FirstOrDefault();
       }
     }
@@ -371,9 +371,9 @@ namespace VSS.MasterData.Repositories
                 INNER JOIN AssetDevice ad ON ad.fk_DeviceUID = d.DeviceUID
                 INNER JOIN Asset a ON a.AssetUID = ad.fk_AssetUID
               WHERE a.IsDeleted = 0
-                AND d.DeviceSerialNumber LIKE @radioSerial
-                AND d.DeviceType LIKE @deviceType"
-          , new {radioSerial, deviceType}
+                AND d.DeviceSerialNumber LIKE @RadioSerial
+                AND d.DeviceType LIKE @DeviceType"
+          , new { RadioSerial = radioSerial, DeviceType = deviceType }
         )).FirstOrDefault();
       }
     }
