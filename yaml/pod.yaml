@@ -71,6 +71,9 @@ spec:
     envFrom:
     - configMapRef:
         name: projectservice-testing
+    env:
+    - name: INF
+      value: "1"
      
   - name: projectonlyschema
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
@@ -81,6 +84,8 @@ spec:
     env:
     - name: MYSQL_DATABASE_NAME
       value: "VSS-MasterData-Project-Only"
+    - name: INF
+      value: "1"
 
   - name: zookeeper-container
     image: wurstmeister/zookeeper:3.4.6
