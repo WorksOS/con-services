@@ -14,6 +14,13 @@ spec:
       labels:
         app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}-consumer
     spec:
+      initContainers:
+      - name: init-db
+        image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
+        tty: true
+        envFrom:
+        - configMapRef:
+            name: {{ .Release.Name }}-config-{{ .Values.environment }}-{{ .Values.image.tag }}
       containers:
       - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:{{ .Values.consumerImage.tag }}
         name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}-consumer        
