@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using System;
+using System.Globalization;
 using System.Net.Http;
 using System.Threading;
 using TestUtility;
@@ -48,6 +49,16 @@ namespace IntegrationTests
     {
       var msg = new Msg();
       msg.Title("Asset Int Test 2", "Inject Asset,Device,Project and customers events with manual 3D subscription. Call WebApi GetId and return machine level and asset id");
+
+      CultureInfo cultureInfo = new CultureInfo("en-US");
+
+      var notFormated = new DateTime(9999, 12, 31);
+      var formated = new DateTime(9999, 12, 31).ToString("yyyy-MM-dd");
+      var formatedWithCulture = new DateTime(9999, 12, 31).ToString("yyyy-MM-dd").ToString(cultureInfo);
+      Console.WriteLine($"Manual3DpmSubscription_AssetProjectAndDevice 0 jeannieTest: notFormated: {notFormated}");
+      Console.WriteLine($"Manual3DpmSubscription_AssetProjectAndDevice 0 jeannieTest: formated: {formated}");
+      Console.WriteLine($"Manual3DpmSubscription_AssetProjectAndDevice 0 jeannieTest: formatedWithCulture: {formatedWithCulture}");
+
       var ts = new TestSupport {IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var legacyProjectId = ts.SetLegacyProjectId();
@@ -168,6 +179,7 @@ namespace IntegrationTests
     {
       var msg = new Msg();
       msg.Title("Asset Int Test 4", "Inject landfill project and subscription. Call WebApi GetId and return machine level and asset id");
+
       var ts = new TestSupport {IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var legacyProjectId = ts.SetLegacyProjectId();
