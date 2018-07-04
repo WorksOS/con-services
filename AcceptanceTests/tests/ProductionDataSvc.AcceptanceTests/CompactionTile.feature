@@ -50,7 +50,7 @@ And projectUid "<ProjectUID>"
 And filterUid "<FilterUID>"
 And cutfillDesignUid "<cutfillDesignUid>"
 And displayMode "<Mode>" and bbox "<BBox>" and width "<Width>" and height "<Height>"
-And a summary volume file with volumeCalcType "<VolCalc>" and a topUid "<TopUid>" and a baseUid "<BaseUid>"
+And a summary volume file with volumeCalcType "<VolCalc>" and a topUid "<TopUid>" and a baseUid "<BaseUid>" 
 When I request result
 Then the result tile should match the "<ResultName>" from the repository within "<Difference>" percent
 Examples: 
