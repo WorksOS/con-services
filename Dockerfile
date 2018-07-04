@@ -20,17 +20,17 @@ CORECLR_PROFILER={36032161-FFC0-4B61-B559-F6C5D41BAE5A} \
 CORECLR_NEWRELIC_HOME=/usr/local/newrelic-netcore20-agent \
 CORECLR_PROFILER_PATH=/usr/local/newrelic-netcore20-agent/libNewRelicProfiler.so \
 
-COPY ./newrelic /newrelic/
-
-RUN dpkg -i /newrelic/newrelic-netcore20*.deb
-
-RUN ls -la /usr/local/newrelic-netcore20-agent
-
 WORKDIR /app
 
 ENV ASPNETCORE_URLS http://*:80
 EXPOSE 80
 
 COPY --from=builder /build/artifacts/ProjectWebApi .
+
+COPY ./newrelic /newrelic/
+
+RUN dpkg -i /newrelic/newrelic-netcore20*.deb
+
+RUN ls -la /usr/local/newrelic-netcore20-agent
 
 ENTRYPOINT ["dotnet", "VSS.MasterData.Project.WebAPI.dll"]
