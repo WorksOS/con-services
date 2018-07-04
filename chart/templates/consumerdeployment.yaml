@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}-consumer
+  name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
   labels:
-    app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}-consumer
+    app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}-consumer
+      app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}-consumer
+        app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
     spec:
       containers:
-      - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileharvester:{{ .Values.consumerImage.tag }}
-        name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}-consumer        
+      - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileharvester:{{ .Values.image.tag }}
+        name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}        
         resources:
 {{ toYaml .Values.resources | indent 12 }}
         envFrom:
