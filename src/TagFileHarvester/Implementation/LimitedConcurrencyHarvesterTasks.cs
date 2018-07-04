@@ -32,9 +32,15 @@ namespace VSS.Productivity3D.TagFileHarvester.Implementation
       return factory2.StartNew<T>(action, token);
     }
 
-    public Task StartNewLimitedConcurrency2(Action action, CancellationToken token)
+    public Task StartNewLimitedConcurrency2(Action action, CancellationToken token, bool delay = false)
     {
-      return factory2.StartNew(action, token);
+     /* if (!delay)*/
+        return factory2.StartNew(action, token);
+      /*return Task.Factory.StartNew(() =>
+      {
+        Task.Delay(OrgsHandler.OrgProcessingDelay, token).ContinueWith((t) =>
+          action.Invoke(), token).Wait(token);
+      }, token);*/
     }
 
     public Tuple<int, int> Status()

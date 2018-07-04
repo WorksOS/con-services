@@ -36,6 +36,11 @@ namespace VSS.Productivity3D.TagFileHarvesterTests.Mock
       }, token);
     }
 
+    public Task StartNewLimitedConcurrency2(Action action, CancellationToken token, bool delay)
+    {
+      throw new NotImplementedException();
+    }
+
     public Task StartNewLimitedConcurrency2(Action action, CancellationToken token)
     {
       return Task.Run(() =>

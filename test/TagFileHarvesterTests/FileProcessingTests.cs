@@ -30,7 +30,6 @@ namespace VSS.Productivity3D.TagFileHarvesterTests
       unityContainer.RegisterInstance<IFileRepository>(respositoryInstance);
       unityContainer.RegisterType<IHarvesterTasks, MockTaskScheduler>();
       unityContainer.RegisterInstance<ILog>(log);
-      unityContainer.RegisterInstance<IBookmarkManager>(XMLBookMarkManager.Instance);
       OrgsHandler.Clean();
       respositoryInstance.Clean();
       OrgsHandler.Initialize(unityContainer);
@@ -39,9 +38,6 @@ namespace VSS.Productivity3D.TagFileHarvesterTests
     [TestCleanup]
     public void TestCleanup()
     {
-      XMLBookMarkManager.Instance.DeleteFile();
-      XMLBookMarkManager.Instance.DeleteMergeFile();
-      XMLBookMarkManager.Instance.DeleteInstance();
       unityContainer.RemoveAllExtensions();
       
      }

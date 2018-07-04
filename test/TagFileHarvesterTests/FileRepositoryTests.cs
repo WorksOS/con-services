@@ -32,7 +32,7 @@ namespace VSS.Productivity3D.TagFileHarvesterTests
       FileRepository.Log = log;
       FileRepository repository = new FileRepository();
       bool fromCache;
-      List<string> folders = repository.ListFolders(new Organization { filespaceId = filespaceId }, lastUTC, out fromCache);
+      List<string> folders = repository.ListFolders(new Organization { filespaceId = filespaceId }, out fromCache);
     }
 
     [TestMethod]
@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.TagFileHarvesterTests
     {
       FileRepository.Log = log;
       FileRepository repository = new FileRepository();
-      List<FileRepository.TagFile> files = repository.ListFiles(new Organization { filespaceId = filespaceId }, "/WG", lastUTC);
+      List<FileRepository.TagFile> files = repository.ListFiles(new Organization { filespaceId = filespaceId }, "/WG");
       //Folders of vss-nz1 to use for testing
       // "/D5 PoundRd"
       // "/WG"
@@ -73,7 +73,5 @@ namespace VSS.Productivity3D.TagFileHarvesterTests
     }
 
     private string filespaceId = "u036574d5-f108-454a-80ef-cece64eae27b";//Trimble Synchronizer Data folder for vss-nz1
-    private DateTime lastUTC = new DateTime(2010, 1, 1);
-
   }
 }

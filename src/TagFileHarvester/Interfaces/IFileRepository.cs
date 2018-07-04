@@ -14,8 +14,8 @@ namespace VSS.Productivity3D.TagFileHarvester.Interfaces
   {
     //TODO probably we need ticket to be hidden in repository
     List<Organization> ListOrganizations();
-    List<string> ListFolders(Organization org, DateTime lastModifiedUTC, out bool fromCache);
-    List<FileRepository.TagFile> ListFiles(Organization org, string path, DateTime lastModifiedUTC);
+    List<string> ListFolders(Organization org, out bool fromCache);
+    List<FileRepository.TagFile> ListFiles(Organization org, string path);
     Stream GetFile(Organization org, string fullName);
     bool MoveFile(Organization org, string srcFullName, string dstFullName);
     bool IsAnythingInCahe(Organization org);

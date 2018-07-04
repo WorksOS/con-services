@@ -36,7 +36,7 @@ namespace VSS.Productivity3D.TagFileHarvesterTests.MockRepositories
       return orgs;
     }
 
-    public List<string> ListFolders(Organization org, DateTime lastModifiedUTC, out bool fromCache)
+    public List<string> ListFolders(Organization org, out bool fromCache)
     {
       var result = Enumerable.Repeat(RandomString(), 15).Select(s => RandomString()).ToList();
       result.Add(String.Empty);
@@ -44,7 +44,7 @@ namespace VSS.Productivity3D.TagFileHarvesterTests.MockRepositories
       return result;
     }
 
-    public List<FileRepository.TagFile> ListFiles(Organization org, string path, DateTime lastModifiedUTC)
+    public List<FileRepository.TagFile> ListFiles(Organization org, string path)
     {
       //TODO fix test here
       return null;
