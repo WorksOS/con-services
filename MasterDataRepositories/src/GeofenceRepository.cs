@@ -112,8 +112,8 @@ namespace VSS.MasterData.Repositories
               IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID, AreaSqMeters,
               LastActionedUTC   
             FROM Geofence
-            WHERE GeofenceUID = @geofenceUid",
-        new { geofenceUid = geofence.GeofenceUID }
+            WHERE GeofenceUID = @GeofenceUID",
+        new { GeofenceUID = geofence.GeofenceUID }
       )).FirstOrDefault();
 
       if (eventType == "CreateGeofenceEvent")
@@ -210,7 +210,7 @@ namespace VSS.MasterData.Repositories
           @"INSERT Geofence
                 (GeofenceUID, Name, Description, GeometryWKT, FillColor, IsTransparent, IsDeleted, fk_CustomerUID, UserUID, LastActionedUTC, fk_GeofenceTypeID, AreaSqMeters)
             VALUES
-                (@GeofenceUID, @Name, @Description, @GeometryWKT, @FillColor, IsTransparent, @IsDeleted, @CustomerUID, @UserUID, @LastActionedUTC, @GeofenceType, @AreaSqMeters)";
+                (@GeofenceUID, @Name, @Description, @GeometryWKT, @FillColor, @IsTransparent, @IsDeleted, @CustomerUID, @UserUID, @LastActionedUTC, @GeofenceType, @AreaSqMeters)";
 
         upsertedCount = await ExecuteWithAsyncPolicy(insert, geofence);
         log.LogDebug($"GeofenceRepository/CreateGeofence upserted {upsertedCount} rows for: geofenceUid:{geofence.GeofenceUID}");
@@ -253,7 +253,7 @@ namespace VSS.MasterData.Repositories
           @"INSERT Geofence
                 (GeofenceUID, Name, Description, GeometryWKT, FillColor, IsTransparent, IsDeleted, fk_CustomerUID, UserUID, LastActionedUTC, fk_GeofenceTypeID, AreaSqMeters)
             VALUES
-                (@GeofenceUID, @Name, @Description, @GeometryWKT, @FillColor, IsTransparent, @IsDeleted, @CustomerUID, @UserUID, @LastActionedUTC, @GeofenceType, @AreaSqMeters)";
+                (@GeofenceUID, @Name, @Description, @GeometryWKT, @FillColor, @IsTransparent, @IsDeleted, @CustomerUID, @UserUID, @LastActionedUTC, @GeofenceType, @AreaSqMeters)";
         upsertedCount = await ExecuteWithAsyncPolicy(insert, geofence);
         log.LogDebug($"DeleteGeofence (insert): upserted {upsertedCount} rows for: geofenceUid:{geofence.GeofenceUID}");
         return upsertedCount;
@@ -278,8 +278,8 @@ namespace VSS.MasterData.Repositories
                 IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID, AreaSqMeters,
                 LastActionedUTC
               FROM Geofence 
-              WHERE fk_CustomerUID = @customerUid AND IsDeleted = 0",
-        new { customerUid }
+              WHERE fk_CustomerUID = @CustomerUID AND IsDeleted = 0",
+        new { CustomerUID = customerUid }
       );
     }
 
@@ -296,7 +296,8 @@ namespace VSS.MasterData.Repositories
                 IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID, AreaSqMeters,
                 LastActionedUTC
               FROM Geofence 
-              WHERE GeofenceUID IN @geofenceUids AND IsDeleted = 0",
+              WHERE GeofenceUID IN @geofenceUids 
+                AND IsDeleted = 0",
         new { geofenceUids }
       );
     }
@@ -309,8 +310,8 @@ namespace VSS.MasterData.Repositories
                 IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID,
                 LastActionedUTC
               FROM Geofence
-              WHERE GeofenceUID = @geofenceUid AND IsDeleted = 0"
-        , new { geofenceUid }
+              WHERE GeofenceUID = @GeofenceUID AND IsDeleted = 0"
+        , new { GeofenceUID = geofenceUid }
       )).FirstOrDefault();
     }
 
@@ -322,8 +323,8 @@ namespace VSS.MasterData.Repositories
                 IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID, AreaSqMeters,
                 LastActionedUTC
               FROM Geofence
-              WHERE GeofenceUID = @geofenceUid"
-        , new { geofenceUid }
+              WHERE GeofenceUID = @GeofenceUID"
+        , new { GeofenceUID = geofenceUid }
       )).FirstOrDefault();
     }
 

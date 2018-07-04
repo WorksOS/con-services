@@ -147,6 +147,7 @@ collector:
   podLabels: {}
 
 query:
+  ingressDomain: k8s.vspengg.com
   enabled: true
   annotations: {}
   image: jaegertracing/jaeger-query
