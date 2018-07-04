@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
         .UseContentRoot(Directory.GetCurrentDirectory())
         .ConfigureLogging(builder =>
         {
-          Log4NetProvider.RepoName = Startup.LOGGER_REPO_NAME;
+          Log4NetProvider.RepoName = Startup.LoggerRepoName;
           builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
           builder.SetMinimumLevel(LogLevel.Trace);
         })

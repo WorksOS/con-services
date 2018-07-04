@@ -1,5 +1,4 @@
-﻿#if NET_4_7
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -114,4 +113,3 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Filters
     }
   }
 }
-#endif
