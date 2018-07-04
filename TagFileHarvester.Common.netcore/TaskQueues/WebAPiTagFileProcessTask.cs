@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading;
@@ -72,6 +73,20 @@ namespace TagFileHarvester.TaskQueues
 
         if (fileRepository == null)
           return null;
+
+        if (OrgsHandler.newrelic == "true")
+        {
+          var eventAttributes = new Dictionary<string, object>
+          {
+            { "Org", org.shortName },
+            { "Filename", tagFilename },
+            { "Code", code.ToString() },
+            { "ProcessingCode", result.Code.ToString() },
+            { "ProcessingMessage", result.Message }
+          };
+
+          NewRelic.Api.Agent.NewRelic.RecordCustomEvent("TagFileHarvester_Process", eventAttributes);
+        }
 
         switch (code)
         {

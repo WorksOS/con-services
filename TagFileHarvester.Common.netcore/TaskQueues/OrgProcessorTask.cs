@@ -47,6 +47,17 @@ namespace TagFileHarvester.TaskQueues
 
       if (cancellationToken.IsCancellationRequested) return Result;
 
+      if (OrgsHandler.newrelic == "true")
+      {
+        var eventAttributes = new Dictionary<string, object>
+        {
+          { "Org", org.shortName }
+        };
+
+        NewRelic.Api.Agent.NewRelic.RecordCustomEvent("TagFileHarvester_Process", eventAttributes);
+      }
+
+
       //Resolve all dependencies here
       var fileRepository = Container.Resolve<IFileRepository>();
       var harvesterTasks = Container.Resolve<IHarvesterTasks>();

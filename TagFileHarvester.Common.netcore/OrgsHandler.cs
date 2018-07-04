@@ -27,6 +27,7 @@ namespace TagFileHarvester
     public static TimeSpan OrgProcessingDelay;
     public static byte TagFilesFolderLifeSpanInDays;
     public static string ShortOrgName;
+    public static string newrelic = "";
 
     private static ILog log;
 

@@ -53,6 +53,7 @@ namespace TagFileHarvester.netcore
         OrgsHandler.FilenameDumpEnabled = (bool)config.GetValueBool("FilenameDumpEnabled");
         OrgsHandler.ShortOrgName = config.GetValueString("ShortOrgName");
         OrgsHandler.TagFileEndpoint = config.GetValueString("TagFileEndpoint");
+        OrgsHandler.newrelic = config.GetValueString("newrelic");
 
 
         ServicePointManager.DefaultConnectionLimit = 8;
