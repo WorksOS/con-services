@@ -53,6 +53,8 @@ node ('jenkinsslave-pod') {
 		// specific escaping examples. One day we might be able to test solutions (and have the results go to a specific directory) rather than specific projects, negating the need for such a complex command.
 		def testCommand = $/docker run -v ${env.WORKSPACE}/TestResults:/TestResults ${build_container.id} bash -c 'cd /build/test && ls UnitTests/**/*Tests.csproj | xargs -I@ -t dotnet test @ /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutputDirectory=/TestResults/TestCoverage/ --test-adapter-path:. --logger:"xunit;LogFilePath=/TestResults/@.xml"'/$
 		
+		// **/ //Here to help syntax hilighting in VSCode
+
 		//Run the test command generated above
 		sh(script: testCommand)
 
@@ -117,8 +119,9 @@ node ('jenkinsslave-pod') {
 						sh "ls -la"
 					}
 
+					//Dump log from webapi to buildlog
+					containerLog 'service-container'
 					//Archive test logs
-					containerLog "${container}"
 					archiveArtifacts artifacts: 'testresults/*.*', fingerprint: true
                     				
 					//http://javadoc.jenkins-ci.org/tfs/index.html?hudson/plugins/tfs/model/TeamResultType.html
