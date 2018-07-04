@@ -479,7 +479,7 @@ namespace VSS.MasterData.Repositories
               $"ProjectRepository/DeleteProject: deleting a project permanently: {JsonConvert.SerializeObject(project)}");
             const string delete =
               @"DELETE FROM Project
-                    WHERE ProjectUID = @projectUID";
+                    WHERE ProjectUID = @ProjectUID";
             upsertedCount = await ExecuteWithAsyncPolicy(delete, project);
             log.LogDebug(
               $"ProjectRepository/DeleteProject: deleted {upsertedCount} rows for: projectUid:{project.ProjectUID}");
@@ -666,8 +666,8 @@ namespace VSS.MasterData.Repositories
         {
           const string delete =
             @"DELETE FROM CustomerProject
-                WHERE fk_CustomerUID = @customerUID 
-                  AND fk_ProjectUID = @projectUID";
+                WHERE fk_CustomerUID = @CustomerUID 
+                  AND fk_ProjectUID = @ProjectUID";
           upsertedCount = await ExecuteWithAsyncPolicy(delete, customerProject);
           log.LogDebug(
             $"ProjectRepository/DissociateProjectCustomer: upserted {upsertedCount} rows for: customerUid:{customerProject.CustomerUID}");
@@ -719,13 +719,11 @@ namespace VSS.MasterData.Repositories
               VALUES
                 (@GeofenceUID, @ProjectUID, @LastActionedUTC)";
 
-        {
-          upsertedCount = await ExecuteWithAsyncPolicy(insert, projectGeofence);
-          log.LogDebug(
-            $"ProjectRepository/AssociateProjectGeofence: inserted {upsertedCount} rows for: projectUid:{projectGeofence.ProjectUID} geofenceUid:{projectGeofence.GeofenceUID}");
+        upsertedCount = await ExecuteWithAsyncPolicy(insert, projectGeofence);
+        log.LogDebug(
+          $"ProjectRepository/AssociateProjectGeofence: inserted {upsertedCount} rows for: projectUid:{projectGeofence.ProjectUID} geofenceUid:{projectGeofence.GeofenceUID}");
 
-          return upsertedCount;
-        }
+        return upsertedCount;
       }
 
       log.LogDebug(
@@ -746,8 +744,8 @@ namespace VSS.MasterData.Repositories
         {
           const string delete =
             @"DELETE FROM ProjectGeofence
-                WHERE fk_GeofenceUID = @geofenceUID 
-                  AND fk_ProjectUID = @projectUID";
+                WHERE fk_GeofenceUID = @GeofenceUID 
+                  AND fk_ProjectUID = @ProjectUID";
           upsertedCount = await ExecuteWithAsyncPolicy(delete, projectGeofence);
           log.LogDebug(
             $"ProjectRepository/DissociateProjectGeofence: upserted {upsertedCount} rows for: geofenceUid:{projectGeofence.GeofenceUID}");
@@ -814,7 +812,7 @@ namespace VSS.MasterData.Repositories
           "INSERT ImportedFile " +
           "    (fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID, MinZoomLevel, MaxZoomLevel, IsDeleted, LastActionedUTC) " +
           "  VALUES " +
-          "    (@ProjectUid, @ImportedFileUid, @ImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUTC, @FileUpdatedUTC, @ImportedBy, @SurveyedUtc, @DxfUnitsType, @MinZoomLevel, @MaxZoomLevel, 0, @LastActionedUtc)");
+          "    (@ProjectUid, @ImportedFileUid, @ImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUtc, @FileUpdatedUtc, @ImportedBy, @SurveyedUtc, @DxfUnitsType, @MinZoomLevel, @MaxZoomLevel, 0, @LastActionedUtc)");
 
         upsertedCount = await ExecuteWithAsyncPolicy(insert, importedFile);
         log.LogDebug(
@@ -834,30 +832,28 @@ namespace VSS.MasterData.Repositories
 
         const string update =
           @"UPDATE ImportedFile
-              SET fk_ProjectUID = @projectUID, 
+              SET fk_ProjectUID = @ProjectUid, 
                 ImportedFileID = @ImportedFileId,
-                fk_CustomerUID = @customerUID,
-                fk_ImportedFileTypeID = @importedFileType,
-                Name = @name,
-                FileDescriptor = @fileDescriptor,
-                FileCreatedUTC = @fileCreatedUTC,
-                FileUpdatedUTC = @fileUpdatedUTC,
-                ImportedBy = @importedBy, 
-                SurveyedUTC = @surveyedUTC,
+                fk_CustomerUID = @CustomerUid,
+                fk_ImportedFileTypeID = @ImportedFileType,
+                Name = @Name,
+                FileDescriptor = @FileDescriptor,
+                FileCreatedUTC = @FileCreatedUtc,
+                FileUpdatedUTC = @FileUpdatedUtc,
+                ImportedBy = @ImportedBy, 
+                SurveyedUTC = @SurveyedUtc,
                 MinZoomLevel = @MinZoomLevel,
                 MaxZoomLevel = @MaxZoomLevel,
-                fk_DXFUnitsTypeID = @dxfUnitsType
+                fk_DXFUnitsTypeID = @DxfUnitsType
               WHERE ImportedFileUID = @ImportedFileUid";
 
-        {
-          upsertedCount = await ExecuteWithAsyncPolicy(update, importedFile);
-          log.LogDebug(
-            $"ProjectRepository/CreateImportedFile: (updateExisting): upserted {upsertedCount} rows for: projectUid:{importedFile.ProjectUid} importedFileUid: {importedFile.ImportedFileUid}");
+        upsertedCount = await ExecuteWithAsyncPolicy(update, importedFile);
+        log.LogDebug(
+          $"ProjectRepository/CreateImportedFile: (updateExisting): upserted {upsertedCount} rows for: projectUid:{importedFile.ProjectUid} importedFileUid: {importedFile.ImportedFileUid}");
 
-          // don't really care if this didn't pass as may already exist for create/update utc
-          if (upsertedCount > 0)
-            await UpsertImportedFileHistory(importedFile);
-        }
+        // don't really care if this didn't pass as may already exist for create/update utc
+        if (upsertedCount > 0)
+          await UpsertImportedFileHistory(importedFile);
       }
       else
       {
@@ -881,14 +877,14 @@ namespace VSS.MasterData.Repositories
           const string update =
             @"UPDATE ImportedFile
                 SET 
-                  FileDescriptor = @fileDescriptor,
-                  FileCreatedUTC = @fileCreatedUtc,
-                  FileUpdatedUTC = @fileUpdatedUtc,
-                  ImportedBy = @importedBy, 
-                  SurveyedUTC = @surveyedUTC,
+                  FileDescriptor = @FileDescriptor,
+                  FileCreatedUTC = @FileCreatedUtc,
+                  FileUpdatedUTC = @FileUpdatedUtc,
+                  ImportedBy = @ImportedBy, 
+                  SurveyedUTC = @SurveyedUtc,
                   MinZoomLevel = @MinZoomLevel,
                   MaxZoomLevel = @MaxZoomLevel,
-                  LastActionedUTC = @LastActionedUTC
+                  LastActionedUTC = @LastActionedUtc
                 WHERE ImportedFileUID = @ImportedFileUid";
 
           upsertedCount = await ExecuteWithAsyncPolicy(update, importedFile);
@@ -1018,7 +1014,7 @@ namespace VSS.MasterData.Repositories
             const string update =
               @"UPDATE ImportedFile                               
                 SET IsDeleted = 1,
-                    LastActionedUTC = @LastActionedUTC
+                    LastActionedUTC = @LastActionedUtc
                 WHERE ImportedFileUID = @ImportedFileUid";
 
             upsertedCount = await ExecuteWithAsyncPolicy(update, importedFile);
@@ -1089,10 +1085,10 @@ namespace VSS.MasterData.Repositories
               (@ProjectUid, @ProjectSettingsType, @Settings, @UserID, @LastActionedUtc)
             ON DUPLICATE KEY UPDATE
               LastActionedUTC =
-                IF ( VALUES(LastActionedUTC) >= LastActionedUTC, 
-                    VALUES(LastActionedUTC), LastActionedUTC),
+                IF ( VALUES(LastActionedUtc) >= LastActionedUTC, 
+                    VALUES(LastActionedUtc), LastActionedUTC),
               Settings =
-                IF ( VALUES(LastActionedUTC) >= LastActionedUTC, 
+                IF ( VALUES(LastActionedUtc) >= LastActionedUTC, 
                     VALUES(Settings), Settings)";
 
       var upsertedCount = await ExecuteWithAsyncPolicy(upsert, projectSettings);

@@ -289,8 +289,7 @@ namespace VSS.MasterData.Repositories
 
           const string update =
             @"UPDATE Subscription                
-                  SET SubscriptionUID = @SubscriptionUID,
-                      fk_CustomerUID = @CustomerUID,
+                  SET fk_CustomerUID = @CustomerUID,
                       StartDate=@StartDate, 
                       EndDate=@EndDate, 
                       fk_ServiceTypeID=@ServiceTypeID,

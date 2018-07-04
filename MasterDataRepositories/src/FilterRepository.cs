@@ -128,10 +128,10 @@ namespace VSS.MasterData.Repositories
                  (fk_CustomerUid, UserID, fk_ProjectUID, FilterUID,
                   Name, FilterJson, fk_FilterTypeID,
                   IsDeleted, LastActionedUTC)
-            VALUES
-              (@CustomerUid, @UserID, @ProjectUID, @FilterUID,  
-                  @Name, @FilterJson, @FilterType,
-                  @IsDeleted, @LastActionedUTC)";
+              VALUES
+                (@CustomerUid, @UserId, @ProjectUid, @FilterUid,  
+                    @Name, @FilterJson, @FilterType,
+                    @IsDeleted, @LastActionedUtc)";
 
         upsertedCount = await ExecuteWithAsyncPolicy(insert, filter);
         log.LogDebug($"FilterRepository/CreateFilter: created {upsertedCount}");
@@ -149,7 +149,7 @@ namespace VSS.MasterData.Repositories
               SET Name = @Name,
                   FilterJson = @FilterJson,
                   fk_FilterTypeID = @FilterType,
-              WHERE FilterUID = @FilterUID";
+              WHERE FilterUID = @FilterUid";
 
         upsertedCount = await ExecuteWithAsyncPolicy(update, filter);
         log.LogDebug($"FilterRepository/CreateFilter: (update): updated {upsertedCount}");
@@ -175,8 +175,8 @@ namespace VSS.MasterData.Repositories
           @"UPDATE Filter
               SET Name = @Name,
                   FilterJson = @FilterJson,
-                  LastActionedUTC = @LastActionedUTC
-              WHERE FilterUID = @FilterUID";
+                  LastActionedUTC = @LastActionedUtc
+              WHERE FilterUID = @FilterUid";
 
         upsertedCount = await ExecuteWithAsyncPolicy(update, filter);
         log.LogDebug($"FilterRepository/UpdateFilter: updated {upsertedCount}");
@@ -190,9 +190,9 @@ namespace VSS.MasterData.Repositories
                   Name, FilterJson, fk_FilterTypeID,
                   IsDeleted, LastActionedUTC)
             VALUES
-              (@CustomerUid, @UserID, @ProjectUID, @FilterUID,  
+              (@CustomerUid, @UserId, @ProjectUid, @FilterUid,  
                @Name, @FilterJson, @FilterType,
-               @IsDeleted, @LastActionedUTC)";
+               @IsDeleted, @LastActionedUtc)";
 
       upsertedCount = await ExecuteWithAsyncPolicy(insert, filter);
       log.LogDebug($"FilterRepository/UpdateFilter: created {upsertedCount}");
@@ -213,7 +213,7 @@ namespace VSS.MasterData.Repositories
           const string update =
             @"UPDATE Filter                
                   SET IsDeleted = 1,
-                    LastActionedUTC = @LastActionedUTC
+                    LastActionedUTC = @LastActionedUtc
                   WHERE FilterUID = @FilterUid";
           upsertedCount = await ExecuteWithAsyncPolicy(update, filter);
           log.LogDebug(
@@ -235,10 +235,10 @@ namespace VSS.MasterData.Repositories
                  (fk_CustomerUid, UserID, fk_ProjectUID, FilterUID,
                   Name, FilterJson, fk_FilterTypeID,
                   IsDeleted, LastActionedUTC)
-            VALUES
-              (@CustomerUid, @UserID, @ProjectUID, @FilterUID,  
-               @Name, @FilterUid, @FilterType,
-               1, @LastActionedUTC)";
+              VALUES
+                (@CustomerUid, @UserId, @ProjectUid, @FilterUid,  
+                 @Name, @FilterJson, @FilterType,
+                 1, @LastActionedUTC)";
 
         upsertedCount = await ExecuteWithAsyncPolicy(delete, filter);
         log.LogDebug(

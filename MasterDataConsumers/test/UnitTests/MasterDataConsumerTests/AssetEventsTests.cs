@@ -12,7 +12,6 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
     public void AssetEventsCopyModels()
     {
       DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
-
       var asset = new Asset()
       {
         AssetUID = Guid.NewGuid().ToString(),

@@ -168,17 +168,17 @@ namespace VSS.MasterData.Repositories
 
         const string update =
           @"UPDATE Device                
-                SET DeviceSerialNumber = @DeviceSerialNumber,
-                    DeviceType = @DeviceType,
-                    DeviceState = @DeviceState,
-                    DeregisteredUTC = @DeregisteredUTC,
-                    ModuleType = @ModuleType,
-                    MainboardSoftwareVersion = @MainboardSoftwareVersion,
-                    RadioFirmwarePartNumber = @RadioFirmwarePartNumber,      
-                    GatewayFirmwarePartNumber = @GatewayFirmwarePartNumber,  
-                    DataLinkType = @DataLinkType,     
-                    LastActionedUTC = @LastActionedUtc
-              WHERE DeviceUID = @deviceUid";
+              SET DeviceSerialNumber = @DeviceSerialNumber,
+                  DeviceType = @DeviceType,
+                  DeviceState = @DeviceState,
+                  DeregisteredUTC = @DeregisteredUTC,
+                  ModuleType = @ModuleType,
+                  MainboardSoftwareVersion = @MainboardSoftwareVersion,
+                  RadioFirmwarePartNumber = @RadioFirmwarePartNumber,      
+                  GatewayFirmwarePartNumber = @GatewayFirmwarePartNumber,  
+                  DataLinkType = @DataLinkType,     
+                  LastActionedUTC = @LastActionedUtc
+              WHERE DeviceUID = @DeviceUID";
         return await ExecuteWithAsyncPolicy(update, device);
       }
       // Create received after Update
@@ -230,7 +230,7 @@ namespace VSS.MasterData.Repositories
                       DataLinkType = @DataLinkType,    
                       OwningCustomerUID = @OwningCustomerUID, 
                       LastActionedUTC = @LastActionedUtc
-                WHERE DeviceUID = @deviceUid";
+                WHERE DeviceUID = @DeviceUID";
           return await ExecuteWithAsyncPolicy(update, device);
         }
         log.LogDebug(
@@ -305,8 +305,8 @@ namespace VSS.MasterData.Repositories
       {
         const string update =
           @"UPDATE AssetDevice                
-                SET fk_AssetUID = @assetUid
-              WHERE fk_DeviceUID = @deviceUid";
+                SET fk_AssetUID = @AssetUID
+              WHERE fk_DeviceUID = @DeviceUID";
           return await ExecuteWithAsyncPolicy(update, assetDevice);
       }
       // Create received after Update
@@ -324,9 +324,8 @@ namespace VSS.MasterData.Repositories
         {
           const string update =
             @"DELETE FROM AssetDevice                                 
-                WHERE fk_DeviceUID = @deviceUid
-                  AND fk_AssetUID = @assetUid";
-
+                WHERE fk_DeviceUID = @DeviceUID
+                  AND fk_AssetUID = @AssetUID";
             return await ExecuteWithAsyncPolicy(update, assetDevice);
  }
         else
