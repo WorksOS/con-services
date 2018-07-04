@@ -118,7 +118,7 @@ node ('jenkinsslave-pod') {
 					}
 
 					//Archive test logs
-					containerLog ${container}
+					containerLog "${container}"
 					archiveArtifacts artifacts: 'testresults/*.*', fingerprint: true
                     				
 					//http://javadoc.jenkins-ci.org/tfs/index.html?hudson/plugins/tfs/model/TeamResultType.html
