@@ -25,8 +25,8 @@ COPY --from=build_container /trex/ /trex/
 WORKDIR /trex
 
 #A bit of a hack to try and get logging working in java
-RUN mkdir config
-RUN cp java.util.logging.properties ./config
+#RUN mkdir config
+#RUN cp java.util.logging.properties ./config
 
 
 
