@@ -79,6 +79,9 @@ spec:
     envFrom:
     - configMapRef:
         name: tagfileauthservice-testing
+    env:
+    - name: INF
+      value: "1"
  
   - name: zookeeper-container
     image: wurstmeister/zookeeper:3.4.6
