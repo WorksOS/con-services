@@ -83,7 +83,7 @@ namespace VSS.TRex.Servers.Compute
       Log.LogInformation($"cfg.DataStorageConfiguration.WalArchivePath={cfg.DataStorageConfiguration.WalArchivePath}");
       Log.LogInformation($"cfg.DataStorageConfiguration.WalPath={cfg.DataStorageConfiguration.WalPath}");
 
-      //cfg.JvmOptions = new List<string>() { "-DIGNITE_QUIET=false" };
+      cfg.JvmOptions = new List<string>() { "-DIGNITE_QUIET=false" };
 
       cfg.SpringConfigUrl = @".\igniteKubeConfig.xml";
 
