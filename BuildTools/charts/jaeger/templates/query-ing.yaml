@@ -1,4 +1,5 @@
 {{- if .Values.query.ingress.enabled -}}
+{{- $domain := printf ".%s" .Values.query.ingressDomain }}
 {{- $servicePort := .Values.query.service.queryPort -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -18,7 +19,7 @@ metadata:
 spec:
   rules:
     {{- range $host := .Values.query.ingress.hosts }}
-    - host: {{ $host }}.k8s.vspengg.com
+    - host: {{ $host }}{{ $domain }}
       http:
         paths:
           - path: /
