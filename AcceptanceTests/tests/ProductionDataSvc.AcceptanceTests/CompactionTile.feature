@@ -50,7 +50,7 @@ And projectUid "<ProjectUID>"
 And filterUid "<FilterUID>"
 And cutfillDesignUid "<cutfillDesignUid>"
 And displayMode "<Mode>" and bbox "<BBox>" and width "<Width>" and height "<Height>"
-And a summary volume file with volumeCalcType "<VolCalc>" and a topUid "<TopUid>" and a baseUid "<BaseUid>"
+And a summary volume file with volumeCalcType "<VolCalc>" and a topUid "<TopUid>" and a baseUid "<BaseUid>" 
 When I request result
 Then the result tile should match the "<ResultName>" from the repository within "<Difference>" percent
 Examples: 
@@ -61,6 +61,7 @@ Examples:
 | SVDesignToGroundLatest            | ff91dd40-1569-4765-a2bc-014321f76ace | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 |                                      | 36.20660692859012, -115.0213623046875, 36.20882309283712, -115.01861572265624   | 256   | 256    | 8    | DesignToGround | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | SummaryVolGroundDesign     | 5          |
 | SVGroundToGround1                 | ff91dd40-1569-4765-a2bc-014321f76ace | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 |                                      | 36.20700097553514, -115.0199023681640, 36.20741501855802, -115.01881572265624   | 256   | 256    | 8    | GroundToGround | 9c27697f-ea6d-478a-a168-ed20d6cd9a21 | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 | SummaryVolGroundGround1    | 5          |
 | SVGroundToGround2                 | ff91dd40-1569-4765-a2bc-014321f76ace | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 |                                      | 36.20700097553514, -115.0199023681640, 36.20741501855802, -115.01881572265624   | 256   | 256    | 8    | GroundToGround | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 | 9c27697f-ea6d-478a-a168-ed20d6cd9a21 | SummaryVolGroundGround2    | 5          |
+| SVGroundToGround3AdjustBaseFilter | ff91dd40-1569-4765-a2bc-014321f76ace | 9244d3f1-af2b-41ed-aa16-5a776278b6eb |                                      | 36.20700097553514, -115.0199023681640, 36.20741501855802, -115.01881572265624   | 256   | 256    | 8    | GroundToGround | 279ed62b-06a2-4184-ab14-dd7462dcc8c1 | 9244d3f1-af2b-41ed-aa16-5a776278b6eb | SummaryVolGroundGround3    | 5          |
 | GDEarliestWithPCRange             | ff91dd40-1569-4765-a2bc-014321f76ace | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 |                                      | 36.20660692859012, -115.0213623046875, 36.20882309283712, -115.01861572265624   | 256   | 256    | 8    | GroundToDesign | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | 5a130d7c-a79b-433d-a04a-094b07cfc1dd | GDEarliestWithPCRange      | 5          |
 | DGLatestWithPCRange               | ff91dd40-1569-4765-a2bc-014321f76ace | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 |                                      | 36.20660692859012, -115.0213623046875, 36.20882309283712, -115.01861572265624   | 256   | 256    | 8    | DesignToGround | b06996e4-4944-4d84-b2c7-e1808dd7d7d7 | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | DGLatestWithPCRange        | 5          |
 | GGroundWithPCRange2               | ff91dd40-1569-4765-a2bc-014321f76ace | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 |                                      | 36.20700097553514, -115.0199023681640, 36.20741501855802, -115.01881572265624   | 256   | 256    | 8    | GroundToGround | 9c27697f-ea6d-478a-a168-ed20d6cd9a20 | b06996e4-4944-4d84-b2c7-e1808dd7d7d7 | GGroundWithPCRange2        | 5          |
