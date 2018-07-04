@@ -106,8 +106,8 @@ namespace VSS.MasterData.Repositories
             (@"SELECT 
                 CustomerUID, Name, fk_CustomerTypeID AS CustomerType, IsDeleted, LastActionedUTC
               FROM Customer
-              WHERE CustomerUID = @CustomerUid",
-                new {CustomerUid = customer.CustomerUID}
+              WHERE CustomerUID = @CustomerUID",
+                new { CustomerUID = customer.CustomerUID}
             )).FirstOrDefault();
 
             if (existing != null && existing.IsDeleted)
@@ -308,8 +308,9 @@ namespace VSS.MasterData.Repositories
             (@"SELECT 
                 UserUID, fk_CustomerUID AS CustomerUID, LastActionedUTC
               FROM CustomerUser
-              WHERE fk_CustomerUID = @customerUID AND UserUID = @userUID",
-                new {customerUID = customerUser.CustomerUID, userUID = customerUser.UserUID}
+              WHERE fk_CustomerUID = @CustomerUID 
+                AND UserUID = @UserUID",
+                new { CustomerUID = customerUser.CustomerUID, UserUID = customerUser.UserUID}
             )).FirstOrDefault();
 
             if (eventType == "AssociateCustomerUserEvent")
@@ -404,8 +405,8 @@ namespace VSS.MasterData.Repositories
             (@"SELECT 
                CustomerUID, TCCOrgID, LastActionedUTC
               FROM CustomerTccOrg
-              WHERE CustomerUID = @customerUID",
-                new {customerUID = customerTccOrg.CustomerUID}
+              WHERE CustomerUID = @CustomerUID",
+                new { CustomerUID = customerTccOrg.CustomerUID}
             )).FirstOrDefault();
 
             if (eventType == "CreateCustomerTccOrgEvent")
@@ -453,8 +454,9 @@ namespace VSS.MasterData.Repositories
             (@"SELECT CustomerUID, Name, fk_CustomerTypeID AS CustomerType, IsDeleted, c.LastActionedUTC 
                 FROM Customer c 
                 JOIN CustomerUser cu ON cu.fk_CustomerUID = c.CustomerUID 
-                WHERE cu.UserUID = @userUid AND c.IsDeleted = 0",
-                new {userUid = userUid.ToString()}
+                WHERE cu.UserUID = @UserUID 
+                  AND c.IsDeleted = 0",
+                new { UserUID = userUid.ToString()}
             )).FirstOrDefault();
 
 
@@ -466,8 +468,9 @@ namespace VSS.MasterData.Repositories
             var customer = (await QueryWithAsyncPolicy<Customer>
             (@"SELECT CustomerUID, Name, fk_CustomerTypeID AS CustomerType, IsDeleted, LastActionedUTC 
                 FROM Customer 
-                WHERE CustomerUID = @customerUid AND IsDeleted = 0",
-                new {customerUid = customerUid.ToString()}
+                WHERE CustomerUID = @CustomerUID 
+                  AND IsDeleted = 0",
+                new { CustomerUID = customerUid.ToString()}
             )).FirstOrDefault();
 
 
@@ -480,8 +483,9 @@ namespace VSS.MasterData.Repositories
             (@"SELECT c.CustomerUID, c.Name, c.fk_CustomerTypeID AS CustomerType, c.IsDeleted, c.LastActionedUTC, cto.TCCOrgID
                 FROM Customer c
                   LEFT OUTER JOIN CustomerTccOrg cto ON cto.CustomerUID = c.CustomerUID
-                WHERE c.CustomerUID = @customerUid AND c.IsDeleted = 0",
-                new {customerUid = customerUid.ToString()}
+                WHERE c.CustomerUID = @CustomerUID 
+                  AND c.IsDeleted = 0",
+                new { CustomerUID = customerUid.ToString()}
             )).FirstOrDefault();
 
 
@@ -494,8 +498,9 @@ namespace VSS.MasterData.Repositories
             (@"SELECT c.CustomerUID, c.Name, c.fk_CustomerTypeID AS CustomerType, c.IsDeleted, c.LastActionedUTC, cto.TCCOrgID 
                 FROM CustomerTccOrg cto 
                   INNER JOIN Customer c ON c.CustomerUID = cto.CustomerUID  
-                WHERE cto.TCCOrgId = @tccOrgUid AND c.IsDeleted = 0",
-                new {tccOrgUid}
+                WHERE cto.TCCOrgId = @TCCOrgID 
+                  AND c.IsDeleted = 0",
+                new { TCCOrgID = tccOrgUid }
             )).FirstOrDefault();
 
 
@@ -507,8 +512,8 @@ namespace VSS.MasterData.Repositories
             var customer = (await QueryWithAsyncPolicy<Customer>
             (@"SELECT CustomerUID, Name, fk_CustomerTypeID AS CustomerType, IsDeleted, LastActionedUTC 
                 FROM Customer 
-                WHERE CustomerUID = @customerUid",
-                new {customerUid = customerUid.ToString()}
+                WHERE CustomerUID = @CustomerUID",
+                new { CustomerUID = customerUid.ToString()}
             )).FirstOrDefault();
 
 
@@ -520,8 +525,8 @@ namespace VSS.MasterData.Repositories
             var customer = (await QueryWithAsyncPolicy<CustomerUser>
             (@"SELECT fk_CustomerUID AS CustomerUID, UserUID, LastActionedUTC 
                 FROM CustomerUser
-                WHERE UserUID = @userUid",
-                new {userUid = userUid.ToString()}
+                WHERE UserUID = @UserUID",
+                new { UserUID = userUid.ToString()}
             )).FirstOrDefault();
 
 

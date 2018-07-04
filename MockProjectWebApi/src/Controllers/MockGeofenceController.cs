@@ -48,11 +48,11 @@ namespace MockProjectWebApi.Controllers
 
     [Route("api/v1/mock/geofences")]
     [HttpPost]
-    public OkResult CreateMockGeofence([FromBody] GeofenceData geofenceData)
+    public GeofenceCreateResult CreateMockGeofence([FromBody] GeofenceData geofenceData)
     {
       Console.WriteLine("GetMockGeofences");
       GeofenceData.Add(geofenceData);
-      return Ok();
+      return new GeofenceCreateResult(){geofenceUID = geofenceData.GeofenceUID.ToString()};
     }
 
     [Route("api/v1/mock/geofences")]

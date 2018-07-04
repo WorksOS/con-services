@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using VSS.ConfigurationStore;
@@ -76,19 +77,26 @@ namespace VSS.MasterData.Proxies
         UserUID = userUid,
         AreaSqMeters = areaSqMeters
       };
-      await SendRequest<OkResult>("GEOFENCE_API_URL", JsonConvert.SerializeObject(payLoadToSend),
+
+      var result = await SendRequest<GeofenceCreateResult>("GEOFENCE_API_URL", JsonConvert.SerializeObject(payLoadToSend),
         customHeaders, String.Empty, "POST", String.Empty);
 
       ClearCacheItem<GeofenceDataResult>(customerGuid.ToString(), userUid.ToString());
 
-      // potentally another user could have created a geofence, so
-      //    can'y rely on just retrieving one extra Geofence, and it being our new one.
-      //    Ensure the comparer in  GeofenceData only includes the fields we want e.g. NOT GeofenceUid
-      var updatedGeofences = await GetGeofences(customerGuid.ToString(), customHeaders);
-      var geofence = updatedGeofences.FirstOrDefault(g => g.GeofenceUID == geofenceGuid || Equals(g, payLoadToSend));
-      if (geofence == null)
-        return Guid.Empty;
-      return geofence.GeofenceUID;
+      //// potentally another user could have created a geofence, so
+      ////    can'y rely on just retrieving one extra Geofence, and it being our new one.
+      ////    Ensure the comparer in  GeofenceData only includes the fields we want e.g. NOT GeofenceUid
+      //var updatedGeofences = await GetGeofences(customerGuid.ToString(), customHeaders);
+      //var geofence = updatedGeofences.FirstOrDefault(g => g.GeofenceUID == geofenceGuid || Equals(g, payLoadToSend));
+
+      log.LogInformation($"GeofenceProxy.CreateGeofence. payloadToSend: {JsonConvert.SerializeObject(payLoadToSend)} result: {JsonConvert.SerializeObject(result)}");
+      var guidToReturn = Guid.Empty;
+      if (result != null)
+      {
+        guidToReturn = Guid.Parse(result.geofenceUID);
+      }
+      
+      return guidToReturn;
     }
 
     public async Task<Guid> UpdateGeofence(Guid geofenceGuid, Guid customerGuid, string geofenceName, string description,
@@ -109,6 +117,8 @@ namespace VSS.MasterData.Proxies
       };
       await SendRequest<OkResult>("GEOFENCE_API_URL", JsonConvert.SerializeObject(payLoadToSend),
         customHeaders, String.Empty, "PUT", String.Empty);
+
+      ClearCacheItem<GeofenceDataResult>(customerGuid.ToString(), userUid.ToString());
 
       return geofenceGuid;
     }

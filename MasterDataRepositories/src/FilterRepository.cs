@@ -101,8 +101,8 @@ namespace VSS.MasterData.Repositories
                 f.Name, f.FilterJson, f.fk_FilterTypeID as FilterType,
                 f.IsDeleted, f.LastActionedUTC
               FROM Filter f
-              WHERE f.FilterUID = @filterUid",
-        new { filter.FilterUid })).FirstOrDefault();
+              WHERE f.FilterUID = @FilterUid",
+        new { FilterUid = filter.FilterUid })).FirstOrDefault();
 
       if (eventType == "CreateFilterEvent")
         upsertedCount = await CreateFilter(filter, existing);
@@ -271,9 +271,9 @@ namespace VSS.MasterData.Repositories
                 f.Name, f.FilterJson, f.fk_FilterTypeID as FilterType,
                 f.IsDeleted, f.LastActionedUTC
               FROM Filter f
-              WHERE f.fk_CustomerUID = @customerUid 
-                AND f.fk_ProjectUID = @projectUid 
-                AND f.UserID = @userId 
+              WHERE f.fk_CustomerUID = @CustomerUid 
+                AND f.fk_ProjectUID = @ProjectUid 
+                AND f.UserID = @UserId 
                 AND f.IsDeleted = 0";
       else
         queryString = $@"SELECT 
@@ -282,14 +282,14 @@ namespace VSS.MasterData.Repositories
                 f.Name, f.FilterJson, f.fk_FilterTypeID as FilterType,
                 f.IsDeleted, f.LastActionedUTC
               FROM Filter f
-              WHERE f.fk_CustomerUID = @customerUid 
-                AND f.fk_ProjectUID = @projectUid 
-                AND f.UserID = @userId 
+              WHERE f.fk_CustomerUID = @CustomerUid 
+                AND f.fk_ProjectUID = @ProjectUid 
+                AND f.UserID = @UserId 
                 AND f.IsDeleted = 0
                 AND f.fk_FilterTypeID = {(int)FilterType.Persistent}";
 
       var filters = (await QueryWithAsyncPolicy<Filter>(queryString,
-        new { customerUid, projectUid, userId }));
+        new { CustomerUid = customerUid, ProjectUid = projectUid, UserId = userId }));
       return filters;
     }
 
@@ -306,10 +306,10 @@ namespace VSS.MasterData.Repositories
                 f.Name, f.FilterJson, f.fk_FilterTypeID as FilterType,
                 f.IsDeleted, f.LastActionedUTC
               FROM Filter f
-              WHERE f.fk_ProjectUID = @projectUid 
+              WHERE f.fk_ProjectUID = @ProjectUid 
                 AND f.IsDeleted = 0
                 AND f.fk_FilterTypeID = {(int)FilterType.Persistent}",
-        new { projectUid }));
+        new { ProjectUid = projectUid }));
       return filters;
     }
 
@@ -347,9 +347,9 @@ namespace VSS.MasterData.Repositories
                 f.Name, f.FilterJson, f.fk_FilterTypeID as FilterType,
                 f.IsDeleted, f.LastActionedUTC
               FROM Filter f
-              WHERE f.FilterUID = @filterUid 
+              WHERE f.FilterUID = @FilterUid 
                 AND f.IsDeleted = 0",
-        new { filterUid })).FirstOrDefault();
+        new { FilterUid = filterUid })).FirstOrDefault();
       return filter;
     }
 
@@ -366,8 +366,8 @@ namespace VSS.MasterData.Repositories
                 f.Name, f.FilterJson, f.fk_FilterTypeID as FilterType, 
                 f.IsDeleted, f.LastActionedUTC
               FROM Filter f
-              WHERE f.FilterUID = @filterUid",
-        new { filterUid })).FirstOrDefault();
+              WHERE f.FilterUID = @FilterUid",
+        new { FilterUid = filterUid })).FirstOrDefault();
       return filter;
     }
     #endregion getters
