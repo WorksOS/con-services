@@ -45,5 +45,8 @@ namespace VSS.MasterData.Proxies.Interfaces
 
     Task<BaseDataResult> UploadTagFile(string filename, byte[] data, string orgId = null,
       IDictionary<string, string> customHeaders = null);
+
+    Task<T> ExecuteGenericV1Request<T>(string route, object payload,
+      IDictionary<string, string> customHeaders = null);
   }
 }
