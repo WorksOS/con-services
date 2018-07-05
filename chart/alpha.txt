@@ -1,3 +1,4 @@
+TCCBaseURL: https://www.myconnectedsite.com
 TCCUserName: vlbeta
 TCCOrganization: vlbeta
 TCCPassword: vlbeta_key8
