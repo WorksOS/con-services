@@ -36,7 +36,7 @@ namespace TagFileHarvester.netcore
         OrgsHandler.MaxThreadsToProcessTagFiles = config.GetValueInt("MaxThreadsToProcessTagFiles");
         OrgsHandler.tccSynchFilespaceShortName = config.GetValueString("TCCSynchFilespaceShortName");
         OrgsHandler.tccSynchMachineFolder = config.GetValueString("TCCSynchMachineControlFolder");
-        OrgsHandler.TCCSynchProductionDataFolder = config.GetValueString("Default.TCCSynchProductionDataFolder");
+        OrgsHandler.TCCSynchProductionDataFolder = config.GetValueString("TCCSynchProductionDataFolder");
         OrgsHandler.TCCSynchProductionDataArchivedFolder =
           config.GetValueString("TCCSynchProductionDataArchivedFolder");
         OrgsHandler.TCCSynchProjectBoundaryIssueFolder =
