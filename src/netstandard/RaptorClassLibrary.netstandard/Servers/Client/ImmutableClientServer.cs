@@ -69,26 +69,26 @@ namespace VSS.TRex.Servers.Client
                         {
                             { "TRexNodeId", TRexNodeID }
                         },
-            
-            // Enforce using only the LocalHost interface
-            //DiscoverySpi = new TcpDiscoverySpi()
-            //{
-            //  LocalAddress = "127.0.0.1",
-            //  LocalPort = 47500,
 
-            //  IpFinder = new TcpDiscoveryStaticIpFinder()
-            //  {
-            //    Endpoints = new[] { "127.0.0.1:47500..47509" }
-            //  }
-            //},
+           // Enforce using only the LocalHost interface
+           //DiscoverySpi = new TcpDiscoverySpi()
+           //{
+           //  LocalAddress = "127.0.0.1",
+           //  LocalPort = 47500,
 
-            //CommunicationSpi = new TcpCommunicationSpi()
-            //{
-            //  LocalAddress = "127.0.0.1",
-            //  LocalPort = 47100,
-            //},
+           //  IpFinder = new TcpDiscoveryStaticIpFinder()
+           //  {
+           //    Endpoints = new[] { "127.0.0.1:47500..47509" }
+           //  }
+           //},
 
-            Logger = new TRexIgniteLogger(Logger.CreateLogger("ImmutableClientServer")),
+           CommunicationSpi = new TcpCommunicationSpi()
+           {
+             //LocalAddress = "127.0.0.1",
+             LocalPort = 47100,
+           },
+
+           Logger = new TRexIgniteLogger(Logger.CreateLogger("ImmutableClientServer")),
 
             // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
             DataStorageConfiguration = new DataStorageConfiguration

@@ -15,5 +15,8 @@ WORKDIR /trex/libs/
 RUN wget https://search.maven.org/remotecontent?filepath=org/apache/ignite/ignite-kubernetes/2.4.0/ignite-kubernetes-2.4.0.jar
 RUN wget http://central.maven.org/maven2/org/codehaus/jackson/jackson-core-asl/1.9.13/jackson-core-asl-1.9.13.jar
 RUN wget http://central.maven.org/maven2/org/codehaus/jackson/jackson-mapper-asl/1.9.13/jackson-mapper-asl-1.9.13.jar
+RUN wget http://central.maven.org/maven2/log4j/log4j/1.2.17/log4j-1.2.17.jar
+RUN wget http://central.maven.org/maven2/org/apache/ignite/ignite-log4j/2.4.0/ignite-log4j-2.4.0.jar
+
 
 #TRex unit tests will be tested by the jenkins file as host directory mounts cannot be specified in the dockerfile
