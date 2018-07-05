@@ -13,6 +13,7 @@ namespace VSS.MasterData.Repositories.Extensions
       geofence.GeofenceType = GeofenceType.Generic;
       geofence.GeometryWKT = "";
       geofence.FillColor = 0;
+      geofence.IsTransparent = true;
       geofence.IsDeleted = true;
       geofence.Description = "";
       geofence.CustomerUID = "";
