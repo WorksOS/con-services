@@ -9,7 +9,10 @@ FROM ${BUILD_CONTAINER} as build_container
 FROM microsoft/dotnet:2.1-aspnetcore-runtime
 RUN \
   apt-get update && apt-get install -y \
-  openjdk-8-jdk nodejs
+  openjdk-8-jdk
+
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+RUN apt-get install -y nodejs
 
 
 # #Need these for ignite to work
