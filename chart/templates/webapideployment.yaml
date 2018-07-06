@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+  name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}
   labels:
-    app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+    app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+      app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+        app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}
     spec:
       containers:
-      - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-landfill:{{ .Values.image.tag }}
-        name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}        
+      - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-landfill:{{ .Values.image.tag | lower }}
+        name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}        
         livenessProbe:
           httpGet:
             scheme: HTTP
@@ -30,7 +30,7 @@ spec:
 {{ toYaml .Values.resources | indent 12 }}
         envFrom:
         - configMapRef:
-            name: {{ .Release.Name }}-config-{{ .Values.environment }}-{{ .Values.image.tag }}
+            name: {{ .Release.Name }}-config-{{ .Values.environment }}-{{ .Values.image.tag | lower }}
         imagePullPolicy: Always
         ports:
         - containerPort: 80

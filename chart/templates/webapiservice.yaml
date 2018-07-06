@@ -1,10 +1,10 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+  name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}
 spec:
   selector:
-    app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+    app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}
   ports:
   - protocol: TCP
     port: 80
