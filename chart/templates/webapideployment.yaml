@@ -15,7 +15,7 @@ spec:
         app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}
     spec:
       containers:
-      - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-landfill:{{ .Values.image.tag | lower }}
+      - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-landfill:{{ .Values.image.tag }}
         name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}        
         livenessProbe:
           httpGet:
