@@ -48,5 +48,8 @@ namespace VSS.MasterData.Proxies.Interfaces
 
     Task<T> ExecuteGenericV1Request<T>(string route, object payload,
       IDictionary<string, string> customHeaders = null);
+
+    Task<T> ExecuteGenericV1Request<T>(string route, string query, IDictionary<string, string> customHeaders = null);
+
   }
 }

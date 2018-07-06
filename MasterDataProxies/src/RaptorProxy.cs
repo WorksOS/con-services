@@ -261,6 +261,7 @@ namespace VSS.MasterData.Proxies
       log.LogDebug("RaptorProxy.UploadTagFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
       return response;
     }
+
     /// <summary>
     /// Execute a generic request against v1 raptor endpoint
     /// </summary>
@@ -278,6 +279,23 @@ namespace VSS.MasterData.Proxies
       log.LogDebug("RaptorProxy.ExecuteGenericV1Request: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
       return response;
     }
+
+    /// <summary>
+    /// Execute a generic request against v1 raptor endpoint
+    /// </summary>
+    /// <typeparam name="T">Expected response type</typeparam>
+    /// <param name="route">Route on v1 endpoint</param>
+    /// <param name="payload">Object to post</param>
+    /// <param name="customHeaders">Authn\z headers</param>
+    /// <returns></returns>
+    public async Task<T> ExecuteGenericV1Request<T>(string route, string query, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"RaptorProxy.ExecuteGenericV1Request: route: {route}");
+      var response = await SendRequest<T>("RAPTOR_V1_BASE_API_URL", string.Empty, customHeaders, route, "GET", query);
+      log.LogDebug("RaptorProxy.ExecuteGenericV1Request: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+      return response;
+    }
+
 
   }
 
