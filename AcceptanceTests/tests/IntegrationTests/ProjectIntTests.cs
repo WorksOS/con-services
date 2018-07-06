@@ -569,8 +569,7 @@ namespace IntegrationTests
     public void CreateStandardProjectThenUpdateProjectTypeToLandFillAndCheckDatabase()
     {
       var msg = new Msg();
-      var msgNumber = "17a";
-      msg.Title($"Project v4 test {msgNumber}", "Create standard project then update project type ato landfill and check project-only database");
+      msg.Title($"Project Integration test", "Create standard project then update project type ato landfill and check project-only database");
       var ts = new TestSupport();
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
@@ -590,7 +589,7 @@ namespace IntegrationTests
       $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |"};
       ts.PublishEventCollection(eventsArray);
       ts.IsPublishToWebApi = true;
-      var projectName = $"Boundary Test {msgNumber}";
+      var projectName = $"Standard To LandFill test";
       var projectEventArray = new[] {
        "| EventType          | EventDate   | ProjectUID   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | ",
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {projectName} | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc |" };
@@ -606,9 +605,10 @@ namespace IntegrationTests
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray2, true);
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray2, true);
 
+      // Now check the project type has changed and the kafka message consumed properly.
       var projectConsumerMysql = new MySqlHelper();
       projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
-      projectConsumerMysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "ProjectType", "1", Guid.Parse(projectUid));
+      projectConsumerMysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "fk_ProjectTypeID", "1", Guid.Parse(projectUid));
     }
 
 
