@@ -27,7 +27,7 @@ common:
   # If enabled, then the data and master nodes will be StatefulSets with
   # associated persistent volume claims.
   stateful:
-    enabled: false
+    enabled: true
 
     # The PVC storage class that backs the persistent volume claims. On AWS
     # "gp2" would be appropriate.
@@ -90,7 +90,7 @@ data:
   stateful:
     # This is a default value, and will not be sufficient in a production
     # system. You'll probably want to increase it.
-    size: 12Gi
+    size: 100Gi
 
 # The master node is responsible for lightweight cluster-wide actions such as
 # creating or deleting an index, tracking which nodes are part of the 
@@ -127,7 +127,7 @@ master:
   stateful:
     # This is a default value, and will not be sufficient in a production
     # system. You'll probably want to increase it.
-    size: 2Gi  
+    size: 20Gi  
 
 curator:
   enabled: true
@@ -170,6 +170,7 @@ kibana:
       - kibana.k8s.vspengg.com
     annotations:
       kubernetes.io/ingress.class: nginx
+      # external-dns.alpha.kubernetes.io/target: endpoints.k8s.services.myvisionlink.com
       # kubernetes.io/tls-acme: "true"
     tls:
       # Secrets must be manually created in the namespace.
