@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using log4net;
+using Newtonsoft.Json;
 using TagFileHarvester.Implementation;
 using TagFileHarvester.Interfaces;
 using TagFileHarvester.Models;
@@ -139,7 +140,7 @@ namespace TagFileHarvester.TaskQueues
                   // raise flag that we have at least one failured file
                   log.DebugFormat(
                     "TagFile {0} processed with result {1}",
-                    f.fullName, localresult);
+                    f.fullName, JsonConvert.SerializeObject(localresult));
                   return localresult;
                 }
               }, filetasksCancel.Token)));
