@@ -133,7 +133,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       log.LogDebug(
         $"Creating the project in the DB {JsonConvert.SerializeObject(project)} and customerProject {JsonConvert.SerializeObject(customerProject)}");
 
-      var isCreated = await projectRepo.StoreEvent(project).ConfigureAwait(false);
+      var isCreated = 0;
+      try
+      {
+        isCreated = await projectRepo.StoreEvent(project).ConfigureAwait(false);
+      }
+      catch (Exception e)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 61, "projectRepo.storeCreateProject", e.Message);
+      }
+
       if (isCreated == 0)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 61);
 
@@ -142,7 +151,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       if (project.ProjectID <= 0)
       {
-        var existing = await projectRepo.GetProjectOnly(project.ProjectUID.ToString()).ConfigureAwait(false);
+        Repositories.DBModels.Project existing = null;
+        try
+        {
+          existing = await projectRepo.GetProjectOnly(project.ProjectUID.ToString()).ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 42, "projectRepo.GetProjectOnly", e.Message);
+        }
         if (existing != null && existing.LegacyProjectID > 0)
           project.ProjectID = existing.LegacyProjectID;
         else
@@ -154,8 +171,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       log.LogDebug($"Using Legacy projectId {project.ProjectID} for project {project.ProjectName}");
 
       // this is needed so that when ASNode (raptor client), which is called from CoordinateSystemPost, can retrieve the just written project+cp
-      isCreated = await projectRepo.StoreEvent(customerProject).ConfigureAwait(false);
-
+      try
+      {
+        isCreated = await projectRepo.StoreEvent(customerProject).ConfigureAwait(false);
+      }
+      catch (Exception e)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 63, "projectRepo.StoreCustomerProject", e.Message);
+      }
       if (isCreated == 0)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 63);
 

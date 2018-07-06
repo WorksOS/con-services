@@ -47,7 +47,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       this.DynamicAddwithOffset("Missing CreateProjectRequest.", 39);
       this.DynamicAddwithOffset("Missing UpdateProjectRequest.", 40);
       this.DynamicAddwithOffset("Unable to create/update CoordinateSystem in RaptorServices. returned: {0} {1}.", 41);
-      this.DynamicAddwithOffset("LegacyProjectId has not been generated.", 42);
+      this.DynamicAddwithOffset("LegacyProjectId has not been generated. {0}", 42);
       this.DynamicAddwithOffset("Project boundary overlaps another project, for this customer and time span.", 43);
       this.DynamicAddwithOffset("Missing legacyProjectId.", 44);
       this.DynamicAddwithOffset("Landfill is missing its CoordinateSystem.", 45);
@@ -66,9 +66,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       this.DynamicAddwithOffset("CreateImportedFileV4. The file has already been created.", 58);
       this.DynamicAddwithOffset("GeofenceService CreateGeofence failed. No geofenceUid returned.", 59);
       this.DynamicAddwithOffset("Application calling context supports only HttpGet endpoints.", 60);
-      this.DynamicAddwithOffset("Unable to create project.", 61);
-      this.DynamicAddwithOffset("Unable to update project.", 62);
-      this.DynamicAddwithOffset("Unable to associate project with customer.", 63);
+      this.DynamicAddwithOffset("Unable to create project. {0}", 61);
+      this.DynamicAddwithOffset("Unable to update project. {0}", 62);
+      this.DynamicAddwithOffset("Unable to associate project with customer. {0}", 63);
       this.DynamicAddwithOffset("Unable to disassociate project from customer.", 64);
       this.DynamicAddwithOffset("Unable to store project-geofence associate in database.", 65);
       this.DynamicAddwithOffset("Unable to delete project.", 66);

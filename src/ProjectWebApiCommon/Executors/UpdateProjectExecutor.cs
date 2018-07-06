@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -99,7 +100,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       }
       log.LogDebug($"UpdateProject: subscriptionUidAssigned: {subscriptionUidAssigned} existing.ProjectType {existing.ProjectType} updateProjectEvent.ProjectType: {updateProjectEvent.ProjectType}");
 
-      var isUpdated = await projectRepo.StoreEvent(updateProjectEvent).ConfigureAwait(false);
+      var isUpdated = 0;
+      try
+      {
+        isUpdated = await projectRepo.StoreEvent(updateProjectEvent).ConfigureAwait(false);
+      }
+      catch (Exception e)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 62, "projectRepo.storeUpdateProject", e.Message);
+      }
+
       if (isUpdated == 0)
       {
         await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 62, string.Empty);
@@ -113,6 +123,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         await UpdateGeofenceInGeofenceService(updateProjectEvent, existing);
       }
 
+      // doing this as late as possible in case something fails. We can't cleanup kafka que.
+      CreateKafkaEvents(updateProjectEvent);
+
       log.LogDebug("UpdateProjectV4. completed succesfully");
       return new ContractExecutionResult();
     }
@@ -122,6 +135,21 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       throw new NotImplementedException();
     }
 
+
+    /// <summary>
+    /// Creates Kafka events.
+    /// </summary>
+    /// <param name="updateProjectEvent"></param>
+    /// <returns></returns>
+    protected void CreateKafkaEvents(UpdateProjectEvent updateProjectEvent)
+    {
+     var messagePayload = JsonConvert.SerializeObject(new { UpdateProjectEvent = updateProjectEvent });
+      producer.Send(kafkaTopicName,
+        new List<KeyValuePair<string, string>>
+        {
+          new KeyValuePair<string, string>(updateProjectEvent.ProjectUID.ToString(), messagePayload)
+        });
+    }
 
     /// <summary>
     /// Updates the projectType geofence
