@@ -37,6 +37,9 @@ namespace VSS.TRex.Types
         TargetSpeedSummary, //Renders SPeed summary looking through all cell passes for a cell
         CCVChange, //Renders CCV chnage in absolute values (compared to CCV percent change)
         CCA,
-        CCASummary
-    }
+        CCASummary,
+        TemperatureDetail,
+        ThreeDTerrain,
+        ThreeDDesign
+  }
 }
