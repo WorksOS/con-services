@@ -1,4 +1,7 @@
-﻿using ASNode.CMVChange.RPC;
+﻿using System;
+using System.IO;
+using System.Linq;
+using ASNode.CMVChange.RPC;
 using ASNode.ElevationStatistics.RPC;
 using ASNode.ExportProductionDataCSV.RPC;
 using ASNode.GridReport.RPC;
@@ -13,6 +16,7 @@ using ASNodeDecls;
 using ASNodeRPC;
 using BoundingExtents;
 using DesignProfiler.ComputeDesignBoundary.RPC;
+using DesignProfiler.ComputeDesignFilterBoundary.RPC;
 using DesignProfiler.ComputeProfile.RPC;
 using DesignProfilerDecls;
 using ShineOn.Rtl;
@@ -24,10 +28,6 @@ using SVOICOptionsDecls;
 using SVOICProfileCell;
 using SVOICStatistics;
 using SVOICVolumeCalculationsDecls;
-using System;
-using System.IO;
-using System.Linq;
-using DesignProfiler.ComputeDesignFilterBoundary.RPC;
 using VLPDDecls;
 using VSS.Productivity3D.Common.Interfaces;
 
@@ -208,9 +208,11 @@ namespace VSS.Productivity3D.Common.Proxies
       return client.GetSummaryVolumesAlignmentProfile(Args, out MemoryStream profile) == 1 ? profile : null;
     }
 
-    public TDesignName[] GetOnMachineDesigns(long DataModelID)
+    public TDesignName[] GetOnMachineDesignEvents(long dataModelId)
     {
-      return client.GetOnMachineDesigns(DataModelID, out TDesignName[] designNames) == 1/*icsrrNoError*/ ? designNames : null;
+      return client.GetOnMachineDesignEvents(dataModelId, out var designNames) == 1
+        ? designNames
+        : null;
     }
 
     public int GetOnMachineLayers(long DataModelID, out TDesignLayer[] LayerList)

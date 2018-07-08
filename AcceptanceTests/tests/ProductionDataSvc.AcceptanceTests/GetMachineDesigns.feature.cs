@@ -44,7 +44,7 @@ namespace ProductionDataSvc.AcceptanceTests
         public static void FeatureSetup(Microsoft.VisualStudio.TestTools.UnitTesting.TestContext testContext)
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner(null, 0);
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "GetMachineDesigns", "\tI should be able to get on-machine designs.", ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "GetMachineDesigns", "    I should be able to get on-machine designs.", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -93,9 +93,9 @@ this.ScenarioSetup(scenarioInfo);
 #line 5
   testRunner.Given("the Machine Design service URI \"/api/v1/projects/{0}/machinedesigns\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 6
- testRunner.And("a project Id 1001158", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+    testRunner.And("a project Id 1001158", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 7
- testRunner.When("I request machine designs", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+    testRunner.When("I request machine designs", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
             TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
                         "designId",
@@ -251,7 +251,7 @@ this.ScenarioSetup(scenarioInfo);
                         "49",
                         "we love u juarne"});
 #line 8
- testRunner.Then("the following machine designs should be returned", ((string)(null)), table1, "Then ");
+    testRunner.Then("the following machine designs should be returned", ((string)(null)), table1, "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -265,15 +265,15 @@ this.ScenarioSetup(scenarioInfo);
   testRunner.Given(string.Format("the Machine Design Details service URI \"/api/v2/projects/{{0}}/{0}\" for operation" +
                         " \"{0}\" and the result file \"GetMachineDesignsResponse.json\"", operation), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 63
- testRunner.And(string.Format("a projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+    testRunner.And(string.Format("a projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 64
   testRunner.And(string.Format("startUTC \"{0}\"", startUTC), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 65
   testRunner.And(string.Format("endUTC \"{0}\"", endUTC), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 66
- testRunner.When("I request machine design details", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+    testRunner.When("I request machine design details", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 67
- testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+    testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

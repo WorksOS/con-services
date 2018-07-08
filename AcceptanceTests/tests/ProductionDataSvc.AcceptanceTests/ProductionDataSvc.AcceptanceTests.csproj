@@ -131,14 +131,39 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CompactionCellDatum.feature</DependentUpon>
     </Compile>
-    <Compile Include="Models\CompactionCellDatumResult.cs" />
-    <Compile Include="Models\CompactionTagFile.cs" />
-    <Compile Include="Models\GetMachineDesignDetailsResult.cs" />
-    <Compile Include="Models\MachineDesignDetails.cs" />
-    <Compile Include="CompactionPatch.feature.cs">
-      <DependentUpon>CompactionPatch.feature</DependentUpon>
+    <Compile Include="CompactionMachineLiftIds.feature.cs">
+      <DependentUpon>CompactionMachineLiftIds.feature</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="EditData.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditData.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GetMachineDesignDetailsResult.cs" />
+    <Compile Include="GetMachineDesigns.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GetMachineDesigns.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Models\MachineDesignDetails.cs" />
+    <Compile Include="Models\CompactionCellDatumResult.cs" />
+    <Compile Include="Models\CompactionTagFile.cs" />
+    <Compile Include="Patch.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Patch.feature</DependentUpon>
+    </Compile>
+    <Compile Include="ProjectThumbnails.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ProjectThumbnails.feature</DependentUpon>
+    </Compile>
+    <Compile Include="ReportTile.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportTile.feature</DependentUpon>
     </Compile>
     <Compile Include="StepDefinitions\CompactionCellDatumSteps.cs" />
     <Compile Include="CompactionCmv.feature.cs">
@@ -241,11 +266,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DxfTile.feature</DependentUpon>
     </Compile>
-    <Compile Include="EditData.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditData.feature</DependentUpon>
-    </Compile>
     <Compile Include="ElevationStatistics.feature.cs">
       <DependentUpon>ElevationStatistics.feature</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -285,11 +305,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>GetLifts.feature</DependentUpon>
-    </Compile>
-    <Compile Include="GetMachineDesigns.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>GetMachineDesigns.feature</DependentUpon>
     </Compile>
     <Compile Include="GetProjectExtents.feature.cs">
       <AutoGen>True</AutoGen>
@@ -394,11 +409,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ProjectStatistics.feature</DependentUpon>
     </Compile>
-    <Compile Include="ProjectThumbnails.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ProjectThumbnails.feature</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CellDatum.feature.cs">
       <AutoGen>True</AutoGen>
@@ -410,20 +420,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CellPasses.feature</DependentUpon>
     </Compile>
-    <Compile Include="Patch.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Patch.feature</DependentUpon>
-    </Compile>
     <Compile Include="Profile.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Profile.feature</DependentUpon>
-    </Compile>
-    <Compile Include="ReportTile.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ReportTile.feature</DependentUpon>
     </Compile>
     <Compile Include="Report.feature.cs">
       <AutoGen>True</AutoGen>
@@ -444,6 +444,7 @@
     <Compile Include="StepDefinitions\CompactionCmvSteps.cs" />
     <Compile Include="StepDefinitions\CompactionCutFillSteps.cs" />
     <Compile Include="StepDefinitions\CompactionElevationSteps.cs" />
+    <Compile Include="StepDefinitions\CompactionMachineLiftIdsSteps.cs" />
     <Compile Include="StepDefinitions\CompactionMdpSteps.cs" />
     <Compile Include="StepDefinitions\CompactionPaletteSteps.cs" />
     <Compile Include="StepDefinitions\CompactionPassCountSteps.cs" />
@@ -663,6 +664,10 @@
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>GetDesignBoundaries.feature.cs</LastGenOutput>
     </None>
+    <None Include="CompactionMachineLiftIds.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>CompactionMachineLiftIds.feature.cs</LastGenOutput>
+    </None>
     <None Include="GetLifts.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>GetLifts.feature.cs</LastGenOutput>
@@ -732,13 +737,13 @@
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>ProjectThumbnails.feature.cs</LastGenOutput>
     </None>
-    <None Include="ReportTile.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>ReportTile.feature.cs</LastGenOutput>
-    </None>
     <None Include="Report.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>Report.feature.cs</LastGenOutput>
+    </None>
+    <None Include="ReportTile.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>ReportTile.feature.cs</LastGenOutput>
     </None>
     <None Include="ScheduleExportToVETA.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
@@ -825,6 +830,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\CompactionGetTemperatureDataResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CompactionMachineLiftIdsResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\CompactionReportTileResponse.json">

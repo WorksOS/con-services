@@ -77,101 +77,102 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
           }
         }
 
-        if (fileType == ImportedFileType.Linework ||
-            fileType == ImportedFileType.DesignSurface ||
-            fileType == ImportedFileType.Alignment)
+        switch (fileType)
         {
-          var suffix = FileUtils.GeneratedFileSuffix(fileType);
-          //Get PRJ file contents from Raptor
-          log.LogDebug("Getting projection file from Raptor");
-          var dxfUnitsType = fileType == ImportedFileType.Linework
-            ? (TVLPDDistanceUnits)request.DXFUnitsType
-            : TVLPDDistanceUnits.vduMeters; //always metric for design surface and alignment as we generate the DXF file.
+          case ImportedFileType.Linework:
+          case ImportedFileType.DesignSurface:
+          case ImportedFileType.Alignment:
+            var suffix = FileUtils.GeneratedFileSuffix(fileType);
+            //Get PRJ file contents from Raptor
+            log.LogDebug("Getting projection file from Raptor");
+            var dxfUnitsType = fileType == ImportedFileType.Linework || fileType == ImportedFileType.Alignment
+              ? (TVLPDDistanceUnits)request.DXFUnitsType
+              : TVLPDDistanceUnits.vduMeters; //always metric for design surface and alignment as we generate the DXF file.
 
-          var result2 = raptorClient.GetCoordinateSystemProjectionFile(request.ProjectId.Value,
-            dxfUnitsType, out string prjFile);
-          if (result2 != TASNodeErrorStatus.asneOK)
-          {
-            //We need gracefully fail here as the file may be imported to an empty datamodel
-            log.LogWarning("Failed to get requested " + FileUtils.PROJECTION_FILE_EXTENSION + " file with error: {0}.",
-              ContractExecutionStates.FirstNameWithOffset((int)result2));
+            var result2 = raptorClient.GetCoordinateSystemProjectionFile(request.ProjectId.Value,
+              dxfUnitsType, out string prjFile);
+            if (result2 != TASNodeErrorStatus.asneOK)
+            {
+              //We need gracefully fail here as the file may be imported to an empty datamodel
+              log.LogWarning("Failed to get requested " + FileUtils.PROJECTION_FILE_EXTENSION + " file with error: {0}.",
+                ContractExecutionStates.FirstNameWithOffset((int)result2));
 
-            return new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Add file notification partially successful - no tiles can be generated")
-              { MinZoomLevel = 0, MaxZoomLevel = 0 };
+              return new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Add file notification partially successful - no tiles can be generated")
+                { MinZoomLevel = 0, MaxZoomLevel = 0 };
 
-            /*throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
+              /*throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
               ContractExecutionStatesEnum.FailedToGetResults,
               string.Format("Failed to get requested " + FileUtils.PROJECTION_FILE_EXTENSION + " file with error: {0}.",
                 ContractExecutionStates.FirstNameWithOffset((int)result2))));*/
 
-          }
-          //Note: Cannot have async void therefore bool result from method. However, failure handled inside method so ignore return value here.
-          await CreateTransformFile(request.ProjectId.Value, request.File, prjFile, suffix, FileUtils.PROJECTION_FILE_EXTENSION);
+            }
+            //Note: Cannot have async void therefore bool result from method. However, failure handled inside method so ignore return value here.
+            await CreateTransformFile(request.ProjectId.Value, request.File, prjFile, suffix, FileUtils.PROJECTION_FILE_EXTENSION);
 
-          //Get GM_XFORM file contents from Raptor
-          log.LogDebug("Getting horizontal adjustment file from Raptor");
+            //Get GM_XFORM file contents from Raptor
+            log.LogDebug("Getting horizontal adjustment file from Raptor");
 
-          var result3 = raptorClient.GetCoordinateSystemHorizontalAdjustmentFile(request.CoordSystemFileName,
-            request.ProjectId.Value, dxfUnitsType, out string haFile);
-          if (result3 != TASNodeErrorStatus.asneOK)
-          {
-            log.LogWarning(string.Format(
-              "Failed to get requested " + FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION + " file with error: {0}.",
-              ContractExecutionStates.FirstNameWithOffset((int)result2)));
-            return new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Add file notification partially successful. Can not create horizontal adjustment - no tiles can be generated")
-              { MinZoomLevel = 0, MaxZoomLevel = 0 };
+            var result3 = raptorClient.GetCoordinateSystemHorizontalAdjustmentFile(request.CoordSystemFileName,
+              request.ProjectId.Value, dxfUnitsType, out string haFile);
+            if (result3 != TASNodeErrorStatus.asneOK)
+            {
+              log.LogWarning(string.Format(
+                "Failed to get requested " + FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION + " file with error: {0}.",
+                ContractExecutionStates.FirstNameWithOffset((int)result2)));
+              return new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Add file notification partially successful. Can not create horizontal adjustment - no tiles can be generated")
+                { MinZoomLevel = 0, MaxZoomLevel = 0 };
 
-            /* throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
+              /* throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
                ContractExecutionStatesEnum.FailedToGetResults,
                string.Format(
                  "Failed to get requested " + FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION + " file with error: {0}.",
                  ContractExecutionStates.FirstNameWithOffset((int)result2))));*/
-          }
-          //An empty string means there is no horizontal adjustment in coordinate system so no file to create
-          if (haFile != string.Empty)
-          {
-            await CreateTransformFile(request.ProjectId.Value, request.File, haFile, suffix,
-              FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION);
-          }
-
-          if (fileType != ImportedFileType.Linework)
-          {
-            //Get alignment or surface boundary as DXF file from Raptor
-            if (!await CreateDxfFile(request.ProjectId.Value, request.File, suffix, request.DXFUnitsType))
-            {
-              //We need gracefully fail here as the file may be imported to an empty datamodel
-              log.LogWarning("Failed to get requested " + FileUtils.DXF_FILE_EXTENSION);
-
-              return new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Add file notification partially successful. Can not create DXF - no tiles can be generated")
-                { MinZoomLevel = 0, MaxZoomLevel = 0 };
             }
-          }
-          //Calculate the zoom range
-          string generatedName = FileUtils.GeneratedFileName(request.File.fileName, suffix, FileUtils.DXF_FILE_EXTENSION);
-          var fullGeneratedName = string.Format("{0}/{1}", request.File.path, generatedName);
-          zoomResult = await tileGenerator.CalculateTileZoomRange(request.File.filespaceId, fullGeneratedName).ConfigureAwait(false); 
-          //Generate DXF tiles
-          await tileGenerator.CreateDxfTiles(request.ProjectId.Value, request.File, suffix, zoomResult, false).ConfigureAwait(false);
-        }
+            //An empty string means there is no horizontal adjustment in coordinate system so no file to create
+            if (haFile != string.Empty)
+            {
+              await CreateTransformFile(request.ProjectId.Value, request.File, haFile, suffix,
+                FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION);
+            }
 
-        else if (fileType == ImportedFileType.SurveyedSurface)
-        {
-          log.LogDebug("Storing ground surface file in Raptor");
-          DesignDescriptor dd = DesignDescriptor.CreateDesignDescriptor(request.FileId, request.File, 0.0);
-          ASNode.GroundSurface.RPC.TASNodeServiceRPCVerb_GroundSurface_Args args = ASNode.GroundSurface.RPC.__Global
-            .Construct_GroundSurface_Args(
-              request.ProjectId.Value,
-              request.FileId,
-              FileUtils.SurveyedSurfaceUtc(request.File.fileName).Value,
-              RaptorConverters.DesignDescriptor(dd)
-            );
+            if (fileType != ImportedFileType.Linework)
+            {
+              //Get alignment or surface boundary as DXF file from Raptor
+              if (!await CreateDxfFile(request.ProjectId.Value, request.File, suffix, request.DXFUnitsType))
+              {
+                //We need gracefully fail here as the file may be imported to an empty datamodel
+                log.LogWarning("Failed to get requested " + FileUtils.DXF_FILE_EXTENSION);
 
-          if (!raptorClient.StoreGroundSurfaceFile(args))
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-                "Failed to store ground surface file"));
-          }
+                return new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Add file notification partially successful. Can not create DXF - no tiles can be generated")
+                  { MinZoomLevel = 0, MaxZoomLevel = 0 };
+              }
+            }
+            //Calculate the zoom range
+            string generatedName = FileUtils.GeneratedFileName(request.File.fileName, suffix, FileUtils.DXF_FILE_EXTENSION);
+            var fullGeneratedName = string.Format("{0}/{1}", request.File.path, generatedName);
+            zoomResult = await tileGenerator.CalculateTileZoomRange(request.File.filespaceId, fullGeneratedName).ConfigureAwait(false); 
+            //Generate DXF tiles
+            await tileGenerator.CreateDxfTiles(request.ProjectId.Value, request.File, suffix, zoomResult, false).ConfigureAwait(false);
+            break;
+          case ImportedFileType.SurveyedSurface:
+            log.LogDebug("Storing ground surface file in Raptor");
+            DesignDescriptor dd = DesignDescriptor.CreateDesignDescriptor(request.FileId, request.File, 0.0);
+            ASNode.GroundSurface.RPC.TASNodeServiceRPCVerb_GroundSurface_Args args = ASNode.GroundSurface.RPC.__Global
+              .Construct_GroundSurface_Args(
+                request.ProjectId.Value,
+                request.FileId,
+                FileUtils.SurveyedSurfaceUtc(request.File.fileName).Value,
+                RaptorConverters.DesignDescriptor(dd)
+              );
+
+            if (!raptorClient.StoreGroundSurfaceFile(args))
+            {
+              throw new ServiceException(HttpStatusCode.BadRequest,
+                new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+                  "Failed to store ground surface file"));
+            }
+
+            break;
         }
 
         return new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Add file notification successful")

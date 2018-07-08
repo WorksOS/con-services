@@ -87,7 +87,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="volumeCalcType">Summary volumes calculation type</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>CompactionTileExecutor</executor> 
-    [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
     [ValidateTileParameters]
     [Route("api/v2/productiondatatiles")]
     [HttpGet]
@@ -117,7 +116,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var projectSettingsColors = await GetProjectSettingsColors(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
-      DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
+      var cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
       var tileResult = WithServiceExceptionTryExecute(() =>
         tileService.GetProductionDataTile(projectSettings, projectSettingsColors, filter, projectId, mode, width, height,
@@ -156,7 +155,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// (number of cells across a subgrid) * 0.34 (default width in meters of a single cell).
     /// </returns>
     /// <executor>CompactionTileExecutor</executor> 
-    [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
     [ValidateTileParameters]
     [Route("api/v2/productiondatatiles/png")]
     [HttpGet]
@@ -187,7 +185,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettingsColors = await GetProjectSettingsColors(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
 
-      DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue
+      var cutFillDesign = cutFillDesignUid.HasValue
         ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value)
         : null;
 
@@ -220,7 +218,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="fileType">The imported file type for which to to overlay tiles. Valid values are Linework, Alignment and DesignSurface</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>DxfTileExecutor</executor> 
-    [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
     [ValidateTileParameters]
     [ValidateWidthAndHeight]
     [Route("api/v2/lineworktiles")]
@@ -247,7 +244,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       dxfTileRequest.Validate();
 
-      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(LoggerFactory, raptorClient, null, this.ConfigStore, fileRepo);
+      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(LoggerFactory, raptorClient, null, ConfigStore, fileRepo);
       var result = await executor.ProcessAsync(dxfTileRequest) as TileResult;
 
       return result;
@@ -273,7 +270,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="fileType">The imported file type for which to to overlay tiles. Valid values are Linework, Alignment and DesignSurface</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>DxfTileExecutor</executor> 
-    [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
     [ValidateTileParameters]
     [Route("api/v2/lineworktiles/png")]
     [HttpGet]
@@ -299,7 +295,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       dxfTileRequest.Validate();
 
-      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(LoggerFactory, raptorClient, null, this.ConfigStore, fileRepo);
+      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(LoggerFactory, raptorClient, null, ConfigStore, fileRepo);
       var result = await executor.ProcessAsync(dxfTileRequest) as TileResult;
 
       return new FileStreamResult(new MemoryStream(result.TileData), "image/png");
@@ -340,7 +336,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
 
       //Get all the imported files for the project
-      var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), GetUserId(), Request.Headers.GetCustomHeaders()) ?? new List<FileData>();
+      var fileList = await FileListProxy.GetFiles(projectUid.ToString(), GetUserId(), Request.Headers.GetCustomHeaders()) ?? new List<FileData>();
 
       //Select the required ones from the list
       var filesOfType = fileList.Where(f => f.ImportedFileType == importedFileType && f.IsActivated).ToList();
@@ -361,10 +357,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       double trLong = 0;
       double trLat = 0;
 
-      int count = 0;
-      foreach (string s in bbox.Split(','))
+      var count = 0;
+      foreach (var s in bbox.Split(','))
       {
-        if (!double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out double num))
+        if (!double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out var num))
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

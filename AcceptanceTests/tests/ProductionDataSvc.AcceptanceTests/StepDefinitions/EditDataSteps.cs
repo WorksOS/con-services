@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
-    [Binding, Scope(Feature = "EditData")]
+   [Binding, Scope(Feature = "EditData")]
     public class EditDataSteps
     {
         private Poster<EditDataRequest, EditDataResult> editDataRequester;

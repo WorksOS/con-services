@@ -132,18 +132,20 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("GetProjectExtents - Including Surveyed Surfaces")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "GetProjectExtents")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("requireSurveyedSurfaceLargerThanProductionData")]
         public virtual void GetProjectExtents_IncludingSurveyedSurfaces()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("GetProjectExtents - Including Surveyed Surfaces", new string[] {
-                        "requireSurveyedSurfaceLargerThanProductionData"});
-#line 17
+                        "requireSurveyedSurfaceLargerThanProductionData",
+                        "ignore"});
+#line 18
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 18
- testRunner.Given("a GetProjectExtents project id 1001158", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 19
+ testRunner.Given("a GetProjectExtents project id 1001158", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 20
  testRunner.When("I try to get the extents", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
             TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
@@ -160,7 +162,7 @@ this.FeatureBackground();
                         "2184.3218844638031",
                         "1088.3172778947385",
                         "591.953857421875"});
-#line 20
+#line 21
  testRunner.Then("the following Bounding Box ThreeD Grid values should be returned", ((string)(null)), table2, "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -172,15 +174,15 @@ this.FeatureBackground();
         public virtual void GetProjectExtents_BadRequestNullProjectID()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("GetProjectExtents - Bad Request (Null Project ID)", ((string[])(null)));
-#line 24
+#line 25
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 25
- testRunner.Given("a GetProjectExtents null project id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 26
- testRunner.When("I try to get the extents expecting badrequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("a GetProjectExtents null project id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 27
+ testRunner.When("I try to get the extents expecting badrequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 28
  testRunner.Then("I should get error code -1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -192,15 +194,15 @@ this.FeatureBackground();
         public virtual void GetProjectExtents_BadRequestInvalidProjectID()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("GetProjectExtents - Bad Request (Invalid Project ID)", ((string[])(null)));
-#line 29
+#line 30
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 30
- testRunner.Given("a GetProjectExtents project id 0", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 31
- testRunner.When("I try to get the extents expecting badrequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("a GetProjectExtents project id 0", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 32
+ testRunner.When("I try to get the extents expecting badrequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 33
  testRunner.Then("I should get error code -1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -212,15 +214,15 @@ this.FeatureBackground();
         public virtual void GetProjectExtents_BadRequestDeletedProject()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("GetProjectExtents - Bad Request (Deleted Project)", ((string[])(null)));
-#line 34
+#line 35
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 35
- testRunner.Given("a GetProjectExtents project id 1000992", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 36
- testRunner.When("I try to get the extents expecting badrequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("a GetProjectExtents project id 1000992", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 37
+ testRunner.When("I try to get the extents expecting badrequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 38
  testRunner.Then("I should get error code -4", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();

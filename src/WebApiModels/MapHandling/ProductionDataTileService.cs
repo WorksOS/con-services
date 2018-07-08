@@ -1,7 +1,7 @@
 ﻿using System;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Net;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -64,7 +64,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
       try
       {
-         elevationExtents = GetElevationExtents(projectSettings, filter, projectId, mode);
+        elevationExtents = GetElevationExtents(projectSettings, filter, projectId, mode);
       }
       catch (ServiceException se)
       {
@@ -72,21 +72,21 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         log.LogTrace(
             $"Failed to get elevation extents for height request with error: {se.GetResult.Code}:{se.GetResult.Message} a transparent tile will be generated");
       }
-      
+
       if (getTile)
       {
-         tileRequest = requestFactory.Create<TileRequestHelper>(r => r
-            .ProjectId(projectId)
-            .Headers(customHeaders)
-            .ProjectSettings(projectSettings)
-            .ProjectSettingsColors(projectSettingsColors)
-            .Filter(filter)
-            .DesignDescriptor(cutFillDesign))
-            .SetVolumeCalcType(volumeCalcType)
-            .SetVolumeDesign(volumeDesign)
-            .SetBaseFilter(baseFilter)
-            .SetTopFilter(topFilter)
-            .CreateTileRequest(mode, width, height, bbox, elevationExtents);
+        tileRequest = requestFactory.Create<TileRequestHelper>(r => r
+           .ProjectId(projectId)
+           .Headers(customHeaders)
+           .ProjectSettings(projectSettings)
+           .ProjectSettingsColors(projectSettingsColors)
+           .Filter(filter)
+           .DesignDescriptor(cutFillDesign))
+           .SetVolumeCalcType(volumeCalcType)
+           .SetVolumeDesign(volumeDesign)
+           .SetBaseFilter(baseFilter)
+           .SetTopFilter(topFilter)
+           .CreateTileRequest(mode, width, height, bbox, elevationExtents);
 
         //TileRequest is both v1 and v2 model so cannot change its validation directly.
         //However for v2 we want to return a transparent empty tile for cut-fill if no design specified.
@@ -97,13 +97,13 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         }
         catch (ServiceException se)
         {
-          if (tileRequest.mode == DisplayMode.CutFill &&
+          if (tileRequest.Mode == DisplayMode.CutFill &&
               se.Code == HttpStatusCode.BadRequest &&
               se.GetResult.Code == ContractExecutionStatesEnum.ValidationError)
           {
             if (
-              se is MissingDesignDescriptorException || 
-              se is TwoFiltersRequiredException || 
+              se is MissingDesignDescriptorException ||
+              se is TwoFiltersRequiredException ||
               se is SingleFilterRequiredException)
             {
               getTile = false;
@@ -144,7 +144,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="mode">Display mode; type of data requested</param>
     /// <returns>Elevation extents to use</returns>
     private ElevationStatisticsResult GetElevationExtents(CompactionProjectSettings projectSettings, FilterResult filter, long projectId, DisplayMode mode)
-    {  
+    {
       var elevExtents = mode == DisplayMode.Height ? elevProxy.GetElevationRange(projectId, filter, projectSettings) : null;
       //Fix bug in Raptor - swap elevations if required
       elevExtents?.SwapElevationsIfRequired();

@@ -72,7 +72,7 @@ Scenario: EditData - Insert Lift Edit Overlapping Real Lift Exactly
 	Then the lift list should contain the lift details in the following data edits
 		| EditId |
 		| 9      |
-
+@ignore
 Scenario: EditData - Read Back Edits
 	Given I submit the following data edits to project 1001285
          | EditId |

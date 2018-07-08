@@ -33,7 +33,7 @@ namespace VSS.Productivity3D.Common.Models
     /// </summary>
     [JsonProperty(PropertyName = "mode", Required = Required.Always)]
     [Required]
-    public DisplayMode mode { get; protected set; }
+    public DisplayMode Mode { get; protected set; }
 
     /// <summary>
     /// The set of colours to be used to map the datum values in the thematic data to colours to be rendered in the tile.
@@ -136,10 +136,7 @@ namespace VSS.Productivity3D.Common.Models
     [Range(MIN_PIXELS, MAX_PIXELS)]
     [JsonProperty(PropertyName = "height", Required = Required.Always)]
     [Required]
-    public ushort height { get; protected set; }
-
-    [JsonIgnore]
-    public bool IsSummaryVolumeCutFillRequest { get; set; }
+    public ushort Height { get; protected set; }
 
     /// <summary>
     /// Default private constructor.
@@ -151,33 +148,33 @@ namespace VSS.Productivity3D.Common.Models
     /// Static constructor.
     /// </summary>
     public static TileRequest CreateTileRequest(
-        long projectId,
-        Guid? callId,
-        DisplayMode mode,
-        List<ColorPalette> palettes,
-        LiftBuildSettings liftBuildSettings,
-        RaptorConverters.VolumesType computeVolType,
-        double computeVolNoChangeTolerance,
-        DesignDescriptor designDescriptor,
-        FilterResult filter1,
-        long filterId1,
-        FilterResult filter2,
-        long filterId2,
-        FilterLayerMethod filterLayerMethod,
-        BoundingBox2DLatLon boundingBoxLatLon,
-        BoundingBox2DGrid boundingBoxGrid,
-        ushort width,
-        ushort height,
-        uint representationalDisplayColor = 0,
-        uint cmvDetailsColorNumber = 5,
-        uint cmvPercentChangeColorNumber = 6,
-        bool setSummaryDataLayersVisibility = true)
+      long projectId,
+      Guid? callId,
+      DisplayMode mode,
+      List<ColorPalette> palettes,
+      LiftBuildSettings liftBuildSettings,
+      RaptorConverters.VolumesType computeVolType,
+      double computeVolNoChangeTolerance,
+      DesignDescriptor designDescriptor,
+      FilterResult filter1,
+      long filterId1,
+      FilterResult filter2,
+      long filterId2,
+      FilterLayerMethod filterLayerMethod,
+      BoundingBox2DLatLon boundingBoxLatLon,
+      BoundingBox2DGrid boundingBoxGrid,
+      ushort width,
+      ushort height,
+      uint representationalDisplayColor = 0,
+      uint cmvDetailsColorNumber = 5,
+      uint cmvPercentChangeColorNumber = 6,
+      bool setSummaryDataLayersVisibility = true)
     {
       return new TileRequest
       {
         ProjectId = projectId,
         CallId = callId,
-        mode = mode,
+        Mode = mode,
         Palettes = palettes,
         LiftBuildSettings = liftBuildSettings,
         ComputeVolumesType = computeVolType,
@@ -191,7 +188,7 @@ namespace VSS.Productivity3D.Common.Models
         BoundBoxLatLon = boundingBoxLatLon,
         BoundBoxGrid = boundingBoxGrid,
         Width = width,
-        height = height,
+        Height = height,
         RepresentationalDisplayColor = representationalDisplayColor,
         cmvDetailsColorNumber = cmvDetailsColorNumber,
         cmvPercentChangeColorNumber = cmvPercentChangeColorNumber,
@@ -205,7 +202,7 @@ namespace VSS.Productivity3D.Common.Models
     public override void Validate()
     {
       base.Validate();
-      ValidatePalettes(Palettes, mode);
+      ValidatePalettes(Palettes, Mode);
 
       //Compaction settings
       LiftBuildSettings?.Validate();
@@ -213,11 +210,11 @@ namespace VSS.Productivity3D.Common.Models
       //Volumes
       //mode == DisplayMode.VolumeCoverage
       //computeVolNoChangeTolerance and computeVolType must be provided but since not nullable types they always will have a value anyway
-      ValidateDesign(DesignDescriptor, mode, ComputeVolumesType);
+      ValidateDesign(DesignDescriptor, Mode, ComputeVolumesType);
 
       //Summary volumes: v1 has mode VolumeCoverage, v2 has mode CutFill but computeVolType is set
-      if (mode == DisplayMode.VolumeCoverage ||
-         (mode == DisplayMode.CutFill &&
+      if (Mode == DisplayMode.VolumeCoverage ||
+         (Mode == DisplayMode.CutFill &&
          (ComputeVolumesType == RaptorConverters.VolumesType.Between2Filters ||
          ComputeVolumesType == RaptorConverters.VolumesType.BetweenDesignAndFilter ||
          ComputeVolumesType == RaptorConverters.VolumesType.BetweenFilterAndDesign)))
@@ -230,7 +227,6 @@ namespace VSS.Productivity3D.Common.Models
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Bounding box required either in lat/lng or grid coordinates"));
-
       }
 
       if (BoundBoxLatLon != null && BoundBoxGrid != null)
@@ -240,14 +236,14 @@ namespace VSS.Productivity3D.Common.Models
             "Only one bounding box is allowed"));
       }
 
-      if (mode == DisplayMode.TargetThicknessSummary && LiftBuildSettings.liftThicknessTarget == null)
+      if (Mode == DisplayMode.TargetThicknessSummary && LiftBuildSettings.liftThicknessTarget == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                 "For this mode LiftThickness Target in LIftBuildSettings must be specified."));
       }
 
-      if (mode == DisplayMode.TargetSpeedSummary && LiftBuildSettings.machineSpeedTarget == null)
+      if (Mode == DisplayMode.TargetSpeedSummary && LiftBuildSettings.machineSpeedTarget == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

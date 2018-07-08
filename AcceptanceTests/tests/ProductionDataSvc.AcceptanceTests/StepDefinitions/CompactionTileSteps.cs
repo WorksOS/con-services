@@ -1,8 +1,4 @@
-﻿
-using System;
-using System.Drawing;
-using System.IO;
-using System.Runtime.InteropServices;
+﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
@@ -38,34 +34,34 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     public void GivenFilterUid(string filterUid)
     {
       if (!string.IsNullOrEmpty(filterUid))
-        { tileRequester.QueryString.Add("filterUid", filterUid);}
+      { tileRequester.QueryString.Add("filterUid", filterUid); }
     }
 
     [Given(@"cutfillDesignUid ""(.*)""")]
     public void GivenCutfillDesignUid(string cutfillDesignUid)
     {
       if (!string.IsNullOrEmpty(cutfillDesignUid))
-        { tileRequester.QueryString.Add("cutfillDesignUid", cutfillDesignUid);}
+      { tileRequester.QueryString.Add("cutfillDesignUid", cutfillDesignUid); }
     }
 
-
     [Then(@"the result tile should match the ""(.*)"" from the repository within ""(.*)"" percent")]
-    public void ThenTheResultTileShouldMatchTheFromTheRepositoryWithin(string resultName, string difference)
+    public void ThenTheResultTileShouldMatchTheFromTheRepositoryWithin(string resultName, string difference = "0")
     {
-      double imageDifference = 0;
-      if (!string.IsNullOrEmpty(difference))
-      {
-        imageDifference = Convert.ToDouble(difference) / 100;
-      }    
+      var imageDifference = Convert.ToDouble(difference) / 100;
+
       var expectedTileData = tileRequester.ResponseRepo[resultName].TileData;
       var actualTileData = tileRequester.CurrentResponse.TileData;
+
       var expFileName = "Expected_" + ScenarioContext.Current.ScenarioInfo.Title + resultName + ".jpg";
       var actFileName = "Actual_" + ScenarioContext.Current.ScenarioInfo.Title + resultName + ".jpg";
+
       var diff = Common.CompareImagesAndGetDifferencePercent(expectedTileData, actualTileData, expFileName, actFileName);
-      Console.WriteLine("Actual Difference % = " + diff*100); 
+
+      Console.WriteLine("Actual Difference % = " + diff * 100);
       Console.WriteLine("Actual filename = " + actFileName);
       Console.WriteLine(tileRequester.CurrentResponse);
-      Assert.IsTrue(Math.Abs(diff) < imageDifference, "Actual Difference:" + diff*100 + "% Expected tiles (" + expFileName +  ") doesn't match actual tiles (" + actFileName + ")");
+
+      Assert.IsTrue(Math.Abs(diff) < imageDifference, "Actual Difference:" + diff * 100 + "% Expected tiles (" + expFileName + ") doesn't match actual tiles (" + actFileName + ")");
     }
 
     [When(@"I request result")]
@@ -87,11 +83,11 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     public void GivenAVolumeCalcTypeAndABaseUid(string volumeCalcType, string volumeTopUid, string volumeBaseUid)
     {
       if (!string.IsNullOrEmpty(volumeCalcType))
-        { tileRequester.QueryString.Add("volumeCalcType", volumeCalcType);}
+      { tileRequester.QueryString.Add("volumeCalcType", volumeCalcType); }
       if (!string.IsNullOrEmpty(volumeTopUid))
-        { tileRequester.QueryString.Add("volumeTopUid", volumeTopUid);}
+      { tileRequester.QueryString.Add("volumeTopUid", volumeTopUid); }
       if (!string.IsNullOrEmpty(volumeBaseUid))
-        { tileRequester.QueryString.Add("volumeBaseUid", volumeBaseUid);}
+      { tileRequester.QueryString.Add("volumeBaseUid", volumeBaseUid); }
     }
   }
 }

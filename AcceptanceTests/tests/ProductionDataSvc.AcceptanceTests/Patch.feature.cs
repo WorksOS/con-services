@@ -93,14 +93,20 @@ namespace ProductionDataSvc.AcceptanceTests
         
         public virtual void Patch_GoodRequest(string parameterName, string resultName, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Patch - Good Request", exampleTags);
-#line 7
+            string[] @__tags = new string[] {
+                    "ignore"};
+            if ((exampleTags != null))
+            {
+                @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
+            }
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Patch - Good Request", @__tags);
+#line 8
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 8
-    testRunner.When(string.Format("I request Production Data Patch supplying \"{0}\" paramters from the repository", parameterName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 9
+ testRunner.When(string.Format("I request Production Data Patch supplying \"{0}\" paramters from the repository", parameterName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 10
     testRunner.Then(string.Format("the Production Data Patch response should match \"{0}\" result from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -109,12 +115,13 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Patch - Good Request: HeightNoFilter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Patch")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "HeightNoFilter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "HeightNoFilter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "HeightNoFilter")]
         public virtual void Patch_GoodRequest_HeightNoFilter()
         {
-#line 7
+#line 8
 this.Patch_GoodRequest("HeightNoFilter", "HeightNoFilter", ((string[])(null)));
 #line hidden
         }
@@ -122,12 +129,13 @@ this.Patch_GoodRequest("HeightNoFilter", "HeightNoFilter", ((string[])(null)));
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Patch - Good Request: HeightAreaFilter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Patch")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "HeightAreaFilter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "HeightAreaFilter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "HeightAreaFilter")]
         public virtual void Patch_GoodRequest_HeightAreaFilter()
         {
-#line 7
+#line 8
 this.Patch_GoodRequest("HeightAreaFilter", "HeightAreaFilter", ((string[])(null)));
 #line hidden
         }
@@ -135,14 +143,14 @@ this.Patch_GoodRequest("HeightAreaFilter", "HeightAreaFilter", ((string[])(null)
         public virtual void Patch_BadRequest(string parameterName, string httpCode, string errorCode, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Patch - Bad Request", exampleTags);
-#line 15
+#line 16
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 16
+#line 17
     testRunner.When(string.Format("I request Patch supplying \"{0}\" paramters from the repository expecting http erro" +
                         "r code {1}", parameterName, httpCode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 17
+#line 18
     testRunner.Then(string.Format("the response cell should contain error code {0}", errorCode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -157,7 +165,7 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "-1")]
         public virtual void Patch_BadRequest_NullProjectId()
         {
-#line 15
+#line 16
 this.Patch_BadRequest("NullProjectId", "400", "-1", ((string[])(null)));
 #line hidden
         }
