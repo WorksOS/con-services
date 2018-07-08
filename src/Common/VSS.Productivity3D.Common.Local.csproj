@@ -38,6 +38,7 @@
     <ProjectReference Include="..\..\..\MerinoSandbox\MasterDataProxies\src\VSS.MasterData.Proxies.Local.csproj" />
     <ProjectReference Include="..\..\..\MerinoSandbox\Productivity3DModels\src\VSS.Productivity3D.Models.Local.csproj" />
     <ProjectReference Include="..\..\..\MerinoSandbox\TCCFileAccess\src\VSS.TCCFileAccess.Local.csproj" />
+    <ProjectReference Include="..\..\..\MerinoSandbox\WebApi.Common\src\VSS.WebApi.Common.Local.csproj" />
   </ItemGroup>
   
   <ItemGroup>
