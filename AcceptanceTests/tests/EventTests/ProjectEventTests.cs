@@ -26,8 +26,8 @@ namespace EventTests
        "| EventType          | EventDate   | ProjectID         | ProjectUID    | ProjectName   | ProjectType                     | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |" ,
       $"| CreateProjectEvent | 0d+09:00:00 | {legacyProjectId} | {projectGuid} | testProject1  | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      | {GEOMETRY_WKT} |" };
       ts.PublishEventCollection(eventArray);
-      var startDt = ts.FirstEventDate.ToString("MM/dd/yyyy HH:mm:ss");
-      var endDt = new DateTime(9999, 12, 31).ToString("MM/dd/yyyy HH:mm:ss");
+      var startDt = ts.FirstEventDate.ToString("MM/dd/yyyy HH:mm:ss tt");
+      var endDt = new DateTime(9999, 12, 31).ToString("MM/dd/yyyy HH:mm:ss tt");
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Project","ProjectUID","Name,LegacyProjectID,fk_ProjectTypeID,StartDate,EndDate,GeometryWKT",$"testProject1,{legacyProjectId},{(int)ProjectType.ProjectMonitoring},{startDt},{endDt},{GEOMETRY_WKT}",projectGuid);
     }
@@ -42,8 +42,8 @@ namespace EventTests
       var projectGuid = Guid.NewGuid();
       var legacyProjectId = ts.SetLegacyProjectId();
       string projectName = "testProject2";
-      var startDate = ts.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00", ts.FirstEventDate).ToString("MM/dd/yyyy HH:mm:ss"); ;
-      var endDate = ts.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00",ts.FirstEventDate).ToString("MM/dd/yyyy HH:mm:ss"); ;
+      var startDate = ts.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00", ts.FirstEventDate).ToString("MM/dd/yyyy HH:mm:ss tt"); ;
+      var endDate = ts.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00",ts.FirstEventDate).ToString("MM/dd/yyyy HH:mm:ss tt"); ;
       var eventArray = new[] {
        "| EventType          | EventDate   | ProjectID         | ProjectUID    | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT    |" ,
       $"| CreateProjectEvent | 0d+09:00:00 | {legacyProjectId} | {projectGuid} | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      |{GEOMETRY_WKT}  |" ,
