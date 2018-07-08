@@ -100,7 +100,7 @@ namespace VSS.MasterData.Repositories
                               AssetUID, Name, LegacyAssetID, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted, 
                               LastActionedUTC AS LastActionedUtc
                             FROM Asset
-                            WHERE AssetUID = @assetUid", new {assetUid = asset.AssetUID})).FirstOrDefault();
+                            WHERE AssetUID = @AssetUID", new { AssetUID = asset.AssetUID})).FirstOrDefault();
 
             if (existing == null || existing.IsDeleted == false)
             {
@@ -127,7 +127,7 @@ namespace VSS.MasterData.Repositories
                     @"INSERT Asset
                     (AssetUID, Name, LegacyAssetID, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted, LastActionedUTC )
                   VALUES
-                   (@AssetUid, @Name, @LegacyAssetID, @SerialNumber, @MakeCode, @Model, @ModelYear, @AssetType, @IconKey, @OwningCustomerUID, @EquipmentVIN, @IsDeleted, @LastActionedUtc)";
+                   (@AssetUID, @Name, @LegacyAssetID, @SerialNumber, @MakeCode, @Model, @ModelYear, @AssetType, @IconKey, @OwningCustomerUID, @EquipmentVIN, @IsDeleted, @LastActionedUtc)";
                 return await ExecuteWithAsyncPolicy(upsert, asset);
             }
             if (existing.LastActionedUtc == null
@@ -144,19 +144,19 @@ namespace VSS.MasterData.Repositories
                 asset.EquipmentVIN = asset.EquipmentVIN ?? existing.EquipmentVIN;
 
                 const string update =
-                    @"UPDATE Asset                
-                  SET Name = @Name,
-                      LegacyAssetID = @LegacyAssetID,
-                      SerialNumber = @SerialNumber,
-                      MakeCode = @MakeCode,
-                      Model = @Model,
-                      ModelYear = @ModelYear,
-                      AssetType = @AssetType,
-                      IconKey = @IconKey,      
-                      OwningCustomerUID = @OwningCustomerUID,
-                      EquipmentVIN = @EquipmentVIN,      
-                      LastActionedUTC = @LastActionedUtc
-                WHERE AssetUID = @AssetUid";
+                  @"UPDATE Asset                
+                    SET Name = @Name,
+                        LegacyAssetID = @LegacyAssetID,
+                        SerialNumber = @SerialNumber,
+                        MakeCode = @MakeCode,
+                        Model = @Model,
+                        ModelYear = @ModelYear,
+                        AssetType = @AssetType,
+                        IconKey = @IconKey,      
+                        OwningCustomerUID = @OwningCustomerUID,
+                        EquipmentVIN = @EquipmentVIN,      
+                        LastActionedUTC = @LastActionedUtc
+                  WHERE AssetUID = @AssetUID";
                 return await ExecuteWithAsyncPolicy(update, asset);
             }
             if (asset.LastActionedUtc < existing.LastActionedUtc) // Create received after Update
@@ -165,7 +165,7 @@ namespace VSS.MasterData.Repositories
                     @"UPDATE Asset                
                   SET MakeCode = @MakeCode,
                     SerialNumber = @SerialNumber
-                  WHERE AssetUID = @AssetUid";
+                  WHERE AssetUID = @AssetUID";
                 return await ExecuteWithAsyncPolicy(update, asset);
             }
 
@@ -180,9 +180,9 @@ namespace VSS.MasterData.Repositories
                 {
                     const string update =
                         @"UPDATE Asset                
-                    SET IsDeleted = 1,
-                      LastActionedUTC = @LastActionedUtc
-                    WHERE AssetUID = @AssetUid";
+                          SET IsDeleted = 1,
+                            LastActionedUTC = @LastActionedUtc
+                          WHERE AssetUID = @AssetUID";
                     return await ExecuteWithAsyncPolicy(update, asset);
                 }
                 log.LogDebug(
@@ -198,7 +198,7 @@ namespace VSS.MasterData.Repositories
                     "INSERT Asset " +
                     "    (AssetUID, IsDeleted, LastActionedUTC, AssetType) " +
                     "  VALUES " +
-                    "   (@AssetUid, @IsDeleted, @LastActionedUtc, \"Unassigned\")");
+                    "   (@AssetUID, @IsDeleted, @LastActionedUtc, \"Unassigned\")");
                 return await ExecuteWithAsyncPolicy(upsert, asset);
             }
             return await Task.FromResult(0);
@@ -221,16 +221,16 @@ namespace VSS.MasterData.Repositories
 
                     const string update =
                         @"UPDATE Asset                
-                    SET Name = @Name,
-                      LegacyAssetId = @LegacyAssetId,
-                      Model = @Model,                      
-                      ModelYear = @ModelYear, 
-                      AssetType = @AssetType,
-                      IconKey = @IconKey,
-                      OwningCustomerUID = @OwningCustomerUID,
-                      EquipmentVIN = @EquipmentVIN,
-                      LastActionedUTC = @LastActionedUtc
-                    WHERE AssetUID = @AssetUid";
+                            SET Name = @Name,
+                              LegacyAssetId = @LegacyAssetID,
+                              Model = @Model,                      
+                              ModelYear = @ModelYear, 
+                              AssetType = @AssetType,
+                              IconKey = @IconKey,
+                              OwningCustomerUID = @OwningCustomerUID,
+                              EquipmentVIN = @EquipmentVIN,
+                              LastActionedUTC = @LastActionedUtc
+                            WHERE AssetUID = @AssetUID";
                     return await ExecuteWithAsyncPolicy(update, asset);
                 }
                 log.LogWarning(
@@ -247,7 +247,7 @@ namespace VSS.MasterData.Repositories
                     @"INSERT Asset
                     (AssetUID, Name, LegacyAssetId, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted, LastActionedUTC )
                   VALUES
-                    (@AssetUid, @Name, @LegacyAssetId, @Model, @ModelYear, @AssetType, @IconKey, @OwningCustomerUID, @EquipmentVIN, @IsDeleted, @LastActionedUtc)";
+                    (@AssetUID, @Name, @LegacyAssetID, @Model, @ModelYear, @AssetType, @IconKey, @OwningCustomerUID, @EquipmentVIN, @IsDeleted, @LastActionedUtc)";
                 return await ExecuteWithAsyncPolicy(upsert, asset);
             }
             return await Task.FromResult(0);
@@ -263,8 +263,8 @@ namespace VSS.MasterData.Repositories
                         AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset
-                      WHERE AssetUID = @assetUid 
-                        AND IsDeleted = 0", new {assetUid})).FirstOrDefault();
+                      WHERE AssetUID = @AssetUID 
+                        AND IsDeleted = 0", new { AssetUID = assetUid })).FirstOrDefault();
         }
 
         public async Task<Asset> GetAsset(long legacyAssetId)
@@ -273,9 +273,9 @@ namespace VSS.MasterData.Repositories
                         AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset
-                      WHERE LegacyAssetId = @legacyAssetId 
+                      WHERE LegacyAssetId = @LegacyAssetID 
                         AND IsDeleted = 0"
-                , new {legacyAssetId}
+                , new { LegacyAssetID = legacyAssetId }
             )).FirstOrDefault();
         }
 

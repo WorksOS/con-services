@@ -114,8 +114,8 @@ namespace VSS.MasterData.Repositories
             DeviceUID, DeviceSerialNumber, DeviceType, DeviceState, DeregisteredUTC, ModuleType, MainboardSoftwareVersion, RadioFirmwarePartNumber, GatewayFirmwarePartNumber, DataLinkType, OwningCustomerUID,
             LastActionedUTC AS LastActionedUtc
           FROM Device
-          WHERE DeviceUID = @deviceUid"
-        , new {deviceUid = device.DeviceUID}
+          WHERE DeviceUID = @DeviceUID"
+        , new { DeviceUID = device.DeviceUID}
       )).FirstOrDefault();
 
       if (eventType == "CreateDeviceEvent")
@@ -168,17 +168,17 @@ namespace VSS.MasterData.Repositories
 
         const string update =
           @"UPDATE Device                
-                SET DeviceSerialNumber = @DeviceSerialNumber,
-                    DeviceType = @DeviceType,
-                    DeviceState = @DeviceState,
-                    DeregisteredUTC = @DeregisteredUTC,
-                    ModuleType = @ModuleType,
-                    MainboardSoftwareVersion = @MainboardSoftwareVersion,
-                    RadioFirmwarePartNumber = @RadioFirmwarePartNumber,      
-                    GatewayFirmwarePartNumber = @GatewayFirmwarePartNumber,  
-                    DataLinkType = @DataLinkType,     
-                    LastActionedUTC = @LastActionedUtc
-              WHERE DeviceUID = @deviceUid";
+              SET DeviceSerialNumber = @DeviceSerialNumber,
+                  DeviceType = @DeviceType,
+                  DeviceState = @DeviceState,
+                  DeregisteredUTC = @DeregisteredUTC,
+                  ModuleType = @ModuleType,
+                  MainboardSoftwareVersion = @MainboardSoftwareVersion,
+                  RadioFirmwarePartNumber = @RadioFirmwarePartNumber,      
+                  GatewayFirmwarePartNumber = @GatewayFirmwarePartNumber,  
+                  DataLinkType = @DataLinkType,     
+                  LastActionedUTC = @LastActionedUtc
+              WHERE DeviceUID = @DeviceUID";
         return await ExecuteWithAsyncPolicy(update, device);
       }
       // Create received after Update
@@ -230,7 +230,7 @@ namespace VSS.MasterData.Repositories
                       DataLinkType = @DataLinkType,    
                       OwningCustomerUID = @OwningCustomerUID, 
                       LastActionedUTC = @LastActionedUtc
-                WHERE DeviceUID = @deviceUid";
+                WHERE DeviceUID = @DeviceUID";
           return await ExecuteWithAsyncPolicy(update, device);
         }
         log.LogDebug(
@@ -273,8 +273,8 @@ namespace VSS.MasterData.Repositories
       var existing = (await QueryWithAsyncPolicy<AssetDevice>
       (@"SELECT fk_DeviceUID AS DeviceUID, fk_AssetUID AS AssetUID, LastActionedUTC
           FROM AssetDevice
-          WHERE fk_DeviceUID = @deviceUid"
-        , new {deviceUid = assetDevice.DeviceUID}
+          WHERE fk_DeviceUID = @DeviceUID"
+        , new { DeviceUID = assetDevice.DeviceUID}
       )).FirstOrDefault();
 
       if (eventType == "AssociateDeviceAssetEvent")
@@ -305,8 +305,8 @@ namespace VSS.MasterData.Repositories
       {
         const string update =
           @"UPDATE AssetDevice                
-                SET fk_AssetUID = @assetUid
-              WHERE fk_DeviceUID = @deviceUid";
+                SET fk_AssetUID = @AssetUID
+              WHERE fk_DeviceUID = @DeviceUID";
           return await ExecuteWithAsyncPolicy(update, assetDevice);
       }
       // Create received after Update
@@ -324,9 +324,8 @@ namespace VSS.MasterData.Repositories
         {
           const string update =
             @"DELETE FROM AssetDevice                                 
-                WHERE fk_DeviceUID = @deviceUid
-                  AND fk_AssetUID = @assetUid";
-
+                WHERE fk_DeviceUID = @DeviceUID
+                  AND fk_AssetUID = @AssetUID";
             return await ExecuteWithAsyncPolicy(update, assetDevice);
  }
         else
@@ -353,8 +352,8 @@ namespace VSS.MasterData.Repositories
               DeviceUID, DeviceSerialNumber, DeviceType, DeviceState, DeregisteredUTC, ModuleType, MainboardSoftwareVersion, RadioFirmwarePartNumber, GatewayFirmwarePartNumber, DataLinkType, OwningCustomerUID,
               LastActionedUTC AS LastActionedUtc
             FROM Device
-            WHERE DeviceUID = @deviceUid"
-          , new {deviceUid}
+            WHERE DeviceUID = @DeviceUID"
+          , new { DeviceUID = deviceUid }
         )).FirstOrDefault();
       }
     }
@@ -371,9 +370,9 @@ namespace VSS.MasterData.Repositories
                 INNER JOIN AssetDevice ad ON ad.fk_DeviceUID = d.DeviceUID
                 INNER JOIN Asset a ON a.AssetUID = ad.fk_AssetUID
               WHERE a.IsDeleted = 0
-                AND d.DeviceSerialNumber LIKE @radioSerial
-                AND d.DeviceType LIKE @deviceType"
-          , new {radioSerial, deviceType}
+                AND d.DeviceSerialNumber LIKE @RadioSerial
+                AND d.DeviceType LIKE @DeviceType"
+          , new { RadioSerial = radioSerial, DeviceType = deviceType }
         )).FirstOrDefault();
       }
     }
