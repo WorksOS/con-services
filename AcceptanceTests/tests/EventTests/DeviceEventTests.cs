@@ -32,7 +32,7 @@ namespace EventTests
       var ts = new TestSupport { IsPublishToKafka = true };
       var mysql = new MySqlHelper();
       var deviceUid = Guid.NewGuid();
-      var deregisteredDate = ts.ConvertTimeStampAndDayOffSetToDateTime("1d+12:00:00", ts.FirstEventDate);
+      var deregisteredDate = ts.ConvertTimeStampAndDayOffSetToDateTime("1d+2012:00:00", ts.FirstEventDate);
       msg.Title("Device Event 2", "Create Device Event ");
       var eventArray = new[] {
          "| EventType         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | DeregisteredUTC    | DataLinkType | GatewayFirmwarePartNumber | MainboardSoftwareVersion | ModuleType | RadioFirmwarePartNumber |",
@@ -134,7 +134,7 @@ namespace EventTests
       var ts = new TestSupport { IsPublishToKafka = true };
       var mysql = new MySqlHelper();
       var deviceUid = Guid.NewGuid();
-      var deregisteredDate = ts.ConvertTimeStampAndDayOffSetToDateTime("1d+12:00:00", ts.FirstEventDate);
+      var deregisteredDate = ts.ConvertTimeStampAndDayOffSetToDateTime("1d+2012:00:00", ts.FirstEventDate);
       msg.Title("Device Event 6", "Create Device Event ");
       var eventArray = new[] {
          "| EventType         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | MainboardSoftwareVersion | RadioFirmwarePartNumber |",
