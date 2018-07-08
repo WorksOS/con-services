@@ -42,8 +42,8 @@ namespace EventTests
       var projectGuid = Guid.NewGuid();
       var legacyProjectId = ts.SetLegacyProjectId();
       string projectName = "testProject2";
-      DateTime startDate = ts.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00", ts.FirstEventDate);
-      DateTime endDate = ts.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00",ts.FirstEventDate);
+      var startDate = ts.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00", ts.FirstEventDate).ToString("MM/dd/yyyy HH:mm:ss"); ;
+      var endDate = ts.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00",ts.FirstEventDate).ToString("MM/dd/yyyy HH:mm:ss"); ;
       var eventArray = new[] {
        "| EventType          | EventDate   | ProjectID         | ProjectUID    | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT    |" ,
       $"| CreateProjectEvent | 0d+09:00:00 | {legacyProjectId} | {projectGuid} | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      |{GEOMETRY_WKT}  |" ,
@@ -73,8 +73,8 @@ namespace EventTests
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       string projectName = $"Test Project 3";
-      var startDate = ts.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00", ts.FirstEventDate);
-      var endDate = ts.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00",ts.FirstEventDate);
+      var startDate = ts.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00", ts.FirstEventDate).ToString("MM/dd/yyyy HH:mm:ss"); ;
+      var endDate = ts.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00",ts.FirstEventDate).ToString("MM/dd/yyyy HH:mm:ss"); ;
 
       var customerEventArray = new[] {
       "| EventType           | EventDate   | CustomerName | CustomerType | CustomerUID   |",
