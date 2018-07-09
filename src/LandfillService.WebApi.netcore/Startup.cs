@@ -117,8 +117,8 @@ namespace LandfillService.WebApi.netcore
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCommon(SERVICE_TITLE);
 
-      /*if (Configuration["newrelic"] == "true")*/ app.UseMiddleware<NewRelicMiddleware>();
-      //app.UseFilterMiddleware<TIDAuthentication>();
+      if (Configuration["newrelic"] == "true") app.UseMiddleware<NewRelicMiddleware>();
+      app.UseFilterMiddleware<TIDAuthentication>();
       app.UseMvc();
     }
   }
