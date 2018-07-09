@@ -4,6 +4,7 @@ using VLPDDecls;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling;
 
@@ -18,7 +19,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
     {
       try
       {
-        var request = item as TagFileRequest;
+        var request = item as TagFileRequestLegacy;
 
         var returnResult = tagProcessor.ProjectDataServerTAGProcessorClient()
                                        .SubmitTAGFileToTAGFileProcessor

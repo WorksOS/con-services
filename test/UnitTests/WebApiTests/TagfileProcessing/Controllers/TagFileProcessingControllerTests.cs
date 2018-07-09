@@ -37,7 +37,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
     {
       byte[] tagData = { 0x1, 0x2, 0x3 };
       WGS84Fence fence = CreateAFence();
-      TagFileRequest request = TagFileRequest.CreateTagFile("dummy.tag", tagData, 544, fence, 1244020666025812, false, false);
+      TagFileRequestLegacy request = TagFileRequestLegacy.CreateTagFile("dummy.tag", tagData, 544, fence, 1244020666025812, false, false);
       TWGS84FenceContainer fenceContainer = RaptorConverters.convertWGS84Fence(request.Boundary);
 
       // create the mock PDSClient with successful result
@@ -71,7 +71,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
     {
       byte[] tagData = new byte[] { 0x1, 0x2, 0x3 };
       WGS84Fence fence = CreateAFence();
-      TagFileRequest request = TagFileRequest.CreateTagFile("dummy.tag", tagData, 544, fence, 1244020666025812, false, false);
+      TagFileRequestLegacy request = TagFileRequestLegacy.CreateTagFile("dummy.tag", tagData, 544, fence, 1244020666025812, false, false);
       RaptorConverters.convertWGS84Fence(request.Boundary);
 
       // create the mock PDSClient with successful result
