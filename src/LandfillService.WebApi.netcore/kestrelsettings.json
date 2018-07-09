@@ -1,8 +1,8 @@
 ﻿{
-    "LogLevel": {
-      "Default": "Debug",
-      "System": "Information",
-      "Microsoft": "Information"
-    },
+  "LogLevel": {
+    "Default": "Debug",
+    "System": "Warning",
+    "Microsoft": "Warning"
+  },
   "server.urls": "http://*:80"
   }
