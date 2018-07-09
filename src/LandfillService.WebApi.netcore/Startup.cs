@@ -80,8 +80,8 @@ namespace LandfillService.WebApi.netcore
       // Prevent endless loops when OpenTracing is tracking HTTP requests to Jaeger.
       services.Configure<HttpHandlerDiagnosticOptions>(options =>
       {
+        options.IgnorePatterns.Add(request => true);
         options.IgnorePatterns.Add(request => _jaegerUri.IsBaseOf(request.RequestUri));
-        options.IgnorePatterns.Add(request => request.RequestUri.AbsoluteUri=="/ping");
       });
 
       //GlobalTracer.Register();
