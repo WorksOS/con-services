@@ -57,8 +57,8 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       arg = new SubmitTAGFileRequestArgument()
           {
-            ProjectID = request.ProjectUId,
-            AssetID = request.AssetUId,
+            ProjectID = request.ProjectUID,
+            AssetID = request.AssetUID,
             TAGFileName = request.FileName,
             TagFileContent = request.Data,
             TCCOrgID = request.TccOrgId
