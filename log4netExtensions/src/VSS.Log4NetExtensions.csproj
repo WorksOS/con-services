@@ -7,7 +7,7 @@
     <Company>VSS</Company>
     <Product>VSS.Log4NetExtensions.netcore</Product>
     <Description>Can be used as an adapter between Log4Net and ASP.NET 5 logging facilities.</Description>
-    <VersionPrefix>2.3.1</VersionPrefix>
+    <VersionPrefix>2.3.2</VersionPrefix>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>VSS.Log4NetExtensions</AssemblyName>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
