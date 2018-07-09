@@ -3,7 +3,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.IO;
+using System.Net;
+using System.Threading;
 using VSS.Log4Net.Extensions;
+using VSS.WebApi.Common;
 
 #if NET_4_7
 using Microsoft.AspNetCore.Hosting.WindowsServices;
@@ -49,18 +52,29 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
 #else
 
       var host = new WebHostBuilder()
-        .UseConfiguration(config)
         .UseKestrel()
+        .UseLibuv(opts =>
+        {
+          opts.ThreadCount = 32;
+        })
         .UseContentRoot(Directory.GetCurrentDirectory())
+        .UseIISIntegration()
         .ConfigureLogging(builder =>
         {
           Log4NetProvider.RepoName = Startup.LoggerRepoName;
           builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
-          builder.SetMinimumLevel(LogLevel.Trace);
+          builder.SetMinimumLevel(LogLevel.Debug);
         })
-        .UseIISIntegration()
-        .UseStartup<Startup>();
-      host.Build().Run();
+        .UsePrometheus()
+        .UseStartup<Startup>()
+        .Build();
+
+      ThreadPool.SetMaxThreads(1024, 2048);
+      ThreadPool.SetMinThreads(1024, 2048);
+
+      //Check how many requests we can execute
+      ServicePointManager.DefaultConnectionLimit = 128;
+      host.Run();
 #endif
     }
   }

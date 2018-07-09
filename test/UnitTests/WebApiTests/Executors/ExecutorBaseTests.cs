@@ -1,8 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.IO;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
@@ -30,14 +29,13 @@ namespace WebApiTests.Executors
     [TestInitialize]
     public virtual void InitTest()
     {
+      var serviceCollection = new ServiceCollection();
       Log4NetProvider.RepoName = loggerRepoName;
       Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
-
-      var serviceCollection = new ServiceCollection();
-
+      
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton(loggerFactory);
       serviceCollection.AddTransient<IRepository<IAssetEvent>, AssetRepository>()

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using OpenTracing.Contrib.NetCore.CoreFx;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -9,6 +11,7 @@ using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.FIlters;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Filters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.WebApi.Common;
 
@@ -33,12 +36,16 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
     /// </summary>
     public const string LoggerRepoName = "WebApi";
 
+    private IServiceCollection serviceCollection;
+
+    private static readonly Uri _jaegerUri = new Uri("http://localhost:14268/api/traces");
+
     /// <summary>
     /// Gets the root configuration object.
     /// </summary>
     public IConfigurationRoot Configuration { get; }
 
-    private IServiceCollection serviceCollection;
+
 
     /// <summary>
     /// Default constructor.
@@ -90,8 +97,19 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
           config.Filters.Add(new ValidationFilterAttribute());
         });
 
+      services.AddJaeger(SERVICE_TITLE);
+
+      // Prevent endless loops when OpenTracing is tracking HTTP requests to Jaeger.
+      services.Configure<HttpHandlerDiagnosticOptions>(options =>
+      {
+        options.IgnorePatterns.Add(request => _jaegerUri.IsBaseOf(request.RequestUri));
+      });
+
+      services.AddOpenTracing();
+
       serviceCollection = services;
     }
+
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
     /// <summary>
@@ -99,20 +117,18 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
     /// </summary>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
+      loggerFactory.AddDebug();
+      loggerFactory.AddLog4Net(LoggerRepoName);
       serviceCollection.AddSingleton(loggerFactory);
       serviceCollection.BuildServiceProvider();
 
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(LoggerRepoName);
-
+      //Enable CORS before TID so OPTIONS works without authentication
       app.UseCommon(SERVICE_TITLE);
 
-#if NET_4_7
       if (Configuration["newrelic"] == "true")
       {
         app.UseMiddleware<NewRelicMiddleware>();
       }
-#endif
 
       app.UseMvc();
     }

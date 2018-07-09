@@ -19,10 +19,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Routing" Version="2.0.*" />
     <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="2.0.*" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.0.*" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.*" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.0.*" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.*" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.*" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.0" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.*" />
   </ItemGroup>
 

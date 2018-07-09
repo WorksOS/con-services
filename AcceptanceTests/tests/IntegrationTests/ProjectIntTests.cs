@@ -46,7 +46,7 @@ namespace IntegrationTests
       ts.PublishEventCollection(projectEventArray);
 
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectUid);
-      var endDt = new DateTime(9999, 12, 31);
+      var endDt = new DateTime(9999, 12, 31).ToString("yyyy-MM-dd");
       var custEventArray = new[] {
        "| EventType                         | EventDate   | CustomerName | CustomerType | CustomerUID   | ProjectUID   | SubscriptionUID   | StartDate          | EndDate | SubscriptionType      | DeviceUID   | AssetUID      |",
       $"| CreateCustomerEvent               | 0d+09:00:00 | CustName     | Customer     | {customerUid} |              |                   |                    |         |                       |             |               |",
@@ -102,7 +102,7 @@ namespace IntegrationTests
       ts.PublishEventCollection(projectEventArray);
 
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectUid);
-      var endDt = new DateTime(9999, 12, 31);
+      var endDt = new DateTime(9999, 12, 31).ToString("yyyy-MM-dd");
       var custEventArray = new[] {
        "| EventType                         | EventDate   | CustomerName | CustomerType | CustomerUID   | SubscriptionUID   | StartDate          | EndDate | SubscriptionType             | ",
       $"| CreateCustomerEvent               | 0d+09:00:00 | CustName     | Customer     | {customerUid} |                   |                    |         |                              | ",
@@ -156,7 +156,7 @@ namespace IntegrationTests
       ts.PublishEventCollection(projectEventArray);
 
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectUid);
-      var endDt = new DateTime(9999, 12, 31);
+      var endDt = new DateTime(9999, 12, 31).ToString("yyyy-MM-dd");
       var custEventArray = new[] {
        "| EventType                         | EventDate   | CustomerName | CustomerType | CustomerUID   | ProjectUID   | SubscriptionUID   | StartDate          | EndDate | SubscriptionType | DeviceUID   | AssetUID      |",
       $"| CreateCustomerEvent               | 0d+09:00:00 | CustName     | Customer     | {customerUid} |              |                   |                    |         |                  |             |               |",
@@ -212,7 +212,7 @@ namespace IntegrationTests
       ts.PublishEventCollection(projectEventArray);
 
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectUid);
-      var endDt = new DateTime(9999, 12, 31);
+      var endDt = new DateTime(9999, 12, 31).ToString("yyyy-MM-dd");
       var custEventArray = new[] {
        "| EventType                         | EventDate   | CustomerName | CustomerType | CustomerUID   | ProjectUID   | SubscriptionUID   | StartDate          | EndDate | SubscriptionType | DeviceUID   | AssetUID      |",
       $"| CreateCustomerEvent               | 0d+09:00:00 | CustName     | Customer     | {customerUid} |              |                   |                    |         |                  |             |               |",
@@ -284,7 +284,7 @@ namespace IntegrationTests
       ts.PublishEventCollection(projectEventArray);
 
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectUid1);
-      var endDt = new DateTime(9999, 12, 31);
+      var endDt = new DateTime(9999, 12, 31).ToString("yyyy-MM-dd");
       var custEventArray = new[] {
        "| EventType                         | EventDate   | CustomerName | CustomerType | CustomerUID   | ProjectUID   | SubscriptionUID   | StartDate          | EndDate | SubscriptionType      | DeviceUID   | AssetUID      |",
       $"| CreateCustomerEvent               | 0d+09:00:00 | CustName     | Customer     | {customerUid} |              |                   |                    |         |                       |             |               |",

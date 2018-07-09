@@ -1,9 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <Authors>Merino</Authors>
-    <Company>VSS</Company>
-    <TargetFrameworks>netcoreapp2.0;net471</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.0</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <AssemblyName>VSS.Productivity3D.TagFileAuth.WebAPI</AssemblyName>
@@ -24,48 +22,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Views;Areas\**\Views;Dockerfile;log4net.xml">
+    <None Update="Dockerfile;log4net.xml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="2.0.*" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.*" />
-    <PackageReference Include="Microsoft.AspNetCore.Routing" Version="2.0.*" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="2.0.*" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.0.*" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.0.*" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.*" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.0.*" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.*" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.*" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.*" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.*" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.*" />
-    <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
-    <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.*" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net471' ">
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
-    <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="2.0.*" />
-    <PackageReference Include="System.Net.Security" Version="4.3.2" />
-    <PackageReference Include="NewRelic.Agent.Api" Version="8.1.712" />
-  </ItemGroup>  
-
-
-  <ItemGroup>
-    <ProjectReference Include="..\WebApiModels\VSS.Productivity3D.TagFileAuth.WebAPI.Models.csproj" />
-  </ItemGroup>  
-
-  <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
-    <ItemGroup>
-      <DocFile Include="bin\$(Configuration)\$(TargetFramework)\*.xml" />
-    </ItemGroup>
-    <Copy SourceFiles="@(DocFile)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="false" />
-  </Target>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
@@ -77,9 +37,39 @@
     <DebugSymbols>True</DebugSymbols>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">
-    <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7</DefineConstants>
-  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="App.Metrics.AspNetCore" Version="2.0.0" />
+    <PackageReference Include="App.Metrics.Formatters.Prometheus" Version="2.0.0" />
+    <PackageReference Include="Jaeger" Version="0.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.*" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="2.0.*" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.0.*" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.0.*" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.0" />
+    <PackageReference Include="OpenTracing.Contrib.NetCore" Version="0.4.0" />
+    <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
+    <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.*" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.*" />
+    <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.1.*" />
+    <PackageReference Include="NewRelic.Agent.Api" Version="8.3.360" />
+  </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\WebApiModels\VSS.Productivity3D.TagFileAuth.WebAPI.Models.csproj" />
+  </ItemGroup>  
+
+  <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
+    <ItemGroup>
+      <DocFile Include="bin\$(Configuration)\$(TargetFramework)\*.xml" />
+    </ItemGroup>
+    <Copy SourceFiles="@(DocFile)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="false" />
+  </Target>
 
 </Project>

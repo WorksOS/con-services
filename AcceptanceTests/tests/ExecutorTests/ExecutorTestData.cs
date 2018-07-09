@@ -32,13 +32,12 @@ namespace ExecutorTests
     [TestInitialize]
     public virtual void InitTest()
     {
+      var serviceCollection = new ServiceCollection();
       Log4NetProvider.RepoName = loggerRepoName;
       Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
-
-      var serviceCollection = new ServiceCollection();
 
       serviceCollection.AddLogging();
       serviceCollection

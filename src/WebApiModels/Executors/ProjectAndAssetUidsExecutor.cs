@@ -21,15 +21,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
   /// </summary>
   public class ProjectAndAssetUidsExecutor : RequestExecutorContainer
   {
-    //protected int ServiceType;
-    //protected bool IsJohnDoeAsset;
-    //protected List<Subscriptions> ProjectCustomerSubs;
-    protected List<Subscriptions> AssetCustomerSubs;
-    protected List<Subscriptions> AssetSubs;
-    //protected string ProjectOwningCustomer;
-    protected string AssetOwningCustomerUid;
-    //protected string TccCustomerUid;
-
 
     ///  <summary>
     ///  Processes the request
@@ -71,17 +62,18 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
             ContractExecutionStatesEnum.SerializationError));
       }
 
-      string projectUid = string.Empty;
-      string assetUid = string.Empty;
-
-      var MostSignificantServiceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "Unknown").NGEnum;
-      var isJohnDoeAsset = false;
+      var projectUid = string.Empty;
+      var projectOwningCustomer = string.Empty;
       var projectCustomerSubs = new List<Subscriptions>();
-      AssetCustomerSubs = new List<Subscriptions>();
-      AssetSubs = new List<Subscriptions>();
-      //ProjectOwningCustomer = string.Empty;
-      AssetOwningCustomerUid = string.Empty;
+
+      var assetUid = string.Empty;
+      var assetSubs = new List<Subscriptions>();
+      string assetOwningCustomerUid = string.Empty;
+
       string tccCustomerUid = string.Empty;
+
+      var isJohnDoeAsset = false;
+
       Project project = null;
 
       // presence of projectUid indicates a manual Import
@@ -94,8 +86,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         if (project != null)
         {
           projectUid = project.ProjectUID;
+          projectOwningCustomer = project.CustomerUID;
           projectCustomerSubs =
-            (await dataRepository.LoadManual3DCustomerBasedSubs(project.CustomerUID, DateTime.UtcNow)).ToList();
+            (await dataRepository.LoadManual3DCustomerBasedSubs(projectOwningCustomer, DateTime.UtcNow)).ToList();
           log.LogDebug(
             $"ProjectAndAssetUidsExecutor: Loaded ProjectCustomerSubs? {JsonConvert.SerializeObject(projectCustomerSubs)}");
         }
@@ -132,12 +125,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         if (assetDevice != null)
         {
           assetUid = assetDevice.AssetUID;
-          AssetOwningCustomerUid = assetDevice.OwningCustomerUID;
+          assetOwningCustomerUid = assetDevice.OwningCustomerUID;
           log.LogDebug($"ProjectAndAssetUidsExecutor: Loaded assetDevice {JsonConvert.SerializeObject(assetDevice)}");
 
           // get any assetSubs ("3D Project Monitoring") 
-          AssetSubs = (await dataRepository.LoadAssetSubs(assetUid, DateTime.UtcNow)).ToList();
-          log.LogDebug($"ProjectAndAssetUidsExecutor: Loaded assetSubs? {JsonConvert.SerializeObject(AssetSubs)}");
+          assetSubs = (await dataRepository.LoadAssetSubs(assetUid, DateTime.UtcNow)).ToList();
+          log.LogDebug($"ProjectAndAssetUidsExecutor: Loaded assetSubs? {JsonConvert.SerializeObject(assetSubs)}");
         }
         else
         {
@@ -150,32 +143,27 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       // Manual Import, just confirm the project we are provided with
       if (!string.IsNullOrEmpty(request.ProjectUid))
       {
-        // todo something with MostSignificantServiceType
-
         if (!projectCustomerSubs.Any())
         {
-          // see if we can use the assetCustomerSub 3dpm?
-          if (string.IsNullOrEmpty(assetUid))
+          // see if we can use the assetCustomerSub 3dpm
+          if (!string.IsNullOrEmpty(assetUid))
           {
-            // todo do we need assetOwningCustomer and MostSignificantServiceType  3dpm 9"Manual 3D Project Monitoring") subscriptions
-            //  yes I think so for Manual import to determine if assetCustomer == projectCustomer stuff
-            AssetCustomerSubs = (await dataRepository.LoadManual3DCustomerBasedSubs(AssetOwningCustomerUid, DateTime.UtcNow)).ToList();
-            log.LogDebug($"ProjectAndAssetUidsExecutor: Loaded assetsCustomerSubs? {JsonConvert.SerializeObject(AssetCustomerSubs)}");
+            // we need assetOwningCustomer for Manual import to determine if assetCustomer == projectCustomer 
+            var assetCustomerSubs = (await dataRepository.LoadManual3DCustomerBasedSubs(assetOwningCustomerUid, DateTime.UtcNow)).ToList();
+            log.LogDebug($"ProjectAndAssetUidsExecutor: Loaded assetsCustomerSubs? {JsonConvert.SerializeObject(assetCustomerSubs)}");
             
-            MostSignificantServiceType =
-              GetMostSignificantServiceType(assetUid,
-                (string.IsNullOrEmpty(project?.CustomerUID) ? String.Empty : project?.CustomerUID), projectCustomerSubs,
-                AssetCustomerSubs, AssetSubs);
+            var mostSignificantServiceType =
+              GetMostSignificantServiceType(assetUid, projectOwningCustomer, projectCustomerSubs,
+                assetCustomerSubs, assetSubs);
             log.LogDebug(
               "ProjectAndAssetUidsExecutor: after GetMostSignificantServiceType(). AssetUID {0} project{1} custSubs {2} assetSubs {3}",
               assetUid, JsonConvert.SerializeObject(project),
               JsonConvert.SerializeObject(projectCustomerSubs),
-              JsonConvert.SerializeObject(AssetSubs));
+              JsonConvert.SerializeObject(assetSubs));
 
-            if (MostSignificantServiceType == serviceTypeMappings.serviceTypes.Find(st => st.name == "Unknown").NGEnum)
+            if (mostSignificantServiceType == serviceTypeMappings.serviceTypes.Find(st => st.name == "Unknown").NGEnum)
             {
-              throw new ServiceException(HttpStatusCode.BadRequest,
-                GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(projectUid, assetUid, 99 /* todo no sub for manual import for project or asset */));
+              return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(projectUid, assetUid, 39);
             }
           }
           else
@@ -185,6 +173,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
           }
         }
 
+        // got some kind of subscription by this stage...
         var intersectingProjects = (await dataRepository.GetIntersectingProjects(project.CustomerUID,
           new int[] {(int) project.ProjectType},
           request.Latitude, request.Longitude, request.TimeOfPosition)).ToList();
@@ -216,9 +205,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       }
 
       var potentialProjects = new List<Project>();
-      if (!string.IsNullOrEmpty(tccCustomerUid) || !string.IsNullOrEmpty(AssetOwningCustomerUid))
+      if (!string.IsNullOrEmpty(tccCustomerUid) || !string.IsNullOrEmpty(assetOwningCustomerUid))
       {
-        potentialProjects = await GetPotentialProjects(AssetOwningCustomerUid, AssetSubs, tccCustomerUid, request);
+        potentialProjects = await GetPotentialProjects(assetOwningCustomerUid, assetSubs, tccCustomerUid, request);
         log.LogDebug(
           $"ProjectAndAssetUidsExecutor: GetPotentialProjects: {JsonConvert.SerializeObject(potentialProjects)}");
 

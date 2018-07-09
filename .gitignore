@@ -10,13 +10,12 @@
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
-build/
 bld/
 [Bb]in/
 [Oo]bj/
 [Pp]ackages/
 *.boltdata/
-[Dd]eploy/
+AcceptanceTests/[Dd]eploy/
 [Tt]ests/[Ww]ork/
 
 

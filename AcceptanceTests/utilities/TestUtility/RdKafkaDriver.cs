@@ -1,29 +1,30 @@
-﻿using RdKafka;
+﻿using Confluent.Kafka;
 using System;
+using System.Collections.Generic;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace TestUtility
 {
-  public class RdKafkaDriver //: IDisposable
+  public class RdKafkaDriver
   {
     public Producer kafkaProducer;
 
-    //[ThreadStatic]
-    //private static Topic _topic = null;
-    //public Topic GetTopic
-    //{ get
-    //  {
-    //    if (_topic == null) _topic = kafkaProducer.Topic(topicName);
-    //    return _topic;
-    //  }
-    //}
     public RdKafkaDriver()
     {
-      var appConfig = new TestConfig(); 
-      Log.Info($"Kafka Server: {appConfig.kafkaServer} ",Log.ContentType.URI);
-      kafkaProducer = new Producer(appConfig.kafkaServer);
+      var appConfig = new TestConfig();
+      Log.Info($"Kafka Server: {appConfig.kafkaServer} ", Log.ContentType.URI);
+      var producerConfig = new Dictionary<string, object>
+      {
+        {"bootstrap.servers", appConfig.kafkaServer},
+        {"session.timeout.ms", "10000"},
+        {"retries", "3"},
+        //{"batch.size", "1048576"},
+        //{"linger.ms", "20"},
+        //{"acks", "all"},
+        //{"block.on.buffer.full", "true"}
+      };
+
+      kafkaProducer = new Producer(producerConfig);
     }
 
     /// <summary>
@@ -32,31 +33,26 @@ namespace TestUtility
     /// <param name="topicName">Kafka topic name e.g  VSS.VisionLink.Interfaces.Events.Telematics.Machine.SwitchStateEvent </param>
     /// <param name="message">Kafka Message</param>
     public void SendKafkaMessage(string topicName, string message)
-    { 
+    {
       try
       {
-        using (var topic = kafkaProducer.Topic(topicName))
+        Log.Info($"Publish: {topicName} Message: {message} ", Log.ContentType.KafkaSend);
+        Console.WriteLine($"Publish: {topicName} Message: {message} ");
+        var data = Encoding.UTF8.GetBytes(message);
+        var key = Encoding.UTF8.GetBytes(message);
+        var deliveryReport = kafkaProducer.ProduceAsync(topicName, key, data).ContinueWith(task =>
         {
-            Log.Info($"Publish: {topicName} Message: {message} ", Log.ContentType.KafkaSend);
-            Console.WriteLine($"Publish: {topicName} Message: {message} ");
-            var data = Encoding.UTF8.GetBytes(message);
-            var deliveryReport = topic.Produce(data);                
-            var response = deliveryReport.ContinueWith(task =>
-            {
-                Log.Info($"Partition: {task.Result.Partition}, Offset: {task.Result.Offset} Incontinue: {deliveryReport.Status.ToString()}", Log.ContentType.KafkaResponse);
-            });
-            response.Wait();
-        }
+          Log.Info(
+            $"Partition: {task.Result.Partition}, Offset: {task.Result.Offset} Incontinue: {task.Status.ToString()}",
+            Log.ContentType.KafkaResponse);
+          return 1;
+        }).Result;
+
       }
       catch (Exception ex)
       {
-          Log.Error(ex, Log.ContentType.Error);
+        Log.Error(ex, Log.ContentType.Error);
       }
     }
-
-    //public void Dispose()
-    //{
-    //  GetTopic.Dispose();
-    //}
   }
 }
