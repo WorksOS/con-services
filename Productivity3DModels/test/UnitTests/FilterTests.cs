@@ -6,8 +6,9 @@ using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.UnitTests.ResultsHandling;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Utilities;
+using VSS.Productivity3D.Models.Validation;
 
 namespace VSS.Productivity3D.Models.UnitTests
 {
