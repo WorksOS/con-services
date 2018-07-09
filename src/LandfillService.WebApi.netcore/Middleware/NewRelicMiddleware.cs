@@ -28,6 +28,7 @@ namespace VSS.MasterData.Landfill.WebAPI.Middleware
     /// <param name="context">The current <see cref="HttpContext" /> object.</param>
     public async Task Invoke(HttpContext context)
     {
+
       var watch = Stopwatch.StartNew();
       await NextRequestDelegate.Invoke(context);
 

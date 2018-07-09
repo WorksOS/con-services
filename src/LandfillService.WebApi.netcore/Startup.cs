@@ -9,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OpenTracing;
+using OpenTracing.Contrib.NetCore.AspNetCore;
+using OpenTracing.Contrib.NetCore.Configuration;
 using OpenTracing.Contrib.NetCore.CoreFx;
 using OpenTracing.Util;
 using VSS.Common.Exceptions;
@@ -80,72 +82,15 @@ namespace LandfillService.WebApi.netcore
       services.AddScoped<IErrorCodesProvider, ProjectErrorCodesProvider>();
 
 
-      services.AddOpenTracing();
-
-      //Add Jaegar tracing
-      services.AddSingleton<ITracer>(serviceProvider =>
-      {
-        ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-
-        ITracer tracer;
-        if (!String.IsNullOrEmpty(Environment.GetEnvironmentVariable("JAEGER_AGENT_HOST")) &&
-            !String.IsNullOrEmpty(Environment.GetEnvironmentVariable("JAEGER_AGENT_PORT")) &&
-            !String.IsNullOrEmpty(Environment.GetEnvironmentVariable("JAEGER_SAMPLER_TYPE")) &&
-            !String.IsNullOrEmpty(Environment.GetEnvironmentVariable("JAEGER_SERVICE_NAME")))
+      services.AddOpenTracing(builder =>
         {
-
-          Configuration jagerConfig = Jaeger.Configuration.FromEnv(loggerFactory);
-          //ISender sender = new UdpSender(jagerConfig.GetTracerBuilder )
-
-          //IReporter reporter = new RemoteReporter.Builder()
-          //  .WithSender();
-
-          //By default this sends the tracing results to localhost:6831
-          //to test locallay run this docker run -d -p 6831:5775/udp -p 16686:16686 jaegertracing/all-in-one:latest
-          tracer = jagerConfig.GetTracerBuilder()
-            .Build();
-
-        }
-        else
-        {
-          //Use default tracer
-
-          ISampler sampler = new ConstSampler(sample: true);
-
-          //By default this sends the tracing results to localhost:6831
-          //to test locallay run this docker run -d -p 6831:5775/udp -p 16686:16686 jaegertracing/all-in-one:latest
-          tracer = new Tracer.Builder(SERVICE_TITLE)
-            .WithLoggerFactory(loggerFactory)
-            .WithSampler(sampler)
-            .Build();
-        }
-
-        // Prevent endless loops when OpenTracing is tracking HTTP requests to Jaeger.
-        services.Configure<HttpHandlerDiagnosticOptions>(options =>
-        {
-          options.IgnorePatterns.Add(request => request.RequestUri.AbsolutePath.ToString() == "/ping");
-          options.IgnorePatterns.Add(request => _jaegerUri.IsBaseOf(request.RequestUri));
+          builder.ConfigureAspNetCore(options =>
+            {
+              options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
+            });
         });
 
-        GlobalTracer.Register(tracer);
-
-        return tracer;
-      });
-
-
-
-
-
-//      services.AddJaeger(SERVICE_TITLE);
-
-      // Prevent endless loops when OpenTracing is tracking HTTP requests to Jaeger.
-      /*services.Configure<HttpHandlerDiagnosticOptions>(options =>
-      {
-        options.IgnorePatterns.Add(request => _jaegerUri.IsBaseOf(request.RequestUri));
-      });*/
-
-      //GlobalTracer.Register();
-
+      services.AddJaeger(SERVICE_TITLE);
 
       services.AddMemoryCache();
       services.AddCommon<Startup>(SERVICE_TITLE);

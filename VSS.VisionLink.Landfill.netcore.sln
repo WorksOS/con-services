@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common.netstandard", "src\Common.netcore\Common.netstandard.csproj", "{623E175A-51EE-4F17-85D1-A3C87416A32D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LandfillService.WebApi.netcore", "src\LandfillService.WebApi.netcore\LandfillService.WebApi.netcore.csproj", "{199FA402-0C5F-4AFF-9ACF-E34FF335B3AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LandfillService.WebApi.netcore", "src\LandfillService.WebApi.netcore\LandfillService.WebApi.netcore.csproj", "{199FA402-0C5F-4AFF-9ACF-E34FF335B3AC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LandfillDatasync.netcore", "src\LandfillDatasync.netcore\LandfillDatasync.netcore.csproj", "{6FF906A5-D5AE-4606-BCE4-EF95C8FB43C1}"
 EndProject
