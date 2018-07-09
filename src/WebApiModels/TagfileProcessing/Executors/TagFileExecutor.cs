@@ -37,7 +37,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
     {
       try
       {
-        var request = item as TagFileRequest;
+        var request = item as TagFileRequestLegacy;
 
         var resultCode = tagProcessor.ProjectDataServerTAGProcessorClient()
           .SubmitTAGFileToTAGFileProcessor

@@ -5,6 +5,7 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using WGSPoint = VSS.Productivity3D.Models.Models.WGSPoint3D;
+using VSS.Productivity3D.Models.Enums;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 {

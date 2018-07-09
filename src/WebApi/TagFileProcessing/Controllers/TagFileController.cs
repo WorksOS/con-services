@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     [PostRequestVerifier]
     [Route("api/v1/tagfiles")]
     [HttpPost]
-    public IActionResult Post([FromBody]TagFileRequest request)
+    public IActionResult Post([FromBody]TagFileRequestLegacy request)
     {
       request.Validate();
 
@@ -72,7 +72,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
 
       var projectId = GetLegacyProjectId(request.ProjectUid).Result;
 
-      var tagFileRequest = TagFileRequest.CreateTagFile(request.FileName, request.Data, projectId, null, VelociraptorConstants.NO_MACHINE_ID, false, false, request.OrgId);
+      var tagFileRequest = TagFileRequestLegacy.CreateTagFile(request.FileName, request.Data, projectId, null, VelociraptorConstants.NO_MACHINE_ID, false, false, request.OrgId);
       tagFileRequest.Validate();
 
       return ExecuteRequest(tagFileRequest);
@@ -96,7 +96,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
 
       var projectId = GetLegacyProjectId(request.ProjectUid).Result;
 
-      var tfRequest = TagFileRequest.CreateTagFile(request.FileName, request.Data, projectId, null, VelociraptorConstants.NO_MACHINE_ID, false, false);
+      var tfRequest = TagFileRequestLegacy.CreateTagFile(request.FileName, request.Data, projectId, null, VelociraptorConstants.NO_MACHINE_ID, false, false);
       tfRequest.Validate();
 
       var result = RequestExecutorContainerFactory
@@ -113,7 +113,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       return StatusCode((int)HttpStatusCode.BadRequest, result);
     }
 
-    private IActionResult ExecuteRequest(TagFileRequest tfRequest)
+    private IActionResult ExecuteRequest(TagFileRequestLegacy tfRequest)
     {
       var responseObj = RequestExecutorContainerFactory
                         .Build<TagFileExecutor>(logger, raptorClient, tagProcessor)

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Compaction.ActionServices;
 using WGSPoint = VSS.Productivity3D.Models.Models.WGSPoint3D;
@@ -32,19 +33,19 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       [TestMethod]
       public void Should_return_GroundToGround_When_both_filters_are_set()
       {
-        Assert.AreEqual(RaptorConverters.VolumesType.Between2Filters, volumeSummaryDataHelper.GetVolumesType(filter, filter));
+        Assert.AreEqual(VolumesType.Between2Filters, volumeSummaryDataHelper.GetVolumesType(filter, filter));
       }
 
       [TestMethod]
       public void Should_return_GroundToDesign_When_only_baseFilter_is_set()
       {
-        Assert.AreEqual(RaptorConverters.VolumesType.BetweenFilterAndDesign, volumeSummaryDataHelper.GetVolumesType(filter, null));
+        Assert.AreEqual(VolumesType.BetweenFilterAndDesign, volumeSummaryDataHelper.GetVolumesType(filter, null));
       }
 
       [TestMethod]
       public void Should_return_DesignToGround_When_only_topFilter_is_set()
       {
-        Assert.AreEqual(RaptorConverters.VolumesType.BetweenDesignAndFilter, volumeSummaryDataHelper.GetVolumesType(null, filter));
+        Assert.AreEqual(VolumesType.BetweenDesignAndFilter, volumeSummaryDataHelper.GetVolumesType(null, filter));
       }
     }
 

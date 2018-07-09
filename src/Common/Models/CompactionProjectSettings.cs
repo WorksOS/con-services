@@ -10,6 +10,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.Models.Utilities;
+using VSS.Productivity3D.Models.Validation;
 
 namespace VSS.Productivity3D.Common.Models
 {

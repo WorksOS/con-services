@@ -6,6 +6,7 @@ using VSS.MasterData.Models.FIlters;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models
 {
@@ -15,7 +16,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models
   /// If not set, Raptor will determine automatically which project the TAG file should be processed into. 
   /// When provided it acts as an override value. 
   /// </summary>
-  public class TagFileRequest : IValidatable
+  public class TagFileRequestLegacy : IValidatable
   {
     /// <summary>
     /// Dummy project ID field to keep things in order until we straighten the TAG files submission endpoint out.
@@ -57,13 +58,13 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models
     /// <summary>
     /// Default private constructor.
     /// </summary>
-    private TagFileRequest()
+    private TagFileRequestLegacy()
     { }
 
     /// <summary>
     /// Static constructor.
     /// </summary>
-    public static TagFileRequest CreateTagFile(string fileName,
+    public static TagFileRequestLegacy CreateTagFile(string fileName,
         byte[] data,
         long projectId,
         WGS84Fence boundary,
@@ -72,7 +73,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models
         bool convertToDxf,
         string tccOrgId = null)
     {
-      return new TagFileRequest
+      return new TagFileRequestLegacy
       {
         FileName = fileName,
         Data = data,

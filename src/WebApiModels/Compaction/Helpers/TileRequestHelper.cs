@@ -8,6 +8,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
+using VSS.Productivity3D.Models.Enums;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 {
@@ -90,7 +91,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       }
 
       TileRequest tileRequest = TileRequest.CreateTileRequest(
-        ProjectId, null, mode, palette, liftSettings, (RaptorConverters.VolumesType)computeVolType,
+        ProjectId, null, mode, palette, liftSettings, (VolumesType)computeVolType,
         0, design, filter1, 0, filter2, 0,
         Filter == null || !Filter.LayerType.HasValue ? FilterLayerMethod.None : Filter.LayerType.Value,
         bbox, null, width, height, 0, CMV_DETAILS_NUMBER_OF_COLORS, CMV_PERCENT_CHANGE_NUMBER_OF_COLORS, false);

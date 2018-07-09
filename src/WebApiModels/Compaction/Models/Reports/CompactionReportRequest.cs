@@ -5,6 +5,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Enums;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
 {
@@ -101,7 +102,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
 
       if (ReportCutFill)
       {
-        ValidateDesign(DesignFile, DisplayMode.CutFill, RaptorConverters.VolumesType.None);
+        ValidateDesign(DesignFile, DisplayMode.CutFill, VolumesType.None);
       }
 
       if (!(ReportPassCount || ReportTemperature || ReportMDP || ReportCutFill || ReportCMV || ReportElevation))

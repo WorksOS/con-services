@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Validation;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models;
 
 namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Models
@@ -26,11 +27,11 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Models
       };
 
       var fence = WGS84Fence.CreateWGS84Fence(points);
-      var tagfile = TagFileRequest.CreateTagFile("test.dxf", data, 10, fence, 11, false, false);
+      var tagfile = TagFileRequestLegacy.CreateTagFile("test.dxf", data, 10, fence, 11, false, false);
 
       Assert.IsTrue(validator.TryValidate(tagfile, out ICollection<ValidationResult> results));
 
-      tagfile = TagFileRequest.CreateTagFile("te$#@#%%&^%&^%#G<>SFDGREYT*st.dxf", data, 10, null, 11, false, false);
+      tagfile = TagFileRequestLegacy.CreateTagFile("te$#@#%%&^%&^%#G<>SFDGREYT*st.dxf", data, 10, null, 11, false, false);
 
       Assert.IsFalse(validator.TryValidate(tagfile, out results));
     }
