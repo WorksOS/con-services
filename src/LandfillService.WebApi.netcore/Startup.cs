@@ -78,6 +78,7 @@ namespace LandfillService.WebApi.netcore
       {
         options.IgnorePatterns.Add(request => request.RequestUri.AbsolutePath.ToString() == "/ping");
       });
+      services.AddOpenTracing();
       services.AddJaeger(SERVICE_TITLE);
 
       // Prevent endless loops when OpenTracing is tracking HTTP requests to Jaeger.
@@ -88,7 +89,7 @@ namespace LandfillService.WebApi.netcore
 
       //GlobalTracer.Register();
 
-      //services.AddOpenTracing();
+
       services.AddMemoryCache();
       services.AddCommon<Startup>(SERVICE_TITLE);
 
