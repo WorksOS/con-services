@@ -9,8 +9,8 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     /// </summary>
     public class TagFileDetail
     {
-        public Guid projectId;
-        public Guid assetId;
+        public Guid? projectId;
+        public Guid? assetId;
         public string tagFileName;
         public byte[] tagFileContent;
         public string tccOrgId;

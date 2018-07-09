@@ -23,9 +23,9 @@ namespace TAGFiles.Tests.netcore
     {
 
         TFAProxy tfa = new TFAProxy();
-        Guid a;
-        Guid p;
-        ValidationResult vr = tfa.ValidateTagfile(Guid.Empty, Guid.Empty, "", 0, 0, 0, DateTime.Now, out p, out a);
+        Guid? a;
+        Guid? p = null;
+        ValidationResult vr = tfa.ValidateTagfile(Guid.Empty, Guid.Empty, "", 0, 0, 0, DateTime.Now, ref p, out a);
         Assert.True(vr == ValidationResult.BadRequest, "Failed to return a bad request");
     }
 

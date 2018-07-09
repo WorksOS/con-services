@@ -31,8 +31,8 @@ namespace VSS.TRex.TAGFiles.Classes
 /// <param name="projectId"></param>
 /// <param name="assetId"></param>
 /// <returns></returns>
-        ValidationResult ValidateTagfile(Guid submittedProjectId, Guid tccOrgId, string radioSerial, int radioType,
-                double lat, double lon, DateTime timeOfPosition, out Guid projectId, out Guid assetId);
+        ValidationResult ValidateTagfile(Guid? submittedProjectId, Guid tccOrgId, string radioSerial, int radioType,
+                double lat, double lon, DateTime timeOfPosition, ref Guid? projectId, out Guid? assetId);
 
     }
 }

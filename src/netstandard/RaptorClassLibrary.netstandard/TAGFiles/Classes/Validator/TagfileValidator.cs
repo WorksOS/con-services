@@ -25,22 +25,23 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         private static ValidationResult CheckFileIsProcessible(TagFileDetail tagDetail, TAGProcessor processor)
         {
 
-            /*
-            Three different types of tagfile submission
-            Type A: Automatic submission.
-            This is where a tagfile comes in from a known org and the system works out what Asset and Project it belongs to. Licensing is checked
+      /*
+      Three different types of tagfile submission
+      Type A: Automatic submission.
+      This is where a tagfile comes in from a known org and the system works out what Asset and Project it belongs to. Licensing is checked
 
-            Type B:  Manual submission.
-            This is where the project is known and supplied as an override projectid value. The Asset is worked out via TFA service or assigned a JohnDoe id if not known. 
-            Licensing is checked for manual subscription
+      Type B:  Manual submission.
+      This is where the project is known and supplied as an override projectid value. The Asset is worked out via TFA service or assigned a JohnDoe id if not known. 
+      Licensing is checked for manual subscription
 
-            Type C: Override submission.
-            This is where the ProjectId and AssetId is both supplied. It bypasses TFA service and providing the tagfile is valid, is processed straight into the project.
-            This is not a typical submission but is handy for testing and in a situation where a known third party source other than NG could determine the AssetId and Project. Typical NG users could not submit via this method thus avoiding our license check. 
-             
-             */
+      Type C: Override submission.
+      This is where the ProjectId and AssetId is both supplied. It bypasses TFA service and providing the tagfile is valid, is processed straight into the project.
+      This is not a typical submission but is handy for testing and in a situation where a known third party source other than NG could determine the AssetId and Project. Typical NG users could not submit via this method thus avoiding our license check. 
 
-            // Type C. Do we have what we need already (Most likley test tool submission)
+       */
+
+      // Type C. Do we have what we need already (Most likley test tool submission)
+         if (tagDetail.assetId != null && tagDetail.projectId != null)
             if (tagDetail.assetId != Guid.Empty && tagDetail.projectId != Guid.Empty) 
                 return ValidationResult.Valid;
 
@@ -51,7 +52,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
             Log.LogInformation($"Calling TFA servce to validate tagfile:{tagDetail.tagFileName}");
 
             // use decimal degrees when calling API
-            var apiResult = tfa.ValidateTagfile(tagDetail.projectId, Guid.Parse(tagDetail.tccOrgId), processor.RadioSerial, radioType, processor.LLHLat * (180 / Math.PI), processor.LLHLon * (180 / Math.PI), processor.DataTime, out tagDetail.projectId, out tagDetail.assetId);
+            var apiResult = tfa.ValidateTagfile(tagDetail.projectId, Guid.Parse(tagDetail.tccOrgId), processor.RadioSerial, radioType, processor.LLHLat * (180 / Math.PI), processor.LLHLon * (180 / Math.PI), processor.DataTime, ref tagDetail.projectId, out tagDetail.assetId);
             Log.LogInformation($"TFA GetId returned for {tagDetail.tagFileName} StatusCode: {apiResult}, ProjectId:{tagDetail.projectId}, AssetId:{tagDetail.assetId}");
             if (apiResult == ValidationResult.Valid)
             {

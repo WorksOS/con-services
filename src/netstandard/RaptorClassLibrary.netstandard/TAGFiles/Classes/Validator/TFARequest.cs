@@ -12,6 +12,6 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         public double longitude;
         public DateTime timeOfPosition;
         public Guid tccOrgUid;
-        public Guid projectUid;
+        public Guid? projectUid;
     }
 }
