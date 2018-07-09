@@ -6,7 +6,7 @@
     <Company>VSS</Company>
     <Product>VSS.WebApi.Common.netcore</Product>
     <Description>Shared configuration for 3D Web APIs</Description>
-    <VersionPrefix>1.2.4</VersionPrefix>
+    <VersionPrefix>1.2.5</VersionPrefix>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>VSS.WebApi.Common</AssemblyName>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -37,6 +37,7 @@
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.26.*" />
     <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.35.*" />
     <PackageReference Include="Jaeger" Version="0.1.1" />
+    <PackageReference Include="OpenTracing.Contrib.NetCore" Version="0.4.0" />
   </ItemGroup>
 
 </Project>
