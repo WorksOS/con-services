@@ -19,7 +19,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Models
       var validator = new DataAnnotationsValidator();
       byte[] data = { 0x1, 0x2, 0x3 };
 
-      WGSPoint3D[] points = {
+        WGSPoint3D[] points = {
         WGSPoint3D.CreatePoint(0.631986074660308, -2.00757760231466),
         WGSPoint3D.CreatePoint(0.631907507374149, -2.00758733949739),
         WGSPoint3D.CreatePoint(0.631904485465203, -2.00744352879854),
