@@ -23,11 +23,13 @@ namespace LandfillService.WebApi.netcore
         .UseLibuv(opts => { opts.ThreadCount = 32; })
         .UseContentRoot(Directory.GetCurrentDirectory())
         .UseIISIntegration()
+        .UseConfiguration(kestrelConfig)
         .ConfigureLogging(builder =>
         {
           Log4NetProvider.RepoName = Startup.LoggerRepoName;
           builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
-          builder.SetMinimumLevel(LogLevel.Debug);
+          builder.SetMinimumLevel(LogLevel.Trace);
+          builder.AddConfiguration(kestrelConfig);
         })
         .UsePrometheus()
         .UseStartup<Startup>()
