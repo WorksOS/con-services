@@ -1,7 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
@@ -19,6 +21,8 @@ using VSS.TRex.Rendering.Servers.Client;
 using VSS.TRex.Servers;
 using VSS.TRex.Servers.Client;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.TAGFiles.GridFabric.Arguments;
+using VSS.TRex.TAGFiles.GridFabric.Requests;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Gateway.Common.Executors
@@ -45,6 +49,22 @@ namespace VSS.TRex.Gateway.Common.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       ContractExecutionResult result = null;
+
+      var request = item as TagFileRequest;
+
+      SubmitTAGFileRequest submitRequest = new SubmitTAGFileRequest();
+      SubmitTAGFileRequestArgument arg = null;
+
+      arg = new SubmitTAGFileRequestArgument()
+          {
+            ProjectID = request.ProjectUId,
+            AssetID = request.AssetUId,
+            TAGFileName = request.FileName,
+            TagFileContent = request.Data,
+            TCCOrgID = request.TccOrgId
+          };
+
+
       return result;
     }
     /*

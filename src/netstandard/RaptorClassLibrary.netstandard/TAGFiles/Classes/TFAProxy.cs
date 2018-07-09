@@ -31,14 +31,15 @@ namespace VSS.TRex.TAGFiles.Classes
         /// <param name="projectId"></param>
         /// <param name="assetId"></param>
         /// <returns></returns>
-        public ValidationResult ValidateTagfile(Guid submittedProjectId, Guid tccOrgId, string radioSerial, int radioType, double lat, double lon, DateTime timeOfPosition, out Guid projectId, out Guid assetId)
+        public ValidationResult ValidateTagfile(Guid? submittedProjectId, Guid tccOrgId, string radioSerial, int radioType, double lat, double lon, DateTime timeOfPosition, ref Guid? projectId, out Guid? assetId)
         {
             ValidationResult result = ValidationResult.Unknown;
 
+            assetId = null;
             // dont waste the services time if you dont have any details
             //if (tccOrgId == string.Empty && radioType == string.Empty)
-             //   return ValidationResult.BadRequest;
-            Log.LogInformation($"Details passed to TFA servce. ProjectID:{projectId}, AssetId:{assetId}, TCCOrgId:{tccOrgId}, radioSerial:{radioSerial}, radioType:{radioType}, lat:{lat}, lon:{lon}, DateTime:{timeOfPosition}");
+            //   return ValidationResult.BadRequest;
+              Log.LogInformation($"Details passed to TFA servce. ProjectID:{projectId}, TCCOrgId:{tccOrgId}, radioSerial:{radioSerial}, radioType:{radioType}, lat:{lat}, lon:{lon}, DateTime:{timeOfPosition}");
 
             if (radioSerial == String.Empty && tccOrgId == Guid.Empty && submittedProjectId == Guid.Empty)
             {
@@ -83,7 +84,7 @@ namespace VSS.TRex.TAGFiles.Classes
                 {
                     result = ValidationResult.Valid;
                     // if not overriding take TFA projectid
-                    if ((projectId == Guid.Empty) && (Guid.Parse(responseObj.projectUid) != Guid.Empty))
+                    if ((projectId == null) && (Guid.Parse(responseObj.projectUid) != Guid.Empty))
                     {
                         projectId = Guid.Parse(responseObj.projectUid);
                     }

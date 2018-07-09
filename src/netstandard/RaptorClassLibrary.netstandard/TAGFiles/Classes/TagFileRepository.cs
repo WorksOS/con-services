@@ -20,8 +20,8 @@ namespace VSS.TRex.TAGFiles.Classes
     public class TagfileMetaData
     {
         [XmlAttribute]
-        public Guid projectId;
-        public Guid assetId;
+        public Guid? projectId;
+        public Guid? assetId;
         public string tagFileName;
         public string tccOrgId;
         public bool IsJohnDoe;
