@@ -9,10 +9,16 @@ MYSQL_DATABASE_NAME: VSS-Landfill-Alpha
 MYSQL_PORT: "3306"
 MYSQL_USERNAME: vssLandfillUsr
 MYSQL_ROOT_PASSWORD: (mRty94hER
+KAFKA_URI: 10.97.97.96
+KAFKA_PORT: "9092"
+KAFKA_GROUP_NAME: Landfill-Consumer-Alpha-3
+KAFKA_TOPICS: VSS.Interfaces.Events.MasterData.IProjectEvent.V1,VSS.Interfaces.Events.MasterData.ICustomerEvent,VSS.Interfaces.Events.MasterData.IGeofenceEvent,VSS.Interfaces.Events.MasterData.ISubscriptionEvent
+KAFKA_TOPIC_NAME_SUFFIX: -Alpha
+KAFKA_OFFSET: Latest
+CUSTOM_INIT_SCRIPT: zookeeper_check.sh
 JAEGER_AGENT_HOST: jaeger-agent.jaeger
 JAEGER_AGENT_PORT: "6831"
 JAEGER_SAMPLER_TYPE: const
 JAEGER_SERVICE_NAME: Alpha Landfill Service API
 NEW_RELIC_LICENSE_KEY: YOUR_LICENSE_KEY 
 NEW_RELIC_APP_NAME: YOUR_APP_NAME
-
