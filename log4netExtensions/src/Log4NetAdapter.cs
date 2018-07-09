@@ -59,7 +59,7 @@ namespace VSS.Log4Net.Extensions
       }
 
       var message = formatter(state, exception);
-      message = Regex.Replace(message, @"\t|\n|\r", "");
+      message = Regex.Replace(message, @"\t|\n|\r", " ");
 
       if (_accessor?.HttpContext?.Items != null)
         if (_accessor.HttpContext.Items.ContainsKey("RequestID"))
