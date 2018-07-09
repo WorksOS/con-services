@@ -35,16 +35,16 @@ namespace ExecutorTests
     [TestMethod]
     public async Task ProjectBoundariesAtDateExecutor_ExistingAsset()
     {
-      Guid assetUID = Guid.NewGuid();
+      Guid assetUid = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
-      Guid owningCustomerUID = Guid.NewGuid();
-      Guid deviceUID = Guid.NewGuid();
-      string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
+      Guid owningCustomerUid = Guid.NewGuid();
+      Guid deviceUid = Guid.NewGuid();
+      string deviceSerialNumber = "The radio serial " + deviceUid;
       DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
       string tccOrgId = "";
 
-      CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID, deviceSerialNumber, deviceType.ToString());
-      CreateCustomer(owningCustomerUID, tccOrgId);
+      CreateAssetDeviceAssociation(assetUid, legacyAssetId, owningCustomerUid, deviceUid, deviceSerialNumber, deviceType.ToString());
+      CreateCustomer(owningCustomerUid, tccOrgId);
 
       DateTime timeOfPositionUtc = DateTime.UtcNow.AddHours(-2);
       GetProjectBoundariesAtDateRequest projectBoundariesAtDateExecutorRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(legacyAssetId, timeOfPositionUtc);
@@ -63,17 +63,17 @@ namespace ExecutorTests
     [TestMethod]
     public async Task ProjectBoundariesAtDateExecutor_ExistingAssetAndAssetSub()
     {
-      Guid assetUID = Guid.NewGuid();
+      Guid assetUid = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
-      Guid owningCustomerUID = Guid.NewGuid();
-      Guid deviceUID = Guid.NewGuid();
-      string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
+      Guid owningCustomerUid = Guid.NewGuid();
+      Guid deviceUid = Guid.NewGuid();
+      string deviceSerialNumber = "The radio serial " + deviceUid;
       DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
       string tccOrgId = "";
 
-      CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID, deviceSerialNumber, deviceType.ToString());
-      CreateCustomer(owningCustomerUID, tccOrgId);
-      CreateAssetSub(assetUID, owningCustomerUID, "3D Project Monitoring");
+      CreateAssetDeviceAssociation(assetUid, legacyAssetId, owningCustomerUid, deviceUid, deviceSerialNumber, deviceType.ToString());
+      CreateCustomer(owningCustomerUid, tccOrgId);
+      CreateAssetSub(assetUid, owningCustomerUid, "3D Project Monitoring");
 
       DateTime timeOfPositionUtc = DateTime.UtcNow.AddHours(-2);
       GetProjectBoundariesAtDateRequest projectBoundariesAtDateExecutorRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(legacyAssetId, timeOfPositionUtc);
@@ -92,21 +92,21 @@ namespace ExecutorTests
     [TestMethod]
     public async Task ProjectBoundariesAtDateExecutor_ExistingAssetAndAssetSubAndProject()
     {
-      Guid assetUID = Guid.NewGuid();
+      Guid assetUid = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
-      Guid owningCustomerUID = Guid.NewGuid();
-      Guid deviceUID = Guid.NewGuid();
-      string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
+      Guid owningCustomerUid = Guid.NewGuid();
+      Guid deviceUid = Guid.NewGuid();
+      string deviceSerialNumber = "The radio serial " + deviceUid;
       DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
       string tccOrgId = "";
 
-      CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID, deviceSerialNumber, deviceType.ToString());
-      CreateCustomer(owningCustomerUID, tccOrgId);
-      CreateAssetSub(assetUID, owningCustomerUID, "3D Project Monitoring");
+      CreateAssetDeviceAssociation(assetUid, legacyAssetId, owningCustomerUid, deviceUid, deviceSerialNumber, deviceType.ToString());
+      CreateCustomer(owningCustomerUid, tccOrgId);
+      CreateAssetSub(assetUid, owningCustomerUid, "3D Project Monitoring");
 
-      Guid projectUID = Guid.NewGuid();
+      Guid projectUid = Guid.NewGuid();
       int legacyProjectId = new Random().Next(0, int.MaxValue);
-      CreateProject(projectUID, legacyProjectId, owningCustomerUID, VSS.VisionLink.Interfaces.Events.MasterData.Models.ProjectType.Standard);
+      CreateProject(projectUid, legacyProjectId, owningCustomerUid, ProjectType.Standard);
 
       DateTime timeOfPositionUtc = DateTime.UtcNow.AddHours(-2);
       GetProjectBoundariesAtDateRequest projectBoundariesAtDateExecutorRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(legacyAssetId, timeOfPositionUtc);
@@ -127,21 +127,21 @@ namespace ExecutorTests
     [TestMethod]
     public async Task ProjectBoundariesAtDateExecutor_ExistingAssetAndCustSubAndProject()
     {
-      Guid assetUID = Guid.NewGuid();
+      Guid assetUid = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
-      Guid owningCustomerUID = Guid.NewGuid();
-      Guid deviceUID = Guid.NewGuid();
-      string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
+      Guid owningCustomerUid = Guid.NewGuid();
+      Guid deviceUid = Guid.NewGuid();
+      string deviceSerialNumber = "The radio serial " + deviceUid;
       DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
       string tccOrgId = "";
 
-      CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID, deviceSerialNumber, deviceType.ToString());
-      CreateCustomer(owningCustomerUID, tccOrgId);
-      CreateCustomerSub(owningCustomerUID, "Manual 3D Project Monitoring");
+      CreateAssetDeviceAssociation(assetUid, legacyAssetId, owningCustomerUid, deviceUid, deviceSerialNumber, deviceType.ToString());
+      CreateCustomer(owningCustomerUid, tccOrgId);
+      CreateCustomerSub(owningCustomerUid, "Manual 3D Project Monitoring");
 
-      Guid projectUID = Guid.NewGuid();
+      Guid projectUid = Guid.NewGuid();
       int legacyProjectId = new Random().Next(0, int.MaxValue);
-      CreateProject(projectUID, legacyProjectId, owningCustomerUID, VSS.VisionLink.Interfaces.Events.MasterData.Models.ProjectType.Standard);
+      CreateProject(projectUid, legacyProjectId, owningCustomerUid, ProjectType.Standard);
 
       DateTime timeOfPositionUtc = DateTime.UtcNow.AddHours(-2);
       GetProjectBoundariesAtDateRequest projectBoundariesAtDateExecutorRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(legacyAssetId, timeOfPositionUtc);
@@ -162,25 +162,25 @@ namespace ExecutorTests
     [TestMethod]
     public async Task ProjectBoundariesAtDateExecutor_ExistingAssetAndCustSubAnd2Projects()
     {
-      Guid assetUID = Guid.NewGuid();
+      Guid assetUid = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
-      Guid owningCustomerUID = Guid.NewGuid();
-      Guid deviceUID = Guid.NewGuid();
-      string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
+      Guid owningCustomerUid = Guid.NewGuid();
+      Guid deviceUid = Guid.NewGuid();
+      string deviceSerialNumber = "The radio serial " + deviceUid;
       DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
       string tccOrgId = "";
 
-      CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID, deviceSerialNumber, deviceType.ToString());
-      CreateCustomer(owningCustomerUID, tccOrgId);
-      CreateCustomerSub(owningCustomerUID, "Manual 3D Project Monitoring");
+      CreateAssetDeviceAssociation(assetUid, legacyAssetId, owningCustomerUid, deviceUid, deviceSerialNumber, deviceType.ToString());
+      CreateCustomer(owningCustomerUid, tccOrgId);
+      CreateCustomerSub(owningCustomerUid, "Manual 3D Project Monitoring");
 
-      Guid projectUID = Guid.NewGuid();
+      Guid projectUid = Guid.NewGuid();
       int legacyProjectId = new Random().Next(0, int.MaxValue);
-      CreateProject(projectUID, legacyProjectId, owningCustomerUID, VSS.VisionLink.Interfaces.Events.MasterData.Models.ProjectType.Standard);
+      CreateProject(projectUid, legacyProjectId, owningCustomerUid, ProjectType.Standard);
 
-      Guid projectUID2 = Guid.NewGuid();
+      Guid projectUid2 = Guid.NewGuid();
       int legacyProjectId2 = new Random().Next(0, int.MaxValue);
-      CreateProject(projectUID2, legacyProjectId2, owningCustomerUID, VSS.VisionLink.Interfaces.Events.MasterData.Models.ProjectType.LandFill, "POLYGON((170 10, 190 10, 190 40, 180 40, 170 40, 170 10))");
+      CreateProject(projectUid2, legacyProjectId2, owningCustomerUid, ProjectType.LandFill, "POLYGON((170 10, 190 10, 190 40, 180 40, 170 40, 170 10))");
 
       DateTime timeOfPositionUtc = DateTime.UtcNow.AddHours(-2);
       GetProjectBoundariesAtDateRequest projectBoundariesAtDateExecutorRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(legacyAssetId, timeOfPositionUtc);
@@ -215,30 +215,30 @@ namespace ExecutorTests
     [TestMethod]
     public async Task ProjectBoundariesAtDateExecutor_ExistingAssetAndCustSubAnd2Projects_OneDeleted()
     {
-      Guid assetUID = Guid.NewGuid();
+      Guid assetUid = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
-      Guid owningCustomerUID = Guid.NewGuid();
-      Guid deviceUID = Guid.NewGuid();
-      string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
+      Guid owningCustomerUid = Guid.NewGuid();
+      Guid deviceUid = Guid.NewGuid();
+      string deviceSerialNumber = "The radio serial " + deviceUid;
       DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
       string tccOrgId = "";
 
-      CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID, deviceSerialNumber,
+      CreateAssetDeviceAssociation(assetUid, legacyAssetId, owningCustomerUid, deviceUid, deviceSerialNumber,
         deviceType.ToString());
-      CreateCustomer(owningCustomerUID, tccOrgId);
-      CreateCustomerSub(owningCustomerUID, "Manual 3D Project Monitoring");
+      CreateCustomer(owningCustomerUid, tccOrgId);
+      CreateCustomerSub(owningCustomerUid, "Manual 3D Project Monitoring");
 
-      Guid projectUID = Guid.NewGuid();
+      Guid projectUid = Guid.NewGuid();
       int legacyProjectId = new Random().Next(0, int.MaxValue);
-      CreateProject(projectUID, legacyProjectId, owningCustomerUID,
-        VSS.VisionLink.Interfaces.Events.MasterData.Models.ProjectType.Standard);
+      CreateProject(projectUid, legacyProjectId, owningCustomerUid,
+        ProjectType.Standard);
 
-      Guid projectUID2 = Guid.NewGuid();
+      Guid projectUid2 = Guid.NewGuid();
       int legacyProjectId2 = new Random().Next(0, int.MaxValue);
-      CreateProject(projectUID2, legacyProjectId2, owningCustomerUID,
-        VSS.VisionLink.Interfaces.Events.MasterData.Models.ProjectType.LandFill,
+      CreateProject(projectUid2, legacyProjectId2, owningCustomerUid,
+        ProjectType.LandFill,
         "POLYGON((170 10, 190 10, 190 40, 180 40, 170 40, 170 10))");
-      DeleteProject(projectUID2);
+      DeleteProject(projectUid2);
 
       DateTime timeOfPositionUtc = DateTime.UtcNow.AddHours(-2);
       GetProjectBoundariesAtDateRequest projectBoundariesAtDateExecutorRequest =
@@ -262,22 +262,22 @@ namespace ExecutorTests
     [TestMethod]
     public async Task ProjectBoundariesAtDateExecutor_ExistingAssetAndCustSubAndProject_MissingAssetOwner()
     {
-      Guid assetUID = Guid.NewGuid();
+      Guid assetUid = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
-      Guid owningCustomerUID = Guid.NewGuid();
-      Guid deviceUID = Guid.NewGuid();
-      string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
+      Guid owningCustomerUid = Guid.NewGuid();
+      Guid deviceUid = Guid.NewGuid();
+      string deviceSerialNumber = "The radio serial " + deviceUid;
       DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
       string tccOrgId = "";
 
       // note no owningCustomerUID
-      CreateAssetDeviceAssociation(assetUID, legacyAssetId, null, deviceUID, deviceSerialNumber, deviceType.ToString());
-      CreateCustomer(owningCustomerUID, tccOrgId);
-      CreateCustomerSub(owningCustomerUID, "Manual 3D Project Monitoring");
+      CreateAssetDeviceAssociation(assetUid, legacyAssetId, null, deviceUid, deviceSerialNumber, deviceType.ToString());
+      CreateCustomer(owningCustomerUid, tccOrgId);
+      CreateCustomerSub(owningCustomerUid, "Manual 3D Project Monitoring");
 
-      Guid projectUID = Guid.NewGuid();
+      Guid projectUid = Guid.NewGuid();
       int legacyProjectId = new Random().Next(0, int.MaxValue);
-      CreateProject(projectUID, legacyProjectId, owningCustomerUID, VSS.VisionLink.Interfaces.Events.MasterData.Models.ProjectType.Standard);
+      CreateProject(projectUid, legacyProjectId, owningCustomerUid, ProjectType.Standard);
 
       DateTime timeOfPositionUtc = DateTime.UtcNow.AddHours(-2);
       GetProjectBoundariesAtDateRequest projectBoundariesAtDateExecutorRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(legacyAssetId, timeOfPositionUtc);
@@ -296,22 +296,22 @@ namespace ExecutorTests
     [TestMethod]
     public async Task ProjectBoundariesAtDateExecutor_ExistingAssetAndCustSubAndProject_DifferentCustomers()
     {
-      Guid assetUID = Guid.NewGuid();
+      Guid assetUid = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
-      Guid assetOwningCustomerUID = Guid.NewGuid();
-      Guid deviceUID = Guid.NewGuid();
-      string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
+      Guid assetOwningCustomerUid = Guid.NewGuid();
+      Guid deviceUid = Guid.NewGuid();
+      string deviceSerialNumber = "The radio serial " + deviceUid;
       DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
       string tccOrgId = "";
 
-      CreateAssetDeviceAssociation(assetUID, legacyAssetId, assetOwningCustomerUID, deviceUID, deviceSerialNumber, deviceType.ToString());
-      CreateCustomer(assetOwningCustomerUID, tccOrgId);
+      CreateAssetDeviceAssociation(assetUid, legacyAssetId, assetOwningCustomerUid, deviceUid, deviceSerialNumber, deviceType.ToString());
+      CreateCustomer(assetOwningCustomerUid, tccOrgId);
 
-      Guid projectUID = Guid.NewGuid();
+      Guid projectUid = Guid.NewGuid();
       int legacyProjectId = new Random().Next(0, int.MaxValue);
-      Guid projectCustomerUID = Guid.NewGuid();
-      CreateProject(projectUID, legacyProjectId, projectCustomerUID, VSS.VisionLink.Interfaces.Events.MasterData.Models.ProjectType.Standard);
-      CreateCustomerSub(projectCustomerUID, "Manual 3D Project Monitoring");
+      Guid projectCustomerUid = Guid.NewGuid();
+      CreateProject(projectUid, legacyProjectId, projectCustomerUid, ProjectType.Standard);
+      CreateCustomerSub(projectCustomerUid, "Manual 3D Project Monitoring");
 
       DateTime timeOfPositionUtc = DateTime.UtcNow.AddHours(-2);
       GetProjectBoundariesAtDateRequest projectBoundariesAtDateExecutorRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(legacyAssetId, timeOfPositionUtc);
@@ -330,21 +330,21 @@ namespace ExecutorTests
     [TestMethod]
     public async Task ProjectBoundariesAtDateExecutor_ExistingAssetAndCustSubAndProject_tagFileUtcMismatch()
     {
-      Guid assetUID = Guid.NewGuid();
+      Guid assetUid = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
-      Guid owningCustomerUID = Guid.NewGuid();
-      Guid deviceUID = Guid.NewGuid();
-      string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
+      Guid owningCustomerUid = Guid.NewGuid();
+      Guid deviceUid = Guid.NewGuid();
+      string deviceSerialNumber = "The radio serial " + deviceUid;
       DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
       string tccOrgId = "";
 
-      CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID, deviceSerialNumber, deviceType.ToString());
-      CreateCustomer(owningCustomerUID, tccOrgId);
-      CreateCustomerSub(owningCustomerUID, "Manual 3D Project Monitoring");
+      CreateAssetDeviceAssociation(assetUid, legacyAssetId, owningCustomerUid, deviceUid, deviceSerialNumber, deviceType.ToString());
+      CreateCustomer(owningCustomerUid, tccOrgId);
+      CreateCustomerSub(owningCustomerUid, "Manual 3D Project Monitoring");
 
-      Guid projectUID = Guid.NewGuid();
+      Guid projectUid = Guid.NewGuid();
       int legacyProjectId = new Random().Next(0, int.MaxValue);
-      CreateProject(projectUID, legacyProjectId, owningCustomerUID, VSS.VisionLink.Interfaces.Events.MasterData.Models.ProjectType.Standard);
+      CreateProject(projectUid, legacyProjectId, owningCustomerUid, VSS.VisionLink.Interfaces.Events.MasterData.Models.ProjectType.Standard);
 
       DateTime timeOfPositionUtc = new DateTime(2016, 02, 01).AddDays(-1); // this is projectStartDate
       GetProjectBoundariesAtDateRequest projectBoundariesAtDateExecutorRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(legacyAssetId, timeOfPositionUtc);
@@ -363,21 +363,21 @@ namespace ExecutorTests
     [TestMethod]
     public async Task ProjectBoundariesAtDateExecutor_ExistingAssetAndAssetSubAndProject_AccountOwner()
     {
-      Guid assetUID = Guid.NewGuid();
+      Guid assetUid = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
-      Guid owningCustomerUID = Guid.NewGuid();
-      Guid deviceUID = Guid.NewGuid();
-      string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
+      Guid owningCustomerUid = Guid.NewGuid();
+      Guid deviceUid = Guid.NewGuid();
+      string deviceSerialNumber = "The radio serial " + deviceUid;
       DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
       string tccOrgId = "";
 
-      CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID, deviceSerialNumber, deviceType.ToString());
-      CreateCustomer(owningCustomerUID, tccOrgId, CustomerType.Account);
-      CreateAssetSub(assetUID, owningCustomerUID, "3D Project Monitoring");
+      CreateAssetDeviceAssociation(assetUid, legacyAssetId, owningCustomerUid, deviceUid, deviceSerialNumber, deviceType.ToString());
+      CreateCustomer(owningCustomerUid, tccOrgId, CustomerType.Account);
+      CreateAssetSub(assetUid, owningCustomerUid, "3D Project Monitoring");
 
-      Guid projectUID = Guid.NewGuid();
+      Guid projectUid = Guid.NewGuid();
       int legacyProjectId = new Random().Next(0, int.MaxValue);
-      CreateProject(projectUID, legacyProjectId, owningCustomerUID, VSS.VisionLink.Interfaces.Events.MasterData.Models.ProjectType.Standard);
+      CreateProject(projectUid, legacyProjectId, owningCustomerUid, ProjectType.Standard);
 
       DateTime timeOfPositionUtc = DateTime.UtcNow.AddHours(-2);
       GetProjectBoundariesAtDateRequest projectBoundariesAtDateExecutorRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(legacyAssetId, timeOfPositionUtc);
@@ -396,23 +396,23 @@ namespace ExecutorTests
     [TestMethod]
     public async Task ProjectBoundariesAtDateExecutor_ExistingAssetAndAssetSubAndProject_subForDifferentCustomerAsync()
     {
-      Guid assetUID = Guid.NewGuid();
+      Guid assetUid = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
-      Guid owningCustomerUID = Guid.NewGuid();
-      Guid deviceUID = Guid.NewGuid();
-      string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
+      Guid owningCustomerUid = Guid.NewGuid();
+      Guid deviceUid = Guid.NewGuid();
+      string deviceSerialNumber = "The radio serial " + deviceUid;
       DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
       string tccOrgId = "";
 
-      CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID, deviceSerialNumber, deviceType.ToString());
-      CreateCustomer(owningCustomerUID, tccOrgId);
+      CreateAssetDeviceAssociation(assetUid, legacyAssetId, owningCustomerUid, deviceUid, deviceSerialNumber, deviceType.ToString());
+      CreateCustomer(owningCustomerUid, tccOrgId);
 
-      Guid assetSubCustomerUID = Guid.NewGuid();
-      CreateAssetSub(assetUID, assetSubCustomerUID, "3D Project Monitoring");
+      Guid assetSubCustomerUid = Guid.NewGuid();
+      CreateAssetSub(assetUid, assetSubCustomerUid, "3D Project Monitoring");
 
-      Guid projectUID = Guid.NewGuid();
+      Guid projectUid = Guid.NewGuid();
       int legacyProjectId = new Random().Next(0, int.MaxValue);
-      CreateProject(projectUID, legacyProjectId, owningCustomerUID, VSS.VisionLink.Interfaces.Events.MasterData.Models.ProjectType.Standard);
+      CreateProject(projectUid, legacyProjectId, owningCustomerUid, ProjectType.Standard);
 
       DateTime timeOfPositionUtc = DateTime.UtcNow.AddHours(-2);
       GetProjectBoundariesAtDateRequest projectBoundariesAtDateExecutorRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(legacyAssetId, timeOfPositionUtc);

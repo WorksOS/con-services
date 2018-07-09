@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.IO;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
@@ -53,7 +52,7 @@ namespace ExecutorTests
       serviceProvider = serviceCollection.BuildServiceProvider();
 
       this.LoggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-      logger = loggerFactory.CreateLogger<AssetIdExecutorTests>();
+      this.logger = LoggerFactory.CreateLogger<ExecutorTestData>();
 
       //logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<AssetIdExecutorTests>();
       assetRepo = serviceProvider.GetRequiredService<IRepository<IAssetEvent>>() as AssetRepository;

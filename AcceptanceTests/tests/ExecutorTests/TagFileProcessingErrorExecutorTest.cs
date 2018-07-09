@@ -14,14 +14,16 @@ namespace ExecutorTests
     [TestMethod]
     public void TagFileProcessingErrorV1Executor()
     {
-      TagFileProcessingErrorV1Request request = TagFileProcessingErrorV1Request.CreateTagFileProcessingErrorRequest(1, "Data from my dozer", (int) TagFileErrorsEnum.ProjectID_NoMatchingArea);
+      TagFileProcessingErrorV1Request request =
+        TagFileProcessingErrorV1Request.CreateTagFileProcessingErrorRequest(1, "Data from my dozer",
+          (int) TagFileErrorsEnum.ProjectID_NoMatchingArea);
       request.Validate();
 
-      var result = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(logger, configStore, 
-          assetRepo, deviceRepo, customerRepo, 
+      var executor = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(logger, configStore,
+          assetRepo, deviceRepo, customerRepo,
           projectRepo, subscriptionRepo,
-          producer, kafkaTopicName)
-        .Process(request) as TagFileProcessingErrorResult;
+          producer, kafkaTopicName);
+      var result =  executor.Process(request) as TagFileProcessingErrorResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "unsuccessful");
     }
@@ -30,15 +32,12 @@ namespace ExecutorTests
     public async Task TagFileProcessingErrorV2ExecutorAsync()
     {
       string tccOrgId = Guid.NewGuid().ToString();
-      long? legacyAssetId = null;
-      int? legacyProjectId = null;
       int error = 1;
       string tagFileName = "Machine Name--whatever --161230235959";
-      string deviceSerialNumber = null;
       var request = TagFileProcessingErrorV2Request.CreateTagFileProcessingErrorRequest
-      (tccOrgId, legacyAssetId, legacyProjectId,
+      (tccOrgId, null, null,
         error, tagFileName,
-        deviceSerialNumber, 0);
+        null, 0);
       request.Validate();
 
       var executor = RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(logger, configStore,

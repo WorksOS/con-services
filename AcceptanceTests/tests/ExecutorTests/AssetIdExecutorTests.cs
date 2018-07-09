@@ -15,8 +15,8 @@ namespace ExecutorTests
     [TestMethod]
     public async Task AssetIDExecutor_NonExistingDeviceAssetAsync()
     {
-      Guid deviceUID = Guid.NewGuid();
-      string deviceSerialNumber = "The radio serial " + deviceUID;
+      Guid deviceUid = Guid.NewGuid();
+      string deviceSerialNumber = "The radio serial " + deviceUid;
       DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
 
       GetAssetIdRequest assetIdRequest =
@@ -36,13 +36,13 @@ namespace ExecutorTests
     [TestMethod]
     public async Task AssetIDExecutor_ExistingDeviceAsset()
     {
-      Guid assetUID = Guid.NewGuid();
+      Guid assetUid = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
-      Guid owningCustomerUID = Guid.NewGuid();
-      Guid deviceUID = Guid.NewGuid();
-      string deviceSerialNumber = "The radio serial " + deviceUID;
+      Guid owningCustomerUid = Guid.NewGuid();
+      Guid deviceUid = Guid.NewGuid();
+      string deviceSerialNumber = "The radio serial " + deviceUid;
       DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
-      var isCreatedOk = CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID,
+      var isCreatedOk = CreateAssetDeviceAssociation(assetUid, legacyAssetId, owningCustomerUid, deviceUid,
         deviceSerialNumber, deviceType.ToString());
       Assert.IsTrue(isCreatedOk, "created assetDevice association");
 
@@ -65,13 +65,13 @@ namespace ExecutorTests
     [TestMethod]
     public async Task AssetIDExecutor_ExistingDeviceAssetAndCustomerSub()
     {
-      Guid assetUID = Guid.NewGuid();
+      Guid assetUid = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
-      Guid? owningCustomerUID = Guid.NewGuid();
-      Guid deviceUID = Guid.NewGuid();
-      string deviceSerialNumber = "The radio serial " + deviceUID;
+      Guid? owningCustomerUid = Guid.NewGuid();
+      Guid deviceUid = Guid.NewGuid();
+      string deviceSerialNumber = "The radio serial " + deviceUid;
       DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
-      var isCreatedOk = CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID,
+      var isCreatedOk = CreateAssetDeviceAssociation(assetUid, legacyAssetId, owningCustomerUid, deviceUid,
         deviceSerialNumber, deviceType.ToString());
       Assert.IsTrue(isCreatedOk, "created assetDevice association");
 
@@ -79,7 +79,7 @@ namespace ExecutorTests
         GetAssetIdRequest.CreateGetAssetIdRequest(-1, (int) deviceType, deviceSerialNumber);
       assetIdRequest.Validate();
 
-      isCreatedOk = CreateCustomerSub(owningCustomerUID.Value, "Manual 3D Project Monitoring");
+      isCreatedOk = CreateCustomerSub(owningCustomerUid.Value, "Manual 3D Project Monitoring");
       Assert.IsTrue(isCreatedOk, "created Customer subscription");
 
       var executor =
@@ -96,13 +96,13 @@ namespace ExecutorTests
     [TestMethod]
     public async Task AssetIDExecutor_ExistingDeviceAssetAndCustomerSub_NoOwnerCustomer()
     {
-      Guid assetUID = Guid.NewGuid();
+      Guid assetUid = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
-      Guid? owningCustomerUID = null;
-      Guid deviceUID = Guid.NewGuid();
-      string deviceSerialNumber = "The radio serial " + deviceUID;
+      Guid? owningCustomerUid = null;
+      Guid deviceUid = Guid.NewGuid();
+      string deviceSerialNumber = "The radio serial " + deviceUid;
       DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
-      var isCreatedOk = CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID,
+      var isCreatedOk = CreateAssetDeviceAssociation(assetUid, legacyAssetId, owningCustomerUid, deviceUid,
         deviceSerialNumber, deviceType.ToString());
       Assert.IsTrue(isCreatedOk, "created assetDevice association");
 
@@ -111,8 +111,8 @@ namespace ExecutorTests
       assetIdRequest.Validate();
 
       // customer sub but the asset has not owning Customer
-      owningCustomerUID = Guid.NewGuid();
-      isCreatedOk = CreateCustomerSub(owningCustomerUID.Value, "Manual 3D Project Monitoring");
+      owningCustomerUid = Guid.NewGuid();
+      isCreatedOk = CreateCustomerSub(owningCustomerUid.Value, "Manual 3D Project Monitoring");
       Assert.IsTrue(isCreatedOk, "created Customer subscription");
 
       var executor =

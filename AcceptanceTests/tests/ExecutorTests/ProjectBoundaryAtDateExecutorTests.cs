@@ -14,10 +14,7 @@ namespace ExecutorTests
     [TestMethod]
     public async Task ProjectBoundaryAtDateExecutor_NonExistingProject()
     {
-      Guid projectUID = Guid.NewGuid();
       int legacyProjectId = new Random().Next(0, int.MaxValue);
-      Guid customerUID = Guid.NewGuid();
-
       DateTime timeOfPositionUtc = DateTime.UtcNow.AddHours(-2);
 
       GetProjectBoundaryAtDateRequest projectBoundaryAtDateExecutorRequest = GetProjectBoundaryAtDateRequest.CreateGetProjectBoundaryAtDateRequest(legacyProjectId, timeOfPositionUtc);
@@ -36,11 +33,11 @@ namespace ExecutorTests
     [TestMethod]
     public async Task ProjectBoundaryAtDateExecutor_ExistingProject()
     {
-      Guid projectUID = Guid.NewGuid();
+      Guid projectUid = Guid.NewGuid();
       int legacyProjectId = new Random().Next(0, int.MaxValue);
-      Guid customerUID = Guid.NewGuid();
-      CreateCustomer(customerUID, "");
-      CreateProject(projectUID, legacyProjectId, customerUID);
+      Guid customerUid = Guid.NewGuid();
+      CreateCustomer(customerUid, "");
+      CreateProject(projectUid, legacyProjectId, customerUid);
 
       DateTime timeOfPositionUtc = DateTime.UtcNow.AddHours(-2);
 
@@ -66,11 +63,11 @@ namespace ExecutorTests
     [Ignore]
     public async Task ProjectBoundaryAtDateExecutor_ExistingProjectInvalidBoundary()
     {
-      Guid projectUID = Guid.NewGuid();
+      Guid projectUid = Guid.NewGuid();
       int legacyProjectId = new Random().Next(0, int.MaxValue);
-      Guid customerUID = Guid.NewGuid();
+      Guid customerUid = Guid.NewGuid();
       string invalidBoundary = "POLYGON((170 10, 190 10, 170 10))"; // missing matching endpoint
-      var isCreatedOk = CreateProject(projectUID, legacyProjectId, customerUID, VSS.VisionLink.Interfaces.Events.MasterData.Models.ProjectType.Standard, invalidBoundary);
+      var isCreatedOk = CreateProject(projectUid, legacyProjectId, customerUid, VSS.VisionLink.Interfaces.Events.MasterData.Models.ProjectType.Standard, invalidBoundary);
       Assert.IsTrue(isCreatedOk, "created project");
 
       DateTime timeOfPositionUtc = DateTime.UtcNow.AddHours(-2);
