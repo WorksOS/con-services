@@ -81,6 +81,7 @@ namespace LandfillService.WebApi.netcore
       services.Configure<HttpHandlerDiagnosticOptions>(options =>
       {
         options.IgnorePatterns.Add(request => _jaegerUri.IsBaseOf(request.RequestUri));
+        options.IgnorePatterns.Add(request => request.RequestUri.AbsoluteUri=="/ping");
       });
 
       //GlobalTracer.Register();
