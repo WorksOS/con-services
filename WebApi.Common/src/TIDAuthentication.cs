@@ -58,9 +58,6 @@ namespace VSS.WebApi.Common
     /// <returns></returns>
     public async Task Invoke(HttpContext context)
     {
-      log.LogInformation($"Request {context.Request.Method} {context.Request.Path}");
-      var watch = Stopwatch.StartNew();
-
       if (!context.Request.Path.Value.Contains("/swagger/") && !InternalConnection(context))
       {
         bool isApplicationContext = false;
@@ -145,8 +142,6 @@ namespace VSS.WebApi.Common
       }
 
       await this._next.Invoke(context);
-      watch.Stop();
-      log.LogInformation($"Response {context.Response.StatusCode} {watch.ElapsedMilliseconds}ms");
     }
 
     /// <summary>

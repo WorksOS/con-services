@@ -39,6 +39,7 @@ namespace VSS.WebApi.Common
         c.SwaggerEndpoint("/swagger/v1/swagger.json", serviceTitle);
       });
 
+      app.UseFilterMiddleware<RequestTraceMiddleware>();
       //TIDAuthentication added by those servicesd which need it
       //MVC must be last; added by individual services after their custom services.
       return app;
