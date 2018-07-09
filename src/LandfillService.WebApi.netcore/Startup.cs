@@ -74,18 +74,22 @@ namespace LandfillService.WebApi.netcore
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IErrorCodesProvider, ProjectErrorCodesProvider>();
 
-
+      services.Configure<HttpHandlerDiagnosticOptions>(options =>
+      {
+        options.IgnorePatterns.Add(request => request.RequestUri.AbsolutePath.ToString() == "/ping");
+      });
+      services.AddOpenTracing();
       services.AddJaeger(SERVICE_TITLE);
 
       // Prevent endless loops when OpenTracing is tracking HTTP requests to Jaeger.
-      services.Configure<HttpHandlerDiagnosticOptions>(options =>
+      /*services.Configure<HttpHandlerDiagnosticOptions>(options =>
       {
         options.IgnorePatterns.Add(request => _jaegerUri.IsBaseOf(request.RequestUri));
-      });
+      });*/
 
       //GlobalTracer.Register();
 
-      services.AddOpenTracing();
+
       services.AddMemoryCache();
       services.AddCommon<Startup>(SERVICE_TITLE);
 
