@@ -6,7 +6,7 @@ MYSQL_USERNAME: Merino
 MYSQL_ROOT_PASSWORD: R58Kper%5
 KAFKA_URI: 10.97.97.96
 KAFKA_PORT: "9092"
-KAFKA_GROUP_NAME: TagFileAuth-Consumer-Alpha
+KAFKA_GROUP_NAME: TagFileAuth-Consumer-Alpha-3
 KAFKA_TOPICS: VSS.Interfaces.Events.MasterData.ICustomerEvent,VSS.Interfaces.Events.MasterData.IProjectEvent,VSS.Interfaces.Events.MasterData.ISubscriptionEvent,VSS.Interfaces.Events.MasterData.IAsset,VSS.Interfaces.Events.MasterData.IDeviceEvent
 KAFKA_TOPIC_NAME_SUFFIX: -Alpha
 KAFKA_OFFSET: latest
