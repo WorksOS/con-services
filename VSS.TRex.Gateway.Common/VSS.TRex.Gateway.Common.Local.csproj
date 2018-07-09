@@ -23,6 +23,10 @@
     <ProjectReference Include="..\src\netstandard\VSS.TRex.Rendering.Implementations.Core2\VSS.TRex.Rendering.Implementations.Core2.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>

@@ -12,7 +12,6 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Designs.Storage;
 using VSS.TRex.Filters;
-using VSS.TRex.Gateway.Common.Models;
 using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.GridFabric.Arguments;

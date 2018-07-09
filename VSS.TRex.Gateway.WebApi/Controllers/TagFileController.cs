@@ -13,7 +13,6 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Gateway.Common.Executors;
-using VSS.TRex.Gateway.Common.Models;
 using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.SiteModels.Interfaces;
 

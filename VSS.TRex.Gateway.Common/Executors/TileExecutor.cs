@@ -10,7 +10,6 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Designs.Storage;
 using VSS.TRex.Filters;
-using VSS.TRex.Gateway.Common.Models;
 using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.GridFabric.Arguments;
@@ -94,13 +93,13 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var request = item as TileRequest;
 
-      ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(Guid.Parse(request.projectUid), false);
+      ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(request.ProjectUid.Value);
 
       if (siteModel == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            $"Site model {request.projectUid} is unavailable"));
+            $"Site model {request.ProjectUid} is unavailable"));
       }
 
       try
@@ -119,17 +118,35 @@ namespace VSS.TRex.Gateway.Common.Executors
 
         TileRenderingServer tileRenderServer = TileRenderingServer.NewInstance(new[] { ApplicationServiceServer.DEFAULT_ROLE_CLIENT, ServerRoles.TILE_RENDERING_NODE });
 
+        //TODO: TRex expects a Guid for the cut-fill design. Raptor has a DesignDescriptor with long (id) and file name etc.
+        //Raymond: how are designs implemented in TRex?
+        //We could create a derived class of DesignDescriptor containing the Guid and 3dpm can create a new TileRequest
+        //with all the same data but a derived DesignDescriptor with the Guid set, assuming serialization/deserialization
+        //gives us the derived class here
+
+        BoundingWorldExtent3D extents = null;
+        bool hasGridCoords = false;
+        if (request.BoundBoxLatLon != null)
+        {
+          extents = new BoundingWorldExtent3D(request.BoundBoxLatLon.bottomLeftLon, request.BoundBoxLatLon.bottomLeftLat, request.BoundBoxLatLon.topRightLon, request.BoundBoxLatLon.topRightLat);
+        }
+        if (request.BoundBoxGrid != null)
+        {
+          hasGridCoords = true;
+          extents = new BoundingWorldExtent3D(request.BoundBoxGrid.bottomLeftX, request.BoundBoxGrid.bottomleftY, request.BoundBoxGrid.topRightX, request.BoundBoxGrid.topRightY);
+        }
+
         TileRenderResponse_Core2 response = tileRenderServer.RenderTile(
           new TileRenderRequestArgument
           (siteModel.ID,
-            request.Mode,
-            request.Extents,
-            true, // CoordsAreGrid
+            (DisplayMode)request.Mode,
+            extents,
+            hasGridCoords,
             request.Width, // PixelsX
             request.Height, // PixelsY
             filter1,
             filter2,
-            request.CutFillDesignID// DesignDescriptor
+            Guid.Empty//TODO: request.DesignDescriptor
           )) as TileRenderResponse_Core2;
         
         return TileResult.CreateTileResult(response?.TileBitmap);
