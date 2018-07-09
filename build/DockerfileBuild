@@ -1,11 +1,7 @@
-FROM microsoft/dotnet:2.1-sdk
+FROM microsoft/dotnet:2.1-sdk-alpine3.7
 
-RUN \
-  apt-get update && apt-get install -y \
-  openjdk-8-jdk
-
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
-RUN apt-get install -y nodejs
+RUN apk --no-cache add bash nodejs nodejs-npm
+	
 
 #Copy files from scm into build container and build
 COPY . /build/
