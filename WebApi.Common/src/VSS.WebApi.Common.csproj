@@ -37,7 +37,6 @@
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.26.*" />
     <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.35.*" />
     <PackageReference Include="Jaeger" Version="0.1.1" />
-    <PackageReference Include="OpenTracing.Contrib.NetCore" Version="0.4.0" />
   </ItemGroup>
 
 </Project>
