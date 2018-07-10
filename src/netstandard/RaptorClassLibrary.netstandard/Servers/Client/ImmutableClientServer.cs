@@ -82,11 +82,11 @@ namespace VSS.TRex.Servers.Client
            //  }
            //},
 
-           CommunicationSpi = new TcpCommunicationSpi()
-           {
-             //LocalAddress = "127.0.0.1",
-             LocalPort = 47100,
-           },
+           //CommunicationSpi = new TcpCommunicationSpi()
+           //{
+           //  //LocalAddress = "127.0.0.1",
+           //  LocalPort = 47100,
+           //},
 
            Logger = new TRexIgniteLogger(Logger.CreateLogger("ImmutableClientServer")),
 

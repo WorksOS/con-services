@@ -98,11 +98,11 @@ namespace VSS.TRex.Servers.Compute
       //  }
       //};
 
-      cfg.CommunicationSpi = new TcpCommunicationSpi()
-      {
-        //LocalAddress = "127.0.0.1",
-        LocalPort = 47100,
-      };
+      //cfg.CommunicationSpi = new TcpCommunicationSpi()
+      //{
+      //  //LocalAddress = "127.0.0.1",
+      //  LocalPort = 47100,
+      //};
 
       cfg.Logger = new TRexIgniteLogger(Logger.CreateLogger("ImmutableCacheComputeServer"));
 
