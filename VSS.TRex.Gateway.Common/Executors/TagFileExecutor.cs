@@ -47,42 +47,42 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result = null;
 
+      ContractExecutionResult result = new ContractExecutionResult(1,"Unknown exception");
       var request = item as TagFileRequest;
-
-      SubmitTAGFileRequest submitRequest = new SubmitTAGFileRequest();
-      SubmitTAGFileRequestArgument arg = null;
-
-      arg = new SubmitTAGFileRequestArgument()
-          {
-            ProjectID = request.ProjectUID,
-            AssetID = request.AssetUID,
-            TAGFileName = request.FileName,
-            TagFileContent = request.Data,
-            TCCOrgID = request.TccOrgId
-          };
-
-
-      return result;
-    }
-    /*
-      ContractExecutionResult result = null;
-
-   //   var request = item as TileRequest;
 
       try
       {
-   //     return TileResult.CreateTileResult(response?.TileBitmap);
+        log.LogInformation($"#In# TagFileExecutor. Process tagfile:{request.FileName}, Project:{request.ProjectUID}, TCCOrgID:{request.TccOrgId}");
+
+        SubmitTAGFileRequest submitRequest = new SubmitTAGFileRequest();
+        SubmitTAGFileRequestArgument arg = null;
+
+        arg = new SubmitTAGFileRequestArgument()
+              {
+                  ProjectID   = request.ProjectUID,
+                  AssetID     = request.AssetUID,
+                  TAGFileName = request.FileName,
+                  TagFileContent = request.Data,
+                  TCCOrgID    = request.TccOrgId
+              };
+
+        var res = submitRequest.Execute(arg);
+
+        if (res.Success)
+          result = new ContractExecutionResult(0, ContractExecutionResult.DefaultMessage);
+        else
+          result = new ContractExecutionResult(1, res.Exception); // todo
+
       }
-      catch (Exception E)
+      finally
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-                $"Exception: {E.Message}"));
+        log.LogInformation($"#Out# TagFileExecutor. Process tagfile:{request.FileName}, Project:{request.ProjectUID}, Submission Result:{result.Message}, Exception:{result.Message}");
+    
       }
+      return result;
+
     }
-    */
 
 
     /// <summary>
