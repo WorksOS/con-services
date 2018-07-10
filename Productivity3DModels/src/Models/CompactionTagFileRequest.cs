@@ -4,7 +4,7 @@ using System.Text;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.FIlters;
 
-namespace VSS.Productivity3D.Models.Local.Models
+namespace VSS.Productivity3D.Models.Models
 {
     /// <summary>
     /// TAG file domain object. Model represents TAG file submitted to Raptor.
