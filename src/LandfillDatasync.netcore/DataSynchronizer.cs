@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Common.netstandard.ApiClients;
 using Common.Repository;
 using log4net;
 using LandfillService.Common.ApiClients;
 using LandfillService.Common.Models;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Proxies;
 
 namespace LandFillServiceDataSynchronizer
 {
@@ -14,10 +18,14 @@ namespace LandFillServiceDataSynchronizer
   {
     private const string userId = "sUpErSeCretIdTuSsupport348215890UnknownRa754291";
     private readonly ILog Log;
+    private readonly I_3dpmAuthN authn;
 
     public DataSynchronizer(ILog logger)
     {
       Log = logger;
+      authn = new _3dpmAuthN(new GenericConfiguration(new NullLoggerFactory()),
+        new TPaasProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
+        new Logger<_3dpmAuthN>(new NullLoggerFactory()));
     }
 
     //private RaptorApiClient raptorApiClient = new RaptorApiClient();
@@ -32,11 +40,16 @@ namespace LandFillServiceDataSynchronizer
       var projects = GetListOfProjectsToRetrieve();
       var result = new Dictionary<ProjectResponse, List<DateEntry>>();
       Log.DebugFormat("Got {0} projects to process for volumes", projects.Count);
+      var headers =
+        new Dictionary<string, string> {{"Authorization", $"Bearer {authn.Get3DPmSchedulerBearerToken().Result}"}};
       foreach (var project in projects)
       {
         var startDate =
           new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
-              new GenericConfiguration(new NullLoggerFactory())).GetProjectStatisticsAsync(userId, project).Result
+              new GenericConfiguration(new NullLoggerFactory()),
+              new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
+              new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
+                new MemoryCache(new MemoryCacheOptions())),headers).GetProjectStatisticsAsync(userId, project).Result
             .startTime.Date;
         if (startDate < DateTime.Today.AddDays(-90))
           startDate = DateTime.Today.AddDays(-90);
@@ -72,14 +85,18 @@ namespace LandFillServiceDataSynchronizer
       {
         var geofenceUids = project.Value.Select(d => d.geofenceUid).Distinct().ToList();
         var geofences = GetGeofenceBoundaries(project.Key.id, geofenceUids);
-
+        var headers =
+          new Dictionary<string, string> { { "Authorization", $"Bearer {authn.Get3DPmSchedulerBearerToken().Result}" } };
         Log.DebugFormat("Processing projectResponse {0} with {1} entries", project.Key.id, project.Value.Count());
         foreach (var dateEntry in project.Value)
         {
           var geofence = geofences.ContainsKey(dateEntry.geofenceUid) ? geofences[dateEntry.geofenceUid] : null;
           new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
-              new GenericConfiguration(new NullLoggerFactory()))
-            .GetVolumeInBackground(userId, project.Key, geofence, dateEntry).Wait();
+              new GenericConfiguration(new NullLoggerFactory()),
+              new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
+              new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
+                new MemoryCache(new MemoryCacheOptions())), headers)
+                    .GetVolumeInBackground(userId, project.Key, geofence, dateEntry).Wait();
         }
       }
     }
@@ -95,6 +112,8 @@ namespace LandFillServiceDataSynchronizer
       //No point in getting CCA if no weights or volumes and therefore no density data.
       var projects = GetListOfProjectsToRetrieve();
       Log.DebugFormat("Got {0} projects to process for CCA", projects.Count);
+      var headers =
+        new Dictionary<string, string> { { "Authorization", $"Bearer {authn.Get3DPmSchedulerBearerToken().Result}" } };
 
       foreach (var project in projects)
       {
@@ -110,7 +129,10 @@ namespace LandFillServiceDataSynchronizer
         //Process CCA for scheduled date
         var hwZone =
           new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
-            new GenericConfiguration(new NullLoggerFactory())).GetTimeZoneInfoForTzdbId(project.timeZoneName);
+            new GenericConfiguration(new NullLoggerFactory()),
+            new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
+            new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
+              new MemoryCache(new MemoryCacheOptions())), headers).GetTimeZoneInfoForTzdbId(project.timeZoneName);
         var projDate = utcDate.Date.Add(hwZone.BaseUtcOffset);
         var nowDate = DateTime.UtcNow.Date.Add(hwZone.BaseUtcOffset);
         //In case we're backfilling...
@@ -118,7 +140,10 @@ namespace LandFillServiceDataSynchronizer
         {
           var machinesToProcess =
             new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
-                new GenericConfiguration(new NullLoggerFactory()))
+                new GenericConfiguration(new NullLoggerFactory()),
+                new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
+                new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
+                  new MemoryCache(new MemoryCacheOptions())), headers)
               .GetMachineLiftsInBackground(userId, project, utcDate.Date, utcDate.Date).Result;
           Log.DebugFormat("Processing projectResponse {0} with {1} machines for date {2}", project.id,
             machinesToProcess.Count,
@@ -143,6 +168,8 @@ namespace LandFillServiceDataSynchronizer
       Dictionary<string, List<WGSPoint>> geofences, IEnumerable<MachineLifts> machines)
     {
       var machineIds = machines.ToDictionary(m => m, m => LandfillDb.GetMachineId(projectResponse.projectUid, m));
+      var headers =
+        new Dictionary<string, string> { { "Authorization", $"Bearer {authn.Get3DPmSchedulerBearerToken().Result}" } };
 
       foreach (var geofenceUid in geofenceUids)
       {
@@ -155,7 +182,10 @@ namespace LandFillServiceDataSynchronizer
             Log.DebugFormat("Processing projectResponse {0}, geofence {1}, machine {2}, lift {3}, machineId {4}",
               projectResponse.id, geofenceUid, machine, lift.layerId, machineIds[machine]);
             new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
-              new GenericConfiguration(new NullLoggerFactory())).GetCCAInBackground(
+              new GenericConfiguration(new NullLoggerFactory()),
+              new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
+              new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
+                new MemoryCache(new MemoryCacheOptions())), headers).GetCCAInBackground(
               userId, projectResponse, geofenceUid, geofence, date, machineIds[machine], machine, lift.layerId).Wait();
           }
 
@@ -163,7 +193,10 @@ namespace LandFillServiceDataSynchronizer
           Log.DebugFormat("Processing projectResponse {0}, geofence {1}, machine {2}, lift {3}, machineId {4}",
             projectResponse.id, geofenceUid, machine, "ALL", machineIds[machine]);
           new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
-            new GenericConfiguration(new NullLoggerFactory())).GetCCAInBackground(
+            new GenericConfiguration(new NullLoggerFactory()),
+            new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
+            new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
+              new MemoryCache(new MemoryCacheOptions())), headers).GetCCAInBackground(
             userId, projectResponse, geofenceUid, geofence, date, machineIds[machine], machine, null).Wait();
         }
       }
