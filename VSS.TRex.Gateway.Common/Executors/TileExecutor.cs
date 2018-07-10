@@ -1,11 +1,13 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
+using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Designs.Storage;
@@ -41,56 +43,20 @@ namespace VSS.TRex.Gateway.Common.Executors
       return siteModel.SurveyedSurfaces == null || includeSurveyedSurfaces ? new Guid[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray();
     }
 
-    private void ConvertFilter(FilterResult filter, ISiteModel siteModel, out CombinedFilter combinedFilter)
+    private CombinedFilter ConvertFilter(FilterResult filter, ISiteModel siteModel)
     {
-      var returnEarliestFilteredCellPass = filter.ReturnEarliest.HasValue && filter.ReturnEarliest.Value;
+      if (filter == null) return null;
 
-      CellPassAttributeFilter AttributeFilter = new CellPassAttributeFilter
-      {
-        ReturnEarliestFilteredCellPass = returnEarliestFilteredCellPass,
-        HasElevationTypeFilter = true,
-        ElevationType = returnEarliestFilteredCellPass ? ElevationType.First : ElevationType.Last,
-        // TODO Map the excluded surveyed surfaces from the filter.SurveyedSurfaceExclusionList to the ones that are in the TRex database
-        SurveyedSurfaceExclusionList = GetSurveyedSurfaceExclusionList(siteModel, filter.SurveyedSurfaceExclusionList.Count == 0)
-      };
-
-      var fence = new Fence();
-
-      if (filter.PolygonGrid != null)
-      {
-        for (int i = 0; i < filter.PolygonGrid.Count; i++)
-          fence.Points.Add(new FencePoint()
-          {
-            X = filter.PolygonGrid[i].x,
-            Y = filter.PolygonGrid[i].y,
-            Z = 0
-          });
-      }
-      else
-      {
-        for (int i = 0; i < filter.PolygonLL.Count; i++)
-          fence.Points.Add(new FencePoint()
-          {
-            X = filter.PolygonLL[i].Lon,
-            Y = filter.PolygonLL[i].Lat,
-            Z = 0
-          });
-      }
-
-      CellSpatialFilter SpatialFilter = new CellSpatialFilter
-      {
-        CoordsAreGrid = filter.PolygonGrid != null,
-        IsSpatial = true,
-        Fence = fence
-      };
-
-      combinedFilter = new CombinedFilter(AttributeFilter, SpatialFilter);
+      var combinedFilter = Mapper.Map<FilterResult, CombinedFilter>(filter);
+      // TODO Map the excluded surveyed surfaces from the filter.SurveyedSurfaceExclusionList to the ones that are in the TRex database
+      bool includeSurveyedSurfaces = filter.SurveyedSurfaceExclusionList.Count == 0;
+      var excludedIds = siteModel.SurveyedSurfaces == null || includeSurveyedSurfaces ? new Guid[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray();
+      combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList = excludedIds;
+      return combinedFilter;
     }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result = null;
-
       var request = item as TileRequest;
 
       ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(request.ProjectUid.Value);
@@ -102,61 +68,44 @@ namespace VSS.TRex.Gateway.Common.Executors
             $"Site model {request.ProjectUid} is unavailable"));
       }
 
-      try
+      CombinedFilter filter1 = ConvertFilter(request.Filter1, siteModel);
+
+      CombinedFilter filter2 = ConvertFilter(request.Filter2, siteModel);
+
+      //TODO: TRex expects a Guid for the cut-fill design. Raptor has a DesignDescriptor with long (id) and file name etc.
+      //Raymond: how are designs implemented in TRex?
+      //We could create a derived class of DesignDescriptor containing the Guid and 3dpm can create a new TileRequest
+      //with all the same data but a derived DesignDescriptor with the Guid set, assuming serialization/deserialization
+      //gives us the derived class here
+
+      BoundingWorldExtent3D extents = null;
+      bool hasGridCoords = false;
+      if (request.BoundBoxLatLon != null)
       {
-        // Filter 1...
-        CombinedFilter filter1 = null;
+        extents = Mapper.Map<BoundingBox2DLatLon, BoundingWorldExtent3D>(request.BoundBoxLatLon);
+      }
+      else if (request.BoundBoxGrid != null)
+      {
+        hasGridCoords = true;
+        extents = Mapper.Map<BoundingBox2DGrid, BoundingWorldExtent3D>(request.BoundBoxGrid);
+     }
 
-        if (request.Filter1 != null)
-          ConvertFilter(request.Filter1, siteModel, out filter1);
+      TileRenderingServer tileRenderServer = TileRenderingServer.NewInstance(new[] { ApplicationServiceServer.DEFAULT_ROLE_CLIENT, ServerRoles.TILE_RENDERING_NODE });
 
-        // Filter 2...
-        CombinedFilter filter2 = null;
-
-        if (request.Filter2 != null)
-          ConvertFilter(request.Filter2, siteModel, out filter2);
-
-        TileRenderingServer tileRenderServer = TileRenderingServer.NewInstance(new[] { ApplicationServiceServer.DEFAULT_ROLE_CLIENT, ServerRoles.TILE_RENDERING_NODE });
-
-        //TODO: TRex expects a Guid for the cut-fill design. Raptor has a DesignDescriptor with long (id) and file name etc.
-        //Raymond: how are designs implemented in TRex?
-        //We could create a derived class of DesignDescriptor containing the Guid and 3dpm can create a new TileRequest
-        //with all the same data but a derived DesignDescriptor with the Guid set, assuming serialization/deserialization
-        //gives us the derived class here
-
-        BoundingWorldExtent3D extents = null;
-        bool hasGridCoords = false;
-        if (request.BoundBoxLatLon != null)
-        {
-          extents = new BoundingWorldExtent3D(request.BoundBoxLatLon.bottomLeftLon, request.BoundBoxLatLon.bottomLeftLat, request.BoundBoxLatLon.topRightLon, request.BoundBoxLatLon.topRightLat);
-        }
-        if (request.BoundBoxGrid != null)
-        {
-          hasGridCoords = true;
-          extents = new BoundingWorldExtent3D(request.BoundBoxGrid.bottomLeftX, request.BoundBoxGrid.bottomleftY, request.BoundBoxGrid.topRightX, request.BoundBoxGrid.topRightY);
-        }
-
-        TileRenderResponse_Core2 response = tileRenderServer.RenderTile(
-          new TileRenderRequestArgument
-          (siteModel.ID,
-            (DisplayMode)request.Mode,
-            extents,
-            hasGridCoords,
-            request.Width, // PixelsX
-            request.Height, // PixelsY
-            filter1,
-            filter2,
-            Guid.Empty//TODO: request.DesignDescriptor
-          )) as TileRenderResponse_Core2;
+      TileRenderResponse_Core2 response = tileRenderServer.RenderTile(
+        new TileRenderRequestArgument
+        (siteModel.ID,
+          (Types.DisplayMode)request.Mode,
+          extents,
+          hasGridCoords,
+          request.Width, // PixelsX
+          request.Height, // PixelsY
+          filter1,
+          filter2,
+          Guid.Empty//TODO: request.DesignDescriptor
+        )) as TileRenderResponse_Core2;
         
-        return TileResult.CreateTileResult(response?.TileBitmap);
-      }
-      catch (Exception E)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            $"Exception: {E.Message}"));
-      }
+      return TileResult.CreateTileResult(response?.TileBitmap); 
     }
 
     /// <summary>

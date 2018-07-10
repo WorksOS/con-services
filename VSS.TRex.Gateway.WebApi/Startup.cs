@@ -11,6 +11,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.WebApi.Common;
 
 namespace VSS.TRex.Gateway.WebApi
@@ -43,6 +44,8 @@ namespace VSS.TRex.Gateway.WebApi
 
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
+
+      AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
     }
 
     /// <summary>
