@@ -49,7 +49,7 @@
     <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.11.*" />
     <PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.*" />
     <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.*" />
-    <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.1.*" />
+    <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.1.0" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
