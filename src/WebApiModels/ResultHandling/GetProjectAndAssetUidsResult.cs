@@ -23,14 +23,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
     ///    For TFA, these are 3k based 
     ///    Message is the english verion of any error
     /// </summary>
-    public static GetProjectAndAssetUidsResult CreateGetProjectAndAssetUidsResult(string projectUid, string assetUid, int uniqueCode = 0)
+    public static GetProjectAndAssetUidsResult CreateGetProjectAndAssetUidsResult(string projectUid, string assetUid, int uniqueCode = 0, string messageDetail = null)
     {
       return new GetProjectAndAssetUidsResult
       {
         ProjectUid = projectUid,
         AssetUid = assetUid,
         Code = uniqueCode == 0 ? uniqueCode : ContractExecutionStatesEnum.GetErrorNumberwithOffset(uniqueCode),
-        Message = uniqueCode == 0 ? DefaultMessage : string.Format(ContractExecutionStatesEnum.FirstNameWithOffset(uniqueCode))        
+        Message = uniqueCode == 0 ? DefaultMessage : string.Format(ContractExecutionStatesEnum.FirstNameWithOffset(uniqueCode), messageDetail)        
       };
     }
 

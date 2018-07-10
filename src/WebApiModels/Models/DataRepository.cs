@@ -157,7 +157,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     }
 
     public async Task<IEnumerable<Project>> GetIntersectingProjects(string customerUid, int[] projectTypes, 
-      double latitude, double longitude, DateTime timeOfPosition)
+      double latitude, double longitude, DateTime? timeOfPosition = null)
     {
       IEnumerable<Project> projects = null;
       try
@@ -166,6 +166,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         {
           var p = await projectRepository.GetIntersectingProjects(customerUid, projectTypes,
             latitude, longitude, timeOfPosition).ConfigureAwait(false);
+
+          // todo do time checking outside of method as allowed for ManualImport
 
           if (p != null) projects = p;
         }
@@ -314,10 +316,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         var s = await subscriptionsRepository.GetSubscriptionsByAsset(assetUid, validAtDate.Date).ConfigureAwait(false);
         if (s != null)
         {
-          subs = s.ToList()
+          subs = s
             .Where(x => x.ServiceTypeID == (serviceTypeMappings.serviceTypes.Find(st => st.name == "3D Project Monitoring").NGEnum))
+            .Select(x => new Subscriptions(assetUid, "", x.CustomerUID, x.ServiceTypeID, x.StartDate, x.EndDate))
             .Distinct()
-            .Select(x => new Subscriptions(assetUid, "", x.CustomerUID, x.ServiceTypeID, x.StartDate, x.EndDate));
+            .ToList();
         }
       }
       return subs;

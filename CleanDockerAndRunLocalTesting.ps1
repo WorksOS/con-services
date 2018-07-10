@@ -1,3 +1,7 @@
+Write "Updating environment IP address"
+& .\UpdateEnvFileIpAddress.ps1
+
+Write cleanup docker images
 # Setting the COMPOSE_CONVERT_WINDOWS_PATHS environment variable before trying 
 # to bring up the containers seems to fix the docker-compose bug reported here: https://github.com/docker/for-win/issues/1829
 $Env:COMPOSE_CONVERT_WINDOWS_PATHS=1

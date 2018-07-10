@@ -46,7 +46,10 @@
       DynamicAddwithOffset("ProjectUid is present, but invalid", 36);
       DynamicAddwithOffset("Either Radio Serial or TCCOrgId must be provided", 37);
       DynamicAddwithOffset("Unable to find the Project requested", 38);
-      DynamicAddwithOffset("Unable to locate any valid subscriptions for Manual Import", 39);
+      DynamicAddwithOffset("Manual Import unable to locate any valid subscriptions", 39);
+      DynamicAddwithOffset("Manual Import unable to locate any valid projectSubscriptions or locate asset", 40);
+      DynamicAddwithOffset("Manual Import matches incorrect number of projects: {0}", 41);
+      DynamicAddwithOffset("Manual Import project does not intersect location and time provided", 42);
     }
 
     /// <summary>

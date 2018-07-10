@@ -67,11 +67,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     }
 
     /// <summary>
-    /// This endpoint is used by TRex,
-    ///      it is called for each tag file, with as much information as is available.
-    ///      Attempts to identify a unique projectUid and AssetUid, which tag file could be applied to
+    /// This endpoint is used by TRex.
+    ///      It is called for each tag file, with as much information as is available.
+    ///      Attempts to identify a unique projectUid and AssetUid, which the tag file could be applied to
     ///         or an error which is/may be, preventing identifying one.
     ///      This step tries to identify a unique projectUid and/or AssetUId and/or error.
+    ///         If validation of request fails, returns BadRequest plus a unique error code and message
+    ///         If it fails to identify/verify a project, it returns OK plus a unique error code and message
+    ///         If something internal has gone wrong, which may be retyable e.g. database unavailable
+    ///            it returns InternalError plus a unique error code and message
     /// </summary>
     /// <param name="request">Details of the project, asset and tccOrgId. Also location and its date time</param>
     /// <returns>

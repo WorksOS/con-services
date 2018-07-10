@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -29,7 +30,6 @@ namespace WebApiTests.Executors
     private Mock<ISubscriptionRepository> _subscriptionRepo;
     private Mock<IProjectRepository> _projectRepo;
 
-
     [TestInitialize]
     public override void InitTest()
     {
@@ -45,7 +45,7 @@ namespace WebApiTests.Executors
     }
 
     [TestMethod]
-    public async Task ProjectAndAssetUidsExecutor_InvalidParameters()
+    public async Task TRexExecutor_Sad_InvalidParameters()
     {
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), configStore,
         _assetRepo.Object, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
@@ -58,7 +58,7 @@ namespace WebApiTests.Executors
     }
 
     [TestMethod]
-    public async Task ProjectAndAssetUidsExecutor_ManualImport_ProjectNotFound()
+    public async Task TRexExecutor_Manual_Sad_StandardProjectProjectNotFound()
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
@@ -70,11 +70,11 @@ namespace WebApiTests.Executors
       var assetCustomerUid = Guid.NewGuid().ToString();
       var assetCustomerSubs = new List<Subscription>() { }; // Man3d
 
-      Project projectOfInterest = null;
-      var projects = new List<Project> {};
-      IEnumerable<Project> intersectingProjects = projects.AsEnumerable();
-      _projectRepo.Setup(p => p.GetProject(It.IsAny<string>())).ReturnsAsync(projectOfInterest);
-      _projectRepo.Setup(p => p.GetIntersectingProjects(It.IsAny<string>(), It.IsAny<int[]>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<DateTime>())).ReturnsAsync(intersectingProjects);
+      Project manualImportProject = null;
+      var intersectingProjectsList = new List<Project> {};
+      IEnumerable<Project> intersectingProjects = intersectingProjectsList.AsEnumerable();
+      _projectRepo.Setup(p => p.GetProject(It.IsAny<string>())).ReturnsAsync(manualImportProject);
+      _projectRepo.Setup(p => p.GetIntersectingProjects(It.IsAny<string>(), It.IsAny<int[]>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<DateTime?>())).ReturnsAsync(intersectingProjects);
 
       var assetDevice = new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid };
       _deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(assetDevice);
@@ -93,7 +93,7 @@ namespace WebApiTests.Executors
     }
 
     [TestMethod]
-    public async Task ProjectAndAssetUidsExecutor_ManualImport_HappyPath_ProjectCustomerHasManualSub()
+    public async Task TRexExecutor_Manual_Happy_StandardProjectProjectCustomerHasManualSub()
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
@@ -105,11 +105,11 @@ namespace WebApiTests.Executors
       var assetCustomerUid = Guid.NewGuid().ToString();
       var assetCustomerSubs = new List<Subscription>(){}; // Man3d
 
-      var projectOfInterest = new Project(){ProjectUID = projectUid, ProjectType = ProjectType.Standard, CustomerUID = projectCustomerUid };
-      var projects = new List<Project> {projectOfInterest};
-      IEnumerable<Project> intersectingProjects = projects.AsEnumerable();
-      _projectRepo.Setup(p => p.GetProject(It.IsAny<string>())).ReturnsAsync(projectOfInterest);
-      _projectRepo.Setup(p => p.GetIntersectingProjects(It.IsAny<string>(), It.IsAny<int[]>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<DateTime>())).ReturnsAsync(intersectingProjects);
+      var manualImportProject = new Project(){ProjectUID = projectUid, ProjectType = ProjectType.Standard, CustomerUID = projectCustomerUid };
+      var intersectingProjectsList = new List<Project> {manualImportProject};
+      IEnumerable<Project> intersectingProjects = intersectingProjectsList.AsEnumerable();
+      _projectRepo.Setup(p => p.GetProject(It.IsAny<string>())).ReturnsAsync(manualImportProject);
+      _projectRepo.Setup(p => p.GetIntersectingProjects(It.IsAny<string>(), It.IsAny<int[]>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<DateTime?>())).ReturnsAsync(intersectingProjects);
 
       var assetDevice = new AssetDeviceIds() {AssetUID = assetUid, OwningCustomerUID = assetCustomerUid};
       _deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync( assetDevice);
@@ -128,7 +128,7 @@ namespace WebApiTests.Executors
     }
 
     [TestMethod]
-    public async Task ProjectAndAssetUidsExecutor_ManualImport_HappyPath_AssetCustomerHasManualSub()
+    public async Task TRexExecutor_Manual_Sad_StandardProjectAssetCustomerHasManualSub()
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
@@ -141,11 +141,11 @@ namespace WebApiTests.Executors
       var assetCustomerSubs = new List<Subscription>() 
          { new Subscription() { ServiceTypeID = (int)ServiceTypeEnum.Manual3DProjectMonitoring }}; // Man3d
 
-      var projectOfInterest = new Project() { ProjectUID = projectUid, ProjectType = ProjectType.Standard, CustomerUID = projectCustomerUid };
-      var projects = new List<Project> { projectOfInterest };
-      IEnumerable<Project> intersectingProjects = projects.AsEnumerable();
-      _projectRepo.Setup(p => p.GetProject(It.IsAny<string>())).ReturnsAsync(projectOfInterest);
-      _projectRepo.Setup(p => p.GetIntersectingProjects(It.IsAny<string>(), It.IsAny<int[]>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<DateTime>())).ReturnsAsync(intersectingProjects);
+      var manualImportProject = new Project() { ProjectUID = projectUid, ProjectType = ProjectType.Standard, CustomerUID = projectCustomerUid };
+      var intersectingProjectsList = new List<Project> { manualImportProject };
+      IEnumerable<Project> intersectingProjects = intersectingProjectsList.AsEnumerable();
+      _projectRepo.Setup(p => p.GetProject(It.IsAny<string>())).ReturnsAsync(manualImportProject);
+      _projectRepo.Setup(p => p.GetIntersectingProjects(It.IsAny<string>(), It.IsAny<int[]>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<DateTime?>())).ReturnsAsync(intersectingProjects);
 
       var assetDevice = new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid };
       _deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(assetDevice);
@@ -164,7 +164,7 @@ namespace WebApiTests.Executors
     }
 
     [TestMethod]
-    public async Task ProjectAndAssetUidsExecutor_ManualImport_HappyPath_NoManualSub()
+    public async Task TRexExecutor_Manual_Sad_StandardProjectNoSub()
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectCustomerUid = Guid.NewGuid().ToString();
@@ -176,11 +176,11 @@ namespace WebApiTests.Executors
       var assetCustomerUid = Guid.NewGuid().ToString();
       var assetCustomerSubs = new List<Subscription>() { }; // Man3d
 
-      var projectOfInterest = new Project() { ProjectUID = projectUid, ProjectType = ProjectType.Standard, CustomerUID = projectCustomerUid };
-      var projects = new List<Project> { projectOfInterest };
-      IEnumerable<Project> intersectingProjects = projects.AsEnumerable();
-      _projectRepo.Setup(p => p.GetProject(It.IsAny<string>())).ReturnsAsync(projectOfInterest);
-      _projectRepo.Setup(p => p.GetIntersectingProjects(It.IsAny<string>(), It.IsAny<int[]>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<DateTime>())).ReturnsAsync(intersectingProjects);
+      var manualImportProject = new Project() { ProjectUID = projectUid, ProjectType = ProjectType.Standard, CustomerUID = projectCustomerUid };
+      var intersectingProjectsList = new List<Project> { manualImportProject };
+      IEnumerable<Project> intersectingProjects = intersectingProjectsList.AsEnumerable();
+      _projectRepo.Setup(p => p.GetProject(It.IsAny<string>())).ReturnsAsync(manualImportProject);
+      _projectRepo.Setup(p => p.GetIntersectingProjects(It.IsAny<string>(), It.IsAny<int[]>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<DateTime?>())).ReturnsAsync(intersectingProjects);
 
       var assetDevice = new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid };
       _deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(assetDevice);
@@ -195,15 +195,228 @@ namespace WebApiTests.Executors
       var projectAndAssetUidsRequest = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", "", 91, 181, DateTime.UtcNow);
       var result = await executor.ProcessAsync(projectAndAssetUidsRequest) as GetProjectAndAssetUidsResult;
 
-      ValidateResult(result, projectUid, assetUid, 3039, "Unable to locate any valid subscriptions for Manual Import");
+      ValidateResult(result, string.Empty, assetUid, 3039, "Manual Import unable to locate any valid subscriptions");
     }
 
-    //var ex = await Assert.ThrowsExceptionAsync<ServiceException>(() => executor.ProcessAsync(projectAndAssetUidsRequest));
+    [TestMethod]
+    public async Task TRexExecutor_Manual_Sad_StandardProjectNoManualSubBut3dSubForAssetCustomer()
+    {
+      var projectUid = Guid.NewGuid().ToString();
+      var projectCustomerUid = Guid.NewGuid().ToString();
+      var projectCustomerSubs = new List<Subscription>(); // Man3d
 
-    //Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
-    //Assert.AreEqual(3039, ex.GetResult.Code);
-    //Assert.AreEqual("Unable to locate any valid subscriptions for Manual Import", ex.GetResult.Message);
+      var assetUid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
+      var assetSubs = new List<Subscription>()
+        {new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.ThreeDProjectMonitoring, CustomerUID = assetCustomerUid}}; 
+      var assetCustomerSubs = new List<Subscription>() { }; // Man3d
 
+      var manualImportProject = new Project() { ProjectUID = projectUid, ProjectType = ProjectType.Standard, CustomerUID = projectCustomerUid };
+      var intersectionProjectsList = new List<Project> { manualImportProject };
+      IEnumerable<Project> intersectingProjects = intersectionProjectsList.AsEnumerable();
+      _projectRepo.Setup(p => p.GetProject(It.IsAny<string>())).ReturnsAsync(manualImportProject);
+      _projectRepo.Setup(p => p.GetIntersectingProjects(It.IsAny<string>(), It.IsAny<int[]>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<DateTime?>())).ReturnsAsync(intersectingProjects);
+
+      var assetDevice = new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid };
+      _deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(assetDevice);
+
+      _subscriptionRepo.Setup(d => d.GetSubscriptionsByCustomer(projectCustomerUid, It.IsAny<DateTime>())).ReturnsAsync(projectCustomerSubs);
+      _subscriptionRepo.Setup(d => d.GetSubscriptionsByCustomer(assetCustomerUid, It.IsAny<DateTime>())).ReturnsAsync(assetCustomerSubs);
+      _subscriptionRepo.Setup(d => d.GetSubscriptionsByAsset(assetUid, It.IsAny<DateTime>())).ReturnsAsync(assetSubs);
+
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), configStore,
+        _assetRepo.Object, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
+
+      var projectAndAssetUidsRequest = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", "", 91, 181, DateTime.UtcNow);
+      var result = await executor.ProcessAsync(projectAndAssetUidsRequest) as GetProjectAndAssetUidsResult;
+
+      ValidateResult(result, string.Empty, assetUid, 3039, "Manual Import unable to locate any valid subscriptions");
+    }
+
+    [TestMethod]
+    public async Task TRexExecutor_Manual_Happy_StandardProjectNoManualSubBut3dSubForProjectCustomer()
+    {
+      var projectUid = Guid.NewGuid().ToString();
+      var projectCustomerUid = Guid.NewGuid().ToString();
+      var projectCustomerSubs = new List<Subscription>(); // Man3d
+
+      var assetUid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
+      var assetSubs = new List<Subscription>()
+        {new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.ThreeDProjectMonitoring, CustomerUID = projectCustomerUid}}; 
+      var assetCustomerSubs = new List<Subscription>() { }; // Man3d
+
+      var manualImportProject = new Project() { ProjectUID = projectUid, ProjectType = ProjectType.Standard, CustomerUID = projectCustomerUid };
+      var intersectingProjectsList = new List<Project> { manualImportProject };
+      IEnumerable<Project> intersectingProjects = intersectingProjectsList.AsEnumerable();
+      _projectRepo.Setup(p => p.GetProject(It.IsAny<string>())).ReturnsAsync(manualImportProject);
+      _projectRepo.Setup(p => p.GetIntersectingProjects(It.IsAny<string>(), It.IsAny<int[]>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<DateTime?>())).ReturnsAsync(intersectingProjects);
+
+      var assetDevice = new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid };
+      _deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(assetDevice);
+
+      _subscriptionRepo.Setup(d => d.GetSubscriptionsByCustomer(projectCustomerUid, It.IsAny<DateTime>())).ReturnsAsync(projectCustomerSubs);
+      _subscriptionRepo.Setup(d => d.GetSubscriptionsByCustomer(assetCustomerUid, It.IsAny<DateTime>())).ReturnsAsync(assetCustomerSubs);
+      _subscriptionRepo.Setup(d => d.GetSubscriptionsByAsset(assetUid, It.IsAny<DateTime>())).ReturnsAsync(assetSubs);
+
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), configStore,
+        _assetRepo.Object, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
+
+      var projectAndAssetUidsRequest = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", "", 91, 181, DateTime.UtcNow);
+      var result = await executor.ProcessAsync(projectAndAssetUidsRequest) as GetProjectAndAssetUidsResult;
+      
+      ValidateResult(result, projectUid, assetUid, 0, "success");
+    }
+
+    [TestMethod]
+    public async Task TRexExecutor_Manual_Sad_StandardProjectProjectDoesntIntersectSpatially()
+    {
+      var projectUid = Guid.NewGuid().ToString();
+      var projectCustomerUid = Guid.NewGuid().ToString();
+      var projectCustomerSubs = new List<Subscription>()
+        {new Subscription() {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}}; // Man3d
+
+      var assetUid = Guid.NewGuid().ToString();
+      var assetSubs = new List<Subscription>(); // 3dpm
+      var assetCustomerUid = Guid.NewGuid().ToString();
+      var assetCustomerSubs = new List<Subscription>() { }; // Man3d
+
+      var manualImportProject = new Project()
+      {
+        ProjectUID = projectUid,
+        ProjectType = ProjectType.Standard,
+        CustomerUID = projectCustomerUid
+      };
+      var intersectionProjectsList = new List<Project> {};
+      IEnumerable<Project> intersectingProjects = intersectionProjectsList.AsEnumerable();
+      _projectRepo.Setup(p => p.GetProject(It.IsAny<string>())).ReturnsAsync(manualImportProject);
+      _projectRepo.Setup(p => p.GetIntersectingProjects(It.IsAny<string>(), It.IsAny<int[]>(), It.IsAny<double>(),
+        It.IsAny<double>(), It.IsAny<DateTime?>())).ReturnsAsync(intersectingProjects);
+
+      var assetDevice = new AssetDeviceIds() {AssetUID = assetUid, OwningCustomerUID = assetCustomerUid};
+      _deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(assetDevice);
+
+      _subscriptionRepo.Setup(d => d.GetSubscriptionsByCustomer(projectCustomerUid, It.IsAny<DateTime>()))
+        .ReturnsAsync(projectCustomerSubs);
+      _subscriptionRepo.Setup(d => d.GetSubscriptionsByCustomer(assetCustomerUid, It.IsAny<DateTime>()))
+        .ReturnsAsync(assetCustomerSubs);
+      _subscriptionRepo.Setup(d => d.GetSubscriptionsByAsset(assetUid, It.IsAny<DateTime>())).ReturnsAsync(assetSubs);
+
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
+        _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), configStore,
+        _assetRepo.Object, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
+
+      var projectAndAssetUidsRequest =
+        GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", "", 91, 181,
+          DateTime.UtcNow);
+      var result = await executor.ProcessAsync(projectAndAssetUidsRequest) as GetProjectAndAssetUidsResult;
+
+      ValidateResult(result, string.Empty, assetUid, 3041, "Manual Import matches incorrect number of projects: 0 found");
+    }
+
+
+    /***
+     * Can manually import tag files regardless if tag file time outside projectTime
+     *    Must have current a)  Manual Sub for standard or b) Landfill/Civil (for those projects)
+     *    i.e. Can only view and therefore manuallyImport a LandfillProject IF you have a current Landfill sub
+     */
+    [TestMethod]
+    public async Task TRexExecutor_Manual_Happy_StandardProjectManualSubAndTimeOutsideProjectDates()
+    {
+      var projectUid = Guid.NewGuid().ToString();
+      var projectCustomerUid = Guid.NewGuid().ToString();
+      var projectCustomerSubs = new List<Subscription>()
+        { new Subscription() { ServiceTypeID = (int)ServiceTypeEnum.Manual3DProjectMonitoring }}; // Man3d
+
+      var assetUid = Guid.NewGuid().ToString();
+      var assetSubs = new List<Subscription>(); // 3dpm
+      var assetCustomerUid = Guid.NewGuid().ToString();
+      var assetCustomerSubs = new List<Subscription>() { }; // Man3d
+
+      var startDate = DateTime.UtcNow.AddDays(-4);
+      var endDate = DateTime.UtcNow.AddDays(-3);
+      var manualImportProject = new Project() { ProjectUID = projectUid, ProjectType = ProjectType.Standard, CustomerUID = projectCustomerUid, StartDate = startDate, EndDate = endDate};
+      var intersectingProjectsList = new List<Project> { manualImportProject };
+      IEnumerable<Project> intersectingProjects = intersectingProjectsList.AsEnumerable();
+      _projectRepo.Setup(p => p.GetProject(It.IsAny<string>())).ReturnsAsync(manualImportProject);
+      _projectRepo.Setup(p => p.GetIntersectingProjects(It.IsAny<string>(), It.IsAny<int[]>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<DateTime?>())).ReturnsAsync(intersectingProjects);
+
+      var assetDevice = new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid };
+      _deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(assetDevice);
+
+      _subscriptionRepo.Setup(d => d.GetSubscriptionsByCustomer(projectCustomerUid, It.IsAny<DateTime>())).ReturnsAsync(projectCustomerSubs);
+      _subscriptionRepo.Setup(d => d.GetSubscriptionsByCustomer(assetCustomerUid, It.IsAny<DateTime>())).ReturnsAsync(assetCustomerSubs);
+      _subscriptionRepo.Setup(d => d.GetSubscriptionsByAsset(assetUid, It.IsAny<DateTime>())).ReturnsAsync(assetSubs);
+
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), configStore,
+        _assetRepo.Object, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
+
+      var projectAndAssetUidsRequest = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", "", 91, 181, startDate.AddDays(-1));
+      var result = await executor.ProcessAsync(projectAndAssetUidsRequest) as GetProjectAndAssetUidsResult;
+
+      ValidateResult(result, projectUid, assetUid, 0, "success");
+    }
+
+    [TestMethod]
+    public async Task TRexExecutor_Manual_Happy_LandfillProjectLandfillSubAndTimeOutsideProjectDates()
+    {
+      var projectUid = Guid.NewGuid().ToString();
+      var projectCustomerUid = Guid.NewGuid().ToString();
+      var projectCustomerSubs = new List<Subscription>();  // Man3d 
+
+      var assetUid = Guid.NewGuid().ToString();
+      var assetSubs = new List<Subscription>(); // 3dpm
+      var assetCustomerUid = Guid.NewGuid().ToString();
+      var assetCustomerSubs = new List<Subscription>() { }; // Man3d
+
+      var startDate = DateTime.UtcNow.AddDays(-4);
+      var endDate = DateTime.UtcNow.AddDays(-3);
+      var manualImportProject = new Project() { ProjectUID = projectUid, ProjectType = ProjectType.LandFill, CustomerUID = projectCustomerUid, StartDate = startDate, EndDate = endDate };
+      var intersectingProjectsList = new List<Project> { manualImportProject };
+      IEnumerable<Project> intersectingProjects = intersectingProjectsList.AsEnumerable();
+      _projectRepo.Setup(p => p.GetProject(It.IsAny<string>())).ReturnsAsync(manualImportProject);
+      _projectRepo.Setup(p => p.GetIntersectingProjects(It.IsAny<string>(), It.IsAny<int[]>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<DateTime?>())).ReturnsAsync(intersectingProjects);
+
+      var assetDevice = new AssetDeviceIds() { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid };
+      _deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(assetDevice);
+
+      _subscriptionRepo.Setup(d => d.GetSubscriptionsByCustomer(projectCustomerUid, It.IsAny<DateTime>())).ReturnsAsync(projectCustomerSubs);
+      _subscriptionRepo.Setup(d => d.GetSubscriptionsByCustomer(assetCustomerUid, It.IsAny<DateTime>())).ReturnsAsync(assetCustomerSubs);
+      _subscriptionRepo.Setup(d => d.GetSubscriptionsByAsset(assetUid, It.IsAny<DateTime>())).ReturnsAsync(assetSubs);
+
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), configStore,
+        _assetRepo.Object, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
+
+      var projectAndAssetUidsRequest = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, 6, "radSer45", "", 91, 181, startDate.AddDays(-1));
+      var result = await executor.ProcessAsync(projectAndAssetUidsRequest) as GetProjectAndAssetUidsResult;
+
+      ValidateResult(result, projectUid, assetUid, 0, "success");
+    }
+
+    [TestMethod]
+    public async Task TRexExecutor_Manual_Happy_CivilProjectCivilSubAndTimeOutsideProjectDates()
+    {
+      throw new NotImplementedException();
+    }
+
+
+    [TestMethod]
+    public async Task TRexExecutor_Manual_Happy_LandfillProjectLandfillSub()
+    {
+      throw new NotImplementedException();
+    }
+
+    [TestMethod]
+    public async Task TRexExecutor_Manual_Sad_LandfillProjectAndManualSub()
+    {
+      throw new NotImplementedException();
+    }
+
+    [TestMethod]
+    public async Task TRexExecutor_Manual_Sad_CivilProjectAndManualSub()
+    {
+      throw new NotImplementedException();
+    }
 
     private void ValidateResult(GetProjectAndAssetUidsResult result, string expectedProjectUid, string expectedAssetUid, int resultCode, string resultMessage)
     {
