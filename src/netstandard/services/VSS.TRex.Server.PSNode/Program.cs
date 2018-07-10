@@ -28,8 +28,8 @@ namespace VSS.TRex.Server.PSNode
       DependencyInjection();
 
       var server = new SubGridProcessingServer();
-      Console.WriteLine("Press anykey to exit");
-      Console.ReadLine();
+      Console.WriteLine("Press ctrl+c to exit");
+      Console.CancelKeyPress += ((s, a) => { Console.WriteLine("Exiting"); });
     }
   }
 }

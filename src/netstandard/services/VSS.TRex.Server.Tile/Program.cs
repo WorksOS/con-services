@@ -39,8 +39,8 @@ namespace VSS.TRex.Server.Application
       Log.LogDebug("Creating service");
 
       var server = new ApplicationServiceServer();
-      Console.WriteLine("Press anykey to exit");
-      Console.ReadLine();
+      Console.WriteLine("Press ctrl+c to exit");
+      Console.CancelKeyPress += ((s, a) => { Console.WriteLine("Exiting"); });
     }
   }
 }

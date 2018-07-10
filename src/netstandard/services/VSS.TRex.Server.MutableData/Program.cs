@@ -30,8 +30,8 @@ namespace VSS.TRex.Server.MutableData
       DependencyInjection();
 
       var server = new TagProcComputeServer();
-      Console.WriteLine("Press anykey to exit");
-      Console.ReadLine();
+      Console.WriteLine("Press ctrl+c to exit");
+      Console.CancelKeyPress += ((s, a) => { Console.WriteLine("Exiting"); });
     }
   }
 }

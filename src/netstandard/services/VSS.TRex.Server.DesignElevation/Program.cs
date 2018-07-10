@@ -16,8 +16,9 @@ namespace VSS.TRex.Server.DesignElevation
       DependencyInjection();
 
       var server = new CalculateDesignElevationsServer();
-      Console.WriteLine("Press anykey to exit");
-      Console.ReadLine();
+      Console.WriteLine("Press ctrl+c to exit");
+      Console.CancelKeyPress += ((s, a) => { Console.WriteLine("Exiting"); });
+
     }
   }
 }
