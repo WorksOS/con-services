@@ -85,7 +85,7 @@ namespace VSS.TRex.Servers.Compute
 
       cfg.JvmOptions = new List<string>() { "-DIGNITE_QUIET=false" };
 
-      cfg.SpringConfigUrl = @".\igniteKubeConfig.xml";
+      //cfg.SpringConfigUrl = @".\igniteKubeConfig.xml";
 
       //cfg.DiscoverySpi = new TcpDiscoverySpi()
       //{
@@ -189,7 +189,7 @@ namespace VSS.TRex.Servers.Compute
       ConfigureTRexGrid(cfg);
 
       Log.LogInformation($"Creating new Ignite node for {cfg.IgniteInstanceName}");
-
+      
       try
       {
         Console.WriteLine($"Creating new Ignite node for {cfg.IgniteInstanceName}");
