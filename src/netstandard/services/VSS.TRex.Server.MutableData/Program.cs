@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.Interfaces;
@@ -13,7 +14,9 @@ namespace VSS.TRex.Server.MutableData
 {
   class Program
   {
-  private static void DependencyInjection()
+    private static readonly AutoResetEvent WaitHandle = new AutoResetEvent(false);
+
+    private static void DependencyInjection()
     {
       DIBuilder
         .New()
@@ -31,7 +34,13 @@ namespace VSS.TRex.Server.MutableData
 
       var server = new TagProcComputeServer();
       Console.WriteLine("Press ctrl+c to exit");
-      Console.CancelKeyPress += ((s, a) => { Console.WriteLine("Exiting"); });
+      Console.CancelKeyPress += (s, a) =>
+      {
+        Console.WriteLine("Exiting");
+        WaitHandle.Set();
+      };
+
+      WaitHandle.WaitOne();
     }
   }
 }

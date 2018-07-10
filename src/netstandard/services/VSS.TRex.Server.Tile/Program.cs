@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.CoordinateSystems;
@@ -15,6 +16,9 @@ namespace VSS.TRex.Server.Application
 {
   class Program
   {
+    //Event to signal when to shutdown
+    private static readonly AutoResetEvent WaitHandle = new AutoResetEvent(false);
+
     private static void DependencyInjection()
     {
         DIBuilder.New()
@@ -40,7 +44,12 @@ namespace VSS.TRex.Server.Application
 
       var server = new ApplicationServiceServer();
       Console.WriteLine("Press ctrl+c to exit");
-      Console.CancelKeyPress += ((s, a) => { Console.WriteLine("Exiting"); });
+      Console.CancelKeyPress += (s, a) => 
+        { Console.WriteLine("Exiting");
+          WaitHandle.Set();
+        };
+
+      WaitHandle.WaitOne();
     }
   }
 }

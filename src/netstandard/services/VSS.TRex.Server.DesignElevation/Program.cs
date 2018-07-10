@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using VSS.TRex.DesignProfiling.Servers.Client;
 using VSS.TRex.DI;
 
@@ -6,6 +7,8 @@ namespace VSS.TRex.Server.DesignElevation
 {
   class Program
   {
+    private static readonly AutoResetEvent WaitHandle = new AutoResetEvent(false);
+
     private static void DependencyInjection()
     {
       DIBuilder.New().AddLogging().Complete();
@@ -16,9 +19,13 @@ namespace VSS.TRex.Server.DesignElevation
       DependencyInjection();
 
       var server = new CalculateDesignElevationsServer();
-      Console.WriteLine("Press ctrl+c to exit");
-      Console.CancelKeyPress += ((s, a) => { Console.WriteLine("Exiting"); });
+      Console.CancelKeyPress += (s, a) =>
+      {
+        Console.WriteLine("Exiting");
+        WaitHandle.Set();
+      };
 
+      WaitHandle.WaitOne();
     }
   }
 }
