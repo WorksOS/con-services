@@ -1,17 +1,9 @@
-using Jaeger;
-using Jaeger.Reporters;
-using Jaeger.Samplers;
-using Jaeger.Senders;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OpenTracing;
-using OpenTracing.Contrib.NetCore.CoreFx;
-using OpenTracing.Util;
-using System;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
@@ -46,7 +38,6 @@ namespace VSS.MasterData.Project.WebAPI
     public const string LoggerRepoName = "WebApi";
     private IServiceCollection serviceCollection;
 
-    private static readonly Uri _jaegerUri = new Uri("http://localhost:14268/api/traces");
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -100,15 +91,15 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<IProjectSettingsRequestHelper, ProjectSettingsRequestHelper>();
       services.AddScoped<IErrorCodesProvider, ProjectErrorCodesProvider>();
 
-      services.AddJaeger(SERVICE_TITLE);
-
-      // Prevent endless loops when OpenTracing is tracking HTTP requests to Jaeger.
-      services.Configure<HttpHandlerDiagnosticOptions>(options =>
+      services.AddOpenTracing(builder =>
       {
-        options.IgnorePatterns.Add(request => _jaegerUri.IsBaseOf(request.RequestUri));
+        builder.ConfigureAspNetCore(options =>
+        {
+          options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
+        });
       });
 
-      //GlobalTracer.Register();
+      services.AddJaeger(SERVICE_TITLE);
 
       services.AddOpenTracing();
       services.AddMemoryCache();
