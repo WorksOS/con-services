@@ -21,6 +21,7 @@ using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -358,7 +359,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
               await ApplyDateRange(projectUid, filterData);
 
               var polygonPoints = filterData.PolygonLL?.ConvertAll(p =>
-                Common.Models.WGSPoint.CreatePoint(p.Lat.LatDegreesToRadians(), p.Lon.LonDegreesToRadians()));
+                WGSPoint3D.CreatePoint(p.Lat.LatDegreesToRadians(), p.Lon.LonDegreesToRadians()));
 
               var layerMethod = filterData.LayerNumber.HasValue
                 ? FilterLayerMethod.TagfileLayerNumber

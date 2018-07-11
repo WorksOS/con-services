@@ -6,6 +6,8 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
+using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.WebApiModels.Compaction.Models
 {

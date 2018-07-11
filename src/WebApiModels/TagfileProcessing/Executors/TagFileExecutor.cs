@@ -9,6 +9,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling;
@@ -37,13 +38,27 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
     {
       try
       {
-        var request = item as TagFileRequest;
+        var request = item as TagFileRequestLegacy;
+
+        if (request.ProjectId != VelociraptorConstants.NO_PROJECT_ID && request.Boundary == null)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "Failed to process tagfile with error: Manual tag file submissions must include a boundary fence."));
+        }
+
+        if (request.ProjectId == VelociraptorConstants.NO_PROJECT_ID && request.Boundary != null)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "Failed to process tagfile with error: Automatic tag file submissions cannot include boundary fence."));
+        }
 
         var resultCode = tagProcessor.ProjectDataServerTAGProcessorClient()
           .SubmitTAGFileToTAGFileProcessor
           (request.FileName,
             new MemoryStream(request.Data),
-            request.ProjectId ?? -1, 0, 0, request.MachineId ?? -1,
+            request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, 0, 0, request.MachineId ?? -1,
             request.Boundary != null
               ? RaptorConverters.convertWGS84Fence(request.Boundary)
               : TWGS84FenceContainer.Null(), request.TccOrgId);

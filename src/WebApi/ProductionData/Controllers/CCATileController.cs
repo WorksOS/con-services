@@ -18,9 +18,11 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.Common.Utilities;
+using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
-using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
+using WGSPoint = VSS.Productivity3D.Models.Models.WGSPoint3D;
+using VSS.Productivity3D.Models.Enums;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {
@@ -218,7 +220,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         DisplayMode.CCA,
         null,
         null,
-        RaptorConverters.VolumesType.None,
+        VolumesType.None,
         0,
         null,
         filter,

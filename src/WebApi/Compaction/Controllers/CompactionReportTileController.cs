@@ -17,10 +17,12 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApiModels.MapHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Productivity3D.Models.Enums;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {

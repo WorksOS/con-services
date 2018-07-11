@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Models.Models;
 using CommonModels=VSS.Productivity3D.Common.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
@@ -36,7 +37,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="filterPolygons">List of filter polygons</param>
     /// <param name="boundaryType">Type of filter boundary which determines the color</param>
     /// <returns>A bitmap</returns>
-    public byte[] GetFilterBoundaryBitmap(MapParameters parameters, List<List<CommonModels.WGSPoint>> filterPolygons, FilterBoundaryType boundaryType)
+    public byte[] GetFilterBoundaryBitmap(MapParameters parameters, List<List<WGSPoint3D>> filterPolygons, FilterBoundaryType boundaryType)
     {
       byte[] geofenceImage = null;
 
@@ -149,7 +150,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       return sitesImage;
     }
 
-    private void DrawGeofence(MapParameters parameters, Graphics g, string uid, IEnumerable<CommonModels.WGSPoint> points, int color, bool isTransparent)
+    private void DrawGeofence(MapParameters parameters, Graphics g, string uid, IEnumerable<WGSPoint3D> points, int color, bool isTransparent)
     {
       const int FILL_TRANSPARENCY = 0x40; //0.25 of FF
       const int STROKE_TRANSPARENCY = 0x73; //0.45 of FF
@@ -171,6 +172,6 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
   {
     byte[] GetSitesBitmap(MapParameters parameters, IEnumerable<GeofenceData> sites);
     byte[] GetBoundariesBitmap(MapParameters parameters, IEnumerable<GeofenceData> customBoundaries);
-    byte[] GetFilterBoundaryBitmap(MapParameters parameters, List<List<CommonModels.WGSPoint>> filterPoints, FilterBoundaryType boundaryType);
+    byte[] GetFilterBoundaryBitmap(MapParameters parameters, List<List<WGSPoint3D>> filterPoints, FilterBoundaryType boundaryType);
   }
 }

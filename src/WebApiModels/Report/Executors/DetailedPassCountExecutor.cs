@@ -13,6 +13,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Models;
+using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.WebApiModels.Report.Executors
 {

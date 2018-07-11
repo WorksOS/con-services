@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using VSS.MasterData.Models.Internal;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
 {
@@ -10,24 +11,24 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
   public class SummaryDataHelper : ISummaryDataHelper
   {
     /// <inheritdoc />
-    public RaptorConverters.VolumesType GetVolumesType(FilterResult filter1, FilterResult filter2)
+    public VolumesType GetVolumesType(FilterResult filter1, FilterResult filter2)
     {
       if (filter1 != null && filter2 != null) // Ground to Ground
       {
-        return RaptorConverters.VolumesType.Between2Filters;
+        return VolumesType.Between2Filters;
       }
 
       if (filter1 != null) // Ground to Design
       {
-        return RaptorConverters.VolumesType.BetweenFilterAndDesign;
+        return VolumesType.BetweenFilterAndDesign;
       }
 
       if (filter2 != null) // Design to Ground
       {
-        return RaptorConverters.VolumesType.BetweenDesignAndFilter;
+        return VolumesType.BetweenDesignAndFilter;
       }
 
-      return RaptorConverters.VolumesType.None;
+      return VolumesType.None;
     }
 
     /// <summary>

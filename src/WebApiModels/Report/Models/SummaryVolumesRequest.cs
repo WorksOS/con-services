@@ -2,6 +2,8 @@
 using System.ComponentModel.DataAnnotations;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Models
 {
@@ -15,7 +17,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     /// </summary>
     [JsonProperty(Required = Required.Always)]
     [Required]
-    public RaptorConverters.VolumesType VolumeCalcType { get; private set; }
+    public VolumesType VolumeCalcType { get; private set; }
 
     /// <summary>
     /// The descriptor of the design surface to be used as the base or earliest surface for design-filter volumes
@@ -60,7 +62,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     /// Creates a <see cref="SummaryVolumesRequest"/> object for use with the v2 API.
     /// </summary>
     /// <returns>New instance of <see cref="SummaryVolumesRequest"/>.</returns>
-    public static SummaryVolumesRequest CreateAndValidate(long projectId, FilterResult baseFilter, FilterResult topFilter, DesignDescriptor baseDesignDescriptor, DesignDescriptor topDesignDescriptor, RaptorConverters.VolumesType volumeCalcType)
+    public static SummaryVolumesRequest CreateAndValidate(long projectId, FilterResult baseFilter, FilterResult topFilter, DesignDescriptor baseDesignDescriptor, DesignDescriptor topDesignDescriptor, VolumesType volumeCalcType)
     {
       var request = new SummaryVolumesRequest
       {

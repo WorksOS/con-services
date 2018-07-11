@@ -6,6 +6,8 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Enums;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Models
 { 
@@ -183,7 +185,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
 
       if (reportCutFill == true)
       {
-        ValidateDesign(designFile, DisplayMode.CutFill, RaptorConverters.VolumesType.None);
+        ValidateDesign(designFile, DisplayMode.CutFill, VolumesType.None);
       }
 
       if (interval < 0.1 || interval > 100.00)

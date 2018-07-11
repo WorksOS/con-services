@@ -2,6 +2,7 @@
 using System;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 

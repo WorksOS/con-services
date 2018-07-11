@@ -2,6 +2,7 @@
 using System;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
 namespace VSS.Productivity3D.WebApiTests.ProductionData.Models

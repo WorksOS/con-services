@@ -6,7 +6,8 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
+using VSS.Productivity3D.Models.Models;
+using WGSPoint = VSS.Productivity3D.Models.Models.WGSPoint3D;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
 {

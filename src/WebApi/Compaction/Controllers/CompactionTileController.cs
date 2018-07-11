@@ -19,12 +19,14 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Compaction.Controllers.Filters;
 using VSS.Productivity3D.WebApi.Models.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Executors;
 using VSS.Productivity3D.WebApiModels.Compaction.Models;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Productivity3D.Models.Enums;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -115,7 +117,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var projectSettingsColors = await GetProjectSettingsColors(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
-      DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
+      var cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
       var tileResult = WithServiceExceptionTryExecute(() =>
         tileService.GetProductionDataTile(projectSettings, projectSettingsColors, filter, projectId, mode, width, height,
@@ -184,7 +186,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettingsColors = await GetProjectSettingsColors(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
 
-      DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue
+      var cutFillDesign = cutFillDesignUid.HasValue
         ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value)
         : null;
 
@@ -243,7 +245,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       dxfTileRequest.Validate();
 
-      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(LoggerFactory, raptorClient, null, this.ConfigStore, fileRepo);
+      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(LoggerFactory, raptorClient, null, ConfigStore, fileRepo);
       var result = await executor.ProcessAsync(dxfTileRequest) as TileResult;
 
       return result;
@@ -294,7 +296,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       dxfTileRequest.Validate();
 
-      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(LoggerFactory, raptorClient, null, this.ConfigStore, fileRepo);
+      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(LoggerFactory, raptorClient, null, ConfigStore, fileRepo);
       var result = await executor.ProcessAsync(dxfTileRequest) as TileResult;
 
       return new FileStreamResult(new MemoryStream(result.TileData), "image/png");
@@ -335,7 +337,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
 
       //Get all the imported files for the project
-      var fileList = await this.FileListProxy.GetFiles(projectUid.ToString(), GetUserId(), Request.Headers.GetCustomHeaders()) ?? new List<FileData>();
+      var fileList = await FileListProxy.GetFiles(projectUid.ToString(), GetUserId(), Request.Headers.GetCustomHeaders()) ?? new List<FileData>();
 
       //Select the required ones from the list
       var filesOfType = fileList.Where(f => f.ImportedFileType == importedFileType && f.IsActivated).ToList();
@@ -356,10 +358,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       double trLong = 0;
       double trLat = 0;
 
-      int count = 0;
-      foreach (string s in bbox.Split(','))
+      var count = 0;
+      foreach (var s in bbox.Split(','))
       {
-        if (!double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out double num))
+        if (!double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out var num))
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

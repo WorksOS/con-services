@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Enums;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 {

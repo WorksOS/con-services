@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.Utilities;
+using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Utilities;
+using VSS.Productivity3D.Models.Enums;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
 {
@@ -58,7 +62,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// The volume computation type to use for summary volume thematic rendering
     /// </summary>
     [JsonProperty(PropertyName = "computeVolType", Required = Required.Default)]
-    public RaptorConverters.VolumesType ComputeVolType { get; private set; }
+    public VolumesType ComputeVolType { get; private set; }
 
     /// <summary>
     /// The tolerance to be used to indicate no change in volume for a cell. Used for summary volume thematic rendering. Value is expressed in meters.
@@ -136,7 +140,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
       List<ColorPalette> palettes,
       LiftBuildSettings liftBuildSettings,
        bool renderColorValues,
-      RaptorConverters.VolumesType computeVolType,
+      VolumesType computeVolType,
       double computeVolNoChangeTolerance,
       DesignDescriptor designDescriptor,
       FilterResult filter1,

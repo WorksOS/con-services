@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Validation;
 
 namespace VSS.Productivity3D.WebApiTests.Report.Models
 {

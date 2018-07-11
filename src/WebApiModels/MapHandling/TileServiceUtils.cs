@@ -5,10 +5,9 @@ using System.IO;
 using System.Linq;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Extensions;
-using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
+using VSS.Productivity3D.Models.Models;
 using Point = VSS.MasterData.Models.Models.Point;
-using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
+using WGSPoint = VSS.Productivity3D.Models.Models.WGSPoint3D;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {

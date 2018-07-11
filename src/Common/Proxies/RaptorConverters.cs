@@ -15,9 +15,11 @@ using SVOSiteVisionDecls;
 using VLPDDecls;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models;
 using __Global = ProductionServer_TLB.__Global;
 using Point = VSS.MasterData.Models.Models.Point;
-using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
+using WGSPoint = VSS.Productivity3D.Models.Models.WGSPoint3D;
 
 namespace VSS.Productivity3D.Common.Proxies
 {
@@ -838,47 +840,6 @@ namespace VSS.Productivity3D.Common.Proxies
     }
 
     /// <summary>
-    /// The different volume computation types available
-    /// </summary>
-    public enum VolumesType
-    {
-      /// <summary>
-      /// Null value
-      /// </summary>
-      None = 0,
-
-      /// <summary>
-      /// Compute volumes above a specific elevation. Not currently available.
-      /// </summary>
-      AboveLevel = 1,
-
-      /// <summary>
-      /// Compute volumes between two specific elevations. Not currently available.
-      /// </summary>
-      Between2Levels = 2,
-
-      /// <summary>
-      /// Compute volumes above the levels defined using a supplied filter
-      /// </summary>
-      AboveFilter = 3,
-
-      /// <summary>
-      /// Compute volumes between the levels defined using a pair of supplied filters.
-      /// </summary>
-      Between2Filters = 4,
-
-      /// <summary>
-      /// Compute volumes defined by a filter (lower bound) and a design surface (upper bound)
-      /// </summary>
-      BetweenFilterAndDesign = 5,
-
-      /// <summary>
-      /// Compute volumes defined by a design surface (lower bound) and a filter (upper bound)
-      /// </summary>
-      BetweenDesignAndFilter = 6
-    }
-
-    /// <summary>
     /// ConvertVolumesType
     /// </summary>
     /// <param name="volumesType"></param>
@@ -1094,7 +1055,7 @@ namespace VSS.Productivity3D.Common.Proxies
     /// </summary>
     public static void reconcileTopFilterAndVolumeComputationMode(ref TICFilterSettings topFilter,
                                                                   DisplayMode mode,
-                                                                  RaptorConverters.VolumesType computeVolType)
+                                                                  VolumesType computeVolType)
     {
       // Adjust filter to take into account volume type computations that effect Cut/Fill, Volume and Thickness requests. 
       // If these requests invovle a design through the appropriate volume computation modes, the topFilter has no effect
@@ -1102,7 +1063,7 @@ namespace VSS.Productivity3D.Common.Proxies
       // and a top filter indication one of the comparative surfaces used by these requests
       if (((mode == DisplayMode.CutFill) || (mode == DisplayMode.VolumeCoverage) || (mode == DisplayMode.TargetThicknessSummary))
           &&
-          ((computeVolType == RaptorConverters.VolumesType.BetweenDesignAndFilter) || (computeVolType == RaptorConverters.VolumesType.BetweenFilterAndDesign)))
+          ((computeVolType == VolumesType.BetweenDesignAndFilter) || (computeVolType == VolumesType.BetweenFilterAndDesign)))
       {
         // Force topfilter (which is filter2) to be a plain empty filter to remove any default
         // setting such as the LayerType to percolate through into the request.
@@ -1114,13 +1075,13 @@ namespace VSS.Productivity3D.Common.Proxies
     /// Ensures there is not a misconfigured topFilter for certain operations that involve design surfaces for volume computation operations
     /// </summary>
     public static void reconcileTopFilterAndVolumeComputationMode(ref TICFilterSettings topFilter,
-                                                                  RaptorConverters.VolumesType computeVolType)
+                                                                  VolumesType computeVolType)
     {
       // Adjust filter to take into account volume computations with respect to designs
       // If these requests invovle a design through the appropriate volume computation modes, the topFilter has no effect
       // and must be made safe so the underlying engines do not receive conflicting instructions between a specified design
       // and a top filter indication one of the comparative surfaces used by these requests
-      if ((computeVolType == RaptorConverters.VolumesType.BetweenDesignAndFilter) || (computeVolType == RaptorConverters.VolumesType.BetweenFilterAndDesign))
+      if ((computeVolType == VolumesType.BetweenDesignAndFilter) || (computeVolType == VolumesType.BetweenFilterAndDesign))
       {
         // Force topfilter (which is filter2) to be a plain empty filter to remove any default
         // setting such as the LayerType to percolate through into the request.
@@ -1134,7 +1095,7 @@ namespace VSS.Productivity3D.Common.Proxies
     public static void reconcileTopFilterAndVolumeComputationMode(ref TICFilterSettings filter1,
                                                                   ref TICFilterSettings filter2,
                                                                   DisplayMode mode,
-                                                                  RaptorConverters.VolumesType computeVolType)
+                                                                  VolumesType computeVolType)
     {
       // Adjust filter to take into account volume type computations that effect Cut/Fill, Volume and Thickness requests. 
       // If these requests invovle a design through the appropriate volume computation modes, either the topFilter or the baseFilter
@@ -1143,14 +1104,14 @@ namespace VSS.Productivity3D.Common.Proxies
       // and a filter used by these requests
       if (((mode == DisplayMode.CutFill) || (mode == DisplayMode.VolumeCoverage) || (mode == DisplayMode.TargetThicknessSummary)))
       {
-        if (computeVolType == RaptorConverters.VolumesType.BetweenDesignAndFilter)
+        if (computeVolType == VolumesType.BetweenDesignAndFilter)
         {
           // Force topfilter to be a plain empty filter to remove any default
           // setting such as the LayerType to percolate through into the request.
           filter2 = new TICFilterSettings();
         }
 
-        if (computeVolType == RaptorConverters.VolumesType.BetweenFilterAndDesign)
+        if (computeVolType == VolumesType.BetweenFilterAndDesign)
         {
           // Force basefilter to be a plain empty filter to remove any default
           // setting such as the LayerType to percolate through into the request.
@@ -1164,7 +1125,7 @@ namespace VSS.Productivity3D.Common.Proxies
     /// </summary>
     public static void reconcileTopFilterAndVolumeComputationMode(ref TICFilterSettings baseFilter,
                                                                   ref TICFilterSettings topFilter,
-                                                                  RaptorConverters.VolumesType computeVolType)
+                                                                  VolumesType computeVolType)
     {
       // Adjust filter to take into account volume type computations respect to designs. 
       // If these requests invovle a design through the appropriate volume computation modes, either the topFilter or the baseFilter
@@ -1172,14 +1133,14 @@ namespace VSS.Productivity3D.Common.Proxies
       // and must be made safe so the underlying engines do not receive conflicting instructions between a specified design
       // and a filter used by these requests
 
-      if (computeVolType == RaptorConverters.VolumesType.BetweenDesignAndFilter)
+      if (computeVolType == VolumesType.BetweenDesignAndFilter)
       {
         // Force topfilter to be a plain empty filter to remove any default
         // setting such as the LayerType to percolate through into the request.
         baseFilter = new TICFilterSettings();
       }
 
-      if (computeVolType == RaptorConverters.VolumesType.BetweenFilterAndDesign)
+      if (computeVolType == VolumesType.BetweenFilterAndDesign)
       {
         // Force basefilter to be a plain empty filter to remove any default
         // setting such as the LayerType to percolate through into the request.

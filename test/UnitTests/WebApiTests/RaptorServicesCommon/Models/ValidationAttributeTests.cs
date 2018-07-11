@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.MasterData.Models.FIlters;
 using VSS.Productivity3D.Common.Filters.Validation;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Models
 {
@@ -29,15 +30,15 @@ namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Models
         public void MoreThanTwoPointsAttributeTest()
         {
             MoreThanTwoPointsAttribute attribute = new MoreThanTwoPointsAttribute();
-            List<WGSPoint> list = new List<WGSPoint>();
+            List<WGSPoint3D> list = new List<WGSPoint3D>();
             for (int i=0;i<5;i++)
-                list.Add(WGSPoint.CreatePoint(3,3));
-            List<WGSPoint> list2 = new List<WGSPoint>();
+                list.Add(WGSPoint3D.CreatePoint(3,3));
+            List<WGSPoint3D> list2 = new List<WGSPoint3D>();
             for (int i = 0; i < 55; i++)
-                list2.Add(WGSPoint.CreatePoint(3, 3));
-            List<WGSPoint> list3 = new List<WGSPoint>();
+                list2.Add(WGSPoint3D.CreatePoint(3, 3));
+            List<WGSPoint3D> list3 = new List<WGSPoint3D>();
             for (int i = 0; i < 1; i++)
-                list3.Add(WGSPoint.CreatePoint(3, 3));
+                list3.Add(WGSPoint3D.CreatePoint(3, 3));
 
             Assert.IsTrue(attribute.IsValid(list.ToArray()));
             Assert.IsFalse(attribute.IsValid(list2.ToArray()));

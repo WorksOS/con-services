@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
 {
@@ -15,8 +16,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
     /// </summary>
     /// <param name="filter1">Filter to compare against filter2</param>
     /// <param name="filter2">Filter to compare against filter1</param>
-    /// <returns>Returns the <see cref="RaptorConverters.VolumesType"/> type for the two input surfaces.</returns>
-    RaptorConverters.VolumesType GetVolumesType(FilterResult filter1, FilterResult filter2);
+    /// <returns>Returns the <see cref="VolumesType"/> type for the two input surfaces.</returns>
+    VolumesType GetVolumesType(FilterResult filter1, FilterResult filter2);
 
     /// <summary>
     /// 

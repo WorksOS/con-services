@@ -13,6 +13,8 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Compaction.ActionServices;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
@@ -335,7 +337,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var volumeCalcType = summaryDataHelper.GetVolumesType(baseFilter, topFilter);
 
-      if (volumeCalcType == RaptorConverters.VolumesType.None)
+      if (volumeCalcType == VolumesType.None)
       {
         throw new ServiceException(
           HttpStatusCode.BadRequest,

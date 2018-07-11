@@ -13,7 +13,8 @@ using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.MasterData.Models.Models;
-using WGSPoint = VSS.Productivity3D.Common.Models.WGSPoint;
+using VSS.Productivity3D.Models.Enums;
+using WGSPoint = VSS.Productivity3D.Models.Models.WGSPoint3D;
 
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
