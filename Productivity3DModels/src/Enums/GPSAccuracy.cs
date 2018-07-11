@@ -1,4 +1,4 @@
-﻿namespace VSS.Productivity3D.Models.Models
+﻿namespace VSS.Productivity3D.Models.Enums
 {
   /// <summary>
   /// Provides description of GPS accuracy for the current cell, current machine and current datetime
