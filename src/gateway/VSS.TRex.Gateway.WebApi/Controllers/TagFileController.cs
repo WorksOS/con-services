@@ -62,55 +62,46 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     }
 
 
-
-
-
     /// <summary>
     /// For the direct submission of tag files from GNSS capable machines.
     /// </summary>
    // [PostRequestVerifier]
     [Route("api/v2/tagfiles/direct")]
     [HttpPost]
-    public ObjectResult PostTagFileDirectSubmission([FromBody]CompactionTagFileRequest request)
+    public IActionResult PostTagFileDirectSubmission([FromBody]CompactionTagFileRequest request)
     {
-      // todo
-      return StatusCode((int)HttpStatusCode.BadRequest,null );
-      /*
 
-      // Serialize the request ignoring the Data property so not to overwhelm the logs.
-      var serializedRequest = JsonConvert.SerializeObject(
-          request,
-          Formatting.None,
-          new JsonSerializerSettings { ContractResolver = new JsonContractPropertyResolver("Data") });
-      
-      log.LogDebug("PostTagFile (Direct): " + serializedRequest);
+      request.Validate();
+      TagFileRequest request2 = TagFileRequest.CreateTagFile(
+                                                              request.FileName,
+                                                              request.Data,
+                                                              request.ProjectUid,
+                                                              null,
+                                                              0,false,false,request.OrgId);
 
-      var projectId = GetLegacyProjectId(request.ProjectUid).Result;
 
-      var tfRequest = TagFileRequestLegacy.CreateTagFile(request.FileName, request.Data, projectId, null, VelociraptorConstants.NO_MACHINE_ID, false, false);
-      tfRequest.Validate();
+      var tagfileResult = WithServiceExceptionTryExecute(() =>
+                                                             RequestExecutorContainer
+                                                                 .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+                                                                 .Process(request2)) as TagFileResult;
 
-      var result = RequestExecutorContainerFactory
-          .Build<TagFileDirectSubmissionExecutor>(logger, raptorClient, tagProcessor)
-          .Process(tfRequest) as TagFileDirectSubmissionResult;
-
-      if (result.Code == 0)
+      // todo we probably need to return some proper return codes to determine further course of action
+      if (tagfileResult != null)
       {
-        log.LogDebug($"PostTagFile (Direct): Successfully imported TAG file '{request.FileName}'.");
-        return StatusCode((int)HttpStatusCode.OK, result);
+        if (tagfileResult.Code == 0)
+          return (IActionResult)Ok(tagfileResult);
+        else
+        {
+          return BadRequest(tagfileResult);
+        }
+      }
+      else
+      {
+        return BadRequest(TagFileResult.Create(0, "Unexpected failure")); // todo
       }
 
-      log.LogDebug($"PostTagFile (Direct): Failed to import TAG file '{request.FileName}', {result.Message}");
-      return StatusCode((int)HttpStatusCode.BadRequest, result);
-      */
+
     }
-
-
-
-
-
-
-
 
   }
 }
