@@ -39,17 +39,17 @@ common:
 # have dedicated ingest nodes, that will only perform this specific task.  
 client:
   # It isn't common to need more than 2 client nodes.
-  replicas: 1
+  replicas: 3
   antiAffinity: "soft"
 
   # The amount of RAM allocated to the JVM heap. This should be set to the
   # same value as client.resources.requests.memory, or you may see
   # OutOfMemoryErrors on startup.
-  heapMemory: 256m
+  heapMemory: 1024m
 
   resources:
     requests:
-      memory: 256Mi
+      memory: 1024Mi
 
   env:
     NODE_DATA: "false"
@@ -72,11 +72,11 @@ data:
   # The amount of RAM allocated to the JVM heap. This should be set to the
   # same value as data.resources.requests.memory, or you may see
   # OutOfMemoryErrors on startup.
-  heapMemory: 256m
+  heapMemory: 1024m
 
   resources:
     requests:
-      memory: 256Mi
+      memory: 1024Mi
 
   env:
     NODE_DATA: "true"
