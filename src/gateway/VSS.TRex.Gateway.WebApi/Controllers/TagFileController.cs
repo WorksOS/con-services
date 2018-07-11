@@ -81,7 +81,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [HttpPost]
     public IActionResult PostTagFile([FromBody]CompactionTagFileRequest request)
     {
-      request.Validate();
+      //request.Validate();
 
       // Serialize the request ignoring the Data property so not to overwhelm the logs.
       var serializedRequest = JsonConvert.SerializeObject(
@@ -130,7 +130,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     public IActionResult PostTagFileDirectSubmission([FromBody]CompactionTagFileRequest request)
     {
 
-      request.Validate();
+      //request.Validate();
       log.LogDebug($"PostTagFile: ProjectID:{request.ProjectUid},File:{request.FileName}");
 
       TagFileRequest requestStandard = TagFileRequest.CreateTagFile(
