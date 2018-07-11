@@ -156,16 +156,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return projects;
     }
 
-    public async Task<IEnumerable<Project>> GetIntersectingProjects(string customerUid, int[] projectTypes, 
-      double latitude, double longitude, DateTime? timeOfPosition = null)
+    public async Task<IEnumerable<Project>> GetIntersectingProjects(string customerUid, 
+      double latitude, double longitude, int[] projectTypes, DateTime? timeOfPosition = null)
     {
       IEnumerable<Project> projects = null;
       try
       {
         if (customerUid != null)
         {
-          var p = await projectRepository.GetIntersectingProjects(customerUid, projectTypes,
-            latitude, longitude, timeOfPosition).ConfigureAwait(false);
+          var p = await projectRepository.GetIntersectingProjects(customerUid, latitude, longitude, projectTypes, timeOfPosition).ConfigureAwait(false);
 
           // todo do time checking outside of method as allowed for ManualImport
 

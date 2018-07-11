@@ -46,10 +46,14 @@
       DynamicAddwithOffset("ProjectUid is present, but invalid", 36);
       DynamicAddwithOffset("Either Radio Serial or TCCOrgId must be provided", 37);
       DynamicAddwithOffset("Unable to find the Project requested", 38);
-      DynamicAddwithOffset("Manual Import unable to locate any valid subscriptions", 39);
-      DynamicAddwithOffset("Manual Import unable to locate any valid projectSubscriptions or locate asset", 40);
-      DynamicAddwithOffset("Manual Import matches incorrect number of projects: {0}", 41);
-      DynamicAddwithOffset("Manual Import project does not intersect location and time provided", 42);
+      DynamicAddwithOffset("Manual Import: unable to locate any valid subscriptions", 39);
+      DynamicAddwithOffset("Manual Import: unable to locate any valid projectSubscriptions or locate asset", 40);
+      DynamicAddwithOffset("Manual Import: no intersecting projects found", 41);
+      DynamicAddwithOffset("Manual Import: project does not intersect location and time provided", 42);
+      DynamicAddwithOffset("Manual Import: cannot import to an archived project", 43);
+      DynamicAddwithOffset("Manual Import: cannot import to a Civil type project", 44);
+      DynamicAddwithOffset("Manual Import: landfill project does not have a valid subscription at that time", 45);
+      DynamicAddwithOffset("Manual Import: internal unhandled path", 46);
     }
 
     /// <summary>

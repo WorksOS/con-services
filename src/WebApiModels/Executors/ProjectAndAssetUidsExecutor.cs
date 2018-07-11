@@ -3,12 +3,13 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
+using Google.Protobuf.WellKnownTypes;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Repositories.DBModels;
-using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
@@ -59,7 +60,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (request == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult("", "",
+          GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, string.Empty,
             ContractExecutionStatesEnum.SerializationError));
       }
 
@@ -86,6 +87,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
         if (project != null)
         {
+          if (project.IsDeleted)
+          {
+            return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, string.Empty, 43);
+          }
+          if (project.ProjectType == ProjectType.ProjectMonitoring)
+          {
+            return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, string.Empty, 44);
+          }
           projectUid = project.ProjectUID;
           projectOwningCustomer = project.CustomerUID;
           projectCustomerSubs =
@@ -95,12 +104,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         }
         else
         {
-          return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(projectUid, "", 38);
+          return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, string.Empty, 38);
         }
       }
 
       // setup AssetUid to return. Assemble ServicePlans for assetCustomer and/or TCCOrgID customer
-
       // For a manual import (projectUid provided),
       //    A manual device type (or where no asset-type parameters are available), only serviceType will be available.
       //    So if there are any projectCustomer subs, then set serviceType to manual
@@ -129,9 +137,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
           assetOwningCustomerUid = assetDevice.OwningCustomerUID;
           log.LogDebug($"ProjectAndAssetUidsExecutor: Loaded assetDevice {JsonConvert.SerializeObject(assetDevice)}");
 
-          // get any assetSubs ("3D Project Monitoring") 
-          assetSubs = (await dataRepository.LoadAssetSubs(assetUid, DateTime.UtcNow)).ToList();
-          log.LogDebug($"ProjectAndAssetUidsExecutor: Loaded assetSubs? {JsonConvert.SerializeObject(assetSubs)}");
+          // get any assetSubs ("3D Project Monitoring") for StandardProject validation
+          if (string.IsNullOrEmpty(request.ProjectUid) || project.ProjectType == ProjectType.Standard)
+          {
+            assetSubs = (await dataRepository.LoadAssetSubs(assetUid, DateTime.UtcNow)).ToList();
+            log.LogDebug($"ProjectAndAssetUidsExecutor: Loaded assetSubs? {JsonConvert.SerializeObject(assetSubs)}");
+          }
 
         }
         else
@@ -140,8 +151,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         }
       }
 
-      // manual is quite different e.g. any time prior to sub EndDate is ok
-      //                                assetCustomer and projectCustomer subs may play a role
+      // manual (projectUid provided) is quite different to auto
+      //          e.g. any time prior to sub EndDate is ok
+      //               assetCustomer and projectCustomer subs may play a role
+      //               Cannot do for a PM project (tossed out above)
+      //               Cannot do for a 'deleted/archived' project (same as auto) (manual is tossed out above) 
       if (!string.IsNullOrEmpty(request.ProjectUid))
       {
         return await HandleManualImport(request, project, projectCustomerSubs, assetUid, assetOwningCustomerUid,
@@ -160,11 +174,34 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       Project project, List<Subscriptions> projectCustomerSubs, string assetUid, string assetOwningCustomerUid,
       List<Subscriptions> assetSubs)
     {
+      // by this stage...
+      //  got a project,
+      //  note that for manual, any projectTimeRange is ok. sub endDate is significant for Landfill.
+      // Can manually import tag files regardless if tag file time outside projectTime
+      //   Must have current a)  Manual Sub for standard or b) Landfill/Civil (for those projects)
+      //   i.e. Can only view and therefore manuallyImport a LandfillProject IF you have a current Landfill sub
+      //
+      // if assetUid is a JohnDoe, with/without a tccOrgID,
+      //       StandardProject: ok if projectCustomer has a man3dp
+      //       Landfill requires a LandfillSub  
+
+      var intersectingProjects = (await dataRepository.GetIntersectingProjects(project.CustomerUID, request.Latitude,
+        request.Longitude, new int[] { (int)project.ProjectType }, null)).ToList();
+
+      log.LogDebug(
+        $"ProjectAndAssetUidsExecutor: Projects which intersect with manually imported project {JsonConvert.SerializeObject(intersectingProjects)}");
+
+
+      if (!intersectingProjects.Any())
+      {
+        return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, assetUid, 41);
+      }
+
       if (project.ProjectType == ProjectType.Standard)
       {
         if (!projectCustomerSubs.Any())
         {
-          // see if we can use the assetCustomerSub Man3d
+          // see if we can use the asset assetCustomerSub Man3d
           if (!string.IsNullOrEmpty(assetUid))
           {
             // we need assetOwningCustomer for Manual import to determine if assetCustomer == projectCustomer 
@@ -186,93 +223,40 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
           }
           else
           {
-            return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, assetUid, 40);
+            return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, string.Empty, 40);
           }
         }
 
-
-        // got some kind of subscription, and project by this stage...
-        // for manual, any projectTimeRange is ok
-        var intersectingProjects = (await dataRepository.GetIntersectingProjects(project.CustomerUID,
-          new int[0], request.Latitude, request.Longitude, null)).ToList();
-
-        log.LogDebug(
-          $"ProjectAndAssetUidsExecutor: Projects which intersect with manually imported project {JsonConvert.SerializeObject(intersectingProjects)}");
-
-        if (intersectingProjects.Count != 1)
+        //  got some kind of valid subscription by here
+        if (intersectingProjects.Select(p =>
+                string.Compare(p.ProjectUID, project.ProjectUID, StringComparison.OrdinalIgnoreCase))
+              .Any())
         {
-          return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, assetUid, 41,
-            $"{intersectingProjects.Count} found");
+          // todo Alan? if assetUid is a JohnDoe, does Alan want assetUID "-1" or is "" ok. Would return ProjectUID and success.
+          return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(project.ProjectUID, assetUid);
         }
+        return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(project.ProjectUID, assetUid, 41);
+      }
+   
 
+      if (project.ProjectType == ProjectType.LandFill)
+      {
         if (intersectingProjects
-          .Select(p => string.Compare(p.ProjectUID, project.ProjectUID, StringComparison.OrdinalIgnoreCase)).Any())
+                .Any(p =>
+                 (string.Compare(p.ProjectUID, project.ProjectUID, StringComparison.OrdinalIgnoreCase) == 0)
+                  && p.ServiceTypeID == (serviceTypeMappings.serviceTypes.Find(st => st.name == "Landfill").NGEnum)
+                  && p.SubscriptionEndDate.HasValue 
+                  && request.TimeOfPosition <= p.SubscriptionEndDate))
         {
           return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(project.ProjectUID, assetUid);
         }
 
-        return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, assetUid, 42);
-      }
-      else if (project.ProjectType == ProjectType.LandFill)
-      {
-        // project customer must have current landfill sub, time ok anytime prior to (sub expiration or now?) todo
-        ///
-        ///    // ProjectMonitoring project
-        //  MUST have a TCCOrgID
-        //  TccCustomerUid must have a PM sub (sql join in GetProjectMonitoringProject)
-        //  allow johnDoe assets and valid assetIDs.
-        //  Don't allow manually imported tagfiles i.e. ProjectUid provided. !--- todo
-        //if (!string.IsNullOrEmpty(tccCustomerUid) && string.IsNullOrEmpty(request.ProjectUid))
-        //{
-          var pmProjects = (await dataRepository.GetProjectMonitoringProject(project.CustomerUID,
-            request.Latitude, request.Longitude, request.TimeOfPosition,
-            (int)ProjectType.ProjectMonitoring,
-            (serviceTypeMappings.serviceTypes.Find(st => st.name == "Project Monitoring").NGEnum))).ToList();
-          if (pmProjects.Any())
-          {
-            //potentialProjects.AddRange(pmProjects);
-            log.LogDebug(
-              "ProjectAndAssetUidsExecutor: Loaded pmProjects which lat/long is within {JsonConvert.SerializeObject(pmProjects)}");
-          }
-          else
-          {
-            log.LogDebug("ProjectAndAssetUidsExecutor: No pmProjects loaded");
-          }
-        //}
-
-        
+        return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, string.Empty, 45);
       }
 
-      else if (project.ProjectType == ProjectType.ProjectMonitoring)
-      {
-        // project customer must have current PM sub, time ok anytime prior to (sub expiration or now?) todo
-       
-        // Landfill project
-        //  MUST have a TCCOrgID
-        //  TccCustomerUid must have a Landfill sub (sql join in GetProjectMonitoringProject)
-        //  allow johnDoe assets, valid assetIDs and manual import i.e. ProjectUid provided.
-        //if (!string.IsNullOrEmpty(request.TccOrgUid))
-        //{
-          var landfillProjects = (await dataRepository.GetProjectMonitoringProject(project.CustomerUID , // todo tccCustomerUid,
-              request.Latitude, request.Longitude, request.TimeOfPosition,
-              (int)ProjectType.LandFill, (serviceTypeMappings.serviceTypes.Find(st => st.name == "Landfill").NGEnum)))
-            .ToList();
-          if (landfillProjects.Any())
-          {
-            //potentialProjects.AddRange(landfillProjects);
-            log.LogDebug(
-              $"ProjectAndAssetUidsExecutor: Loaded landfillProjects which lat/long is within {JsonConvert.SerializeObject(landfillProjects)}");
-          }
-          else
-          {
-            log.LogDebug("ProjectAndAssetUidsExecutor: No landfillProjects loaded");
-          }
-        //}
-        //
-      }
-
-      return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, string.Empty,
-        99); // todo unknown projectType
+      // pm prevented from getting here, all types should be handled already
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(String.Empty, String.Empty, 46));
     }
 
 
