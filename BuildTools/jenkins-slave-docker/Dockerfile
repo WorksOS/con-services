@@ -2,6 +2,8 @@ FROM jenkins/jnlp-slave:alpine
 
 USER root
 
+RUN apk update
+
 #install AWS CLI
 RUN set -x \
     && apk add git bash curl openssh-server wget unzip python

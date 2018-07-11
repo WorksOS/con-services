@@ -131,9 +131,9 @@ namespace VSS.MasterData.Repositories
         };
         upsertedCount = await UpsertProjectGeofenceDetail(projectGeofence, "AssociateProjectGeofenceEvent");
       }
-      else if (evt is DissociateProjectGeofence )
+      else if (evt is DissociateProjectGeofence)
       {
-        var projectEvent = (DissociateProjectGeofence)evt;
+        var projectEvent = (DissociateProjectGeofence) evt;
         var projectGeofence = new ProjectGeofence
         {
           ProjectUID = projectEvent.ProjectUID.ToString(),
@@ -272,7 +272,7 @@ namespace VSS.MasterData.Repositories
               FROM Project
               WHERE ProjectUID = @ProjectUID
                 OR LegacyProjectId = @LegacyProjectID",
-        new { ProjectUID = project.ProjectUID, LegacyProjectID = project.LegacyProjectID}
+        new {ProjectUID = project.ProjectUID, LegacyProjectID = project.LegacyProjectID}
       )).FirstOrDefault();
 
       if (eventType == "CreateProjectEvent")
@@ -320,13 +320,19 @@ namespace VSS.MasterData.Repositories
 
         // this create could have the legit legacyProjectId
         project.LegacyProjectID =
-          project.LegacyProjectID > 0 && project.LegacyProjectID < LegacyProjectIdCutoff ? project.LegacyProjectID : existing.LegacyProjectID;
+          project.LegacyProjectID > 0 && project.LegacyProjectID < LegacyProjectIdCutoff
+            ? project.LegacyProjectID
+            : existing.LegacyProjectID;
 
         // leave more recent values
         project.Name = string.IsNullOrEmpty(existing.Name) ? project.Name : existing.Name;
         project.Description = string.IsNullOrEmpty(existing.Description) ? project.Description : existing.Description;
-        project.ProjectTimeZone = string.IsNullOrEmpty(existing.ProjectTimeZone) ? project.ProjectTimeZone : existing.ProjectTimeZone;
-        project.LandfillTimeZone = string.IsNullOrEmpty(existing.LandfillTimeZone) ? project.LandfillTimeZone : existing.LandfillTimeZone;
+        project.ProjectTimeZone = string.IsNullOrEmpty(existing.ProjectTimeZone)
+          ? project.ProjectTimeZone
+          : existing.ProjectTimeZone;
+        project.LandfillTimeZone = string.IsNullOrEmpty(existing.LandfillTimeZone)
+          ? project.LandfillTimeZone
+          : existing.LandfillTimeZone;
         project.StartDate = existing.StartDate == DateTime.MinValue ? project.StartDate : existing.StartDate;
         project.EndDate = existing.EndDate == DateTime.MinValue ? project.EndDate : existing.EndDate;
         project.LastActionedUTC = existing.LastActionedUTC;
@@ -336,8 +342,9 @@ namespace VSS.MasterData.Repositories
           project.CoordinateSystemFileName = existing.CoordinateSystemFileName;
           project.CoordinateSystemLastActionedUTC = existing.CoordinateSystemLastActionedUTC;
         }
+
         project.GeometryWKT = string.IsNullOrEmpty(existing.GeometryWKT) ? project.GeometryWKT : existing.GeometryWKT;
-        
+
         string update = BuildProjectUpdateString(project);
         log.LogDebug("ProjectRepository/CreateProject: going to update a dummy project");
 
@@ -359,13 +366,19 @@ namespace VSS.MasterData.Repositories
 
         // this create could have the legit legacyProjectId
         project.LegacyProjectID =
-          project.LegacyProjectID > 0 && project.LegacyProjectID < LegacyProjectIdCutoff ? project.LegacyProjectID : existing.LegacyProjectID;
+          project.LegacyProjectID > 0 && project.LegacyProjectID < LegacyProjectIdCutoff
+            ? project.LegacyProjectID
+            : existing.LegacyProjectID;
 
         // leave more recent values
         project.Name = string.IsNullOrEmpty(existing.Name) ? project.Name : existing.Name;
         project.Description = string.IsNullOrEmpty(existing.Description) ? project.Description : existing.Description;
-        project.ProjectTimeZone = string.IsNullOrEmpty(existing.ProjectTimeZone) ? project.ProjectTimeZone : existing.ProjectTimeZone;
-        project.LandfillTimeZone = string.IsNullOrEmpty(existing.LandfillTimeZone) ? project.LandfillTimeZone : existing.LandfillTimeZone;
+        project.ProjectTimeZone = string.IsNullOrEmpty(existing.ProjectTimeZone)
+          ? project.ProjectTimeZone
+          : existing.ProjectTimeZone;
+        project.LandfillTimeZone = string.IsNullOrEmpty(existing.LandfillTimeZone)
+          ? project.LandfillTimeZone
+          : existing.LandfillTimeZone;
         project.StartDate = existing.StartDate == DateTime.MinValue ? project.StartDate : existing.StartDate;
         project.EndDate = existing.EndDate == DateTime.MinValue ? project.EndDate : existing.EndDate;
         project.LastActionedUTC = existing.LastActionedUTC;
@@ -375,6 +388,7 @@ namespace VSS.MasterData.Repositories
           project.CoordinateSystemFileName = existing.CoordinateSystemFileName;
           project.CoordinateSystemLastActionedUTC = existing.CoordinateSystemLastActionedUTC;
         }
+
         project.GeometryWKT = string.IsNullOrEmpty(existing.GeometryWKT) ? project.GeometryWKT : existing.GeometryWKT;
 
         string update = BuildProjectUpdateString(project);
@@ -412,8 +426,12 @@ namespace VSS.MasterData.Repositories
           project.LegacyProjectID = existing.LegacyProjectID;
           project.Name = string.IsNullOrEmpty(project.Name) ? existing.Name : project.Name;
           project.Description = string.IsNullOrEmpty(project.Description) ? existing.Description : project.Description;
-          project.ProjectTimeZone = string.IsNullOrEmpty(project.ProjectTimeZone) ? existing.ProjectTimeZone : project.ProjectTimeZone;
-          project.LandfillTimeZone = string.IsNullOrEmpty(project.LandfillTimeZone) ? existing.LandfillTimeZone : project.LandfillTimeZone;
+          project.ProjectTimeZone = string.IsNullOrEmpty(project.ProjectTimeZone)
+            ? existing.ProjectTimeZone
+            : project.ProjectTimeZone;
+          project.LandfillTimeZone = string.IsNullOrEmpty(project.LandfillTimeZone)
+            ? existing.LandfillTimeZone
+            : project.LandfillTimeZone;
           project.StartDate = project.StartDate == DateTime.MinValue ? existing.StartDate : project.StartDate;
 
           if (string.IsNullOrEmpty(project.CoordinateSystemFileName))
@@ -421,6 +439,7 @@ namespace VSS.MasterData.Repositories
             project.CoordinateSystemFileName = existing.CoordinateSystemFileName;
             project.CoordinateSystemLastActionedUTC = existing.CoordinateSystemLastActionedUTC;
           }
+
           project.GeometryWKT = string.IsNullOrEmpty(project.GeometryWKT) ? existing.GeometryWKT : project.GeometryWKT;
 
           log.LogDebug($"ProjectRepository/UpdateProject: updating project={project.ProjectUID}");
@@ -434,6 +453,7 @@ namespace VSS.MasterData.Repositories
           {
             upsertedCount = await InsertProjectHistory(project);
           }
+
           return upsertedCount;
         }
 
@@ -446,7 +466,7 @@ namespace VSS.MasterData.Repositories
           $"ProjectRepository/UpdateProject: project doesn't already exist, creating one. project={project.ProjectUID}");
         if (String.IsNullOrEmpty(project.ProjectTimeZone))
           project.ProjectTimeZone = "";
-        
+
         string insert = BuildProjectInsertString(project);
         upsertedCount = await ExecuteWithAsyncPolicy(insert, project);
         log.LogDebug($"ProjectRepository/UpdateProject: (insert): inserted {upsertedCount} rows");
@@ -479,7 +499,7 @@ namespace VSS.MasterData.Repositories
               $"ProjectRepository/DeleteProject: deleting a project permanently: {JsonConvert.SerializeObject(project)}");
             const string delete =
               @"DELETE FROM Project
-                    WHERE ProjectUID = @projectUID";
+                    WHERE ProjectUID = @ProjectUID";
             upsertedCount = await ExecuteWithAsyncPolicy(delete, project);
             log.LogDebug(
               $"ProjectRepository/DeleteProject: deleted {upsertedCount} rows for: projectUid:{project.ProjectUID}");
@@ -503,6 +523,7 @@ namespace VSS.MasterData.Repositories
             {
               upsertedCount = await InsertProjectHistory(project);
             }
+
             return upsertedCount;
           }
         }
@@ -531,6 +552,7 @@ namespace VSS.MasterData.Repositories
         {
           upsertedCount = await InsertProjectHistory(project);
         }
+
         return upsertedCount;
       }
 
@@ -601,6 +623,7 @@ namespace VSS.MasterData.Repositories
                 WHERE ProjectUID = @ProjectUID"
           , project.GeometryWKT, formattedPolygon ?? "null");
       }
+
       return update;
     }
 
@@ -619,7 +642,7 @@ namespace VSS.MasterData.Repositories
               FROM CustomerProject
               WHERE fk_CustomerUID = @CustomerUID 
                 AND fk_ProjectUID = @ProjectUID",
-        new { CustomerUID = customerProject.CustomerUID, ProjectUID = customerProject.ProjectUID}
+        new {CustomerUID = customerProject.CustomerUID, ProjectUID = customerProject.ProjectUID}
       )).FirstOrDefault();
 
       if (eventType == "AssociateProjectCustomerEvent")
@@ -666,8 +689,8 @@ namespace VSS.MasterData.Repositories
         {
           const string delete =
             @"DELETE FROM CustomerProject
-                WHERE fk_CustomerUID = @customerUID 
-                  AND fk_ProjectUID = @projectUID";
+                WHERE fk_CustomerUID = @CustomerUID 
+                  AND fk_ProjectUID = @ProjectUID";
           upsertedCount = await ExecuteWithAsyncPolicy(delete, customerProject);
           log.LogDebug(
             $"ProjectRepository/DissociateProjectCustomer: upserted {upsertedCount} rows for: customerUid:{customerProject.CustomerUID}");
@@ -694,7 +717,7 @@ namespace VSS.MasterData.Repositories
               fk_GeofenceUID AS GeofenceUID, fk_ProjectUID AS ProjectUID, LastActionedUTC
             FROM ProjectGeofence
             WHERE fk_ProjectUID = @ProjectUID AND fk_GeofenceUID = @GeofenceUID",
-        new { ProjectUID = projectGeofence.ProjectUID, GeofenceUID = projectGeofence.GeofenceUID}
+        new {ProjectUID = projectGeofence.ProjectUID, GeofenceUID = projectGeofence.GeofenceUID}
       )).FirstOrDefault();
 
       if (eventType == "AssociateProjectGeofenceEvent")
@@ -719,13 +742,11 @@ namespace VSS.MasterData.Repositories
               VALUES
                 (@GeofenceUID, @ProjectUID, @LastActionedUTC)";
 
-        {
-          upsertedCount = await ExecuteWithAsyncPolicy(insert, projectGeofence);
-          log.LogDebug(
-            $"ProjectRepository/AssociateProjectGeofence: inserted {upsertedCount} rows for: projectUid:{projectGeofence.ProjectUID} geofenceUid:{projectGeofence.GeofenceUID}");
+        upsertedCount = await ExecuteWithAsyncPolicy(insert, projectGeofence);
+        log.LogDebug(
+          $"ProjectRepository/AssociateProjectGeofence: inserted {upsertedCount} rows for: projectUid:{projectGeofence.ProjectUID} geofenceUid:{projectGeofence.GeofenceUID}");
 
-          return upsertedCount;
-        }
+        return upsertedCount;
       }
 
       log.LogDebug(
@@ -746,8 +767,8 @@ namespace VSS.MasterData.Repositories
         {
           const string delete =
             @"DELETE FROM ProjectGeofence
-                WHERE fk_GeofenceUID = @geofenceUID 
-                  AND fk_ProjectUID = @projectUID";
+                WHERE fk_GeofenceUID = @GeofenceUID 
+                  AND fk_ProjectUID = @ProjectUID";
           upsertedCount = await ExecuteWithAsyncPolicy(delete, projectGeofence);
           log.LogDebug(
             $"ProjectRepository/DissociateProjectGeofence: upserted {upsertedCount} rows for: geofenceUid:{projectGeofence.GeofenceUID}");
@@ -783,7 +804,7 @@ namespace VSS.MasterData.Repositories
               fk_DXFUnitsTypeID as DxfUnitsType, MinZoomLevel, MaxZoomLevel,
               IsDeleted, LastActionedUTC
             FROM ImportedFile
-            WHERE ImportedFileUID = @ImportedFileUid", new { ImportedFileUid = importedFile.ImportedFileUid}
+            WHERE ImportedFileUID = @ImportedFileUid", new {ImportedFileUid = importedFile.ImportedFileUid}
       )).FirstOrDefault();
 
       if (eventType == "CreateImportedFileEvent")
@@ -814,7 +835,7 @@ namespace VSS.MasterData.Repositories
           "INSERT ImportedFile " +
           "    (fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID, MinZoomLevel, MaxZoomLevel, IsDeleted, LastActionedUTC) " +
           "  VALUES " +
-          "    (@ProjectUid, @ImportedFileUid, @ImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUTC, @FileUpdatedUTC, @ImportedBy, @SurveyedUtc, @DxfUnitsType, @MinZoomLevel, @MaxZoomLevel, 0, @LastActionedUtc)");
+          "    (@ProjectUid, @ImportedFileUid, @ImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUtc, @FileUpdatedUtc, @ImportedBy, @SurveyedUtc, @DxfUnitsType, @MinZoomLevel, @MaxZoomLevel, 0, @LastActionedUtc)");
 
         upsertedCount = await ExecuteWithAsyncPolicy(insert, importedFile);
         log.LogDebug(
@@ -834,30 +855,28 @@ namespace VSS.MasterData.Repositories
 
         const string update =
           @"UPDATE ImportedFile
-              SET fk_ProjectUID = @projectUID, 
+              SET fk_ProjectUID = @ProjectUid, 
                 ImportedFileID = @ImportedFileId,
-                fk_CustomerUID = @customerUID,
-                fk_ImportedFileTypeID = @importedFileType,
-                Name = @name,
-                FileDescriptor = @fileDescriptor,
-                FileCreatedUTC = @fileCreatedUTC,
-                FileUpdatedUTC = @fileUpdatedUTC,
-                ImportedBy = @importedBy, 
-                SurveyedUTC = @surveyedUTC,
+                fk_CustomerUID = @CustomerUid,
+                fk_ImportedFileTypeID = @ImportedFileType,
+                Name = @Name,
+                FileDescriptor = @FileDescriptor,
+                FileCreatedUTC = @FileCreatedUtc,
+                FileUpdatedUTC = @FileUpdatedUtc,
+                ImportedBy = @ImportedBy, 
+                SurveyedUTC = @SurveyedUtc,
                 MinZoomLevel = @MinZoomLevel,
                 MaxZoomLevel = @MaxZoomLevel,
-                fk_DXFUnitsTypeID = @dxfUnitsType
+                fk_DXFUnitsTypeID = @DxfUnitsType
               WHERE ImportedFileUID = @ImportedFileUid";
 
-        {
-          upsertedCount = await ExecuteWithAsyncPolicy(update, importedFile);
-          log.LogDebug(
-            $"ProjectRepository/CreateImportedFile: (updateExisting): upserted {upsertedCount} rows for: projectUid:{importedFile.ProjectUid} importedFileUid: {importedFile.ImportedFileUid}");
+        upsertedCount = await ExecuteWithAsyncPolicy(update, importedFile);
+        log.LogDebug(
+          $"ProjectRepository/CreateImportedFile: (updateExisting): upserted {upsertedCount} rows for: projectUid:{importedFile.ProjectUid} importedFileUid: {importedFile.ImportedFileUid}");
 
-          // don't really care if this didn't pass as may already exist for create/update utc
-          if (upsertedCount > 0)
-            await UpsertImportedFileHistory(importedFile);
-        }
+        // don't really care if this didn't pass as may already exist for create/update utc
+        if (upsertedCount > 0)
+          await UpsertImportedFileHistory(importedFile);
       }
       else
       {
@@ -881,14 +900,14 @@ namespace VSS.MasterData.Repositories
           const string update =
             @"UPDATE ImportedFile
                 SET 
-                  FileDescriptor = @fileDescriptor,
-                  FileCreatedUTC = @fileCreatedUtc,
-                  FileUpdatedUTC = @fileUpdatedUtc,
-                  ImportedBy = @importedBy, 
-                  SurveyedUTC = @surveyedUTC,
+                  FileDescriptor = @FileDescriptor,
+                  FileCreatedUTC = @FileCreatedUtc,
+                  FileUpdatedUTC = @FileUpdatedUtc,
+                  ImportedBy = @ImportedBy, 
+                  SurveyedUTC = @SurveyedUtc,
                   MinZoomLevel = @MinZoomLevel,
                   MaxZoomLevel = @MaxZoomLevel,
-                  LastActionedUTC = @LastActionedUTC
+                  LastActionedUTC = @LastActionedUtc
                 WHERE ImportedFileUID = @ImportedFileUid";
 
           upsertedCount = await ExecuteWithAsyncPolicy(update, importedFile);
@@ -952,7 +971,7 @@ namespace VSS.MasterData.Repositories
             fk_ImportedFileUID AS ImportedFileUid, FileCreatedUTC, FileUpdatedUTC, ImportedBy
           FROM ImportedFileHistory
             WHERE fk_ImportedFileUID = @ImportedFileUid",
-        new { ImportedFileUid = importedFile.ImportedFileUid}
+        new {ImportedFileUid = importedFile.ImportedFileUid}
       )).ToList();
 
       bool alreadyExists = false;
@@ -1018,7 +1037,7 @@ namespace VSS.MasterData.Repositories
             const string update =
               @"UPDATE ImportedFile                               
                 SET IsDeleted = 1,
-                    LastActionedUTC = @LastActionedUTC
+                    LastActionedUTC = @LastActionedUtc
                 WHERE ImportedFileUID = @ImportedFileUid";
 
             upsertedCount = await ExecuteWithAsyncPolicy(update, importedFile);
@@ -1089,10 +1108,10 @@ namespace VSS.MasterData.Repositories
               (@ProjectUid, @ProjectSettingsType, @Settings, @UserID, @LastActionedUtc)
             ON DUPLICATE KEY UPDATE
               LastActionedUTC =
-                IF ( VALUES(LastActionedUTC) >= LastActionedUTC, 
-                    VALUES(LastActionedUTC), LastActionedUTC),
+                IF ( VALUES(LastActionedUtc) >= LastActionedUTC, 
+                    VALUES(LastActionedUtc), LastActionedUTC),
               Settings =
-                IF ( VALUES(LastActionedUTC) >= LastActionedUTC, 
+                IF ( VALUES(LastActionedUtc) >= LastActionedUTC, 
                     VALUES(Settings), Settings)";
 
       var upsertedCount = await ExecuteWithAsyncPolicy(upsert, projectSettings);
@@ -1128,7 +1147,7 @@ namespace VSS.MasterData.Repositories
                 LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
               WHERE p.ProjectUID = @ProjectUID 
                 AND p.IsDeleted = 0",
-        new { ProjectUID = projectUid })).FirstOrDefault();
+        new {ProjectUID = projectUid})).FirstOrDefault();
       return project;
     }
 
@@ -1149,7 +1168,7 @@ namespace VSS.MasterData.Repositories
                 JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID
               WHERE p.LegacyProjectID = @LegacyProjectID 
                 AND p.IsDeleted = 0",
-        new { LegacyProjectID = legacyProjectID });
+        new {LegacyProjectID = legacyProjectID});
       return project.FirstOrDefault();
     }
 
@@ -1178,7 +1197,7 @@ namespace VSS.MasterData.Repositories
               WHERE p.LegacyProjectID = @LegacyProjectID 
                 AND p.IsDeleted = 0
                 AND @validAtDate BETWEEN s.StartDate AND s.EndDate",
-        new { LegacyProjectID = legacyProjectID, validAtDate = validAtDate.Date}
+        new {LegacyProjectID = legacyProjectID, validAtDate = validAtDate.Date}
       );
 
 
@@ -1200,7 +1219,7 @@ namespace VSS.MasterData.Repositories
                 LastActionedUTC 
               FROM ProjectHistory             
               WHERE ProjectUID = @ProjectUID",
-        new { ProjectUID = projectUid });
+        new {ProjectUID = projectUid});
       return projectList;
     }
 
@@ -1225,7 +1244,7 @@ namespace VSS.MasterData.Repositories
                 JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
               WHERE ps.fk_SubscriptionUID = @SubscriptionUID 
                 AND p.IsDeleted = 0",
-        new { SubscriptionUID = subscriptionUid }
+        new {SubscriptionUID = subscriptionUid}
       )).FirstOrDefault();
       ;
 
@@ -1291,7 +1310,7 @@ namespace VSS.MasterData.Repositories
               WHERE cp.fk_CustomerUID = @CustomerUID 
                 AND cu.UserUID = @userUid 
                 AND p.IsDeleted = 0",
-        new { CustomerUID = customerUid, userUid}
+        new {CustomerUID = customerUid, userUid}
       );
 
 
@@ -1322,7 +1341,7 @@ namespace VSS.MasterData.Repositories
               LEFT OUTER JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
               LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
             WHERE c.CustomerUID = @CustomerUID",
-        new { CustomerUID = customerUid }
+        new {CustomerUID = customerUid}
       );
 
 
@@ -1346,7 +1365,7 @@ namespace VSS.MasterData.Repositories
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC
               FROM Project p 
               WHERE p.ProjectUID = @ProjectUID",
-        new { ProjectUID = projectUid }
+        new {ProjectUID = projectUid}
       )).FirstOrDefault();
 
 
@@ -1364,7 +1383,7 @@ namespace VSS.MasterData.Repositories
       (@"SELECT p.ProjectUID
               FROM Project p 
               WHERE p.ProjectUID = @ProjectUID",
-        new { ProjectUID = projectUid }
+        new {ProjectUID = projectUid}
       )).FirstOrDefault();
 
 
@@ -1382,7 +1401,7 @@ namespace VSS.MasterData.Repositories
       (@"SELECT cp.fk_ProjectUID
               FROM CustomerProject cp 
               WHERE cp.fk_ProjectUID = @ProjectUID",
-        new { ProjectUID = projectUid }
+        new {ProjectUID = projectUid}
       )).FirstOrDefault();
 
 
@@ -1409,7 +1428,7 @@ namespace VSS.MasterData.Repositories
                 LEFT JOIN ProjectSubscription ps on p.ProjectUID = ps.fk_ProjectUID
                 LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
               WHERE p.ProjectUID = @ProjectUID",
-        new { ProjectUID = projectUid }
+        new {ProjectUID = projectUid}
       )).FirstOrDefault();
 
 
@@ -1429,7 +1448,7 @@ namespace VSS.MasterData.Repositories
               FROM ProjectGeofence pg
                 LEFT OUTER JOIN Geofence g on g.GeofenceUID = pg.fk_GeofenceUID
               WHERE fk_ProjectUID = @ProjectUID",
-        new { ProjectUID = projectUid }
+        new {ProjectUID = projectUid}
       );
     }
 
@@ -1449,7 +1468,7 @@ namespace VSS.MasterData.Repositories
                 LEFT OUTER JOIN ProjectGeofence pg on pg.fk_GeofenceUID = g.GeofenceUID 
               WHERE fk_CustomerUID = @CustomerUID 
                 AND g.IsDeleted = 0",
-        new { CustomerUID = customerUid }
+        new {CustomerUID = customerUid}
       );
     }
 
@@ -1475,7 +1494,7 @@ namespace VSS.MasterData.Repositories
                 AND UserID = @UserID
                 AND fk_ProjectSettingsTypeID = @ProjectSettingsType
               ORDER BY fk_ProjectUID, UserID, fk_ProjectSettingsTypeID",
-        new { ProjectUid = projectUid, UserID = userId, ProjectSettingsType = projectSettingsType })).FirstOrDefault();
+        new {ProjectUid = projectUid, UserID = userId, ProjectSettingsType = projectSettingsType})).FirstOrDefault();
       return projectSettings;
     }
 
@@ -1493,7 +1512,7 @@ namespace VSS.MasterData.Repositories
               FROM ProjectSettings
               WHERE fk_ProjectUID = @ProjectUid
                 AND UserID = @UserID",
-        new { ProjectUid = projectUid, UserID = userId }
+        new {ProjectUid = projectUid, UserID = userId}
       );
       return projectSettingsList;
     }
@@ -1513,7 +1532,7 @@ namespace VSS.MasterData.Repositories
           FROM ImportedFile
             WHERE fk_ProjectUID = @ProjectUid
               AND IsDeleted = 0",
-        new { ProjectUid = projectUid }
+        new {ProjectUid = projectUid}
       )).ToList();
 
       var historyAllFiles = await GetImportedFileHistory(projectUid);
@@ -1538,7 +1557,7 @@ namespace VSS.MasterData.Repositories
             MinZoomLevel, MaxZoomLevel, IsDeleted, LastActionedUTC
           FROM ImportedFile
             WHERE importedFileUID = @ImportedFileUid",
-        new { ImportedFileUid = importedFileUid }
+        new {ImportedFileUid = importedFileUid}
       )).FirstOrDefault();
 
       if (importedFile != null)
@@ -1565,7 +1584,7 @@ namespace VSS.MasterData.Repositories
               AND IsDeleted = 0
               AND (@ImportedFileUid IS NULL OR ImportedFileUID = @ImportedFileUid)
             ORDER BY ImportedFileUID, ifh.FileUpdatedUTC",
-        new {projectUid, ImportedFileUid = importedFileUid }
+        new {projectUid, ImportedFileUid = importedFileUid}
       )).ToList();
     }
 
@@ -1603,7 +1622,8 @@ namespace VSS.MasterData.Repositories
         , point);
 
       var projects =
-        await QueryWithAsyncPolicy<Project>(select, new { CustomerUID = customerUID, timeOfPosition = timeOfPosition.Date});
+        await QueryWithAsyncPolicy<Project>(select,
+          new {CustomerUID = customerUID, timeOfPosition = timeOfPosition.Date});
 
 
       return projects;
@@ -1644,7 +1664,7 @@ namespace VSS.MasterData.Repositories
         , point);
 
       var projects = await QueryWithAsyncPolicy<Project>(select,
-        new { CustomerUID = customerUID, timeOfPosition = timeOfPosition.Date, ProjectType = projectType, serviceType});
+        new {CustomerUID = customerUID, timeOfPosition = timeOfPosition.Date, ProjectType = projectType, serviceType});
 
 
       return projects;
@@ -1679,13 +1699,62 @@ namespace VSS.MasterData.Repositories
                           AND @EndDate >= p.StartDate
                           AND cp.fk_CustomerUID = @CustomerUID
                           AND p.ProjectUid != @excludeProjectUid
-                          AND st_Intersects({ polygonToCheck}, PolygonST) = 1";
+                          AND st_Intersects({polygonToCheck}, PolygonST) = 1";
 
       var projects = await QueryWithAsyncPolicy<Project>(select,
-        new { CustomerUID = customerUid, StartDate = startDate.Date, EndDate = endDate.Date, excludeProjectUid });
+        new {CustomerUID = customerUid, StartDate = startDate.Date, EndDate = endDate.Date, excludeProjectUid});
 
       return projects.Any();
     }
+
+    /// <summary>
+    ///     Gets any project of the specified type/s (or all),
+    ///     which the lat/long is within
+    /// </summary>
+    /// <param name="customerUid"></param>
+    /// <param name="projectTypes"></param>
+    /// <param name="latitude"></param>
+    /// <param name="longitude"></param>
+    /// <param name="timeOfPosition"></param>
+    /// <returns>The project</returns>
+    public async Task<IEnumerable<Project>> GetIntersectingProjects(string customerUid, int[] projectTypes,
+      double latitude, double longitude, DateTime timeOfPosition)
+    {
+      var point = $"ST_GeomFromText('POINT({longitude} {latitude})')";
+      var projectTypesString = string.Empty;
+      if (projectTypes.Any())
+      {
+        projectTypesString += " p.fk_ProjectTypeID IN ( ";
+        for (int i = 0; i < projectTypes.Length; i++)
+        {
+          projectTypesString += projectTypes[i] + ((i < projectTypes.Length - 1) ? "," : "");
+        }
+
+        projectTypesString += " ) AND ";
+      }
+
+      var select = "SELECT DISTINCT " +
+                   "        p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, " +
+                   "        p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT, " +
+                   "        p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC, " +
+                   "        cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID " +
+                   "      FROM Project p " +
+                   "        INNER JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID " +
+                   $"      WHERE {projectTypesString} " +
+                   "            p.IsDeleted = 0 " +
+                   "        AND @timeOfPosition BETWEEN p.StartDate AND p.EndDate " +
+                   "        AND cp.fk_CustomerUID = @customerUID " +
+                   $"        AND st_Intersects({point}, PolygonST) = 1";
+
+      var projects =
+        await QueryWithAsyncPolicy<Project>(select,
+          new {customerUID = customerUid, timeOfPosition = timeOfPosition.Date});
+
+      return projects;
+    }
+
+    #endregion gettersSpatial
+
 
     public async Task<IEnumerable<Project>> GetProjects_UnitTests()
     {
@@ -1708,7 +1777,6 @@ namespace VSS.MasterData.Repositories
       return projects;
     }
 
-    #endregion gettersSpatial
   }
 
   internal class Point

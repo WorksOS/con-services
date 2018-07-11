@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using log4net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -58,9 +59,13 @@ namespace VSS.Log4Net.Extensions
       }
 
       var message = formatter(state, exception);
+      message = Regex.Replace(message, @"\t|\n|\r", " ");
+
       if (_accessor?.HttpContext?.Items != null)
         if (_accessor.HttpContext.Items.ContainsKey("RequestID"))
           message = "req:" + _accessor.HttpContext.Items["RequestID"] + " " + message;
+
+
 
       switch (logLevel)
       {
