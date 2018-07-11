@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,8 @@ using Newtonsoft.Json;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Models.Local.Models;
+using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors;
@@ -58,22 +60,26 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     /// <summary>
     /// For accepting and loading manually or automatically submitted tag files.
     /// </summary>
+    /// <remarks>
+    /// Manually submitted tag files include a project Id, the service performs a lookup for the boundary.
+    /// </remarks>
     [PostRequestVerifier]
     [Route("api/v2/tagfiles")]
     [HttpPost]
-    public IActionResult PostTagFile([FromBody]CompactionTagFileRequest request)
+    public async Task<IActionResult> PostTagFile([FromBody]CompactionTagFileRequest request)
     {
-      // Serialize the request ignoring the Data property so not to overwhelm the logs.
-      var serializedRequest = JsonConvert.SerializeObject(
-        request,
-        Formatting.None,
-        new JsonSerializerSettings { ContractResolver = new JsonContractPropertyResolver("Data") });
-
+      var serializedRequest = SerializeObjectIgnoringProperties(request, "Data");
       log.LogDebug("PostTagFile: " + serializedRequest);
 
-      var projectId = GetLegacyProjectId(request.ProjectUid).Result;
+      var legacyProjectId = GetLegacyProjectId(request.ProjectUid).Result;
+      WGS84Fence boundary = null;
 
-      var tagFileRequest = TagFileRequestLegacy.CreateTagFile(request.FileName, request.Data, projectId, null, VelociraptorConstants.NO_MACHINE_ID, false, false, request.OrgId);
+      if (legacyProjectId != VelociraptorConstants.NO_PROJECT_ID)
+      {
+        boundary = await GetProjectBoundary(legacyProjectId);
+      }
+
+      var tagFileRequest = TagFileRequestLegacy.CreateTagFile(request.FileName, request.Data, legacyProjectId, boundary, VelociraptorConstants.NO_MACHINE_ID, false, false, request.OrgId);
       tagFileRequest.Validate();
 
       return ExecuteRequest(tagFileRequest);
@@ -82,22 +88,18 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     /// <summary>
     /// For the direct submission of tag files from GNSS capable machines.
     /// </summary>
+    /// <remarks>
+    /// Direct submission tag files don't include a project Id or boundary.
+    /// </remarks>
     [PostRequestVerifier]
     [Route("api/v2/tagfiles/direct")]
     [HttpPost]
     public ObjectResult PostTagFileDirectSubmission([FromBody]CompactionTagFileRequest request)
     {
-      // Serialize the request ignoring the Data property so not to overwhelm the logs.
-      var serializedRequest = JsonConvert.SerializeObject(
-        request,
-        Formatting.None,
-        new JsonSerializerSettings { ContractResolver = new JsonContractPropertyResolver("Data") });
-
+      var serializedRequest = SerializeObjectIgnoringProperties(request, "Data");
       log.LogDebug("PostTagFile (Direct): " + serializedRequest);
 
-      var projectId = GetLegacyProjectId(request.ProjectUid).Result;
-
-      var tfRequest = TagFileRequestLegacy.CreateTagFile(request.FileName, request.Data, projectId, null, VelociraptorConstants.NO_MACHINE_ID, false, false);
+      var tfRequest = TagFileRequestLegacy.CreateTagFile(request.FileName, request.Data, VelociraptorConstants.NO_PROJECT_ID, null, VelociraptorConstants.NO_MACHINE_ID, false, false);
       tfRequest.Validate();
 
       var result = RequestExecutorContainerFactory
@@ -123,6 +125,29 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       return responseObj.Code == 0
         ? (IActionResult)Ok(responseObj)
         : BadRequest(responseObj);
+    }
+
+    /// <summary>
+    /// Serialize the request ignoring the Data property so not to overwhelm the logs.
+    /// </summary>
+    private static string SerializeObjectIgnoringProperties(CompactionTagFileRequest request, params string[] properties)
+    {
+      return JsonConvert.SerializeObject(
+        request,
+        Formatting.None,
+        new JsonSerializerSettings { ContractResolver = new JsonContractPropertyResolver(properties) });
+    }
+
+    /// <summary>
+    /// Gets the WGS84 project boundary geofence for a given project Id.
+    /// </summary>
+    private async Task<WGS84Fence> GetProjectBoundary(long legacyProjectId)
+    {
+      var projectData = await((RaptorPrincipal)User).GetProject(legacyProjectId);
+
+      return projectData.ProjectGeofenceWKT == null
+        ? null
+        : WGS84Fence.CreateWGS84Fence(RaptorConverters.geometryToPoints(projectData.ProjectGeofenceWKT).ToArray());
     }
   }
 }

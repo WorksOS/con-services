@@ -4,9 +4,13 @@
 Background: 
   Given the Tag file service URI "/api/v1/tagfiles" and request repo "TagFileRequest.json"
 
-Scenario: TagFile - Good Request
-  When I POST a tag file with code 100 from the repository
-  Then the Tag Process Service response should contain Code 0 and Message "success"
+Scenario Outline: TagFile - Good request
+  When I POST a tag file with name "<paramName>" from the repository
+  Then the Tag Process Service response should contain Code <Code> and Message <Message>
+  Examples: 
+  | paramName     | Code | Message   |
+  | 100           | 0    | "success" |
+  | NullProjectId | 0    | "success" |
 
 Scenario Outline: TagFile - Bad Tag File
   When I POST a tag file with Code <Code> from the repository expecting bad request return
@@ -24,6 +28,6 @@ Scenario Outline: TagFile - Bad Request
   | paramName        | code |
   | NullFileName     | -1   |
   | NullData         | -1   |
-  #| NullBoundary     | -1   |
-  #| InvalidProjectId | -1   |
+  | NullBoundary     | -1   |
+  | InvalidProjectId | 2011 |
   | FilenameTooLong  | -1   |

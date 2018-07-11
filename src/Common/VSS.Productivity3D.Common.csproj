@@ -38,7 +38,7 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.2" />
     <PackageReference Include="NewRelic.Agent.Api" Version="8.1.712" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="NodaTime" Version="2.2.6" />
+    <PackageReference Include="NodaTime" Version="2.3.0" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.*" />
     <PackageReference Include="VSS.AWS.TransferProxy" Version="1.0.0" />
@@ -49,7 +49,7 @@
     <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.11.*" />
     <PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.*" />
     <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.*" />
-    <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.1.*" />
+    <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.1.0" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

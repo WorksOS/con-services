@@ -91,34 +91,59 @@ namespace ProductionDataSvc.AcceptanceTests
 #line hidden
         }
         
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("TagFile - Good Request")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "TagFile")]
-        public virtual void TagFile_GoodRequest()
+        public virtual void TagFile_GoodRequest(string paramName, string code, string message, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("TagFile - Good Request", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("TagFile - Good request", exampleTags);
 #line 7
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
 #line 8
-  testRunner.When("I POST a tag file with code 100 from the repository", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+  testRunner.When(string.Format("I POST a tag file with name \"{0}\" from the repository", paramName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 9
-  testRunner.Then("the Tag Process Service response should contain Code 0 and Message \"success\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+  testRunner.Then(string.Format("the Tag Process Service response should contain Code {0} and Message {1}", code, message), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("TagFile - Good request: 100")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "TagFile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "100")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:paramName", "100")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Code", "0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Message", "\"success\"")]
+        public virtual void TagFile_GoodRequest_100()
+        {
+#line 7
+this.TagFile_GoodRequest("100", "0", "\"success\"", ((string[])(null)));
+#line hidden
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("TagFile - Good request: NullProjectId")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "TagFile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "NullProjectId")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:paramName", "NullProjectId")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Code", "0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Message", "\"success\"")]
+        public virtual void TagFile_GoodRequest_NullProjectId()
+        {
+#line 7
+this.TagFile_GoodRequest("NullProjectId", "0", "\"success\"", ((string[])(null)));
+#line hidden
         }
         
         public virtual void TagFile_BadTagFile(string code, string message, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("TagFile - Bad Tag File", exampleTags);
-#line 11
+#line 15
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 12
+#line 16
   testRunner.When(string.Format("I POST a tag file with Code {0} from the repository expecting bad request return", code), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 13
+#line 17
   testRunner.Then(string.Format("the Tag Process Service response should contain Code {0} and Message {1}", code, message), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -133,7 +158,7 @@ this.FeatureBackground();
             "its pre-processing scan.\"")]
         public virtual void TagFile_BadTagFile_2005()
         {
-#line 11
+#line 15
 this.TagFile_BadTagFile("2005", "\"Failed to process tagfile with error: The TAG file was found to be corrupted on " +
                     "its pre-processing scan.\"", ((string[])(null)));
 #line hidden
@@ -148,7 +173,7 @@ this.TagFile_BadTagFile("2005", "\"Failed to process tagfile with error: The TAG
             "alid.\"")]
         public virtual void TagFile_BadTagFile_2008()
         {
-#line 11
+#line 15
 this.TagFile_BadTagFile("2008", "\"Failed to process tagfile with error: OnChooseMachine. Machine Subscriptions Inv" +
                     "alid.\"", ((string[])(null)));
 #line hidden
@@ -163,7 +188,7 @@ this.TagFile_BadTagFile("2008", "\"Failed to process tagfile with error: OnChoos
             "ion Does Not Lie Within Project Boundary.\"")]
         public virtual void TagFile_BadTagFile_2014()
         {
-#line 11
+#line 15
 this.TagFile_BadTagFile("2014", "\"Failed to process tagfile with error: OnChooseDataModel. First Epoch Blade Posit" +
                     "ion Does Not Lie Within Project Boundary.\"", ((string[])(null)));
 #line hidden
@@ -172,14 +197,14 @@ this.TagFile_BadTagFile("2014", "\"Failed to process tagfile with error: OnChoos
         public virtual void TagFile_BadRequest(string paramName, string code, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("TagFile - Bad Request", exampleTags);
-#line 20
+#line 24
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 21
+#line 25
   testRunner.When(string.Format("I POST a Tag file with name \"{0}\" from the repository expecting bad request retur" +
                         "n", paramName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 22
+#line 26
   testRunner.Then(string.Format("the Tag Process Service response should contain Error Code {0}", code), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -193,7 +218,7 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:code", "-1")]
         public virtual void TagFile_BadRequest_NullFileName()
         {
-#line 20
+#line 24
 this.TagFile_BadRequest("NullFileName", "-1", ((string[])(null)));
 #line hidden
         }
@@ -206,8 +231,34 @@ this.TagFile_BadRequest("NullFileName", "-1", ((string[])(null)));
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:code", "-1")]
         public virtual void TagFile_BadRequest_NullData()
         {
-#line 20
+#line 24
 this.TagFile_BadRequest("NullData", "-1", ((string[])(null)));
+#line hidden
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("TagFile - Bad Request: NullBoundary")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "TagFile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "NullBoundary")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:paramName", "NullBoundary")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:code", "-1")]
+        public virtual void TagFile_BadRequest_NullBoundary()
+        {
+#line 24
+this.TagFile_BadRequest("NullBoundary", "-1", ((string[])(null)));
+#line hidden
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("TagFile - Bad Request: InvalidProjectId")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "TagFile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "InvalidProjectId")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:paramName", "InvalidProjectId")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:code", "2011")]
+        public virtual void TagFile_BadRequest_InvalidProjectId()
+        {
+#line 24
+this.TagFile_BadRequest("InvalidProjectId", "2011", ((string[])(null)));
 #line hidden
         }
         
@@ -219,7 +270,7 @@ this.TagFile_BadRequest("NullData", "-1", ((string[])(null)));
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:code", "-1")]
         public virtual void TagFile_BadRequest_FilenameTooLong()
         {
-#line 20
+#line 24
 this.TagFile_BadRequest("FilenameTooLong", "-1", ((string[])(null)));
 #line hidden
         }
