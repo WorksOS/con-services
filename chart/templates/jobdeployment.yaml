@@ -17,6 +17,6 @@ spec:
             args: ["LandfillDatasync.netcore.dll"]
             envFrom:
             - configMapRef:
-              name: {{ .Release.Name }}-config-{{ .Values.environment }}-{{ .Values.image.tag | lower }}
+                name: {{ .Release.Name }}-config-{{ .Values.environment }}-{{ .Values.image.tag | lower }}
             imagePullPolicy: Always
           restartPolicy: Never
