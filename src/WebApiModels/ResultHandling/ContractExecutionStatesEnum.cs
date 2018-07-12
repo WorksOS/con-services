@@ -44,7 +44,7 @@
       DynamicAddwithOffset("Failed to get project uid", 34);
       DynamicAddwithOffset("GetProjectUid internal error", 35);
       DynamicAddwithOffset("ProjectUid is present, but invalid", 36);
-      DynamicAddwithOffset("Either Radio Serial or TCCOrgId must be provided", 37);
+      DynamicAddwithOffset("Auto Import: Either Radio Serial or TCCOrgId must be provided", 37);
       DynamicAddwithOffset("Unable to find the Project requested", 38);
       DynamicAddwithOffset("Manual Import: unable to locate any valid subscriptions", 39);
       DynamicAddwithOffset("Manual Import: unable to locate any valid projectSubscriptions or locate asset", 40);
@@ -54,6 +54,9 @@
       DynamicAddwithOffset("Manual Import: cannot import to a Civil type project", 44);
       DynamicAddwithOffset("Manual Import: landfill project does not have a valid subscription at that time", 45);
       DynamicAddwithOffset("Manual Import: internal unhandled path", 46);
+      DynamicAddwithOffset("Auto Import: no asset or tccOrgId identified", 47);
+      DynamicAddwithOffset("Auto Import: no project meets the time/location/subscription requirements", 48);
+      DynamicAddwithOffset("Auto Import: more than 1 project meets the time/location/subscription requirements", 49);
     }
 
     /// <summary>
