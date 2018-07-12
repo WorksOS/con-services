@@ -45,7 +45,7 @@ node ('jenkinsslave-pod') {
     }
     
     stage('Prepairing runtime image') {
-        runtimeImage = docker.build(container, "-f Dockerfile --build-arg BUILD_CONTAINER=${build_container} .")
+        runtimeImage = docker.build(container, "-f Dockerfile --build-arg BUILD_CONTAINER=${container} .")
         runtimeImage.push()
     }
 
