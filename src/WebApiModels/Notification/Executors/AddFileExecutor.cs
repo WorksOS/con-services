@@ -85,10 +85,11 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
 
             var suffix = FileUtils.GeneratedFileSuffix(fileType);
             //Get PRJ file contents from Raptor
-            log.LogDebug("Getting projection file from Raptor");
-            var dxfUnitsType = fileType == ImportedFileType.Linework ////TODO: Rolled bask change to respect units for SVL files #71936 || fileType == ImportedFileType.Alignment
+            log.LogDebug($"Getting projection file from Raptor for file {request.File.fileName}");
+            var dxfUnitsType = fileType == ImportedFileType.Linework || fileType == ImportedFileType.Alignment
               ? (TVLPDDistanceUnits)request.DXFUnitsType
               : TVLPDDistanceUnits.vduMeters; //always metric for design surface and alignment as we generate the DXF file.
+            log.LogDebug($"Units selected {dxfUnitsType}");
 
             var result2 = raptorClient.GetCoordinateSystemProjectionFile(request.ProjectId.Value,
               dxfUnitsType, out string prjFile);
