@@ -46,7 +46,7 @@ namespace Common.netstandard.ApiClients
           {
             {"Accept", "application/json"},
             {"Content-Type", "application/x-www-form-urlencoded"},
-            {"Authorization", string.Format($"Bearer {configuration.GetValueString("3DPmSchedulerConsumerKeys")}")}
+            {"Authorization", string.Format($"Bearer {configuration.GetValueString("TPAAS_APP_TOKENKEYS")}")}
           };
           string grantType = "client_credentials";
           TPaasOauthResult tPaasOauthResult;
