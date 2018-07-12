@@ -1,11 +1,6 @@
-FROM microsoft/dotnet:2.0-sdk as builder
-
-COPY . /build/
-WORKDIR /build
-
-RUN chmod 777 *.sh
-
-RUN ["/bin/sh", "build.sh"]
+#BUILD_CONTAINER is the container where landfill was just built and unit tested in usually this should be local i.e. not pushed to ecr or elsewhere.
+ARG BUILD_CONTAINER
+FROM ${BUILD_CONTAINER} as build_container
 
 FROM microsoft/dotnet:2.0-runtime
 
@@ -31,7 +26,4 @@ WORKDIR /app
 ENV ASPNETCORE_URLS http://*:80
 EXPOSE 80
 
-COPY --from=builder /build/artifacts/LandfillServiceWebApi .
-
-
-ENTRYPOINT ["dotnet", "LandfillService.WebApi.netcore.dll"]
+COPY --from=build_container /landfillapp .

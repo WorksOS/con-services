@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: projectservice-testing
+  name: landfillservice-testing
 spec:
   containers:
 
@@ -19,13 +19,13 @@ spec:
         port: 3306
     envFrom:
     - configMapRef:
-        name: projectservice-testing
+        name: landfillservice-testing
 
   - name: masterdataconsumercustomer
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     envFrom:
     - configMapRef:
-        name: projectservice-testing
+        name: landfillservice-testing
     tty: true
     env:
     - name: KAFKA_TOPICS
@@ -38,7 +38,7 @@ spec:
     tty: true
     envFrom:
     - configMapRef:
-        name: projectservice-testing    
+        name: landfillservice-testing    
     env:
     - name: KAFKA_TOPICS
       value: "VSS.Interfaces.Events.MasterData.IProjectEvent"
@@ -49,7 +49,7 @@ spec:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     envFrom:
     - configMapRef:
-        name: projectservice-testing
+        name: landfillservice-testing
     tty: true
     env:
     - name: KAFKA_TOPICS
@@ -59,7 +59,7 @@ spec:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     envFrom:
     - configMapRef:
-        name: projectservice-testing
+        name: landfillservice-testing
     tty: true
     env:
     - name: KAFKA_TOPICS
@@ -70,7 +70,7 @@ spec:
     tty: true
     envFrom:
     - configMapRef:
-        name: projectservice-testing
+        name: landfillservice-testing
     env:
     - name: INF
       value: "1"
@@ -79,7 +79,7 @@ spec:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
     envFrom:
     - configMapRef:
-        name: projectservice-testing
+        name: landfillservice-testing
     tty: true
     env:
     - name: MYSQL_DATABASE_NAME
@@ -110,7 +110,7 @@ spec:
         port: 9092
     envFrom:
     - configMapRef:
-        name: projectservice-testing
+        name: landfillservice-testing
 
   - name: mockapi-container
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux
@@ -125,7 +125,7 @@ spec:
     tty: true
     envFrom:
     - configMapRef:
-        name: projectservice-testing
+        name: landfillservice-testing
 
   - name: service-container
     image: !container!
@@ -143,4 +143,4 @@ spec:
     tty: true
     envFrom:
     - configMapRef:
-        name: projectservice-testing
+        name: landfillservice-testing

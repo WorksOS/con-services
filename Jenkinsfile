@@ -22,8 +22,8 @@ node ('jenkinsslave-pod') {
     
     def vars = []
     def acceptance_testing_yaml
-    def runtimeImage
-
+    def runtimeImage 
+    def build_container
     //Set the build name so it is consistant with VSTS
     currentBuild.displayName = versionNumber
 
@@ -37,7 +37,7 @@ node ('jenkinsslave-pod') {
     stage('Build Solution') {
         checkout scm
         
-        def build_container = docker.build(container, "-f Dockerfile.build .")
+        build_container = docker.build(container, "-f Dockerfile.build .")
 
         // Currently we need to execute the tests like this, because the pipeline docker plugin being aware of DIND, and attempting to map
         // the volume to the bare metal host        
@@ -45,7 +45,7 @@ node ('jenkinsslave-pod') {
     }
     
     stage('Prepairing runtime image') {
-        runtimeImage = docker.build(container, "-f Dockerfile .")
+        runtimeImage = docker.build(container, "-f Dockerfile --build-arg BUILD_CONTAINER=${build_container} .")
         runtimeImage.push()
     }
 
@@ -53,7 +53,6 @@ node ('jenkinsslave-pod') {
         sh "docker tag ${container} ${finalImage}"
         sh "eval \$(aws ecr get-login --region us-west-2 --no-include-email)"
         sh "docker push ${finalImage}"
-        sh "echo ${env.versionNumber} >> chart/build.sbt"
         sh "ls -la chart/"
         archiveArtifacts artifacts: 'chart/**/*.*', fingerprint: true
     }
