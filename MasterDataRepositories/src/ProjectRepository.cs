@@ -1737,7 +1737,8 @@ namespace VSS.MasterData.Repositories
       var timeRangeString = string.Empty;
       if (timeOfPosition != null)
       {
-        timeRangeString = $"  AND '{timeOfPosition.Value.Date}' BETWEEN p.StartDate AND p.EndDate ";
+        var formattedDate = (timeOfPosition.Value.Date.ToString("yyyy-MM-dd"));
+        timeRangeString = $"  AND '{formattedDate}' BETWEEN p.StartDate AND p.EndDate ";
       }
 
       var select = "SELECT DISTINCT " +
