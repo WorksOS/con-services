@@ -3,5 +3,5 @@ FROM microsoft/dotnet:2.0-sdk
 COPY . /build/
 WORKDIR /build
 
-RUN dotnet publish VSS.VisionLink.Landfill.netcore.sln --output /landfillapp
+RUN dotnet publish VSS.VisionLink.Landfill.netcore.sln --output /landfillapp --framework netcoreapp2.0 --runtime linux-x64
 
