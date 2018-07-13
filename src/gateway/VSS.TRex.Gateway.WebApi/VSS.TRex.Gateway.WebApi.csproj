@@ -23,18 +23,25 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.8" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.3" />
+    <PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.0.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Primitives" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.2" />
     <!--
     <PackageReference Include="System.Net.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
     -->
+    <PackageReference Include="Apache.Ignite" Version="2.4.0" />
     <PackageReference Include="log4net.netcore" Version="3.0.0" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.1" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.*" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.*" />
     <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.1.*" />

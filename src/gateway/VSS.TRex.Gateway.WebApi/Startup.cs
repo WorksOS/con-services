@@ -9,9 +9,11 @@ using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.TRex.Gateway.Common.Converters;
+using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.Rendering.Servers.Client;
+using VSS.TRex.Servers;
+using VSS.TRex.Servers.Client;
 using VSS.WebApi.Common;
 
 namespace VSS.TRex.Gateway.WebApi
@@ -66,7 +68,13 @@ namespace VSS.TRex.Gateway.WebApi
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
-      services.AddTransient<ICustomerProxy, CustomerProxy>(); // used in TID auth for customer/user validation
+
+      //TODO: Work out how we want to activate the grid in netcore. For now do it here directly.
+      bool result1 = ActivatePersistentGridServer.Instance().SetGridActive(TRexGrids.ImmutableGridName());
+      bool result2 = ActivatePersistentGridServer.Instance().SetGridActive(TRexGrids.MutableGridName());
+
+      TileRenderingServer tileRenderServer = TileRenderingServer.NewInstance(new[] { ApplicationServiceServer.DEFAULT_ROLE_CLIENT, ServerRoles.TILE_RENDERING_NODE });
+      services.AddSingleton<ITileRenderingServer>(tileRenderServer);
 
       serviceCollection = services;
     }

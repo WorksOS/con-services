@@ -12,6 +12,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Designs.Storage;
 using VSS.TRex.Filters;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.GridFabric.Arguments;
@@ -21,13 +22,16 @@ using VSS.TRex.Servers;
 using VSS.TRex.Servers.Client;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
+using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.Profiling.Servers.Client;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
   public class TileExecutor : RequestExecutorContainer
   {
-    public TileExecutor(IConfigurationStore configStore,
-      ILoggerFactory logger, IServiceExceptionHandler exceptionHandler) : base(configStore, logger, exceptionHandler)
+    public TileExecutor(IConfigurationStore configStore, ILoggerFactory logger, 
+      IServiceExceptionHandler exceptionHandler, ITileRenderingServer tileRenderServer) 
+      : base(configStore, logger, exceptionHandler, tileRenderServer)
     {
     }
 
@@ -59,19 +63,6 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
       var request = item as TileRequest;
 
-      ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(request.ProjectUid.Value);
-
-      if (siteModel == null)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            $"Site model {request.ProjectUid} is unavailable"));
-      }
-
-      CombinedFilter filter1 = ConvertFilter(request.Filter1, siteModel);
-
-      CombinedFilter filter2 = ConvertFilter(request.Filter2, siteModel);
-
       //TODO: TRex expects a Guid for the cut-fill design. Raptor has a DesignDescriptor with long (id) and file name etc.
       //Raymond: how are designs implemented in TRex?
       //We could create a derived class of DesignDescriptor containing the Guid and 3dpm can create a new TileRequest
@@ -82,29 +73,38 @@ namespace VSS.TRex.Gateway.Common.Executors
       bool hasGridCoords = false;
       if (request.BoundBoxLatLon != null)
       {
-        extents = Mapper.Map<BoundingBox2DLatLon, BoundingWorldExtent3D>(request.BoundBoxLatLon);
+        extents = AutoMapperUtility.Automapper.Map<BoundingBox2DLatLon, BoundingWorldExtent3D>(request.BoundBoxLatLon);
       }
       else if (request.BoundBoxGrid != null)
       {
         hasGridCoords = true;
-        extents = Mapper.Map<BoundingBox2DGrid, BoundingWorldExtent3D>(request.BoundBoxGrid);
-     }
+        extents = AutoMapperUtility.Automapper.Map<BoundingBox2DGrid, BoundingWorldExtent3D>(request.BoundBoxGrid);
+      }
 
-      TileRenderingServer tileRenderServer = TileRenderingServer.NewInstance(new[] { ApplicationServiceServer.DEFAULT_ROLE_CLIENT, ServerRoles.TILE_RENDERING_NODE });
+      ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(request.ProjectUid.Value);
 
-      TileRenderResponse_Core2 response = tileRenderServer.RenderTile(
+      if (siteModel == null)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+            $"Site model {request.ProjectUid} is unavailable"));
+      }
+      CombinedFilter filter1 = ConvertFilter(request.Filter1, siteModel);
+      CombinedFilter filter2 = ConvertFilter(request.Filter2, siteModel);
+
+      var response = tileRenderServer.RenderTile(
         new TileRenderRequestArgument
         (siteModel.ID,
-          (Types.DisplayMode)request.Mode,
+          (Types.DisplayMode) request.Mode,
           extents,
           hasGridCoords,
           request.Width, // PixelsX
           request.Height, // PixelsY
           filter1,
           filter2,
-          Guid.Empty//TODO: request.DesignDescriptor
+          Guid.Empty //TODO: request.DesignDescriptor
         )) as TileRenderResponse_Core2;
-        
+
       return TileResult.CreateTileResult(response?.TileBitmap); 
     }
 

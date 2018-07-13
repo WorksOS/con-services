@@ -31,7 +31,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
 
     public TagFileExecutor(IConfigurationStore configStore,
-        ILoggerFactory logger, IServiceExceptionHandler exceptionHandler) : base(configStore, logger, exceptionHandler)
+        ILoggerFactory logger, IServiceExceptionHandler exceptionHandler) : base(configStore, logger, exceptionHandler, null)
     {
     }
 

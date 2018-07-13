@@ -50,9 +50,9 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       log.LogDebug($"PostTagFile: ProjectID:{request.ProjectUID},File:{request.FileName}");
 
       var tagfileResult = WithServiceExceptionTryExecute(() =>
-                                                             RequestExecutorContainer
-                                                                 .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-                                                                 .Process(request)) as TagFileResult;
+        RequestExecutorContainer
+            .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null)
+            .Process(request)) as TagFileResult;
 
       // todo we probably need to return some proper return codes to determine further course of action
       if (tagfileResult != null)
@@ -98,9 +98,9 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           -1, false, false, request.OrgId);
 
       var tagfileResult = WithServiceExceptionTryExecute(() =>
-                                                             RequestExecutorContainer
-                                                                 .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-                                                                 .Process(requestStandard)) as TagFileResult;
+        RequestExecutorContainer
+            .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null)
+            .Process(requestStandard)) as TagFileResult;
 
       // todo we probably need to return some proper return codes to determine further course of action
       if (tagfileResult != null)
@@ -142,9 +142,9 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
 
       var tagfileResult = WithServiceExceptionTryExecute(() =>
-                                                             RequestExecutorContainer
-                                                                 .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-                                                                 .Process(requestStandard)) as TagFileResult;
+          RequestExecutorContainer
+              .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null)
+              .Process(requestStandard)) as TagFileResult;
 
       // todo we probably need to return some proper return codes to determine further course of action
       if (tagfileResult != null)

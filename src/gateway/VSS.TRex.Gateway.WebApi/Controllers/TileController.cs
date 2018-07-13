@@ -9,14 +9,19 @@ using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.ResultHandling;
+using VSS.TRex.Rendering.Servers.Client;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
   public class TileController : BaseController
   {
-    public TileController(ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler, IConfigurationStore configStore)
+    private ITileRenderingServer tileRenderServer;
+
+    public TileController(ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler, 
+      IConfigurationStore configStore, ITileRenderingServer tileRenderServer)
       : base(loggerFactory, loggerFactory.CreateLogger<TileController>(), exceptionHandler, configStore)
-    {     
+    {
+      this.tileRenderServer = tileRenderServer;
     }
 
     [HttpPost]
@@ -30,7 +35,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       var tileResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
-          .Build<TileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Build<TileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, tileRenderServer)
           .Process(request)) as TileResult;
 
       if (tileResult?.TileData == null )

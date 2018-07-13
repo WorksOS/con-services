@@ -5,6 +5,7 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.TRex.Rendering.Servers.Client;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -28,6 +29,8 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// handle exceptions
     /// </summary>
     protected IServiceExceptionHandler serviceExceptionHandler;
+
+    protected ITileRenderingServer tileRenderServer;
 
 
     /// <summary>
@@ -99,13 +102,14 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <summary>
     /// Injected constructor.
     /// </summary>
-    protected RequestExecutorContainer(IConfigurationStore configStore,
-      ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler) : this()
+    protected RequestExecutorContainer(IConfigurationStore configStore, ILoggerFactory logger, 
+      IServiceExceptionHandler serviceExceptionHandler, ITileRenderingServer tileRenderServer) : this()
     {
       this.configStore = configStore;
       if (logger != null)
         log = logger.CreateLogger<RequestExecutorContainer>();
       this.serviceExceptionHandler = serviceExceptionHandler;
+      this.tileRenderServer = tileRenderServer;
     }
 
     /// <summary>
@@ -122,15 +126,16 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <typeparam Name="TExecutor">The type of the executor.</typeparam>
     /// <returns></returns>
     public static TExecutor
-      Build<TExecutor>(IConfigurationStore configStore,
-        ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
+      Build<TExecutor>(IConfigurationStore configStore, ILoggerFactory logger, 
+      IServiceExceptionHandler serviceExceptionHandler, ITileRenderingServer tileRenderServer)
       where TExecutor : RequestExecutorContainer, new()
     {
       var executor = new TExecutor
       {
         configStore = configStore,
         log = logger.CreateLogger<TExecutor>(),
-        serviceExceptionHandler = serviceExceptionHandler
+        serviceExceptionHandler = serviceExceptionHandler,
+        tileRenderServer = tileRenderServer
       };
 
       return executor;

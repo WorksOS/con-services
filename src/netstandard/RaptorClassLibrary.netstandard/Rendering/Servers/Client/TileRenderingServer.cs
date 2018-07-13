@@ -9,7 +9,7 @@ namespace VSS.TRex.Rendering.Servers.Client
     /// <summary>
     /// The server used to house tile rendering services
     /// </summary>
-    public class TileRenderingServer : ApplicationServiceServer
+    public class TileRenderingServer : ApplicationServiceServer, ITileRenderingServer
     {
         /// <summary>
         /// Default no-arg constructor that creates a server with the default Application Service role and the specialise tile rendering role.

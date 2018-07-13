@@ -57,7 +57,6 @@ namespace VSS.TRex.Servers.Client
                     IgniteConfiguration cfg = new IgniteConfiguration
                     {
                         // SpringConfigUrl = @".\TRexIgniteConfig.xml",
-
                         IgniteInstanceName = TRexGrids.ImmutableGridName(),
                         ClientMode = true,
 
