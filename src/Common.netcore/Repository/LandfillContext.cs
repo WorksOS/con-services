@@ -28,6 +28,7 @@ namespace Common.Repository
     /// <returns>The result of executing body()</returns>
     private static T WithConnection<T>(Func<MySqlConnection, T> body)
     {
+      Console.WriteLine(connString);
       using (var conn = new MySqlConnection(connString))
       {
         conn.Open();
@@ -209,6 +210,7 @@ namespace Common.Repository
                 JOIN ProjectSubscription ps ON ps.fk_ProjectUID = p.ProjectUID
                 JOIN Subscription s ON s.SubscriptionUID = ps.fk_SubscriptionUID
               WHERE p.fk_ProjectTypeID = 1 AND p.IsDeleted = 0";
+        
         using (var reader = MySqlHelper.ExecuteReader(conn, command))
         {
           var projects = new List<ProjectResponse>();
