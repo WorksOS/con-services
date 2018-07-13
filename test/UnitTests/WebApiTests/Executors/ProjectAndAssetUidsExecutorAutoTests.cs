@@ -296,7 +296,7 @@ namespace WebApiTests.Executors
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
-        assetUid: String.Empty, 
+        assetUid: string.Empty, 
         assetSubs: new List<Subscription>(),
         assetCustomerUid: string.Empty,
         assetCustomerSubs: new List<Subscription>(),
@@ -333,7 +333,7 @@ namespace WebApiTests.Executors
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
-        assetUid: String.Empty,
+        assetUid: string.Empty,
         assetSubs: new List<Subscription>(),
         assetCustomerUid: string.Empty,
         assetCustomerSubs: new List<Subscription>(),
@@ -370,7 +370,7 @@ namespace WebApiTests.Executors
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
-        assetUid: String.Empty,
+        assetUid: string.Empty,
         assetSubs: new List<Subscription>(),
         assetCustomerUid: string.Empty,
         assetCustomerSubs: new List<Subscription>(),
@@ -407,7 +407,7 @@ namespace WebApiTests.Executors
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
-        assetUid: String.Empty,
+        assetUid: string.Empty,
         assetSubs: new List<Subscription>(),
         assetCustomerUid: string.Empty,
         assetCustomerSubs: new List<Subscription>(),
@@ -448,7 +448,7 @@ namespace WebApiTests.Executors
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
-        assetUid: String.Empty,
+        assetUid: string.Empty,
         assetSubs: new List<Subscription>(),
         assetCustomerUid: string.Empty,
         assetCustomerSubs: new List<Subscription>(),
@@ -485,7 +485,7 @@ namespace WebApiTests.Executors
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
-        assetUid: String.Empty,
+        assetUid: string.Empty,
         assetSubs: new List<Subscription>(),
         assetCustomerUid: string.Empty,
         assetCustomerSubs: new List<Subscription>(),
@@ -522,7 +522,7 @@ namespace WebApiTests.Executors
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
-        assetUid: String.Empty,
+        assetUid: string.Empty,
         assetSubs: new List<Subscription>(),
         assetCustomerUid: string.Empty,
         assetCustomerSubs: new List<Subscription>(),
@@ -559,7 +559,7 @@ namespace WebApiTests.Executors
         projectUid: projectUid,
         projectCustomerUid: projectCustomerUid,
         projectCustomerSubs: new List<Subscription>(),
-        assetUid: String.Empty,
+        assetUid: string.Empty,
         assetSubs: new List<Subscription>(),
         assetCustomerUid: string.Empty,
         assetCustomerSubs: new List<Subscription>(),
@@ -642,8 +642,9 @@ namespace WebApiTests.Executors
     )
     {
       _projectRepo.Setup(p => p.GetProject(It.IsAny<string>())).ReturnsAsync(projectOfInterest);
-      _projectRepo.Setup(p => p.GetIntersectingProjects(It.IsAny<string>(), It.IsAny<double>(), It.IsAny<double>(),
-        It.IsAny<int[]>(), It.IsAny<DateTime?>())).ReturnsAsync(intersectingProjects);
+      IEnumerable<Project> enumIntersectingProjects = intersectingProjects.AsEnumerable();
+      _projectRepo.Setup(p => p.GetIntersectingProjects(It.IsAny<string>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int[]>(), It.IsAny<DateTime?>()))
+        .ReturnsAsync(enumIntersectingProjects);
 
       _deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(assetDevice);
 

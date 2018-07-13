@@ -143,6 +143,6 @@ node ('jenkinsslave-pod') {
 		sh "docker tag ${container} ${finalImage}"
 		sh "eval \$(aws ecr get-login --region us-west-2 --no-include-email)"
 		sh "docker push ${finalImage}"
-        archiveArtifacts artifacts: 'chart/**/*.*', fingerprint: true
+        archiveArtifacts artifacts: 'deploy/**/*.*', fingerprint: true
 	}
 }

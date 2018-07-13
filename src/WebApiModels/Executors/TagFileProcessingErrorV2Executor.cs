@@ -55,58 +55,32 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       Asset asset = null;
       if (!string.IsNullOrEmpty(request.tccOrgId))
       {
-        try
-        {
-          customerTCCOrg = await dataRepository.LoadCustomerByTccOrgId(request.tccOrgId);
-          if (customerTCCOrg == null)
-            log.LogError($"TagFileProcessingErrorV2Executor: tccOrgId Not found)");
-          else
-            log.LogDebug($"TagFileProcessingErrorV2Executor: tccOrgId {JsonConvert.SerializeObject(customerTCCOrg)}");
-        }
-        catch (Exception e)
-        {
-          throw new ServiceException(HttpStatusCode.InternalServerError,
-            TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-              ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
-        }
+        customerTCCOrg = await dataRepository.LoadCustomerByTccOrgId(request.tccOrgId);
+        if (customerTCCOrg == null)
+          log.LogError($"TagFileProcessingErrorV2Executor: tccOrgId Not found)");
+        else
+          log.LogDebug($"TagFileProcessingErrorV2Executor: tccOrgId {JsonConvert.SerializeObject(customerTCCOrg)}");
       }
 
       // can TFHarvester send a projectId -1 thru -3? 
       //    if so we may be able to identify a customer from it using boundaries and subs
       if (request.projectId != null && request.projectId > 0)
       {
-        try
-        {
-          project = await dataRepository.LoadProject(request.projectId.Value);
-          if (project == null)
-            log.LogError($"TagFileProcessingErrorV2Executor: project Not found)");
-          else
-            log.LogDebug($"TagFileProcessingErrorV2Executor: project {JsonConvert.SerializeObject(project)}");
-        }
-        catch (Exception e)
-        {
-          throw new ServiceException(HttpStatusCode.InternalServerError,
-            TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-              ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
-        }
+
+        project = await dataRepository.LoadProject(request.projectId.Value);
+        if (project == null)
+          log.LogError($"TagFileProcessingErrorV2Executor: project Not found)");
+        else
+          log.LogDebug($"TagFileProcessingErrorV2Executor: project {JsonConvert.SerializeObject(project)}");
       }
 
       if (request.assetId != null && request.assetId > 0)
       {
-        try
-        {
-          asset = await dataRepository.LoadAsset(request.assetId.Value);
-          if (asset == null)
-            log.LogError($"TagFileProcessingErrorV2Executor: asset Not found)");
-          else
-            log.LogDebug($"TagFileProcessingErrorV2Executor: asset {JsonConvert.SerializeObject(asset)}");
-        }
-        catch (Exception e)
-        {
-          throw new ServiceException(HttpStatusCode.InternalServerError,
-            TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-              ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
-        }
+        asset = await dataRepository.LoadAsset(request.assetId.Value);
+        if (asset == null)
+          log.LogError($"TagFileProcessingErrorV2Executor: asset Not found)");
+        else
+          log.LogDebug($"TagFileProcessingErrorV2Executor: asset {JsonConvert.SerializeObject(asset)}");
       }
 
       // if no assetid how about getting it and possibly customerUid from DeviceSerialNumber/DeviceType?

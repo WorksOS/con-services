@@ -24,7 +24,7 @@ namespace WebApiTests.Executors
         assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionRepository);
       var result = await executor.ProcessAsync(ProjectBoundaryAtDateRequest) as GetProjectBoundaryAtDateResult;
       Assert.IsNotNull(result, "executor returned nothing");
-      Assert.AreEqual(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code, "executor "); // todo does executed successfully mean it executed but may return nothing?
+      Assert.AreEqual(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code, "executor "); 
 
       Assert.IsNotNull(result.projectBoundary, "executor returned incorrect projectBoundary");
       Assert.IsNull(result.projectBoundary.FencePoints, "executor returned incorrect projectBoundary count");

@@ -131,7 +131,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
           GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult("", "", 30));
       }
 
-      if (!string.IsNullOrEmpty(projectUid.ToString()) && string.IsNullOrEmpty(RadioSerial) && string.IsNullOrEmpty(TccOrgUid))
+      if (string.IsNullOrEmpty(ProjectUid) && string.IsNullOrEmpty(RadioSerial) && string.IsNullOrEmpty(TccOrgUid))
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
           GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult("", "", 37));

@@ -57,7 +57,7 @@
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
     <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.*" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.*" />
-    <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.1.*" />
+    <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.*" />
     <PackageReference Include="NewRelic.Agent.Api" Version="8.3.360" />
   </ItemGroup>
 

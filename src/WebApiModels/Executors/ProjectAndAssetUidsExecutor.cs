@@ -175,7 +175,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
             log.LogDebug(
               $"ProjectAndAssetUidsExecutor: Loaded assetsCustomerSubs? {JsonConvert.SerializeObject(assetCustomerSubs)}");
 
-            // todo is this used, or is it just important that ANY of these 3 types is available?
+            // if only a 3dpm sub avail then this will be tossed out if customers !=
             var mostSignificantServiceType =
               GetMostSignificantServiceType(assetUid, project.CustomerUID, projectCustomerSubs,
                 assetCustomerSubs, assetSubs);

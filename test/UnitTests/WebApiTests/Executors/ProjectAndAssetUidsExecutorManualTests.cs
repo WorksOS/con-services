@@ -224,7 +224,7 @@ namespace WebApiTests.Executors
         assetCustomerSubs: new List<Subscription>(),
         projectOfInterest: projectOfInterest,
         intersectingProjects: new List<Project> {projectOfInterest},
-        assetDevice: new AssetDeviceIds() {AssetUID = assetUid, OwningCustomerUID = assetCustomerUid},
+        assetDevice: new AssetDeviceIds() {AssetUID = assetUid, OwningCustomerUID = projectCustomerUid },
         expectedProjectUidResult: projectUid,
         expectedAssetUidResult: assetUid,
         expectedCodeResult: 0,

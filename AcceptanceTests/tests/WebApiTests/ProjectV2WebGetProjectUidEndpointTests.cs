@@ -11,7 +11,7 @@ using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 namespace WebApiTests
 {
   [TestClass]
-  public class ProjectV2WebTests
+  public class ProjectV2WebGetProjectUidEndpointTests
   {
     private readonly Msg msg = new Msg();
 
@@ -160,8 +160,7 @@ namespace WebApiTests
       Assert.AreEqual(string.Empty, actualResult.ProjectUid, "ProjectUid does not match");
       Assert.AreEqual(3029, actualResult.Code, " result code of request doesn't match expected");
     }
-
-
+    
     [TestMethod]
     public void AssetDevice_ProjectMonitoringSubAndProject()
     {
