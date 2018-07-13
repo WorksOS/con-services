@@ -86,7 +86,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
             var suffix = FileUtils.GeneratedFileSuffix(fileType);
             //Get PRJ file contents from Raptor
             log.LogDebug($"Getting projection file from Raptor for file {request.File.fileName}");
-            var dxfUnitsType = fileType == ImportedFileType.Linework || fileType == ImportedFileType.Alignment
+            var dxfUnitsType = fileType == ImportedFileType.Linework
               ? (TVLPDDistanceUnits)request.DXFUnitsType
               : TVLPDDistanceUnits.vduMeters; //always metric for design surface and alignment as we generate the DXF file.
             log.LogDebug($"Units selected {dxfUnitsType}");
@@ -139,6 +139,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
 
             if (fileType != ImportedFileType.Linework)
             {
+              log.LogDebug($"Creating DXF file with Units selected {request.DXFUnitsType}");
               //Get alignment or surface boundary as DXF file from Raptor
               if (!await CreateDxfFile(request.ProjectId.Value, request.File, suffix, request.DXFUnitsType))
               {

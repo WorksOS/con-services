@@ -73,6 +73,10 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     private readonly IFilterServiceProxy filterServiceProxy;
 
     private readonly IResponseCache cache;
+    /// <summary>
+    /// User preferences interface
+    /// </summary>
+    private readonly IPreferenceProxy userPreferences;
 
     /// <summary>
     /// Constructor with injection
@@ -100,6 +104,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       this.fileListProxy = fileListProxy;
       this.filterServiceProxy = filterServiceProxy;
       this.cache = cache;
+      this.userPreferences = prefProxy;
     }
 
     /// <summary>
@@ -131,6 +136,32 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       string coordSystem = projectDescr.CoordinateSystemFileName;
       var customHeaders = Request.Headers.GetCustomHeaders();
       FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
+
+      if (fileType == ImportedFileType.Alignment)
+      {
+        var preferences = await userPreferences.GetUserPreferences(this.Request.Headers.GetCustomHeaders());
+        if (preferences == null)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+              "Failed to retrieve preferences for current user"));
+        }
+
+        var units = preferences.Units.UnitsType();
+
+        switch (units)
+        {
+          case UnitsTypeEnum.Metric:
+            dxfUnitsType = DxfUnitsType.Meters;
+            break;
+          case UnitsTypeEnum.Imperial:
+            dxfUnitsType = DxfUnitsType.ImperialFeet;
+            break;
+          case UnitsTypeEnum.US:
+            dxfUnitsType = DxfUnitsType.UsSurveyFeet;
+            break;
+        }
+      }
 
       var request = ProjectFileDescriptor.CreateProjectFileDescriptor(
         projectDescr.LegacyProjectId,
