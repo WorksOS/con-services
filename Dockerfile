@@ -2,7 +2,7 @@
 ARG BUILD_CONTAINER
 FROM ${BUILD_CONTAINER} as build_container
 
-FROM microsoft/aspnetcore:2.0
+FROM microsoft/dotnet:2.0-runtime
 
 #This is required for the webpi to run properly
 RUN apt-get update && apt-get install -y \
