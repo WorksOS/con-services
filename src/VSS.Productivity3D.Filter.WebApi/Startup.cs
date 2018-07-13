@@ -13,14 +13,12 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Common.Filters;
 using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.WebApi.Common;
-#if NET_4_7
-  using VSS.Productivity3D.Common.Filters;
-#endif
 
 namespace VSS.Productivity3D.Filter.WebApi
 {
@@ -33,10 +31,12 @@ namespace VSS.Productivity3D.Filter.WebApi
     /// The name of this service for swagger etc.
     /// </summary>
     private const string SERVICE_TITLE = "Filter Service API";
+
     /// <summary>
     /// 
     /// </summary>
     public const string loggerRepoName = "WebApi";
+
     private IServiceCollection serviceCollection;
 
     /// <summary>
@@ -71,7 +71,6 @@ namespace VSS.Productivity3D.Filter.WebApi
     /// <param name="services">The services.</param>
     public void ConfigureServices(IServiceCollection services)
     {
-      services.AddLogging();
       services.AddCommon<Startup>(SERVICE_TITLE);
 
       // Add framework services.
@@ -85,6 +84,19 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>();
       services.AddTransient<IRepository<IProjectEvent>, ProjectRepository>();
       services.AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>();
+      services.AddMemoryCache();
+
+      services.AddOpenTracing(builder =>
+      {
+        builder.ConfigureAspNetCore(options =>
+        {
+          options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
+        });
+      });
+
+      services.AddJaeger(SERVICE_TITLE);
+
+      services.AddOpenTracing();
       services.AddMemoryCache();
 
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -107,10 +119,9 @@ namespace VSS.Productivity3D.Filter.WebApi
 
       loggerFactory.AddDebug();
 
-#if NET_4_7
       if (Configuration["newrelic"] == "true")
         app.UseMiddleware<NewRelicMiddleware>();
-#endif
+
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCommon(SERVICE_TITLE);
       app.UseFilterMiddleware<FilterAuthentication>();
