@@ -12,7 +12,7 @@ spec:
         spec:    
           containers:
           - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-landfill:{{ .Values.image.tag }}
-            name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}-datasync   
+            name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}-datasync
             command: ["dotnet"]
             args: ["LandfillDatasync.netcore.dll"]
             envFrom:
