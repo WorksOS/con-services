@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Raptor.Common.netstandard\VSS.TRex.Common.netstandard.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Geometry.netstandard\VSS.TRex.Geometry.netstandard.csproj" />
   </ItemGroup>
 
 </Project>

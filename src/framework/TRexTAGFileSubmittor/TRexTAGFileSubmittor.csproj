@@ -7,7 +7,7 @@
     <ProjectGuid>{7DD49C6B-042D-40CE-8E8E-430146E3AF97}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>VSS.TRex.TAGFileSubmitter</RootNamespace>
+    <RootNamespace>TRexTAGFileSubmittor</RootNamespace>
     <AssemblyName>TRexTAGFileSubmittor</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -122,11 +122,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\netstandard\Raptor.Common.netstandard\VSS.TRex.Common.netstandard.csproj">
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Common.netstandard\VSS.TRex.Common.netstandard.csproj">
       <Project>{737bfd08-031b-4506-8205-947b82c6d2ba}</Project>
       <Name>VSS.TRex.Common.netstandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\netstandard\RaptorClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj">
+    <ProjectReference Include="..\..\netstandard\TRexClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj">
       <Project>{40db7cf3-5817-45a5-9f90-29baa80e2c7a}</Project>
       <Name>TRexClassLibrary.netstandard</Name>
     </ProjectReference>

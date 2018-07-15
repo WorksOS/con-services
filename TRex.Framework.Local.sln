@@ -15,15 +15,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "netstandard", "netstandard"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Rendering.Implementations.Core2", "src\netstandard\VSS.TRex.Rendering.Implementations.Core2\VSS.TRex.Rendering.Implementations.Core2.csproj", "{C587E1CB-266E-48C3-B077-5D4BBAA5FCF3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TRexClassLibrary.netstandard", "src\netstandard\RaptorClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj", "{D72FFEA8-E587-46DB-BC6E-F6798581BF00}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TRexClassLibrary.netstandard", "src\netstandard\TRexClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj", "{D72FFEA8-E587-46DB-BC6E-F6798581BF00}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "interfaces", "interfaces", "{3B4E0784-8466-4F99-AB91-ACECF4BC2DDC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Rendering.Abstractions", "src\interfaces\VSS.TRex.Rendering.Abstractions\VSS.TRex.Rendering.Abstractions.csproj", "{F8B428AE-73FA-4DC6-81AA-9C7135E96A21}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Velociraptor.Geometry.netstandard", "src\netstandard\VSS.Velociraptor.Geometry.netstandard\VSS.Velociraptor.Geometry.netstandard.csproj", "{C1DF2914-6D79-43BB-9CC2-1B4E429CA579}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Geometry.netstandard", "src\netstandard\VSS.TRex.Geometry.netstandard\VSS.TRex.Geometry.netstandard.csproj", "{C1DF2914-6D79-43BB-9CC2-1B4E429CA579}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Velociraptor.Designs.TTM.netstandard", "src\netstandard\VSS.Velociraptor.Designs.TTM.netstandard\VSS.Velociraptor.Designs.TTM.netstandard.csproj", "{9B80B7DB-93A6-4DEF-9698-01C65C81A49B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Designs.TTM.netstandard", "src\netstandard\VSS.TRex.Designs.TTM.netstandard\VSS.TRex.Designs.TTM.netstandard.csproj", "{9B80B7DB-93A6-4DEF-9698-01C65C81A49B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "framework", "framework", "{F7D821F9-ACEA-4044-A522-D5A9CEAFB91F}"
 EndProject
@@ -41,13 +41,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TRexMutableDataServer", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TRexTAGFileSubmittor", "src\framework\TRexTAGFileSubmittor\TRexTAGFileSubmittor.csproj", "{7DD49C6B-042D-40CE-8E8E-430146E3AF97}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TRexTileServer", "src\framework\TRexTileServer\TRexTileServer.csproj", "{6EAD2931-5828-4D38-B141-ECF8A76E4347}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TRexApplicationServer", "src\framework\TRexApplicationServer\TRexApplicationServer.csproj", "{6EAD2931-5828-4D38-B141-ECF8A76E4347}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.TRex.Rendering.Implementations.Framework", "src\framework\VSS.TRex.Rendering.Implementations.Framework\VSS.TRex.Rendering.Implementations.Framework.csproj", "{663CDD68-0934-4CCB-B0AC-A47414C6B5DB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "services", "services", "{B10E641F-D315-420E-86A7-59BC5A53654A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Server.Application", "src\netstandard\services\VSS.TRex.Server.Tile\VSS.TRex.Server.Application.csproj", "{477C4DE0-BABC-43B5-979A-C4FC0A8C2754}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Server.Application", "src\netstandard\services\VSS.TRex.Server.Application\VSS.TRex.Server.Application.csproj", "{477C4DE0-BABC-43B5-979A-C4FC0A8C2754}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Server.DesignElevation", "src\netstandard\services\VSS.TRex.Server.DesignElevation\VSS.TRex.Server.DesignElevation.csproj", "{89A95FAF-9D61-4FA9-B201-22B62B3B8799}"
 EndProject
@@ -57,7 +57,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Server.PSNode", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TRex.Common.Classes", "src\netstandard\TRex.Common.Classes\TRex.Common.Classes.csproj", "{A058701D-5C7A-4DB3-97DF-76E2E5B879F8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Common.netstandard", "src\netstandard\Raptor.Common.netstandard\VSS.TRex.Common.netstandard.csproj", "{8A7A8BC8-8827-46B5-ABB9-F8CFA490B80C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Common.netstandard", "src\netstandard\VSS.TRex.Common.netstandard\VSS.TRex.Common.netstandard.csproj", "{8A7A8BC8-8827-46B5-ABB9-F8CFA490B80C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.WebApi.Common.Local", "..\MerinoSandbox\WebApi.Common\src\VSS.WebApi.Common.Local.csproj", "{64582076-9660-4EB8-A3C9-403E4FC6405A}"
 EndProject
@@ -67,15 +67,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "gateway", "gateway", "{EF65
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F5E84E89-AC1D-4932-A0C9-6565D5414268}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TRexClassLibrary.Tests.netcore", "tests\netstandard\RaptorClassLibrary.Tests.netcore\TRexClassLibrary.Tests.netcore.csproj", "{7E825753-19C9-4A4F-AB61-33E97135F3FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TRexClassLibrary.Tests.netcore", "tests\netstandard\TRexClassLibrary.Tests.netcore\TRexClassLibrary.Tests.netcore.csproj", "{7E825753-19C9-4A4F-AB61-33E97135F3FB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TAGFiles.Tests.netcore", "tests\netstandard\TAGFiles.Tests.netcore\TAGFiles.Tests.netcore.csproj", "{0029BD1E-D43A-4667-B7CF-CBB6B7F233D7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Common", "tests\netstandard\Tests.Common\Tests.Common.csproj", "{783AED06-C54A-43DC-B455-10DFD8A19E22}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.DesignProfiling.Tests.netcore", "tests\netstandard\VSS.Velociraptor.DesignProfiling.Tests.netcore\VSS.TRex.DesignProfiling.Tests.netcore.csproj", "{A98C4B35-9511-42B5-B397-1C328DEF725B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.DesignProfiling.Tests.netcore", "tests\netstandard\VSS.TRex.DesignProfiling.Tests.netcore\VSS.TRex.DesignProfiling.Tests.netcore.csproj", "{A98C4B35-9511-42B5-B397-1C328DEF725B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Designs.TTM.Tests.netcore", "tests\netstandard\VSS.Velociraptor.Designs.TTM.Tests.netcore\VSS.TRex.Designs.TTM.Tests.netcore.csproj", "{B6E3AE14-71C3-4F0F-A229-06F38DDC8F27}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Designs.TTM.Tests.netcore", "tests\netstandard\VSS.TRex.Designs.TTM.Tests.netcore\VSS.TRex.Designs.TTM.Tests.netcore.csproj", "{B6E3AE14-71C3-4F0F-A229-06F38DDC8F27}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Gateway.Common.Local", "src\gateway\VSS.TRex.Gateway.Common\VSS.TRex.Gateway.Common.Local.csproj", "{25C08700-97DE-44E3-8475-1B01C137FFDA}"
 EndProject

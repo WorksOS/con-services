@@ -5,21 +5,21 @@ VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "netstandard", "netstandard", "{60739A56-DAB5-4BDD-B54E-1ACA0FF82092}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Common.netstandard", "src\netstandard\Raptor.Common.netstandard\VSS.TRex.Common.netstandard.csproj", "{737BFD08-031B-4506-8205-947B82C6D2BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Common.netstandard", "src\netstandard\VSS.TRex.Common.netstandard\VSS.TRex.Common.netstandard.csproj", "{737BFD08-031B-4506-8205-947B82C6D2BA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TRexClassLibrary.netstandard", "src\netstandard\RaptorClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj", "{40DB7CF3-5817-45A5-9F90-29BAA80E2C7A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TRexClassLibrary.netstandard", "src\netstandard\TRexClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj", "{40DB7CF3-5817-45A5-9F90-29BAA80E2C7A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Velociraptor.Geometry.netstandard", "src\netstandard\VSS.Velociraptor.Geometry.netstandard\VSS.Velociraptor.Geometry.netstandard.csproj", "{BAC0B22F-B4FD-406A-9196-2E864416EF4E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Geometry.netstandard", "src\netstandard\VSS.TRex.Geometry.netstandard\VSS.TRex.Geometry.netstandard.csproj", "{BAC0B22F-B4FD-406A-9196-2E864416EF4E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Velociraptor.Designs.TTM.netstandard", "src\netstandard\VSS.Velociraptor.Designs.TTM.netstandard\VSS.Velociraptor.Designs.TTM.netstandard.csproj", "{28DA8E55-DF7D-4241-A525-797B664BC09C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Designs.TTM.netstandard", "src\netstandard\VSS.TRex.Designs.TTM.netstandard\VSS.TRex.Designs.TTM.netstandard.csproj", "{28DA8E55-DF7D-4241-A525-797B664BC09C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{34164EB1-38C2-4301-AEF3-83E3A0DFA8F3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Designs.TTM.Tests.netcore", "tests\netstandard\VSS.Velociraptor.Designs.TTM.Tests.netcore\VSS.TRex.Designs.TTM.Tests.netcore.csproj", "{13EB6387-02E9-460B-AAC2-BC5F670661D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Designs.TTM.Tests.netcore", "tests\netstandard\VSS.TRex.Designs.TTM.Tests.netcore\VSS.TRex.Designs.TTM.Tests.netcore.csproj", "{13EB6387-02E9-460B-AAC2-BC5F670661D3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.DesignProfiling.Tests.netcore", "tests\netstandard\VSS.Velociraptor.DesignProfiling.Tests.netcore\VSS.TRex.DesignProfiling.Tests.netcore.csproj", "{F375B5F3-84C4-4385-85D0-EAA6A5855C3B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.DesignProfiling.Tests.netcore", "tests\netstandard\VSS.TRex.DesignProfiling.Tests.netcore\VSS.TRex.DesignProfiling.Tests.netcore.csproj", "{F375B5F3-84C4-4385-85D0-EAA6A5855C3B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TRexClassLibrary.Tests.netcore", "tests\netstandard\RaptorClassLibrary.Tests.netcore\TRexClassLibrary.Tests.netcore.csproj", "{4E32CCC0-47C1-4CC1-AD8E-14A9FD5C1ED0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TRexClassLibrary.Tests.netcore", "tests\netstandard\TRexClassLibrary.Tests.netcore\TRexClassLibrary.Tests.netcore.csproj", "{4E32CCC0-47C1-4CC1-AD8E-14A9FD5C1ED0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TAGFiles.Tests.netcore", "tests\netstandard\TAGFiles.Tests.netcore\TAGFiles.Tests.netcore.csproj", "{56FB1D16-1B1E-428A-B9AA-CF486A5917E0}"
 EndProject
@@ -46,7 +46,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Server.MutableData
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Server.PSNode", "src\netstandard\services\VSS.TRex.Server.PSNode\VSS.TRex.Server.PSNode.csproj", "{B441691C-8EA0-4573-A68E-411BC23DED85}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Server.Application", "src\netstandard\services\VSS.TRex.Server.Tile\VSS.TRex.Server.Application.csproj", "{5B7C0CB2-B3F3-45F9-964E-EF3584F90E13}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Server.Application", "src\netstandard\services\VSS.TRex.Server.Application\VSS.TRex.Server.Application.csproj", "{5B7C0CB2-B3F3-45F9-964E-EF3584F90E13}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Rendering.Implementations.Core2", "src\netstandard\VSS.TRex.Rendering.Implementations.Core2\VSS.TRex.Rendering.Implementations.Core2.csproj", "{B0752962-4249-4790-9D61-262EABDCE6AF}"
 EndProject

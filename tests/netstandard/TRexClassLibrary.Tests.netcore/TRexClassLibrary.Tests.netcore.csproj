@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
 	<GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <IsPackable>false</IsPackable>
-    <RootNamespace>VSS.TRex.Tests</RootNamespace>
+    <RootNamespace>TRexClassLibrary.Tests.netcore</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -30,8 +30,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\interfaces\VSS.TRex.Rendering.Abstractions\VSS.TRex.Rendering.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\src\netstandard\Raptor.Common.netstandard\VSS.TRex.Common.netstandard.csproj" />
-    <ProjectReference Include="..\..\..\src\netstandard\RaptorClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Common.netstandard\VSS.TRex.Common.netstandard.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\TRexClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj" />
   </ItemGroup>
 
 </Project>

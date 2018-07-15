@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\netstandard\VSS.Velociraptor.Designs.TTM.netstandard\VSS.Velociraptor.Designs.TTM.netstandard.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Designs.TTM.netstandard\VSS.TRex.Designs.TTM.netstandard.csproj" />
   </ItemGroup>
 
   <ItemGroup>

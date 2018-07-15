@@ -18,8 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\netstandard\RaptorClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj" />
-    <ProjectReference Include="..\RaptorClassLibrary.Tests.netcore\TRexClassLibrary.Tests.netcore.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\TRexClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj" />
+    <ProjectReference Include="..\TRexClassLibrary.Tests.netcore\TRexClassLibrary.Tests.netcore.csproj" />
   </ItemGroup>
 
   <ItemGroup>

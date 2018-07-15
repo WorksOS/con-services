@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\VSS.Velociraptor.Geometry.netstandard\VSS.Velociraptor.Geometry.netstandard.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Common.netstandard\VSS.TRex.Common.netstandard.csproj" />
   </ItemGroup>
 
 </Project>

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>VSS.TRex</RootNamespace>
+    <RootNamespace>TRexClassLibrary.netstandard</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -36,8 +36,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\interfaces\VSS.TRex.Rendering.Abstractions\VSS.TRex.Rendering.Abstractions.csproj" />
-    <ProjectReference Include="..\VSS.Velociraptor.Designs.TTM.netstandard\VSS.Velociraptor.Designs.TTM.netstandard.csproj" />
-    <ProjectReference Include="..\VSS.Velociraptor.Geometry.netstandard\VSS.Velociraptor.Geometry.netstandard.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Designs.TTM.netstandard\VSS.TRex.Designs.TTM.netstandard.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Geometry.netstandard\VSS.TRex.Geometry.netstandard.csproj" />
   </ItemGroup>
 
   <ItemGroup>
