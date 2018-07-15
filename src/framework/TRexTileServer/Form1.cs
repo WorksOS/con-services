@@ -2,7 +2,7 @@
 using VSS.TRex.Servers;
 using VSS.TRex.Servers.Client;
 
-namespace TRexServerApplication
+namespace TRexApplicationServer
 {
     public partial class Form1 : Form
     {

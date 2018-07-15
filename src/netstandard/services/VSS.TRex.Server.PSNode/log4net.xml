@@ -2,7 +2,7 @@
 <configuration>
   <log4net>
     <appender name="RollingFile" type="log4net.Appender.RollingFileAppender">
-      <file type="log4net.Util.PatternString" value="./trex/logtrex.log" />
+      <file type="log4net.Util.PatternString" value="%property{appRoot}/logs/VSS.TRex.Server.PSNode.log" />
       <encoding value="utf-8" />
       <layout type="log4net.Layout.PatternLayout">
         <conversionPattern value="%date [%thread] %-5level %logger{1}. %message%newline" />

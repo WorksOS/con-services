@@ -1,4 +1,4 @@
-﻿namespace TRexServerApplication
+﻿namespace TRexApplicationServer
 {
     partial class Form1
     {

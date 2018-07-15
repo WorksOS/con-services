@@ -11,7 +11,7 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 
-namespace TRexServerApplication
+namespace TRexApplicationServer
 {
   static class Program
   {

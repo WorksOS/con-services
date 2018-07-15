@@ -73,7 +73,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TRexTileServer", "src\framework\TRexTileServer\TRexTileServer.csproj", "{6EAD2931-5828-4D38-B141-ECF8A76E4347}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TRexApplicationServer", "src\framework\TRexTileServer\TRexApplicationServer.csproj", "{6EAD2931-5828-4D38-B141-ECF8A76E4347}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TRex.Common.Classes", "src\netstandard\TRex.Common.Classes\TRex.Common.Classes.csproj", "{71039164-6AEF-42EC-9926-7647BE46E7AC}"
 EndProject
@@ -83,7 +83,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Gateway.Common", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Gateway.WebApi", "src\gateway\VSS.TRex.Gateway.WebApi\VSS.TRex.Gateway.WebApi.csproj", "{37880D77-608F-40F3-92B3-22EA8FDE982A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.TRex.Gateway.Tests", "tests\gateway\VSS.TRex.Gateway.Tests\VSS.TRex.Gateway.Tests.csproj", "{756D7191-7082-42CC-BD10-10BC43CCD52D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Gateway.Tests", "tests\gateway\VSS.TRex.Gateway.Tests\VSS.TRex.Gateway.Tests.csproj", "{756D7191-7082-42CC-BD10-10BC43CCD52D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
