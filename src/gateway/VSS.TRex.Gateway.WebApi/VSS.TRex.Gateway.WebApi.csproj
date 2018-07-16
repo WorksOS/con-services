@@ -45,6 +45,9 @@
     <ProjectReference Include="..\VSS.TRex.Gateway.Common\VSS.TRex.Gateway.Common.csproj" />
   </ItemGroup>
 
+  <appSettings>
+    <add key="DisableAITelemetry" value="true" />
+  </appSettings>
 
 
   <ItemGroup>
