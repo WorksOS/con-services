@@ -44,6 +44,7 @@ namespace LandFillServiceDataSynchronizer
         new Dictionary<string, string> {{"Authorization", $"Bearer {authn.Get3DPmSchedulerBearerToken().Result}"}};
       foreach (var project in projects)
       {
+        headers["X-VisionLink-CustomerUID"] = project.customerUid;
         var startDate =
           new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
               new GenericConfiguration(new NullLoggerFactory()),
@@ -90,6 +91,7 @@ namespace LandFillServiceDataSynchronizer
         Log.DebugFormat("Processing projectResponse {0} with {1} entries", project.Key.id, project.Value.Count());
         foreach (var dateEntry in project.Value)
         {
+          headers["X-VisionLink-CustomerUID"] = project.Key.customerUid;
           var geofence = geofences.ContainsKey(dateEntry.geofenceUid) ? geofences[dateEntry.geofenceUid] : null;
           new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
               new GenericConfiguration(new NullLoggerFactory()),
@@ -125,7 +127,7 @@ namespace LandFillServiceDataSynchronizer
 
         var geofenceUids = LandfillDb.GetGeofences(project.projectUid).Select(g => g.uid.ToString()).ToList();
         var geofences = GetGeofenceBoundaries(project.id, geofenceUids);
-
+        headers["X-VisionLink-CustomerUID"] = project.customerUid;
         //Process CCA for scheduled date
         var hwZone =
           new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
@@ -170,6 +172,7 @@ namespace LandFillServiceDataSynchronizer
       var machineIds = machines.ToDictionary(m => m, m => LandfillDb.GetMachineId(projectResponse.projectUid, m));
       var headers =
         new Dictionary<string, string> { { "Authorization", $"Bearer {authn.Get3DPmSchedulerBearerToken().Result}" } };
+      headers["X-VisionLink-CustomerUID"] = projectResponse.customerUid;
 
       foreach (var geofenceUid in geofenceUids)
       {

@@ -17,6 +17,7 @@ namespace LandfillService.Common.Models
     public string projectUid { get; set; }
     public string legacyTimeZoneName { get; set; }
     public long legacyCustomerID { get; set; }
+    public string customerUid { get; set; }
   }
 
   /// <summary>

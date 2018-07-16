@@ -203,7 +203,7 @@ namespace Common.Repository
         var command =
           @"SELECT DISTINCT p.ProjectUID,  p.Name, p.LegacyProjectID AS ProjectID, 
                 p.LandfillTimeZone as TimeZone,
-                cp.LegacyCustomerID
+                cp.LegacyCustomerID, cp.fk_CustomerUID As CustomerUid
               FROM Project p  
                 JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
                 JOIN CustomerUser cu ON cu.fk_CustomerUID = cp.fk_CustomerUID
@@ -221,7 +221,8 @@ namespace Common.Repository
               timeZoneName = reader.GetString(reader.GetOrdinal("TimeZone")),
               projectUid = reader.GetString(reader.GetOrdinal("ProjectUID")),
               name = reader.GetString(reader.GetOrdinal("Name")),
-              legacyCustomerID = reader.GetInt64(reader.GetOrdinal("LegacyCustomerID"))
+              legacyCustomerID = reader.GetInt64(reader.GetOrdinal("LegacyCustomerID")),
+              customerUid = reader.GetString(reader.GetOrdinal("CustomerUid"))
             });
           return projects;
         }
