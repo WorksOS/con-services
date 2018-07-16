@@ -3,4 +3,4 @@ FROM microsoft/dotnet:2.0-sdk
 COPY . /build/
 WORKDIR /build
 
-RUN dotnet publish VSS.VisionLink.Landfill.netcore.sln --output /landfillapp /property:PublishWithAspNetCoreTargetManifest=false
+RUN dotnet publish VSS.VisionLink.Landfill.netcore.sln --output /landfillapp --self-contained --runtime linux-x64
