@@ -61,6 +61,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Gateway.Common", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Gateway.WebApi", "src\gateway\VSS.TRex.Gateway.WebApi\VSS.TRex.Gateway.WebApi.csproj", "{9B5290E8-1126-487B-A828-F94BB72F7C6F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "webtools", "tools\webtools\webtools.csproj", "{621D259F-3A86-428A-A1D4-D243B30D091B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -221,6 +223,14 @@ Global
 		{9B5290E8-1126-487B-A828-F94BB72F7C6F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9B5290E8-1126-487B-A828-F94BB72F7C6F}.Release|x64.ActiveCfg = Release|Any CPU
 		{9B5290E8-1126-487B-A828-F94BB72F7C6F}.Release|x64.Build.0 = Release|Any CPU
+		{621D259F-3A86-428A-A1D4-D243B30D091B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{621D259F-3A86-428A-A1D4-D243B30D091B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{621D259F-3A86-428A-A1D4-D243B30D091B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{621D259F-3A86-428A-A1D4-D243B30D091B}.Debug|x64.Build.0 = Debug|Any CPU
+		{621D259F-3A86-428A-A1D4-D243B30D091B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{621D259F-3A86-428A-A1D4-D243B30D091B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{621D259F-3A86-428A-A1D4-D243B30D091B}.Release|x64.ActiveCfg = Release|Any CPU
+		{621D259F-3A86-428A-A1D4-D243B30D091B}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -247,6 +257,7 @@ Global
 		{B0752962-4249-4790-9D61-262EABDCE6AF} = {60739A56-DAB5-4BDD-B54E-1ACA0FF82092}
 		{EE833C5F-15CF-4860-AD03-A7CA211B388B} = {1AFF02E3-B72B-46EC-B1E5-30ECC6E5C855}
 		{9B5290E8-1126-487B-A828-F94BB72F7C6F} = {1AFF02E3-B72B-46EC-B1E5-30ECC6E5C855}
+		{621D259F-3A86-428A-A1D4-D243B30D091B} = {EABE5BA3-7F2D-4F6B-80C2-674EE09037DC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C2E7378F-4D70-4EA4-8A6C-A96934CBABD8}

@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\netstandard\RaptorClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj" />
+    <ProjectReference Include="..\..\src\netstandard\TRexClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj" />
   </ItemGroup>
 
   <ItemGroup>
