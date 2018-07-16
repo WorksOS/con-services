@@ -6,4 +6,4 @@ start cmd.exe /k "dotnet src/netstandard/services/VSS.TRex.Server.MutableData/bi
 timeout 7
 start cmd.exe /k "dotnet src/netstandard/services/VSS.TRex.Server.PSNode/bin/Debug/netcoreapp2.0/VSS.TRex.Server.PSNode.dll"
 timeout 7
-start cmd.exe /k "dotnet src/netstandard/services/VSS.TRex.Server.Tile/bin/Debug/netcoreapp2.0/VSS.TRex.Server.Application.dll"
+start cmd.exe /k "dotnet src/netstandard/services/VSS.TRex.Server.Application/bin/Debug/netcoreapp2.0/VSS.TRex.Server.Application.dll"

@@ -2,7 +2,7 @@ start ..\VSS.TRex\src\framework\TRexImmutableDataServer\bin\debug\TRexImmutableD
 timeout 7
 start ..\VSS.TRex\src\framework\TRexMutableDataServer\bin\debug\TRexMutableDataServer.exe SpatialDivision=0
 timeout 7
-start ..\VSS.TRex\src\framework\TRexTileServer\bin\debug\TRexTileServer.exe
+start ..\VSS.TRex\src\framework\TRexApplicationServer\bin\debug\TRexApplicationServer.exe
 timeout 7
 start ..\VSS.TRex\src\framework\TRexDesignElevationsServer\bin\debug\TRexDesignElevationsServer.exe
 timeout 7
