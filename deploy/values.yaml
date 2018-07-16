@@ -10,9 +10,10 @@ environment: dev
 
 rootDomain: k8s.vspengg.com
 
+serviceAccountName: trex
+
 image:
   tag: latest
-
 
 ingress:
   enabled: true

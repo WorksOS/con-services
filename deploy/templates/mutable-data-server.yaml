@@ -17,6 +17,7 @@ spec:
         # can easily track all Ignite pods available deployed so far.
         app: {{ template "trex.name" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}
     spec:
+      serviceAccountName: {{ .Values.serviceAccountName }}
       #volumes:
         # Custom name for the storage that holds Ignite's configuration
         # which is example-kube.xml.
@@ -49,6 +50,7 @@ spec:
         # Might be optional depending on your Kubernetes environment.
         - containerPort: 47100 # communication SPI port number.
         - containerPort: 47500 # discovery SPI port number.
+        - containerPort: 48100 # communication SPI port number.
         - containerPort: 49112 # JMX port number.
         - containerPort: 8080  # REST port number.
         - containerPort: 10800 # SQL port number.
@@ -59,4 +61,9 @@ spec:
         env:
           - name: IGNITE_HOME
             value: "/trex/"
-          
+
+      - name: kubectl-proxy
+        image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-trex:kubectl-proxy
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8001  
