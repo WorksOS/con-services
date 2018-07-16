@@ -45,26 +45,32 @@ namespace LandFillServiceDataSynchronizer
       foreach (var project in projects)
       {
         headers["X-VisionLink-CustomerUID"] = project.customerUid;
-        var startDate =
-          new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
-              new GenericConfiguration(new NullLoggerFactory()),
-              new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
-              new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
-                new MemoryCache(new MemoryCacheOptions())),headers).GetProjectStatisticsAsync(userId, project).Result
-            .startTime.Date;
-        if (startDate < DateTime.Today.AddDays(-90))
-          startDate = DateTime.Today.AddDays(-90);
-        var geofenceUids = LandfillDb.GetGeofences(project.projectUid).Select(g => g.uid.ToString()).ToList();
+        try
+        {
+          var startDate =
+            new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
+                new GenericConfiguration(new NullLoggerFactory()),
+                new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
+                new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
+                  new MemoryCache(new MemoryCacheOptions())), headers).GetProjectStatisticsAsync(userId, project).Result
+              .startTime.Date;
+          if (startDate < DateTime.Today.AddDays(-90))
+            startDate = DateTime.Today.AddDays(-90);
+          var geofenceUids = LandfillDb.GetGeofences(project.projectUid).Select(g => g.uid.ToString()).ToList();
 
-        result.Add(project, geofenceUids.SelectMany(g => Enumerable
-          .Range(0, 1 + DateTime.Today.Subtract(startDate).Days)
-          .Select(offset => startDate.AddDays(offset))
-          .Select(d => new DateEntry {geofenceUid = g, date = d})).ToList());
+          result.Add(project, geofenceUids.SelectMany(g => Enumerable
+            .Range(0, 1 + DateTime.Today.Subtract(startDate).Days)
+            .Select(offset => startDate.AddDays(offset))
+            .Select(d => new DateEntry { geofenceUid = g, date = d })).ToList());
+        }
+        catch (Exception e)
+        {
+          Console.WriteLine($"Skipping project {project.name} as failed to get statistics");
+          //Log.Debug($"Skipping project {project.name} as failed to get statistics");
+        }
       }
-
-/*      Dictionary<Project, List<DateEntry>> entries = projects.ToDictionary(projectResponse => projectResponse,
-          projectResponse => LandfillDb.GetDatesWithVolumesNotRetrieved(projectResponse).ToList());*/
-      Log.DebugFormat("Got {0} entries to process for volumes", result.Count);
+      Console.WriteLine("Got {0} entries to process for volumes", result.Count);
+      //Log.DebugFormat("Got {0} entries to process for volumes", result.Count);
 
       return result;
     }
