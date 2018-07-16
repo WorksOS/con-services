@@ -3,4 +3,6 @@ FROM microsoft/dotnet:2.0-sdk
 COPY . /build/
 WORKDIR /build
 
-RUN dotnet publish VSS.VisionLink.Landfill.netcore.sln --output /landfillapp --self-contained --runtime linux-x64
+RUN rm -rf /landfillapp
+RUN dotnet publish VSS.VisionLink.Landfill.netcore.sln --output /landfillapp --runtime linux-x64
+RUN dotnet publish ./src/LandfillService.WebApi.netcore/LandfillService.WebApi.netcore.csproj -o /landfillapp --framework netcoreapp2.0 --runtime linux-x64
