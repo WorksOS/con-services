@@ -41,6 +41,9 @@
     <Reference Include="Apache.Ignite.Core, Version=2.4.0.27085, Culture=neutral, PublicKeyToken=a487a7ff0b2aaa4a, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Apache.Ignite.2.4.0\lib\net40\Apache.Ignite.Core.dll</HintPath>
     </Reference>
+    <Reference Include="log4net.netcore, Version=1.2.15.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\log4net.netcore.3.0.0\lib\net45\log4net.netcore.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.AspNetCore.Http.Abstractions, Version=2.0.3.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Microsoft.AspNetCore.Http.Abstractions.2.0.3\lib\netstandard2.0\Microsoft.AspNetCore.Http.Abstractions.dll</HintPath>
     </Reference>
@@ -129,11 +132,11 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\netstandard\Raptor.Common.netstandard\VSS.TRex.Common.netstandard.csproj">
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Common.netstandard\VSS.TRex.Common.netstandard.csproj">
       <Project>{737bfd08-031b-4506-8205-947b82c6d2ba}</Project>
       <Name>VSS.TRex.Common.netstandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\netstandard\RaptorClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj">
+    <ProjectReference Include="..\..\netstandard\TRexClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj">
       <Project>{40db7cf3-5817-45a5-9f90-29baa80e2c7a}</Project>
       <Name>TRexClassLibrary.netstandard</Name>
     </ProjectReference>

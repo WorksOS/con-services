@@ -11,7 +11,7 @@ namespace VSS.TRex.Rendering.Implementations.Core2
 
     internal CC.Bitmap UnderlyingBitmap => container;
 
-    internal Bitmap(int x, int y)
+    public Bitmap(int x, int y)
     {
       container = new CC.Bitmap(x, y);
     }

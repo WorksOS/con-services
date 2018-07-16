@@ -129,17 +129,17 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\netstandard\Raptor.Common.netstandard\VSS.TRex.Common.netstandard.csproj">
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Common.netstandard\VSS.TRex.Common.netstandard.csproj">
       <Project>{737bfd08-031b-4506-8205-947b82c6d2ba}</Project>
       <Name>VSS.TRex.Common.netstandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\netstandard\RaptorClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj">
+    <ProjectReference Include="..\..\netstandard\TRexClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj">
       <Project>{40db7cf3-5817-45a5-9f90-29baa80e2c7a}</Project>
       <Name>TRexClassLibrary.netstandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\netstandard\VSS.Velociraptor.Geometry.netstandard\VSS.Velociraptor.Geometry.netstandard.csproj">
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Geometry.netstandard\VSS.TRex.Geometry.netstandard.csproj">
       <Project>{bac0b22f-b4fd-406a-9196-2e864416ef4e}</Project>
-      <Name>VSS.Velociraptor.Geometry.netstandard</Name>
+      <Name>VSS.TRex.Geometry.netstandard</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
