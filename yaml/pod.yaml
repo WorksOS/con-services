@@ -61,7 +61,7 @@ spec:
     - configMapRef:
         name: filterservice-testing
 
-  - name: service-container
+  - name: service-container-db
     image: !db-container!
     tty: true
     envFrom:
