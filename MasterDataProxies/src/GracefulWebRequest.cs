@@ -12,7 +12,6 @@ using VSS.ConfigurationStore;
 
 namespace VSS.MasterData.Proxies
 {
-
   public class GracefulWebRequest
   {
     private readonly ILogger log;
@@ -29,7 +28,6 @@ namespace VSS.MasterData.Proxies
       }
     }
 
-
     private class RequestExecutor
     {
       private readonly string endpoint;
@@ -45,7 +43,7 @@ namespace VSS.MasterData.Proxies
       {
         var readStream = response.GetResponseStream();
         byte[] buffer = ArrayPool<byte>.Shared.Rent(BUFFER_MAX_SIZE);
-        string responseString = String.Empty;
+        string responseString = string.Empty;
 
         try
         {
@@ -111,7 +109,7 @@ namespace VSS.MasterData.Proxies
       }
 
       private async Task<WebRequest> PrepareWebRequest(string endpoint, string method,
-        IDictionary<string, string> customHeaders, string payloadData = null, Stream requestStream = null, int? timeout=null)
+        IDictionary<string, string> customHeaders, string payloadData = null, Stream requestStream = null, int? timeout = null)
       {
         var request = WebRequest.Create(endpoint);
         request.Method = method;
@@ -162,23 +160,23 @@ namespace VSS.MasterData.Proxies
         else
           //Apply payload if any
           if (!String.IsNullOrEmpty(payloadData))
+        {
+          // don't overwrite any existing one.
+          if (customHeaders == null || !customHeaders.ContainsKey("Content-Type"))
           {
-            // don't overwrite any existing one.
-            if (customHeaders == null || !customHeaders.ContainsKey("Content-Type"))
-            {
-              request.ContentType = "application/json";
-            }
-            //This fails to serialize the HttpWebRequest with a Json serialization exception for netcore 2.0
-            //log.LogDebug($"PrepareWebRequest() T : requestWithPayload {JsonConvert.SerializeObject(request).Truncate(logMaxChar)}");
-
-
-            using (var writeStream = await request.GetRequestStreamAsync())
-            {
-              UTF8Encoding encoding = new UTF8Encoding();
-              byte[] bytes = encoding.GetBytes(payloadData);
-              await writeStream.WriteAsync(bytes, 0, bytes.Length);
-            }
+            request.ContentType = "application/json";
           }
+          //This fails to serialize the HttpWebRequest with a Json serialization exception for netcore 2.0
+          //log.LogDebug($"PrepareWebRequest() T : requestWithPayload {JsonConvert.SerializeObject(request).Truncate(logMaxChar)}");
+
+
+          using (var writeStream = await request.GetRequestStreamAsync())
+          {
+            UTF8Encoding encoding = new UTF8Encoding();
+            byte[] bytes = encoding.GetBytes(payloadData);
+            await writeStream.WriteAsync(bytes, 0, bytes.Length);
+          }
+        }
         return request;
       }
 
@@ -202,6 +200,7 @@ namespace VSS.MasterData.Proxies
         var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData, null, timeout);
 
         WebResponse response = null;
+
         try
         {
           response = await request.GetResponseAsync();
@@ -214,36 +213,54 @@ namespace VSS.MasterData.Proxies
         catch (WebException ex)
         {
           log.LogDebug($"ExecuteRequest() T: InWebException");
-          using (WebResponse exResponse = ex.Response)
+
+          using (var errorResponse = ex.Response)
           {
-            if (exResponse == null) throw;
+            if (errorResponse == null) throw;
+
             log.LogDebug("ExecuteRequestException() T: going to read stream");
-            var responseString = await GetStringFromResponseStream(exResponse);
-            HttpWebResponse httpResponse = (HttpWebResponse)exResponse;
-            log.LogDebug(
-              $"ExecuteRequestException() T: errorCode: {httpResponse.StatusCode} responseString: {responseString.Truncate(logMaxChar)}");
+
+            var responseString = await GetStringFromResponseStream(errorResponse);
+            var httpResponse = (HttpWebResponse)errorResponse;
+
+            log.LogDebug($"ExecuteRequestException() T: errorCode: {httpResponse.StatusCode} responseString: {responseString.Truncate(logMaxChar)}");
+
+            // Request Id may be required for TPAAS support issues.
+            var tpassRequestId = errorResponse.Headers.Get("Tpaas-Request-Id");
+            if (!string.IsNullOrEmpty(tpassRequestId))
+            {
+              log.LogDebug($"Tpaas-Request-Id: {tpassRequestId}");
+            }
+
             throw new Exception($"{httpResponse.StatusCode} {responseString}");
           }
         }
         catch (Exception ex)
         {
           log.LogDebug($"ExecuteRequestException() T: errorCode: {ex.Message}");
+
           if (ex.InnerException != null)
+          {
             log.LogDebug($"ExecuteRequestInnerException() T: errorCode: {ex.InnerException.Message}");
+          }
+
           throw;
         }
         finally
         {
           response?.Dispose();
         }
+
         return null;
       }
 
       public async Task<T> ExecuteActualRequest<T>(Stream requestSteam = null)
       {
         var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData, requestSteam, timeout);
+
         string responseString = null;
         WebResponse response = null;
+
         try
         {
           log.LogDebug($"ExecuteRequest() T starting the request");
@@ -258,22 +275,40 @@ namespace VSS.MasterData.Proxies
         catch (WebException ex)
         {
           log.LogDebug($"ExecuteRequest() T: InWebException");
-          using (WebResponse exResponse = ex.Response)
+
+          using (var errorResponse = ex.Response)
           {
-            if (exResponse == null) throw;
+            if (errorResponse == null)
+            {
+              throw;
+            }
+
             log.LogDebug("ExecuteRequestException() T: going to read stream");
-            responseString = await GetStringFromResponseStream(exResponse);
-            HttpWebResponse httpResponse = (HttpWebResponse) exResponse;
-            log.LogDebug(
-              $"ExecuteRequestException() T: errorCode: {httpResponse.StatusCode} responseString: {responseString.Truncate(logMaxChar)}");
+            responseString = await GetStringFromResponseStream(errorResponse);
+
+            var httpResponse = (HttpWebResponse)errorResponse;
+
+            log.LogDebug($"ExecuteRequestException() T: errorCode: {httpResponse.StatusCode} responseString: {responseString.Truncate(logMaxChar)}");
+
+            // Request Id may be required for TPAAS support issues.
+            var tpassRequestId = errorResponse.Headers.Get("Tpaas-Request-Id");
+            if (!string.IsNullOrEmpty(tpassRequestId))
+            {
+              log.LogDebug($"Tpaas-Request-Id: {tpassRequestId}");
+            }
+
             throw new Exception($"{httpResponse.StatusCode} {responseString}");
           }
         }
         catch (Exception ex)
         {
           log.LogDebug($"ExecuteRequestException() T: errorCode: {ex.Message}");
+
           if (ex.InnerException != null)
+          {
             log.LogDebug($"ExecuteRequestInnerException() T: errorCode: {ex.InnerException.Message}");
+          }
+
           throw;
         }
         finally
@@ -282,16 +317,17 @@ namespace VSS.MasterData.Proxies
         }
 
         if (!string.IsNullOrEmpty(responseString))
-        {     
-          var toReturn = JsonConvert.DeserializeObject<T>(responseString);
-          log.LogDebug($"ExecuteRequest() T. toReturn:{JsonConvert.SerializeObject(toReturn).Truncate(logMaxChar)}");
-          return toReturn;
-          
-        }
-        var defaultToReturn = default(T);
-        log.LogDebug($"ExecuteRequest() T. defaultToReturn:{JsonConvert.SerializeObject(defaultToReturn).Truncate(logMaxChar)}");
-        return defaultToReturn;
+        {
+          var responseObject = JsonConvert.DeserializeObject<T>(responseString);
+          log.LogDebug($"ExecuteRequest() T. toReturn:{JsonConvert.SerializeObject(responseObject).Truncate(logMaxChar)}");
 
+          return responseObject;
+        }
+
+        var defaultResponseObject = default(T);
+        log.LogDebug($"ExecuteRequest() T. defaultToReturn:{JsonConvert.SerializeObject(defaultResponseObject).Truncate(logMaxChar)}");
+
+        return defaultResponseObject;
       }
     }
 
@@ -340,7 +376,6 @@ namespace VSS.MasterData.Proxies
       return default(T);
     }
 
-
     /// <summary>
     /// Executes the request.
     /// </summary>
@@ -353,7 +388,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="suppressExceptionLogging">if set to <c>true</c> [suppress exception logging].</param>
     /// <returns></returns>
     public async Task<Stream> ExecuteRequest(string endpoint, string method,
-      IDictionary<string, string> customHeaders = null, string payloadData = null, 
+      IDictionary<string, string> customHeaders = null, string payloadData = null,
       int? timeout = null, int retries = 3, bool suppressExceptionLogging = false)
     {
       log.LogDebug(
@@ -384,7 +419,6 @@ namespace VSS.MasterData.Proxies
       }
       return null;
     }
-
 
     /// <summary>
     /// Executes the request.
