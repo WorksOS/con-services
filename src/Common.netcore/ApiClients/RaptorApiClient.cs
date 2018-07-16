@@ -72,7 +72,8 @@ namespace LandfillService.Common.ApiClients
     {
       try
       {
-        Log.LogDebug("Get volume for projectResponse {0} date {1}", projectResponse.id, entry.date);
+        Console.WriteLine("GetVolumeInBackground for project {0} date {1}", projectResponse.id, entry.date);
+        Log.LogDebug("GetVolumeInBackground for project {0} date {1}", projectResponse.id, entry.date);
 
         var res = await GetVolumesAsync(userUid, projectResponse, entry.date, geofence);
 
@@ -172,9 +173,20 @@ namespace LandfillService.Common.ApiClients
     public TimeZoneInfo GetTimeZoneInfoForTzdbId(string tzdbId)
     {
       var mappings = TzdbDateTimeZoneSource.Default.WindowsMapping.MapZones;
-      var map = mappings.FirstOrDefault(x =>
-        x.TzdbIds.Any(z => z.Equals(tzdbId, StringComparison.OrdinalIgnoreCase)));
+      var map = mappings.FirstOrDefault(x => x.TzdbIds.Any(z => z.Equals(tzdbId, StringComparison.OrdinalIgnoreCase)));
       return map == null ? null : TimeZoneInfo.FindSystemTimeZoneById(map.WindowsId);
+    }
+
+    /// <summary>
+    /// Get timezone difference from UTC and return offset in minutes
+    /// </summary>
+    /// <param name="timeZone">Nodatime timezone</param>
+    /// <returns>Offset in minutes</returns>
+    public int ConvertFromTimeZoneToMinutesOffset(string timeZone)
+    {
+      var zone = DateTimeZoneProviders.Tzdb[timeZone];
+      var offset = zone.GetUtcOffset(SystemClock.Instance.GetCurrentInstant());
+      return offset.Milliseconds == 0 ? 0 : offset.Milliseconds / 60000;
     }
 
     /// <summary>

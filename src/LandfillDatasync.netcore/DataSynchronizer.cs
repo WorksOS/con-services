@@ -94,7 +94,7 @@ namespace LandFillServiceDataSynchronizer
         var geofences = GetGeofenceBoundaries(project.Key.id, geofenceUids);
         var headers =
           new Dictionary<string, string> { { "Authorization", $"Bearer {authn.Get3DPmSchedulerBearerToken().Result}" } };
-        Log.DebugFormat("Processing projectResponse {0} with {1} entries", project.Key.id, project.Value.Count());
+        Log.DebugFormat("RunUpdateVolumesFromRaptor Processing project {0} with {1} entries", project.Key.id, project.Value.Count());
         foreach (var dateEntry in project.Value)
         {
           headers["X-VisionLink-CustomerUID"] = project.Key.customerUid;
@@ -119,7 +119,7 @@ namespace LandFillServiceDataSynchronizer
       //Use same criteria as volumes to select projects to process. 
       //No point in getting CCA if no weights or volumes and therefore no density data.
       var projects = GetListOfProjectsToRetrieve();
-      Log.DebugFormat("Got {0} projects to process for CCA", projects.Count);
+      Log.DebugFormat("RunUpdateCCAFromRaptor Got {0} projects to process for CCA", projects.Count);
       var headers =
         new Dictionary<string, string> { { "Authorization", $"Bearer {authn.Get3DPmSchedulerBearerToken().Result}" } };
 
@@ -129,20 +129,30 @@ namespace LandFillServiceDataSynchronizer
 
         var utcDate = DateTime.UtcNow.AddMonths(-1);
         utcDate = DateTime.SpecifyKind(utcDate, DateTimeKind.Utc);
-        Log.InfoFormat("START Processing projectResponse {0}", project.id);
+        Log.InfoFormat("RunUpdateCCAFromRaptor Processing projectID {0} name {1} timezone {2}", project.id, project.name, project.legacyTimeZoneName);
 
         var geofenceUids = LandfillDb.GetGeofences(project.projectUid).Select(g => g.uid.ToString()).ToList();
         var geofences = GetGeofenceBoundaries(project.id, geofenceUids);
         headers["X-VisionLink-CustomerUID"] = project.customerUid;
         //Process CCA for scheduled date
-        var hwZone =
-          new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
+        //var hwZone =
+        //  new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
+        //    new GenericConfiguration(new NullLoggerFactory()),
+        //    new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
+        //    new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
+        //      new MemoryCache(new MemoryCacheOptions())), headers).GetTimeZoneInfoForTzdbId(project.timeZoneName);
+        //var projDate = utcDate.Date.Add(hwZone.BaseUtcOffset);
+        //var nowDate = DateTime.UtcNow.Date.Add(hwZone.BaseUtcOffset);
+
+        var offsetMinutes = new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
             new GenericConfiguration(new NullLoggerFactory()),
             new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
             new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
-              new MemoryCache(new MemoryCacheOptions())), headers).GetTimeZoneInfoForTzdbId(project.timeZoneName);
-        var projDate = utcDate.Date.Add(hwZone.BaseUtcOffset);
-        var nowDate = DateTime.UtcNow.Date.Add(hwZone.BaseUtcOffset);
+              new MemoryCache(new MemoryCacheOptions())), headers).ConvertFromTimeZoneToMinutesOffset(project.legacyTimeZoneName);
+        Log.DebugFormat("RunUpdateCCAFromRaptor Timezone {0} with minutes offset {1} ", project.legacyTimeZoneName, offsetMinutes);
+        var projDate = utcDate.Date.AddMinutes(offsetMinutes);
+        var nowDate = DateTime.UtcNow.Date.AddMinutes(offsetMinutes);
+        
         //In case we're backfilling...
         while (projDate <= nowDate)
         {
@@ -153,10 +163,7 @@ namespace LandFillServiceDataSynchronizer
                 new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
                   new MemoryCache(new MemoryCacheOptions())), headers)
               .GetMachineLiftsInBackground(userId, project, utcDate.Date, utcDate.Date).Result;
-          Log.DebugFormat("Processing projectResponse {0} with {1} machines for date {2}", project.id,
-            machinesToProcess.Count,
-            utcDate.Date);
-
+          Log.DebugFormat("RunUpdateCCAFromRaptor Processing projectResponse {0} with {1} machines for date {2}", project.id,machinesToProcess.Count,utcDate.Date);
           ProcessCCA(utcDate.Date, project, geofenceUids, geofences, machinesToProcess);
           utcDate = utcDate.Date.AddDays(1);
           projDate = projDate.Date.AddDays(1);
@@ -188,7 +195,7 @@ namespace LandFillServiceDataSynchronizer
         {
           foreach (var lift in machine.lifts)
           {
-            Log.DebugFormat("Processing projectResponse {0}, geofence {1}, machine {2}, lift {3}, machineId {4}",
+            Log.DebugFormat("ProcessCCA machine lifts {0}, geofence {1}, machine {2}, lift {3}, machineId {4}",
               projectResponse.id, geofenceUid, machine, lift.layerId, machineIds[machine]);
             new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
               new GenericConfiguration(new NullLoggerFactory()),
@@ -199,7 +206,7 @@ namespace LandFillServiceDataSynchronizer
           }
 
           //Also do the 'All Lifts'
-          Log.DebugFormat("Processing projectResponse {0}, geofence {1}, machine {2}, lift {3}, machineId {4}",
+          Log.DebugFormat("ProcessCCA all lifts {0}, geofence {1}, machine {2}, lift {3}, machineId {4}",
             projectResponse.id, geofenceUid, machine, "ALL", machineIds[machine]);
           new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
             new GenericConfiguration(new NullLoggerFactory()),
