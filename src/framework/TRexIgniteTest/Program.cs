@@ -2,11 +2,12 @@
 using System.Windows.Forms;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.DI;
+using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 
-namespace VSS.TRex.IgnitePOC.TestApp
+namespace TRexIgniteTest
 {
   static class Program
   {
@@ -16,7 +17,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
         .New()
         .AddLogging()
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
-        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels()))
         .Complete();
     }
 

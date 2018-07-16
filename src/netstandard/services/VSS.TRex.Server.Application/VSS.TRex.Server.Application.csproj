@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\TRexClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex\VSS.TRex.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.Rendering.Implementations.Core2\VSS.TRex.Rendering.Implementations.Core2.csproj" />
   </ItemGroup>
 

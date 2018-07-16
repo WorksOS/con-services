@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
 using VSS.TRex.Machines;
 using VSS.TRex.TAGFiles.Servers.Client;
-using VSSTests.TRex.Tests.Common;
+using Tests.Common;
 
 /*
 Arguments for building project #5, Dimensions:
@@ -18,7 +17,7 @@ Arguments for building project #6, Christchurch Southern Motorway:
 6 "J:\PP\Construction\Office software\SiteVision Office\Test Files\VisionLink Data\Southern Motorway\TAYLORS COMP"
 */
 
-namespace VSS.TRex.Client
+namespace TRexTAGFileSubmittor
 {
   class Program
   {
@@ -166,8 +165,7 @@ namespace VSS.TRex.Client
     {
 
       DependencyInjection();
-      Log = Logging.Logger.CreateLogger<Program>();
-      Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+      Log = VSS.TRex.Logging.Logger.CreateLogger<Program>();
 
       Log.LogInformation("Initialising TAG file processor");
 

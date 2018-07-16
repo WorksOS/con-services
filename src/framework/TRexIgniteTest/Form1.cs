@@ -20,12 +20,8 @@ using VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
-using VSS.TRex.DesignProfiling;
-using VSS.TRex.Analytics.Operations;
-using VSS.TRex.Analytics.GridFabric.Arguments;
 using VSS.TRex.Analytics.MDPStatistics;
 using VSS.TRex.Analytics.MDPStatistics.GridFabric;
-using VSS.TRex.Analytics.Models;
 using VSS.TRex.Analytics.PassCountStatistics;
 using VSS.TRex.Analytics.PassCountStatistics.Details;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric.Details;
@@ -65,8 +61,13 @@ using VSS.TRex.Types;
 using VSS.TRex.Volumes;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Volumes.GridFabric.Responses;
+using VSS.TRex.Volumes.Servers.Client;
+using VSS.TRex.SiteModels;
+using VSS.TRex.Analytics.CutFillStatistics.GridFabric;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.Exports.Servers.Client;
 
-namespace VSS.TRex.IgnitePOC.TestApp
+namespace TRexIgniteTest
 {
 	public partial class Form1 : Form
 	{
@@ -100,7 +101,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 		{
 				// Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
 				// SiteModel siteModel = GenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
-        ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+        ISiteModel siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
 
 				if (siteModel == null)
 				{
@@ -178,7 +179,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 
 	  private BoundingWorldExtent3D GetZoomAllExtents()
 		{
-        ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+        ISiteModel siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
 
 				if (siteModel != null)
 				{
@@ -284,7 +285,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 
 		private void DoUpdateDesignsAndSurveyedSurfaces()
 		{
-				Designs.Storage.Designs designs = DesignsService.Instance().List(ID());
+				Designs designs = DesignsService.Instance().List(ID());
 
 				if (designs != null)
 				{
@@ -742,7 +743,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 		{
 				// Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
 				// SiteModel siteModel = GenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
-            ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+            ISiteModel siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
 
 				try
 				{
@@ -875,7 +876,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 		private void button5_Click(object sender, EventArgs e)
 		{
 			// Calculate cut fill statistics from the latest elevations to the selected design
-			var siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+			var siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
 			var offsets = new [] { 0.5, 0.2, 0.1, 0, -0.1, -0.2, -0.5 };
 
 			Stopwatch sw = new Stopwatch();
@@ -909,7 +910,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 
 		private void TemperatureSummaryButton_Click(object sender, EventArgs e)
 		{
-			var siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+			var siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
 
 			Stopwatch sw = new Stopwatch();
 			sw. Start();
@@ -1196,7 +1197,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 
     private void SpeedSummaryButton_Click(object sender, EventArgs e)
     {
-      var siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+      var siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
 
       Stopwatch sw = new Stopwatch();
       sw.Start();
@@ -1236,7 +1237,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 
     private void CMVSummaryButton_Click(object sender, EventArgs e)
     {
-      var siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+      var siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
 
       Stopwatch sw = new Stopwatch();
       sw.Start();
@@ -1278,7 +1279,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 
     private void MDPSummaryButton_Click(object sender, EventArgs e)
     {
-      var siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+      var siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
 
       Stopwatch sw = new Stopwatch();
       sw.Start();
@@ -1320,7 +1321,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 
     private void PassCountSummaryButton_Click(object sender, EventArgs e)
     {
-      var siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+      var siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
 
       Stopwatch sw = new Stopwatch();
       sw.Start();
@@ -1361,7 +1362,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 
     private void CMVDetailsButton_Click(object sender, EventArgs e)
     {
-      var siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+      var siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
       var cmvBands = new[] { 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700 };
 
       Stopwatch sw = new Stopwatch();
@@ -1401,7 +1402,7 @@ namespace VSS.TRex.IgnitePOC.TestApp
 
     private void PassCountDetailsButton_Click(object sender, EventArgs e)
     {
-      var siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+      var siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
       var passCountBands = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
       Stopwatch sw = new Stopwatch();

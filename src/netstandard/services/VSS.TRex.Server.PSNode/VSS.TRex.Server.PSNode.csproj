@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\TRexClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex\VSS.TRex.csproj" />
   </ItemGroup>
 
   <ItemGroup>

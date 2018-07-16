@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSSTests.TRex.Tests.Common
+namespace Tests.Common
 {
     public static class TAGTestConsts
     {

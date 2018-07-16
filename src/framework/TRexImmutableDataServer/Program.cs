@@ -9,7 +9,7 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 
-namespace TRexPSNodeServer
+namespace TRexImmutableDataServer
 {
   static class Program
   {

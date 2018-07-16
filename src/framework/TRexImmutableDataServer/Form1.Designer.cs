@@ -1,4 +1,4 @@
-﻿namespace TRexPSNodeServer
+﻿namespace TRexImmutableDataServer
 {
     partial class Form1
     {

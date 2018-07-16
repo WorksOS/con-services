@@ -1,4 +1,4 @@
-﻿namespace VSS.TRex.Rendering.Abstractions.GridFabric.Factories
+﻿namespace VSS.TRex.Rendering.Abstractions.GridFabric.Responses
 {
     public interface ITileRenderResponse
     {

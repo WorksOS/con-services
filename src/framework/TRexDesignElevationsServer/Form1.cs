@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using VSS.TRex.DesignProfiling.Servers.Client;
+using VSS.TRex.Designs.Servers.Client;
 
 namespace TRexDesignElevationsServer
 {

@@ -1,5 +1,5 @@
 ﻿using System;
-using VSS.TRex.DesignProfiling.Servers.Client;
+using VSS.TRex.Designs.Servers.Client;
 using VSS.TRex.DI;
 
 namespace VSS.TRex.Server.DesignElevation
