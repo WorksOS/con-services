@@ -31,7 +31,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
 
     public TagFileExecutor(IConfigurationStore configStore,
-        ILoggerFactory logger, IServiceExceptionHandler exceptionHandler) : base(configStore, logger, exceptionHandler, null)
+        ILoggerFactory logger, IServiceExceptionHandler exceptionHandler, IMutableClientServer tagfileClientServer) : base(configStore, logger, exceptionHandler, null)
     {
     }
 
@@ -61,7 +61,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         arg = new SubmitTAGFileRequestArgument()
               {
                   ProjectID   = request.ProjectUID,
-                  AssetID     = request.AssetUID,
+                 // todo AssetID     = request.AssetUID,
+                  AssetID     = Guid.Parse("00000000-0000-0000-0000-000000000001"), // until TFA is ready
                   TAGFileName = request.FileName,
                   TagFileContent = request.Data,
                   TCCOrgID    = request.TccOrgId

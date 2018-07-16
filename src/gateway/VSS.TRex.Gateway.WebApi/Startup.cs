@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Apache.Ignite.Core;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -80,6 +81,9 @@ namespace VSS.TRex.Gateway.WebApi
 
       TileRenderingServer tileRenderServer = TileRenderingServer.NewInstance(new[] { ApplicationServiceServer.DEFAULT_ROLE_CLIENT, ServerRoles.TILE_RENDERING_NODE });
       services.AddSingleton<ITileRenderingServer>(tileRenderServer);
+
+      MutableClientServer tagFileRenderServer = new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT);
+      services.AddSingleton<IMutableClientServer>(tagFileRenderServer);
 
       serviceCollection = services;
     }

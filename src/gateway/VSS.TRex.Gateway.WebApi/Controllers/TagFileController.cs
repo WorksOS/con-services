@@ -19,6 +19,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.ResultHandling;
+using VSS.TRex.Servers.Client;
 using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
@@ -26,19 +27,36 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
   public class TagFileController : BaseController
   {
 
+    private IMutableClientServer tagfileClientServer;
+
     private readonly ILogger log;
 
-
-    public TagFileController(ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler, IConfigurationStore configStore)
+    public TagFileController(ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler, IConfigurationStore configStore, IMutableClientServer tagFileClientServer)
         : base(loggerFactory, loggerFactory.CreateLogger<TileController>(), exceptionHandler, configStore)
     {
+      this.tagfileClientServer = tagFileClientServer;
     }
 
 
+
+
+    /// <summary>
+    /// Test endpoint for tagfiles
+    /// </summary>
+    // [PostRequestVerifier]
+    [Route("api/v1/tagfiles")]
+    [HttpGet]
+    public String Get()
+    {
+      // Test endpoint connection
+       return "You have reached api/v1/tagfiles";
+    }
+
+    
     /// <summary>
     /// Posts TAG file to Raptor. 
     /// </summary>
-    // [PostRequestVerifier]
+      // [PostRequestVerifier]
     [Route("api/v1/tagfiles")]
     [HttpPost]
     public IActionResult Post([FromBody] TagFileRequest request)
@@ -89,13 +107,16 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           Formatting.None,
           new JsonSerializerSettings { ContractResolver = new JsonContractPropertyResolver("Data") });
 
-      log.LogDebug("PostTagFile: " + serializedRequest);
+
+     // log.LogDebug("PostTagFile: " + serializedRequest);
+
       TagFileRequest requestStandard = TagFileRequest.CreateTagFile(
           request.FileName,
           request.Data,
           request.ProjectUid,
           null,
-          -1, false, false, request.OrgId);
+          1, false, false, request.OrgId);
+//      -1, false, false, request.OrgId);
 
       var tagfileResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
