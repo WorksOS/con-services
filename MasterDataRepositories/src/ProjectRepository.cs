@@ -1708,47 +1708,57 @@ namespace VSS.MasterData.Repositories
     }
 
     /// <summary>
-    ///     Gets any project of the specified type/s (or all),
+    ///     Gets any project for the customer
     ///     which the lat/long is within
+    ///       optionally can check for a) subset of projectTypes and b) within time 
     /// </summary>
     /// <param name="customerUid"></param>
-    /// <param name="projectTypes"></param>
     /// <param name="latitude"></param>
     /// <param name="longitude"></param>
+    /// <param name="projectTypes"></param>
     /// <param name="timeOfPosition"></param>
     /// <returns>The project</returns>
-    public async Task<IEnumerable<Project>> GetIntersectingProjects(string customerUid, int[] projectTypes,
-      double latitude, double longitude, DateTime timeOfPosition)
+    public async Task<IEnumerable<Project>> GetIntersectingProjects(string customerUid,
+      double latitude, double longitude, int[] projectTypes, DateTime? timeOfPosition)
     {
       var point = $"ST_GeomFromText('POINT({longitude} {latitude})')";
       var projectTypesString = string.Empty;
       if (projectTypes.Any())
       {
-        projectTypesString += " p.fk_ProjectTypeID IN ( ";
+        projectTypesString += " AND p.fk_ProjectTypeID IN ( ";
         for (int i = 0; i < projectTypes.Length; i++)
         {
           projectTypesString += projectTypes[i] + ((i < projectTypes.Length - 1) ? "," : "");
         }
 
-        projectTypesString += " ) AND ";
+        projectTypesString += " ) ";
+      }
+
+      var timeRangeString = string.Empty;
+      if (timeOfPosition != null)
+      {
+        var formattedDate = (timeOfPosition.Value.Date.ToString("yyyy-MM-dd"));
+        timeRangeString = $"  AND '{formattedDate}' BETWEEN p.StartDate AND p.EndDate ";
       }
 
       var select = "SELECT DISTINCT " +
                    "        p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, " +
                    "        p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT, " +
                    "        p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC, " +
-                   "        cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID " +
+                   "        cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, " +
+                   "        ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID " +
                    "      FROM Project p " +
                    "        INNER JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID " +
-                   $"      WHERE {projectTypesString} " +
-                   "            p.IsDeleted = 0 " +
-                   "        AND @timeOfPosition BETWEEN p.StartDate AND p.EndDate " +
-                   "        AND cp.fk_CustomerUID = @customerUID " +
+                   "        LEFT OUTER JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID " +
+                   "        LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID " +
+                   "       WHERE     p.IsDeleted = 0 " +
+                   $"        AND cp.fk_CustomerUID = '{customerUid}' " +
+                   $"       {projectTypesString} " +
+                   $"       {timeRangeString} " +
                    $"        AND st_Intersects({point}, PolygonST) = 1";
 
       var projects =
-        await QueryWithAsyncPolicy<Project>(select,
-          new {customerUID = customerUid, timeOfPosition = timeOfPosition.Date});
+        await QueryWithAsyncPolicy<Project>(select);
 
       return projects;
     }

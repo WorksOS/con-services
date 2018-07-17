@@ -64,24 +64,10 @@ namespace VSS.WebApi.Common
         string applicationName = string.Empty;
         string userUid = string.Empty;
         string userEmail = string.Empty;
-        bool requireCustomerUid = RequireCustomerUid(context);
         string customerUid = string.Empty;
         string customerName = string.Empty;
 
         string authorization = context.Request.Headers["X-Jwt-Assertion"];
-
-        if (requireCustomerUid)
-        {
-          customerUid = context.Request.Headers["X-VisionLink-CustomerUID"];
-        }
-
-        // If no authorization header found, nothing to process further
-        if (string.IsNullOrEmpty(authorization) || (string.IsNullOrEmpty(customerUid) && requireCustomerUid))
-        {
-          log.LogWarning("No account selected for the request");
-          await SetResult("No account selected", context);
-          return;
-        }
 
         try
         {
@@ -97,6 +83,23 @@ namespace VSS.WebApi.Common
           await SetResult("Invalid authentication", context);
           return;
         }
+
+        bool requireCustomerUid = RequireCustomerUid(context);
+
+
+        if (requireCustomerUid)
+        {
+          customerUid = context.Request.Headers["X-VisionLink-CustomerUID"];
+        }
+
+        // If no authorization header found, nothing to process further
+        if (string.IsNullOrEmpty(authorization) || (string.IsNullOrEmpty(customerUid) && requireCustomerUid))
+        {
+          log.LogWarning("No account selected for the request");
+          await SetResult("No account selected", context);
+          return;
+        }
+
 
         var customHeaders = context.Request.Headers.GetCustomHeaders();
         //If this is an application context do not validate user-customer

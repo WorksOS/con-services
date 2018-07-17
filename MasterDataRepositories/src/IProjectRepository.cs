@@ -35,8 +35,8 @@ namespace VSS.MasterData.Repositories
       DateTime timeOfPosition);
     Task<IEnumerable<Project>> GetProjectMonitoringProject(string customerUID, double latitude, double longitude,
       DateTime timeOfPosition, int projectType, int serviceType);
-    Task<IEnumerable<Project>> GetIntersectingProjects(string customerUid, int[] projectTypes, double latitude, double longitude,
-      DateTime timeOfPosition);
+    Task<IEnumerable<Project>> GetIntersectingProjects(string customerUid, double latitude, double longitude,
+      int[] projectTypes, DateTime? timeOfPosition = null);
     
     Task<int> StoreEvent(IProjectEvent evt);
   }
