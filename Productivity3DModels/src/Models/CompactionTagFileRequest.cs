@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Text;
 using Newtonsoft.Json;
+using VSS.Common.Exceptions;
 using VSS.MasterData.Models.FIlters;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.Models.Models
 {
@@ -36,5 +40,20 @@ namespace VSS.Productivity3D.Models.Models
         /// Defines Org ID (either from TCC or Connect) to support project-based subs
         /// </summary>
         public string OrgId { get; set; }
+
+
+        /// <summary>
+        /// Validates all properties
+        /// </summary>
+        public void Validate()
+        {
+            if (Data == null || !Data.Any())
+            {
+                throw new ServiceException(HttpStatusCode.BadRequest,
+                        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                                "Data cannot be null"));
+            }
+        }
+
     }
 }
