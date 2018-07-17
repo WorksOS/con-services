@@ -28,7 +28,10 @@ namespace VSS.TRex.Rendering.Implementations.Core2
 
         public ITileRenderResponse CreateTileRenderResponse(object bmp)
         {
-            return new TileRenderResponse_Core2();
+          return new TileRenderResponse_Core2
+          {
+            TileBitmap = (Bitmap)bmp
+          }; ;
         }
     }
 }

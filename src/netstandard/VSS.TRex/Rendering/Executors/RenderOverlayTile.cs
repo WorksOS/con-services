@@ -2,6 +2,7 @@
 using System;
 using System.Drawing;
 using System.Reflection;
+using Amazon.S3.Model;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
@@ -502,7 +503,9 @@ namespace VSS.TRex.Rendering.Executors
         BoundingIntegerExtent2D CellExtents = new BoundingIntegerExtent2D((int) CellExtents_MinX, (int) CellExtents_MinY, (int) CellExtents_MaxX, (int) CellExtents_MaxY);
         CellExtents.Expand(1);
 
-        FilterSet Filters = new FilterSet(Filter2 == null ? new[] {Filter1} : new[] {Filter1, Filter2});
+        CombinedFilter[] filterSet = Filter1 == null && Filter2 == null ?
+          new CombinedFilter[0] : Filter2 == null ? new[] {Filter1} : new[] {Filter1, Filter2};
+        FilterSet Filters = new FilterSet(filterSet);
 
         // Construct PipelineProcessor
         PipelineProcessor processor = new PipelineProcessor(
