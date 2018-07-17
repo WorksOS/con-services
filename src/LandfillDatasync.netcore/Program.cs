@@ -3,7 +3,6 @@ using System.IO;
 using System.Reflection;
 using log4net;
 using log4net.Config;
-using LandFillServiceDataSynchronizer;
 
 namespace LandfillDatasync.netcore
 {
@@ -17,14 +16,25 @@ namespace LandfillDatasync.netcore
 
       var dataSync = new DataSynchronizer(Log);
 
+      var noOfDaysVolsVar = Environment.GetEnvironmentVariable("NoOfDaysBackForVolumes");
+      var noOfDaysVols = 30;
+      if (!string.IsNullOrEmpty(noOfDaysVolsVar))
+      {
+        noOfDaysVols = -Math.Abs(Convert.ToInt32(noOfDaysVolsVar));
+      }
 
-      dataSync.RunUpdateVolumesFromRaptor();
+      dataSync.RunUpdateVolumesFromRaptor(noOfDaysVols);
 
-
-      var startDate = Environment.GetEnvironmentVariable("StartDateForCCA");
-      var startUtc = DateTime.UtcNow.Date;
-      if (!string.IsNullOrEmpty(startDate)) DateTime.TryParse(startDate, out startUtc);
-      dataSync.RunUpdateCCAFromRaptor();
+      //var startDate = Environment.GetEnvironmentVariable("StartDateForCCA");
+      //var startUtc = DateTime.UtcNow.Date;
+      //if (!string.IsNullOrEmpty(startDate)) DateTime.TryParse(startDate, out startUtc);
+      var noOfDaysCca = Environment.GetEnvironmentVariable("NoOfDaysBackForCCA");
+      var ccaDaysBackFill = 30;
+      if (!string.IsNullOrEmpty(noOfDaysCca))
+      {
+        ccaDaysBackFill = -Math.Abs(Convert.ToInt32(noOfDaysCca));
+      }
+      dataSync.RunUpdateCcaFromRaptor(ccaDaysBackFill);
     }
   }
 }

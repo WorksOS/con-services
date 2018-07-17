@@ -3,15 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 using Common.Repository;
 using LandfillService.Common.Models;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using NodaTime;
 using NodaTime.TimeZones;
 using VSS.ConfigurationStore;
@@ -40,18 +35,18 @@ namespace LandfillService.Common.ApiClients
   {
     private readonly IConfigurationStore config;
     private readonly ILogger Log;
-    private readonly string prodDataEndpoint;
+    //private readonly string prodDataEndpoint;
     private IRaptorProxy raptorProxy;
-    private readonly string reportEndpoint;
-    private string baseAddress;
+    //private readonly string reportEndpoint;
+    //private string baseAddress;
     public IDictionary<string, string> customHeaders;
     private IFileListProxy filesProxy;
 
     public RaptorApiClient(ILogger Log, IConfigurationStore config, IRaptorProxy proxy, IFileListProxy projectProxy, IDictionary<string, string> customHeaders)
     {
-      baseAddress = config.GetValueString("RaptorApiUrl") ?? "/";
-      reportEndpoint = config.GetValueString("RaptorReportEndpoint");
-      prodDataEndpoint = config.GetValueString("RaptorProdDataEndpoint");
+      //baseAddress = config.GetValueString("RaptorApiUrl") ?? "/";
+      //reportEndpoint = config.GetValueString("RaptorReportEndpoint");
+      //prodDataEndpoint = config.GetValueString("RaptorProdDataEndpoint");
       this.Log = Log;
       this.config = config;
       raptorProxy = proxy;
@@ -72,7 +67,7 @@ namespace LandfillService.Common.ApiClients
     {
       try
       {
-        Console.WriteLine("GetVolumeInBackground for project {0} date {1}", projectResponse.id, entry.date);
+       // Console.WriteLine("GetVolumeInBackground for project {0} date {1}", projectResponse.id, entry.date);
         Log.LogDebug("GetVolumeInBackground for project {0} date {1}", projectResponse.id, entry.date);
 
         var res = await GetVolumesAsync(userUid, projectResponse, entry.date, geofence);
@@ -320,8 +315,7 @@ namespace LandfillService.Common.ApiClients
 
       var result = await raptorProxy.ExecuteGenericV1Request<SummaryVolumesResult>("/volumes/summary", volumeParams, customHeaders);
       
-      Log.LogDebug("Volumes request for projectResponse {0}: {1} {2} Result : {3}", projectResponse.id, reportEndpoint,
-        JsonConvert.SerializeObject(volumeParams), JsonConvert.SerializeObject(result));
+      //Log.LogDebug("Volumes request for projectResponse {0}: {1} {2} Result : {3}", projectResponse.id, reportEndpoint,JsonConvert.SerializeObject(volumeParams), JsonConvert.SerializeObject(result));
       return result;
     }
 
@@ -340,11 +334,13 @@ namespace LandfillService.Common.ApiClients
 
     private void ConvertToUtc(DateTime date, string timeZoneName, out DateTime startUtc, out DateTime endUtc)
     {
-      var projTimeZone = DateTimeZoneProviders.Tzdb[timeZoneName];
-      var utcNow = DateTime.UtcNow;
-      var projTimeZoneOffsetFromUtc = projTimeZone.GetUtcOffset(Instant.FromDateTimeUtc(utcNow));
+      //var projTimeZone = DateTimeZoneProviders.Tzdb[timeZoneName];
+      //var utcNow = DateTime.UtcNow;
+      //var projTimeZoneOffsetFromUtc = projTimeZone.GetUtcOffset(Instant.FromDateTimeUtc(utcNow));
       //use only utc dates and times in the service contracts. Ignore time for now.
-      var utcDateTime = date.Date.Add(projTimeZoneOffsetFromUtc.ToTimeSpan().Negate());
+      var offset = ConvertFromTimeZoneToMinutesOffset(timeZoneName);
+      //var utcDateTime = date.Date.Add(projTimeZoneOffsetFromUtc.ToTimeSpan().Negate());
+      var utcDateTime = date.Date.AddMinutes(offset);
       startUtc = utcDateTime;
       endUtc = utcDateTime.AddDays(1).AddMinutes(-1);
     }
@@ -404,13 +400,11 @@ namespace LandfillService.Common.ApiClients
     /// <param name="startUtc">Start UTC to retrieve machines and lifts for</param>
     /// <param name="endUtc">End UTC to retrieve machines and lifts for</param>
     /// <returns>Machines and lifts</returns>
-    private async Task<MachineLayerIdsExecutionResult> GetMachineLiftListAsync(string userUid,
-      ProjectResponse projectResponse, DateTime startUtc, DateTime endUtc)
+    private async Task<MachineLayerIdsExecutionResult> GetMachineLiftListAsync(string userUid,ProjectResponse projectResponse, DateTime startUtc, DateTime endUtc)
     {
-      var url = $"/{prodDataEndpoint}projects/{projectResponse.id}/machinelifts";
-
+      var url = $"/projects/{projectResponse.id}/machinelifts";
       var query = $"?startUtc={FormatUtcDate(startUtc)}&endUtc={FormatUtcDate(endUtc)}";
-
+      Console.WriteLine("GetMachineLiftList: Url = {0} {1}", url,query);
       return await raptorProxy.ExecuteGenericV1Request<MachineLayerIdsExecutionResult>(url, query, customHeaders);
 
     }
@@ -425,11 +419,10 @@ namespace LandfillService.Common.ApiClients
     /// <param name="endUtc">The start UTC for the machine/lifts</param>
     /// <param name="machineList">The list of machines and lifts returned by Raptor</param>
     /// <returns>List of machines and lifts in projectResponse time zone.</returns>
-    private List<MachineLifts> GetMachineLiftsInProjectTimeZone(ProjectResponse projectResponse, DateTime endUtc,
-      IEnumerable<MachineLiftDetails> machineList)
+    private List<MachineLifts> GetMachineLiftsInProjectTimeZone(ProjectResponse projectResponse, DateTime endUtc,IEnumerable<MachineLiftDetails> machineList)
     {
-      var hwZone = GetTimeZoneInfoForTzdbId(projectResponse.timeZoneName);
-
+      //var hwZone = GetTimeZoneInfoForTzdbId(projectResponse.timeZoneName);
+      var offset = ConvertFromTimeZoneToMinutesOffset(projectResponse.timeZoneName);
       var machineLifts = new List<MachineLifts>();
       foreach (var machine in machineList)
       {
@@ -448,7 +441,7 @@ namespace LandfillService.Common.ApiClients
             //If the lift is still active at the end of the day the use the end of the day
             if (orderedLift.endUtc > endUtc)
               orderedLift.endUtc = endUtc;
-            lifts.Add(new Lift {layerId = orderedLift.layerId, endTime = orderedLift.endUtc.Add(hwZone.BaseUtcOffset)});
+            lifts.Add(new Lift {layerId = orderedLift.layerId, endTime = orderedLift.endUtc.AddMinutes(offset)});   //.Add(hwZone.BaseUtcOffset)});
           }
 
         machineLift.lifts = lifts;

@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies;
 
-namespace LandFillServiceDataSynchronizer
+namespace LandfillDatasync.netcore
 {
   public class DataSynchronizer
   {
@@ -35,7 +35,12 @@ namespace LandFillServiceDataSynchronizer
       return LandfillDb.GetListOfAvailableProjects();
     }
 
-    private Dictionary<ProjectResponse, List<DateEntry>> GetListOfEntriesToUpdate()
+    /// <summary>
+    /// Get list of volume entries from raptor 
+    /// </summary>
+    /// <param name="noOfDaysVols"></param>
+    /// <returns></returns>
+    private Dictionary<ProjectResponse, List<DateEntry>> GetListOfEntriesToUpdate(int noOfDaysVols)
     {
       var projects = GetListOfProjectsToRetrieve();
       var result = new Dictionary<ProjectResponse, List<DateEntry>>();
@@ -54,14 +59,15 @@ namespace LandFillServiceDataSynchronizer
                 new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
                   new MemoryCache(new MemoryCacheOptions())), headers).GetProjectStatisticsAsync(userId, project).Result
               .startTime.Date;
-          if (startDate < DateTime.Today.AddDays(-90))
-            startDate = DateTime.Today.AddDays(-90);
+          if (startDate < DateTime.Today.AddDays(noOfDaysVols))
+            startDate = DateTime.Today.AddDays(noOfDaysVols);
           var geofenceUids = LandfillDb.GetGeofences(project.projectUid).Select(g => g.uid.ToString()).ToList();
 
           result.Add(project, geofenceUids.SelectMany(g => Enumerable
             .Range(0, 1 + DateTime.Today.Subtract(startDate).Days)
             .Select(offset => startDate.AddDays(offset))
             .Select(d => new DateEntry { geofenceUid = g, date = d })).ToList());
+          Console.WriteLine($"Valid project {project.name} has {geofenceUids.Count} geofences");
         }
         catch (Exception e)
         {
@@ -84,9 +90,9 @@ namespace LandFillServiceDataSynchronizer
       return geofences;
     }
 
-    public void RunUpdateVolumesFromRaptor()
+    public void RunUpdateVolumesFromRaptor(int noOfDaysVols)
     {
-      var datesToUpdate = GetListOfEntriesToUpdate();
+      var datesToUpdate = GetListOfEntriesToUpdate(noOfDaysVols);
 
       foreach (var project in datesToUpdate)
       {
@@ -109,64 +115,74 @@ namespace LandFillServiceDataSynchronizer
       }
     }
 
-    public void RunUpdateCCAFromRaptor()
+    /// <summary>
+    /// Call raptor every day to get CCA 
+    /// </summary>
+    /// <param name="ccaDaysBackFill"></param>
+    public void RunUpdateCcaFromRaptor(int ccaDaysBackFill)
     {
       //1. Do the scheduled date for each projectResponse (note: UTC date)
       //2. Do missing dates with no CCA for each projectResponse (note: these are projectResponse time zone)
       //3. Retry unretrieved entries for each projectResponse (also projectResponse time zone)
 
-
       //Use same criteria as volumes to select projects to process. 
       //No point in getting CCA if no weights or volumes and therefore no density data.
       var projects = GetListOfProjectsToRetrieve();
       Log.DebugFormat("RunUpdateCCAFromRaptor Got {0} projects to process for CCA", projects.Count);
-      var headers =
-        new Dictionary<string, string> { { "Authorization", $"Bearer {authn.Get3DPmSchedulerBearerToken().Result}" } };
+      var headers = new Dictionary<string, string> { { "Authorization", $"Bearer {authn.Get3DPmSchedulerBearerToken().Result}" } };
 
       foreach (var project in projects)
       {
         //   if (projectResponse.id != 2712) continue;
-
-        var utcDate = DateTime.UtcNow.AddMonths(-1);
-        utcDate = DateTime.SpecifyKind(utcDate, DateTimeKind.Utc);
-        Log.InfoFormat("RunUpdateCCAFromRaptor Processing projectID {0} name {1} timezone {2}", project.id, project.name, project.legacyTimeZoneName);
-
-        var geofenceUids = LandfillDb.GetGeofences(project.projectUid).Select(g => g.uid.ToString()).ToList();
-        var geofences = GetGeofenceBoundaries(project.id, geofenceUids);
-        headers["X-VisionLink-CustomerUID"] = project.customerUid;
-        //Process CCA for scheduled date
-        //var hwZone =
-        //  new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
-        //    new GenericConfiguration(new NullLoggerFactory()),
-        //    new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
-        //    new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
-        //      new MemoryCache(new MemoryCacheOptions())), headers).GetTimeZoneInfoForTzdbId(project.timeZoneName);
-        //var projDate = utcDate.Date.Add(hwZone.BaseUtcOffset);
-        //var nowDate = DateTime.UtcNow.Date.Add(hwZone.BaseUtcOffset);
-
-        var offsetMinutes = new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
-            new GenericConfiguration(new NullLoggerFactory()),
-            new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
-            new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
-              new MemoryCache(new MemoryCacheOptions())), headers).ConvertFromTimeZoneToMinutesOffset(project.legacyTimeZoneName);
-        Log.DebugFormat("RunUpdateCCAFromRaptor Timezone {0} with minutes offset {1} ", project.legacyTimeZoneName, offsetMinutes);
-        var projDate = utcDate.Date.AddMinutes(offsetMinutes);
-        var nowDate = DateTime.UtcNow.Date.AddMinutes(offsetMinutes);
-        
-        //In case we're backfilling...
-        while (projDate <= nowDate)
+        try
         {
-          var machinesToProcess =
-            new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
-                new GenericConfiguration(new NullLoggerFactory()),
-                new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
-                new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
-                  new MemoryCache(new MemoryCacheOptions())), headers)
-              .GetMachineLiftsInBackground(userId, project, utcDate.Date, utcDate.Date).Result;
-          Log.DebugFormat("RunUpdateCCAFromRaptor Processing projectResponse {0} with {1} machines for date {2}", project.id,machinesToProcess.Count,utcDate.Date);
-          ProcessCCA(utcDate.Date, project, geofenceUids, geofences, machinesToProcess);
-          utcDate = utcDate.Date.AddDays(1);
-          projDate = projDate.Date.AddDays(1);
+          //var utcDate = DateTime.UtcNow.AddMonths(-1);
+          var utcDate = DateTime.UtcNow.AddDays(ccaDaysBackFill); 
+          utcDate = DateTime.SpecifyKind(utcDate, DateTimeKind.Utc);
+          Log.InfoFormat("RunUpdateCCAFromRaptor Processing projectID {0} name {1} timezone {2}", project.id, project.name, project.timeZoneName);
+
+          var geofenceUids = LandfillDb.GetGeofences(project.projectUid).Select(g => g.uid.ToString()).ToList();
+          var geofences = GetGeofenceBoundaries(project.id, geofenceUids);
+          headers["X-VisionLink-CustomerUID"] = project.customerUid;
+          //Process CCA for scheduled date
+          //var hwZone =
+          //  new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
+          //    new GenericConfiguration(new NullLoggerFactory()),
+          //    new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
+          //    new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
+          //      new MemoryCache(new MemoryCacheOptions())), headers).GetTimeZoneInfoForTzdbId(project.timeZoneName);
+          //var projDate = utcDate.Date.Add(hwZone.BaseUtcOffset);
+          //var nowDate = DateTime.UtcNow.Date.Add(hwZone.BaseUtcOffset);
+
+          var offsetMinutes = new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
+              new GenericConfiguration(new NullLoggerFactory()),
+              new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
+              new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
+                new MemoryCache(new MemoryCacheOptions())), headers).ConvertFromTimeZoneToMinutesOffset(project.timeZoneName);
+          Log.DebugFormat("RunUpdateCCAFromRaptor Timezone {0} with minutes offset {1} ", project.timeZoneName, offsetMinutes);
+          var projDate = utcDate.Date.AddMinutes(offsetMinutes);
+          var nowDate = DateTime.UtcNow.Date.AddMinutes(offsetMinutes);
+        
+          //In case we're backfilling...
+          while (projDate <= nowDate)
+          {
+            var machinesToProcess =
+              new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
+                  new GenericConfiguration(new NullLoggerFactory()),
+                  new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
+                  new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
+                    new MemoryCache(new MemoryCacheOptions())), headers)
+                .GetMachineLiftsInBackground(userId, project, utcDate.Date, utcDate.Date).Result;
+            Log.DebugFormat("RunUpdateCCAFromRaptor Processing projectResponse {0} with {1} machines for date {2}", project.id,machinesToProcess.Count,utcDate.Date);
+            ProcessCCA(utcDate.Date, project, geofenceUids, geofences, machinesToProcess);
+            utcDate = utcDate.Date.AddDays(1);
+            projDate = projDate.Date.AddDays(1);
+          }
+
+        }
+        catch (Exception e)
+        {
+          Console.WriteLine("RunUpdateCCAFromRaptor Skipping project {0} id {1} - Exception {2}", project.name,project.id, e.Message);
         }
       }
     }
@@ -183,8 +199,7 @@ namespace LandFillServiceDataSynchronizer
       Dictionary<string, List<WGSPoint>> geofences, IEnumerable<MachineLifts> machines)
     {
       var machineIds = machines.ToDictionary(m => m, m => LandfillDb.GetMachineId(projectResponse.projectUid, m));
-      var headers =
-        new Dictionary<string, string> { { "Authorization", $"Bearer {authn.Get3DPmSchedulerBearerToken().Result}" } };
+      var headers = new Dictionary<string, string> { { "Authorization", $"Bearer {authn.Get3DPmSchedulerBearerToken().Result}" } };
       headers["X-VisionLink-CustomerUID"] = projectResponse.customerUid;
 
       foreach (var geofenceUid in geofenceUids)
