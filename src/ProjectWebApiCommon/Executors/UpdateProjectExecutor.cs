@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -98,6 +99,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             log, serviceExceptionHandler, customHeaders, subscriptionProxy, subscriptionRepo, projectRepo, false)
           .ConfigureAwait(false);
       }
+
       log.LogDebug($"UpdateProject: subscriptionUidAssigned: {subscriptionUidAssigned} existing.ProjectType {existing.ProjectType} updateProjectEvent.ProjectType: {updateProjectEvent.ProjectType}");
 
       var isUpdated = 0;
@@ -114,6 +116,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 62, string.Empty);
       }
+
       log.LogDebug($"UpdateProject: Project updated successfully");
 
 
@@ -130,12 +133,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       return new ContractExecutionResult();
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new NotImplementedException();
-    }
-
-
     /// <summary>
     /// Creates Kafka events.
     /// </summary>
@@ -143,7 +140,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <returns></returns>
     protected void CreateKafkaEvents(UpdateProjectEvent updateProjectEvent)
     {
-     var messagePayload = JsonConvert.SerializeObject(new { UpdateProjectEvent = updateProjectEvent });
+      var messagePayload = JsonConvert.SerializeObject(new {UpdateProjectEvent = updateProjectEvent});
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>
         {
@@ -167,14 +164,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       try
       {
         var projectGeofences = (await projectRepo.GetAssociatedGeofences(updateProjectEvent.ProjectUID.ToString())
-          .ConfigureAwait(false));
+          .ConfigureAwait(false)).ToList();
 
-        if (projectGeofences != null)
+        if (projectGeofences.Any())
         {
-          var enumerable = projectGeofences.ToList();
-          if (enumerable.Any())
+          projectGeofence = projectGeofences.FirstOrDefault(p => p.GeofenceType == GeofenceType.Project);
+
+          if (projectGeofence == null)
           {
-            projectGeofence = enumerable.FirstOrDefault(p => p.GeofenceType == GeofenceType.Project);
+            await CreateProjectGeofence(projectGeofences, updateProjectEvent, existing).ConfigureAwait(false);
+            return;
           }
         }
       }
@@ -182,11 +181,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 101, e.Message, existing);
       }
-      if (projectGeofence == null)
-      {
-        await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 96, string.Empty, existing);
-      }
-      log.LogDebug($"UpdateProject: Got the ProjectGeofence association: {JsonConvert.SerializeObject(projectGeofence)}");
+      
+      log.LogDebug(
+        $"UpdateProject: Got the ProjectGeofence association: {JsonConvert.SerializeObject(projectGeofence)}");
 
 
       GeofenceData geofence = null;
@@ -199,10 +196,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 98, e.Message, existing);
       }
+
       if (geofence == null)
       {
         await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 97, string.Empty, existing);
       }
+
       log.LogDebug($"UpdateProject: Got the geofence: {JsonConvert.SerializeObject(geofence)}");
 
 
@@ -221,13 +220,57 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 100, e.Message, existing);
       }
+
       if (geofenceUidUpdated == Guid.Empty)
       {
         await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 99, String.Empty, existing);
       }
+
       log.LogDebug($"UpdateProject: geoFence has been updated: {geofenceUidUpdated}");
 
     }
+
+    private async Task CreateProjectGeofence(List<ProjectGeofence> projectGeofences,
+      UpdateProjectEvent updateProjectEvent, Repositories.DBModels.Project existing)
+    {
+      // this patches the fact that various prior ProjectSvc CreateProject endpoints including TBC intentionally)
+      // didn't (or couldn't - TBC) add Geofence and/or ProjectGeofence. Add them now.
+
+      // Create Geofence
+      var geofenceUidCreated = Guid.Empty;
+      try
+      {
+        geofenceUidCreated = await ProjectRequestHelper.CreateGeofenceInGeofenceService(
+          updateProjectEvent.ProjectUID.ToString(), updateProjectEvent.ProjectName, updateProjectEvent.ProjectBoundary,
+          customerUid, userId,
+          httpContextAccessor, log, serviceExceptionHandler,
+          customHeaders, geofenceProxy).ConfigureAwait(false);
+        log.LogDebug($"UpdateProject: Was geofence created by GeofenceSvc? geofenceUid: {geofenceUidCreated}");
+      }
+      catch (Exception e)
+      {
+        await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 59, e.Message, existing);
+      }
+
+      if (geofenceUidCreated == Guid.Empty)
+      {
+        await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 59, string.Empty, existing);
+      }
+
+      AssociateProjectGeofence associateProjectGeofence = new AssociateProjectGeofence()
+      {
+        ProjectUID = updateProjectEvent.ProjectUID,
+        GeofenceUID = geofenceUidCreated,
+        ActionUTC = DateTime.UtcNow
+      };
+
+      await ProjectRequestHelper
+        .AssociateProjectGeofence(associateProjectGeofence, projectRepo,
+          log, serviceExceptionHandler,
+          producer, kafkaTopicName).ConfigureAwait(false);
+      log.LogDebug("UpdateProject. associateProjectGeofence: {associateProjectGeofence}");
+    }
+
 
     private async Task RollbackAndThrow(UpdateProjectEvent updateProjectEvent, HttpStatusCode httpStatusCode, int errorCode, string exceptionMessage, Repositories.DBModels.Project existing = null)
     {
@@ -254,5 +297,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       serviceExceptionHandler.ThrowServiceException(httpStatusCode, errorCode, exceptionMessage);
     }
+    
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException();
+    }
+
   }
 }

@@ -102,7 +102,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
               ProjectUID = updateProjectGeofenceRequest.ProjectUid,
               ActionUTC = DateTime.UtcNow
             };
-            await ProjectRequestHelper.AssociateGeofenceProject(geofenceProject, projectRepo,
+            await ProjectRequestHelper.AssociateProjectGeofence(geofenceProject, projectRepo,
               log, serviceExceptionHandler,
               producer, kafkaTopicName);
           }

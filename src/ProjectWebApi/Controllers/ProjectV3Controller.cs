@@ -194,7 +194,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task AssociateGeofenceProjectV3([FromBody] AssociateProjectGeofence geofenceProject)
     {
       ProjectDataValidator.Validate(geofenceProject, projectRepo, serviceExceptionHandler);
-      await ProjectRequestHelper.AssociateGeofenceProject(geofenceProject, projectRepo,
+      await ProjectRequestHelper.AssociateProjectGeofence(geofenceProject, projectRepo,
         log, serviceExceptionHandler, producer, kafkaTopicName);
     }
 

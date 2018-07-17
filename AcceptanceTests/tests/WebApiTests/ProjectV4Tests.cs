@@ -613,10 +613,10 @@ namespace WebApiTests
 
 
     [TestMethod]
-    public void CreateStandardProject_ThenUpdateProjectTypeFailure_CheckRollback()
+    public void CreateStandardProject_ThenUpdateProjectTypeAndProjectBoundar()
     {
       var msgNumber = "17b";
-      msg.Title($"Project v4 test {msgNumber}", "Create standard project then update project type and boundary (causing it to fail) then check rollback");
+      msg.Title($"Project v4 test {msgNumber}", "Create standard project then update project type and boundary");
       var ts = new TestSupport();
       var mysql = new MySqlHelper();
       var legacyProjectId = ts.SetLegacyProjectId();
@@ -650,13 +650,14 @@ namespace WebApiTests
        "| EventType            | EventDate   | ProjectUID   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary      | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description       |",
       $"| UpdateProjectRequest | 0d+10:00:00 | {projectUid} | {projectName} | LandFill    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {updatedGeometryWkt} | {customerUid} | {legacyProjectId} |false      | ChangeCordinatesystem | dummy description |" };
 
-      // this should fail as we havn't written the Geofence DB row (which SHOULD have been written by GeofenceSvc).
+      // we haven't written the Geofence DB row
+      // projectSvc should pass as we now create a new Geofence and ProjectGeofence for the Project.
       var response = ts.PublishEventToWebApi(projectEventArray2);
-      Assert.IsTrue(response == "UpdateGeofenceInGeofenceService: Unable to find the project-geofence association.", "Response is unexpected. Should be a 'UpdateGeofenceInGeofenceService: Unable to find the project-geofence association.'. Response: " + response);
+      Assert.IsTrue(response == "success", "Response is unexpected. Should be a 'success'. Response: " + response);
 
-      // check that that Project.ProjectBoundary is == the original (geometryWkt)
-      //    can't very that the Subscription is available again as it is done vis subSvc. Must be done manually
-      ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
+      // check that that Project.ProjectBoundary is the changed type and geometry
+      //    can't verify that the Subscription is available again as it is done vis subSvc. Must be done manually
+      ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray2, true);
    }
 
 
