@@ -76,7 +76,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
             // Perform some Validation Checks
 
             if (tagDetail.tagFileContent.Length <= TRexConfig.MinTAGFileLength)
-                return ValidationResult.Invalid;
+                return ValidationResult.InvalidTagfile;
 
             // Now open tagfile and validate contents
             var siteModel = new SiteModel(Guid.Empty);
@@ -93,7 +93,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
 
             TAGReadResult readResult = tagFile.Read(reader, sink);
             if (readResult != TAGReadResult.NoError)
-                return ValidationResult.Invalid; //Exit if failed content validation
+                return ValidationResult.InvalidTagfile; //Exit if failed content validation
 
             // Tagfile contents are OK so proceed
 
@@ -107,7 +107,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
                         return ValidationResult.Valid;
                      }
                 else
-                    return ValidationResult.Invalid; // cannot process without asset and project id
+                    return ValidationResult.BadRequest; // cannot process without asset and project id
             }
 
             return CheckFileIsProcessible(tagDetail, processor);

@@ -47,7 +47,7 @@ namespace TAGFiles.Tests
             // Validate tagfile submission
             var result = TagfileValidator.ValidSubmission(td);
 
-            Assert.True(result == ValidationResult.Invalid, "Failed to return a Invalid request");
+            Assert.True(result == ValidationResult.InvalidTagfile, "Failed to return a Invalid request");
         }
 
         [Fact]
@@ -67,7 +67,7 @@ namespace TAGFiles.Tests
             // Validate tagfile submission
             var result = TagfileValidator.ValidSubmission(td);
 
-            Assert.True(result == ValidationResult.Invalid, "Failed to return a Invalid request");
+            Assert.True(result == ValidationResult.InvalidTagfile, "Failed to return a Invalid request");
         }
 
 

@@ -94,7 +94,7 @@ namespace VSS.TRex.TAGFiles.Classes
                 else
                 {
                     // Todo assigned correct values from new service once written
-                    result = ValidationResult.Invalid;
+                    result = ValidationResult.InvalidLicense;
                 }
                     
             }
@@ -103,7 +103,7 @@ namespace VSS.TRex.TAGFiles.Classes
                 Console.Out.WriteLine("-----------------");
                 Console.Out.WriteLine(e.Message);
                 Log.LogError($"#Exception# Unexpected exception occured calling TFA service ProjectId:{projectId}, TCCOrgId:{tccOrgId}, radioSerial:{radioSerial}, radioType:{radioType}, lat:{lat}, lon:{lon}, DateTime:{timeOfPosition} {e.Message}");
-                //result = ValidationResult.Unknown;
+                result = ValidationResult.TFAError;
                 return result;
             }
 

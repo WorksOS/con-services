@@ -32,7 +32,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     private readonly ILogger log;
 
     public TagFileController(ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler, IConfigurationStore configStore, IMutableClientServer tagFileClientServer)
-        : base(loggerFactory, loggerFactory.CreateLogger<TileController>(), exceptionHandler, configStore)
+        : base(loggerFactory, loggerFactory.CreateLogger<TagFileController>(), exceptionHandler, configStore)
     {
       this.tagfileClientServer = tagFileClientServer;
     }
@@ -69,7 +69,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       var tagfileResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
-            .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null)
+            .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null, tagfileClientServer)
             .Process(request)) as TagFileResult;
 
       // todo we probably need to return some proper return codes to determine further course of action
@@ -120,7 +120,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       var tagfileResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
-            .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null)
+            .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null, tagfileClientServer)
             .Process(requestStandard)) as TagFileResult;
 
       // todo we probably need to return some proper return codes to determine further course of action
@@ -164,7 +164,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       var tagfileResult = WithServiceExceptionTryExecute(() =>
           RequestExecutorContainer
-              .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null)
+              .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null,tagfileClientServer)
               .Process(requestStandard)) as TagFileResult;
 
       // todo we probably need to return some proper return codes to determine further course of action

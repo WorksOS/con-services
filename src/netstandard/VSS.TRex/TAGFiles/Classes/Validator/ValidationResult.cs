@@ -11,8 +11,9 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     {
         Unknown,
         Valid,
-        Invalid,
         BadRequest,
-        NotProcessible
+        InvalidTagfile,
+        InvalidLicense,
+        TFAError
     }
 }
