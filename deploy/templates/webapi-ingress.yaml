@@ -1,11 +1,11 @@
 {{- $fdqn := printf "%s.%s" .Values.environment .Values.rootDomain -}}
-{{- $serviceName := printf "%s-%s-%s" .Release.Name .Values.environment .Values.image.tag -}}
+{{- $serviceName := printf "%s-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+  name: {{ $serviceName }}
   labels:
-    app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+    app: {{ $serviceName }}
   annotations:
   {{- range $key, $value := .Values.ingress.annotations }}
     {{ $key }}: {{ $value | quote }}
