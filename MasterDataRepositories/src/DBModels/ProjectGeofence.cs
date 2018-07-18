@@ -7,6 +7,6 @@ namespace VSS.MasterData.Repositories.DBModels
         public string ProjectUID { get; set; }
         public string GeofenceUID { get; set; }
         public DateTime LastActionedUTC { get; set; }
-        public GeofenceType GeofenceType { get; set; }
+        public GeofenceType? GeofenceType { get; set; }
     }
 }
