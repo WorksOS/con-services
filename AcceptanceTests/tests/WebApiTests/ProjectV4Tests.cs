@@ -613,7 +613,7 @@ namespace WebApiTests
 
 
     [TestMethod]
-    public void CreateStandardProject_ThenUpdateProjectTypeAndProjectBoundar()
+    public void CreateStandardProject_ThenUpdateProjectTypeAndProjectBoundary()
     {
       var msgNumber = "17b";
       msg.Title($"Project v4 test {msgNumber}", "Create standard project then update project type and boundary");
@@ -659,6 +659,63 @@ namespace WebApiTests
       //    can't verify that the Subscription is available again as it is done vis subSvc. Must be done manually
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray2, true);
    }
+
+    [TestMethod]
+    public void CreateStandardProject_ThenUpdateProjectBoundary_MissMatchedProjectGeofence()
+    {
+      var msgNumber = "17b";
+      msg.Title($"Project v4 test {msgNumber}", "Create standard project then update project boundary, where there is a mismatched ProjectGeofence");
+      var ts = new TestSupport();
+      var mysql = new MySqlHelper();
+      var legacyProjectId = ts.SetLegacyProjectId();
+      var projectUid = Guid.NewGuid().ToString();
+      var customerUid = Guid.NewGuid();
+      var tccOrg = Guid.NewGuid();
+      var subscriptionUid = Guid.NewGuid();
+      var startDateTime = ts.FirstEventDate;
+      var endDateTime = new DateTime(9999, 12, 31);
+      var endDateTime2 = DateTime.Now.Date.AddYears(2);
+      var startDate = startDateTime.ToString("yyyy-MM-dd");
+      var endDate = endDateTime.ToString("yyyy-MM-dd");
+      const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+      const string updatedGeometryWkt = "POLYGON((-12 3,-12.3 3,-12.3 4,-12.3 4,-12.8 4,-12 3))";
+      var eventsArray = new[] {
+       "| TableName           | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
+      $"| Customer            | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                   |                |                  |             |                |               |          |                    |",
+      $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |           |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
+      $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |"};
+      ts.PublishEventCollection(eventsArray);
+      ts.IsPublishToWebApi = true;
+      var projectName = $"Boundary Test {msgNumber}";
+      var projectEventArray = new[] {
+       "| EventType          | EventDate   | ProjectUID   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | ",
+      $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {projectName} | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc |" };
+      ts.PublishEventCollection(projectEventArray);
+      ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
+      ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
+
+      // now create the mismatched Geofence in the db, which we want the Project to associate to
+      var geofenceSvcCreatedGeofenceUid = Guid.NewGuid().ToString();
+      var projectSvcExpectedGeofenceUid = mysql.VerifyProjectGeofence(projectUid, 1);
+      var geofenceEventArray = new[] {
+        "| TableName  | EventType           | EventDate   | fk_CustomerUID | Description | FillColor  | GeofenceName  | fk_GeofenceTypeID            | GeofenceUID                      | GeometryWKT   | IsTransparent | Name          | UserUID        | IsDeleted | LastActionedUTC |",
+        $"| Geofence   | CreateGeofenceEvent | 0d+09:00:00 | {customerUid}  | Fence       | 1         | {projectName} | {(int) GeofenceType.Project} | {geofenceSvcCreatedGeofenceUid}  | {geometryWkt} | {false}       | {projectName} | {customerUid}  | {false}   | 0d+09:00:00     |"};
+      ts.IsPublishToWebApi = false;
+      ts.PublishEventCollection(geofenceEventArray);
+
+      var projectEventArray2 = new[] {
+       "| EventType            | EventDate   | ProjectUID   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary      | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description       |",
+      $"| UpdateProjectRequest | 0d+10:00:00 | {projectUid} | {projectName} | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {updatedGeometryWkt} | {customerUid} | {legacyProjectId} |false      | ChangeCordinatesystem | dummy description |" };
+
+      // we expect the publish to fail, as call to Geofence mock will fail. That's ok.
+      // projectSvc should adjust ProjectGeofence to point to the good geofence.
+      var response = ts.PublishEventToWebApi(projectEventArray2);
+
+      var expectedMessage = "UpdateGeofenceInGeofenceService: Unable to find the projects Geofence.";
+      Assert.AreEqual(expectedMessage, response, "Response is unexpected. ");
+      var updatedGeofenceUid = mysql.VerifyProjectGeofence(projectUid, 1);
+      Assert.AreEqual(geofenceSvcCreatedGeofenceUid, updatedGeofenceUid, "ProjectGeofence Should have been re-positioned to the new GeofenceUid.");
+    }
 
 
     [TestMethod]

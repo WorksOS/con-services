@@ -846,37 +846,6 @@ namespace TestUtility
     /// <summary>
     /// Inject the MockSubscription
     /// </summary>
-    /// <param name="serviceType"></param>
-    /// <param name="subscriptionUid">Subscription UID</param>
-    /// <param name="customerUid">Customer UID</param>
-    /// <param name="startDate">Start date of the subscription</param>
-    /// <param name="endDate">End date of the subscription</param>
-    public void CreateMockSubscription(ServiceTypeEnum serviceType, string subscriptionUid, string customerUid,
-      DateTime startDate, DateTime endDate)
-    {
-      MockSubscription = new Subscription
-      {
-        SubscriptionUID = subscriptionUid,
-        CustomerUID = customerUid,
-        ServiceTypeID = (int) serviceType,
-        StartDate = startDate,
-        EndDate = endDate,
-        LastActionedUTC = DateTime.UtcNow
-      };
-      var query = $@"INSERT INTO `{TsCfg.dbSchema}`.{"Subscription"} 
-                            (SubscriptionUID,fk_CustomerUID,fk_ServiceTypeID,StartDate,EndDate,LastActionedUTC) VALUES
-                            ('{MockSubscription.SubscriptionUID}','{MockSubscription.CustomerUID}',{
-          MockSubscription.ServiceTypeID
-        },'{MockSubscription.StartDate:yyyy-MM-dd HH}','{MockSubscription.EndDate:yyyy-MM-dd}','{
-          MockSubscription.LastActionedUTC
-        :yyyy-MM-dd HH\:mm\:ss.fffffff}');";
-      var mysqlHelper = new MySqlHelper();
-      mysqlHelper.ExecuteMySqlInsert(TsCfg.DbConnectionString, query);
-    }
-
-    /// <summary>
-    /// Inject the MockSubscription
-    /// </summary>
     /// <param name="orgId"></param>
     /// <param name="customerUid">Customer UID</param>
     public void CreateMockCustomerTbcOrgId(string orgId, string customerUid)

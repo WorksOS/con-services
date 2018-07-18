@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -100,7 +99,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           .ConfigureAwait(false);
       }
 
-      log.LogDebug($"UpdateProject: subscriptionUidAssigned: {subscriptionUidAssigned} existing.ProjectType {existing.ProjectType} updateProjectEvent.ProjectType: {updateProjectEvent.ProjectType}");
+      log.LogDebug($"UpdateProject: subscriptionUidAssigned? {subscriptionUidAssigned}. ExistingProjectType: {existing.ProjectType} updatedProjectType: {updateProjectEvent.ProjectType}");
 
       var isUpdated = 0;
       try
@@ -158,32 +157,38 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <returns></returns>
     protected async Task UpdateGeofenceInGeofenceService(UpdateProjectEvent updateProjectEvent, Repositories.DBModels.Project existing)
     {
-      log.LogDebug($"UpdateProject: Updating the Project geofence: {updateProjectEvent.ProjectUID.ToString()}");
+      log.LogDebug($"UpdateProjectGeofence: Updating the Project geofence: {updateProjectEvent.ProjectUID.ToString()}");
 
+      List<ProjectGeofence> projectGeofences = null;
       ProjectGeofence projectGeofence = null;
       try
       {
-        var projectGeofences = (await projectRepo.GetAssociatedGeofences(updateProjectEvent.ProjectUID.ToString())
+        projectGeofences = (await projectRepo.GetAssociatedGeofences(updateProjectEvent.ProjectUID.ToString())
           .ConfigureAwait(false)).ToList();
-
-        if (projectGeofences.Any())
-        {
-          projectGeofence = projectGeofences.FirstOrDefault(p => p.GeofenceType == GeofenceType.Project);
-
-          if (projectGeofence == null)
-          {
-            await CreateProjectGeofence(projectGeofences, updateProjectEvent, existing).ConfigureAwait(false);
-            return;
-          }
-        }
       }
       catch (Exception e)
       {
         await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 101, e.Message, existing);
       }
+
+      if (projectGeofences != null && projectGeofences.Any())
+      {
+        projectGeofence = projectGeofences.FirstOrDefault(p => p.GeofenceType == GeofenceType.Project);
+
+        if (projectGeofence == null)
+        {
+          projectGeofence = await MissMatchedGeofence(projectGeofences, existing).ConfigureAwait(false);
+        }
+      }
+
+      if (projectGeofence == null)
+      {
+        await CreateProjectGeofence(updateProjectEvent, existing).ConfigureAwait(false);
+        return;
+      }
       
       log.LogDebug(
-        $"UpdateProject: Got the ProjectGeofence association: {JsonConvert.SerializeObject(projectGeofence)}");
+        $"UpdateProjectGeofence: Got the ProjectGeofence association: {JsonConvert.SerializeObject(projectGeofence)}");
 
 
       GeofenceData geofence = null;
@@ -230,11 +235,80 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
     }
 
-    private async Task CreateProjectGeofence(List<ProjectGeofence> projectGeofences,
-      UpdateProjectEvent updateProjectEvent, Repositories.DBModels.Project existing)
+    private async Task<ProjectGeofence> MissMatchedGeofence(List<ProjectGeofence> projectGeofences, Repositories.DBModels.Project existing)
+    {
+      // is this project pointing to the wrong geofence due to geofenceSvc issue
+      //  where the GeofenceService doesn't always use the GeofenceUID passed to it.
+      //  This caused the geofence to be created with a different GeofenceUID,
+      //      but the ProjectGeofence with the expected GeofenceUID.
+      //  Need to unassociate with the one which doesn't exist, and associate with the existing one.
+      // mmmm not nice at all to fix data issues in main code, however due to having to keep kafka que in sync...
+      //      can't just create a new Geofence, as the GeofenceSvc will not allow one with the same name.
+      //      If this fails, however (e.g. if user has changed project name), then the next step (CreateGeofence) may indeed create a new one.
+
+      //  i.e. is ProjectGeofence pointing to a missing Geofence?
+      ProjectGeofence newlyMatchedProjectGeofence = null;
+      var psIsMissingGeofence = projectGeofences.FirstOrDefault(p => p.GeofenceType == null);
+      if (psIsMissingGeofence != null)
+      {
+        log.LogInformation($"MissMatchedGeofence: Got a ProjectGeofence which is missing the Geofence {JsonConvert.SerializeObject(psIsMissingGeofence)}");
+        var customerGeofences = (await projectRepo.GetCustomerGeofences(customerUid).ConfigureAwait(false)).ToList();
+        
+        // if geofence doesn't exist, then we're on to it
+        if (customerGeofences.Any(g => g.GeofenceUID == psIsMissingGeofence.GeofenceUID) == false)
+        {
+          var gotFreeProjectGeofenceOfSameName = customerGeofences.FirstOrDefault(g =>
+              g.GeofenceType == GeofenceType.Project && g.ProjectUID == null && g.Name == existing.Name);
+
+          log.LogDebug($"MissMatchedGeofence: Geofence indeed does not exist. Do we have an unattached, appropriate Geofence? {gotFreeProjectGeofenceOfSameName}");
+          if (gotFreeProjectGeofenceOfSameName != null)
+          {
+            var dissociateProjectGeofence = new DissociateProjectGeofence()
+            {
+              ProjectUID = Guid.Parse(psIsMissingGeofence.ProjectUID),
+              GeofenceUID = Guid.Parse(psIsMissingGeofence.GeofenceUID),
+              ActionUTC = DateTime.UtcNow
+            };
+
+            await ProjectRequestHelper.DissociateProjectGeofence(dissociateProjectGeofence, projectRepo, log,
+              serviceExceptionHandler, producer, kafkaTopicName);
+            log.LogDebug($"MissMatchedGeofence: DissociatedProject from missing Geofence: {dissociateProjectGeofence}");
+
+            var associateProjectGeofence = new AssociateProjectGeofence()
+            {
+              ProjectUID = Guid.Parse(psIsMissingGeofence.ProjectUID),
+              GeofenceUID = Guid.Parse(gotFreeProjectGeofenceOfSameName.GeofenceUID),
+              ActionUTC = DateTime.UtcNow
+            };
+
+            await ProjectRequestHelper
+              .AssociateProjectGeofence(associateProjectGeofence, projectRepo,
+                log, serviceExceptionHandler,
+                producer, kafkaTopicName).ConfigureAwait(false);
+            log.LogInformation($"MissMatchedGeofence: re-associated Project with unattached, appropriate Geofence: {associateProjectGeofence}");
+
+            newlyMatchedProjectGeofence = new ProjectGeofence()
+            {
+              GeofenceType = GeofenceType.Project,
+              ProjectUID = psIsMissingGeofence.ProjectUID,
+              GeofenceUID = gotFreeProjectGeofenceOfSameName.GeofenceUID
+            };
+          }
+        }
+      }
+
+      return newlyMatchedProjectGeofence;
+    }
+
+    private async Task CreateProjectGeofence(UpdateProjectEvent updateProjectEvent, Repositories.DBModels.Project existing)
     {
       // this patches the fact that various prior ProjectSvc CreateProject endpoints including TBC intentionally)
       // didn't (or couldn't - TBC) add Geofence and/or ProjectGeofence. Add them now.
+
+      log.LogDebug($"UpdateProject.CreateProjectGeofence.");
+
+      // if ExistsExpression in  projectGeofences, one with genericType, that's probably a null one
+
 
       // Create Geofence
       var geofenceUidCreated = Guid.Empty;

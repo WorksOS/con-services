@@ -124,29 +124,58 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <summary>
     /// Associates the geofence to the project.
     /// </summary>
-    /// <param name="geofenceProject">The geofence project.</param>
+    /// <param name="projectGeofence">The association.</param>
     /// <param name="log"></param>
     /// <param name="serviceExceptionHandler"></param>
     /// <param name="projectRepo"></param>
     /// <param name="producer"></param>
     /// <param name="kafkaTopicName"></param>
     /// <returns></returns>
-    public static async Task AssociateProjectGeofence(AssociateProjectGeofence geofenceProject,
+    public static async Task AssociateProjectGeofence(AssociateProjectGeofence projectGeofence,
       IProjectRepository projectRepo,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler,
       IKafka producer, string kafkaTopicName)
     {
-      geofenceProject.ReceivedUTC = DateTime.UtcNow;
+      projectGeofence.ReceivedUTC = DateTime.UtcNow;
 
-      var isUpdated = await projectRepo.StoreEvent(geofenceProject).ConfigureAwait(false);
+      var isUpdated = await projectRepo.StoreEvent(projectGeofence).ConfigureAwait(false);
       if (isUpdated == 0)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 65);
 
-      var messagePayload = JsonConvert.SerializeObject(new { AssociateProjectGeofence = geofenceProject });
+      var messagePayload = JsonConvert.SerializeObject(new { AssociateProjectGeofence = projectGeofence });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>()
         {
-          new KeyValuePair<string, string>(geofenceProject.ProjectUID.ToString(), messagePayload)
+          new KeyValuePair<string, string>(projectGeofence.ProjectUID.ToString(), messagePayload)
+        });
+    }
+
+    /// <summary>
+    /// Dissociates the geofence from the project.
+    /// </summary>
+    /// <param name="projectGeofence">The association.</param>
+    /// <param name="log"></param>
+    /// <param name="serviceExceptionHandler"></param>
+    /// <param name="projectRepo"></param>
+    /// <param name="producer"></param>
+    /// <param name="kafkaTopicName"></param>
+    /// <returns></returns>
+    public static async Task DissociateProjectGeofence(DissociateProjectGeofence projectGeofence,
+      IProjectRepository projectRepo,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler,
+      IKafka producer, string kafkaTopicName)
+    {
+      projectGeofence.ReceivedUTC = DateTime.UtcNow;
+
+      var isUpdated = await projectRepo.StoreEvent(projectGeofence).ConfigureAwait(false);
+      if (isUpdated == 0)
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 107);
+
+      var messagePayload = JsonConvert.SerializeObject(new { DissociateProjectGeofence = projectGeofence });
+      producer.Send(kafkaTopicName,
+        new List<KeyValuePair<string, string>>()
+        {
+          new KeyValuePair<string, string>(projectGeofence.ProjectUID.ToString(), messagePayload)
         });
     }
   }
