@@ -18,9 +18,7 @@ namespace VSS.TRex.Server.MutableData
   {
     private static readonly AutoResetEvent WaitHandle = new AutoResetEvent(false);
 
-    private static void DependencyInjection()
-
-    static public IConfiguration Configuration { get; set; }
+    public static IConfiguration Configuration { get; set; }
 
     private static void DependencyInjection()
     {
