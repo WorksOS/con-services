@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using Microsoft.AspNetCore.Mvc;
@@ -42,7 +43,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         tileResult = TileResult.EmptyTile(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE);
 
       var memStream = new MemoryStream();
-      ((System.Drawing.Bitmap) tileResult.TileData.GetBitmap()).Save(memStream, ImageFormat.Png);
+      tileResult.TileData.Save(memStream, ImageFormat.Png);
       memStream.Position = 0;
 
       return new FileStreamResult(memStream, "image/png");
