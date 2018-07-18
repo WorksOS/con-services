@@ -122,13 +122,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\netstandard\VSS.TRex.Common.netstandard\VSS.TRex.Common.netstandard.csproj">
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Common\VSS.TRex.Common.csproj">
       <Project>{737bfd08-031b-4506-8205-947b82c6d2ba}</Project>
-      <Name>VSS.TRex.Common.netstandard</Name>
+      <Name>VSS.TRex.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\netstandard\TRexClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj">
+    <ProjectReference Include="..\..\netstandard\VSS.TRex\VSS.TRex.csproj">
       <Project>{40db7cf3-5817-45a5-9f90-29baa80e2c7a}</Project>
-      <Name>TRexClassLibrary.netstandard</Name>
+      <Name>VSS.TRex</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\tests\netstandard\Tests.Common\Tests.Common.csproj">
       <Project>{00400CF0-8011-4B1E-8AC6-2A752A79F527}</Project>

@@ -2,13 +2,13 @@
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using VSS.TRex.DesignProfiling;
 using VSS.TRex;
 using VSS.TRex.Designs;
 using VSS.TRex.ExistenceMaps;
 using VSS.TRex.Geometry;
 using VSS.TRex.Services.Designs;
 using VSS.TRex.Services.Surfaces;
+using VSS.TRex.SubGridTrees;
 using VSS.TRex.Surfaces;
 
 namespace SurveyedSurfaceManager

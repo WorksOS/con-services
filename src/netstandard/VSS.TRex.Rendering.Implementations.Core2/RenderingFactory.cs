@@ -1,5 +1,5 @@
 ﻿using VSS.TRex.Rendering.Abstractions;
-using VSS.TRex.Rendering.Abstractions.GridFabric.Factories;
+using VSS.TRex.Rendering.Abstractions.GridFabric.Responses;
 using VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses;
 
 namespace VSS.TRex.Rendering.Implementations.Core2
@@ -28,7 +28,10 @@ namespace VSS.TRex.Rendering.Implementations.Core2
 
         public ITileRenderResponse CreateTileRenderResponse(object bmp)
         {
-            return new TileRenderResponse_Core2();
+          return new TileRenderResponse_Core2
+          {
+            TileBitmap = (Bitmap)bmp
+          }; ;
         }
     }
 }

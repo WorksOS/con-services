@@ -93,9 +93,9 @@
       <Project>{3ff74fe8-c1b2-4a78-b685-99fabcd4989b}</Project>
       <Name>VSS.TRex.Rendering.Abstractions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\netstandard\TRexClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj">
+    <ProjectReference Include="..\..\netstandard\VSS.TRex\VSS.TRex.csproj">
       <Project>{40db7cf3-5817-45a5-9f90-29baa80e2c7a}</Project>
-      <Name>TRexClassLibrary.netstandard</Name>
+      <Name>VSS.TRex</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

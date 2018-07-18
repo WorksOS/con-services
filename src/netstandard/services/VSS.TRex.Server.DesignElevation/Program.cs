@@ -1,6 +1,6 @@
 ﻿using System;
+using VSS.TRex.Designs.Servers.Client;
 using System.Threading;
-using VSS.TRex.DesignProfiling.Servers.Client;
 using VSS.TRex.DI;
 
 namespace VSS.TRex.Server.DesignElevation

@@ -44,7 +44,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\MerinoSandbox\Productivity3DModels\src\VSS.Productivity3D.Models.Local.csproj" />
     <ProjectReference Include="..\..\..\..\MerinoSandbox\WebApi.Common\src\VSS.WebApi.Common.Local.csproj" />
-    <ProjectReference Include="..\..\netstandard\TRexClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex\VSS.TRex.csproj" />
     <ProjectReference Include="..\VSS.TRex.Gateway.Common\VSS.TRex.Gateway.Common.Local.csproj" />
   </ItemGroup>
 

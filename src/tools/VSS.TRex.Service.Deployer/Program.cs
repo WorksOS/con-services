@@ -5,7 +5,7 @@ using VSS.TRex.Logging;
 using VSS.TRex.TAGFiles.GridFabric.Services;
 using VSS.TRex.Servers.Client;
 
-namespace TRex.Service.Deployer
+namespace VSS.TRex.Service.Deployer
 {
     /// <summary>
     /// This command line tool deploys all grid deployed services into the appropriate mutable and immutable

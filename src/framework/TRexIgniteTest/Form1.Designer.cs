@@ -1,4 +1,4 @@
-﻿namespace VSS.TRex.IgnitePOC.TestApp
+﻿namespace TRexIgniteTest
 {
     partial class Form1
     {

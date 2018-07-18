@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\tests\netstandard\Tests.Common\Tests.Common.csproj" />
-    <ProjectReference Include="..\..\netstandard\TRexClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex\VSS.TRex.csproj" />
   </ItemGroup>
 
 </Project>

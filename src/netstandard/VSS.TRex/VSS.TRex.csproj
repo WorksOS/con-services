@@ -1,0 +1,61 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>VSS.TRex</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;RELEASE;NETSTANDARD2_0;RELEASE;NETSTANDARD2_0</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Analytics\Foundation\GridFabric\Arguments\**" />
+    <Compile Remove="Analytics\Foundation\GridFabric\Requests\**" />
+    <Compile Remove="CoordinateSystems\GridFabric\Requests\**" />
+    <Compile Remove="Profiling\Executors\Tasks\**" />
+    <EmbeddedResource Remove="Analytics\Foundation\GridFabric\Arguments\**" />
+    <EmbeddedResource Remove="Analytics\Foundation\GridFabric\Requests\**" />
+    <EmbeddedResource Remove="CoordinateSystems\GridFabric\Requests\**" />
+    <EmbeddedResource Remove="Profiling\Executors\Tasks\**" />
+    <None Remove="Analytics\Foundation\GridFabric\Arguments\**" />
+    <None Remove="Analytics\Foundation\GridFabric\Requests\**" />
+    <None Remove="CoordinateSystems\GridFabric\Requests\**" />
+    <None Remove="Profiling\Executors\Tasks\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Apache.Ignite" Version="2.4.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.0.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.0" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.35.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\interfaces\VSS.TRex.Rendering.Abstractions\VSS.TRex.Rendering.Abstractions.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Designs.TTM\VSS.TRex.Designs.TTM.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Geometry\VSS.TRex.Geometry.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Servers\Client\igniteKubeConfig.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Servers\Compute\igniteKubeConfig.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

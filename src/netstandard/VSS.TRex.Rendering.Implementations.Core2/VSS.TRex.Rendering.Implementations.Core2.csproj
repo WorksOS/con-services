@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\interfaces\VSS.TRex.Rendering.Abstractions\VSS.TRex.Rendering.Abstractions.csproj" />
-    <ProjectReference Include="..\TRexClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj" />
+    <ProjectReference Include="..\VSS.TRex\VSS.TRex.csproj" />
   </ItemGroup>
 
 </Project>

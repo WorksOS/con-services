@@ -6,8 +6,8 @@ using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
 using VSS.TRex.Machines;
 using VSS.TRex.TAGFiles.Servers.Client;
-using VSSTests.TRex.Tests.Common;
 using Microsoft.Extensions.Logging;
+using Tests.Common;
 
 /*
 Arguments for building project #5, Dimensions:
@@ -17,7 +17,7 @@ Arguments for building project #6, Christchurch Southern Motorway:
 6 "J:\PP\Construction\Office software\SiteVision Office\Test Files\VisionLink Data\Southern Motorway\TAYLORS COMP"
 */
 
-namespace VSS.TRex.Client
+namespace VSS.TRex.Tools.TagfileSubmitter
 {
   public class Program
   {
