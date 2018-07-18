@@ -27,5 +27,5 @@ NEW_RELIC_APP_NAME: k8s-project-service
 newrelic: "true"
 TPAAS_APP_TOKENKEYS: RlRKNmFQZkxLbEJrMUttWFZNeGRmZENXWVZVYTp6ZmIzQTk5Z2JlMm53M2prdGZPQjJUM3VQNlVh
 TPAAS_OAUTH_URL: https://identity.trimble.com/i/oauth2/token
-NoOfDaysBackForCCA: 30
-NoOfDaysBackForVolumes: 30
+NoOfDaysBackForCCA: "30"
+NoOfDaysBackForVolumes: "30"
