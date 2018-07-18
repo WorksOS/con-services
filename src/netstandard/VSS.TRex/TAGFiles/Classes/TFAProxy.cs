@@ -13,6 +13,7 @@ namespace VSS.TRex.TAGFiles.Classes
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
     private IConfiguration Configuration;
 
+
     /// <summary>
     /// Default constructor
     /// </summary>
@@ -36,11 +37,12 @@ namespace VSS.TRex.TAGFiles.Classes
     /// <param name="projectId"></param>
     /// <param name="assetId"></param>
     /// <returns></returns>
-    public ValidationResult ValidateTagfile(Guid? submittedProjectId, Guid tccOrgId, string radioSerial, int radioType, double lat, double lon, DateTime timeOfPosition, ref Guid? projectId, out Guid? assetId)
+    public ValidationResult ValidateTagfile(Guid? submittedProjectId, Guid tccOrgId, string radioSerial, int radioType, double lat, double lon, DateTime timeOfPosition, ref Guid? projectId, out Guid? assetId, out string message)
     {
       ValidationResult result = ValidationResult.Unknown;
 
       assetId = null;
+      message = string.Empty;
       // dont waste the services time if you dont have any details
       //if (tccOrgId == string.Empty && radioType == string.Empty)
       //   return ValidationResult.BadRequest;
@@ -60,13 +62,11 @@ namespace VSS.TRex.TAGFiles.Classes
         latitude = lat,
         longitude = lon,
         timeOfPosition = timeOfPosition,
-        tccOrgUid = tccOrgId,
-        projectUid = submittedProjectId
+        tccOrgUid = tccOrgId.ToString(),
+        projectUid = submittedProjectId == null ? string.Empty : submittedProjectId.ToString() // maybe empty guid?
       };
 
       var json = Newtonsoft.Json.JsonConvert.SerializeObject(req);
-
-
 
       string URL = Configuration.GetValue<string>("TFA_SERVICE_BASEURL", String.Empty) + Configuration.GetValue<string>("TFA_SERVICE_GETPROJECTID", String.Empty);
       Console.WriteLine($"Connecting to TFA service:{URL}");
@@ -88,9 +88,12 @@ namespace VSS.TRex.TAGFiles.Classes
         StreamReader responseReader = new StreamReader(webStream);
         string response = responseReader.ReadToEnd();
         Console.Out.WriteLine(response);
+
         var responseObj = Newtonsoft.Json.JsonConvert.DeserializeObject<TFAReponse>(response);
         responseReader.Close();
-        if (responseObj.ResultCode == 0)
+        message = responseObj.message;
+        Log.LogInformation($"#TFAResponse# ProjectUid:{responseObj.projectUid}, AssetUid:{responseObj.assetUid}, code:{responseObj.code}, message:{responseObj.message}");
+        if (responseObj.code == 0)
         {
           result = ValidationResult.Valid;
           // if not overriding take TFA projectid

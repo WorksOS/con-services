@@ -65,8 +65,14 @@ namespace VSS.TRex.TAGFiles.Executors
           // Validate tagfile submission
 
           //  TRexConfig
+          string tfaMessage = string.Empty;
+          var result = TagfileValidator.ValidSubmission(td,out tfaMessage);
+          if (tfaMessage != String.Empty)
+          {
+            response.Exception = tfaMessage;
+          }
 
-          var result = TagfileValidator.ValidSubmission(td);
+          
           if (result == ValidationResult.Valid && td.projectId != null) // If OK add to process queue
           {
             // First archive the tagfile

@@ -31,7 +31,8 @@ namespace TAGFiles.Tests
       TFAProxy tfa = new TFAProxy(Configuration);
       Guid? a;
       Guid? p = null;
-      ValidationResult vr = tfa.ValidateTagfile(Guid.Empty, Guid.Empty, "", 0, 0, 0, DateTime.Now, ref p, out a);
+      string s;
+      ValidationResult vr = tfa.ValidateTagfile(Guid.Empty, Guid.Empty, "", 0, 0, 0, DateTime.Now, ref p, out a, out s);
       Assert.True(vr == ValidationResult.BadRequest, "Failed to return a bad request");
     }
 
@@ -50,8 +51,9 @@ namespace TAGFiles.Tests
         IsJohnDoe = false
       };
 
+      string s;
       // Validate tagfile submission
-      var result = TagfileValidator.ValidSubmission(td);
+      var result = TagfileValidator.ValidSubmission(td, out s);
 
       Assert.True(result == ValidationResult.InvalidTagfile, "Failed to return a Invalid request");
     }
@@ -69,9 +71,9 @@ namespace TAGFiles.Tests
         tccOrgId = "",
         IsJohnDoe = false
       };
-
+      string s;
       // Validate tagfile submission
-      var result = TagfileValidator.ValidSubmission(td);
+      var result = TagfileValidator.ValidSubmission(td, out s);
 
       Assert.True(result == ValidationResult.InvalidTagfile, "Failed to return a Invalid request");
     }
@@ -99,9 +101,9 @@ namespace TAGFiles.Tests
         tccOrgId = "",
         IsJohnDoe = false
       };
-
+      string s;
       // Validate tagfile submission
-      var result = TagfileValidator.ValidSubmission(td);
+      var result = TagfileValidator.ValidSubmission(td, out s);
 
       Assert.True(result == ValidationResult.Valid, "Failed to return a Valid request");
     }
