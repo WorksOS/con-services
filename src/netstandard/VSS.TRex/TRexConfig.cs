@@ -2,11 +2,15 @@
 
 namespace VSS.TRex
 {
-    /// <summary>
-    /// A class to contain a collection of TRex configuration controls.
-    /// Shoulb be refactored or modified so the standard c# configuration system is used or underpins it.
-    /// </summary>
-    public static class TRexConfig
+  /// <summary>
+  /// A class to contain a collection of TRex configuration controls.
+  /// Should be refactored or modified so the standard c# configuration system is used or underpins it.
+  ///
+  /// Important! configuration will come from a json file or environment variables so dont use this class. For long term see program.cs for ConfigurationBuilder 
+  ///
+  /// 
+  /// </summary>
+  public static class TRexConfig
     {
         /// <summary>
         /// The limit under which node subgrids are represented by sparse lists rather than a complete subgrid array of child subgrid references
@@ -40,6 +44,7 @@ namespace VSS.TRex
         public static string PersistentCacheStoreLocation = Path.Combine(Path.GetTempPath(), "TRexIgniteData");
         //public static string PersistentCacheStoreLocation = "C:/temp/TRexIgniteData"; //Path.Combine(Path.GetTempPath(), "TRexIgniteData");
     
+      /*
         /// <summary>
         /// Use TFA service to validate tagfiles
         /// </summary>
@@ -69,7 +74,6 @@ namespace VSS.TRex
         /// location to archive tagfiles. If blank defaults to local temp TrexIgniteData folder
         /// </summary>
         public static string TagFileArchiveFolder = "";
-
-
+        */
     }
 }

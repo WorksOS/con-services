@@ -20,6 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="ignite-log4j.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
