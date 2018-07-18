@@ -24,7 +24,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     /// <param name="tagDetail"></param>
     /// <param name="processor"></param>
     /// <returns></returns>
-    private static ValidationResult CheckFileIsProcessible(TagFileDetail tagDetail, TAGProcessor processor)
+    private static ValidationResult CheckFileIsProcessible(TagFileDetail tagDetail, TAGProcessor processor, out string tfaMessage)
     {
 
       /*
@@ -42,6 +42,8 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
 
        */
 
+      tfaMessage = String.Empty;
+
       // Type C. Do we have what we need already (Most likley test tool submission)
       if (tagDetail.assetId != null && tagDetail.projectId != null)
         if (tagDetail.assetId != Guid.Empty && tagDetail.projectId != Guid.Empty)
@@ -54,8 +56,9 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       Log.LogInformation($"Calling TFA servce to validate tagfile:{tagDetail.tagFileName}");
 
       // use decimal degrees when calling API
-      var apiResult = tfa.ValidateTagfile(tagDetail.projectId, Guid.Parse(tagDetail.tccOrgId), processor.RadioSerial, radioType, processor.LLHLat * (180 / Math.PI), processor.LLHLon * (180 / Math.PI), processor.DataTime, ref tagDetail.projectId, out tagDetail.assetId);
-      Log.LogInformation($"TFA GetId returned for {tagDetail.tagFileName} StatusCode: {apiResult}, ProjectId:{tagDetail.projectId}, AssetId:{tagDetail.assetId}");
+      var apiResult = tfa.ValidateTagfile(tagDetail.projectId, Guid.Parse(tagDetail.tccOrgId), processor.RadioSerial, radioType, processor.LLHLat * (180 / Math.PI), processor.LLHLon * (180 / Math.PI), processor.DataTime, ref tagDetail.projectId, out tagDetail.assetId, out string tfaReturnMessage);
+      tfaMessage = tfaReturnMessage;
+      Log.LogInformation($"TFA GetId returned for {tagDetail.tagFileName} StatusCode: {apiResult}, ProjectId:{tagDetail.projectId}, AssetId:{tagDetail.assetId}, TFAMessage:{tfaMessage}");
       if (apiResult == ValidationResult.Valid)
       {
         // Check For JohnDoe machines. if you get a valid pass and no assetid it means it had a manual3dlicense
@@ -70,10 +73,11 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     /// </summary>
     /// <param name="tagDetail"></param>
     /// <returns></returns>
-    public static ValidationResult ValidSubmission(TagFileDetail tagDetail)
+    public static ValidationResult ValidSubmission(TagFileDetail tagDetail, out string tfaMessage)
     {
       // Perform some Validation Checks 
-      ValidationResult result = ValidationResult.Unknown;
+  
+      tfaMessage = string.Empty;
 
       // get our settings
       IConfiguration config = DIContext.Obtain<IConfiguration>();
@@ -115,7 +119,10 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
           return ValidationResult.BadRequest; // cannot process without asset and project id
       }
 
-      return CheckFileIsProcessible(tagDetail, processor);
+      // Contact TFA service to validate tagfile details
+      ValidationResult vr = CheckFileIsProcessible(tagDetail, processor, out string tfaReturnMessage);
+      tfaMessage = tfaReturnMessage;
+      return vr;
 
     }
   }
