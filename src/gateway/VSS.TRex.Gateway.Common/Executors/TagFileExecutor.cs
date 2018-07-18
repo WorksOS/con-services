@@ -78,7 +78,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       }
       finally
       {
-        log.LogInformation($"#Out# TagFileExecutor. Process tagfile:{request.FileName}, Project:{request.ProjectUID}, Submission Result:{result.Message}, Exception:{result.Message}");
+        log.LogInformation($"#Out# TagFileExecutor. Process tagfile:{request.FileName}, Project:{request.ProjectUID}, Submission Code: {result.Code}, Message:{result.Message}");
     
       }
       return result;

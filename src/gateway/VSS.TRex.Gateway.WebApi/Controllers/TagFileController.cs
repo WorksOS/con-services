@@ -24,20 +24,20 @@ using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
+  /// <summary>
+  /// Process Tagfiles Controller
+  /// </summary>
   public class TagFileController : BaseController
   {
 
     private IMutableClientServer tagfileClientServer;
 
-    private readonly ILogger log;
 
     public TagFileController(ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler, IConfigurationStore configStore, IMutableClientServer tagFileClientServer)
         : base(loggerFactory, loggerFactory.CreateLogger<TagFileController>(), exceptionHandler, configStore)
     {
       this.tagfileClientServer = tagFileClientServer;
     }
-
-
 
 
     /// <summary>
@@ -49,14 +49,14 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     public String Get()
     {
       // Test endpoint connection
-       return "You have reached api/v1/tagfiles";
+      return "You have reached api/v1/tagfiles";
     }
 
-    
+
     /// <summary>
     /// Posts TAG file to Raptor. 
     /// </summary>
-      // [PostRequestVerifier]
+    // [PostRequestVerifier]
     [Route("api/v1/tagfiles")]
     [HttpPost]
     public IActionResult Post([FromBody] TagFileRequest request)
@@ -65,7 +65,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       request.Validate();
 
-      log.LogDebug($"PostTagFile: ProjectID:{request.ProjectUID},File:{request.FileName}");
+      Log.LogDebug($"PostTagFile: ProjectID:{request.ProjectUID},File:{request.FileName}");
 
       var tagfileResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
@@ -76,7 +76,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       if (tagfileResult != null)
       {
         if (tagfileResult.Code == 0)
-          return (IActionResult) Ok(tagfileResult);
+          return (IActionResult)Ok(tagfileResult);
         else
         {
           return BadRequest(tagfileResult);
@@ -108,15 +108,15 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           new JsonSerializerSettings { ContractResolver = new JsonContractPropertyResolver("Data") });
 
 
-     // log.LogDebug("PostTagFile: " + serializedRequest);
+      Log.LogDebug($"PostTagFile:{request.FileName}");
 
       TagFileRequest requestStandard = TagFileRequest.CreateTagFile(
           request.FileName,
           request.Data,
           request.ProjectUid,
           null,
-          1, false, false, request.OrgId);
-//      -1, false, false, request.OrgId);
+          1, false, false, request.OrgId); //todo
+      //      -1, false, false, request.OrgId);
 
       var tagfileResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
@@ -152,19 +152,19 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     {
 
       //request.Validate();
-      log.LogDebug($"PostTagFile: ProjectID:{request.ProjectUid},File:{request.FileName}");
+      Log.LogDebug($"PostTagFile: ProjectID:{request.ProjectUid},File:{request.FileName}");
 
       TagFileRequest requestStandard = TagFileRequest.CreateTagFile(
                                                               request.FileName,
                                                               request.Data,
                                                               request.ProjectUid,
                                                               null,
-                                                              -1, false,false,request.OrgId);
+                                                              -1, false, false, request.OrgId);
 
 
       var tagfileResult = WithServiceExceptionTryExecute(() =>
           RequestExecutorContainer
-              .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null,tagfileClientServer)
+              .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null, tagfileClientServer)
               .Process(requestStandard)) as TagFileResult;
 
       // todo we probably need to return some proper return codes to determine further course of action

@@ -14,6 +14,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         BadRequest,
         InvalidTagfile,
         InvalidLicense,
-        TFAError
+        TFAError,
+        MissingConfiguration
     }
 }
