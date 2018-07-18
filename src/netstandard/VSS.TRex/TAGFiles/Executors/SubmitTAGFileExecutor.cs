@@ -37,7 +37,10 @@ namespace VSS.TRex.TAGFiles.Executors
     public static SubmitTAGFileResponse Execute(Guid? projectId, Guid? assetId, string tagFileName, byte[] tagFileContent, string tccOrgId)
     {
 
-      Log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectID:{projectId}, AssetID:{assetId}");
+//      Log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectID:{projectId}, AssetID:{assetId}");
+      Log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectID:{projectId}");
+
+
       SubmitTAGFileResponse response = new SubmitTAGFileResponse
       {
         FileName = tagFileName,
@@ -64,11 +67,11 @@ namespace VSS.TRex.TAGFiles.Executors
           //  TRexConfig
 
           var result = TagfileValidator.ValidSubmission(td);
-          if (result == ValidationResult.Valid && td.projectId != null && td.assetId != null) // If OK add to process queue
+          if (result == ValidationResult.Valid && td.projectId != null) // If OK add to process queue
           {
             // First archive the tagfile
             IConfiguration config = DIContext.Obtain<IConfiguration>();
-            if (config.GetValue<bool>("EnableTagfileArchiving", false))
+            if (config.GetValue<bool>("ENABLE_TAGFILE_ARCHIVING", false))
             {
               Log.LogInformation($"Archiving tagfile:{tagFileName}, ProjectID:{td.projectId}");
               TagFileRepository.ArchiveTagfile(td);
@@ -77,7 +80,7 @@ namespace VSS.TRex.TAGFiles.Executors
             Guid validProjectID = td.projectId ?? Guid.Empty;
             Guid validAssetID = td.assetId ?? Guid.Empty;
 
-            Log.LogInformation($"Submitting tagfile to TagfileBufferQueue. ProjectID:{validProjectID}, AssetID:{validAssetID}, Tagfile:{tagFileName}");
+            Log.LogInformation($"Submitting tagfile to TagfileBufferQueue. ProjectID:{validProjectID}, AssetID:{validAssetID}, Tagfile:{tagFileName}, JohnDoe{td.IsJohnDoe} ");
             TAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(tagFileName, validProjectID, validAssetID);
             TAGFileBufferQueueItem tagItem = new TAGFileBufferQueueItem
             {

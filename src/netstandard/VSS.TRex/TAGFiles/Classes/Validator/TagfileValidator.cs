@@ -77,8 +77,8 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
 
       // get our settings
       IConfiguration config = DIContext.Obtain<IConfiguration>();
-      int MinTAGFileLength = config.GetValue<int>("MinTAGFileLength", 100);
-      bool TFAServiceEnabled = config.GetValue<bool>("EnableTFAService", true);
+      int MinTAGFileLength = config.GetValue<int>("MIN_TAGFile_LENGTH", 100);
+      bool TFAServiceEnabled = config.GetValue<bool>("ENABLE_TFA_SERVICE", true);
 
       if (tagDetail.tagFileContent.Length <= MinTAGFileLength)
         return ValidationResult.InvalidTagfile;
@@ -107,7 +107,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         Log.LogWarning($"SubmitTAGFileResponse.ValidSubmission. EnableTFAService disabled. Bypassing TFS validation checks");
         if (tagDetail.projectId != Guid.Empty) // do we have what we need
         {
-          if (tagDetail.assetId == Guid.Empty)
+          if (tagDetail.assetId == null || tagDetail.assetId == Guid.Empty)
             tagDetail.IsJohnDoe = true;
           return ValidationResult.Valid;
         }

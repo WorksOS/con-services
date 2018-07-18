@@ -68,7 +68,7 @@ namespace VSS.TRex.TAGFiles.Classes
 
 
 
-      string URL = Configuration.GetValue<string>("TFAServiceURL", String.Empty) + Configuration.GetValue<string>("TFAServiceGetProjectID", String.Empty);
+      string URL = Configuration.GetValue<string>("TFA_SERVICE_BASEURL", String.Empty) + Configuration.GetValue<string>("TFA_SERVICE_GETPROJECTID", String.Empty);
       Console.WriteLine($"Connecting to TFA service:{URL}");
       if (URL == String.Empty)
         return ValidationResult.MissingConfiguration;
