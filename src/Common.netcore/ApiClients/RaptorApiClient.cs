@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Common.Repository;
+using LandfillService.Common.ApiClients;
 using LandfillService.Common.Models;
 using Microsoft.Extensions.Logging;
 using NodaTime;
@@ -12,7 +13,7 @@ using NodaTime.TimeZones;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
 
-namespace LandfillService.Common.ApiClients
+namespace Common.netstandard.ApiClients
 {
   /// <summary>
   ///   This exception can be thrown when the Raptor API returns an unsuccessful response (which needs to be propagated to
@@ -404,7 +405,7 @@ namespace LandfillService.Common.ApiClients
     {
       var url = $"/projects/{projectResponse.id}/machinelifts";
       var query = $"?startUtc={FormatUtcDate(startUtc)}&endUtc={FormatUtcDate(endUtc)}";
-      Console.WriteLine("GetMachineLiftList: Url = {0} {1}", url,query);
+      //Console.WriteLine("GetMachineLiftList: Url = {0} {1}", url,query);
       return await raptorProxy.ExecuteGenericV1Request<MachineLayerIdsExecutionResult>(url, query, customHeaders);
 
     }

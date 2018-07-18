@@ -92,6 +92,7 @@ namespace LandfillDatasync.netcore
 
     public void RunUpdateVolumesFromRaptor(int noOfDaysVols)
     {
+      Log.DebugFormat("***** Start Processing volumes for the last {0} days",noOfDaysVols);
       var datesToUpdate = GetListOfEntriesToUpdate(noOfDaysVols);
 
       foreach (var project in datesToUpdate)
@@ -127,6 +128,8 @@ namespace LandfillDatasync.netcore
 
       //Use same criteria as volumes to select projects to process. 
       //No point in getting CCA if no weights or volumes and therefore no density data.
+      Log.DebugFormat("***** Start Processing volumes for the last {0} days", ccaDaysBackFill);
+
       var projects = GetListOfProjectsToRetrieve();
       Log.DebugFormat("RunUpdateCCAFromRaptor Got {0} projects to process for CCA", projects.Count);
       var headers = new Dictionary<string, string> { { "Authorization", $"Bearer {authn.Get3DPmSchedulerBearerToken().Result}" } };
@@ -173,7 +176,7 @@ namespace LandfillDatasync.netcore
                   new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
                     new MemoryCache(new MemoryCacheOptions())), headers)
                 .GetMachineLiftsInBackground(userId, project, utcDate.Date, utcDate.Date).Result;
-            Log.DebugFormat("RunUpdateCCAFromRaptor Processing projectResponse {0} with {1} machines for date {2}", project.id,machinesToProcess.Count,utcDate.Date);
+ //           Log.DebugFormat("RunUpdateCCAFromRaptor Processing projectResponse {0} with {1} machines for date {2}", project.id,machinesToProcess.Count,utcDate.Date);
             ProcessCCA(utcDate.Date, project, geofenceUids, geofences, machinesToProcess);
             utcDate = utcDate.Date.AddDays(1);
             projDate = projDate.Date.AddDays(1);

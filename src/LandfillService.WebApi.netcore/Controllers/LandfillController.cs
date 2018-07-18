@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Common.netstandard.ApiClients;
 using Common.Repository;
 using LandfillService.Common.ApiClients;
 using LandfillService.Common.Models;
