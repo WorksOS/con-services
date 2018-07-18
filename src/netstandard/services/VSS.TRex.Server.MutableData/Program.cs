@@ -34,8 +34,9 @@ namespace VSS.TRex.Server.MutableData
     static void Main(string[] args)
     {
       // Load settings for Mutabledata
+
       Configuration = new ConfigurationBuilder()
-          .SetBasePath(Directory.GetCurrentDirectory())
+       //   .SetBasePath(Directory.GetCurrentDirectory()) dont set for default running path
           .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
           .AddEnvironmentVariables() // can also come from environment variables which will override json file
           .Build();
