@@ -51,5 +51,8 @@ namespace VSS.MasterData.Proxies.Interfaces
 
     Task<T> ExecuteGenericV1Request<T>(string route, string query, IDictionary<string, string> customHeaders = null);
 
+    Task<BaseDataResult> InvalidateCache(string projectUid,
+      IDictionary<string, string> customHeaders = null);
+
   }
 }

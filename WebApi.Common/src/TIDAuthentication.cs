@@ -69,6 +69,13 @@ namespace VSS.WebApi.Common
 
         string authorization = context.Request.Headers["X-Jwt-Assertion"];
 
+        if (string.IsNullOrEmpty(authorization))
+        {
+          log.LogWarning("No account selected for the request");
+          await SetResult("No account selected", context);
+          return;
+        }
+
         try
         {
           var jwtToken = new TPaaSJWT(authorization);

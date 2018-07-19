@@ -19,6 +19,16 @@ namespace VSS.MasterData.Proxies
     public RaptorProxy(IConfigurationStore configurationStore, ILoggerFactory logger) : base(configurationStore, logger)
     { }
 
+
+    public async Task<BaseDataResult> InvalidateCache(string projectUid,
+      IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"RaptorProxy.InvalidateCache: Project UID: {projectUid}");
+      BaseDataResult response = await SendRequest<BaseDataResult>("RAPTOR_NOTIFICATION_API_URL","" , customHeaders, "/invalidatecache", "GET", $"?projectUid={projectUid}");
+      log.LogDebug("RaptorProxy.InvalidateCache: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+      return response;
+    }
+
     /// <summary>
     /// Validates the CoordinateSystem for the project.
     /// </summary>
