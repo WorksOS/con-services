@@ -79,6 +79,11 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     private readonly IPreferenceProxy userPreferences;
 
     /// <summary>
+    /// Project list proxy
+    /// </summary>
+    private readonly IProjectListProxy projectsListProxy;
+
+    /// <summary>
     /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
@@ -93,7 +98,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     public NotificationController(IASNodeClient raptorClient, ILoggerFactory logger,
       IFileRepository fileRepo, IConfigurationStore configStore,
       IPreferenceProxy prefProxy, ITileGenerator tileGenerator, IFileListProxy fileListProxy,
-      IFilterServiceProxy filterServiceProxy, IResponseCache cache)
+      IFilterServiceProxy filterServiceProxy, IResponseCache cache, IProjectListProxy projectProxy)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
@@ -105,6 +110,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       this.filterServiceProxy = filterServiceProxy;
       this.cache = cache;
       this.userPreferences = prefProxy;
+      this.projectsListProxy = projectProxy;
     }
 
     /// <summary>
@@ -269,6 +275,26 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       cache.InvalidateReponseCacheForProject(projectUid);
       log.LogInformation("GetUpdateFiles returned: " + Response.StatusCode);
       return new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Update files notification successful");
+    }
+
+    /// <summary>
+    /// Dumps cache in the ResponseCache and Masterdata cache for a project
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <returns></returns>
+    [ProjectUidVerifier]
+    [Route("api/v2/notification/invalidatecache")]
+    [HttpGet]
+    public async Task<ContractExecutionResult> InvalidateCache([FromQuery] Guid projectUid)
+    {
+      ;
+      var customHeaders = Request.Headers.GetCustomHeaders();
+      if (!customHeaders.ContainsKey("X-VisionLink-ClearCache"))
+        customHeaders.Add("X-VisionLink-ClearCache", "true");
+      await projectsListProxy.GetProjectForCustomer((User as RaptorPrincipal).CustomerUid, projectUid.ToString(),
+        customHeaders);
+      cache.InvalidateReponseCacheForProject(projectUid);
+      return new ContractExecutionResult();
     }
 
     /// <summary>
