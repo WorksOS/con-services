@@ -29,7 +29,13 @@ namespace VSS.TRex.Gateway.Common.Executors
   public class TagFileExecutor : RequestExecutorContainer
   {
 
-
+    /// <summary>
+    /// TagFileExecutor
+    /// </summary>
+    /// <param name="configStore"></param>
+    /// <param name="logger"></param>
+    /// <param name="exceptionHandler"></param>
+    /// <param name="tagfileClientServer"></param>
     public TagFileExecutor(IConfigurationStore configStore,
         ILoggerFactory logger, IServiceExceptionHandler exceptionHandler, IMutableClientServer tagfileClientServer) : base(configStore, logger, exceptionHandler, null, tagfileClientServer)
     {
@@ -44,42 +50,50 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     }
 
-
+    /// <summary>
+    /// Process tagfile request
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="item"></param>
+    /// <returns></returns>
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
+      var request = item as CompactionTagFileRequest;
 
-      ContractExecutionResult result = new ContractExecutionResult(1,"Unknown exception");
-      var request = item as TagFileRequest;
+      ContractExecutionResult result = new ContractExecutionResult(1, "Unknown exception");
+
 
       try
       {
-        log.LogInformation($"#In# TagFileExecutor. Process tagfile:{request.FileName}, Project:{request.ProjectUID}, TCCOrgID:{request.TccOrgId}");
+        log.LogInformation($"#In# TagFileExecutor. Process tagfile:{request.FileName}, Project:{request.ProjectUid}, TCCOrgID:{request.OrgId}");
 
         SubmitTAGFileRequest submitRequest = new SubmitTAGFileRequest();
         SubmitTAGFileRequestArgument arg = null;
 
         arg = new SubmitTAGFileRequestArgument()
-              {
-                  ProjectID   = request.ProjectUID,
-                  AssetID     = request.AssetUID,
-                 // AssetID     = Guid.Parse("00000000-0000-0000-0000-000000000001"), // until TFA is ready
-                  TAGFileName = request.FileName,
-                  TagFileContent = request.Data,
-                  TCCOrgID    = request.TccOrgId
-              };
+        {
+          ProjectID = request.ProjectUid,
+          AssetID = null, // not supplied by interface
+          TAGFileName = request.FileName,
+          TagFileContent = request.Data,
+          TCCOrgID = request.OrgId
+        };
 
         var res = submitRequest.Execute(arg);
 
         if (res.Success)
           result = TagFileResult.Create(0, ContractExecutionResult.DefaultMessage);
         else
-          result = TagFileResult.Create(1, res.Exception); // todo
+          result = TagFileResult.Create(res.Code, res.Message);
 
       }
       finally
       {
-        log.LogInformation($"#Out# TagFileExecutor. Process tagfile:{request.FileName}, Project:{request.ProjectUID}, Submission Code: {result.Code}, Message:{result.Message}");
-    
+        if (request != null)
+          log.LogInformation($"#Out# TagFileExecutor. Process tagfile:{request.FileName}, Project:{request.ProjectUid}, Submission Code: {result.Code}, Message:{result.Message}");
+        else
+          log.LogInformation($"#Out# TagFileExecutor. Invalid request");
+
       }
       return result;
 

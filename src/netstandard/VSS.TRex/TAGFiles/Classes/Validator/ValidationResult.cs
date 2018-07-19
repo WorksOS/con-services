@@ -1,22 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace VSS.TRex.TAGFiles.Classes.Validator
 {
-    /// <summary>
-    /// Result of validation check
-    /// </summary>
-    public enum ValidationResult
-    {
-        Unknown,
-        Valid,
-        BadRequest,
-        InvalidTagfile,
-        InvalidLicense,
-        TFAError,
-        MissingConfiguration
-    }
+  /// <summary>
+  /// Result of validation check
+  /// </summary>
+  public enum ValidationResult
+  {
+    // positive return types come from TFA
+    // negative means problem occured in Mutable Server
+    Valid = 0,
+    Unknown = -1,
+    BadRequest = -2,
+    InvalidTagfile = -3,
+    TfaError = -4,
+    TfaAcessError = -5,
+    MissingConfiguration = -6,
+    SubmissionError = -7
+  }
+
+
 
   // todo
   /*

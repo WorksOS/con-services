@@ -32,7 +32,8 @@ namespace TAGFiles.Tests
       Guid? a;
       Guid? p = null;
       string s;
-      ValidationResult vr = tfa.ValidateTagfile(Guid.Empty, Guid.Empty, "", 0, 0, 0, DateTime.Now, ref p, out a, out s);
+      int i = 0;
+      ValidationResult vr = tfa.ValidateTagfile(Guid.Empty, Guid.Empty, "", 0, 0, 0, DateTime.Now, ref p, out a, out s,ref i);
       Assert.True(vr == ValidationResult.BadRequest, "Failed to return a bad request");
     }
 
@@ -52,8 +53,9 @@ namespace TAGFiles.Tests
       };
 
       string s;
+      int i = 0;
       // Validate tagfile submission
-      var result = TagfileValidator.ValidSubmission(td, out s);
+      var result = TagfileValidator.ValidSubmission(td, out s, out i);
 
       Assert.True(result == ValidationResult.InvalidTagfile, "Failed to return a Invalid request");
     }
@@ -73,7 +75,8 @@ namespace TAGFiles.Tests
       };
       string s;
       // Validate tagfile submission
-      var result = TagfileValidator.ValidSubmission(td, out s);
+      int i = 0;
+      var result = TagfileValidator.ValidSubmission(td, out s, out i);
 
       Assert.True(result == ValidationResult.InvalidTagfile, "Failed to return a Invalid request");
     }
@@ -102,8 +105,9 @@ namespace TAGFiles.Tests
         IsJohnDoe = false
       };
       string s;
+      int i = 0;
       // Validate tagfile submission
-      var result = TagfileValidator.ValidSubmission(td, out s);
+      var result = TagfileValidator.ValidSubmission(td, out s, out i);
 
       Assert.True(result == ValidationResult.Valid, "Failed to return a Valid request");
     }

@@ -45,8 +45,10 @@ namespace VSS.TRex.TAGFiles.Executors
       {
         FileName = tagFileName,
         Success = false,
-        Exception = "Unknown"
+        Message = "Unknown",
+        Code = -1
       };
+
       try
       {
         try
@@ -64,13 +66,9 @@ namespace VSS.TRex.TAGFiles.Executors
 
           // Validate tagfile submission
 
-          //  TRexConfig
-          string tfaMessage = string.Empty;
-          var result = TagfileValidator.ValidSubmission(td,out tfaMessage);
-          if (tfaMessage != String.Empty)
-          {
-            response.Exception = tfaMessage;
-          }
+          var result = TagfileValidator.ValidSubmission(td,out string tfaMessage, out int tfaCode);
+          response.Code = tfaCode;
+          response.Message = tfaMessage;
 
           
           if (result == ValidationResult.Valid && td.projectId != null) // If OK add to process queue
@@ -101,30 +99,30 @@ namespace VSS.TRex.TAGFiles.Executors
             if (queue.Add(tagKey, tagItem)) // Add tagfile to queue
             {
               response.Success = true;
-              response.Exception = "";
+              response.Message = "";
+              response.Code = (int)ValidationResult.Valid;
             }
             else
             {
+              response.Code = (int)ValidationResult.SubmissionError;
               response.Success = false;
-              response.Exception = "Failed to submit tagfile to processing queue. Request already exists";
+              response.Message = "Failed to submit tagfile to processing queue. Request already exists";
             }
           }
           else
           {
-            // Todo At some point a notification needs to be implemented e.g. 'api/v2/notification/tagfileprocessingerror';
             response.Success = false;
-            response.Exception = Enum.GetName(typeof(ValidationResult), result); // return reason for failure
           }
         }
         catch (Exception e) // catch all exceptions here
         {
-          response.Exception = e.Message;
+          response.Message = e.Message;
           Log.LogError($"#Exception# SubmitTAGFileResponse. Exception occured processing {tagFileName} Exception:{e}");
         }
       }
       finally
       {
-        Log.LogInformation($"#Out# SubmitTAGFileResponse. Processed {tagFileName} Result: {response.Success}, Message:{response.Exception}");
+        Log.LogInformation($"#Out# SubmitTAGFileResponse. Processed {tagFileName} Result: {response.Success}, Message:{response.Message}");
       }
       return response;
     }

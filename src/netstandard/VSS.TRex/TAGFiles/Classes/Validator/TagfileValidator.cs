@@ -24,7 +24,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     /// <param name="tagDetail"></param>
     /// <param name="processor"></param>
     /// <returns></returns>
-    private static ValidationResult CheckFileIsProcessible(TagFileDetail tagDetail, TAGProcessor processor, out string tfaMessage)
+    private static ValidationResult CheckFileIsProcessible(TagFileDetail tagDetail, TAGProcessor processor, out string tfaMessage, out int tfaCode)
     {
 
       /*
@@ -43,11 +43,12 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
        */
 
       tfaMessage = String.Empty;
+      tfaCode = -1;
 
       // Type C. Do we have what we need already (Most likley test tool submission)
       if (tagDetail.assetId != null && tagDetail.projectId != null)
         if (tagDetail.assetId != Guid.Empty && tagDetail.projectId != Guid.Empty)
-          return ValidationResult.Valid;
+          return GetValidationResultName(ValidationResult.Valid, ref tfaMessage, ref tfaCode);
 
       // Business rule for device type conversion
       int radioType = processor.RadioType == "torch" ? (int)DeviceType.SNM940 : (int)DeviceType.ManualDevice; // torch device set to type 6
@@ -56,7 +57,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       Log.LogInformation($"Calling TFA servce to validate tagfile:{tagDetail.tagFileName}");
 
       // use decimal degrees when calling API
-      var apiResult = tfa.ValidateTagfile(tagDetail.projectId, Guid.Parse(tagDetail.tccOrgId), processor.RadioSerial, radioType, processor.LLHLat * (180 / Math.PI), processor.LLHLon * (180 / Math.PI), processor.DataTime, ref tagDetail.projectId, out tagDetail.assetId, out string tfaReturnMessage);
+      var apiResult = tfa.ValidateTagfile(tagDetail.projectId, Guid.Parse(tagDetail.tccOrgId), processor.RadioSerial, radioType, processor.LLHLat * (180 / Math.PI), processor.LLHLon * (180 / Math.PI), processor.DataTime, ref tagDetail.projectId, out tagDetail.assetId, out string tfaReturnMessage, ref tfaCode);
       tfaMessage = tfaReturnMessage;
       Log.LogInformation($"TFA GetId returned for {tagDetail.tagFileName} StatusCode: {apiResult}, ProjectId:{tagDetail.projectId}, AssetId:{tagDetail.assetId}, TFAMessage:{tfaMessage}");
       if (apiResult == ValidationResult.Valid)
@@ -68,16 +69,25 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       return apiResult;
     }
 
+
+    public static ValidationResult GetValidationResultName(ValidationResult en, ref string message, ref int code)
+    {
+      message = Enum.GetName(typeof(ValidationResult), (int) en);
+      code = (int) en;
+      return en;
+    }
+
     /// <summary>
     /// Inputs a tagfile for validation and asset licensing checks
     /// </summary>
     /// <param name="tagDetail"></param>
     /// <returns></returns>
-    public static ValidationResult ValidSubmission(TagFileDetail tagDetail, out string tfaMessage)
+    public static ValidationResult ValidSubmission(TagFileDetail tagDetail, out string tfaMessage, out int tfaCode)
     {
       // Perform some Validation Checks 
   
       tfaMessage = string.Empty;
+      tfaCode = (int)ValidationResult.Unknown;
 
       // get our settings
       IConfiguration config = DIContext.Obtain<IConfiguration>();
@@ -85,7 +95,9 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       bool TFAServiceEnabled = config.GetValue<bool>("ENABLE_TFA_SERVICE", true);
 
       if (tagDetail.tagFileContent.Length <= MinTAGFileLength)
-        return ValidationResult.InvalidTagfile;
+      {
+        return GetValidationResultName(ValidationResult.InvalidTagfile, ref tfaMessage, ref tfaCode);
+      }
 
       // Now open tagfile and validate contents
       var siteModel = new SiteModel(Guid.Empty);
@@ -102,8 +114,9 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
 
       TAGReadResult readResult = tagFile.Read(reader, sink);
       if (readResult != TAGReadResult.NoError)
-        return ValidationResult.InvalidTagfile; //Exit if failed content validation
-
+      {
+        return GetValidationResultName(ValidationResult.InvalidTagfile, ref tfaMessage, ref tfaCode);
+      }
       // Tagfile contents are OK so proceed
 
       if (!TFAServiceEnabled) // allows us to bypass a TFA service
@@ -113,14 +126,14 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         {
           if (tagDetail.assetId == null || tagDetail.assetId == Guid.Empty)
             tagDetail.IsJohnDoe = true;
-          return ValidationResult.Valid;
+          return GetValidationResultName(ValidationResult.Valid, ref tfaMessage, ref tfaCode);
         }
         else
-          return ValidationResult.BadRequest; // cannot process without asset and project id
+          return GetValidationResultName(ValidationResult.BadRequest, ref tfaMessage, ref tfaCode); ; // cannot process without asset and project id
       }
 
       // Contact TFA service to validate tagfile details
-      ValidationResult vr = CheckFileIsProcessible(tagDetail, processor, out string tfaReturnMessage);
+      ValidationResult vr = CheckFileIsProcessible(tagDetail, processor, out string tfaReturnMessage, out tfaCode);
       tfaMessage = tfaReturnMessage;
       return vr;
 
