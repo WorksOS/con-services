@@ -1,4 +1,4 @@
-using Apache.Ignite.Core;
+﻿using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Communication.Tcp;
@@ -81,11 +81,11 @@ namespace VSS.TRex.Servers.Client
            //  }
            //},
 
-           //CommunicationSpi = new TcpCommunicationSpi()
-           //{
-           //  //LocalAddress = "127.0.0.1",
-           //  LocalPort = 47100,
-           //},
+           CommunicationSpi = new TcpCommunicationSpi()
+           {
+             //LocalAddress = "127.0.0.1",
+             LocalPort = 47100,
+           },
 
            Logger = new TRexIgniteLogger(Logger.CreateLogger("ImmutableClientServer")),
 
