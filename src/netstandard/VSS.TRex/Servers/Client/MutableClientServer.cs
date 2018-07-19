@@ -61,6 +61,7 @@ namespace VSS.TRex.Servers.Client
             IgniteInstanceName = TRexGrids.MutableGridName(),
             ClientMode = true,
 
+            JvmOptions = new List<string>() { "-DIGNITE_QUIET=false", "-Djava.net.preferIPv4Stack=true" },
             JvmInitialMemoryMb = 512, // Set to minimum advised memory for Ignite grid JVM of 512Mb
             JvmMaxMemoryMb = 1 * 1024, // Set max to 1Gb
 

@@ -54,12 +54,14 @@ namespace VSS.TRex.Servers.Client
 
           Log.LogInformation($"Creating new Ignite node with Roles = {roleNames} & TRexNodeId = {TRexNodeID}");
 
-         IgniteConfiguration cfg = new IgniteConfiguration
+          IgniteConfiguration cfg = new IgniteConfiguration
           {
             SpringConfigUrl = @".\igniteKubeConfig.xml",
 
             IgniteInstanceName = TRexGrids.ImmutableGridName(),
             ClientMode = true,
+
+            JvmOptions = new List<string>() { "-DIGNITE_QUIET=false", "-Djava.net.preferIPv4Stack=true" },
 
             JvmInitialMemoryMb = 512, // Set to minimum advised memory for Ignite grid JVM of 512Mb
             JvmMaxMemoryMb = 1 * 1024, // Set max to 1Gb
@@ -69,25 +71,25 @@ namespace VSS.TRex.Servers.Client
                             { "TRexNodeId", TRexNodeID }
                         },
 
-           // Enforce using only the LocalHost interface
-           //DiscoverySpi = new TcpDiscoverySpi()
-           //{
-           //  LocalAddress = "127.0.0.1",
-           //  LocalPort = 47500,
+            // Enforce using only the LocalHost interface
+            //DiscoverySpi = new TcpDiscoverySpi()
+            //{
+            //  LocalAddress = "127.0.0.1",
+            //  LocalPort = 47500,
 
-           //  IpFinder = new TcpDiscoveryStaticIpFinder()
-           //  {
-           //    Endpoints = new[] { "127.0.0.1:47500..47509" }
-           //  }
-           //},
+            //  IpFinder = new TcpDiscoveryStaticIpFinder()
+            //  {
+            //    Endpoints = new[] { "127.0.0.1:47500..47509" }
+            //  }
+            //},
 
-           CommunicationSpi = new TcpCommunicationSpi()
-           {
-             //LocalAddress = "127.0.0.1",
-             LocalPort = 47100,
-           },
+            CommunicationSpi = new TcpCommunicationSpi()
+            {
+              //LocalAddress = "127.0.0.1",
+              LocalPort = 47100,
+            },
 
-           Logger = new TRexIgniteLogger(Logger.CreateLogger("ImmutableClientServer")),
+            Logger = new TRexIgniteLogger(Logger.CreateLogger("ImmutableClientServer")),
 
             // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
             DataStorageConfiguration = new DataStorageConfiguration
