@@ -23,7 +23,12 @@ namespace VSS.TRex.TAGFiles.Classes
       this.Configuration = Configuration;
     }
 
-
+    private ValidationResult GetValidationResultName(ValidationResult en, ref string message, ref int code)
+    {
+      message = Enum.GetName(typeof(ValidationResult), (int)en);
+      code = (int)en;
+      return en;
+    }
 
     /// <summary>
     /// Calls Tagfile Auth Service to lookup project details and check assett is licensed
@@ -37,10 +42,10 @@ namespace VSS.TRex.TAGFiles.Classes
     /// <param name="projectId"></param>
     /// <param name="assetId"></param>
     /// <returns></returns>
-    public ValidationResult ValidateTagfile(Guid? submittedProjectId, Guid tccOrgId, string radioSerial, int radioType, double lat, double lon, DateTime timeOfPosition, ref Guid? projectId, out Guid? assetId, out string message)
+    public ValidationResult ValidateTagfile(Guid? submittedProjectId, Guid tccOrgId, string radioSerial, int radioType, double lat, double lon, DateTime timeOfPosition, ref Guid? projectId, out Guid? assetId, out string message, ref int code)
     {
       ValidationResult result = ValidationResult.Unknown;
-
+      code = -1;
       assetId = null;
       message = string.Empty;
       // dont waste the services time if you dont have any details
@@ -51,7 +56,7 @@ namespace VSS.TRex.TAGFiles.Classes
       if (radioSerial == String.Empty && tccOrgId == Guid.Empty && submittedProjectId == Guid.Empty)
       {
         Log.LogWarning($"Must have either a valid TCCOrgID or RadioSerialNo or ProjectID");
-        return ValidationResult.BadRequest;
+        return GetValidationResultName(ValidationResult.BadRequest,ref message,ref code);
       }
 
 
@@ -68,10 +73,12 @@ namespace VSS.TRex.TAGFiles.Classes
 
       var json = Newtonsoft.Json.JsonConvert.SerializeObject(req);
 
+      Log.LogInformation($"#TFARequest# JSON:{json}");
+
       string URL = Configuration.GetValue<string>("TFA_SERVICE_BASEURL", String.Empty) + Configuration.GetValue<string>("TFA_SERVICE_GETPROJECTID", String.Empty);
       Console.WriteLine($"Connecting to TFA service:{URL}");
       if (URL == String.Empty)
-        return ValidationResult.MissingConfiguration;
+        return GetValidationResultName(ValidationResult.MissingConfiguration, ref message,ref code);
 
       HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URL);
       request.Method = "POST";
@@ -93,6 +100,9 @@ namespace VSS.TRex.TAGFiles.Classes
         responseReader.Close();
         message = responseObj.message;
         Log.LogInformation($"#TFAResponse# ProjectUid:{responseObj.projectUid}, AssetUid:{responseObj.assetUid}, code:{responseObj.code}, message:{responseObj.message}");
+        // use code and message from tfa service
+        message = responseObj.message;
+        code = responseObj.code;
         if (responseObj.code == 0)
         {
           result = ValidationResult.Valid;
@@ -101,14 +111,12 @@ namespace VSS.TRex.TAGFiles.Classes
           {
             projectId = Guid.Parse(responseObj.projectUid);
           }
-
           // take what TFA gives us including a empty guid
           assetId = (Guid.Parse(responseObj.assetUid));
         }
         else
         {
-          // Todo assigned correct values from new service once written
-          result = ValidationResult.InvalidLicense;
+          result = ValidationResult.TfaError;
         }
 
       }
@@ -117,7 +125,7 @@ namespace VSS.TRex.TAGFiles.Classes
         Console.Out.WriteLine("-----------------");
         Console.Out.WriteLine(e.Message);
         Log.LogError($"#Exception# Unexpected exception occured calling TFA service ProjectId:{projectId}, TCCOrgId:{tccOrgId}, radioSerial:{radioSerial}, radioType:{radioType}, lat:{lat}, lon:{lon}, DateTime:{timeOfPosition} {e.Message}");
-        result = ValidationResult.TFAError;
+        result = GetValidationResultName(ValidationResult.TfaAcessError,ref message,ref code);
         return result;
       }
 

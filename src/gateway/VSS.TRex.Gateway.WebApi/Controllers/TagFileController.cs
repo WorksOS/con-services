@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -40,7 +41,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// Test endpoint for tagfiles
     /// </summary>
     // [PostRequestVerifier]
-    [Route("api/v1/tagfiles")]
+    [Route("api/v2/tagfiles")]
     [HttpGet]
     public String Get()
     {
@@ -50,93 +51,17 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
 
     /// <summary>
-    /// Posts TAG file to Raptor. 
-    /// </summary>
-    // [PostRequestVerifier]
-    [Route("api/v1/tagfiles")]
-    [HttpPost]
-    public IActionResult Post([FromBody] TagFileRequest request)
-    {
-      // todo
-
-      request.Validate();
-
-      Log.LogDebug($"PostTagFile: ProjectID:{request.ProjectUID},File:{request.FileName}");
-
-      var tagfileResult = WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainer
-            .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null, tagfileClientServer)
-            .Process(request)) as TagFileResult;
-
-      // todo we probably need to return some proper return codes to determine further course of action
-      if (tagfileResult != null)
-      {
-        if (tagfileResult.Code == 0)
-          return (IActionResult)Ok(tagfileResult);
-        else
-        {
-          return BadRequest(tagfileResult);
-        }
-      }
-      else
-      {
-        return BadRequest(TagFileResult.Create(0, "Unexpected failure")); // todo
-      }
-
-    }
-
-
-
-    /// <summary>
     /// For accepting and loading manually or automatically submitted tag files.
     /// </summary>
-   // [PostRequestVerifier]
+    // [PostRequestVerifier]
     [Route("api/v2/tagfiles")]
     [HttpPost]
-    public IActionResult PostTagFile([FromBody]CompactionTagFileRequest request)
+    public async Task<IActionResult> PostTagFile([FromBody]CompactionTagFileRequest request)
     {
-      //request.Validate();
-
-      // Serialize the request ignoring the Data property so not to overwhelm the logs.
-      var serializedRequest = JsonConvert.SerializeObject(
-          request,
-          Formatting.None,
-          new JsonSerializerSettings { ContractResolver = new JsonContractPropertyResolver("Data") });
-
-
-      Log.LogDebug($"PostTagFile:{request.FileName}");
-
-      TagFileRequest requestStandard = TagFileRequest.CreateTagFile(
-          request.FileName,
-          request.Data,
-          request.ProjectUid,
-          null,
-          1, false, false, request.OrgId); //todo
-      //      -1, false, false, request.OrgId);
-
-      var tagfileResult = WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainer
-            .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null, tagfileClientServer)
-            .Process(requestStandard)) as TagFileResult;
-
-      // todo we probably need to return some proper return codes to determine further course of action
-      if (tagfileResult != null)
-      {
-        if (tagfileResult.Code == 0)
-          return (IActionResult)Ok(tagfileResult);
-        else
-        {
-          return BadRequest(tagfileResult);
-        }
-      }
-      else
-      {
-        return BadRequest(TagFileResult.Create(0, "Unexpected failure")); // todo
-      }
-
+      var serializedRequest = SerializeObjectIgnoringProperties(request, "Data");
+      Log.LogInformation("PostTagFile: " + serializedRequest);
+      return await ExecuteRequest(request);
     }
-
-
 
     /// <summary>
     /// For the direct submission of tag files from GNSS capable machines.
@@ -144,24 +69,20 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
    // [PostRequestVerifier]
     [Route("api/v2/tagfiles/direct")]
     [HttpPost]
-    public IActionResult PostTagFileDirectSubmission([FromBody]CompactionTagFileRequest request)
+    public async Task<IActionResult> PostTagFileDirectSubmission([FromBody]CompactionTagFileRequest request)
     {
 
-      //request.Validate();
-      Log.LogDebug($"PostTagFile: ProjectID:{request.ProjectUid},File:{request.FileName}");
+      var serializedRequest = SerializeObjectIgnoringProperties(request, "Data");
+      Log.LogInformation("PostTagFile (Direct): " + serializedRequest);
+      return await ExecuteRequest(request);
+    }
 
-      TagFileRequest requestStandard = TagFileRequest.CreateTagFile(
-                                                              request.FileName,
-                                                              request.Data,
-                                                              request.ProjectUid,
-                                                              null,
-                                                              -1, false, false, request.OrgId);
+    private async Task<IActionResult> ExecuteRequest(CompactionTagFileRequest tfRequest)
+    {
 
-
-      var tagfileResult = WithServiceExceptionTryExecute(() =>
-          RequestExecutorContainer
-              .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null, tagfileClientServer)
-              .Process(requestStandard)) as TagFileResult;
+      var tagfileResult = WithServiceExceptionTryExecute(() => RequestExecutorContainer
+                                                     .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null, tagfileClientServer)
+                                                     .Process(tfRequest)) as TagFileResult;
 
       // todo we probably need to return some proper return codes to determine further course of action
       if (tagfileResult != null)
@@ -175,13 +96,11 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       }
       else
       {
-        return BadRequest(TagFileResult.Create(0, "Unexpected failure")); // todo
+        return BadRequest(TagFileResult.Create(1, "Unexpected failure"));
       }
 
     }
 
-
-    // todo its a common func that needs to move to package
     public class JsonContractPropertyResolver : DefaultContractResolver
     {
       private readonly string[] props;
@@ -200,7 +119,16 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       }
     }
 
-
+    /// <summary>
+    /// Serialize the request ignoring the Data property so not to overwhelm the logs.
+    /// </summary>
+    private static string SerializeObjectIgnoringProperties(CompactionTagFileRequest request, params string[] properties)
+    {
+      return JsonConvert.SerializeObject(
+          request,
+          Formatting.None,
+          new JsonSerializerSettings { ContractResolver = new JsonContractPropertyResolver(properties) });
+    }
 
   }
 }

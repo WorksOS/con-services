@@ -11,7 +11,9 @@ namespace VSS.TRex.TAGFiles.GridFabric.Responses
 
         public bool Success { get; set; }
 
-        public string Exception { get; set; }
+        public int Code { get; set; } 
+
+        public string Message { get; set; }
 
         /// <summary>
         /// Default no-arg constructor
