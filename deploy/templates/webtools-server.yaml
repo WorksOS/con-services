@@ -34,7 +34,7 @@ spec:
         image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-trex:{{ .Values.image.tag }}
         
         command: ["dotnet"]
-        args: ["webtools.dll"]
+        args: ["VSS.TRex.Gateway.WebApi.dll"]
 
         #env:
         # Ignite's Docker image parameter. Adding the jar file that
@@ -62,10 +62,3 @@ spec:
         env:
           - name: IGNITE_HOME
             value: "/trex/"
-      
-      - name: kubectl-proxy
-        image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-trex:kubectl-proxy
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8001
-          

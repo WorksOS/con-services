@@ -33,6 +33,9 @@ spec:
         # Apache Ignite 2.3.0
         image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-trex:{{ .Values.image.tag }}
         
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+
         command: ["dotnet"]
         args: ["VSS.TRex.Server.Application.dll"]
 
@@ -62,9 +65,3 @@ spec:
           - name: IGNITE_HOME
             value: "/trex/"
 
-      - name: kubectl-proxy
-        image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-trex:kubectl-proxy
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8001
-          
