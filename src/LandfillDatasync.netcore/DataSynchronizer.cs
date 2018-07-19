@@ -4,7 +4,6 @@ using System.Linq;
 using Common.netstandard.ApiClients;
 using Common.Repository;
 using log4net;
-using LandfillService.Common.ApiClients;
 using LandfillService.Common.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -45,8 +44,7 @@ namespace LandfillDatasync.netcore
       var projects = GetListOfProjectsToRetrieve();
       var result = new Dictionary<ProjectResponse, List<DateEntry>>();
       Log.DebugFormat("Got {0} projects to process for volumes", projects.Count);
-      var headers =
-        new Dictionary<string, string> {{"Authorization", $"Bearer {authn.Get3DPmSchedulerBearerToken().Result}"}};
+      var headers = new Dictionary<string, string> {{"Authorization", $"Bearer {authn.Get3DPmSchedulerBearerToken().Result}"}};
       foreach (var project in projects)
       {
         headers["X-VisionLink-CustomerUID"] = project.customerUid;
@@ -71,7 +69,7 @@ namespace LandfillDatasync.netcore
         }
         catch (Exception e)
         {
-          Console.WriteLine($"Skipping project {project.name} as failed to get statistics");
+          Console.WriteLine($"Skipping project {project.name} as failed. Exception:" + e.Message);
           //Log.Debug($"Skipping project {project.name} as failed to get statistics");
         }
       }
@@ -99,8 +97,7 @@ namespace LandfillDatasync.netcore
       {
         var geofenceUids = project.Value.Select(d => d.geofenceUid).Distinct().ToList();
         var geofences = GetGeofenceBoundaries(project.Key.id, geofenceUids);
-        var headers =
-          new Dictionary<string, string> { { "Authorization", $"Bearer {authn.Get3DPmSchedulerBearerToken().Result}" } };
+        var headers = new Dictionary<string, string> { { "Authorization", $"Bearer {authn.Get3DPmSchedulerBearerToken().Result}" } };
         Log.DebugFormat("RunUpdateVolumesFromRaptor Processing project {0} with {1} entries", project.Key.id, project.Value.Count());
         foreach (var dateEntry in project.Value)
         {
