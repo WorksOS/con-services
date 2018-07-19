@@ -235,6 +235,21 @@ namespace MockProjectWebApi.Controllers
       return res;
     }
 
+    /// <summary>
+    /// Dummies the notification that a projectUid has been updated/deleted
+    /// </summary>
+    [Route("api/v2/notification/invalidatecache")]
+    [HttpGet]
+    public BaseDataResult DummyNotifyProjectChangeGet(
+      [FromQuery] Guid projectUid
+    )
+    {
+      var res = new BaseDataResult();
+      var message = $"DummyNotifyProjectChangeGet: res {res}. projectUid {projectUid}";
+      Console.WriteLine(message);
+      return res;
+    }
+
 
 
     /// <summary>
