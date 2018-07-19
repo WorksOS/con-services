@@ -205,6 +205,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .ProcessAsync(project)
       );
 
+      //invalidate cache in Raptor
+      log.LogInformation("UpdateProjectV4. Invalidating 3D PM cache");
+
+      await raptorProxy.InvalidateCache(projectRequest.ProjectUid.ToString(), customHeaders);
+
       log.LogInformation("UpdateProjectV4. Completed successfully");
       return new ProjectV4DescriptorsSingleResult(
         AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await ProjectRequestHelper.GetProject(project.ProjectUID.ToString(), customerUid, log, serviceExceptionHandler, projectRepo)
