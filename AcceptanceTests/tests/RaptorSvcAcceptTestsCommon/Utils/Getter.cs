@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -20,6 +21,8 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     public Dictionary<string, string> QueryString { get; set; }
     public TResponse CurrentResponse { get; private set; }
     public ServiceResponse CurrentServiceResponse { get; private set; }
+
+    public HttpResponseMessage HttpResponseMessage { get; private set; }
 
     /// <summary>
     /// Construct service GETTer.
@@ -114,26 +117,28 @@ namespace RaptorSvcAcceptTestsCommon.Utils
         Uri += BuildQueryString();
       }
 
+      CurrentServiceResponse = RaptorServicesClientUtil.DoHttpRequest(Uri, HttpMethod.Get.Method, RestClientConfig.JsonMediaType, null);
 
-      CurrentServiceResponse = RaptorServicesClientUtil.DoHttpRequest(Uri, "GET",
-              RestClientConfig.JsonMediaType, null);
-
-      if (CurrentServiceResponse != null)
+      if (CurrentServiceResponse == null)
       {
-        if (expectedHttpCode != CurrentServiceResponse.HttpCode)
-        {
-          Logger.Error($"Expected {expectedHttpCode}, but got {CurrentServiceResponse.HttpCode} instead.",
-              Logger.ContentType.Error);
-        }
-
-        Assert.AreEqual(expectedHttpCode, CurrentServiceResponse.HttpCode,
-          $"Expected {expectedHttpCode}, but got {CurrentServiceResponse.HttpCode} instead.");
-
-        CurrentResponse = JsonConvert.DeserializeObject<TResponse>(CurrentServiceResponse.ResponseBody);
-        return CurrentResponse;
+        return default(TResponse);
       }
 
-      return default(TResponse);
+      if (expectedHttpCode != CurrentServiceResponse.HttpCode)
+      {
+        Logger.Error($"Expected {expectedHttpCode}, but got {CurrentServiceResponse.HttpCode} instead.",
+          Logger.ContentType.Error);
+      }
+
+      Assert.AreEqual(expectedHttpCode, CurrentServiceResponse.HttpCode,
+        $"Expected {expectedHttpCode}, but got {CurrentServiceResponse.HttpCode} instead.");
+
+      CurrentResponse = JsonConvert.DeserializeObject<TResponse>(CurrentServiceResponse.ResponseBody, new JsonSerializerSettings
+      {
+        Formatting = Formatting.Indented
+      });
+
+      return CurrentResponse;
     }
 
     public string BuildQueryString()
@@ -175,6 +180,25 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     {
       T expected = JsonConvert.DeserializeObject<T>(multilineText);
       Assert.AreEqual(expected, CurrentResponse);
+    }
+
+    // TODO (Aaron) Make QueryString private and refactor step classes removing unnecesary string.isnullorempty() checks. Use AddQueryParam() instead.
+    public bool AddQueryParam(string key, string value)
+    {
+      if (string.IsNullOrEmpty(value))
+      {
+        return false;
+      }
+
+      QueryString.Add(key, value);
+
+      return true;
+    }
+
+    public void Send(string acceptHeader, string contentType, string content = null)
+    {
+       var response = RaptorServicesClientUtil.SendHttpClientRequest(Uri, BuildQueryString(), HttpMethod.Get, acceptHeader, contentType, content).Result;
+      HttpResponseMessage = response;
     }
   }
 }

@@ -30,6 +30,27 @@
     <ProjectReference Include="..\Common\VSS.Productivity3D.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="log4net.netcore">
+      <HintPath>..\..\..\..\Users\amorgan\.nuget\packages\log4net.netcore\3.0.0\lib\net45\log4net.netcore.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.ConfigurationStore">
+      <HintPath>..\..\..\..\Users\amorgan\.nuget\packages\vss.configurationstore.netcore\2.1.0\lib\netstandard2.0\VSS.ConfigurationStore.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.MasterData.Models">
+      <HintPath>..\..\..\..\Users\amorgan\.nuget\packages\vss.masterdata.models.netcore\2.25.4\lib\netstandard2.0\VSS.MasterData.Models.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.MasterData.Proxies">
+      <HintPath>..\..\..\..\Users\amorgan\.nuget\packages\vss.masterdata.proxies.netcore\2.34.0\lib\netstandard2.0\VSS.MasterData.Proxies.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.Productivity3D.Models">
+      <HintPath>..\..\..\..\Users\amorgan\.nuget\packages\vss.productivity3d.models.netcore\1.1.0\lib\netstandard2.0\VSS.Productivity3D.Models.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.Velociraptor.PDSInterface">
+      <HintPath>..\..\..\..\Users\amorgan\.nuget\packages\vss.velociraptor.interfaces\1.0.68\lib\VSS.Velociraptor.PDSInterface.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>

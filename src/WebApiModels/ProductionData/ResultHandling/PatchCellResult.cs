@@ -31,7 +31,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// <summary>
     /// Static constructor.
     /// </summary>
-    public static PatchCellResult CreatePatchCellResult(float elevation, ushort datum, uint color)
+    public static PatchCellResult Create(float elevation, ushort datum, uint color)
     {
       return new PatchCellResult
       {

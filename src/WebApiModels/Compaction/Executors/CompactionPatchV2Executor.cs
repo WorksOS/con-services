@@ -12,14 +12,14 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
-namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
+namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
-  public class PatchExecutor : RequestExecutorContainer
+  public class CompactionPatchV2Executor : RequestExecutorContainer
   {
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
-    public PatchExecutor()
+    public CompactionPatchV2Executor()
     {
       ProcessErrorCodes();
     }
@@ -86,58 +86,58 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       RaptorResult.AddErrorMessages(ContractExecutionStates);
     }
 
-    private PatchResultRenderedColors ConvertPatchResult(byte[] patch)
+    private PatchResult ConvertPatchResult(byte[] patch)
     {
-      var ms = new MemoryStream(patch);
-
-      var totalNumPatchesRequired = StreamUtils.__Global.ReadIntegerFromStream(ms);
-      var valuesRenderedToColors = StreamUtils.__Global.ReadBooleanFromStream(ms);
-      var numSubgridsInPatch = StreamUtils.__Global.ReadIntegerFromStream(ms);
-      double cellSize = StreamUtils.__Global.ReadDateTimeFromStream(ms);
-      var subgrids = new PatchSubgridResultBase[numSubgridsInPatch];
-
-      for (var i = 0; i < numSubgridsInPatch; i++)
+      using (var ms = new MemoryStream(patch))
       {
-        var cellOriginX = StreamUtils.__Global.ReadIntegerFromStream(ms);
-        var cellOriginY = StreamUtils.__Global.ReadIntegerFromStream(ms);
-        var isNull = StreamUtils.__Global.ReadBooleanFromStream(ms);
+        var totalNumPatchesRequired = StreamUtils.__Global.ReadIntegerFromStream(ms);
+        _ = StreamUtils.__Global.ReadBooleanFromStream(ms); // Discard valuesRenderedToColors flag, it's not needed for this response.
+        var numSubgridsInPatch = StreamUtils.__Global.ReadIntegerFromStream(ms);
+        double cellSize = StreamUtils.__Global.ReadDateTimeFromStream(ms);
+        var subgrids = new PatchSubgridResultBase[numSubgridsInPatch];
 
-        log.LogDebug($"Subgrid {i + 1} in patch has cell origin of {cellOriginX}:{cellOriginY}. IsNull?:{isNull}");
+        // From Raptor: 1 << ((FNumLevels * kSubGridIndexBitsPerLevel) -1)
+        const int indexOriginOffset = 1 << 29;
 
-        float elevationOrigin = 0;
-        PatchCellResult[,] cells = null;
-
-        if (!isNull)
+        for (var i = 0; i < numSubgridsInPatch; i++)
         {
-          elevationOrigin = StreamUtils.__Global.ReadSingleFromStream(ms);
+          var worldOriginX = (StreamUtils.__Global.ReadIntegerFromStream(ms) - indexOriginOffset) * cellSize;
+          var worldOriginY = (StreamUtils.__Global.ReadIntegerFromStream(ms) - indexOriginOffset) * cellSize;
+          var isNull = StreamUtils.__Global.ReadBooleanFromStream(ms);
 
-          log.LogDebug($"Subgrid elevation origin in {elevationOrigin}");
+          log.LogDebug($"Subgrid {i + 1} in patch has world origin of {worldOriginX}:{worldOriginY}. IsNull?:{isNull}");
 
-          // Raptor uses: [SubGridTreesDecls.__Global.kSubGridTreeDimension, SubGridTreesDecls.__Global.kSubGridTreeDimension];
-          cells = new PatchCellResult[32, 32];
+          float elevationOrigin = 0;
 
-          for (var j = 0; j < 32; j++)
+          // Protobuf is limited to single dimension arrays, so we cannot use the normal [32,32] layout type used by other patch executors.
+          PatchCellHeightResult[] cells = null;
+
+          if (!isNull)
           {
-            for (var k = 0; k < 32; k++)
+            elevationOrigin = StreamUtils.__Global.ReadSingleFromStream(ms);
+
+            log.LogDebug($"Subgrid elevation origin in {elevationOrigin}");
+
+            const int arrayLength = 32 * 32;
+            cells = new PatchCellHeightResult[arrayLength];
+
+            for (var j = 0; j < arrayLength; j++)
             {
               var elevOffset = StreamUtils.__Global.ReadWordFromStream(ms);
               var elevation = elevOffset != 0xffff ? (float)(elevationOrigin + (elevOffset / 1000.0)) : -100000;
-              var colour = valuesRenderedToColors ? StreamUtils.__Global.ReadLongWordFromStream(ms) : 0;
 
-              cells[j, k] = PatchCellResult.Create(elevation, 0, valuesRenderedToColors ? colour : 0);
+              cells[j] = PatchCellHeightResult.Create(elevation);
             }
           }
+
+          subgrids[i] = PatchSubgridOriginProtobufResult.Create(worldOriginX, worldOriginY, isNull, elevationOrigin, cells);
         }
 
-        subgrids[i] = PatchSubgridResult.Create(cellOriginX, cellOriginY, isNull, elevationOrigin, cells);
+        return PatchResult.Create(cellSize,
+          numSubgridsInPatch,
+          totalNumPatchesRequired,
+          subgrids);
       }
-
-      return PatchResultRenderedColors.Create(
-        cellSize,
-        numSubgridsInPatch,
-        totalNumPatchesRequired,
-        valuesRenderedToColors,
-        subgrids);
     }
   }
 }

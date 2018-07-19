@@ -3,12 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Models;
-using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.Utilities;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Utilities;
-using VSS.Productivity3D.Models.Enums;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
 {
@@ -133,7 +130,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// <summary>
     /// Create instance of PatchRequest
     /// </summary>
-    public static PatchRequest CreatePatchRequest(
+    public static PatchRequest Create(
       long projectId,
       Guid? callId,
       DisplayMode mode,

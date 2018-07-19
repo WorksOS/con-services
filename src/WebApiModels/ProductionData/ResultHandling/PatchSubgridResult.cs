@@ -25,6 +25,12 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     public int CellOriginY { get; private set; }
 
     /// <summary>
+    /// The grid of cells that make up this subgrid in the patch
+    /// </summary>
+    [JsonProperty(PropertyName = "cells")]
+    protected PatchCellResult[,] Cells { get; set; }
+
+    /// <summary>
     /// Static constructor.
     /// </summary>
     public static PatchSubgridResult Create(int cellOriginX, int cellOriginY, bool isNull, float elevationOrigin, PatchCellResult[,] cells)

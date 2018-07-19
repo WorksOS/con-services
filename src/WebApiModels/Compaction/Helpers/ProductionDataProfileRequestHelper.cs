@@ -1,11 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;

@@ -8,11 +8,11 @@ namespace RaptorSvcAcceptTestsCommon.Utils
 {
   public static class Auth
   {
-    public static string AuthProvider => RaptorClientConfig.DllConfig.AppSettings.Settings["AuthProvider"].Value;
+    public static readonly string CUSTOMER_UID = "87bdf851-44c5-e311-aa77-00505688274d";
 
     public static string GetVlSessionId()
     {
-      var formanUri = "https://dev-mobile.vss-eng.com/foreman/Secure/ForemanSvc.svc/Login";
+      const string formanUri = "https://dev-mobile.vss-eng.com/foreman/Secure/ForemanSvc.svc/Login";
       var vlUsername = RaptorClientConfig.DllConfig.AppSettings.Settings["VLUserName"].Value;
       var vlPassword = RaptorClientConfig.DllConfig.AppSettings.Settings["VLPassword"].Value;
 
@@ -123,7 +123,5 @@ namespace RaptorSvcAcceptTestsCommon.Utils
         return header;
       }
     }
-
-    public static readonly string CUSTOMER_UID = "87bdf851-44c5-e311-aa77-00505688274d";
   }
 }

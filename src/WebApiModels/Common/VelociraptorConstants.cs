@@ -11,5 +11,6 @@
     public const int NO_PASSCOUNT = SVOICDecls.__Global.kICNullPassCountValue;
     public const float NULL_SINGLE = DTXModelDecls.__Global.NullSingle;
     public const int NO_SPEED = SVOICDecls.__Global.kICNullMachineSpeed;
+    public const double VOLUME_CHANGE_TOLERANCE = 0.0;
   }
 }

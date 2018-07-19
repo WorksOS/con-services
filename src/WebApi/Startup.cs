@@ -11,6 +11,7 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.WebApi.Common;
+using WebApiContrib.Core.Formatter.Protobuf;
 
 namespace VSS.Productivity3D.WebApi
 {
@@ -58,6 +59,11 @@ namespace VSS.Productivity3D.WebApi
     {
       services.AddCommon<Startup>(SERVICE_TITLE, "API for 3D compaction and volume data");
 
+      services.AddMvcCore(options =>
+      {
+        options.OutputFormatters.Add(new ProtobufOutputFormatter(new ProtobufFormatterOptions()));
+      });
+
       services.AddResponseCompression();
       services.AddMemoryCache();
       services.AddCustomResponseCaching();
@@ -89,9 +95,7 @@ namespace VSS.Productivity3D.WebApi
       }
 
       app.UseResponseCaching();
-
       app.UseResponseCompression();
-
       app.UseMvc();
 
       ConfigureRaptor(serviceProvider);

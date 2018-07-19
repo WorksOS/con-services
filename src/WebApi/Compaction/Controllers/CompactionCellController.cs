@@ -1,21 +1,22 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
-using VSS.MasterData.Models.Models;
-using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using WGSPoint = VSS.Productivity3D.Models.Models.WGSPoint3D;
-
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -32,32 +33,21 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IASNodeClient raptorClient;
 
     /// <summary>
-    /// Constructor with a dependency injection.
+    /// Default constructor.
     /// </summary>
-    /// <param name="raptorClient">>Raptor client.</param>
-    /// <param name="loggerFactory">Logger.</param>
-    /// <param name="configStore">Configuration store.</param>
-    /// <param name="fileListProxy">File list proxy.</param>
-    /// <param name="projectSettingsProxy">Project settings proxy.</param>
-    /// <param name="settingsManager">Compaction settings manager.</param>
-    /// <param name="serviceExceptionHandler">Service exception handler.</param>
-    /// <param name="filterServiceProxy">Filter service proxy.</param>
-    /// <param name="requestFactory">The request factory.</param>
-    public CompactionCellController(IASNodeClient raptorClient, ILoggerFactory loggerFactory, IConfigurationStore configStore, 
+    public CompactionCellController(IASNodeClient raptorClient, ILoggerFactory loggerFactory, IConfigurationStore configStore,
       IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
-      IServiceExceptionHandler serviceExceptionHandler, IFilterServiceProxy filterServiceProxy, IProductionDataRequestFactory requestFactory) 
+      IServiceExceptionHandler serviceExceptionHandler, IFilterServiceProxy filterServiceProxy, IProductionDataRequestFactory requestFactory)
       : base(loggerFactory, loggerFactory.CreateLogger<CompactionCellController>(), serviceExceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
     }
 
-    // GET: api/Cells
     /// <summary>
     /// Requests a single thematic datum value from a single cell. Examples are elevation, compaction. temperature etc.
     /// The cell is identified by either WGS84 lat/long coordinates.
     /// </summary>
     /// <returns>The requested thematic value expressed as a floating point number. Interpretation is dependant on the thematic domain.</returns>
-    /// <executor>CellDatumExecutor</executor> 
     [Route("api/v2/productiondata/cells/datum")]
     [HttpGet]
     public async Task<CompactionCellDatumResult> GetProductionDataCellsDatum(
@@ -66,7 +56,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? cutfillDesignUid,
       [FromQuery] DisplayMode displayMode,
       [FromQuery] double lat,
-      [FromQuery] double lon) 
+      [FromQuery] double lon)
     {
       Log.LogInformation("GetProductionDataCellsDatum: " + Request.QueryString);
 
@@ -76,19 +66,64 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
       var cutFillDesign = await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
 
-      CellDatumRequest request = CellDatumRequest.CreateCellDatumRequest(
-        projectId, 
+      var request = CellDatumRequest.CreateCellDatumRequest(
+        projectId,
         displayMode,
-        WGSPoint.CreatePoint(lat.LatDegreesToRadians(), lon.LonDegreesToRadians()), 
-        null, 
-        filter, 
-        filter?.Id ?? -1, 
-        liftSettings, 
+        WGSPoint.CreatePoint(lat.LatDegreesToRadians(), lon.LonDegreesToRadians()),
+        null,
+        filter,
+        filter?.Id ?? -1,
+        liftSettings,
         cutFillDesign);
 
       request.Validate();
 
       return RequestExecutorContainerFactory.Build<CompactionCellDatumExecutor>(LoggerFactory, raptorClient).Process(request) as CompactionCellDatumResult;
+    }
+
+    /// <summary>
+    /// Gets the subgrid patches for a given project. Maybe be filtered with a polygon grid.
+    /// </summary>
+    /// <remarks>
+    /// This endpoint is expected to be used by machine based devices requesting raw data and deliberately
+    /// returns a lean response object to minimise the response size.
+    /// The response DTOs are decorated for use with Protobuf-net.
+    /// </remarks>
+    /// <param name="projectUid">Project identifier</param>
+    /// <param name="filterUid">Filter identifier (optional)</param>
+    /// <param name="patchId">Id of the requested patch</param>
+    /// <param name="mode">Desired data (0 for elevation)</param>
+    /// <param name="patchSize">Number of cell subgrids horizontally/vertically in a square patch (each subgrid has 32 cells)</param>
+    /// <param name="cellDownSample">Cell downsample factor (1 - cell size = 0.34, 2 - cell size = 0.68 etc.)</param>
+    /// <returns>Returns a highly efficient response stream of patch information (using Protobuf protocol).</returns>
+    [ProjectUidVerifier(AllowLandfillProjects = true)]
+    [Route("api/v2/patches")]
+    [HttpGet]
+    public async Task<IActionResult> GetSubGridPatches(Guid projectUid, Guid filterUid, int patchId, DisplayMode mode, int patchSize, int cellDownSample = 1)
+    {
+      Log.LogInformation($"GetSubGridPatches: {Request.QueryString}");
+
+      var projectId = await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
+      var filter = await GetCompactionFilter(projectUid, filterUid);
+      var liftSettings = SettingsManager.CompactionLiftBuildSettings(await GetProjectSettingsTargets(projectUid));
+      
+      var patchRequest = PatchRequest.Create(
+        projectId,
+        new Guid(),
+        mode,
+        null,
+        liftSettings,
+        false,
+        VolumesType.None,
+        VelociraptorConstants.VOLUME_CHANGE_TOLERANCE,
+        null, filter, filter?.Id ?? 0, null, 0, FilterLayerMethod.AutoMapReset, patchId, patchSize);
+
+      patchRequest.Validate();
+
+      var v2PatchRequestResponse = RequestExecutorContainerFactory.Build<CompactionPatchV2Executor>(LoggerFactory, raptorClient)
+                                                                  .Process(patchRequest);
+
+      return Ok(v2PatchRequestResponse);
     }
   }
 }

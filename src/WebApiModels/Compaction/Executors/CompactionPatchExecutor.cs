@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using ASNodeDecls;
@@ -64,15 +63,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
         if (raptorResult == TASNodeErrorStatus.asneOK)
         {
-          if (patch != null)
-          {
-            var rawResult = PatchResult.CreatePatchResult(patch.ToArray());
-            result = ConvertPatchResult(rawResult);
-          }
-          else
-          {
-            result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Null patch returned");
-          }
+          result = patch != null
+            ? ConvertPatchResult(patch.ToArray())
+            : new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Null patch returned");
         }
         else
         {
@@ -93,56 +86,56 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       RaptorResult.AddErrorMessages(ContractExecutionStates);
     }
 
-    private PatchResultStructured ConvertPatchResult(PatchResult patch)
+    private PatchResult ConvertPatchResult(byte[] patch)
     {
-      var ms = new MemoryStream(patch.PatchData);
-
-      var totalNumPatchesRequired = StreamUtils.__Global.ReadIntegerFromStream(ms);
-      var valuesRenderedToColors = StreamUtils.__Global.ReadBooleanFromStream(ms);
-      var numSubgridsInPatch = StreamUtils.__Global.ReadIntegerFromStream(ms);
-      double cellSize = StreamUtils.__Global.ReadDateTimeFromStream(ms);
-      var subgrids = new List<PatchSubgridResultBase>(numSubgridsInPatch);
-
-      // From Raptor: 1 << ((FNumLevels * kSubGridIndexBitsPerLevel) -1)
-      const int indexOriginOffset = 1 << 29;
-
-      for (var i = 0; i < numSubgridsInPatch; i++)
+      using (var ms = new MemoryStream(patch))
       {
-        var worldOriginX = (StreamUtils.__Global.ReadIntegerFromStream(ms) - indexOriginOffset) * cellSize;
-        var worldOriginY = (StreamUtils.__Global.ReadIntegerFromStream(ms) - indexOriginOffset) * cellSize;
-        var isNull = StreamUtils.__Global.ReadBooleanFromStream(ms);
+        var totalNumPatchesRequired = StreamUtils.__Global.ReadIntegerFromStream(ms);
+        var valuesRenderedToColors = StreamUtils.__Global.ReadBooleanFromStream(ms);
+        var numSubgridsInPatch = StreamUtils.__Global.ReadIntegerFromStream(ms);
+        double cellSize = StreamUtils.__Global.ReadDateTimeFromStream(ms);
+        var subgrids = new PatchSubgridResultBase[numSubgridsInPatch];
 
-        log.LogDebug($"Subgrid {i + 1} in patch has world origin of {worldOriginX}:{worldOriginY}. IsNull?:{isNull}");
+        // From Raptor: 1 << ((FNumLevels * kSubGridIndexBitsPerLevel) -1)
+        const int indexOriginOffset = 1 << 29;
 
-        float elevationOrigin = 0;
-        PatchCellResult[,] cells = null;
-
-        if (!isNull)
+        for (var i = 0; i < numSubgridsInPatch; i++)
         {
-          elevationOrigin = StreamUtils.__Global.ReadSingleFromStream(ms);
+          var worldOriginX = (StreamUtils.__Global.ReadIntegerFromStream(ms) - indexOriginOffset) * cellSize;
+          var worldOriginY = (StreamUtils.__Global.ReadIntegerFromStream(ms) - indexOriginOffset) * cellSize;
+          var isNull = StreamUtils.__Global.ReadBooleanFromStream(ms);
 
-          log.LogDebug($"Subgrid elevation origin in {elevationOrigin}");
+          log.LogDebug($"Subgrid {i + 1} in patch has world origin of {worldOriginX}:{worldOriginY}. IsNull?:{isNull}");
 
-          cells = new PatchCellResult[32, 32];//Raymond's code had [SubGridTreesDecls.__Global.kSubGridTreeDimension, SubGridTreesDecls.__Global.kSubGridTreeDimension];
-
-          for (var j = 0; j < 32; j++)
+          if (!isNull)
           {
-            for (var k = 0; k < 32; k++)
-            {
-              var elevOffset = StreamUtils.__Global.ReadWordFromStream(ms);
-              var elevation = elevOffset != 0xffff ? (float)(elevationOrigin + (elevOffset / 1000.0)) : -100000;
-              var colour = valuesRenderedToColors ? StreamUtils.__Global.ReadLongWordFromStream(ms) : 0;
+            var elevationOrigin = StreamUtils.__Global.ReadSingleFromStream(ms);
 
-              cells[j, k] = PatchCellResult.CreatePatchCellResult(elevation, 0, valuesRenderedToColors ? colour : 0);
+            log.LogDebug($"Subgrid elevation origin in {elevationOrigin}");
+
+            var cells = new PatchCellResult[32, 32];
+
+            for (var j = 0; j < 32; j++)
+            {
+              for (var k = 0; k < 32; k++)
+              {
+                var elevOffset = StreamUtils.__Global.ReadWordFromStream(ms);
+                var elevation = elevOffset != 0xffff ? (float)(elevationOrigin + (elevOffset / 1000.0)) : -100000;
+                var colour = valuesRenderedToColors ? StreamUtils.__Global.ReadLongWordFromStream(ms) : 0;
+
+                cells[j, k] = PatchCellResult.Create(elevation, 0, valuesRenderedToColors ? colour : 0);
+              }
             }
+
+            subgrids[i] = PatchSubgridOriginResult.Create(worldOriginX, worldOriginY, isNull, elevationOrigin, cells);
           }
         }
 
-        subgrids.Add(WorldOriginPatchSubgridResult.Create(worldOriginX, worldOriginY, isNull, elevationOrigin, cells));
+        return PatchResult.Create(cellSize,
+          numSubgridsInPatch,
+          totalNumPatchesRequired,
+          subgrids);
       }
-
-      return PatchResultStructured.CreatePatchResultStructured(cellSize, numSubgridsInPatch, totalNumPatchesRequired,
-          valuesRenderedToColors, subgrids.ToArray());
     }
   }
 }
