@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Drawing;
+using Draw = System.Drawing;
 using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.Executors;
 using VSS.TRex.Types;
@@ -22,7 +22,7 @@ namespace VSS.TRex.Tests
                                                              null, // Filter1
                                                              null, // Filter2
                                                              Guid.Empty,  // DesignDescriptor.Null(),
-                                                             Color.Black,
+                                                            Draw.Color.Black,
                                                              string.Empty);
 
             Assert.NotNull(render);

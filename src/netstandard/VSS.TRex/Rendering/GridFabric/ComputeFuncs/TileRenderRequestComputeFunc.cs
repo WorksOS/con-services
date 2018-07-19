@@ -1,7 +1,7 @@
 ﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Drawing;
+using Draw = System.Drawing;
 using System.Reflection;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
@@ -56,7 +56,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
                      arg.PixelsX, arg.PixelsY,
                      arg.Filter1, arg.Filter2,
                      arg.CutFillDesignID,//arg.CutFillDesign,
-                     Color.Black,
+                  Draw.Color.Black,
                      arg.TRexNodeID);
 
                 Log.LogInformation("Executing render.Execute()");

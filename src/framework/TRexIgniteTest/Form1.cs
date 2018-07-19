@@ -4,6 +4,7 @@ using Apache.Ignite.Core.Cache.Query;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Draw = System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -97,7 +98,7 @@ namespace TRexIgniteTest
 			}
 		}
 
-		private System.Drawing.Bitmap PerformRender(DisplayMode displayMode, int width, int height, bool returnEarliestFilteredCellPass, BoundingWorldExtent3D extents)
+		private Draw.Bitmap PerformRender(DisplayMode displayMode, int width, int height, bool returnEarliestFilteredCellPass, BoundingWorldExtent3D extents)
 		{
 				// Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
 				// SiteModel siteModel = GenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
@@ -139,9 +140,22 @@ namespace TRexIgniteTest
 						)) as TileRenderResponse_Framework;
 
         //TEST: compute profile first (reduces churn in other branches
-				 // PerformProfile();
+        // PerformProfile();
+				  var tileData = response?.TileBitmapData;
 
-						return response?.TileBitmap;
+          if (tileData != null)
+				  {
+				    Draw.Point origin = new Draw.Point(0, 0);
+				    using (Draw.Bitmap bitmap = new Draw.Bitmap(width, height))
+				    using (Draw.Graphics g = Draw.Graphics.FromImage(bitmap))
+            using (var tileStream = new MemoryStream(tileData))
+				    {
+				      Draw.Image image = Draw.Image.FromStream(tileStream);
+				      g.DrawImage(image, origin);
+				      return bitmap;
+				    }
+				  }
+        return null;
 				}
 				catch (Exception E)
 				{
@@ -266,7 +280,7 @@ namespace TRexIgniteTest
 		{
 				fitExtentsToView(pictureBox1.Width, pictureBox1.Height);
 
-				System.Drawing.Bitmap bmp = PerformRender((DisplayMode)displayMode.SelectedIndex, pictureBox1.Width, pictureBox1.Height, chkSelectEarliestPass.Checked, extents);
+				Draw.Bitmap bmp = PerformRender((DisplayMode)displayMode.SelectedIndex, pictureBox1.Width, pictureBox1.Height, chkSelectEarliestPass.Checked, extents);
 
 				if (bmp != null)
 				{
@@ -409,7 +423,7 @@ namespace TRexIgniteTest
 						// Parallel
 						Parallel.For(0, nImages, x =>
 						{
-								using (System.Drawing.Bitmap b = PerformRender(displayMode, width, height, selectEarliestPass, extents))
+								using (Draw.Bitmap b = PerformRender(displayMode, width, height, selectEarliestPass, extents))
 								{
 								}
 						});

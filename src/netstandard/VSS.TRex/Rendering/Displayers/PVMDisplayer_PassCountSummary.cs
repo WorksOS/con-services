@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+﻿using Draw = System.Drawing;
 using VSS.TRex.Cells;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.SubGridTrees.Client;
@@ -30,17 +30,17 @@ namespace VSS.TRex.Rendering.Displayers
     /// <summary>
     /// The colour, which Pass Count summary data displayed in on a plan view map, where pass count values are greater than target range.
     /// </summary>
-    private Color AbovePassTargetRangeColour;
+    private Draw.Color AbovePassTargetRangeColour;
 
     /// <summary>
     /// The colour, which Pass Count summary data displayed in on a plan view map, where pass count values are within target range.
     /// </summary>
-    private Color WithinPassTargetRangeColour;
+    private Draw.Color WithinPassTargetRangeColour;
 
     /// <summary>
     /// The colour, which Pass Count summary data displayed in on a plan view map, where pass count values are less than target range.
     /// </summary>
-    private Color BelowPassTargetRangeColour;
+    private Draw.Color BelowPassTargetRangeColour;
 
     /// <summary>
     /// Default no-arg constructor
@@ -78,12 +78,12 @@ namespace VSS.TRex.Rendering.Displayers
     /// Queries the data at the current cell location and determines the colour that should be displayed there.
     /// </summary>
     /// <returns></returns>
-    protected override Color DoGetDisplayColour()
+    protected override Draw.Color DoGetDisplayColour()
     {
       var cellValue = SubGrid.Cells[east_col, north_row];
 
       if (cellValue.MeasuredPassCount == CellPass.NullPassCountValue)
-        return Color.Empty;
+        return Draw.Color.Empty;
 
       var passTargetRange = new PassCountRangeRecord(cellValue.TargetPassCount, cellValue.TargetPassCount);
 

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Drawing;
+using Draw = System.Drawing;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
@@ -43,7 +43,7 @@ namespace VSS.TRex.Rendering.Displayers
         protected double FCellStripEndX;
 
         // FCellStripColour records the colour of the strip of cells we will draw
-        protected Color FCellStripColour;
+        protected Draw.Color FCellStripColour;
 
         // OriginX/y and LimitX/Y denote the extents of the physical world area covered by
         // the display context being drawn into
@@ -155,9 +155,9 @@ namespace VSS.TRex.Rendering.Displayers
 
         protected virtual void DoRenderCell()
         {
-            Color Colour = DoGetDisplayColour();
+          Draw.Color Colour = DoGetDisplayColour();
 
-            if (Colour != Color.Empty)
+            if (Colour != Draw.Color.Empty)
             {
                 MapView.DrawRect(CurrentEast, CurrentNorth,
                                  _CellSize, _CellSize, true, Colour);
@@ -172,12 +172,12 @@ namespace VSS.TRex.Rendering.Displayers
         // determines the colour that should be displayed there. If there is no value
         // that should be displayed there (ie: it is <Null>, then the function returns
         // clnone as the colour).
-        protected virtual Color DoGetDisplayColour()
+        protected virtual Draw.Color DoGetDisplayColour()
         {
             // No behaviour in base class for this message
             Debug.Assert(false, "TSVOProductionPVMDisplayerBase.DoGetDisplayColour should never be called");
 
-            return Color.Empty;
+            return Draw.Color.Empty;
         }
 
         protected void DoStartRowScan() => FAccumulatingScanLine = false;
@@ -192,9 +192,9 @@ namespace VSS.TRex.Rendering.Displayers
 
         protected void DoAccumulateStrip()
         {
-            Color DisplayColour = DoGetDisplayColour();
+          Draw.Color DisplayColour = DoGetDisplayColour();
 
-            if (DisplayColour != Color.Empty) // There's something to draw
+            if (DisplayColour != Draw.Color.Empty) // There's something to draw
             {
                 // Set the end of the strip to current east
                 FCellStripEndX = CurrentEast;
@@ -233,7 +233,7 @@ namespace VSS.TRex.Rendering.Displayers
                 return;
             }
 
-            if (FCellStripColour == Color.Empty)
+            if (FCellStripColour == Draw.Color.Empty)
             {
                 return;
             }

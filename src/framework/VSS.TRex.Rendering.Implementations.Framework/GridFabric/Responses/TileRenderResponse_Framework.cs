@@ -1,11 +1,13 @@
 ﻿using VSS.TRex.Rendering.Abstractions.GridFabric.Responses;
 using VSS.TRex.Rendering.GridFabric.Responses;
+using Draw = System.Drawing;
+using VSS.TRex.Common;
 
 namespace VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses
 {
     public class TileRenderResponse_Framework : TileRenderResponse
     {
-        public System.Drawing.Bitmap TileBitmap { get; set; }
+        public byte[] TileBitmapData { get; set; }
     
         public override ITileRenderResponse AggregateWith(ITileRenderResponse other)
         {
@@ -17,7 +19,7 @@ namespace VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses
 
         public override void SetBitmap(object bitmap)
         {
-            TileBitmap = (System.Drawing.Bitmap) bitmap;
+            TileBitmapData = ((Draw.Bitmap) bitmap).BitmapToByteArray();
         }
     }
 }

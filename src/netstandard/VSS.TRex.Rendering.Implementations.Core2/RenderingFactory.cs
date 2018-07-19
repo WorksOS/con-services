@@ -2,6 +2,7 @@
 using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Abstractions.GridFabric.Responses;
 using VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses;
+using VSS.TRex.Common;
 
 namespace VSS.TRex.Rendering.Implementations.Core2
 {
@@ -31,7 +32,7 @@ namespace VSS.TRex.Rendering.Implementations.Core2
         {
           return new TileRenderResponse_Core2
           {
-            TileBitmap = (Draw.Bitmap)bmp
+            TileBitmapData = ((Draw.Bitmap)bmp).BitmapToByteArray()
           }; ;
         }
     }

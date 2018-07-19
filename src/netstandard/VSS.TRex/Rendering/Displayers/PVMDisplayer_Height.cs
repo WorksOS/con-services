@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+﻿using Draw = System.Drawing;
 using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -41,11 +41,11 @@ namespace VSS.TRex.Rendering.Displayers
     /// Queries the data at the current cell location and determines the colour that should be displayed there.
     /// </summary>
     /// <returns></returns>
-    protected override Color DoGetDisplayColour()
+    protected override Draw.Color DoGetDisplayColour()
     {
       float Height = SubGrid.Cells[east_col, north_row];
 
-      return Height == Consts.NullHeight ? Color.Empty : Palette.ChooseColour(Height);
+      return Height == Consts.NullHeight ? Draw.Color.Empty : Palette.ChooseColour(Height);
     }
   }
 }
