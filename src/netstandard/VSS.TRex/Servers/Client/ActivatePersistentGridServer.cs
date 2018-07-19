@@ -97,7 +97,7 @@ namespace VSS.TRex.Servers.Client
             }
             catch (Exception E)
             {
-                Log.LogError("SetGridInActive: Exception: {E}");
+                Log.LogError($"SetGridInActive: Exception: {E}");
                 return false;
             }
         }

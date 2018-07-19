@@ -33,7 +33,7 @@ namespace VSS.TRex.Gateway.Common.Executors
   {
     public TileExecutor(IConfigurationStore configStore, ILoggerFactory logger, 
       IServiceExceptionHandler exceptionHandler, ITileRenderingServer tileRenderServer) 
-      : base(configStore, logger, exceptionHandler, tileRenderServer)
+      : base(configStore, logger, exceptionHandler, tileRenderServer,null)
     {
     }
 

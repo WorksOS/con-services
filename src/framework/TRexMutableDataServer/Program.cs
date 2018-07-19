@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.Interfaces;
@@ -14,6 +15,9 @@ namespace TRexMutableDataServer
 {
   static class Program
   {
+
+    static public IConfiguration Configuration { get; set; }
+
     private static void DependencyInjection()
     {
       DIBuilder
@@ -21,7 +25,7 @@ namespace TRexMutableDataServer
         .AddLogging()
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels()))
-        .Add(x => x.AddSingleton<ITFAProxy>(new TFAProxy()))
+        .Add(x => x.AddSingleton<ITFAProxy>(new TFAProxy(null)))
         .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
         .Complete();
     }
@@ -32,6 +36,7 @@ namespace TRexMutableDataServer
     [STAThread]
     static void Main()
     {
+
       DependencyInjection();
 
       Application.EnableVisualStyles();

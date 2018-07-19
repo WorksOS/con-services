@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Reflection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.DI;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.TAGFiles.Classes.Validator;
@@ -8,110 +10,121 @@ using VSS.TRex.TAGFiles.GridFabric.Responses;
 
 namespace VSS.TRex.TAGFiles.Executors
 {
+  /// <summary>
+  /// Execute internal business logic to handle submission of a TAG file to TRex
+  /// </summary>
+  ///  
+  public class SubmitTAGFileExecutor
+  {
+    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+
     /// <summary>
-    /// Execute internal business logic to handle submission of a TAG file to TRex
+    /// Local static/singleton TAG file buffer queue reference to use when adding TAG files to the queue
     /// </summary>
-    ///  
-    public class SubmitTAGFileExecutor
+    private static TAGFileBufferQueue queue = new TAGFileBufferQueue();
+
+
+    /// <summary>
+    /// Receive a TAG file to be processed, validate TAG File Authorisation for the file, and add it to the 
+    /// queue to be processed.
+    /// </summary>
+    /// <param name="projectId">Project ID to be used as an override to any project ID that may be determined via TAG file authorization</param>
+    /// <param name="assetId">Asset ID to be used as an override to any Asset ID that may be determined via TAG file authorization</param>
+    /// <param name="tagFileName">Name of the physical tagfile for archiving and logging</param>
+    /// <param name="tagFileContent">The content of the TAG file to be processed, expressed as a byte array</param>
+    /// <param name="tccOrgId">Used by TFA service to match VL customer to TCC org when looking for project if multiple projects and/or machine ID not in tag file</param>
+    /// <returns></returns>
+    public static SubmitTAGFileResponse Execute(Guid? projectId, Guid? assetId, string tagFileName, byte[] tagFileContent, string tccOrgId)
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
-        /// <summary>
-        /// Local static/singleton TAG file buffer queue reference to use when adding TAG files to the queue
-        /// </summary>
-        private static TAGFileBufferQueue queue = new TAGFileBufferQueue();
+//      Log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectID:{projectId}, AssetID:{assetId}");
+      Log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectID:{projectId}");
 
 
-        /// <summary>
-        /// Receive a TAG file to be processed, validate TAG File Authorisation for the file, and add it to the 
-        /// queue to be processed.
-        /// </summary>
-        /// <param name="projectId">Project ID to be used as an override to any project ID that may be determined via TAG file authorization</param>
-        /// <param name="assetId">Asset ID to be used as an override to any Asset ID that may be determined via TAG file authorization</param>
-        /// <param name="tagFileName">Name of the physical tagfile for archiving and logging</param>
-        /// <param name="tagFileContent">The content of the TAG file to be processed, expressed as a byte array</param>
-        /// <param name="tccOrgId">Used by TFA service to match VL customer to TCC org when looking for project if multiple projects and/or machine ID not in tag file</param>
-        /// <returns></returns>
-        public static SubmitTAGFileResponse Execute(Guid? projectId, Guid? assetId, string tagFileName, byte[] tagFileContent, string tccOrgId)
+      SubmitTAGFileResponse response = new SubmitTAGFileResponse
+      {
+        FileName = tagFileName,
+        Success = false,
+        Message = "Unknown",
+        Code = -1
+      };
+
+      try
+      {
+        try
         {
+          // wrap up details into obj
+          TagFileDetail td = new TagFileDetail()
+          {
+            assetId = assetId,
+            projectId = projectId,
+            tagFileName = tagFileName,
+            tagFileContent = tagFileContent,
+            tccOrgId = tccOrgId,
+            IsJohnDoe = false // default
+          };
 
-            Log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectID:{projectId}, AssetID:{assetId}");
-            SubmitTAGFileResponse response = new SubmitTAGFileResponse
-                                             {
-                                                     FileName = tagFileName,
-                                                     Success = false,
-                                                     Exception = "Unknown"
-                                             };
-            try
+          // Validate tagfile submission
+
+          var result = TagfileValidator.ValidSubmission(td,out string tfaMessage, out int tfaCode);
+          response.Code = tfaCode;
+          response.Message = tfaMessage;
+
+          
+          if (result == ValidationResult.Valid && td.projectId != null) // If OK add to process queue
+          {
+            // First archive the tagfile
+            IConfiguration config = DIContext.Obtain<IConfiguration>();
+            if (config.GetValue<bool>("ENABLE_TAGFILE_ARCHIVING", false))
             {
-                try
-                {
-                    // wrap up details into obj
-                    TagFileDetail td = new TagFileDetail()
-                                       {
-                                               assetId = assetId,
-                                               projectId = projectId,
-                                               tagFileName = tagFileName,
-                                               tagFileContent = tagFileContent,
-                                               tccOrgId = tccOrgId,
-                                               IsJohnDoe = false // default
-                                       };
-
-                    // Validate tagfile submission
-                    var result = TagfileValidator.ValidSubmission(td);
-                    if (result == ValidationResult.Valid && td.projectId != null && td.assetId != null) // If OK add to process queue
-                    {
-                        // First archive the tagfile
-                        if (TRexConfig.EnableTagfileArchiving)
-                        {
-                            Log.LogInformation($"Archiving tagfile:{tagFileName}, ProjectID:{td.projectId}");
-                            TagFileRepository.ArchiveTagfile(td); 
-                        }
-                        // switch from nullable to not nullable
-                        Guid validProjectID = td.projectId ?? Guid.Empty;
-                        Guid validAssetID = td.assetId ?? Guid.Empty;
-
-                        Log.LogInformation($"Submitting tagfile to TagfileBufferQueue. ProjectID:{validProjectID}, AssetID:{validAssetID}, Tagfile:{tagFileName}");
-                        TAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(tagFileName, validProjectID, validAssetID);
-                        TAGFileBufferQueueItem tagItem = new TAGFileBufferQueueItem
-                                                         {
-                                                                 InsertUTC = DateTime.Now,
-                                                                 ProjectID = validProjectID,
-                                                                 AssetID = validAssetID,
-                                                                 FileName = tagFileName,
-                                                                 Content = tagFileContent,
-                                                                 IsJohnDoe = td.IsJohnDoe
-                                                         };
-
-                        if (queue.Add(tagKey, tagItem)) // Add tagfile to queue
-                        {
-                            response.Success = true;
-                            response.Exception = "";
-                        }
-                        else
-                        {
-                            response.Success = false;
-                            response.Exception = "Failed to submit tagfile to processing queue. Request already exists";
-                        }
-                    }
-                    else
-                    {
-                        // Todo At some point a notification needs to be implemented e.g. 'api/v2/notification/tagfileprocessingerror';
-                        response.Success = false;
-                        response.Exception = Enum.GetName(typeof(ValidationResult),result); // return reason for failure
-                    }
-                }
-                catch (Exception e) // catch all exceptions here
-                {
-                    response.Exception = e.Message;
-                    Log.LogError($"#Exception# SubmitTAGFileResponse. Exception occured processing {tagFileName} Exception:{e}");
-                }
+              Log.LogInformation($"Archiving tagfile:{tagFileName}, ProjectID:{td.projectId}");
+              TagFileRepository.ArchiveTagfile(td);
             }
-            finally
+            // switch from nullable to not nullable
+            Guid validProjectID = td.projectId ?? Guid.Empty;
+            Guid validAssetID = td.assetId ?? Guid.Empty;
+
+            Log.LogInformation($"Submitting tagfile to TagfileBufferQueue. ProjectID:{validProjectID}, AssetID:{validAssetID}, Tagfile:{tagFileName}, JohnDoe{td.IsJohnDoe} ");
+            TAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(tagFileName, validProjectID, validAssetID);
+            TAGFileBufferQueueItem tagItem = new TAGFileBufferQueueItem
             {
-                Log.LogInformation($"#Out# SubmitTAGFileResponse. Processed {tagFileName} Result: {response.Success}, ErrorMessage:{response.Exception}");
+              InsertUTC = DateTime.Now,
+              ProjectID = validProjectID,
+              AssetID = validAssetID,
+              FileName = tagFileName,
+              Content = tagFileContent,
+              IsJohnDoe = td.IsJohnDoe
+            };
+
+            if (queue.Add(tagKey, tagItem)) // Add tagfile to queue
+            {
+              response.Success = true;
+              response.Message = "";
+              response.Code = (int)ValidationResult.Valid;
             }
-            return response;
+            else
+            {
+              response.Code = (int)ValidationResult.SubmissionError;
+              response.Success = false;
+              response.Message = "Failed to submit tagfile to processing queue. Request already exists";
+            }
+          }
+          else
+          {
+            response.Success = false;
+          }
         }
+        catch (Exception e) // catch all exceptions here
+        {
+          response.Message = e.Message;
+          Log.LogError($"#Exception# SubmitTAGFileResponse. Exception occured processing {tagFileName} Exception:{e}");
+        }
+      }
+      finally
+      {
+        Log.LogInformation($"#Out# SubmitTAGFileResponse. Processed {tagFileName} Result: {response.Success}, Message:{response.Message}");
+      }
+      return response;
     }
+  }
 }

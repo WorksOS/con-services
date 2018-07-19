@@ -34,7 +34,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       var tileResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
-          .Build<TileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, tileRenderServer)
+          .Build<TileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, tileRenderServer,null)
           .Process(request)) as TileResult;
 
       if (tileResult?.TileData == null )

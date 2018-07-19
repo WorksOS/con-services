@@ -1075,7 +1075,7 @@ namespace TRexIgniteTest
 						}
 
 						var res = request.Execute(arg);
-						MessageBox.Show(String.Format("Submission Result:{0}, File:{1}, ErrorMessage:{2}", res.Success,res.FileName, res.Exception));
+						MessageBox.Show(String.Format("Submission Result:{0}, File:{1}, ErrorMessage:{2}", res.Success,res.FileName, res.Message));
 
 				}
 				catch (Exception exception)

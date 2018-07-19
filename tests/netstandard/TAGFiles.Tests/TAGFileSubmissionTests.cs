@@ -70,7 +70,7 @@ namespace TAGFiles.Tests
                 TCCOrgID = ""
             });
 
-            Assert.True(response.Success, $"Response is not successful. Filename={response.FileName}, exception={response.Exception}");
+            Assert.True(response.Success, $"Response is not successful. Filename={response.FileName}, exception={response.Message}");
         }
     }
 }
