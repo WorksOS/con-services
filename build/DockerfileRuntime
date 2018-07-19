@@ -21,7 +21,7 @@ ENV IGNITE_HOME=/trex/
 # # TRex still cannot run in 
 COPY --from=build_container /trex/ /trex/
 #Get the ignite libs as these are ignored by dotnet publish
-#COPY --from=build_container /root/.nuget/packages/apache.ignite/2.4.0/libs/ /trex/libs/
+#COPY --from=build_container /root/.nuget/packages/apache.ignite/2.6.0/libs/ /trex/libs/
 WORKDIR /trex
 
 #A bit of a hack to try and get logging working in java
