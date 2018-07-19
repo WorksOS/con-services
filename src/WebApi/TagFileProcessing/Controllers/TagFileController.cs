@@ -47,6 +47,9 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     /// <summary>
     /// Posts TAG file to Raptor. 
     /// </summary>
+    /// <remarks>
+    /// This endpoint is only used as a tool for for reprocessing tagfiles for Raptor (not TRex).
+    /// </remarks>
     [PostRequestVerifier]
     [Route("api/v1/tagfiles")]
     [HttpPost]
