@@ -46,6 +46,7 @@ namespace VSS.TRex.Servers.Compute
     public override void ConfigureTRexGrid(IgniteConfiguration cfg)
     {
       base.ConfigureTRexGrid(cfg);
+      cfg.SpringConfigUrl = @".\igniteKubeConfig.xml";
 
       cfg.IgniteInstanceName = TRexGrids.MutableGridName();
 
@@ -94,9 +95,6 @@ namespace VSS.TRex.Servers.Compute
       Log.LogInformation($"cfg.DataStorageConfiguration.WalPath={cfg.DataStorageConfiguration.WalPath}");
 
       cfg.JvmOptions = new List<string>() { "-DIGNITE_QUIET=false", "-Djava.net.preferIPv4Stack=true" };
-
-
-      cfg.SpringConfigUrl = @".\igniteKubeConfig.xml";
 
       //cfg.DiscoverySpi = new TcpDiscoverySpi()
       //{
