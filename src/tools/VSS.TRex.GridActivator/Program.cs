@@ -18,9 +18,10 @@ namespace VSS.TRex.GridActivator
 
     static void Main(string[] args)
     {
-      Log.LogInformation("Activating Grid");
       DependencyInjection();
       Log = Logger.CreateLogger<Program>();
+
+      Log.LogInformation("Activating Grid");
 
 
       //TODO: Work out how we want to activate the grid in netcore. For now do it here directly.
