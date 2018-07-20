@@ -1,5 +1,4 @@
-﻿using System.Drawing.Imaging;
-using System.IO;
+﻿using System.IO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
@@ -27,24 +26,19 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [Route("api/v1/tile")]
     public FileResult GetTile([FromBody] TileRequest request)
     {
-      //TileRequest will contain a FilterResult and other parameters 
       Log.LogDebug("GetTile: " + Request.QueryString);
       
       request.Validate();
 
       var tileResult = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
-          .Build<TileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, tileRenderServer,null)
+          .Build<TileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, tileRenderServer, null)
           .Process(request)) as TileResult;
 
       if (tileResult?.TileData == null )
         tileResult = TileResult.EmptyTile(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE);
 
-      var memStream = new MemoryStream();
-      tileResult.TileData.Save(memStream, ImageFormat.Png);
-      memStream.Position = 0;
-
-      return new FileStreamResult(memStream, "image/png");
+      return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
     }
   }
 }

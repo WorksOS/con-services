@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Buffers.Text;
 using Draw = System.Drawing;
 using System.IO;
 using System.Net;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Extensions.Logging;
@@ -107,21 +109,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           Guid.Empty //TODO: request.DesignDescriptor
         )) as TileRenderResponse_Core2;
 
-      var tileData = response?.TileBitmapData;
-      if (tileData != null)
-      {
-        Draw.Point origin = new Draw.Point(0, 0);
-        using (Draw.Bitmap bitmap = new Draw.Bitmap(request.Width, request.Height))
-        using (Draw.Graphics g = Draw.Graphics.FromImage(bitmap))
-        using (var tileStream = new MemoryStream(tileData))
-        {
-          Draw.Image image = Draw.Image.FromStream(tileStream);
-          g.DrawImage(image, origin);
-          return TileResult.CreateTileResult(bitmap);
-        }
-      }
-
-      return TileResult.CreateTileResult(null); 
+      return TileResult.CreateTileResult(response?.TileBitmapData);
     }
 
     /// <summary>

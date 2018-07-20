@@ -145,14 +145,9 @@ namespace TRexIgniteTest
 
           if (tileData != null)
 				  {
-				    Draw.Point origin = new Draw.Point(0, 0);
-				    using (Draw.Bitmap bitmap = new Draw.Bitmap(width, height))
-				    using (Draw.Graphics g = Draw.Graphics.FromImage(bitmap))
-            using (var tileStream = new MemoryStream(tileData))
+				    using (var ms = new MemoryStream(tileData))
 				    {
-				      Draw.Image image = Draw.Image.FromStream(tileStream);
-				      g.DrawImage(image, origin);
-				      return bitmap;
+				      return new Draw.Bitmap(ms);
 				    }
 				  }
         return null;
@@ -284,7 +279,7 @@ namespace TRexIgniteTest
 
 				if (bmp != null)
 				{
-						bmp.Save(@"C:\temp\renderedtile.bmp", ImageFormat.Bmp);
+						bmp.Save(@"C:\temp\renderedtile.png", ImageFormat.Png);
 						pictureBox1.Image = bmp;
 						pictureBox1.Show();
 				}

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.IO;
 using Draw = System.Drawing;
 using System.Drawing.Imaging;
 
@@ -17,9 +18,7 @@ namespace VSS.TRex.Common
       using (var bitmapStream = new MemoryStream())
       {
         bitmap.Save(bitmapStream, ImageFormat.Png);
-        bitmapStream.Position = 0;
-        data = new byte[bitmapStream.Length];
-        bitmapStream.Read(data, 0, (int)bitmapStream.Length);
+        data = bitmapStream.ToArray();
         bitmapStream.Close();
       }
       return data;
