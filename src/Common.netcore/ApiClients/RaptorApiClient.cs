@@ -8,6 +8,7 @@ using Common.Repository;
 using LandfillService.Common.ApiClients;
 using LandfillService.Common.Models;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using NodaTime;
 using NodaTime.TimeZones;
 using VSS.ConfigurationStore;
@@ -314,6 +315,8 @@ namespace Common.netstandard.ApiClients
         }
       };
 
+      var logVolumeParams = JsonConvert.SerializeObject(volumeParams, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      Console.WriteLine("VOLUMES=" + logVolumeParams);
       var result = await raptorProxy.ExecuteGenericV1Request<SummaryVolumesResult>("/volumes/summary", volumeParams, customHeaders);
       
       //Log.LogDebug("Volumes request for projectResponse {0}: {1} {2} Result : {3}", projectResponse.id, reportEndpoint,JsonConvert.SerializeObject(volumeParams), JsonConvert.SerializeObject(result));
