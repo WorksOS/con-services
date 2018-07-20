@@ -4,7 +4,6 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -163,7 +162,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
                 projectErrorCodesProvider.FirstNameWithOffset(8)));
           }
           
-          ProjectRequestHelper.ValidateGeofence(createEvent.ProjectBoundary, serviceExceptionHandler);
+          ProjectRequestHelper.ValidateProjectBoundary(createEvent.ProjectBoundary, serviceExceptionHandler);
 
           if (string.IsNullOrEmpty(createEvent.ProjectTimezone))
           {
@@ -257,7 +256,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
           }
           if (!string.IsNullOrEmpty(updateEvent.ProjectBoundary))
           {
-            ProjectRequestHelper.ValidateGeofence(updateEvent.ProjectBoundary, serviceExceptionHandler);
+            ProjectRequestHelper.ValidateProjectBoundary(updateEvent.ProjectBoundary, serviceExceptionHandler);
           }
         }
         //Nothing else to check for DeleteProjectEvent
@@ -354,27 +353,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 
       log.LogInformation($"ValidateProjectName Any duplicateProjectNames? {JsonConvert.SerializeObject(duplicateProjectNames)} retrieved");
     }
-
-    public static async Task ValidateGeofenceUids(string customerUid, UpdateProjectGeofenceRequest updateProjectGeofenceRequest,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler,
-      IProjectRepository projectRepo)
-    {
-      var allGeofencesOfTypes = new List<GeofenceWithAssociation>();
-      try
-      {
-        allGeofencesOfTypes =
-          (await ProjectRequestHelper.GetCustomerGeofenceList(customerUid, updateProjectGeofenceRequest.GeofenceTypes,
-            log, projectRepo)).ToList();
-        log.LogInformation($"ValidateGeofenceUids() allGeofencesOfTypes: {JsonConvert.SerializeObject(allGeofencesOfTypes)}");
-      }
-      catch (Exception e)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 106, e.Message);
-      }
-
-      // do we have all the GeofenceUids requested, in the database?
-      var requestedGeofenceUids = allGeofencesOfTypes
-        .Where(g => updateProjectGeofenceRequest.GeofenceGuids.Contains(Guid.Parse(g.GeofenceUID))).ToList();
-    }
+   
   }
 }

@@ -100,39 +100,6 @@ namespace TestUtility
       Assert.AreEqual(expectedEventCount, result, " Number of expected events do not match actual events in database");
     }
 
-    public string VerifyProjectGeofence(string projectUid, int expectedEventCount)
-    {
-      // since we're using geofenceProxy which doesn't write to db, we cant check Geofence in DB
-      var sqlQuery = $@"SELECT COUNT(*) 
-                          FROM Project p 
-                            INNER JOIN ProjectGeofence pg ON pg.fk_ProjectUID = p.ProjectUID                           
-                          WHERE ProjectUID = '{projectUid}'";
-      var result = GetDatabaseCountForEvents(sqlQuery, expectedEventCount);
-      Assert.AreEqual(expectedEventCount, result, " Number of expected ProjectGeofence associations do not match actual events in database");
-
-      string geofenceUid = null;
-      if (result == 1)
-      {
-        sqlQuery = $@"SELECT pg.fk_GeofenceUID
-                          FROM Project p
-                            INNER JOIN ProjectGeofence pg ON pg.fk_ProjectUID = p.ProjectUID
-                          WHERE ProjectUID = '{projectUid}'";
-        geofenceUid = ExecuteMySqlQueryAndReturnRecordCountResult(TsCfg.DbConnectionString, sqlQuery);
-      }
-      return geofenceUid;
-    }
-
-    public void VerifyProjectSubscription(string projectUid, int expectedEventCount)
-    {
-      // since we're using geofenceProxy which doesn't write to db, we cant check Geofence in DB
-      var sqlQuery = $@"SELECT COUNT(*)
-                          FROM Project p
-                            INNER JOIN ProjectSubscription ps ON ps.fk_ProjectUID = p.ProjectUID
-                          WHERE ProjectUID = '{projectUid}'";
-      var result = GetDatabaseCountForEvents(sqlQuery, expectedEventCount);
-      Assert.AreEqual(expectedEventCount, result, " Number of expected ProjectSubscription associations do not match actual events in database");
-    }
-
     /// <summary>
     /// Verify the value of fields in the table for the given uid
     /// </summary>
