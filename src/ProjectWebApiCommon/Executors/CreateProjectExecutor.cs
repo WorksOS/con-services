@@ -22,11 +22,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// </summary>
     protected string subscriptionUidAssigned;
 
-    /// <summary>
-    /// Save for potential rollback
-    /// </summary>
-    protected Guid geofenceUidCreated = Guid.Empty;
-
+   
     /// <summary>
     /// Processes the CreateProjectEvent
     /// </summary>
@@ -41,7 +37,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
       }
 
-      ProjectRequestHelper.ValidateGeofence(createProjectEvent.ProjectBoundary, serviceExceptionHandler);
+      ProjectRequestHelper.ValidateProjectBoundary(createProjectEvent.ProjectBoundary, serviceExceptionHandler);
 
       ProjectRequestHelper.ValidateCoordSystemFile(null, createProjectEvent, serviceExceptionHandler);
 
@@ -74,8 +70,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       //    if CreateProjectInDb fails then nothing is done
       //    if CreateCoordSystem fails then project is deleted
       //    if AssociateProjectSubscription fails ditto
-      //    if CreateGeofenceInGeofenceService fails then project is deleted; ProjectSubscription is Dissassociated
-      //    if AssociateProjectGeofence fails then project is deleted; ProjectSubscription is Dissassociated; Geofence is deleted
       createProjectEvent = await CreateProjectInDb(createProjectEvent, customerProject).ConfigureAwait(false);
       await ProjectRequestHelper.CreateCoordSystemInRaptorAndTcc(
         createProjectEvent.ProjectUID, createProjectEvent.ProjectID, createProjectEvent.CoordinateSystemFileName, 
@@ -86,30 +80,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       subscriptionUidAssigned = await ProjectRequestHelper.AssociateProjectSubscriptionInSubscriptionService(createProjectEvent.ProjectUID.ToString(), createProjectEvent.ProjectType, customerUid,
         log, serviceExceptionHandler, customHeaders, subscriptionProxy,subscriptionRepo, projectRepo, true).ConfigureAwait(false);
       log.LogDebug($"CreateProject: Was projectSubscription Associated? subscriptionUidAssigned: {subscriptionUidAssigned}");
-
-      var geofenceUid = await CreateGeofenceInGeofenceService(createProjectEvent).ConfigureAwait(false);
-      log.LogDebug($"CreateProject: Was geofence created by GeofenceSvc? geofenceUid: {geofenceUid}");
-
-      AssociateProjectGeofence associateProjectGeofence = null;
-      if (geofenceUid != Guid.Empty) // TBC work-around 
-      {
-        associateProjectGeofence = new AssociateProjectGeofence()
-        {
-          ProjectUID = createProjectEvent.ProjectUID,
-          GeofenceUID = geofenceUid,
-          ActionUTC = DateTime.UtcNow
-        };
-        await AssociateProjectGeofence(associateProjectGeofence).ConfigureAwait(false);
-        log.LogDebug("CreateProject. associateProjectGeofence: {associateProjectGeofence}");
-      }
-      else
-      {
-        log.LogDebug("CreateProject. No GeofenceUID so not associated with project. This should only be ok for TBC: {geofenceUid}");
-      }
-      
-
+    
       // doing this as late as possible in case something fails. We can't cleanup kafka que.
-      CreateKafkaEvents(createProjectEvent, customerProject, associateProjectGeofence);
+      CreateKafkaEvents(createProjectEvent, customerProject);
 
       log.LogDebug("CreateProject. completed succesfully");
       return new ContractExecutionResult();
@@ -185,80 +158,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       log.LogDebug($"Created CustomerProject in DB {JsonConvert.SerializeObject(customerProject)}");
       return project; // legacyID may have been added
     }
-    
- 
-    /// <summary>
-    /// Creates a geofence from the projects boundary
-    /// </summary>
-    /// <param name="project">The project.</param>
-    /// <returns></returns>
-    protected async Task<Guid> CreateGeofenceInGeofenceService(CreateProjectEvent project)
-    {
-      // This is a temporary work-around of UserAuthorization issue with external applications.
-      //     GeofenceService contains UserAuthorization which will fail for TBC, which uses the v2 API
-      if (httpContextAccessor != null && httpContextAccessor.HttpContext.Request.Path.Value.Contains("api/v2/projects"))
-      {
-        log.LogWarning($"Skip creating a geofence for project: {project.ProjectName}, as request has come from the TBC endpoint: {httpContextAccessor.HttpContext.Request.Path.Value}.");
-        return Guid.Empty;
-      }
 
-      log.LogDebug($"Creating a geofence for project: {project.ProjectName}");
-      log.LogDebug($"Creating a geofence for customer: {project.CustomerUID}");
-      log.LogDebug($"Creating a geofence for userId: {userId}");
-      try
-      {
-        var area = GeofenceValidation.CalculateAreaSqMeters(project.ProjectBoundary);
-        log.LogDebug($"CreateProject: Going to create Geofence. Area: {area}, customerUid: {customerUid}");
-        geofenceUidCreated = await geofenceProxy.CreateGeofence(project.CustomerUID, project.ProjectName, "", "Project",
-          project.ProjectBoundary,
-          0, true, Guid.Parse(userId), area, customHeaders).ConfigureAwait(false);
-      }
-      catch (Exception e)
-      {
-        await ProjectRequestHelper.DeleteProjectPermanentlyInDb(project.CustomerUID, project.ProjectUID, log, projectRepo).ConfigureAwait(false);
-        await ProjectRequestHelper.DissociateProjectSubscription(project.ProjectUID, subscriptionUidAssigned, log, customHeaders, subscriptionProxy).ConfigureAwait(false);
-
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57,
-          "geofenceProxy.CreateGeofenceInGeofenceService", e.Message);
-      }
-      log.LogDebug($"CreatingProject: Has geofenceSvc created the geofence? geofenceUidCreated: {geofenceUidCreated}");
-
-      if (geofenceUidCreated == Guid.Empty)
-      {
-        await ProjectRequestHelper.DeleteProjectPermanentlyInDb(project.CustomerUID, project.ProjectUID, log, projectRepo).ConfigureAwait(false);
-        await ProjectRequestHelper.DissociateProjectSubscription(project.ProjectUID, subscriptionUidAssigned, log, customHeaders, subscriptionProxy).ConfigureAwait(false);
-
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 59);
-      }
-
-      return geofenceUidCreated;
-    }
-
-    /// <summary>
-    /// Associates project with its geofence.
-    ///      projectService uses Project.ProjectBoundary, 
-    ///      however other services use the ProjectGeofence/Geofence association
-    /// </summary>
-    /// <param name="projectGeofence">The geofence project.</param>
-    /// <returns></returns>
-    protected async Task AssociateProjectGeofence(AssociateProjectGeofence projectGeofence)
-    {
-      ProjectDataValidator.Validate(projectGeofence, projectRepo, serviceExceptionHandler);
-      projectGeofence.ReceivedUTC = DateTime.UtcNow;
-
-      var isUpdated = await projectRepo.StoreEvent(projectGeofence).ConfigureAwait(false);
-      if (isUpdated == 0)
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 65);
-    }
 
     /// <summary>
     /// Creates Kafka events.
     /// </summary>
     /// <param name="project"></param>
     /// <param name="customerProject">The create projectCustomer event</param>
-    /// <param name="projectGeofence"></param>
     /// <returns></returns>
-    protected void CreateKafkaEvents(CreateProjectEvent project, AssociateProjectCustomer customerProject, AssociateProjectGeofence projectGeofence)
+    protected void CreateKafkaEvents(CreateProjectEvent project, AssociateProjectCustomer customerProject)
     {
       log.LogDebug($"CreateProjectEvent on kafka queue {JsonConvert.SerializeObject(project)}");
       string wktBoundary = project.ProjectBoundary;
@@ -287,18 +195,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayloadCustomerProject)
         });
-
-      if (projectGeofence != null)
-      {
-        log.LogDebug($"AssociateProjectGeofenceEvent on kafka queue {JsonConvert.SerializeObject(projectGeofence)}");
-
-        var messagePayload = JsonConvert.SerializeObject(new {AssociateProjectGeofence = projectGeofence});
-        producer.Send(kafkaTopicName,
-          new List<KeyValuePair<string, string>>()
-          {
-            new KeyValuePair<string, string>(projectGeofence.ProjectUID.ToString(), messagePayload)
-          });
-      }
     }
 
   }

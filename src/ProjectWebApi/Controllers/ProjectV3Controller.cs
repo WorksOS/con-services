@@ -96,7 +96,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task CreateProjectV3([FromBody] CreateProjectEvent project)
     {
       log.LogInformation("CreateProjectV3. project: {0}", JsonConvert.SerializeObject(project));
-      ProjectRequestHelper.ValidateGeofence(project.ProjectBoundary, serviceExceptionHandler);
+      ProjectRequestHelper.ValidateProjectBoundary(project.ProjectBoundary, serviceExceptionHandler);
       string wktBoundary = project.ProjectBoundary;
 
       //Convert to old format for Kafka for consistency on kakfa queue

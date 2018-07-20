@@ -224,60 +224,7 @@ namespace IntegrationTests
      $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate:O}    | {endDate:O}    | {projectGuid} | {projectId} | {customerGuid}   | 1                | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))  |" };
       ts.GetProjectsViaWebApiV3AndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
     }
-
-
-    /// <summary>
-    /// TODO!!!!
-    /// Currently it is possible to associate multiple GeofenceType.Project to a project, this should not be 
-    /// allowed but they way project boundaries are defined is most likely to change making this a valid operation.
-    /// This test currently checks the database to ensure that the associations exist but when/if getProjectGeofences is created
-    /// the this should test that method.
-    /// </summary>
-    [TestMethod]
-    public void Create_Then_Associate_Multiple_Project_Type_Geofences_with_Project()
-    {
-      var msg = new Msg();
-      var ts = new TestSupport { IsPublishToKafka = true};
-      var mysql = new MySqlHelper();
-      var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
-      var projectGuid = Guid.NewGuid();
-      var customerGuid = Guid.NewGuid();
-      var geofenceGuid = Guid.NewGuid();
-      var geofenceGuid2 = Guid.NewGuid();
-      var userGuid = Guid.NewGuid();
-      var projectId = ts.SetLegacyProjectId();
-      string projectName = $"Integration Test Project 8";
-      DateTime startDate = ts.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00",ts.FirstEventDate);
-      DateTime endDate = ts.ConvertTimeStampAndDayOffSetToDateTime("1000d+00:00:00",ts.FirstEventDate);
-
-      Create_Customer_Then_Project_And_Subscriptions(ts, customerGuid, projectGuid,projectId, projectName, startDate, endDate, 1);
-
-      var geofenceEventArray = new[] {
-         "| EventType           | EventDate   | CustomerUID    | Description | FillColor | GeofenceName   | GeofenceType           | GeofenceUID     | GeometryWKT | IsTransparent | UserUID    | ",
-        $"| CreateGeofenceEvent | 0d+09:00:00 | {customerGuid} | Fence       | 1         | Walls of Ston  | {GeofenceType.Project} | {geofenceGuid}  | 1,2,3       | {false}       | {userGuid} |" ,
-        $"| CreateGeofenceEvent | 0d+09:00:00 | {customerGuid} | Fence       | 1         | Hadrian's Wall | {GeofenceType.Project} | {geofenceGuid2} | 4,5,6       | {false}       | {userGuid} |"};
-
-      ts.PublishEventCollection(geofenceEventArray);
-      mysql.VerifyTestResultDatabaseRecordCount("Geofence", "UserUID", 2, userGuid);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("Geofence", "GeofenceUID","fk_CustomerUID, Name",$"{customerGuid}, Walls of Ston",geofenceGuid);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("Geofence", "GeofenceUID","fk_CustomerUID, Name",$"{customerGuid}, Hadrian's Wall",geofenceGuid2);
-
-      ts.AssociateGeofenceProjectViaWebApi(projectGuid, geofenceGuid, DateTime.Now, HttpStatusCode.OK);
-      mysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_GeofenceUID", 1, geofenceGuid);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_GeofenceUID","fk_ProjectUID",$"{projectGuid}",geofenceGuid);
-
-      projectConsumerMysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_GeofenceUID", 1, geofenceGuid);
-      projectConsumerMysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_GeofenceUID","fk_ProjectUID",$"{projectGuid}",geofenceGuid);
-
-      ts.AssociateGeofenceProjectViaWebApi(projectGuid, geofenceGuid2, DateTime.Now, HttpStatusCode.OK);
-      mysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_GeofenceUID", 1, geofenceGuid2);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_GeofenceUID","fk_ProjectUID",$"{projectGuid}",geofenceGuid);
-
-      projectConsumerMysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_GeofenceUID", 1, geofenceGuid2);
-      projectConsumerMysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_GeofenceUID","fk_ProjectUID",$"{projectGuid}",geofenceGuid);
-
-    }
+    
 
     [TestMethod]
     public void Create_Then_Associate_Multiple_NonProject_Type_Geofences_with_Project()
