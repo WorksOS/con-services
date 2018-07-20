@@ -23,6 +23,7 @@ spec:
 
   - name: masterdataconsumercustomer
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    imagePullPolicy: Always
     envFrom:
     - configMapRef:
         name: projectservice-testing
@@ -33,6 +34,7 @@ spec:
 
   - name: masterdataconsumerproject
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    imagePullPolicy: Always
     env_file:
      - docker-compose.env
     tty: true
@@ -47,6 +49,7 @@ spec:
       
   - name: masterdataconsumergeofence
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    imagePullPolicy: Always
     envFrom:
     - configMapRef:
         name: projectservice-testing
@@ -57,6 +60,7 @@ spec:
 
   - name: masterdataconsumersubscription
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    imagePullPolicy: Always
     envFrom:
     - configMapRef:
         name: projectservice-testing
@@ -67,6 +71,7 @@ spec:
 
   - name: masterdataschema
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
+    imagePullPolicy: Always
     tty: true
     envFrom:
     - configMapRef:
@@ -77,6 +82,7 @@ spec:
      
   - name: projectonlyschema
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
+    imagePullPolicy: Always
     envFrom:
     - configMapRef:
         name: projectservice-testing
@@ -114,6 +120,7 @@ spec:
 
   - name: mockapi-container
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux
+    imagePullPolicy: Always
     ports:
     - containerPort: 5001
     livenessProbe:
