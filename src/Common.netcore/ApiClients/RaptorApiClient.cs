@@ -64,8 +64,7 @@ namespace Common.netstandard.ApiClients
     /// <param name="geofence">GeofenceResponse</param>
     /// <param name="entry">Weight entry from the client</param>
     /// <returns></returns>
-    public async Task GetVolumeInBackground(string userUid, ProjectResponse projectResponse, List<WGSPoint> geofence,
-      DateEntry entry)
+    public async Task GetVolumeInBackground(string userUid, ProjectResponse projectResponse, List<WGSPoint> geofence,DateEntry entry)
     {
       try
       {
@@ -183,7 +182,7 @@ namespace Common.netstandard.ApiClients
     {
       var zone = DateTimeZoneProviders.Tzdb[timeZone];
       var offset = zone.GetUtcOffset(SystemClock.Instance.GetCurrentInstant());
-      return offset.Milliseconds == 0 ? 0 : offset.Milliseconds / 60000;
+      return offset.Milliseconds == 0 ? 0 : (offset.Milliseconds * -1) / 60000;
     }
 
     /// <summary>
