@@ -285,7 +285,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         {
             try
             {
-                Log.LogInformation("ProcessTAGFilesFromGrouper2 starting executing");
+                Log.LogInformation("#In# ProcessTAGFilesFromGrouper2 starting executing");
 
                 // Cycle looking for new work to do as TAG files arrive until aborted...
                 do
@@ -309,16 +309,16 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                             //task.Wait();
 
                             Log.LogInformation(
-                                $"Start processing {packageCount} TAG files from package in thread {Thread.CurrentThread.ManagedThreadId}");
+                                $"#Progress# Start processing {packageCount} TAG files from package in thread {Thread.CurrentThread.ManagedThreadId}");
                             ProcessTAGFileBucketFromGrouper2(package);
                             Log.LogInformation(
-                                $"Completed processing {packageCount} TAG files from package in thread {Thread.CurrentThread.ManagedThreadId}");
+                                $"#Progress# Completed processing {packageCount} TAG files from package in thread {Thread.CurrentThread.ManagedThreadId}");
                         }
                         finally
                         {
                             // Remove the project from the avoid list
                             Log.LogInformation(
-                                $"Thread {Thread.CurrentThread.ManagedThreadId}: About to remove project {projectID} from [{(!ProjectsToAvoid.Any() ? "Empty" : ProjectsToAvoid.Select(x => $"{x}").Aggregate((a, b) => $"{a} + {b}"))}]");
+                                $"#Progress# Thread {Thread.CurrentThread.ManagedThreadId}: About to remove project {projectID} from [{(!ProjectsToAvoid.Any() ? "Empty" : ProjectsToAvoid.Select(x => $"{x}").Aggregate((a, b) => $"{a} + {b}"))}]");
                             grouper.RemoveProjectFromAvoidList(ProjectsToAvoid, projectID);
                         }
                     }
@@ -333,7 +333,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                     }
                 } while (!aborted);
 
-                Log.LogInformation("ProcessTAGFilesFromGrouper2 completed executing");
+                Log.LogInformation("#Out# ProcessTAGFilesFromGrouper2 completed executing");
             }
             catch (Exception e)
             {

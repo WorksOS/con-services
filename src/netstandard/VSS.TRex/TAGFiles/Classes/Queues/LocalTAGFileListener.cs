@@ -34,7 +34,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 try
                 {
                     TAGFileBufferQueueItemHandler.Instance().Add(evt.Key /*, evt.Value*/);
-                    Log.LogInformation($"Added TAG file item [{evt.Key}] to the grouper");
+                    Log.LogInformation($"#Progress# Added TAG file item [{evt.Key}] to the grouper");
                 }
                 catch (Exception e)
                 {
@@ -45,7 +45,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
             if (countOfCreatedEvents > 0)
             {
-                Log.LogInformation($"Added {countOfCreatedEvents} TAG file items to the grouper");
+                Log.LogInformation($"#Progress# Added {countOfCreatedEvents} TAG file items to the grouper");
             }
         }
     }
