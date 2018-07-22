@@ -32,6 +32,18 @@ namespace VSS.TRex.GridActivator
       //Log.LogInformation("About to call ActivatePersistentGridServer.Instance().SetGridActive() for Mutable TRex grid");
       bool result2 = ActivatePersistentGridServer.Instance().SetGridActive(TRexGrids.MutableGridName());
       //Log.LogInformation($"Activation process completed: Mutable = {result2}");
+
+      Log.LogInformation($"Immutable Grid Active: {result1}");
+      if (!result1)
+      {
+        Log.LogCritical("Immutable Grid failed to activate");
+      }
+      Log.LogInformation($"Mutable Grid Active: {result2}");
+      if (!result1)
+      {
+        Log.LogCritical("Mutable Grid failed to activate");
+      }
+
     }
   }
 }
