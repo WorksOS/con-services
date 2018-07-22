@@ -51,7 +51,7 @@ namespace VSS.TRex.TAGFiles.Classes
       // dont waste the services time if you dont have any details
       //if (tccOrgId == string.Empty && radioType == string.Empty)
       //   return ValidationResult.BadRequest;
-      Log.LogInformation($"Details passed to TFA servce. ProjectID:{projectId}, TCCOrgId:{tccOrgId}, radioSerial:{radioSerial}, radioType:{radioType}, lat:{lat}, lon:{lon}, DateTime:{timeOfPosition}");
+      Log.LogInformation($"#Progress# ValidateTagfile. Details passed to TFA servce. ProjectID:{projectId}, TCCOrgId:{tccOrgId}, radioSerial:{radioSerial}, radioType:{radioType}, lat:{lat}, lon:{lon}, DateTime:{timeOfPosition}");
 
       if (radioSerial == String.Empty && tccOrgId == Guid.Empty && submittedProjectId == Guid.Empty)
       {
@@ -73,7 +73,7 @@ namespace VSS.TRex.TAGFiles.Classes
 
       var json = Newtonsoft.Json.JsonConvert.SerializeObject(req);
 
-      Log.LogInformation($"#TFARequest# JSON:{json}");
+      Log.LogDebug($"#Debug# TFARequest JSON:{json}");
 
       string URL = Configuration.GetValue<string>("TFA_SERVICE_BASEURL", String.Empty) + Configuration.GetValue<string>("TFA_SERVICE_GETPROJECTID", String.Empty);
       Console.WriteLine($"Connecting to TFA service:{URL}");
@@ -99,7 +99,8 @@ namespace VSS.TRex.TAGFiles.Classes
         var responseObj = Newtonsoft.Json.JsonConvert.DeserializeObject<TFAReponse>(response);
         responseReader.Close();
         message = responseObj.message;
-        Log.LogInformation($"#TFAResponse# ProjectUid:{responseObj.projectUid}, AssetUid:{responseObj.assetUid}, code:{responseObj.code}, message:{responseObj.message}");
+        Log.LogInformation($"#Progress# ValidateTagfile. TFAResponse. projectUid:{responseObj.projectUid}, assetUid:{responseObj.assetUid}, code:{responseObj.code}, message:{responseObj.message}");
+
         // use code and message from tfa service
         message = responseObj.message;
         code = responseObj.code;
@@ -124,7 +125,7 @@ namespace VSS.TRex.TAGFiles.Classes
       {
         Console.Out.WriteLine("-----------------");
         Console.Out.WriteLine(e.Message);
-        Log.LogError($"#Exception# Unexpected exception occured calling TFA service ProjectId:{projectId}, TCCOrgId:{tccOrgId}, radioSerial:{radioSerial}, radioType:{radioType}, lat:{lat}, lon:{lon}, DateTime:{timeOfPosition} {e.Message}");
+        Log.LogError($"#Exception# ValidateTagfile. Unexpected exception occured calling TFA service ProjectId:{projectId}, TCCOrgId:{tccOrgId}, radioSerial:{radioSerial}, radioType:{radioType}, lat:{lat}, lon:{lon}, DateTime:{timeOfPosition} {e.Message}");
         result = GetValidationResultName(ValidationResult.TfaAcessError,ref message,ref code);
         return result;
       }
