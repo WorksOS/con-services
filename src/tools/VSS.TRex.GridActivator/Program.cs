@@ -21,7 +21,7 @@ namespace VSS.TRex.GridActivator
       DependencyInjection();
       Log = Logger.CreateLogger<Program>();
 
-      Log.LogInformation("Activating Grid");
+      Log.LogInformation("Activating Grids");
 
 
       //TODO: Work out how we want to activate the grid in netcore. For now do it here directly.
@@ -39,7 +39,7 @@ namespace VSS.TRex.GridActivator
         Log.LogCritical("Immutable Grid failed to activate");
       }
       Log.LogInformation($"Mutable Grid Active: {result2}");
-      if (!result1)
+      if (!result2)
       {
         Log.LogCritical("Mutable Grid failed to activate");
       }
