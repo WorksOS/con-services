@@ -77,14 +77,14 @@ namespace VSS.TRex.TAGFiles.Executors
             IConfiguration config = DIContext.Obtain<IConfiguration>();
             if (config.GetValue<bool>("ENABLE_TAGFILE_ARCHIVING", false))
             {
-              Log.LogInformation($"Archiving tagfile:{tagFileName}, ProjectID:{td.projectId}");
+              Log.LogInformation($"#Progress# SubmitTAGFileResponse. Archiving tagfile:{tagFileName}, ProjectID:{td.projectId}");
               TagFileRepository.ArchiveTagfile(td);
             }
             // switch from nullable to not nullable
             Guid validProjectID = td.projectId ?? Guid.Empty;
             Guid validAssetID = td.assetId ?? Guid.Empty;
 
-            Log.LogInformation($"Submitting tagfile to TagfileBufferQueue. ProjectID:{validProjectID}, AssetID:{validAssetID}, Tagfile:{tagFileName}, JohnDoe{td.IsJohnDoe} ");
+            Log.LogInformation($"#Progress# SubmitTAGFileResponse. Submitting tagfile to TagfileBufferQueue. ProjectID:{validProjectID}, AssetID:{validAssetID}, Tagfile:{tagFileName}, JohnDoe{td.IsJohnDoe} ");
             TAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(tagFileName, validProjectID, validAssetID);
             TAGFileBufferQueueItem tagItem = new TAGFileBufferQueueItem
             {
@@ -106,7 +106,7 @@ namespace VSS.TRex.TAGFiles.Executors
             {
               response.Code = (int)ValidationResult.SubmissionError;
               response.Success = false;
-              response.Message = "Failed to submit tagfile to processing queue. Request already exists";
+              response.Message = "SubmitTAGFileResponse. Failed to submit tagfile to processing queue. Request already exists";
             }
           }
           else

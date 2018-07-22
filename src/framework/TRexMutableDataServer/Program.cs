@@ -25,8 +25,9 @@ namespace TRexMutableDataServer
         .AddLogging()
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels()))
-        .Add(x => x.AddSingleton<ITFAProxy>(new TFAProxy(null)))
+        .Add(x => x.AddSingleton<ITFAProxy>(new TFAProxy(Configuration)))
         .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
+        .Add(x => x.AddSingleton(Configuration))
         .Complete();
     }
 
@@ -36,8 +37,19 @@ namespace TRexMutableDataServer
     [STAThread]
     static void Main()
     {
+      Configuration = new ConfigurationBuilder()
+        .Build();
 
       DependencyInjection();
+
+      if (Configuration.GetSection("EnableTFAService").Value == null)
+        Console.WriteLine("*** Warning! **** Check for missing configuration values. e.g EnableTFAService");
+
+      Console.WriteLine("**** Configuration Settings ****");
+      foreach (var env in Configuration.GetChildren())
+      {
+        Console.WriteLine($"{env.Key}:{env.Value}");
+      }
 
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
