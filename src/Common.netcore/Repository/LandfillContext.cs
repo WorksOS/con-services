@@ -488,6 +488,8 @@ namespace Common.Repository
       var todayinProjTimeZone = (utcNow + projTimeZoneOffsetFromUtc.ToTimeSpan()).Date;
       var twoYearsAgo = todayinProjTimeZone.AddYears(-2);
       //DateTime yesterday = todayinProjTimeZone.AddDays(-1);
+      Console.WriteLine("CheckDateRange.todayinProjTimeZone=" + todayinProjTimeZone);
+      Console.WriteLine("CheckDateRange.twoYearsAgo=" + twoYearsAgo);
       if (!startDate.HasValue)
         startDate = twoYearsAgo;
       if (!endDate.HasValue)

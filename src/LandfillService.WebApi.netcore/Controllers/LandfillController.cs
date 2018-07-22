@@ -271,12 +271,12 @@ namespace LandfillService.WebApi.netcore.Controllers
         var project = projects.Where(p => p.id == id).First();
 
         var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
-
         var utcNow = DateTime.UtcNow;
         var projTimeZoneOffsetFromUtc = projTimeZone.GetUtcOffset(Instant.FromDateTimeUtc(utcNow));
+        Console.WriteLine("projTimeZoneOffsetFromUtc=" + projTimeZoneOffsetFromUtc);
         var yesterdayInProjTimeZone = (utcNow + projTimeZoneOffsetFromUtc.ToTimeSpan()).AddDays(-1);
 
-        Debug.WriteLine("yesterdayInProjTimeZone=" + yesterdayInProjTimeZone);
+        Console.WriteLine("yesterdayInProjTimeZone=" + yesterdayInProjTimeZone);
 
         var validEntries = new List<DateEntry>();
         foreach (var entry in entries)
@@ -291,7 +291,7 @@ namespace LandfillService.WebApi.netcore.Controllers
           }
         }
 
-        Debug.WriteLine("Finished posting weights");
+        Console.WriteLine("Finished posting weights");
 
         return Ok(new WeightData
         {
