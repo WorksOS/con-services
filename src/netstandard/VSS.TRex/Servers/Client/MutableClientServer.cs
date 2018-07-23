@@ -58,7 +58,7 @@ namespace VSS.TRex.Servers.Client
 
           IgniteConfiguration cfg = new IgniteConfiguration()
           {
-            SpringConfigUrl = @".\igniteKubeConfig.xml",
+            SpringConfigUrl = @".\igniteMutableKubeConfig.xml",
 
             IgniteInstanceName = TRexGrids.MutableGridName(),
             ClientMode = true,
@@ -86,11 +86,11 @@ namespace VSS.TRex.Servers.Client
             //    }
             //},
 
-            DiscoverySpi = new TcpDiscoverySpi()
-            {
-              //  LocalAddress = "127.0.0.1",
-              LocalPort = 48500
-            },
+            //DiscoverySpi = new TcpDiscoverySpi()
+            //{
+            //  //  LocalAddress = "127.0.0.1",
+            //  LocalPort = 48500
+            //},
 
           CommunicationSpi = new TcpCommunicationSpi()
             {
