@@ -108,16 +108,16 @@ namespace VSS.TRex.TAGFiles.Classes
         {
           result = ValidationResult.Valid;
           // if not overriding take TFA projectid
-          if ((projectId == null) && (Guid.Parse(responseObj.projectUid) != Guid.Empty))
+          if ((projectId == null || projectId == Guid.Empty) && (Guid.Parse(responseObj.projectUid) != Guid.Empty))
           {
             projectId = Guid.Parse(responseObj.projectUid);
           }
-          // take what TFA gives us including a empty guid
+          // take what TFA gives us including an empty guid which is a JohnDoe
           assetId = (Guid.Parse(responseObj.assetUid));
         }
         else
         {
-          result = ValidationResult.TfaError;
+          result = ValidationResult.TfaFailedValidation;
         }
 
       }
@@ -125,8 +125,8 @@ namespace VSS.TRex.TAGFiles.Classes
       {
         Console.Out.WriteLine("-----------------");
         Console.Out.WriteLine(e.Message);
-        Log.LogError($"#Exception# ValidateTagfile. Unexpected exception occured calling TFA service ProjectId:{projectId}, TCCOrgId:{tccOrgId}, radioSerial:{radioSerial}, radioType:{radioType}, lat:{lat}, lon:{lon}, DateTime:{timeOfPosition} {e.Message}");
-        result = GetValidationResultName(ValidationResult.TfaAcessError,ref message,ref code);
+        Log.LogError($"#Exception# ValidateTagfile. Unexpected exception occured calling TFA service ProjectId:{projectId}, TCCOrgId:{tccOrgId}, radioSerial:{radioSerial}, radioType:{radioType}, lat:{lat}, lon:{lon}, DateTime:{timeOfPosition} , Exception Message:{e.Message}");
+        result = GetValidationResultName(ValidationResult.TfaException,ref message,ref code);
         return result;
       }
 
