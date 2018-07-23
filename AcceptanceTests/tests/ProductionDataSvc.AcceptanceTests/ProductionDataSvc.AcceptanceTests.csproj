@@ -153,6 +153,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>EditData.feature</DependentUpon>
     </Compile>
+    <Compile Include="Map3dTile.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Map3dTile.feature</DependentUpon>
+    </Compile>
     <Compile Include="Models\GetMachineDesignDetailsResult.cs" />
     <Compile Include="GetMachineDesigns.feature.cs">
       <AutoGen>True</AutoGen>
@@ -481,6 +486,7 @@
     <Compile Include="StepDefinitions\ExportReportToVETASteps.cs" />
     <Compile Include="StepDefinitions\FileAccessSteps.cs" />
     <Compile Include="StepDefinitions\GetDesignBoundariesSteps.cs" />
+    <Compile Include="StepDefinitions\Map3dTileSteps.cs" />
     <Compile Include="StepDefinitions\NotificationSteps.cs" />
     <Compile Include="StepDefinitions\PassCountDetailSteps.cs" />
     <Compile Include="StepDefinitions\PassCountSummarySteps.cs" />
@@ -701,6 +707,10 @@
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>GetRaptorConfig.feature.cs</LastGenOutput>
     </None>
+    <None Include="Map3dTile.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>Map3dTile.feature.cs</LastGenOutput>
+    </None>
     <None Include="Notification.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>Notification.feature.cs</LastGenOutput>
@@ -864,6 +874,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\CompactionPatchResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\Map3dGetDataTilesResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\Profiles\ProfileSummaryResponse.json">

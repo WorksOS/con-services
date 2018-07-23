@@ -31,7 +31,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       private readonly TileRequestHelper requestHelper = new TileRequestHelper();
       private readonly CompactionSettingsManager settingsManager = new CompactionSettingsManager();
       private readonly CompactionProjectSettings compactionProjectSettings = CompactionProjectSettings.CreateProjectSettings();
-      private readonly CompactionProjectSettingsColors compactionProjectSettingsColors = CompactionProjectSettingsColors.CreateCompactionProjectSettingsColors();
+      private readonly CompactionProjectSettingsColors compactionProjectSettingsColors = CompactionProjectSettingsColors.Create();
 
       private void InitRequestHelper(FilterResult filterResult = null)
       {

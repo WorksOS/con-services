@@ -238,7 +238,7 @@ namespace VSS.Productivity3D.Common.Models
     /// Creates an instance of the CompactionProjectSettingsColors class.
     /// </summary>
     /// <returns>The instance of the CompactionProjectSettingsColors class.</returns>
-    public static CompactionProjectSettingsColors CreateCompactionProjectSettingsColors
+    public static CompactionProjectSettingsColors Create
     (
       bool? useDefaultElevationColors = true,
       List<uint> elevationColors = null,

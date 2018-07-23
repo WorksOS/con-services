@@ -1,0 +1,195 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
+using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.WebApi.Compaction.ActionServices;
+using VSS.Productivity3D.WebApi.Compaction.Controllers.Filters;
+using VSS.Productivity3D.WebApi.Models.Interfaces;
+
+namespace VSS.Productivity3D.WebApi.Compaction.Controllers
+{
+  /// <summary>
+  /// A controller for getting 3d map tiles
+  /// </summary>
+  [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
+  [ProjectUidVerifier]
+  public class Compaction3DMapController : BaseController
+  {
+    /// <summary>
+    /// Map Display Type for the 3d Maps control
+    /// </summary>
+    public enum MapDisplayType
+    {
+      /// <summary>
+      /// Height Map image
+      /// </summary>
+      HeightMap = 0,
+      /// <summary>
+      /// Height Map representing the design
+      /// </summary>
+      DesignMap = 1,
+      /// <summary>
+      /// The texture to be displayed
+      /// </summary>
+      Texture = 2
+    }
+
+    /// <summary>
+    /// Raptor client for use by executor
+    /// </summary>
+    private readonly IASNodeClient raptorClient;
+
+    /// <summary>
+    /// Tile Generator
+    /// </summary>
+    private readonly IProductionDataTileService tileService;
+
+    /// <summary>
+    /// Bounding box helper
+    /// </summary>
+    private readonly IBoundingBoxHelper boundingBoxHelper;
+
+    /// <summary>
+    /// Default Constructor
+    /// </summary>
+    public Compaction3DMapController(ILoggerFactory loggerFactory, 
+      IServiceExceptionHandler serviceExceptionHandler, 
+      IConfigurationStore configStore, 
+      IFileListProxy fileListProxy, 
+      IProjectSettingsProxy projectSettingsProxy,
+      IFilterServiceProxy filterServiceProxy, 
+      ICompactionSettingsManager settingsManager, 
+      IProductionDataTileService tileService,
+      IASNodeClient raptorClient, 
+      IBoundingBoxHelper boundingBoxHelper) : base(loggerFactory, loggerFactory.CreateLogger<Compaction3DMapController>(), serviceExceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
+    {
+      this.tileService = tileService;
+      this.raptorClient = raptorClient;
+      this.boundingBoxHelper = boundingBoxHelper;
+    }
+
+    /// <summary>
+    /// Generates a image for use in the 3d map control
+    /// These can be heightmaps / textures / designs
+    /// </summary>
+    /// <param name="projectUid">Proejct UID</param>
+    /// <param name="filterUid">Optional Filter UID</param>
+    /// <param name="type">Map Display Type - Heightmap / Texture / Design</param>
+    /// <param name="mode">The thematic mode to be rendered; elevation, compaction, temperature etc (Ignored in Height Map type)</param>
+    /// <param name="width">The width, in pixels, of the image tile to be rendered</param>
+    /// <param name="height">The height, in pixels, of the image tile to be rendered</param>
+    /// <param name="bbox">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
+    /// <returns>An image representing the data requested</returns>
+    [ResponseCache(Duration = 900, VaryByQueryKeys = new[] {"*"})]
+    [ValidateTileParameters]
+    [Route("api/v2/map3d")]
+    [HttpGet]
+    public async Task<TileResult> GetMapTileData(
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid? filterUid,
+      [FromQuery] MapDisplayType type,
+      [FromQuery] DisplayMode mode,
+      [FromQuery] ushort width,
+      [FromQuery] ushort height,
+      [FromQuery] string bbox)
+    {
+      var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
+
+      CompactionProjectSettingsColors projectSettingsColors;
+
+      if (type == MapDisplayType.DesignMap)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest, 
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Not Implemented"));
+      }
+
+      if (type == MapDisplayType.HeightMap)
+      {
+        projectSettingsColors = GetGreyScaleHeightColors();
+        mode = DisplayMode.Height; // The height map must be of type height....
+      }
+      else
+      {
+        projectSettingsColors = await GetProjectSettingsColors(projectUid);
+      }
+
+      var filter = await GetCompactionFilter(projectUid, filterUid);
+
+      var tileResult = WithServiceExceptionTryExecute(() =>
+        tileService.GetProductionDataTile(projectSettings,
+          projectSettingsColors,
+          filter,
+          projectId,
+          mode,
+          width,
+          height,
+          boundingBoxHelper.GetBoundingBox(bbox),
+          null,
+          null,
+          null,
+          null,
+          null,
+          CustomHeaders));
+      Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
+
+      return tileResult;
+    }
+
+
+    /// <summary>
+    /// Generates a raw image for use in the 3d map control
+    /// These can be heightmaps / textures / designs
+    /// </summary>
+    /// <param name="projectUid">Proejct UID</param>
+    /// <param name="filterUid">Optional Filter UID</param>
+    /// <param name="type">Map Display Type - Heightmap / Texture / Design</param>
+    /// <param name="mode">The thematic mode to be rendered; elevation, compaction, temperature etc (Ignored in Height Map type)</param>
+    /// <param name="width">The width, in pixels, of the image tile to be rendered</param>
+    /// <param name="height">The height, in pixels, of the image tile to be rendered</param>
+    /// <param name="bbox">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
+    /// <returns>An image representing the data requested</returns>
+    [ResponseCache(Duration = 900, VaryByQueryKeys = new[] {"*"})]
+    [ValidateTileParameters]
+    [Route("api/v2/map3d/png")]
+    [HttpGet]
+    public async Task<FileResult> GetMapTileDataRaw(
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid? filterUid,
+      [FromQuery] MapDisplayType type,
+      [FromQuery] DisplayMode mode,
+      [FromQuery] ushort width,
+      [FromQuery] ushort height,
+      [FromQuery] string bbox)
+    {
+      var result = await GetMapTileData(projectUid, filterUid, type, mode, width, height, bbox);
+      return new FileStreamResult(new MemoryStream(result.TileData), "image/png");
+    }
+
+    private CompactionProjectSettingsColors GetGreyScaleHeightColors()
+    {
+      var colors = new List<uint>();
+      for (var i = 0; i <= 255; i++)
+      {
+        colors.Add((uint)i << 16 | (uint)i << 8 | (uint)i << 0);
+      }
+
+      return CompactionProjectSettingsColors.Create(false, colors);
+    }
+  }
+
+}

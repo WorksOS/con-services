@@ -27,6 +27,7 @@ using VSS.Productivity3D.WebApiModels.Compaction.Models;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.WebApi.Compaction.ActionServices;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -48,6 +49,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IProductionDataTileService tileService;
 
     /// <summary>
+    /// Bounding box helper
+    /// </summary>
+    private readonly IBoundingBoxHelper boundingBoxHelper;
+
+    /// <summary>
     /// Used to talk to TCC
     /// </summary>
     private readonly IFileRepository fileRepo;
@@ -56,12 +62,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Default constructor.
     /// </summary>
     public CompactionTileController(IASNodeClient raptorClient, ILoggerFactory loggerFactory, IConfigurationStore configStore,
-      IFileRepository fileRepo, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IProductionDataTileService tileService) :
+      IFileRepository fileRepo, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IProductionDataTileService tileService,  IBoundingBoxHelper boundingBoxHelper) :
       base(loggerFactory, loggerFactory.CreateLogger<CompactionTileController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
       this.fileRepo = fileRepo;
       this.tileService = tileService;
+      this.boundingBoxHelper = boundingBoxHelper;
     }
 
     /// <summary>
@@ -121,7 +128,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
       var tileResult = WithServiceExceptionTryExecute(() =>
         tileService.GetProductionDataTile(projectSettings, projectSettingsColors, filter, projectId, mode, width, height,
-          GetBoundingBox(bbox), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3,
+          boundingBoxHelper.GetBoundingBox(bbox), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3,
           volumeCalcType, CustomHeaders));
 
       return tileResult;
@@ -193,7 +200,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, volumeBaseUid, volumeTopUid);
       var tileResult = WithServiceExceptionTryExecute(() =>
         tileService.GetProductionDataTile(projectSettings, projectSettingsColors, filter, projectId, mode, width, height,
-          GetBoundingBox(bbox), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3,
+          boundingBoxHelper.GetBoundingBox(bbox), cutFillDesign, sumVolParameters.Item1, sumVolParameters.Item2, sumVolParameters.Item3,
           volumeCalcType, CustomHeaders));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 
@@ -241,7 +248,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       Log.LogDebug("GetLineworkTile: " + Request.QueryString);
 
       var requiredFiles = await ValidateFileType(projectUid, fileType);
-      var dxfTileRequest = DxfTileRequest.CreateTileRequest(requiredFiles, GetBoundingBox(bbox));
+      var dxfTileRequest = DxfTileRequest.CreateTileRequest(requiredFiles, boundingBoxHelper.GetBoundingBox(bbox));
 
       dxfTileRequest.Validate();
 
@@ -292,7 +299,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       Log.LogDebug("GetLineworkTileRaw: " + Request.QueryString);
 
       var requiredFiles = await ValidateFileType(projectUid, fileType);
-      var dxfTileRequest = DxfTileRequest.CreateTileRequest(requiredFiles, GetBoundingBox(bbox));
+      var dxfTileRequest = DxfTileRequest.CreateTileRequest(requiredFiles, boundingBoxHelper.GetBoundingBox(bbox));
 
       dxfTileRequest.Validate();
 
@@ -344,71 +351,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       Log.LogInformation("Found {0} files of type {1} from a total of {2}", filesOfType.Count, fileType, fileList.Count);
 
       return filesOfType;
-    }
-
-    /// <summary>
-    /// Get the bounding box values from the query parameter
-    /// </summary>
-    /// <param name="bbox">The query parameter containing the bounding box in decimal degrees</param>
-    /// <returns>Bounding box in radians</returns>
-    private BoundingBox2DLatLon GetBoundingBox(string bbox)
-    {
-      double blLong = 0;
-      double blLat = 0;
-      double trLong = 0;
-      double trLat = 0;
-
-      var count = 0;
-      foreach (var s in bbox.Split(','))
-      {
-        if (!double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out var num))
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-              "Invalid bounding box"));
-        }
-        num = num * Math.PI / 180.0; //convert decimal degrees to radians
-        //Latitude Must be in range -pi/2 to pi/2 and longitude in the range -pi to pi
-        if (count == 0 || count == 2)
-        {
-          if (num < -Math.PI / 2)
-          {
-            num = num + Math.PI;
-          } else if (num > Math.PI / 2)
-          {
-            num = num - Math.PI;
-          }
-        }
-        if (count == 1 || count == 3)
-        {
-          if (num < -Math.PI)
-          {
-            num = num + 2 * Math.PI;
-          } else if (num > Math.PI)
-          {
-            num = num - 2 * Math.PI;
-          }
-        }
-
-        switch (count++)
-        {
-          case 0:
-            blLat = num;
-            break;
-          case 1:
-            blLong = num;
-            break;
-          case 2:
-            trLat = num;
-            break;
-          case 3:
-            trLong = num;
-            break;
-        }
-      }
-
-      Log.LogDebug("BBOX in radians: blLong=" + blLong + ",blLat=" + blLat + ",trLong=" + trLong + ",trLat=" + trLat);
-      return BoundingBox2DLatLon.CreateBoundingBox2DLatLon(blLong, blLat, trLong, trLat);
     }
   }
 }

@@ -124,7 +124,7 @@ node('Jenkins-Win2016-Raptor') {
 
                 build job: "tag-vso-commit", parameters: tagParameters
             }
-        } else if (branch.contains("Dev")) {
+        } else if (branch.contains("Dev") || branch.contains("722575-3d-maps")) {
             //Rebuild Image, tag & push to AWS Docker Repo
             stage ('Build Development Images') {
                 bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:${fullVersion}-${branchName} ./Artifacts/WebApi"
