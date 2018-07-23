@@ -96,10 +96,11 @@ namespace VSS.TRex.Servers.Compute
 
       cfg.JvmOptions = new List<string>() { "-DIGNITE_QUIET=false", "-Djava.net.preferIPv4Stack=true" };
 
-      //cfg.DiscoverySpi = new TcpDiscoverySpi()
-      //{
-      //  LocalAddress = "127.0.0.1",
-      //  LocalPort = 48500,
+      cfg.DiscoverySpi = new TcpDiscoverySpi()
+      {
+        //  LocalAddress = "127.0.0.1",
+        LocalPort = 48500
+      };
 
       //  IpFinder = new TcpDiscoveryStaticIpFinder()
       //  {

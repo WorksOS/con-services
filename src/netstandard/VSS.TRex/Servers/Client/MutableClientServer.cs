@@ -43,7 +43,9 @@ namespace VSS.TRex.Servers.Client
       if (mutableTRexGrid == null)
       {
         // Attempt to attach to an already existing Ignite instance
+        Log.LogInformation("Getting mutable grid");
         mutableTRexGrid = TRexGridFactory.Grid(TRexGrids.MutableGridName());
+        Log.LogInformation($"Got {mutableTRexGrid?.Name}");
 
         // If there was no connection obtained, attempt to create a new instance
         if (mutableTRexGrid == null)
@@ -84,7 +86,13 @@ namespace VSS.TRex.Servers.Client
             //    }
             //},
 
-            CommunicationSpi = new TcpCommunicationSpi()
+            DiscoverySpi = new TcpDiscoverySpi()
+            {
+              //  LocalAddress = "127.0.0.1",
+              LocalPort = 48500
+            },
+
+          CommunicationSpi = new TcpCommunicationSpi()
             {
               //LocalAddress = "127.0.0.1",
               LocalPort = 48100,

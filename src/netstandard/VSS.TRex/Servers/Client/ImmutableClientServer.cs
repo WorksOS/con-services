@@ -43,7 +43,9 @@ namespace VSS.TRex.Servers.Client
       if (immutableTRexGrid == null)
       {
         // Attempt to attach to an already existing Ignite instance
+        Log.LogInformation("Getting Immmutable grid");
         immutableTRexGrid = TRexGridFactory.Grid(TRexGrids.ImmutableGridName());
+        Log.LogInformation($"Got {immutableTRexGrid?.Name}");
 
         // If there was no connection obtained, attempt to create a new instance
         if (immutableTRexGrid == null)
