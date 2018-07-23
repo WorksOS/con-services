@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.MasterData.Repositories.Extensions;
@@ -17,10 +18,17 @@ namespace VSS.MasterData.Repositories
   {
     private const int LegacyProjectIdCutoff = 2000000;
 
-    public ProjectRepository(IConfigurationStore connectionString, ILoggerFactory logger) : base(connectionString,
-      logger)
+    // The landfill Service requires the existance of a Geofence representing the Projects Boundary.
+    // Its type is ProjectType and it must be associated with a ProjectGeofence 
+    private static bool _isProjectTypeGeofenceRequired = false;
+
+    public ProjectRepository(IConfigurationStore configurationStore, ILoggerFactory logger) : base(configurationStore, logger)
     {
       log = logger.CreateLogger<ProjectRepository>();
+      if (!bool.TryParse(configurationStore.GetValueString("ENVIRONMENT_PROJECTTYPEGEOFENCE_ISREQUIRED"), out _isProjectTypeGeofenceRequired))
+      {
+        _isProjectTypeGeofenceRequired = false;
+      }
     }
 
     #region store
@@ -307,6 +315,7 @@ namespace VSS.MasterData.Repositories
         if (upsertedCount > 0)
         {
           upsertedCount = await InsertProjectHistory(project);
+          await UpsertProjectTypeGeofence("CreatedProject", project, existing);
         }
 
         return upsertedCount;
@@ -398,6 +407,7 @@ namespace VSS.MasterData.Repositories
         if (upsertedCount > 0)
         {
           upsertedCount = await InsertProjectHistory(project);
+          await UpsertProjectTypeGeofence("UpdatedProject", project, existing);
         }
 
         return upsertedCount;
@@ -446,12 +456,12 @@ namespace VSS.MasterData.Repositories
 
           string update = BuildProjectUpdateString(project);
           upsertedCount = await ExecuteWithAsyncPolicy(update, project);
-          log.LogDebug(
-            $"ProjectRepository/UpdateProject: upserted {upsertedCount} rows for: projectUid:{project.ProjectUID}");
+          log.LogDebug($"ProjectRepository/UpdateProject: upserted {upsertedCount} rows for: projectUid:{project.ProjectUID}");
 
           if (upsertedCount > 0)
           {
             upsertedCount = await InsertProjectHistory(project);
+            await UpsertProjectTypeGeofence("UpdatedProject", project, existing);
           }
 
           return upsertedCount;
@@ -474,6 +484,7 @@ namespace VSS.MasterData.Repositories
         if (upsertedCount > 0)
         {
           upsertedCount = await InsertProjectHistory(project);
+          await UpsertProjectTypeGeofence("CreatedProject", project, existing);
         }
 
         return upsertedCount;
@@ -629,6 +640,84 @@ namespace VSS.MasterData.Repositories
 
     #endregion project
 
+    #region landfill
+
+    private async Task UpsertProjectTypeGeofence(string upsertType, Project project, Project existing)
+    {
+      if (!_isProjectTypeGeofenceRequired)
+        return;
+
+      log.LogDebug(
+        $"ProjectRepository/UpsertProjectTypeGeofence: upsertType {upsertType}. project={project.ProjectUID}");
+
+      if (upsertType == "CreatedProject")
+      {
+        await CreateGeofenceAndAssociation(project);
+      }
+      else if (upsertType == "UpdatedProject")
+      {
+        await UpdateGeofence(project);
+      }
+    }
+
+    private async Task<int> CreateGeofenceAndAssociation(Project project)
+    {
+      var geofence = new Geofence().Setup();
+      geofence.GeofenceUID = Guid.NewGuid().ToString();
+      geofence.Name = project.Name;
+      geofence.GeofenceType = GeofenceType.Project;
+      geofence.GeometryWKT = project.GeometryWKT;
+      geofence.CustomerUID = ""; // we don't know this from a Project Kafka event
+      geofence.AreaSqMeters = GeofenceValidation.CalculateAreaSqMeters(project.GeometryWKT);
+      geofence.IsDeleted = false;
+      geofence.LastActionedUTC = DateTime.UtcNow;
+      log.LogDebug($"ProjectRepository/CreateGeofence: going to create geofence={geofence}");
+
+      const string insert =
+        @"INSERT Geofence
+              (GeofenceUID, Name, Description, GeometryWKT, FillColor, IsTransparent, IsDeleted, fk_CustomerUID, UserUID, LastActionedUTC, fk_GeofenceTypeID, AreaSqMeters)
+          VALUES
+              (@GeofenceUID, @Name, @Description, @GeometryWKT, @FillColor, @IsTransparent, @IsDeleted, @CustomerUID, @UserUID, @LastActionedUTC, @GeofenceType, @AreaSqMeters)";
+
+      var upsertedCount = await ExecuteWithAsyncPolicy(insert, geofence);
+      log.LogDebug($"ProjectRepository/CreateGeofence upserted {upsertedCount} rows for: geofenceUid:{geofence.GeofenceUID}");
+
+      if (upsertedCount == 1)
+      {
+        var projectGeofence = new ProjectGeofence() { ProjectUID = project.ProjectUID, GeofenceUID = geofence.GeofenceUID, LastActionedUTC = DateTime.UtcNow};
+        await AssociateProjectGeofence(projectGeofence, null);
+        return upsertedCount;
+      }
+      return 0;
+    }
+
+    private async Task<int> UpdateGeofence(Project project)
+    {
+      var select = "SELECT GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, GeometryWKT, " +
+                   "     FillColor, IsTransparent, IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID, " +
+                   "     AreaSqMeters, g.LastActionedUTC " +
+                   "  FROM ProjectGeofence pg " +
+                   "   INNER JOIN Geofence g ON g.GeofenceUID = pg.fk_GeofenceUID " +
+                   $" WHERE fk_ProjectUID = '{project.ProjectUID}' " +
+                   $"  AND fk_GeofenceTypeID = {(int)GeofenceType.Project}; ";
+      var geofence = (await QueryWithAsyncPolicy<Geofence>(select)).FirstOrDefault();
+
+      if (geofence == null)
+      {
+        return await CreateGeofenceAndAssociation(project);
+      }
+
+      var update = "UPDATE Geofence " +
+                   $" SET GeometryWKT = '{project.GeometryWKT}' " +
+                   $" WHERE GeofenceUID = '{geofence.GeofenceUID}' " +
+                   $"  AND fk_GeofenceTypeID = {(int)GeofenceType.Project}; ";
+      var upsertedCount = await ExecuteWithAsyncPolicy(update);
+      log.LogDebug($"ProjectRepository/UpdateGeofence upserted {upsertedCount} rows for: geofenceUid:{geofence.GeofenceUID}");
+
+      return upsertedCount;
+    }
+
+    #endregion landfill
 
     #region associate
 

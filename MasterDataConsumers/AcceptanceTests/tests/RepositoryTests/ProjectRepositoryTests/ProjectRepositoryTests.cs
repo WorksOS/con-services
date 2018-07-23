@@ -104,6 +104,12 @@ namespace RepositoryTests.ProjectRepositoryTests
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
 
       CheckProjectHistoryCount(createProjectEvent.ProjectUID.ToString(), 1);
+
+      var pg = _projectContext.GetAssociatedGeofences(createProjectEvent.ProjectUID.ToString());
+      pg.Wait();
+      Assert.IsNotNull(pg.Result, "Unable to retrieve ProjectGeofences");
+      var projectGeofenceList = pg.Result.ToList();
+      Assert.AreEqual(0, projectGeofenceList.Count(), "Geofence count should not be available for default environment setting");
     }
 
     /// <summary>
@@ -1422,8 +1428,7 @@ namespace RepositoryTests.ProjectRepositoryTests
     }
 
     #endregion Projects
-
-
+    
     #region AssociateProjectWithCustomer
 
     /// <summary>

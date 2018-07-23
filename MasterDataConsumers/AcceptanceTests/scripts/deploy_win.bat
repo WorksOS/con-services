@@ -13,9 +13,11 @@ cd tests
 dotnet publish EventTests/EventTests.csproj -o ..\..\deploy\EventTests -f netcoreapp2.0
 dotnet publish KafkaTests/KafkaTests.csproj -o ..\..\deploy\KafkaTests -f netcoreapp2.0
 dotnet publish RepositoryTests/RepositoryTests.csproj -o ..\..\deploy\RepositoryTests -f netcoreapp2.0
+dotnet publish RepositoryLandfillTests/RepositoryLandfillTests.csproj -o ..\..\deploy\RepositoryLandfillTests -f netcoreapp2.0
 
 copy KafkaTests\appsettings.json ..\deploy\KafkaTests\
 copy RepositoryTests\appsettings.json ..\deploy\RepositoryTests\
+copy RepositoryLandfillTests\appsettings.json ..\deploy\RepositoryLandfillTests\
 
 cd ..
 cd utilities

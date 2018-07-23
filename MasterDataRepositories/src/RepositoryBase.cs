@@ -31,9 +31,9 @@ namespace VSS.MasterData.Repositories
     private bool isInTransaction;
     
 
-    protected RepositoryBase(IConfigurationStore _connectionString, ILoggerFactory logger)
+    protected RepositoryBase(IConfigurationStore configurationStore, ILoggerFactory logger)
     {
-      connectionString = _connectionString.GetConnectionString("VSPDB");
+      connectionString = configurationStore.GetConnectionString("VSPDB");
       log = logger.CreateLogger<RepositoryBase>();
       dbAsyncPolicy = Policy.Handle<Exception>().WaitAndRetryAsync(
         dbAsyncRetryCount,
@@ -76,10 +76,8 @@ namespace VSS.MasterData.Repositories
     {
       using (var connection = new MySqlConnection(connectionString))
       {
-
         await dbAsyncPolicy.ExecuteAsync(async () =>
         {
-
           await connection.OpenAsync();
           log.LogTrace("Repository: db open (with connection reuse) was successfull");
         });

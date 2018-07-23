@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KafkaTests.Local", "tests\K
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepositoryTests.Local", "tests\RepositoryTests\RepositoryTests.Local.csproj", "{64CB2736-A596-4007-894A-437CCFF48FA8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryLandfill.Local", "tests\RepositoryLandfillTests\RepositoryLandfillTests.Local.csproj", "{CCE78C68-8EB9-4F58-8F80-7E4BE9813984}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestRun.Local", "utilities\TestRun\TestRun.Local.csproj", "{64F22D5D-E57E-4B96-BD7D-E820F91ED06D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestUtility.Local", "utilities\TestUtility\TestUtility.Local.csproj", "{E0C409C0-842D-4162-8E42-5BD9AC311FD4}"
@@ -41,6 +43,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4NetExtensions.Local
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Repositories.Local", "..\..\MasterDataRepositories\src\VSS.MasterData.Repositories.Local.csproj", "{4D7500BD-3E60-4B69-AE52-9A1F153DE684}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models.Local", "..\..\MasterDataModels\src\VSS.MasterData.Models.Local.csproj", "{05B291CB-E51A-45A6-AC3A-5BE935851CC8}"
+EndProject
+
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +92,14 @@ Global
 		{4D7500BD-3E60-4B69-AE52-9A1F153DE684}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D7500BD-3E60-4B69-AE52-9A1F153DE684}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D7500BD-3E60-4B69-AE52-9A1F153DE684}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05B291CB-E51A-45A6-AC3A-5BE935851CC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05B291CB-E51A-45A6-AC3A-5BE935851CC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05B291CB-E51A-45A6-AC3A-5BE935851CC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05B291CB-E51A-45A6-AC3A-5BE935851CC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCE78C68-8EB9-4F58-8F80-7E4BE9813984}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCE78C68-8EB9-4F58-8F80-7E4BE9813984}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCE78C68-8EB9-4F58-8F80-7E4BE9813984}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCE78C68-8EB9-4F58-8F80-7E4BE9813984}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -98,5 +111,9 @@ Global
 		{64CB2736-A596-4007-894A-437CCFF48FA8} = {1464640F-AEAE-4331-BC58-52898DF893B6}
 		{64F22D5D-E57E-4B96-BD7D-E820F91ED06D} = {63AD8236-F12D-44C8-B663-EE78D00EFC9A}
 		{E0C409C0-842D-4162-8E42-5BD9AC311FD4} = {63AD8236-F12D-44C8-B663-EE78D00EFC9A}
+		{CCE78C68-8EB9-4F58-8F80-7E4BE9813984} = {1464640F-AEAE-4331-BC58-52898DF893B6}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A6CB9569-7858-4A3F-AE6D-99104B9F2934}
 	EndGlobalSection
 EndGlobal
