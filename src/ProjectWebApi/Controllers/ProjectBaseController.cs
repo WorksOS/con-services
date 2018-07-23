@@ -23,11 +23,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected readonly ISubscriptionProxy subscriptionProxy;
 
     /// <summary>
-    /// Gets or sets the Geofence proxy. 
-    /// </summary>
-    protected readonly IGeofenceProxy geofenceProxy;
-
-    /// <summary>
     /// Save for potential rollback
     /// </summary>
     protected Guid subscriptionUidAssigned = Guid.Empty;
@@ -47,7 +42,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="fileRepo"></param>
     /// <param name="configStore">The configStore.</param>
     /// <param name="subscriptionProxy">The subs proxy.</param>
-    /// <param name="geofenceProxy">The geofence proxy.</param>
     /// <param name="raptorProxy">The raptorServices proxy.</param>
     /// <param name="logger">The logger.</param>
     /// <param name="serviceExceptionHandler">The ServiceException handler</param>
@@ -55,12 +49,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public ProjectBaseController(IKafka producer, 
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo, IFileRepository fileRepo,
       IConfigurationStore configStore, 
-      ISubscriptionProxy subscriptionProxy, IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy,
+      ISubscriptionProxy subscriptionProxy, IRaptorProxy raptorProxy,
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, ILogger log)
       : base(log, configStore, serviceExceptionHandler, producer, raptorProxy, projectRepo, subscriptionRepo, fileRepo)
     {
       this.subscriptionProxy = subscriptionProxy;
-      this.geofenceProxy = geofenceProxy;
     }
 
     /// <summary>

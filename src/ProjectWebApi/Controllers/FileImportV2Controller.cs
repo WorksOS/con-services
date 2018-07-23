@@ -127,7 +127,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<UpsertImportedFileExecutor>(logger, configStore, serviceExceptionHandler,
             customerUid, userId, userEmailAddress, customHeaders,
             producer, kafkaTopicName,
-            null, raptorProxy, null,
+            raptorProxy, null,
             projectRepo, null, fileRepo)
           .ProcessAsync(importedFileUpsertEvent)
       ) as ImportedFileDescriptorSingleResult;
