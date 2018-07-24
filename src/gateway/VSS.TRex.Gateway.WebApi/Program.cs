@@ -34,12 +34,15 @@ namespace VSS.TRex.Gateway.WebApi
         .UseKestrel()
         .UseContentRoot(Directory.GetCurrentDirectory())
         .UseIISIntegration()
+        //Logging configured in DIBuilder
+        /*
         .ConfigureLogging(builder =>
         {
           Log4NetProvider.RepoName = Startup.LoggerRepoName;
           builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
           builder.SetMinimumLevel(LogLevel.Information);
         })
+        */
         .UseStartup<Startup>()
         .Build();
 

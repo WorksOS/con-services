@@ -53,7 +53,8 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     private CombinedFilter ConvertFilter(FilterResult filter, ISiteModel siteModel)
     {
-      if (filter == null) return null;
+      if (filter == null)
+        return new CombinedFilter();//TRex doesn't like null filter
 
       var combinedFilter = Mapper.Map<FilterResult, CombinedFilter>(filter);
       // TODO Map the excluded surveyed surfaces from the filter.SurveyedSurfaceExclusionList to the ones that are in the TRex database
@@ -95,7 +96,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       }
       CombinedFilter filter1 = ConvertFilter(request.Filter1, siteModel);
       CombinedFilter filter2 = ConvertFilter(request.Filter2, siteModel);
-
+   
       var response = tileRenderServer.RenderTile(
         new TileRenderRequestArgument
         (siteModel.ID,
