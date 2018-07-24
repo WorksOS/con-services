@@ -12,7 +12,7 @@ namespace EventTests
     private const string GEOMETRY_WKT2 = "'POLYGON((-77.0740531243794 42.8482755151629,-77.0812927509093 42.8470654333548,-77.0881228590397 42.8463941030527,-77.0940464342951 42.8508641955719,-77.0947275746861 42.8576235270907,-77.0905709567355 42.861567039969,-77.0795818211823 42.8641102732199,-77.0697542276039 42.8641987499805,-77.0650585590246 42.8535441075047,-77.0740531243794 42.8482755151629,-77.0740531243794 42.8482755151629))'";
 
     [TestMethod]
-    [Ignore]
+    // note that this may not work on windows container due to date diffs
     public void CreateProjectEvent()
     {
       var msg = new Msg();
@@ -34,7 +34,7 @@ namespace EventTests
     }
 
     [TestMethod]
-    [Ignore]
+    // note that this may not work on windows container due to date diffs
     public void UpdateProject_Change_ProjectType()
     {
       var msg = new Msg();

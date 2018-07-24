@@ -8,11 +8,6 @@ using System.Threading;
 using VSS.Log4Net.Extensions;
 using VSS.WebApi.Common;
 
-#if NET_4_7
-using Microsoft.AspNetCore.Hosting.WindowsServices;
-using System.Diagnostics;
-#endif
-
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI
 {
@@ -26,30 +21,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
     /// </summary>
     public static void Main(string[] args)
     {
-      var config = new ConfigurationBuilder()
-        .AddCommandLine(args)
+      var kestrelConfig = new ConfigurationBuilder()
+        .AddJsonFile("kestrelsettings.json", optional: true, reloadOnChange: false)
         .Build();
-
-#if NET_4_7
-      //To run the service use https://docs.microsoft.com/en-us/aspnet/core/hosting/windows-service
-      var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
-      var pathToContentRoot = Path.GetDirectoryName(pathToExe);
-
-
-      var host = new WebHostBuilder()
-        .UseConfiguration(config)
-        .UseKestrel()
-        .UseContentRoot(pathToContentRoot)
-        .ConfigureLogging(builder =>
-        {
-          Log4NetProvider.RepoName = Startup.LoggerRepoName;
-          builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
-          builder.SetMinimumLevel(LogLevel.Trace);
-        })
-        .UseIISIntegration()
-        .UseStartup<Startup>();
-      host.Build().RunAsService();
-#else
 
       var host = new WebHostBuilder()
         .UseKestrel()
@@ -59,11 +33,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
         })
         .UseContentRoot(Directory.GetCurrentDirectory())
         .UseIISIntegration()
+        .UseConfiguration(kestrelConfig)
         .ConfigureLogging(builder =>
         {
           Log4NetProvider.RepoName = Startup.LoggerRepoName;
           builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
           builder.SetMinimumLevel(LogLevel.Debug);
+          builder.AddConfiguration(kestrelConfig);
         })
         .UsePrometheus()
         .UseStartup<Startup>()
@@ -75,7 +51,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
       //Check how many requests we can execute
       ServicePointManager.DefaultConnectionLimit = 128;
       host.Run();
-#endif
     }
   }
 }

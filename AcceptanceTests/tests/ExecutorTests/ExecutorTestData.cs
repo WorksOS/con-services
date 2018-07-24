@@ -14,7 +14,6 @@ namespace ExecutorTests
   public class ExecutorTestData
   {
     protected IServiceProvider serviceProvider;
-    protected ILoggerFactory LoggerFactory;
     protected ILogger logger;
     protected IConfigurationStore configStore;
 
@@ -51,10 +50,7 @@ namespace ExecutorTests
 
       serviceProvider = serviceCollection.BuildServiceProvider();
 
-      this.LoggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-      this.logger = LoggerFactory.CreateLogger<ExecutorTestData>();
-
-      //logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<AssetIdExecutorTests>();
+      logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<TagFileProcessingErrorExecutorTests>();
       assetRepo = serviceProvider.GetRequiredService<IRepository<IAssetEvent>>() as AssetRepository;
       configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       deviceRepo = serviceProvider.GetRequiredService<IRepository<IDeviceEvent>>() as DeviceRepository;

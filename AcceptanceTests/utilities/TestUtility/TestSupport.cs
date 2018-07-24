@@ -537,7 +537,7 @@ namespace TestUtility
             ProjectUID = new Guid(eventObject.ProjectUID),
             ProjectBoundary = eventObject.GeometryWKT
           };
-          jsonString = JsonConvert.SerializeObject(new {CreateProjectEvent = createProjectEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { CreateProjectEvent = createProjectEvent }, jsonSettings);
           break;
         case "UpdateProjectEvent":
           topicName = SetKafkaTopicName("IProjectEvent");

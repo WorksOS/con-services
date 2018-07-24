@@ -15,9 +15,6 @@ using VSS.Productivity3D.TagFileAuth.WebAPI.Filters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.WebApi.Common;
 
-#if NET_4_7
-using VSS.Productivity3D.TagFileAuth.WebAPI.Filters;
-#endif
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI
 {
@@ -35,20 +32,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
     /// Log4net repository logger name.
     /// </summary>
     public const string LoggerRepoName = "WebApi";
-
     private IServiceCollection serviceCollection;
 
-    private static readonly Uri _jaegerUri = new Uri("http://localhost:14268/api/traces");
 
     /// <summary>
-    /// Gets the root configuration object.
-    /// </summary>
-    public IConfigurationRoot Configuration { get; }
-
-
-
-    /// <summary>
-    /// Default constructor.
+    /// Initializes a new instance of the <see cref="Startup"/> class.
     /// </summary>
     public Startup(IHostingEnvironment env)
     {
@@ -62,6 +50,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
     }
+    
+    /// <summary>
+    /// Gets the configuration.
+    /// </summary>
+    /// <value>
+    /// The configuration.
+    /// </value>
+    private IConfigurationRoot Configuration { get; }
 
     /// <summary>
     /// This method gets called by the runtime. Use this method to add services to the container
@@ -69,16 +65,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
     /// <param name="services"></param>
     public void ConfigureServices(IServiceCollection services)
     {
-      services.AddCommon<Startup>(SERVICE_TITLE, "API for 3D Tag File Auth");
-
-      //Configure CORS
-      services.AddCors(options =>
-      {
-        options.AddPolicy("VSS", builder => builder.AllowAnyOrigin()
-          .WithHeaders("Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization",
-            "X-VisionLink-CustomerUid", "X-VisionLink-UserUid")
-          .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE"));
-      });
+      services.AddCommon<Startup>(SERVICE_TITLE);
 
       // Add framework services.
       services
@@ -97,16 +84,17 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
           config.Filters.Add(new ValidationFilterAttribute());
         });
 
-      services.AddJaeger(SERVICE_TITLE);
-
-      // Prevent endless loops when OpenTracing is tracking HTTP requests to Jaeger.
-      services.Configure<HttpHandlerDiagnosticOptions>(options =>
+      services.AddOpenTracing(builder =>
       {
-        options.IgnorePatterns.Add(request => _jaegerUri.IsBaseOf(request.RequestUri));
+        builder.ConfigureAspNetCore(options =>
+        {
+          options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
+        });
       });
 
+      services.AddJaeger(SERVICE_TITLE);
       services.AddOpenTracing();
-
+      
       serviceCollection = services;
     }
 
@@ -117,8 +105,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
     /// </summary>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
+      loggerFactory.AddConsole(Configuration.GetSection("Logging"));
       loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(LoggerRepoName);
       serviceCollection.AddSingleton(loggerFactory);
       serviceCollection.BuildServiceProvider();
 

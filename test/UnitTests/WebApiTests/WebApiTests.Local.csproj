@@ -49,7 +49,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\MerinoSandbox\ConfigurationStore\src\VSS.ConfigurationStore.Local.csproj" />
     <ProjectReference Include="..\..\..\..\MerinoSandbox\ITask\src\VSS.ITask.Local.csproj" />
-    <ProjectReference Include="..\..\..\..\MerinoSandbox\MasterDataModels\src\VSS.MasterData.Models.Local.csproj" />
     <ProjectReference Include="..\..\..\..\MerinoSandbox\MasterDataRepositories\src\VSS.MasterData.Repositories.Local.csproj" />
     <ProjectReference Include="..\..\..\src\WebApiModels\VSS.Productivity3D.TagFileAuth.WebAPI.Models.Local.csproj" />
   </ItemGroup>
