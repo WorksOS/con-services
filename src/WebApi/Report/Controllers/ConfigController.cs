@@ -10,23 +10,14 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
   /// 
   /// </summary>
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-  public class ConfigController : Controller
+  public class ConfigController
   {
-    /// <summary>
-    /// Raptor client for use by executor
-    /// </summary>
     private readonly IASNodeClient raptorClient;
-
-    /// <summary>
-    /// LoggerFactory factory for use by executor
-    /// </summary>
     private readonly ILoggerFactory logger;
 
     /// <summary>
-    /// Constructor with injection
+    /// Default constructor.
     /// </summary>
-    /// <param name="raptorClient">Raptor client</param>
-    /// <param name="logger">LoggerFactory</param>
     public ConfigController(IASNodeClient raptorClient, ILoggerFactory logger)
     {
       this.raptorClient = raptorClient;
@@ -37,10 +28,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// Gets Raptor Configuration in XML
     /// </summary>
     /// <returns>The current Raptor configuration using the XML representation of the Velociraptor.Config.xml Raptor configuration file. All configuration options are included, not just the non-default setting in the actual configuration file.</returns>
-    /// <executor>ConfigExecutor</executor>
     [Route("api/v1/configuration")]
     [HttpGet]
-
     public ConfigResult Get()
     {
       return RequestExecutorContainerFactory.Build<ConfigExecutor>(logger, raptorClient).Process(new object()) as ConfigResult;

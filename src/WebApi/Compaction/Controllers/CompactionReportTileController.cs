@@ -1,14 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
@@ -17,19 +16,19 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApiModels.MapHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.Productivity3D.Models.Enums;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
   /// <summary>
   /// Controller for getting tiles for reporting requests
   /// </summary>
-  public class CompactionReportTileController : BaseController
+  public class CompactionReportTileController : BaseTileController<CompactionReportTileController>
   {
     private readonly TileOverlayType[] PROJECT_THUMBNAIL_OVERLAYS =
     {
@@ -47,11 +46,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IPreferenceProxy prefProxy;
 
     /// <summary>
-    /// Proxy for getting geofences from master data.
-    /// </summary>
-    private readonly IGeofenceProxy geofenceProxy;
-
-    /// <summary>
     /// The request factory
     /// </summary>
     private readonly IProductionDataRequestFactory requestFactory;
@@ -64,15 +58,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionReportTileController(ILoggerFactory loggerFactory, IConfigurationStore configStore, IGeofenceProxy geofenceProxy,
-      IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
-      IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IMapTileGenerator tileGenerator,
+    public CompactionReportTileController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IFilterServiceProxy filterServiceProxy, IMapTileGenerator tileGenerator,
       IPreferenceProxy prefProxy, IProductionDataRequestFactory requestFactory)
-      : base(loggerFactory, loggerFactory.CreateLogger<CompactionReportTileController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
+      : base(configStore, fileListProxy, filterServiceProxy, settingsManager)
     {
       this.tileGenerator = tileGenerator;
       this.prefProxy = prefProxy;
-      this.geofenceProxy = geofenceProxy;
       this.requestFactory = requestFactory;
     }
 

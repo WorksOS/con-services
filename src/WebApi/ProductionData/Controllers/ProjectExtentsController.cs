@@ -13,7 +13,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// 
   /// </summary>
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-  public class ProjectExtentsController : Controller, IProjectExtentsContract
+  public class ProjectExtentsController : IProjectExtentsContract
   {
     /// <summary>
     /// Raptor client for use by executor

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 
@@ -20,11 +19,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
     VolumesType GetVolumesType(FilterResult filter1, FilterResult filter2);
 
     /// <summary>
-    /// 
+    /// Executes a Func and suppresses any exception that occurs.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="a"></param>
-    /// <returns></returns>
     Task<T> WithSwallowExceptionExecute<T>(Func<Task<T>> a) where T : class;
   }
 }

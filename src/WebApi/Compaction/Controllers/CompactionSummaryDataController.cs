@@ -6,13 +6,11 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Compaction.ActionServices;
@@ -35,9 +33,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class CompactionSummaryDataController : CompactionDataBaseController
   {
-    /// <inheritdoc />
-    public CompactionSummaryDataController(IASNodeClient raptorClient, ILoggerFactory loggerFactory, IConfigurationStore configStore, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IProductionDataRequestFactory requestFactory)
-      : base(raptorClient, loggerFactory, loggerFactory.CreateLogger<CompactionSummaryDataController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager, requestFactory)
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
+    public CompactionSummaryDataController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory)
+      : base(raptorClient, configStore, fileListProxy, settingsManager, requestFactory)
     { }
 
     /// <summary>

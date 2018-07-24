@@ -30,22 +30,43 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Common base class for Raptor service controllers.
   /// </summary>
-  public abstract class BaseController : Controller
+  public abstract class BaseController<T> : Controller where T : BaseController<T>
   {
-    /// <summary>
-    /// LoggerFactory for logging
-    /// </summary>
-    protected ILogger Log;
+    private ILogger<T> logger;
+    private ILoggerFactory loggerFactory;
+    private IFilterServiceProxy filterServiceProxy;
+    private IProjectSettingsProxy projectSettingsProxy;
+    private IServiceExceptionHandler serviceExceptionHandler;
 
     /// <summary>
-    /// LoggerFactory factory for use by executor
+    /// Gets the filter service proxy interface.
     /// </summary>
-    protected readonly ILoggerFactory LoggerFactory;
+    private IFilterServiceProxy FilterServiceProxy => filterServiceProxy ?? (filterServiceProxy = HttpContext.RequestServices.GetService<IFilterServiceProxy>());
 
     /// <summary>
-    /// Gets the
+    /// Gets the project settings proxy interface.
     /// </summary>
-    protected readonly IServiceExceptionHandler ServiceExceptionHandler;
+    private IProjectSettingsProxy ProjectSettingsProxy => projectSettingsProxy ?? (projectSettingsProxy = HttpContext.RequestServices.GetService<IProjectSettingsProxy>());
+
+    /// <summary>
+    /// Gets the memory cache of previously fetched, and valid, <see cref="FilterResult"/> objects
+    /// </summary>
+    private IMemoryCache FilterCache => HttpContext.RequestServices.GetService<IMemoryCache>();
+
+    /// <summary>
+    /// Gets the service exception handler.
+    /// </summary>
+    private IServiceExceptionHandler ServiceExceptionHandler => serviceExceptionHandler ?? (serviceExceptionHandler = HttpContext.RequestServices.GetService<IServiceExceptionHandler>());
+
+    /// <summary>
+    /// Gets the application logging interface.
+    /// </summary>
+    protected ILogger<T> Log => logger ?? (logger = HttpContext.RequestServices.GetService<ILogger<T>>());
+
+    /// <summary>
+    /// Gets the type used to configure the logging system and create instances of ILogger from the registered ILoggerProviders.
+    /// </summary>
+    protected ILoggerFactory LoggerFactory => loggerFactory ?? (loggerFactory = HttpContext.RequestServices.GetService<ILoggerFactory>());
 
     /// <summary>
     /// Where to get environment variables, connection string etc. from
@@ -56,17 +77,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// For getting list of imported files for a project
     /// </summary>
     protected readonly IFileListProxy FileListProxy;
-
-    /// <summary>
-    /// For getting project settings for a project
-    /// </summary>
-    protected readonly IProjectSettingsProxy ProjectSettingsProxy;
-
-    /// <summary>
-    /// For getting list of persistent filters for a project
-    /// </summary>
-    protected readonly IFilterServiceProxy FilterServiceProxy;
-
+    
     /// <summary>
     /// For getting compaction settings for a project
     /// </summary>
@@ -77,11 +88,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     protected IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
 
-    /// <summary>
-    /// Gets the memory cache of previously fetched, and valid, <see cref="FilterResult"/> objects
-    /// </summary>
-    private IMemoryCache FilterCache => HttpContext.RequestServices.GetService<IMemoryCache>();
-
     private readonly MemoryCacheEntryOptions filterCacheOptions = new MemoryCacheEntryOptions
     {
       SlidingExpiration = TimeSpan.FromDays(3)
@@ -90,15 +96,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    protected BaseController(ILoggerFactory loggerFactory, ILogger log, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, IFilterServiceProxy filterServiceProxy, ICompactionSettingsManager settingsManager)
+    protected BaseController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
     {
-      LoggerFactory = loggerFactory;
-      Log = log;
-      ServiceExceptionHandler = serviceExceptionHandler;
       ConfigStore = configStore;
       FileListProxy = fileListProxy;
-      ProjectSettingsProxy = projectSettingsProxy;
-      FilterServiceProxy = filterServiceProxy;
       SettingsManager = settingsManager;
     }
 
@@ -113,7 +114,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the User uid/applicationID from the context.
     /// </summary>
-    /// <exception cref="ArgumentException">Incorrect user Id value.</exception>
     protected string GetUserId()
     {
       if (User is RaptorPrincipal principal && (principal.Identity is GenericIdentity identity))
@@ -134,7 +134,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         result = action.Invoke();
         Log.LogTrace($"Executed {action.Method.Name} with result {JsonConvert.SerializeObject(result)}");
-
       }
       catch (ServiceException)
       {
@@ -149,11 +148,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         Log.LogInformation($"Executed {action.Method.Name} with the result {result?.Code}");
       }
+
       return result;
     }
 
     /// <summary>
-    /// Async form of WithServiceExceptionTryExecute
+    /// With the service exception try execute async.
     /// </summary>
     protected async Task<TResult> WithServiceExceptionTryExecuteAsync<TResult>(Func<Task<TResult>> action) where TResult : ContractExecutionResult
     {
@@ -256,8 +256,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the project settings targets for the project.
     /// </summary>
-    /// <param name="projectUid">The UID of the project.</param>
-    /// <returns>The project settings targets.</returns>
     protected async Task<CompactionProjectSettings> GetProjectSettingsTargets(Guid projectUid)
     {
       CompactionProjectSettings ps;
@@ -287,8 +285,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the project settings colors for the project.
     /// </summary>
-    /// <param name="projectUid">The UID of the project.</param>
-    /// <returns>The project settings colors.</returns>
     protected async Task<CompactionProjectSettingsColors> GetProjectSettingsColors(Guid projectUid)
     {
       CompactionProjectSettingsColors ps;
@@ -318,7 +314,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Creates an instance of the <see cref="FilterResult"/> class and populates it with data from the <see cref="Filter"/> model class.
     /// </summary>
-    /// <returns>An instance of the <see cref="FilterResult"/> class.</returns>
     protected async Task<FilterResult> GetCompactionFilter(Guid projectUid, Guid? filterUid)
     {
       // Filter models are immutable except for their Name.
@@ -336,61 +331,65 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       DesignDescriptor designDescriptor = null;
       DesignDescriptor alignmentDescriptor = null;
 
-      if (filterUid.HasValue)
+      if (!filterUid.HasValue)
       {
-        try
+        return haveExcludedIds
+          ? FilterResult.CreateFilter(excludedIds)
+          : null;
+      }
+
+      try
+      {
+        var filterData = await GetFilterDescriptor(projectUid, filterUid.Value);
+        if (filterData != null)
         {
-          var filterData = await GetFilterDescriptor(projectUid, filterUid.Value);
-          if (filterData != null)
+          Log.LogDebug($"Filter from Filter Svc: {JsonConvert.SerializeObject(filterData)}");
+          if (filterData.DesignUid != null && Guid.TryParse(filterData.DesignUid, out Guid designUidGuid))
           {
-            Log.LogDebug($"Filter from Filter Svc: {JsonConvert.SerializeObject(filterData)}");
-            if (filterData.DesignUid != null && Guid.TryParse(filterData.DesignUid, out Guid designUidGuid))
+            designDescriptor = await GetAndValidateDesignDescriptor(projectUid, designUidGuid);
+          }
+
+          if (filterData.AlignmentUid != null && Guid.TryParse(filterData.AlignmentUid, out Guid alignmentUidGuid))
+          {
+            alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentUidGuid);
+          }
+
+          if (filterData.HasData() || haveExcludedIds || designDescriptor != null)
+          {
+            await ApplyDateRange(projectUid, filterData);
+
+            var polygonPoints = filterData.PolygonLL?.ConvertAll(p =>
+              WGSPoint3D.CreatePoint(p.Lat.LatDegreesToRadians(), p.Lon.LonDegreesToRadians()));
+
+            var layerMethod = filterData.LayerNumber.HasValue
+              ? FilterLayerMethod.TagfileLayerNumber
+              : FilterLayerMethod.None;
+
+            bool? returnEarliest = null;
+            if (filterData.ElevationType == ElevationType.First)
             {
-              designDescriptor = await GetAndValidateDesignDescriptor(projectUid, designUidGuid);
+              returnEarliest = true;
             }
 
-            if (filterData.AlignmentUid != null && Guid.TryParse(filterData.AlignmentUid, out Guid alignmentUidGuid))
-            {
-              alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentUidGuid);
-            }
+            var raptorFilter = FilterResult.CreateFilter(filterData, polygonPoints, alignmentDescriptor, layerMethod, excludedIds, returnEarliest, designDescriptor);
 
-            if (filterData.HasData() || haveExcludedIds || designDescriptor != null)
-            {
-              await ApplyDateRange(projectUid, filterData);
+            Log.LogDebug($"Filter after filter conversion: {JsonConvert.SerializeObject(raptorFilter)}");
 
-              var polygonPoints = filterData.PolygonLL?.ConvertAll(p =>
-                WGSPoint3D.CreatePoint(p.Lat.LatDegreesToRadians(), p.Lon.LonDegreesToRadians()));
+            FilterCache.Set(filterUid, raptorFilter, filterCacheOptions);
 
-              var layerMethod = filterData.LayerNumber.HasValue
-                ? FilterLayerMethod.TagfileLayerNumber
-                : FilterLayerMethod.None;
-
-              bool? returnEarliest = null;
-              if (filterData.ElevationType == ElevationType.First)
-              {
-                returnEarliest = true;
-              }
-
-              var raptorFilter = FilterResult.CreateFilter(filterData, polygonPoints, alignmentDescriptor, layerMethod, excludedIds, returnEarliest, designDescriptor);
-
-              Log.LogDebug($"Filter after filter conversion: {JsonConvert.SerializeObject(raptorFilter)}");
-
-              FilterCache.Set(filterUid, raptorFilter, filterCacheOptions);
-
-              return raptorFilter;
-            }
+            return raptorFilter;
           }
         }
-        catch (ServiceException ex)
-        {
-          Log.LogDebug($"EXCEPTION caught - cannot find filter {ex.Message} {ex.GetContent} {ex.GetResult.Message}");
-          throw;
-        }
-        catch (Exception ex)
-        {
-          Log.LogDebug("EXCEPTION caught - cannot find filter " + ex.Message);
-          throw;
-        }
+      }
+      catch (ServiceException ex)
+      {
+        Log.LogDebug($"EXCEPTION caught - cannot find filter {ex.Message} {ex.GetContent} {ex.GetResult.Message}");
+        throw;
+      }
+      catch (Exception ex)
+      {
+        Log.LogDebug("EXCEPTION caught - cannot find filter " + ex.Message);
+        throw;
       }
 
       return haveExcludedIds ? FilterResult.CreateFilter(excludedIds) : null;
@@ -431,49 +430,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the <see cref="FilterDescriptor"/> for a given Filter Uid (by project).
     /// </summary>
-    public async Task<Filter> GetFilterDescriptor(Guid projectUid, Guid filterUid)
+    protected async Task<Filter> GetFilterDescriptor(Guid projectUid, Guid filterUid)
     {
       var filterDescriptor = await FilterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), Request.Headers.GetCustomHeaders(true));
 
       return filterDescriptor == null
         ? null
         : JsonConvert.DeserializeObject<Filter>(filterDescriptor.FilterJson);
-    }
-
-    /// <summary>
-    /// Gets the summary volumes parameters according to the calcultion type
-    /// </summary>
-    /// <param name="projectUid">Project UID</param>
-    /// <param name="volumeCalcType">The summary volumes calculation type</param>
-    /// <param name="volumeBaseUid">Base Design or Filter UID for summary volumes determined by volumeCalcType</param>
-    /// <param name="volumeTopUid">Top Design or Filter UID for summary volumes determined by volumeCalcType</param>
-    /// <returns>Tuple of base filter, top filter and volume design descriptor</returns>
-    protected async Task<Tuple<FilterResult, FilterResult, DesignDescriptor>> GetSummaryVolumesParameters(Guid projectUid, VolumeCalcType? volumeCalcType, Guid? volumeBaseUid, Guid? volumeTopUid)
-    {
-      FilterResult baseFilter = null;
-      FilterResult topFilter = null;
-      DesignDescriptor volumeDesign = null;
-
-      if (volumeCalcType.HasValue)
-      {
-        switch (volumeCalcType.Value)
-        {
-          case VolumeCalcType.GroundToGround:
-            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid);
-            topFilter = await GetCompactionFilter(projectUid, volumeTopUid);
-            break;
-          case VolumeCalcType.GroundToDesign:
-            baseFilter = await GetCompactionFilter(projectUid, volumeBaseUid);
-            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeTopUid, true);
-            break;
-          case VolumeCalcType.DesignToGround:
-            volumeDesign = await GetAndValidateDesignDescriptor(projectUid, volumeBaseUid, true);
-            topFilter = await GetCompactionFilter(projectUid, volumeTopUid);
-            break;
-        }
-      }
-
-      return new Tuple<FilterResult, FilterResult, DesignDescriptor>(baseFilter, topFilter, volumeDesign);
     }
   }
 }

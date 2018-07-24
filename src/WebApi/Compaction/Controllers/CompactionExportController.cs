@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
@@ -32,12 +31,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// </summary>
   //NOTE: do not cache responses as large amount of data
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-  public class CompactionExportController : BaseController
+  public class CompactionExportController : BaseController<CompactionExportController>
   {
     /// <summary>
     /// Raptor client for use by executor
     /// </summary>
-    private readonly IASNodeClient raptorClient;
+  private readonly IASNodeClient raptorClient;
 
     /// <summary>
     /// For retrieving user preferences
@@ -52,11 +51,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionExportController(IASNodeClient raptorClient, ILoggerFactory loggerFactory, IConfigurationStore configStore,
-      IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
-      IProductionDataRequestFactory requestFactory, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy,
-      IPreferenceProxy prefProxy, ITransferProxy transferProxy) :
-      base(loggerFactory, loggerFactory.CreateLogger<CompactionExportController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
+    public CompactionExportController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager,
+      IProductionDataRequestFactory requestFactory, IPreferenceProxy prefProxy, ITransferProxy transferProxy) :
+      base(configStore, fileListProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
       this.prefProxy = prefProxy;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -9,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
@@ -19,15 +17,14 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.WebApi.Compaction.ActionServices;
 using VSS.Productivity3D.WebApi.Compaction.Controllers.Filters;
 using VSS.Productivity3D.WebApi.Models.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Executors;
 using VSS.Productivity3D.WebApiModels.Compaction.Models;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.Productivity3D.Models.Enums;
-using VSS.Productivity3D.WebApi.Compaction.ActionServices;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -36,7 +33,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// </summary>
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   [ProjectUidVerifier]
-  public class CompactionTileController : BaseController
+  public class CompactionTileController : BaseTileController<CompactionTileController>
   {
     /// <summary>
     /// Raptor client for use by executor
@@ -61,9 +58,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionTileController(IASNodeClient raptorClient, ILoggerFactory loggerFactory, IConfigurationStore configStore,
-      IFileRepository fileRepo, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, IProductionDataTileService tileService,  IBoundingBoxHelper boundingBoxHelper) :
-      base(loggerFactory, loggerFactory.CreateLogger<CompactionTileController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
+    public CompactionTileController(IASNodeClient raptorClient, IConfigurationStore configStore,
+      IFileRepository fileRepo, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IFilterServiceProxy filterServiceProxy, IProductionDataTileService tileService, IBoundingBoxHelper boundingBoxHelper) :
+      base(configStore, fileListProxy, filterServiceProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
       this.fileRepo = fileRepo;
@@ -336,7 +333,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
               "Unsupported file type " + fileType));
         }
-      } else
+      }
+      else
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

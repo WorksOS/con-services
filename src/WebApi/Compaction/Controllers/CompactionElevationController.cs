@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -27,13 +26,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// </summary>
   //Turn off caching until settings caching problem resolved
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
-  public class CompactionElevationController : BaseController
+  public class CompactionElevationController : BaseController<CompactionElevationController>
   {
     /// <summary>
     /// Raptor client for use by executor
     /// </summary>
     private readonly IASNodeClient raptorClient;
-    
+
     /// <summary>
     /// Proxy for getting elevation statistics from Raptor
     /// </summary>
@@ -47,11 +46,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionElevationController(IASNodeClient raptorClient, ILoggerFactory loggerFactory, IConfigurationStore configStore,
-      IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy,
-      ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy, 
-      IProductionDataRequestFactory productionDataRequestFactory) :
-      base(loggerFactory, loggerFactory.CreateLogger<CompactionElevationController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
+    public CompactionElevationController(IASNodeClient raptorClient, IConfigurationStore configStore, IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy,
+      ICompactionSettingsManager settingsManager, IProductionDataRequestFactory productionDataRequestFactory) :
+      base(configStore, fileListProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
       this.elevProxy = elevProxy;

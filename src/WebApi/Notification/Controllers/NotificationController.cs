@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.ResponseCaching.Internal;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.ResponseCaching.Internal;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
@@ -102,15 +102,15 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
-      this.log = logger.CreateLogger<NotificationController>();
+      log = logger.CreateLogger<NotificationController>();
       this.fileRepo = fileRepo;
       this.configStore = configStore;
       this.tileGenerator = tileGenerator;
       this.fileListProxy = fileListProxy;
       this.filterServiceProxy = filterServiceProxy;
       this.cache = cache;
-      this.userPreferences = prefProxy;
-      this.projectsListProxy = projectProxy;
+      userPreferences = prefProxy;
+      projectsListProxy = projectProxy;
     }
 
     /// <summary>
@@ -123,8 +123,6 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <param name="fileId">A unique file identifier</param>
     /// <param name="dxfUnitsType">A DXF file units type</param>
     /// <param name="fileQueue"></param>
-    /// <returns>A code and message to indicate the result</returns>
-    /// <executor>AddFileExecutor</executor> 
     [ProjectUidVerifier]
     [Route("api/v2/notification/addfile")]
     [HttpGet]
@@ -145,7 +143,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
 
       if (fileType == ImportedFileType.Alignment)
       {
-        var preferences = await userPreferences.GetUserPreferences(this.Request.Headers.GetCustomHeaders());
+        var preferences = await userPreferences.GetUserPreferences(Request.Headers.GetCustomHeaders());
         if (preferences == null)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
@@ -192,15 +190,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
 
     /// <summary>
     /// Notifies Raptor that a file has been deleted from a project
-    /// </summary>
-    /// <param name="projectUid">Project UID</param>
-    /// <param name="fileUid">File UID</param>
-    /// <param name="fileDescriptor">File descriptor in JSON format. Currently this is TCC filespaceId, path and filename</param> 
-    /// <param name="fileType">Type of the file</param>
-    /// <param name="fileId">A unique file identifier</param>
-    /// <param name="legacyFileId">A unique file identifier from Legacy</param>
-    /// <returns>A code and message to indicate the result</returns>
-    /// <executor>DeleteFileExecutor</executor> 
+    /// </summary> 
     [ProjectUidVerifier]
     [Route("api/v2/notification/deletefile")]
     [HttpGet]
@@ -248,8 +238,6 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <summary>
     /// Notifies Raptor that files have been activated or deactivated
     /// </summary>
-    /// <param name="projectUid">Project UID</param>
-    /// <param name="fileUids">File UIDs</param>
     [ProjectUidVerifier]
     [Route("api/v2/notification/updatefiles")]
     [HttpGet]
@@ -303,9 +291,6 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     ///      When a file is added via CGen flexGateway, it will tell raptor.
     ///        However the 3dp UI needs to know about the change, so needs to refresh its caches.
     /// </summary>
-    /// <param name="projectUid">Project UID</param>
-    /// <param name="fileUid">File UID</param>
-    /// <returns>A code and message to indicate the result</returns>
     [ProjectUidVerifier]
     [Route("api/v2/notification/importedfilechange")]
     [HttpGet]
@@ -324,9 +309,6 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <summary>
     /// Notifies Raptor that a filterUid has been updated/deleted so clear it from the queue
     /// </summary>
-    /// <param name="filterUid"></param>
-    /// <param name="projectUid"></param>
-    /// <returns>A code and message to indicate the result</returns>
     [Route("api/v2/notification/filterchange")]
     [HttpGet]
     public ContractExecutionResult GetNotifyFilterChange(
@@ -342,9 +324,6 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <summary>
     /// Clears the imported files cache in the proxy so that linework tile requests are refreshed appropriately
     /// </summary>
-    /// <param name="projectUid">The project UID that the cached items belong to</param>
-    /// <param name="customHeaders">The custom headers of the notification request</param>
-    /// <returns>The updated list of imported files</returns>
     private async Task<List<FileData>> ClearFilesCaches(Guid projectUid, IDictionary<string, string> customHeaders)
     {
       log.LogInformation("Clearing imported files cache for project {0}", projectUid);
@@ -361,8 +340,6 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <summary>
     /// Deserializes the file descriptor
     /// </summary>
-    /// <param name="fileDescriptor">JSON representation of the file descriptor</param>
-    /// <returns>The file descriptor instance</returns>
     private FileDescriptor GetFileDescriptor(string fileDescriptor)
     {
       FileDescriptor fileDes;
@@ -382,8 +359,6 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <summary>
     /// Get the list of filters for the project
     /// </summary>
-    /// <param name="projectUid">Project UID</param>
-    /// <param name="customHeaders">The custom headers of the notification request</param>
     private async Task<List<Filter>> GetFilters(Guid projectUid, IDictionary<string, string> customHeaders)
     {
       var filterDescriptors = await filterServiceProxy.GetFilters(projectUid.ToString(), customHeaders);
@@ -398,8 +373,6 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <summary>
     /// Gets the User uid/applicationID from the context.
     /// </summary>
-    /// <returns></returns>
-    /// <exception cref="ArgumentException">Incorrect user Id value.</exception>
     private string GetUserId()
     {
       if (User is RaptorPrincipal principal && (principal.Identity is GenericIdentity identity))

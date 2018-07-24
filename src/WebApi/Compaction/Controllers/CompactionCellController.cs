@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -25,7 +24,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// </summary>
   [ProjectUidVerifier]
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
-  public class CompactionCellController : BaseController
+  public class CompactionCellController : BaseController<CompactionCellController>
   {
     /// <summary>
     /// Raptor client for use by executor
@@ -35,10 +34,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionCellController(IASNodeClient raptorClient, ILoggerFactory loggerFactory, IConfigurationStore configStore,
-      IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager,
-      IServiceExceptionHandler serviceExceptionHandler, IFilterServiceProxy filterServiceProxy, IProductionDataRequestFactory requestFactory)
-      : base(loggerFactory, loggerFactory.CreateLogger<CompactionCellController>(), serviceExceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
+    public CompactionCellController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory)
+      : base(configStore, fileListProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
     }
@@ -106,7 +103,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectId = await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(await GetProjectSettingsTargets(projectUid));
-      
+
       var patchRequest = PatchRequest.Create(
         projectId,
         new Guid(),

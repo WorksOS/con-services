@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
@@ -24,7 +23,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// Controller for getting Raptor production data for report requests
   /// </summary>
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
-  public class CompactionReportController : BaseController
+  public class CompactionReportController : BaseController<CompactionReportController>
   {
     /// <summary>
     /// Raptor client for use by executor
@@ -44,8 +43,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionReportController(IASNodeClient raptorClient, ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler, IConfigurationStore configStore, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, IFilterServiceProxy filterServiceProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory, IPreferenceProxy prefProxy) :
-      base(loggerFactory, loggerFactory.CreateLogger<CompactionReportController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
+    public CompactionReportController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory, IPreferenceProxy prefProxy) :
+      base(configStore, fileListProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
       this.requestFactory = requestFactory;

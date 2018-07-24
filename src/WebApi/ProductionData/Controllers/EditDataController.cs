@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -13,7 +13,6 @@ using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
 using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
-using VSS.Productivity3D.WebApiModels.Report.Executors;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {
@@ -21,7 +20,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// 
   /// </summary>
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-  public class EditDataController : Controller, IEditDataContract
+  public class EditDataController : IEditDataContract
   {
     /// <summary>
     /// Tag processor for use by executor

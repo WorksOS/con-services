@@ -1,20 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes;
 using ColorValue = VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes.ColorValue;
-using VSS.Productivity3D.Models.Enums;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -22,20 +20,18 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// Controller for getting color palettes for displaying Raptor production data
   /// </summary>
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
-  public class CompactionPaletteController : BaseController
+  public class CompactionPaletteController : BaseController<CompactionPaletteController>
   {
     /// <summary>
     /// Proxy for getting elevation statistics from Raptor
     /// </summary>
-    private readonly IElevationExtentsProxy elevProxy;
+  private readonly IElevationExtentsProxy elevProxy;
 
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionPaletteController(ILoggerFactory loggerFactory, IConfigurationStore configStore,
-      IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy,
-      ICompactionSettingsManager settingsManager, IServiceExceptionHandler exceptionHandler, IFilterServiceProxy filterServiceProxy) :
-      base(loggerFactory, loggerFactory.CreateLogger<CompactionPaletteController>(), exceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
+    public CompactionPaletteController(IConfigurationStore configStore, IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager) :
+      base(configStore, fileListProxy, settingsManager)
     {
       this.elevProxy = elevProxy;
     }

@@ -1,8 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -18,24 +17,26 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Common base for Detail and Summary service controllers.
   /// </summary>
-  public class CompactionDataBaseController : BaseController
+  public class CompactionDataBaseController : BaseController<CompactionDataBaseController>
   {
     /// <summary>
     /// Raptor client for use by executor
     /// </summary>
     protected readonly IASNodeClient RaptorClient;
-    
+
     /// <summary>
     /// The request factory
     /// </summary>
     protected readonly IProductionDataRequestFactory RequestFactory;
 
-    /// <inheritdoc />
-    public CompactionDataBaseController(IASNodeClient raptorClient, ILoggerFactory loggerFactory, ILogger log, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, IFilterServiceProxy filterServiceProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory)
-      : base(loggerFactory, log, serviceExceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
+    public CompactionDataBaseController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory)
+      : base(configStore, fileListProxy, settingsManager)
     {
-      this.RaptorClient = raptorClient;
-      this.RequestFactory = requestFactory;
+      RaptorClient = raptorClient;
+      RequestFactory = requestFactory;
     }
 
     /// <summary>
@@ -60,11 +61,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       var projectSettings = await GetProjectSettingsTargets(projectUid);
 
-      CMVSettings cmvSettings = !isCustomCMVTargets ? 
+      CMVSettings cmvSettings = !isCustomCMVTargets ?
         SettingsManager.CompactionCmvSettings(projectSettings) :
         SettingsManager.CompactionCmvSettingsEx(projectSettings);
 
-      LiftBuildSettings liftSettings = this.SettingsManager.CompactionLiftBuildSettings(projectSettings);
+      LiftBuildSettings liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var projectId = await GetLegacyProjectId(projectUid);
@@ -76,9 +77,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     protected async Task<PassCounts> GetPassCountRequest(Guid projectUid, Guid? filterUid, bool isSummary)
     {
-      var projectSettings = await this.GetProjectSettingsTargets(projectUid);
-      PassCountSettings passCountSettings = isSummary ? null : this.SettingsManager.CompactionPassCountSettings(projectSettings);
-      LiftBuildSettings liftSettings = this.SettingsManager.CompactionLiftBuildSettings(projectSettings);
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
+      PassCountSettings passCountSettings = isSummary ? null : SettingsManager.CompactionPassCountSettings(projectSettings);
+      LiftBuildSettings liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var projectId = await GetLegacyProjectId(projectUid);

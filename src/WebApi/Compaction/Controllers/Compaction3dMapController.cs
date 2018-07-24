@@ -27,7 +27,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// </summary>
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   [ProjectUidVerifier]
-  public class Compaction3DMapController : BaseController
+  public class Compaction3DMapController : BaseController<Compaction3DMapController>
   {
     /// <summary>
     /// Map Display Type for the 3d Maps control
@@ -48,37 +48,24 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       Texture = 2
     }
 
-    /// <summary>
-    /// Raptor client for use by executor
-    /// </summary>
-    private readonly IASNodeClient raptorClient;
-
-    /// <summary>
-    /// Tile Generator
-    /// </summary>
     private readonly IProductionDataTileService tileService;
-
-    /// <summary>
-    /// Bounding box helper
-    /// </summary>
     private readonly IBoundingBoxHelper boundingBoxHelper;
 
     /// <summary>
     /// Default Constructor
     /// </summary>
-    public Compaction3DMapController(ILoggerFactory loggerFactory, 
-      IServiceExceptionHandler serviceExceptionHandler, 
-      IConfigurationStore configStore, 
-      IFileListProxy fileListProxy, 
+    public Compaction3DMapController(ILoggerFactory loggerFactory,
+      IServiceExceptionHandler serviceExceptionHandler,
+      IConfigurationStore configStore,
+      IFileListProxy fileListProxy,
       IProjectSettingsProxy projectSettingsProxy,
-      IFilterServiceProxy filterServiceProxy, 
-      ICompactionSettingsManager settingsManager, 
+      IFilterServiceProxy filterServiceProxy,
+      ICompactionSettingsManager settingsManager,
       IProductionDataTileService tileService,
-      IASNodeClient raptorClient, 
-      IBoundingBoxHelper boundingBoxHelper) : base(loggerFactory, loggerFactory.CreateLogger<Compaction3DMapController>(), serviceExceptionHandler, configStore, fileListProxy, projectSettingsProxy, filterServiceProxy, settingsManager)
+      IASNodeClient raptorClient,
+      IBoundingBoxHelper boundingBoxHelper) : base(configStore, fileListProxy, settingsManager)
     {
       this.tileService = tileService;
-      this.raptorClient = raptorClient;
       this.boundingBoxHelper = boundingBoxHelper;
     }
 
@@ -94,7 +81,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="height">The height, in pixels, of the image tile to be rendered</param>
     /// <param name="bbox">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
     /// <returns>An image representing the data requested</returns>
-    [ResponseCache(Duration = 900, VaryByQueryKeys = new[] {"*"})]
+    [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
     [ValidateTileParameters]
     [Route("api/v2/map3d")]
     [HttpGet]
@@ -107,14 +94,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] ushort height,
       [FromQuery] string bbox)
     {
-      var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
+      var projectId = await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
 
       CompactionProjectSettingsColors projectSettingsColors;
 
       if (type == MapDisplayType.DesignMap)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest, 
+        throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Not Implemented"));
       }
 
@@ -150,7 +137,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return tileResult;
     }
 
-
     /// <summary>
     /// Generates a raw image for use in the 3d map control
     /// These can be heightmaps / textures / designs
@@ -163,7 +149,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="height">The height, in pixels, of the image tile to be rendered</param>
     /// <param name="bbox">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
     /// <returns>An image representing the data requested</returns>
-    [ResponseCache(Duration = 900, VaryByQueryKeys = new[] {"*"})]
+    [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
     [ValidateTileParameters]
     [Route("api/v2/map3d/png")]
     [HttpGet]
@@ -191,5 +177,4 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return CompactionProjectSettingsColors.Create(false, colors);
     }
   }
-
 }

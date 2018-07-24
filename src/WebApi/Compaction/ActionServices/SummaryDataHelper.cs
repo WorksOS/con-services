@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using VSS.MasterData.Models.Internal;
-using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 
