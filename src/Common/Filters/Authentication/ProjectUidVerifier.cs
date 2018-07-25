@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
-using System.Net;
+﻿using System.Net;
 using System.Reflection;
+using Microsoft.AspNetCore.Mvc.Filters;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -13,7 +13,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
   /// </summary>
   public class ProjectUidVerifier : ActionFilterAttribute
   {
-    private static string Name => "projectUid";
+    private const string NAME = "projectUid";
 
     /// <summary>
     /// Gets or sets whether the Filter will check for and reject Landfill Projects.
@@ -37,14 +37,14 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
         if (request.GetType() != typeof(string))
         {
           projectUidValue = request.GetType()
-                                   .GetProperty(Name, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance)
+                                   .GetProperty(NAME, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance)
                                    ?.GetValue(request);
         }
       }
 
-      if (actionContext.ActionArguments.ContainsKey(Name))
+      if (actionContext.ActionArguments.ContainsKey(NAME))
       {
-        projectUidValue = actionContext.ActionArguments[Name];
+        projectUidValue = actionContext.ActionArguments[NAME];
       }
 
       if (!(projectUidValue is string))
@@ -55,14 +55,14 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
       // RaptorPrincipal will handle the failure case where project isn't found.
       var projectDescriptor = (actionContext.HttpContext.User as RaptorPrincipal).GetProject((string)projectUidValue).Result;
 
-      if (this.AllowLandfillProjects && projectDescriptor.ProjectType == ProjectType.LandFill)
+      if (AllowLandfillProjects && projectDescriptor.ProjectType == ProjectType.LandFill)
       {
         throw new ServiceException(HttpStatusCode.Unauthorized,
           new ContractExecutionResult(ContractExecutionStatesEnum.AuthError,
             "Don't have access to the selected landfill project."));
       }
 
-      if (this.AllowArchivedState && projectDescriptor.IsArchived)
+      if (AllowArchivedState && projectDescriptor.IsArchived)
       {
         throw new ServiceException(HttpStatusCode.Unauthorized,
           new ContractExecutionResult(ContractExecutionStatesEnum.AuthError,

@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Diagnostics;
 using Microsoft.AspNetCore.ResponseCaching;
 using Microsoft.AspNetCore.ResponseCaching.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using VSS.Productivity3D.Common.Filters.Caching;
 
-namespace VSS.Productivity3D.Common.Filters
+namespace VSS.Productivity3D.Common.Filters.Caching
 {
   public static class CustomResponseCachingServiceExtensions
   {
@@ -16,7 +14,6 @@ namespace VSS.Productivity3D.Common.Filters
     /// Add response caching services.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/> for adding services.</param>
-    /// <returns></returns>
     public static IServiceCollection AddCustomResponseCaching(this IServiceCollection services)
     {
       if (services == null)
@@ -36,7 +33,6 @@ namespace VSS.Productivity3D.Common.Filters
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/> for adding services.</param>
     /// <param name="configureOptions">A delegate to configure the <see cref="ResponseCachingOptions"/>.</param>
-    /// <returns></returns>
     public static IServiceCollection AddCustomResponseCaching(this IServiceCollection services,
       Action<ResponseCachingOptions> configureOptions)
     {

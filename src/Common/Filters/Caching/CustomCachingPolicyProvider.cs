@@ -4,41 +4,31 @@ using Microsoft.AspNetCore.ResponseCaching.Internal;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 
-namespace VSS.Productivity3D.Common.Filters
+namespace VSS.Productivity3D.Common.Filters.Caching
 {
   //Based on reference implementation
   public class CustomCachingPolicyProvider : ResponseCachingPolicyProvider
   {
-
-    private static readonly CacheControlHeaderValue EmptyCacheControl = new CacheControlHeaderValue();
+    private static readonly CacheControlHeaderValue emptyCacheControl = new CacheControlHeaderValue();
 
     public override bool AttemptResponseCaching(ResponseCachingContext context)
     {
       var request = context.HttpContext.Request;
 
       // Verify the method
-      if (!HttpMethods.IsGet(request.Method) && !HttpMethods.IsHead(request.Method))
-      {
-        return false;
-      }
-
-      return true;
+      return HttpMethods.IsGet(request.Method) || HttpMethods.IsHead(request.Method);
     }
-   
+
     public override bool IsResponseCacheable(ResponseCachingContext context)
     {
-
       var typedHeaders = context.HttpContext.Response.GetTypedHeaders();
-      var responseHeaders = typedHeaders.CacheControl ?? EmptyCacheControl;
+      var responseHeaders = typedHeaders.CacheControl ?? emptyCacheControl;
 
-
-      // Check no-store
       if (responseHeaders.NoStore)
       {
         return false;
       }
 
-      // Check no-cache
       if (responseHeaders.NoCache)
       {
         return false;
@@ -91,7 +81,8 @@ namespace VSS.Productivity3D.Common.Filters
         {
           return false;
         }
-        else if (!sharedMaxAge.HasValue)
+
+        if (!sharedMaxAge.HasValue)
         {
           // Validate max age
           var maxAge = responseHeaders.MaxAge;
@@ -99,7 +90,8 @@ namespace VSS.Productivity3D.Common.Filters
           {
             return false;
           }
-          else if (!maxAge.HasValue)
+
+          if (!maxAge.HasValue)
           {
             // Validate expiration
             if (context.ResponseTime.Value >= typedHeaders.Expires)

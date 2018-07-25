@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using VSS.Log4Net.Extensions;
 using VSS.Productivity3D.Common.Filters;
 using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Caching;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.WebApi.Common;

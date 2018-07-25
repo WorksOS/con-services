@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace VSS.Productivity3D.Common.Filters.Validation
@@ -6,7 +6,6 @@ namespace VSS.Productivity3D.Common.Filters.Validation
   /// <summary>
   /// Validates the passed filter ID.
   /// </summary>
-  /// 
   [AttributeUsage(AttributeTargets.Property)]
   public class ValidFilterIDAttribute : ValidationAttribute
   {
@@ -15,18 +14,13 @@ namespace VSS.Productivity3D.Common.Filters.Validation
     /// </summary>
     /// <param name="value">The value to validate.</param>
     /// <param name="validationContext">The context information about the validation operation.</param>
-    /// <returns>
-    /// An instance of the <see cref="T:System.ComponentModel.DataAnnotations.ValidationResult" /> class.
-    /// </returns>
-    /// 
     protected override ValidationResult IsValid(object value, ValidationContext validationContext)
     {
-      long filterID = (long)value;
+      var filterId = (long)value;
 
-      if (filterID > 0)
-        return ValidationResult.Success;
-      else
-        return new ValidationResult(string.Format("Invalid filter ID: {0}", filterID));
+      return filterId > 0
+        ? ValidationResult.Success
+        : new ValidationResult($"Invalid filter ID: {filterId}");
     }
   }
 }
