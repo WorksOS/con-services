@@ -23,10 +23,8 @@
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.*" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.*" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.*" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.26.*" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.35.*" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.11.*" />
-    <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.*" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.25.*" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
