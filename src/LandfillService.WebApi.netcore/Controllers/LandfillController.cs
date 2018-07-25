@@ -323,18 +323,23 @@ namespace LandfillService.WebApi.netcore.Controllers
         var projects = LandfillDb.GetProjects(principal.Identity.Name, principal.CustomerUid);
         var project = projects.First(p => p.id == id);
         var todayinProjTimeZone = LandfillDb.GetTodayInProjectTimeZone(project.timeZoneName);
+        Console.WriteLine("Volumes todayinProjTimeZone:" + todayinProjTimeZone);
         var startWeek = CurrentWeekMonday(todayinProjTimeZone);
         var weekVol = LandfillDb.GetEntries(project, null, startWeek, todayinProjTimeZone).Sum(e => e.volume);
         var startMonth = new DateTime(todayinProjTimeZone.Year, todayinProjTimeZone.Month, 1);
         var monthVol = LandfillDb.GetEntries(project, null, startMonth, todayinProjTimeZone).Sum(e => e.volume);
+        Console.WriteLine("Volumes week:" + weekVol);
+        Console.WriteLine("Volumes month:" + monthVol);
+
         //Get designIds from ProjectMonitoring service
         var raptorApiClient = new RaptorApiClient(Log, config, raptorProxy, files, Request.Headers.GetCustomHeaders());
-        var res = await raptorApiClient.GetDesignID(Request.Headers["X-Jwt-Assertion"], project,
-          principal.CustomerUid);
+        var res = await raptorApiClient.GetDesignID(Request.Headers["X-Jwt-Assertion"], project, principal.CustomerUid);
         var designId = res.Where(r => r.name == "TOW.ttm").Select(i => i.id).First();
-
+        Console.WriteLine("Volumes designId:" + designId);
         var firstAirspaceVol = await GetAirspaceVolumeInBackground(principal.Identity.Name, project, true, designId);
         var lastAirspaceVol = await GetAirspaceVolumeInBackground(principal.Identity.Name, project, false, designId);
+        Console.WriteLine("Volumes firstAirspaceVol:" + firstAirspaceVol);
+        Console.WriteLine("Volumes lastAirspaceVol:" + lastAirspaceVol);
         var statsDates = await GetProjectStatisticsInBackground(principal.Identity.Name, project);
         var dates = statsDates.ToList();
         var volPerDay = firstAirspaceVol.HasValue && lastAirspaceVol.HasValue
@@ -350,8 +355,9 @@ namespace LandfillService.WebApi.netcore.Controllers
           remainingTime = timeLeft
         });
       }
-      catch (InvalidOperationException)
+      catch (Exception ex) //InvalidOperationException)
       {
+        Console.WriteLine("Volumes exception:" + ex.Message);
         return Ok();
       }
     }
@@ -408,8 +414,8 @@ namespace LandfillService.WebApi.netcore.Controllers
       {
         var raptorApiClient = new RaptorApiClient(Log, config, raptorProxy, files, Request.Headers.GetCustomHeaders());
         var res = await raptorApiClient.GetAirspaceVolumeAsync(userUid, projectResponse, returnEarliest, designId);
-        Debug.WriteLine("Airspace Volume res:" + res);
-        Debug.WriteLine("Airspace Volume: " + res.Fill);
+        Console.WriteLine("Airspace Volume res:" + res);
+        Console.WriteLine("Airspace Volume: " + res.Fill);
 
         return res.Fill;
       }

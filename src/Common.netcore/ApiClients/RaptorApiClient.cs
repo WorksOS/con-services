@@ -116,8 +116,7 @@ namespace Common.netstandard.ApiClients
     /// <param name="date">Date to retrieve volumes for (in projectResponse time zone)</param>
     /// <param name="returnEarliest">Flag to indicate if earliest or latest cell pass to be used</param>
     /// <returns>SummaryVolumesResult</returns>
-    public async Task<SummaryVolumesResult> GetAirspaceVolumeAsync(string userUid, ProjectResponse projectResponse,
-      bool returnEarliest, int designId)
+    public async Task<SummaryVolumesResult> GetAirspaceVolumeAsync(string userUid, ProjectResponse projectResponse,bool returnEarliest, int designId)
     {
       var tccFilespaceId = config.GetValueString("TCCfilespaceId");
       var topOfWasteDesignFilename = config.GetValueString("TopOfWasteDesignFilename");
@@ -140,9 +139,9 @@ namespace Common.netstandard.ApiClients
       return await raptorProxy.ExecuteGenericV1Request<SummaryVolumesResult>("/volumes/summary", volumeParams, customHeaders);
     }
 
-    public async Task<List<DesignDescriptiorLegacy>> GetDesignID(string jwt, ProjectResponse projectResponse,
-      string customerUid)
+    public async Task<List<DesignDescriptiorLegacy>> GetDesignID(string jwt, ProjectResponse projectResponse,string customerUid)
     {
+      Console.WriteLine("Get a list of files from raptor"); 
       return (await filesProxy.GetFiles(projectResponse.projectUid, "", customHeaders)).Select(data =>
         new DesignDescriptiorLegacy()
         {
