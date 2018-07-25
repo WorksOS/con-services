@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -89,7 +90,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// <returns>Returns an instance of <see cref="ContractExecutionResult"/>.</returns>
     [Route("api/v1/boundary/{ProjectUid}")]
     [HttpDelete]
-    public async Task<ContractExecutionResult> DeleteBoundary(string projectUid, [FromQuery] string boundaryUid)
+    public async Task<ContractExecutionResult> DeleteBoundary(string projectUid, [FromUri] string boundaryUid)
     {
       Log.LogInformation(
         $"{ToString()}.DeleteBoundary: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} ProjectUid: {projectUid} BoundaryUid: {boundaryUid}");
@@ -152,7 +153,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// <returns><see cref="GeofenceDataSingleResult"/></returns>
     [Route("api/v1/boundary/{ProjectUid}")]
     [HttpGet]
-    public async Task<GeofenceDataSingleResult> GetProjectBoundary(string projectUid, [FromQuery] string boundaryUid)
+    public async Task<GeofenceDataSingleResult> GetProjectBoundary(string projectUid, [FromUri] string boundaryUid)
     {
       Log.LogInformation(
         $"{ToString()}.GetProjectBoundary: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} IsApplication={(User as TIDCustomPrincipal)?.IsApplication} UserUid={((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name} ProjectUid: {projectUid} BoundaryUid: {boundaryUid}");
