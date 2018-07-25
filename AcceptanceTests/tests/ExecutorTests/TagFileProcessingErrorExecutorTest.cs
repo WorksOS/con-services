@@ -12,7 +12,7 @@ namespace ExecutorTests
   public class TagFileProcessingErrorExecutorTests : ExecutorTestData
   {
     [TestMethod]
-    // note that this may not work on windows container (logging= null error)
+    [Ignore]
     public void TagFileProcessingErrorV1Executor()
     {
       TagFileProcessingErrorV1Request request =

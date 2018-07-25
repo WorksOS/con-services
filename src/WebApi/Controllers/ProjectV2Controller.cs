@@ -90,7 +90,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// </returns>
     /// <executor>GetProjectAndAssetUidsExecutor</executor>
     [Route("api/v2/project/getUids")]
-    [HttpGet]
+    [HttpPost]
     public async Task<GetProjectAndAssetUidsResult> GetProjectAndAssetUids([FromBody]GetProjectAndAssetUidsRequest request)
     {
       _log.LogDebug("GetProjectAndAssetUids: request:{0}", JsonConvert.SerializeObject(request));
