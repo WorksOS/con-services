@@ -334,6 +334,12 @@ namespace LandfillService.WebApi.netcore.Controllers
         //Get designIds from ProjectMonitoring service
         var raptorApiClient = new RaptorApiClient(Log, config, raptorProxy, files, Request.Headers.GetCustomHeaders());
         var res = await raptorApiClient.GetDesignID(Request.Headers["X-Jwt-Assertion"], project, principal.CustomerUid);
+        Console.WriteLine("Found no of files = " + res.Count);
+        foreach (var testfiles in res)
+        {
+          Console.WriteLine("Found name:" + testfiles.name);
+        }
+
         var designId = res.Where(r => r.name == "TOW.ttm").Select(i => i.id).First();
         Console.WriteLine("Volumes designId:" + designId);
         var firstAirspaceVol = await GetAirspaceVolumeInBackground(principal.Identity.Name, project, true, designId);
