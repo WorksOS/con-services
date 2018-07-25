@@ -141,14 +141,29 @@ namespace Common.netstandard.ApiClients
 
     public async Task<List<DesignDescriptiorLegacy>> GetDesignID(string jwt, ProjectResponse projectResponse,string customerUid)
     {
-      Console.WriteLine("Get a list of files from raptor"); 
-      return (await filesProxy.GetFiles(projectResponse.projectUid, "", customHeaders)).Select(data =>
-        new DesignDescriptiorLegacy()
+      Console.WriteLine("Get a list of files from raptor");
+      var allFiles = await filesProxy.GetFiles(projectResponse.projectUid, "", customHeaders);
+      var listFiles = new List<DesignDescriptiorLegacy>();
+      foreach (var file in allFiles)
+      {
+        var onefile = new DesignDescriptiorLegacy()
         {
-          fileType = data.ImportedFileType.ToString(),
-          id = (int) data.LegacyFileId,
-          name = data.ImportedFileTypeName
-        }).ToList();
+          fileType = file.ImportedFileType.ToString(),
+          id = (int) file.LegacyFileId,
+          name = file.ImportedFileTypeName
+        };
+        Console.WriteLine("File name is : " + onefile.name + " and the file type is " + onefile.fileType + " file id is " + onefile.id);
+        listFiles.Add(onefile);
+      }
+      return listFiles;
+
+      //return (await filesProxy.GetFiles(projectResponse.projectUid, "", customHeaders)).Select(data =>
+      //  new DesignDescriptiorLegacy()
+      //  {
+      //    fileType = data.ImportedFileType.ToString(),
+      //    id = (int) data.LegacyFileId,
+      //    name = data.ImportedFileTypeName
+      //  }).ToList();
     }
 
     /// <summary>
