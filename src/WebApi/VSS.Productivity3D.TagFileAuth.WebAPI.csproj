@@ -23,6 +23,10 @@
     </None>
   </ItemGroup>
 
+  <!-- this avoids this error when running in a container:
+              ...  the manifest .. was not found:  package: 'Microsoft.ApplicationInsights.AspNetCore', version: '2.1.1'   -->
+  <PropertyGroup> <PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest> </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>
