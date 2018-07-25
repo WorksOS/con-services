@@ -36,16 +36,15 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="subscriptionRepo">The subscriptions repo.</param>
     /// <param name="store">The configStore.</param>
     /// <param name="subscriptionProxy">The subs proxy.</param>
-    /// <param name="geofenceProxy">The geofence proxy.</param>
     /// <param name="raptorProxy">The raptorServices proxy.</param>
     /// <param name="fileRepo"></param>
     /// <param name="logger">The logger.</param>
     /// <param name="serviceExceptionHandler">The ServiceException handler</param>
     public ProjectV3Controller(IKafka producer, IProjectRepository projectRepo,
       ISubscriptionRepository subscriptionRepo, IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
-      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, IFileRepository fileRepo, 
+      IRaptorProxy raptorProxy, IFileRepository fileRepo, 
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
-      : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, geofenceProxy, raptorProxy,
+      : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, raptorProxy,
           logger, serviceExceptionHandler, logger.CreateLogger<ProjectV3Controller>())
     { }
 
@@ -96,7 +95,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task CreateProjectV3([FromBody] CreateProjectEvent project)
     {
       log.LogInformation("CreateProjectV3. project: {0}", JsonConvert.SerializeObject(project));
-      ProjectRequestHelper.ValidateGeofence(project.ProjectBoundary, serviceExceptionHandler);
+      ProjectRequestHelper.ValidateProjectBoundary(project.ProjectBoundary, serviceExceptionHandler);
       string wktBoundary = project.ProjectBoundary;
 
       //Convert to old format for Kafka for consistency on kakfa queue
@@ -194,7 +193,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task AssociateGeofenceProjectV3([FromBody] AssociateProjectGeofence geofenceProject)
     {
       ProjectDataValidator.Validate(geofenceProject, projectRepo, serviceExceptionHandler);
-      await ProjectRequestHelper.AssociateGeofenceProject(geofenceProject, projectRepo,
+      await ProjectRequestHelper.AssociateProjectGeofence(geofenceProject, projectRepo,
         log, serviceExceptionHandler, producer, kafkaTopicName);
     }
 

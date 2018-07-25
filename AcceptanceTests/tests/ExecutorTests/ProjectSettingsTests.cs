@@ -48,9 +48,7 @@ namespace ExecutorTests
         RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
         (logger, configStore, serviceExceptionHandler,
           customerUidSomeOther, userId, userEmailAddress, CustomHeaders(customerUidOfProject),
-          null, null,
-          null, null, null,
-          projectRepo);
+          null, null, null, null, projectRepo);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(projectSettingsRequest)).ConfigureAwait(false);
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2001", StringComparison.Ordinal), "executor threw exception but incorrect code");
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("No access to the project for a customer or the project does not exist.", StringComparison.Ordinal), "executor threw exception but incorrect messaage");
@@ -76,9 +74,7 @@ namespace ExecutorTests
         RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
           ( logger, configStore, serviceExceptionHandler,
             customerUid, userId, userEmailAddress, CustomHeaders(customerUid),
-            null, null,
-            null, null, null,
-            projectRepo);
+            null, null, null, null, projectRepo);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       
       Assert.IsNotNull(result, "executor returned nothing");
@@ -110,9 +106,7 @@ namespace ExecutorTests
         RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
         (logger, configStore, serviceExceptionHandler,
           customerUid, userId, userEmailAddress, CustomHeaders(customerUid),
-          null, null,
-          null, null, null,
-          projectRepo);
+          null, null, null, null, projectRepo);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(projectUid, result.projectUid, "executor returned incorrect ProjectUid");
@@ -178,7 +172,7 @@ namespace ExecutorTests
       (logger, configStore, serviceExceptionHandler,
         customerUidSomeOther, userId, userEmailAddress, CustomHeaders(customerUidOfProject),
         producer, kafkaTopicName,
-        null, raptorProxy, null,
+        raptorProxy, null,
         projectRepo);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(projectSettingsRequest)).ConfigureAwait(false);
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2001", StringComparison.Ordinal), "executor threw exception but incorrect code");
@@ -205,8 +199,7 @@ namespace ExecutorTests
         (logger, configStore, serviceExceptionHandler,
         customerUid, userId, userEmailAddress, CustomHeaders(customerUid),
         producer, kafkaTopicName,
-        null, raptorProxy, null,
-        projectRepo);
+        raptorProxy, null, projectRepo);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(projectUid.ToString(), result.projectUid, "executor returned incorrect ProjectUid");
@@ -260,8 +253,7 @@ namespace ExecutorTests
       (logger, configStore, serviceExceptionHandler,
         customerUid, userId, userEmailAddress, CustomHeaders(customerUid),
         producer, kafkaTopicName,
-        null, raptorProxy, null,
-        projectRepo);
+        raptorProxy, null, projectRepo);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(projectUid.ToString(), result.projectUid, "executor returned incorrect ProjectUid");

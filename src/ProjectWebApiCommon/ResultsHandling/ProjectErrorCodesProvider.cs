@@ -64,13 +64,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       this.DynamicAddwithOffset("DeleteImportedFileV4. The importedFileUid doesn't exist under this project.", 56);
       this.DynamicAddwithOffset("A problem occurred at the {0} endpoint. Exception: {1}", 57);
       this.DynamicAddwithOffset("CreateImportedFileV4. The file has already been created.", 58);
-      this.DynamicAddwithOffset("GeofenceService CreateGeofence failed. No geofenceUid returned.", 59);
+      this.DynamicAddwithOffset("GeofenceService CreateGeofence failed. No geofenceUid returned. {0}", 59);
       this.DynamicAddwithOffset("Application calling context supports only HttpGet endpoints.", 60);
       this.DynamicAddwithOffset("Unable to create project. {0}", 61);
       this.DynamicAddwithOffset("Unable to update project. {0}", 62);
       this.DynamicAddwithOffset("Unable to associate project with customer. {0}", 63);
       this.DynamicAddwithOffset("Unable to disassociate project from customer.", 64);
-      this.DynamicAddwithOffset("Unable to store project-geofence associate in database.", 65);
+      this.DynamicAddwithOffset("Unable to store project-geofence associate in database. {0}", 65);
       this.DynamicAddwithOffset("Unable to delete project.", 66);
       this.DynamicAddwithOffset("FileImport AddFile in RaptorServices failed. Reason: {0} {1}.", 67);
       this.DynamicAddwithOffset("Invalid parameters.", 68);
@@ -119,3 +119,4 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
     }
   }
 }
+

@@ -41,7 +41,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="configStore"></param>
     /// <param name="serviceExceptionHandler"></param>
     /// <param name="producer"></param>
-    /// <param name="geofenceProxy"></param>
     /// <param name="raptorProxy"></param>
     /// <param name="subscriptionProxy"></param>
     /// <param name="projectRepo"></param>
@@ -49,7 +48,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="requestFactory"></param>
     public ProjectSettingsV4Controller(ILoggerFactory logger, IConfigurationStore configStore, 
       IServiceExceptionHandler serviceExceptionHandler, IKafka producer,
-      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ISubscriptionProxy subscriptionProxy,
+      IRaptorProxy raptorProxy, ISubscriptionProxy subscriptionProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
       IRequestFactory requestFactory
       )
@@ -110,7 +109,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<UpsertProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
-            null, raptorProxy, null,
+            raptorProxy, null,
             projectRepo)
           .ProcessAsync(projectSettingsRequest)
       )) as ProjectSettingsResult;
@@ -144,7 +143,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<UpsertProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
-            null, raptorProxy, null,
+            raptorProxy, null,
             projectRepo)
           .ProcessAsync(projectSettingsRequest)
       )) as ProjectSettingsResult;
@@ -169,7 +168,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<GetProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, null,
             null, null,
-            null, null, null,
+            null, null, 
             projectRepo)
           .ProcessAsync(projectSettingsRequest)
       )) as ProjectSettingsResult;

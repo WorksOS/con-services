@@ -52,12 +52,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// Gets or sets the Kafka topic.
     /// </summary>
     protected string kafkaTopicName;
-
-    /// <summary>
-    /// Project Geofence for 3dp  service
-    /// </summary>
-    protected IGeofenceProxy geofenceProxy;
-
+    
     /// <summary>
     /// Interface to 3dp service validation
     /// </summary>
@@ -191,7 +186,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       string customerUid, string userId = null, string userEmailAddress = null,
       IDictionary<string, string> headers = null,
       IKafka producer = null, string kafkaTopicName = null,
-      IGeofenceProxy geofenceProxy = null, IRaptorProxy raptorProxy = null, ISubscriptionProxy subscriptionProxy = null,
+      IRaptorProxy raptorProxy = null, ISubscriptionProxy subscriptionProxy = null,
       IProjectRepository projectRepo = null, ISubscriptionRepository subscriptionRepo = null,
       IFileRepository fileRepo = null, ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null)
     {
@@ -204,7 +199,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.customHeaders = headers;
       this.producer = producer;
       this.kafkaTopicName = kafkaTopicName;
-      this.geofenceProxy = geofenceProxy;
       this.raptorProxy = raptorProxy;
       this.subscriptionProxy = subscriptionProxy;
       this.projectRepo = projectRepo;

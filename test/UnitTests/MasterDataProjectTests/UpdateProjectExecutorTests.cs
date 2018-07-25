@@ -11,7 +11,6 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
@@ -39,7 +38,6 @@ namespace VSS.MasterData.ProjectTests
     private static ILoggerFactory _logger;
     private static IServiceExceptionHandler _serviceExceptionHandler;
     private static Mock<IKafka> _producer;
-    private static Mock<IGeofenceProxy> _geofenceProxy;
 
 
     [ClassInitialize]
@@ -65,24 +63,7 @@ namespace VSS.MasterData.ProjectTests
       _producer = new Mock<IKafka>();
       _producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
       _producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
-
-      var geofence = new GeofenceData()
-      {
-        GeofenceUID = _geofenceUid,
-        GeofenceType = GeofenceType.Project.ToString(),
-        GeometryWKT = _boundaryString
-      };
-
-      _geofenceProxy = new Mock<IGeofenceProxy>();
-      _geofenceProxy
-        .Setup(gp =>
-          gp.GetGeofenceForCustomer(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
-        .ReturnsAsync(geofence);
-      _geofenceProxy.Setup(gp => gp.UpdateGeofence(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
-          It.IsAny<string>(),
-          It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<Guid>(),
-          It.IsAny<double>(), It.IsAny<Dictionary<string, string>>()))
-        .ReturnsAsync(_geofenceUid);
+      
     }
 
     [TestMethod]
@@ -132,7 +113,7 @@ namespace VSS.MasterData.ProjectTests
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          _geofenceProxy.Object, raptorProxy.Object, null,
+          raptorProxy.Object, null,
           projectRepo.Object, subscriptionRepo.Object, null, null, null);
         await updateExecutor.ProcessAsync(updateProjectEvent);
       }
@@ -187,7 +168,7 @@ namespace VSS.MasterData.ProjectTests
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          _geofenceProxy.Object, raptorProxy.Object, null,
+          raptorProxy.Object, null,
           projectRepo.Object, subscriptionRepo.Object, null, null, null);
         var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
           await updateExecutor.ProcessAsync(updateProjectEvent));
@@ -246,7 +227,7 @@ namespace VSS.MasterData.ProjectTests
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          _geofenceProxy.Object, raptorProxy.Object, null,
+          raptorProxy.Object, null,
           projectRepo.Object, subscriptionRepo.Object, null, null, null);
         var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
           await updateExecutor.ProcessAsync(updateProjectEvent));
@@ -254,56 +235,6 @@ namespace VSS.MasterData.ProjectTests
         var projectErrorCodesProvider = ServiceProvider.GetRequiredService<IErrorCodesProvider>();
         Assert.AreNotEqual(-1,
           ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(37), StringComparison.Ordinal));
-      }
-    }
-
-    [TestMethod]
-    public async Task UpdateProjectExecutor_ChangeName_Invalid_NoprojectGeofence()
-    {
-      _configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
-      _logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
-      _serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-
-      var projectUid = Guid.NewGuid();
-      var projectType = ProjectType.Standard;
-      var existingProject = await CreateProject(projectUid, projectType);
-
-      if (existingProject.ProjectUID != null)
-      {
-        var updateProjectRequest = UpdateProjectRequest.CreateUpdateProjectRequest
-        (projectUid, ProjectType.Standard, "a new project name",
-          existingProject.Description,
-          existingProject.EndDate,
-          existingProject.CoordinateSystemFileName, null,
-          _updatedBoundaryString);
-        var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(updateProjectRequest);
-        updateProjectEvent.ActionUTC = updateProjectEvent.ReceivedUTC = DateTime.UtcNow;
-
-        var projectRepo = new Mock<IProjectRepository>();
-        projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<UpdateProjectEvent>())).ReturnsAsync(1);
-        projectRepo.Setup(pr => pr.GetProject(It.IsAny<string>()))
-          .ReturnsAsync(existingProject);
-
-        projectRepo.Setup(pr => pr.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync((List <ProjectGeofence> )null);
-
-        var subscriptionRepo = new Mock<ISubscriptionRepository>();
-        var raptorProxy = new Mock<IRaptorProxy>();
-        raptorProxy.Setup(rp =>
-            rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
-          .ReturnsAsync(new CoordinateSystemSettingsResult());
-
-        var updateExecutor = RequestExecutorContainerFactory.Build<UpdateProjectExecutor>
-        (_logger, _configStore, _serviceExceptionHandler,
-          _customerUid, _userId, null, _customHeaders,
-          _producer.Object, KafkaTopicName,
-          _geofenceProxy.Object, raptorProxy.Object, null,
-          projectRepo.Object, subscriptionRepo.Object, null, null, null);
-        var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
-          await updateExecutor.ProcessAsync(updateProjectEvent));
-
-        var projectErrorCodesProvider = ServiceProvider.GetRequiredService<IErrorCodesProvider>();
-        Assert.AreNotEqual(-1,
-          ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(96), StringComparison.Ordinal));
       }
     }
 
@@ -375,7 +306,7 @@ namespace VSS.MasterData.ProjectTests
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          _geofenceProxy.Object, raptorProxy.Object, subscriptionProxy.Object,
+          raptorProxy.Object, subscriptionProxy.Object,
           projectRepo.Object, subscriptionRepo.Object);
         await updateExecutor.ProcessAsync(updateProjectEvent);
       }
@@ -457,7 +388,7 @@ namespace VSS.MasterData.ProjectTests
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          _geofenceProxy.Object, raptorProxy.Object, subscriptionProxy.Object,
+          raptorProxy.Object, subscriptionProxy.Object,
           projectRepo.Object, subscriptionRepo.Object, fileRepo.Object);
         await updateExecutor.ProcessAsync(updateProjectEvent);
       }
@@ -511,7 +442,7 @@ namespace VSS.MasterData.ProjectTests
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          _geofenceProxy.Object, raptorProxy.Object, null,
+          raptorProxy.Object, null,
           projectRepo.Object, subscriptionRepo.Object, null, null, null);
         var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
           await updateExecutor.ProcessAsync(updateProjectEvent));
@@ -569,7 +500,7 @@ namespace VSS.MasterData.ProjectTests
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          _geofenceProxy.Object, raptorProxy.Object, null,
+          raptorProxy.Object, null,
           projectRepo.Object, subscriptionRepo.Object, null, null, null);
         var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
           await updateExecutor.ProcessAsync(updateProjectEvent));
@@ -622,12 +553,6 @@ namespace VSS.MasterData.ProjectTests
       var httpContextAccessor = new HttpContextAccessor {HttpContext = new DefaultHttpContext()};
       httpContextAccessor.HttpContext.Request.Path = new PathString("/api/v4/projects");
 
-      var geofenceProxy = new Mock<IGeofenceProxy>();
-      geofenceProxy.Setup(gp => gp.CreateGeofence(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(),
-          It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<Guid>(),
-          It.IsAny<double>(), It.IsAny<Dictionary<string, string>>()))
-        .ReturnsAsync(_geofenceUid);
-
       var raptorProxy = new Mock<IRaptorProxy>();
       raptorProxy.Setup(rp =>
           rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
@@ -649,7 +574,7 @@ namespace VSS.MasterData.ProjectTests
       (_logger, _configStore, _serviceExceptionHandler,
         _customerUid, _userId, null, _customHeaders,
         _producer.Object, KafkaTopicName,
-        geofenceProxy.Object, raptorProxy.Object, subscriptionProxy.Object,
+        raptorProxy.Object, subscriptionProxy.Object,
         projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor);
       await createExecutor.ProcessAsync(createProjectEvent);
 

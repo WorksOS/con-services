@@ -52,7 +52,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="customerRepo"></param>
     /// <param name="store"></param>
     /// <param name="subscriptionProxy"></param>
-    /// <param name="geofenceProxy"></param>
     /// <param name="raptorProxy"></param>
     /// <param name="logger"></param>
     /// <param name="serviceExceptionHandler">The ServiceException handler.</param>
@@ -61,10 +60,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
       IFileRepository fileRepo, ICustomerRepository customerRepo,
       IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
-      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy,
+      IRaptorProxy raptorProxy,
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
       IHttpContextAccessor httpContextAccessor)
-      : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, geofenceProxy, raptorProxy,
+      : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, raptorProxy,
         logger, serviceExceptionHandler, logger.CreateLogger<ProjectV2Controller>())
     {
       this.logger = logger;
@@ -123,7 +122,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<CreateProjectExecutor>(logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
-            geofenceProxy, raptorProxy, subscriptionProxy,
+            raptorProxy, subscriptionProxy,
             projectRepo, subscriptionRepo, fileRepo, null, httpContextAccessor)
           .ProcessAsync(createProjectEvent)
       );
@@ -175,7 +174,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             customerUid, null, null, customHeaders,
             null, null,
             null, null, null,
-            null, null, fileRepo, customerRepo)
+            null, fileRepo, customerRepo)
           .ProcessAsync(tccAuthorizationRequest)
       );
 

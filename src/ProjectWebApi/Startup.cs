@@ -80,7 +80,6 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddSingleton<IKafka, RdKafkaDriver>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<ISubscriptionProxy, SubscriptionProxy>();
-      services.AddTransient<IGeofenceProxy, GeofenceProxy>();
       services.AddTransient<IRaptorProxy, RaptorProxy>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddScoped<IRequestFactory, RequestFactory>();
@@ -126,8 +125,6 @@ namespace VSS.MasterData.Project.WebAPI
     /// <param name="loggerFactory">The logger factory.</param>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
-      loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-      loggerFactory.AddDebug();
       serviceCollection.AddSingleton(loggerFactory);
       serviceCollection.BuildServiceProvider();
 

@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
@@ -45,7 +41,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 7);
       }
 
-      ProjectRequestHelper.ValidateGeofence(updateProjectEvent.ProjectBoundary, serviceExceptionHandler);
+      ProjectRequestHelper.ValidateProjectBoundary(updateProjectEvent.ProjectBoundary, serviceExceptionHandler);
 
       // if updating  type from Standard to Landfill, or creating Landfill, then must have a CoordSystem
       ProjectRequestHelper.ValidateCoordSystemFile(existing, updateProjectEvent, serviceExceptionHandler);
@@ -77,7 +73,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       //    if CreateCoordSystemInRaptorAndTcc fails then nothing is done
       //    if AssociateProjectSubscription fails then nothing is done
       //    if UpdateProjectEvent fails then ProjectSubscription is Dissassociated
-      //    if UpdateGeofenceInGeofenceService fails then any Project changes and ProjectSubscription is Dissassociated 
       if (!string.IsNullOrEmpty(updateProjectEvent.CoordinateSystemFileName))
       {
         // don't bother rolling this back
@@ -98,7 +93,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             log, serviceExceptionHandler, customHeaders, subscriptionProxy, subscriptionRepo, projectRepo, false)
           .ConfigureAwait(false);
       }
-      log.LogDebug($"UpdateProject: subscriptionUidAssigned: {subscriptionUidAssigned} existing.ProjectType {existing.ProjectType} updateProjectEvent.ProjectType: {updateProjectEvent.ProjectType}");
+
+      log.LogDebug($"UpdateProject: subscriptionUidAssigned? {subscriptionUidAssigned}. ExistingProjectType: {existing.ProjectType} updatedProjectType: {updateProjectEvent.ProjectType}");
 
       var isUpdated = 0;
       try
@@ -114,14 +110,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 62, string.Empty);
       }
+
       log.LogDebug($"UpdateProject: Project updated successfully");
 
-
-      if (!string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary) && String.Compare(existing.GeometryWKT,
-            updateProjectEvent.ProjectBoundary, StringComparison.OrdinalIgnoreCase) != 0)
-      {
-        await UpdateGeofenceInGeofenceService(updateProjectEvent, existing);
-      }
 
       // doing this as late as possible in case something fails. We can't cleanup kafka que.
       CreateKafkaEvents(updateProjectEvent);
@@ -130,12 +121,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       return new ContractExecutionResult();
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new NotImplementedException();
-    }
-
-
     /// <summary>
     /// Creates Kafka events.
     /// </summary>
@@ -143,91 +128,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <returns></returns>
     protected void CreateKafkaEvents(UpdateProjectEvent updateProjectEvent)
     {
-     var messagePayload = JsonConvert.SerializeObject(new { UpdateProjectEvent = updateProjectEvent });
+      var messagePayload = JsonConvert.SerializeObject(new {UpdateProjectEvent = updateProjectEvent});
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>
         {
           new KeyValuePair<string, string>(updateProjectEvent.ProjectUID.ToString(), messagePayload)
         });
     }
-
-    /// <summary>
-    /// Updates the projectType geofence
-    ///     If something fails, need to rollback
-    ///        changes to updateProjectEvent, projectSub
-    /// </summary>
-    /// <param name="updateProjectEvent">The updateProjectEvent.</param>
-    /// <param name="existing"></param>
-    /// <returns></returns>
-    protected async Task UpdateGeofenceInGeofenceService(UpdateProjectEvent updateProjectEvent, Repositories.DBModels.Project existing)
-    {
-      log.LogDebug($"UpdateProject: Updating the Project geofence: {updateProjectEvent.ProjectUID.ToString()}");
-
-      ProjectGeofence projectGeofence = null;
-      try
-      {
-        var projectGeofences = (await projectRepo.GetAssociatedGeofences(updateProjectEvent.ProjectUID.ToString())
-          .ConfigureAwait(false));
-
-        if (projectGeofences != null)
-        {
-          var enumerable = projectGeofences.ToList();
-          if (enumerable.Any())
-          {
-            projectGeofence = enumerable.FirstOrDefault(p => p.GeofenceType == GeofenceType.Project);
-          }
-        }
-      }
-      catch (Exception e)
-      {
-        await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 101, e.Message, existing);
-      }
-      if (projectGeofence == null)
-      {
-        await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 96, string.Empty, existing);
-      }
-      log.LogDebug($"UpdateProject: Got the ProjectGeofence association: {JsonConvert.SerializeObject(projectGeofence)}");
-
-
-      GeofenceData geofence = null;
-      try
-      {
-        geofence = await geofenceProxy.GetGeofenceForCustomer(customerUid, projectGeofence.GeofenceUID, customHeaders)
-          .ConfigureAwait(false);
-      }
-      catch (Exception e)
-      {
-        await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 98, e.Message, existing);
-      }
-      if (geofence == null)
-      {
-        await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 97, string.Empty, existing);
-      }
-      log.LogDebug($"UpdateProject: Got the geofence: {JsonConvert.SerializeObject(geofence)}");
-
-
-      Guid geofenceUidUpdated = Guid.Empty;
-      try
-      {
-        var area = GeofenceValidation.CalculateAreaSqMeters(updateProjectEvent.ProjectBoundary);
-        log.LogDebug($"UpdateProject: Going to update Geofence. Area: {area}, customerUid: {customerUid}");
-        geofenceUidUpdated = await geofenceProxy.UpdateGeofence(geofence.GeofenceUID, Guid.Parse(customerUid),
-          geofence.GeofenceName,
-          geofence.Description, geofence.GeofenceType,
-          updateProjectEvent.ProjectBoundary,
-          geofence.FillColor, geofence.IsTransparent, geofence.UserUID, area, customHeaders).ConfigureAwait(false);
-      }
-      catch (Exception e)
-      {
-        await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 100, e.Message, existing);
-      }
-      if (geofenceUidUpdated == Guid.Empty)
-      {
-        await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 99, String.Empty, existing);
-      }
-      log.LogDebug($"UpdateProject: geoFence has been updated: {geofenceUidUpdated}");
-
-    }
+    
 
     private async Task RollbackAndThrow(UpdateProjectEvent updateProjectEvent, HttpStatusCode httpStatusCode, int errorCode, string exceptionMessage, Repositories.DBModels.Project existing = null)
     {
@@ -254,5 +162,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       serviceExceptionHandler.ThrowServiceException(httpStatusCode, errorCode, exceptionMessage);
     }
+    
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException();
+    }
+
   }
 }

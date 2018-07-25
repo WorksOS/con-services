@@ -265,7 +265,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<UpsertProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
-            null, raptorProxy, null,
+            raptorProxy, null,
             projectRepo)
           .ProcessAsync(projectSettingsRequest)
       ) as ProjectSettingsResult;

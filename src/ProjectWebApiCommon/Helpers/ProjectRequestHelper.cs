@@ -1,23 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.ConfigurationStore;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
-using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.MasterData.Repositories.DBModels;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -27,8 +22,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
   /// <summary>
   ///
   /// </summary>
-  public class ProjectRequestHelper
+  public partial class ProjectRequestHelper
   {
+
+    #region project
+
     /// <summary>
     /// Gets the project.
     /// </summary>
@@ -54,63 +52,25 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       return project;
     }
 
-    /// <summary>
-    /// Associates the geofence to the project.
-    /// </summary>
-    /// <param name="geofenceProject">The geofence project.</param>
-    /// <param name="log"></param>
-    /// <param name="serviceExceptionHandler"></param>
-    /// <param name="projectRepo"></param>
-    /// <param name="producer"></param>
-    /// <param name="kafkaTopicName"></param>
-    /// <returns></returns>
-    public static async Task AssociateGeofenceProject(AssociateProjectGeofence geofenceProject,
-      IProjectRepository projectRepo,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler,
-      IKafka producer, string kafkaTopicName)
+
+    public static async Task<bool> DoesProjectOverlap(string customerUid, string projectUid, DateTime projectStartDate,
+      DateTime projectEndDate, string databaseProjectBoundary,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
     {
-      geofenceProject.ReceivedUTC = DateTime.UtcNow;
+      var overlaps =
+        await projectRepo.DoesPolygonOverlap(customerUid, databaseProjectBoundary,
+          projectStartDate, projectEndDate, projectUid).ConfigureAwait(false);
+      if (overlaps)
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 43);
 
-      var isUpdated = await projectRepo.StoreEvent(geofenceProject).ConfigureAwait(false);
-      if (isUpdated == 0)
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 65);
-
-      var messagePayload = JsonConvert.SerializeObject(new {AssociateProjectGeofence = geofenceProject});
-      producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
-        {
-          new KeyValuePair<string, string>(geofenceProject.ProjectUID.ToString(), messagePayload)
-        });
+      log.LogDebug($"No overlapping projects for: {projectUid}");
+      return overlaps;
     }
 
-    /// <summary>
-    /// Associates the geofence to the project.
-    /// </summary>
-    /// <param name="geofenceProject">The geofence project.</param>
-    /// <param name="log"></param>
-    /// <param name="serviceExceptionHandler"></param>
-    /// <param name="projectRepo"></param>
-    /// <param name="producer"></param>
-    /// <param name="kafkaTopicName"></param>
-    /// <returns></returns>
-    public static async Task DissociateGeofenceProject(DissociateProjectGeofence geofenceProject,
-      IProjectRepository projectRepo,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler,
-      IKafka producer, string kafkaTopicName)
-    {
-      geofenceProject.ReceivedUTC = DateTime.UtcNow;
+    #endregion project
 
-      var isUpdated = await projectRepo.StoreEvent(geofenceProject).ConfigureAwait(false);
-      if (isUpdated == 0)
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 107);
 
-      var messagePayload = JsonConvert.SerializeObject(new {DissociateProjectGeofence = geofenceProject});
-      producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
-        {
-          new KeyValuePair<string, string>(geofenceProject.ProjectUID.ToString(), messagePayload)
-        });
-    }
+    #region coordSystem
 
     /// <summary>
     /// validate if Coord sys file name and content are required
@@ -189,42 +149,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       return true;
     }
 
-    public static void ValidateGeofence(string projectBoundary, IServiceExceptionHandler serviceExceptionHandler)
-    {
-      var result = GeofenceValidation.ValidateWKT(projectBoundary);
-      if (String.CompareOrdinal(result, GeofenceValidation.ValidationOk) != 0)
-      {
-        if (String.CompareOrdinal(result, GeofenceValidation.ValidationNoBoundary) == 0)
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 23);
-        }
-
-        if (String.CompareOrdinal(result, GeofenceValidation.ValidationLessThan3Points) == 0)
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 24);
-        }
-
-        if (String.CompareOrdinal(result, GeofenceValidation.ValidationInvalidFormat) == 0)
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 25);
-        }
-      }
-    }
-
-    public static async Task<bool> DoesProjectOverlap(string customerUid, string projectUid, DateTime projectStartDate,
-      DateTime projectEndDate, string databaseProjectBoundary,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
-    {
-      var overlaps =
-        await projectRepo.DoesPolygonOverlap(customerUid, databaseProjectBoundary,
-          projectStartDate, projectEndDate, projectUid).ConfigureAwait(false);
-      if (overlaps)
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 43);
-
-      log.LogDebug($"No overlapping projects for: {projectUid}");
-      return overlaps;
-    }
-
     /// <summary>
     /// Create CoordinateSystem in Raptor and save a copy of the file in TCC
     /// </summary>
@@ -290,6 +214,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       }
     }
 
+    #endregion coordSystem
+
+    
+    #region TCC
     /// <summary>
     /// get file content from TCC
     ///     note that is is intended to be used for small, DC files only.
@@ -383,99 +311,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         $"WriteFileToTCCRepository: tccFileName {tccFileName} written to TCC. folderAlreadyExists {folderAlreadyExists}");
       return FileDescriptor.CreateFileDescriptor(fileSpaceId, tccPath, tccFileName);
     }
-
-    public static async Task<IEnumerable<GeofenceWithAssociation>> GetCustomerGeofenceList(string customerUid,
-      List<GeofenceType> geofenceTypes,
-      ILogger log, IProjectRepository projectRepo)
-    {
-      return (await projectRepo.GetCustomerGeofences(customerUid).ConfigureAwait(false))
-        .Where(g => geofenceTypes.Contains(g.GeofenceType));
-    }
-
-    /// <summary>
-    /// Gets the geofence list available for a customer, 
-    ///    or those associated with a project
-    /// </summary>
-    /// <returns></returns>
-    public static async Task<List<GeofenceWithAssociation>> GetGeofenceList(string customerUid, string projectUid,
-      List<GeofenceType> geofenceTypes,
-      ILogger log, IProjectRepository projectRepo)
-    {
-      log.LogInformation(
-        $"GetGeofenceList: customerUid {customerUid}, projectUid {projectUid}, {JsonConvert.SerializeObject(geofenceTypes)}");
-
-      var geofencesWithAssociation = await GetCustomerGeofenceList(customerUid, geofenceTypes, log, projectRepo);
-
-      if (!string.IsNullOrEmpty(projectUid))
-      {
-        var geofencesAssociated = geofencesWithAssociation
-          .Where(g => g.ProjectUID == projectUid).ToList();
-
-        var associated = geofencesAssociated.ToList();
-        log.LogInformation(
-          $"Geofence list contains {associated.Count} geofences associated to project {projectUid}");
-        return associated;
-      }
-
-      // geofences which are not associated with ANY project
-      var notAssociated = geofencesWithAssociation
-        .Where(g => string.IsNullOrEmpty(g.ProjectUID)).ToList();
-      log.LogInformation($"Geofence list contains {notAssociated.Count} available geofences");
-      return notAssociated;
-    }
-
-
-    /// <summary>
-    /// Validates if there any subscriptions available for the request create project event
-    /// </summary>
-    /// <param name="serviceExceptionHandler"></param>
-    /// <param name="customHeaders"></param>
-    /// <param name="subscriptionProxy"></param>
-    /// <param name="subscriptionRepo"></param>
-    /// <param name="projectRepo"></param>
-    /// <param name="projectUid"></param>
-    /// <param name="projectType"></param>
-    /// <param name="customerUid"></param>
-    /// <param name="viaCreateProject"></param>
-    /// <returns></returns>
-    public static async Task<string> AssociateProjectSubscriptionInSubscriptionService(string projectUid, ProjectType projectType, string customerUid,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders,
-      ISubscriptionProxy subscriptionProxy, ISubscriptionRepository subscriptionRepo, IProjectRepository projectRepo,
-      bool isCreate)
-    {
-      string subscriptionUidAssigned = null;
-      if (projectType == ProjectType.LandFill || projectType == ProjectType.ProjectMonitoring)
-      {
-        subscriptionUidAssigned = (await subscriptionRepo.GetFreeProjectSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date)
-            .ConfigureAwait(false))
-          .FirstOrDefault(s => s.ServiceTypeID == (int)projectType.MatchSubscriptionType())
-          ?.SubscriptionUID;
-
-        if (String.IsNullOrEmpty(subscriptionUidAssigned))
-        {
-          log.LogInformation($"There are no free subscriptions for project type {projectType}");
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 37);
-        }
-
-        //Assign the new project to a subscription
-        try
-        {
-          // rethrows any exception
-          await subscriptionProxy.AssociateProjectSubscription(Guid.Parse(subscriptionUidAssigned),
-            Guid.Parse(projectUid), customHeaders).ConfigureAwait(false);
-        }
-        catch (Exception e)
-        {
-          if (isCreate)
-            await ProjectRequestHelper.DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), Guid.Parse(projectUid), log, projectRepo).ConfigureAwait(false);
-
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57,
-            "SubscriptionProxy.AssociateProjectSubscriptionInSubscriptionService", e.Message);
-        }
-      }
-
-      return subscriptionUidAssigned;
-    }
+    #endregion TCC
     
 
     #region rollback

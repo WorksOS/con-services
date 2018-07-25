@@ -107,7 +107,7 @@ namespace VSS.MasterData.ProjectTests
         .Build<UpsertImportedFileExecutor>(logger, configStore, serviceExceptionHandler,
           _customerUid, _userId, _userEmailAddress, customHeaders,
           producer.Object, KafkaTopicName,
-          null, raptorProxy.Object, null,
+          raptorProxy.Object, null,
           projectRepo.Object, null, fileRepo.Object);
       await executor.ProcessAsync(importedFileUpsertEvent);
     }
