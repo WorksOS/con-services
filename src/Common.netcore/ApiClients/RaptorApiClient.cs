@@ -150,7 +150,7 @@ namespace Common.netstandard.ApiClients
         {
           fileType = file.ImportedFileType.ToString(),
           id = (int) file.LegacyFileId,
-          name = file.ImportedFileTypeName
+          name = file.Name
         };
         Console.WriteLine("File name is : " + onefile.name + " and the file type is " + onefile.fileType + " file id is " + onefile.id);
         listFiles.Add(onefile);
