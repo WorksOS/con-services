@@ -61,7 +61,7 @@ namespace VSS.TRex.Servers.Client
             SpringConfigUrl = @".\igniteMutableKubeConfig.xml",
 
             IgniteInstanceName = TRexGrids.MutableGridName(),
-            //ClientMode = true,
+            ClientMode = true,
 
             JvmOptions = new List<string>() { "-DIGNITE_QUIET=false", "-Djava.net.preferIPv4Stack=true" },
             JvmInitialMemoryMb = 512, // Set to minimum advised memory for Ignite grid JVM of 512Mb
