@@ -11,23 +11,33 @@ sleep 55s
 
 cd /app
 echo "ExecutorTests starting...."
-dotnet vstest ExecutorTests/ExecutorTests.dll --logger:trx;LogFileName=ExecutorTestsTestResults --ResultsDirectory:/testresults
+dotnet vstest ExecutorTests/ExecutorTests.dll --logger:trx
+cp TestResults/*.trx testresults/ExecutorTests.trx
+rm TestResults/*.trx
 echo "ExecutorTests finished"
 
 echo "RepositoryTests starting...."
-dotnet vstest RepositoryTests/RepositoryTests.dll --logger:trx;LogFileName=RepositoryTestsResults --ResultsDirectory:/testresults
+dotnet vstest RepositoryTests/RepositoryTests.dll --logger:trx
+cp TestResults/*.trx testresults/RepositoryTests.trx
+rm TestResults/*.trx
 echo "RepositoryTests finished"
 
 echo "WebApiTests starting...."
-dotnet vstest WebApiTests/WebApiTests.dll --logger:trx;LogFileName=WebApiTestsResults --ResultsDirectory:/testresults
+dotnet vstest WebApiTests/WebApiTests.dll --logger:trx
+cp TestResults/*.trx testresults/WebApiTests.trx
+rm TestResults/*.trx
 echo "WebApiTests finished"
 
 echo "EventTests starting...."
-dotnet vstest EventTests/EventTests.dll --logger:trx;LogFileName=EventTestsResults --ResultsDirectory:/testresults
+dotnet vstest EventTests/EventTests.dll --logger:trx
+cp TestResults/*.trx testresults/EventTests.trx
+rm TestResults/*.trx
 echo "EventTests finished"
 
 echo "Integration tests starting...."
-dotnet vstest IntegrationTests/IntegrationTests.dll --logger:trx;LogFileName=IntegrationTestResults --ResultsDirectory:/testresults
+dotnet vstest IntegrationTests/IntegrationTests.dll --logger:trx
+cp TestResults/*.trx testresults/IntegrationTests.trx
+rm TestResults/*.trx
 echo "Integration tests finished"
 
 echo " "
