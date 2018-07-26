@@ -10,10 +10,17 @@ sleep 55s
 
 
 
-cd /app
-dotnet vstest ExecutorTests/ExecutorTests.dll --logger:trx;LogFileName=ExecutorTestsTestResults --ResultsDirectory:/app/testresults
-dotnet vstest IntegrationTests/IntegrationTests.dll --logger:trx;LogFileName=IntegrationTestsResults --ResultsDirectory:/app/testresults
-dotnet vstest WebApiTests/WebApiTests.dll --logger:trx;LogFileName=WebApiTestsTestResults --ResultsDirectory:/app/testresults
+dotnet vstest ExecutorTests/ExecutorTests.dll --logger:trx
+cp TestResults/*.trx testresults/ExecutorTests.trx
+rm TestResults/*.trx
+
+dotnet vstest IntegrationTests/IntegrationTests.dll --logger:trx
+cp TestResults/*.trx testresults/IntegrationTests.trx
+rm TestResults/*.trx
+
+dotnet vstest WebApiTests/WebApiTests.dll --logger:trx
+cp TestResults/*.trx testresults/WebApiTests.trx
+rm TestResults/*.trx
 echo " "
 echo " All acceptance tests completed"
 echo " "
