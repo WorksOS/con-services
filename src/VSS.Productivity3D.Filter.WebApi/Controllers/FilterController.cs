@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using System.Web.Http;
 using System.Collections.Immutable;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
@@ -85,7 +84,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// <returns>Returns an instance of <see cref="FilterDescriptorSingleResult"/></returns>
     [Route("api/v1/filter/{ProjectUid}")]
     [HttpGet]
-    public async Task<FilterDescriptorSingleResult> GetProjectFilter(string projectUid, [FromUri] string filterUid)
+    public async Task<FilterDescriptorSingleResult> GetProjectFilter(string projectUid, [FromBody] string filterUid)
     {
       Log.LogInformation($"{ToString()}.GetProjectFilter: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} IsApplication={(User as TIDCustomPrincipal)?.IsApplication} UserUid={((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name} ProjectUid: {projectUid} FilterUid: {filterUid}");
 
@@ -202,7 +201,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// <returns><see cref="ContractExecutionResult"/></returns>
     [Route("api/v1/filter/{ProjectUid}")]
     [HttpDelete]
-    public async Task<ContractExecutionResult> DeleteFilter(string projectUid, [FromUri] string filterUid)
+    public async Task<ContractExecutionResult> DeleteFilter(string projectUid, [FromBody] string filterUid)
     {
       Log.LogInformation($"{ToString()}.DeleteFilter: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} ProjectUid: {projectUid} FilterUid: {filterUid}");
 

@@ -8,23 +8,23 @@ echo "Check the database and kafka to see if port is available"
 /bin/bash wait-for-it.sh kafka:9092 -t 0
 echo "Wait for 30 seconds"
 sleep 30s
-# Run the component tests
-echo "Run the component tests"
 
+cd /app
 echo "WebApiTests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/WebApiTestsResults project=WebApiTests messages=false
+dotnet vstest WebApiTests/WebApiTests.dll --logger:trx;LogFileName=WebApiTestsResults --ResultsDirectory:/testresults
 echo "WebApiTests finished"
 
 echo "Run Executor tests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/ExecutorTestResults project=ExecutorTests messages=false
+dotnet vstest ExecutorTests/ExecutorTests.dll --logger:trx;LogFileName=ExecutorTestResults --ResultsDirectory:/testresults
 echo "Executor tests finished"
 
 echo "Run Repository tests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/RepositoryTestResults project=RepositoryTests messages=false
+dotnet vstest RepositoryTests/RepositoryTests.dll --logger:trx;LogFileName=RepositoryTestResults --ResultsDirectory:/testresults
 echo "Repository tests finished"
 
 echo " "
 echo " "
 echo " All acceptance tests completed"
 echo " "
+sleep 500s
 

@@ -16,11 +16,9 @@ using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Filters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.WebApi.Common;
-#if NET_4_7
-  using VSS.Productivity3D.Common.Filters;
-#endif
 
 namespace VSS.Productivity3D.Filter.WebApi
 {
@@ -36,7 +34,7 @@ namespace VSS.Productivity3D.Filter.WebApi
     /// <summary>
     /// 
     /// </summary>
-    public const string loggerRepoName = "WebApi";
+    public const string LoggerRepoName = "WebApi";
     private IServiceCollection serviceCollection;
 
     /// <summary>
@@ -46,12 +44,12 @@ namespace VSS.Productivity3D.Filter.WebApi
     {
       var builder = new ConfigurationBuilder()
         .SetBasePath(env.ContentRootPath)
-        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-        .AddEnvironmentVariables();
+        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
-      env.ConfigureLog4Net(repoName: loggerRepoName, configFileRelativePath: "log4net.xml");
+      env.ConfigureLog4Net("log4net.xml", LoggerRepoName);
 
+      builder.AddEnvironmentVariables();
       Configuration = builder.Build();
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
     }
@@ -71,7 +69,6 @@ namespace VSS.Productivity3D.Filter.WebApi
     /// <param name="services">The services.</param>
     public void ConfigureServices(IServiceCollection services)
     {
-      services.AddLogging();
       services.AddCommon<Startup>(SERVICE_TITLE);
 
       // Add framework services.
@@ -85,9 +82,19 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>();
       services.AddTransient<IRepository<IProjectEvent>, ProjectRepository>();
       services.AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>();
+      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
       services.AddMemoryCache();
 
-      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+      services.AddOpenTracing(builder =>
+      {
+        builder.ConfigureAspNetCore(options =>
+        {
+          options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
+        });
+      });
+
+      services.AddJaeger(SERVICE_TITLE);
+      services.AddOpenTracing();
 
       serviceCollection = services;
     }
@@ -102,18 +109,20 @@ namespace VSS.Productivity3D.Filter.WebApi
     /// <param name="loggerFactory">The logger factory.</param>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
+      loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+      loggerFactory.AddDebug();
       serviceCollection.AddSingleton(loggerFactory);
       serviceCollection.BuildServiceProvider();
 
-      loggerFactory.AddDebug();
-
-#if NET_4_7
-      if (Configuration["newrelic"] == "true")
-        app.UseMiddleware<NewRelicMiddleware>();
-#endif
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCommon(SERVICE_TITLE);
       app.UseFilterMiddleware<FilterAuthentication>();
+
+      if (Configuration["newrelic"] == "true")
+      {
+        app.UseMiddleware<NewRelicMiddleware>();
+      }
+
       app.UseMvc();
 
     }
