@@ -6,14 +6,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ObjectPool;
 using Newtonsoft.Json;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.Common.JsonConverters
 {
-  public class ProjectIDJsonInputFormatter : JsonInputFormatter
+  public class ProjectIdJsonInputFormatter : JsonInputFormatter
   {
-    public ProjectIDJsonInputFormatter(ILogger logger, JsonSerializerSettings serializerSettings, ArrayPool<char> charPool,
+    public ProjectIdJsonInputFormatter(ILogger logger, JsonSerializerSettings serializerSettings, ArrayPool<char> charPool,
       ObjectPoolProvider objectPoolProvider) : base(logger, serializerSettings, charPool, objectPoolProvider)
     { }
 
@@ -25,12 +24,11 @@ namespace VSS.Productivity3D.Common.JsonConverters
 
     private async Task<InputFormatterResult> GetProjectId(InputFormatterContext context, InputFormatterResult result)
     {
-      if (!result.HasError && result.Model is ProjectID)
+      if (!result.HasError && result.Model is ProjectID projectId)
       {
-        var projectID = result.Model as ProjectID;
-        if (!projectID.ProjectId.HasValue)
+        if (!projectId.ProjectId.HasValue)
         {
-          projectID.ProjectId = await (context.HttpContext.User as RaptorPrincipal).GetLegacyProjectId(projectID.ProjectUid);
+          projectId.ProjectId = await ((RaptorPrincipal) context.HttpContext.User).GetLegacyProjectId(projectId.ProjectUid);
         }
       }
 

@@ -1,4 +1,4 @@
-using System.Buffers;
+﻿using System.Buffers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Logging;
@@ -14,7 +14,7 @@ namespace VSS.Productivity3D.Common.Extensions
     {
       opts.InputFormatters.RemoveType<JsonInputFormatter>();
       var serializerSettings = new JsonSerializerSettings();    
-      var jsonInputFormatter = new ProjectIDJsonInputFormatter(logger, serializerSettings, ArrayPool<char>.Shared, objectPoolProvider);
+      var jsonInputFormatter = new ProjectIdJsonInputFormatter(logger, serializerSettings, ArrayPool<char>.Shared, objectPoolProvider);
       opts.InputFormatters.Add(jsonInputFormatter);
     }
   }
