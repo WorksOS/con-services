@@ -30,7 +30,7 @@ namespace ExecutorTests
       string projectUid = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
       string name = string.Empty;
       FilterType filterType = FilterType.Transient;
-      const string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
+      const string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":\"123456789\",\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
 
       var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, new ProjectData() { ProjectUid = projectUid }, new FilterRequest { Name = name, FilterJson = filterJson, FilterType = filterType });
 
@@ -53,7 +53,7 @@ namespace ExecutorTests
       string filterUid = Guid.NewGuid().ToString();
       string name = string.Empty;
       FilterType filterType = FilterType.Transient;
-      string filterJson = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
+      string filterJson = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":\"123456789\",\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
 
       var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData() { ProjectUid = projectUid }, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson, FilterType = filterType });
 
@@ -73,7 +73,7 @@ namespace ExecutorTests
       string filterUid = Guid.NewGuid().ToString();
       string name = string.Empty;
       FilterType filterType = FilterType.Transient;
-      string filterJson = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
+      string filterJson = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":\"123456789\",\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
       string filterJsonUpdated = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
 
       WriteEventToDb(new CreateFilterEvent
@@ -106,7 +106,7 @@ namespace ExecutorTests
       string projectUid = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
       string name = string.Empty;
       FilterType filterType = FilterType.Transient;
-      string filterJson1 = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
+      string filterJson1 = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":\"123456789\",\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
       string filterJson2 = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
 
       var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid,  new ProjectData() { ProjectUid = projectUid }, new FilterRequest { Name = name, FilterJson = filterJson1, FilterType = filterType });
@@ -144,7 +144,7 @@ namespace ExecutorTests
       string filterUid = Guid.NewGuid().ToString();
       string name = string.Empty;
       FilterType filterType = FilterType.Transient;
-      string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
+      string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":\"123456789\",\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
       string filterJsonUpdated = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
 
       WriteEventToDb(new CreateFilterEvent
@@ -181,7 +181,7 @@ namespace ExecutorTests
       string userUid = TestUtility.UIDs.JWT_USER_ID;
       string projectUid = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
       string name = "the Name";
-      string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
+      string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":\"123456789\",\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
 
       var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, new ProjectData() { ProjectUid = projectUid }, new FilterRequest { Name = name, FilterJson = filterJson, FilterType = filterType });
 
@@ -227,7 +227,7 @@ namespace ExecutorTests
       string projectUid = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "theName";
-      string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
+      string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":\"123456789\",\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
       string filterJsonUpdated = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
 
       WriteEventToDb(new CreateFilterEvent
@@ -268,7 +268,7 @@ namespace ExecutorTests
       string filterUid = Guid.NewGuid().ToString();
       string name = "theName";
       string nameUpdated = "theName updated";
-      string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
+      string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":\"123456789\",\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
       string filterJsonUpdated = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
 
       WriteEventToDb(new CreateFilterEvent
@@ -309,7 +309,7 @@ namespace ExecutorTests
       string filterUid = Guid.NewGuid().ToString();
       string name = "theName";
       string nameUpdated = name.ToUpper();
-      string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":123456789,\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
+      string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":\"123456789\",\"machineName\":\"TheMachineName\",\"isJohnDoe\":false}]}";
       string filterJsonNew = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";//should be ignored
 
       WriteEventToDb(new CreateFilterEvent

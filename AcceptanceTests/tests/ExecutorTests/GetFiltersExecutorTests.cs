@@ -307,7 +307,7 @@ namespace ExecutorTests
     }
 
     [TestMethod]
-    [DataRow(DateRangeType.Custom, true)]
+    //[DataRow(DateRangeType.Custom, true)]
     [DataRow(DateRangeType.Custom, false)]
     public async Task GetFiltersExecutor_Should_not_alter_existing_start_end_dates(int dateRangeType, bool asAtDate)
     {
@@ -373,7 +373,8 @@ namespace ExecutorTests
           Assert.IsNull(filterObj.startUtc);
         else
           Assert.AreEqual(DateTime.Parse(startDate).ToUniversalTime(), DateTime.Parse(filterObj.startUtc.ToString()));
-        Assert.AreEqual(DateTime.Parse(endDate).ToUniversalTime(), DateTime.Parse(filterObj.endUTC.ToString()));
+
+        Assert.AreEqual(DateTime.Parse(endDate).ToUniversalTime().ToString(), filterObj.endUtc.ToString());
       }
     }
 
