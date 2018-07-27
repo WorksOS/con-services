@@ -2,32 +2,45 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <NetStandardImplicitPackageVersion>2.0</NetStandardImplicitPackageVersion>
     <AssemblyName>VSS.Productivity3D.Filter.Common</AssemblyName>
     <PackageId>FilterWebApiCommon</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <RootNamespace>VSS.Productivity3D.Filter.Common</RootNamespace>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.0" />
-    <PackageReference Include="AutoMapper" Version="6.1.1" />
-  </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\MerinoSandbox\ConfigurationStore\src\VSS.ConfigurationStore.Local.csproj" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
+    <PackageReference Include="AutoMapper" Version="6.2.2" />
+  </ItemGroup>
+
+
+  <ItemGroup>
     <ProjectReference Include="..\..\..\MerinoSandbox\KafkaConsumer\src\VSS.KafkaConsumer.Local.csproj" />
-    <ProjectReference Include="..\..\..\MerinoSandbox\log4netExtensions\src\VSS.Log4NetExtensions.Local.csproj" />
-    <ProjectReference Include="..\..\..\MerinoSandbox\MasterDataModels\src\VSS.MasterData.Models.Local.csproj" />
     <ProjectReference Include="..\..\..\MerinoSandbox\MasterDataProxies\src\VSS.MasterData.Proxies.Local.csproj" />
     <ProjectReference Include="..\..\..\MerinoSandbox\MasterDataRepositories\src\VSS.MasterData.Repositories.Local.csproj" />
     <ProjectReference Include="..\..\..\MerinoSandbox\WebApi.Common\src\VSS.WebApi.Common.Local.csproj" />
   </ItemGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>True</DebugSymbols>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+    <NoWarn>1701;1702;1705;NU1605</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;1705;NU1605</NoWarn>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>True</DebugSymbols>
+  </PropertyGroup>
 </Project>
