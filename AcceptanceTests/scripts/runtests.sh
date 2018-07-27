@@ -16,8 +16,8 @@ rm TestResults/*.trx
 echo "WebApiTests finished"
 
 echo "Run Executor tests starting...."
-dotnet vstest WebApiTests/WebApiTests.dll --logger:trx
-cp TestResults/*.trx testresults/WebApiTests.trx
+dotnet vstest ExecutorTests/ExecutorTests.dll --logger:trx
+cp TestResults/*.trx testresults/ExecutorTests.trx
 rm TestResults/*.trx
 echo "Executor tests finished"
 

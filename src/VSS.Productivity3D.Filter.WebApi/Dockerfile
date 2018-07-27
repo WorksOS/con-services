@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2-runtime-jessie
+FROM microsoft/dotnet:2.1-sdk
 
 # Set the Working Directory
 WORKDIR /app
