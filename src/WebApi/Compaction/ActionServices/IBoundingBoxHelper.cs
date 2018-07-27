@@ -3,6 +3,9 @@ using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
 {
+  /// <summary>
+  /// Bounding box helper methods.
+  /// </summary>
   public interface IBoundingBoxHelper
   {   
     /// <summary>

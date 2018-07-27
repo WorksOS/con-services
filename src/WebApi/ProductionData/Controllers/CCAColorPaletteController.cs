@@ -92,7 +92,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       log.LogInformation("Get: " + Request.QueryString);
 
-      long projectId = await (User as RaptorPrincipal).GetLegacyProjectId(projectUid);
+      long projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
       var request = CCAColorPaletteRequest.CreateCCAColorPaletteRequest(projectId, assetId, startUtc, endUtc, liftId);
       request.Validate();
 

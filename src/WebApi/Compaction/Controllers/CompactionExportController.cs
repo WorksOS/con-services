@@ -195,7 +195,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetExportReportVeta: " + Request.QueryString);
 
-      var project = await (User as RaptorPrincipal).GetProject(projectUid);
+      var project = await ((RaptorPrincipal) User).GetProject(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
@@ -258,7 +258,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetExportReportMachinePasses: " + Request.QueryString);
 
-      var project = await (User as RaptorPrincipal).GetProject(projectUid);
+      var project = await ((RaptorPrincipal) User).GetProject(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
@@ -318,7 +318,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       Log.LogInformation("GetExportReportSurface: " + Request.QueryString);
 
-      var project = await (User as RaptorPrincipal).GetProject(projectUid);
+      var project = await ((RaptorPrincipal) User).GetProject(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
@@ -392,8 +392,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(LoggerFactory, raptorClient)
             .Process(request) as ProjectStatisticsResult;
 
-        var startUtc = filter?.StartUtc == null ? result.startTime : filter.StartUtc.Value;
-        var endUtc = filter?.EndUtc == null ? result.endTime : filter.EndUtc.Value;
+        var startUtc = filter?.StartUtc ?? result.startTime;
+        var endUtc = filter?.EndUtc ?? result.endTime;
         return new Tuple<DateTime, DateTime>(startUtc, endUtc);
       }
 

@@ -3,11 +3,13 @@ using System.Globalization;
 using System.Net;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
 {
+  /// <summary>
+  /// Bounding box helper methods.
+  /// </summary>
   public class BoundingBoxHelper : IBoundingBoxHelper
   {
     /// <summary>

@@ -137,7 +137,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     )
     {
       log.LogInformation("Get: " + Request.QueryString);
-      long projectId = await (User as RaptorPrincipal).GetLegacyProjectId(projectUid);
+      long projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
       var request = CreateAndValidateRequest(projectId, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid);
 
       return GetCCADataTile(request);
@@ -192,7 +192,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       if (geofenceUid.HasValue)
       {
         //Todo this ahould be async
-        var geometryWKT = geofenceProxy.GetGeofenceBoundary((User as RaptorPrincipal).CustomerUid, geofenceUid.ToString(), RequestUtils.GetCustomHeaders(Request.Headers)).Result;
+        var geometryWKT = geofenceProxy.GetGeofenceBoundary(((RaptorPrincipal) User).CustomerUid, geofenceUid.ToString(), Request.Headers.GetCustomHeaders()).Result;
 
         if (string.IsNullOrEmpty(geometryWKT))
           throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,

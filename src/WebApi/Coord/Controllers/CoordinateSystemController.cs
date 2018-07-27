@@ -19,21 +19,12 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class CoordinateSystemController : Controller, ICoordinateSystemFileContract
   {
-    /// <summary>
-    /// Raptor client for use by executor
-    /// </summary>
     private readonly IASNodeClient raptorClient;
-
-    /// <summary>
-    /// LoggerFactory factory for use by executor
-    /// </summary>
     private readonly ILoggerFactory logger;
 
     /// <summary>
     /// Constructor with dependency injection
     /// </summary>
-    /// <param name="raptorClient">Raptor client</param>
-    /// <param name="logger">LoggerFactory</param>
     public CoordinateSystemController(IASNodeClient raptorClient, ILoggerFactory logger)
     {
       this.raptorClient = raptorClient;
@@ -121,7 +112,7 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     [HttpGet]
     public async Task<CoordinateSystemSettings> Get([FromRoute] Guid projectUid)
     {
-      long projectId = await (User as RaptorPrincipal).GetLegacyProjectId(projectUid);
+      long projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
       ProjectID request = ProjectID.Create(projectId, projectUid);
 
       request.Validate();

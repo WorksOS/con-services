@@ -176,7 +176,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       // TODO (Aaron) refactor this repeated code
       //Short-circuit cache time for Archived projects
-      var project = await (User as RaptorPrincipal).GetProject(projectUid);
+      var project = await ((RaptorPrincipal) User).GetProject(projectUid);
       if (project.IsArchived)
         Response.Headers["Cache-Control"] = "public,max-age=31536000";
       Response.Headers.Add("X-Warning", "false");
@@ -191,8 +191,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [Route("api/v2/projectthumbnail/png")]
     [HttpGet]
     [ResponseCache(Duration = 86400, VaryByQueryKeys = new[] { "*" })]
-    public async Task<FileResult> GetProjectThumbnailRaw(
-      [FromQuery] Guid projectUid)
+    public async Task<FileResult> GetProjectThumbnailRaw([FromQuery] Guid projectUid)
     {
       Log.LogDebug("GetProjectThumbnailRaw: " + Request.QueryString);
 
@@ -201,7 +200,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       // TODO (Aaron) refactor this repeated code
       //Short-circuit cache time for Archived projects
-      var project = await (User as RaptorPrincipal).GetProject(projectUid);
+      var project = await ((RaptorPrincipal) User).GetProject(projectUid);
       if (project.IsArchived)
         Response.Headers["Cache-Control"] = "public,max-age=31536000";
       Response.Headers.Add("X-Warning", "false");
@@ -221,7 +220,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         overlayTypes = new List<TileOverlayType>((TileOverlayType[])Enum.GetValues(typeof(TileOverlayType)));
         overlayTypes.Remove(TileOverlayType.AllOverlays);
       }
-      var project = await (User as RaptorPrincipal).GetProject(projectUid);
+      var project = await ((RaptorPrincipal) User).GetProject(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var projectSettingsColors = await GetProjectSettingsColors(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
@@ -305,7 +304,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     private async Task<UserPreferenceData> GetShortCachedUserPreferences()
     {
-      var userPreferences = await prefProxy.GetShortCachedUserPreferences((User as RaptorPrincipal).UserEmail, TimeSpan.FromSeconds(10), CustomHeaders);
+      var userPreferences = await prefProxy.GetShortCachedUserPreferences(((RaptorPrincipal) User).UserEmail, TimeSpan.FromSeconds(10), CustomHeaders);
       if (userPreferences == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,

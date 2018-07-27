@@ -91,7 +91,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [Route("api/v2/projects/{projectUid}/surveyedsurfaces/{surveyedsurfaceId}/delete")]
     public async Task<ContractExecutionResult> GetDel([FromRoute] Guid projectUid, [FromRoute] long surveyedSurfaceId)
     {
-      long projectId = await (User as RaptorPrincipal).GetLegacyProjectId(projectUid);
+      long projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
       ProjectID projId = ProjectID.Create(projectId, projectUid);
       projId.Validate();
 
@@ -129,7 +129,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [Route("api/v2/projects/{projectUid}/surveyedsurfaces")]
     public async Task<SurveyedSurfaceResult> Get([FromRoute] Guid projectUid)
     {
-      long projectId = await (User as RaptorPrincipal).GetLegacyProjectId(projectUid);
+      long projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
       ProjectID request = ProjectID.Create(projectId, projectUid);
 
       request.Validate();

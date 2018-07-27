@@ -403,7 +403,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </remarks>
     private async Task ApplyDateRange(Guid projectUid, Filter filter)
     {
-      var project = await (User as RaptorPrincipal)?.GetProject(projectUid);
+      var project = await ((RaptorPrincipal) User).GetProject(projectUid);
       if (project == null)
       {
         throw new ServiceException(
@@ -416,7 +416,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
     private async Task ApplyDateRange(Guid projectUid, FilterResult filter)
     {
-      var project = await (User as RaptorPrincipal)?.GetProject(projectUid);
+      var project = await ((RaptorPrincipal) User).GetProject(projectUid);
       if (project == null)
       {
         throw new ServiceException(

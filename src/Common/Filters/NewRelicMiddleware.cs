@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 
@@ -12,15 +12,14 @@ namespace VSS.Productivity3D.Common.Filters
   /// </summary>
   public class NewRelicMiddleware
   {
-    private readonly RequestDelegate NextRequestDelegate;
+    private readonly RequestDelegate nextRequestDelegate;
 
     /// <summary>
     /// Default constructor.
     /// </summary>
-    /// <param name="nextRequestDelegate"></param>
     public NewRelicMiddleware(RequestDelegate nextRequestDelegate)
     {
-      this.NextRequestDelegate = nextRequestDelegate;
+      this.nextRequestDelegate = nextRequestDelegate;
     }
 
     /// <summary>
@@ -30,28 +29,31 @@ namespace VSS.Productivity3D.Common.Filters
     public async Task Invoke(HttpContext context)
     {
       var watch = System.Diagnostics.Stopwatch.StartNew();
-      await this.NextRequestDelegate.Invoke(context);
+      await nextRequestDelegate.Invoke(context);
       watch.Stop();
 
       bool cacheUsed = context.Response.Headers.ContainsKey(HeaderNames.Age);
       int cacheAge = 0;
-      if (cacheUsed)
-        cacheAge = Int32.Parse(context.Response.Headers[HeaderNames.Age]);
 
-      string name = String.Empty;
-      string customerUid = String.Empty;
-      string userEmail = String.Empty;
-      string customerName = String.Empty;
-      string projectUid = String.Empty;
-      string origin = String.Empty;
+      if (cacheUsed)
+      {
+        cacheAge = int.Parse(context.Response.Headers[HeaderNames.Age]);
+      }
+
+      string name = string.Empty;
+      string customerUid = string.Empty;
+      string userEmail = string.Empty;
+      string customerName = string.Empty;
+      string projectUid = string.Empty;
+      string origin = string.Empty;
 
 
       if (context.User is RaptorPrincipal principal)
       {
-        name = principal.Identity.Name.ToString();
-        customerUid = principal.CustomerUid.ToString();
-        userEmail = principal.UserEmail.ToString();
-        customerName = principal.CustomerName.ToString();
+        name = principal.Identity.Name;
+        customerUid = principal.CustomerUid;
+        userEmail = principal.UserEmail;
+        customerName = principal.CustomerName;
       }
 
       if (context.Request.Query.ContainsKey("projectuid"))
@@ -68,19 +70,18 @@ namespace VSS.Productivity3D.Common.Filters
       {
         {"endpoint", context.Request.Path.ToString()},
         {"cacheUsed", cacheUsed.ToString()},
-        {"cacheAge", (Single) Convert.ToDouble(cacheAge)},
+        {"cacheAge", (float) Convert.ToDouble(cacheAge)},
         {"userUid", name},
         {"customerUid", customerUid},
         {"userName", userEmail},
         {"customerName", customerName},
-        {"executionTime", (Single) Convert.ToDouble(watch.ElapsedMilliseconds)},
-        {"projectUid", projectUid.ToString()},
-        {"origin", origin.ToString()},
+        {"executionTime", (float) Convert.ToDouble(watch.ElapsedMilliseconds)},
+        {"projectUid", projectUid},
+        {"origin", origin},
         {"result", context.Response.StatusCode.ToString()}
       };
 
       NewRelic.Api.Agent.NewRelic.RecordCustomEvent("3DPM_Request", eventAttributes);
-
     }
   }
 }

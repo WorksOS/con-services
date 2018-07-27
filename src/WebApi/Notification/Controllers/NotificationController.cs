@@ -86,15 +86,6 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <summary>
     /// Constructor with injection
     /// </summary>
-    /// <param name="raptorClient">Raptor client</param>
-    /// <param name="logger">LoggerFactory</param>
-    /// <param name="fileRepo">Imported file repository</param>
-    /// <param name="configStore">Configuration store</param>
-    /// <param name="prefProxy">Proxy for user preferences</param>
-    /// <param name="tileGenerator">DXF tile generator</param>
-    /// <param name="fileListProxy">File list proxy</param>
-    /// <param name="filterServiceProxy">Filter service proxy</param>
-    /// <param name="cache">The in memory cache provider</param>
     public NotificationController(IASNodeClient raptorClient, ILoggerFactory logger,
       IFileRepository fileRepo, IConfigurationStore configStore,
       IPreferenceProxy prefProxy, ITileGenerator tileGenerator, IFileListProxy fileListProxy,
@@ -136,7 +127,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       [FromServices] IEnqueueItem<ProjectFileDescriptor> fileQueue)
     {
       log.LogDebug("GetAddFile: " + Request.QueryString);
-      ProjectData projectDescr = await (User as RaptorPrincipal).GetProject(projectUid);
+      ProjectData projectDescr = await ((RaptorPrincipal) User).GetProject(projectUid);
       string coordSystem = projectDescr.CoordinateSystemFileName;
       var customHeaders = Request.Headers.GetCustomHeaders();
       FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
@@ -204,7 +195,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       )
     {
       log.LogDebug("GetDeleteFile: " + Request.QueryString);
-      ProjectData projectDescr = await (User as RaptorPrincipal).GetProject(projectUid);
+      ProjectData projectDescr = await ((RaptorPrincipal) User).GetProject(projectUid);
       var customHeaders = Request.Headers.GetCustomHeaders();
 
       //Cannot delete a design or alignment file that is used in a filter
@@ -275,11 +266,10 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     [HttpGet]
     public async Task<ContractExecutionResult> InvalidateCache([FromQuery] Guid projectUid)
     {
-      ;
       var customHeaders = Request.Headers.GetCustomHeaders();
       if (!customHeaders.ContainsKey("X-VisionLink-ClearCache"))
         customHeaders.Add("X-VisionLink-ClearCache", "true");
-      await projectsListProxy.GetProjectForCustomer((User as RaptorPrincipal).CustomerUid, projectUid.ToString(),
+      await projectsListProxy.GetProjectForCustomer(((RaptorPrincipal) User).CustomerUid, projectUid.ToString(),
         customHeaders);
       cache.InvalidateReponseCacheForProject(projectUid);
       return new ContractExecutionResult();
