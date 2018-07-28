@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.TTM
@@ -134,7 +135,7 @@ namespace VSS.TRex.Designs.TTM
             FVertices.Clear();
         }
 
-        //    procedure FixCrossingTriangles(MaxShortestSide: Double );
+      //    procedure FixCrossingTriangles(MaxShortestSide: Double );
 
     }
 }

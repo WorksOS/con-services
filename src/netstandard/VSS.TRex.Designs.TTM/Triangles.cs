@@ -78,6 +78,20 @@ namespace VSS.TRex.Designs.TTM
             }
         }
 
+      /// <summary>
+      /// Remove all null triangle references from the list.
+      /// </summary>
+      public void Pack()
+      {
+        int index_to = 0;
+
+        for (int index_from = 0; index_from < Count; index_from++)
+        {
+          if (this[index_from] != null)
+            this[index_to++] = this[index_from];
+        }
+      }
+
         //        procedure DumpTriangleList(Filename : TFilename);
     }
 }

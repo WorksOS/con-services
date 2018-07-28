@@ -316,7 +316,7 @@ namespace VSS.TRex.Designs.TTM
         public string ModelName { get { return FModelName; } set { FModelName = value; } }
         public TTMStartPoints StartPoints { get { return FStartPoints; } }
         public TTMEdges Edges { get { return FEdges; } }
-        public TTMHeader Header { get { return FHeader; } }
+        public TTMHeader Header; //{ get { return FHeader; } }
 
         public double CoordinateResolution { get; set; }
         public double ElevationResolution { get; set; }

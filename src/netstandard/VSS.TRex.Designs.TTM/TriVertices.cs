@@ -172,7 +172,6 @@ namespace VSS.TRex.Designs.TTM
             HashArray = new List<TriVertex>[ExpectedPointCount * 2];
         }
 
-
         public void NumberVertices()
         {
             for (int i = 0; i < Count; i++)
@@ -181,6 +180,20 @@ namespace VSS.TRex.Designs.TTM
             }
         }
 
-        // procedure DumpVertexList(FileName : TFileName);
-    }
+      /// <summary>
+      /// Remove all null vertices references from the list.
+      /// </summary>
+      public void Pack()
+      {
+        int index_to = 0;
+
+        for (int index_from = 0; index_from < Count; index_from++)
+        {
+          if (this[index_from] != null)
+            this[index_to++] = this[index_from];
+        }
+      }
+
+    // procedure DumpVertexList(FileName : TFileName);
+  }
 }
