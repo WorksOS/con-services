@@ -5,7 +5,7 @@ import { Http } from '@angular/http';
   selector: 'gridStatus',
   templateUrl: './gridStatus.component.html'
 })
-export class gridStatus {
+export class GridStatusComponent {
   public status: string = "Unknown";
   private baseUrl: string;
   private http: Http;

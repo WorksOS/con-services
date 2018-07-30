@@ -19,14 +19,16 @@
 
   <ItemGroup>
     <None Remove="ClientApp\app\components\gridStatus\gridStatus.component.ts" />
+    <None Remove="ClientApp\app\components\upload-data\upload-data.component.ts" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\netstandard\TRexClassLibrary.netstandard\TRexClassLibrary.netstandard.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex\VSS.TRex.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\app\components\gridStatus\gridStatus.component.ts" />
+    <TypeScriptCompile Include="ClientApp\app\components\upload-data\upload-data.component.ts" />
   </ItemGroup>
 
   <Target Name="DebugRunWebpack" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('wwwroot\dist') ">
