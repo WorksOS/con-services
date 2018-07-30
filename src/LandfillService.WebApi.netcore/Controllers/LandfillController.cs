@@ -6,7 +6,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Common.netstandard.ApiClients;
 using Common.Repository;
-using LandfillService.Common.ApiClients;
 using LandfillService.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -73,6 +72,7 @@ namespace LandfillService.WebApi.netcore.Controllers
     public object Get()
     {
       var principal = HttpContext.User as TIDCustomPrincipal;
+      Log.LogDebug("GetProjects: user: " + principal.Identity.Name + " customer: " + principal.CustomerUid);
       return PerhapsUpdateProjectList(principal.Identity.Name, principal.CustomerUid);
     }
 
@@ -123,8 +123,7 @@ namespace LandfillService.WebApi.netcore.Controllers
     /// <param name="endDate">End date in projectResponse time zone for which to return data</param>
     /// <returns>List of data entries for each day in date range and the status of volume retrieval for the projectResponse</returns>
     [Route("api/v2/projects/{id}")]
-    public object Get(uint id, Guid? geofenceUid = null, DateTime? startDate = null,
-      DateTime? endDate = null)
+    public object Get(uint id, Guid? geofenceUid = null, DateTime? startDate = null,DateTime? endDate = null)
     {
       // Get the available data
       // Kick off missing volumes retrieval IF not already running
@@ -132,7 +131,7 @@ namespace LandfillService.WebApi.netcore.Controllers
       var principal = HttpContext.User as TIDCustomPrincipal;
 
       IfProjectAuthorized(principal.Identity.Name, principal.CustomerUid, id);
-
+      Log.LogDebug("GetEntriesForProject: user: " + principal.Identity.Name + " customer: " + principal.CustomerUid + " Project:" + id);
       var projects = PerhapsUpdateProjectList(principal.Identity.Name, principal.CustomerUid);
       {
         try
@@ -175,7 +174,7 @@ namespace LandfillService.WebApi.netcore.Controllers
 
       IfProjectAuthorized(principal.Identity.Name, principal.CustomerUid, id);
 
-
+      Log.LogDebug("GetWeights: user: " + principal.Identity.Name + " customer: " + principal.CustomerUid + " Project:" + id);
       var projects = PerhapsUpdateProjectList(principal.Identity.Name, principal.CustomerUid);
       {
         try
@@ -262,9 +261,7 @@ namespace LandfillService.WebApi.netcore.Controllers
 
       var geofenceUidStr = geofenceUid.Value.ToString();
 
-
-      //LoggerSvc.LogMessage(null, null, null, "PostWeights: userUid=" + userUid);          
-
+      Log.LogDebug("PostWeights: user: " + principal.Identity.Name + " customer " + principal.CustomerUid); 
 
       var projects = PerhapsUpdateProjectList(principal.Identity.Name, principal.CustomerUid);
       {
@@ -273,10 +270,10 @@ namespace LandfillService.WebApi.netcore.Controllers
         var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
         var utcNow = DateTime.UtcNow;
         var projTimeZoneOffsetFromUtc = projTimeZone.GetUtcOffset(Instant.FromDateTimeUtc(utcNow));
-        Console.WriteLine("projTimeZoneOffsetFromUtc=" + projTimeZoneOffsetFromUtc);
+        //Console.WriteLine("projTimeZoneOffsetFromUtc=" + projTimeZoneOffsetFromUtc);
         var yesterdayInProjTimeZone = (utcNow + projTimeZoneOffsetFromUtc.ToTimeSpan()).AddDays(-1);
 
-        Console.WriteLine("yesterdayInProjTimeZone=" + yesterdayInProjTimeZone);
+        //Console.WriteLine("yesterdayInProjTimeZone=" + yesterdayInProjTimeZone);
 
         var validEntries = new List<DateEntry>();
         foreach (var entry in entries)
@@ -317,35 +314,27 @@ namespace LandfillService.WebApi.netcore.Controllers
       var principal = HttpContext.User as TIDCustomPrincipal;
       //Secure with projectResponse list
       IfProjectAuthorized(principal.Identity.Name, principal.CustomerUid, id);
-
+      Log.LogDebug("volumeTime: user: " + principal.Identity.Name + " customer: " + principal.CustomerUid + " Project:" + id);
       try
       {
         var projects = LandfillDb.GetProjects(principal.Identity.Name, principal.CustomerUid);
         var project = projects.First(p => p.id == id);
         var todayinProjTimeZone = LandfillDb.GetTodayInProjectTimeZone(project.timeZoneName);
-        Console.WriteLine("Volumes todayinProjTimeZone:" + todayinProjTimeZone);
+        //Console.WriteLine("Volumes todayinProjTimeZone:" + todayinProjTimeZone);
         var startWeek = CurrentWeekMonday(todayinProjTimeZone);
         var weekVol = LandfillDb.GetEntries(project, null, startWeek, todayinProjTimeZone).Sum(e => e.volume);
         var startMonth = new DateTime(todayinProjTimeZone.Year, todayinProjTimeZone.Month, 1);
         var monthVol = LandfillDb.GetEntries(project, null, startMonth, todayinProjTimeZone).Sum(e => e.volume);
-        Console.WriteLine("Volumes week:" + weekVol);
-        Console.WriteLine("Volumes month:" + monthVol);
+        Log.LogDebug("Volumes week:" + weekVol);
+        Log.LogDebug("Volumes month:" + monthVol);
 
         //Get designIds from ProjectMonitoring service
         var raptorApiClient = new RaptorApiClient(Log, config, raptorProxy, files, Request.Headers.GetCustomHeaders());
         var res = await raptorApiClient.GetDesignID(Request.Headers["X-Jwt-Assertion"], project, principal.CustomerUid);
-        Console.WriteLine("Found no of files = " + res.Count);
-        foreach (var testfiles in res)
-        {
-          Console.WriteLine("Found name:" + testfiles.name);
-        }
-
         var designId = res.Where(r => r.name == "TOW.ttm").Select(i => i.id).First();
-        Console.WriteLine("Volumes designId:" + designId);
+        Log.LogDebug("Volumes designId for TOW.ttm:" + designId);
         var firstAirspaceVol = await GetAirspaceVolumeInBackground(principal.Identity.Name, project, true, designId);
         var lastAirspaceVol = await GetAirspaceVolumeInBackground(principal.Identity.Name, project, false, designId);
-        Console.WriteLine("Volumes firstAirspaceVol:" + firstAirspaceVol);
-        Console.WriteLine("Volumes lastAirspaceVol:" + lastAirspaceVol);
         var statsDates = await GetProjectStatisticsInBackground(principal.Identity.Name, project);
         var dates = statsDates.ToList();
         var volPerDay = firstAirspaceVol.HasValue && lastAirspaceVol.HasValue
@@ -363,7 +352,7 @@ namespace LandfillService.WebApi.netcore.Controllers
       }
       catch (Exception ex) //InvalidOperationException)
       {
-        Console.WriteLine("Volumes exception:" + ex.Message);
+        Log.LogDebug("Volumes exception:" + ex.Message);
         return Ok();
       }
     }
@@ -420,8 +409,8 @@ namespace LandfillService.WebApi.netcore.Controllers
       {
         var raptorApiClient = new RaptorApiClient(Log, config, raptorProxy, files, Request.Headers.GetCustomHeaders());
         var res = await raptorApiClient.GetAirspaceVolumeAsync(userUid, projectResponse, returnEarliest, designId);
-        Console.WriteLine("Airspace Volume res:" + res);
-        Console.WriteLine("Airspace Volume: " + res.Fill);
+        Log.LogDebug("Airspace Volume res:" + res);
+        Log.LogDebug("Airspace Volume: " + res.Fill);
 
         return res.Fill;
       }
@@ -433,7 +422,7 @@ namespace LandfillService.WebApi.netcore.Controllers
       }
       catch (Exception e)
       {
-        Debug.Write("Exception while retrieving airspace volume: " + e);
+        Log.LogDebug("Exception while retrieving airspace volume: " + e);
         throw;
       }
     }
@@ -452,13 +441,12 @@ namespace LandfillService.WebApi.netcore.Controllers
         var raptorApiClient = new RaptorApiClient(Log, config, raptorProxy, files, Request.Headers.GetCustomHeaders());
 
         var res = await raptorApiClient.GetProjectStatisticsAsync(userUid, projectResponse);
-        Debug.WriteLine("Statistics res:" + res);
-        Debug.WriteLine("Statistics dates: " + res.startTime + " - " + res.endTime);
+        Log.LogDebug("Statistics dates: " + res.startTime + " - " + res.endTime);
         return new List<DateTime> {res.startTime, res.endTime};
       }
       catch (Exception e)
       {
-        Debug.Write("Exception while retrieving statistics: " + e);
+        Log.LogDebug("Exception while retrieving statistics: " + e);
         throw;
       }
     }
@@ -508,7 +496,7 @@ namespace LandfillService.WebApi.netcore.Controllers
       IfProjectAuthorized(principal.Identity.Name, principal.CustomerUid, id);
 
       var geofenceUidStr = geofenceUid.ToString();
-
+      Log.LogDebug("Geofences: user:" + principal.Identity.Name + " customer:" + principal.CustomerUid + " geofence:" + geofenceUidStr);
       try
       {
         var points = LandfillDb.GetGeofencePoints(geofenceUidStr);
@@ -546,8 +534,7 @@ namespace LandfillService.WebApi.netcore.Controllers
     /// <param name="endDate">End date in projectResponse time zone for which to return data</param>
     /// <returns>List of machines and daily CCA ratio</returns>
     [Route("api/v2/projects/{id}/ccaratio")]
-    public object GetCCARatio(uint id, Guid? geofenceUid = null, DateTime? startDate = null,
-      DateTime? endDate = null)
+    public object GetCCARatio(uint id, Guid? geofenceUid = null, DateTime? startDate = null,DateTime? endDate = null)
     {
       var principal = HttpContext.User as TIDCustomPrincipal;
       //Secure with projectResponse list
@@ -646,6 +633,8 @@ namespace LandfillService.WebApi.netcore.Controllers
           complete = Math.Round(d.complete),
           overcomplete = Math.Round(d.overcomplete)
         }).ToList();
+
+        Log.LogDebug("ccasummary: " + project.name);
         return Ok(data);
       }
       catch (InvalidOperationException)
@@ -669,7 +658,6 @@ namespace LandfillService.WebApi.netcore.Controllers
       //Secure with projectResponse list
       IfProjectAuthorized(principal.Identity.Name, principal.CustomerUid, id);
 
-
       try
       {
         var project = LandfillDb.GetProjects(principal.Identity.Name, principal.CustomerUid).First(p => p.id == id);
@@ -684,6 +672,8 @@ namespace LandfillService.WebApi.netcore.Controllers
           startDate = endDate.Value.AddYears(-2);
         var raptorApiClient = new RaptorApiClient(Log, config, raptorProxy, files, Request.Headers.GetCustomHeaders());
         var task = await raptorApiClient.GetMachineLiftsInBackground(null, project, startDate.Value, endDate.Value);
+        Log.LogDebug("machinelifts: " + project.name);
+
         return Ok(task);
       }
       catch (InvalidOperationException)

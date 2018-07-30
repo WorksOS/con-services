@@ -125,10 +125,10 @@ namespace LandfillDatasync.netcore
 
       //Use same criteria as volumes to select projects to process. 
       //No point in getting CCA if no weights or volumes and therefore no density data.
-      Log.DebugFormat("***** Start Processing volumes for the last {0} days", ccaDaysBackFill);
+      Log.InfoFormat("***** Start Processing volumes for the last {0} days", ccaDaysBackFill);
 
       var projects = GetListOfProjectsToRetrieve();
-      Log.DebugFormat("RunUpdateCCAFromRaptor Got {0} projects to process for CCA", projects.Count);
+      Log.InfoFormat("UpdateCCA: Got {0} projects to process for CCA", projects.Count);
       var headers = new Dictionary<string, string> { { "Authorization", $"Bearer {authn.Get3DPmSchedulerBearerToken().Result}" } };
 
       foreach (var project in projects)
@@ -139,8 +139,7 @@ namespace LandfillDatasync.netcore
           //var utcDate = DateTime.UtcNow.AddMonths(-1);
           var utcDate = DateTime.UtcNow.AddDays(ccaDaysBackFill); 
           utcDate = DateTime.SpecifyKind(utcDate, DateTimeKind.Utc);
-          Log.InfoFormat("RunUpdateCCAFromRaptor Processing projectID {0} name {1} timezone {2}", project.id, project.name, project.timeZoneName);
-
+          Log.InfoFormat("UpdateCCA: Get Geofences ProjectID {0} name {1} timezone {2}", project.id, project.name, project.timeZoneName);
           var geofenceUids = LandfillDb.GetGeofences(project.projectUid).Select(g => g.uid.ToString()).ToList();
           var geofences = GetGeofenceBoundaries(project.id, geofenceUids);
           headers["X-VisionLink-CustomerUID"] = project.customerUid;
@@ -159,7 +158,7 @@ namespace LandfillDatasync.netcore
               new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
               new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
                 new MemoryCache(new MemoryCacheOptions())), headers).ConvertFromTimeZoneToMinutesOffset(project.timeZoneName);
-          Log.DebugFormat("RunUpdateCCAFromRaptor Timezone {0} with minutes offset {1} ", project.timeZoneName, offsetMinutes);
+          Log.InfoFormat("UpdateCCA: Processing projectID {0} name {1} timezone {2} with minutes offset {3}", project.id, project.name, project.timeZoneName, offsetMinutes);
           var projDate = utcDate.Date.AddMinutes(offsetMinutes);
           var nowDate = DateTime.UtcNow.Date.AddMinutes(offsetMinutes);
         
@@ -173,7 +172,7 @@ namespace LandfillDatasync.netcore
                   new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
                     new MemoryCache(new MemoryCacheOptions())), headers)
                 .GetMachineLiftsInBackground(userId, project, utcDate.Date, utcDate.Date).Result;
- //           Log.DebugFormat("RunUpdateCCAFromRaptor Processing projectResponse {0} with {1} machines for date {2}", project.id,machinesToProcess.Count,utcDate.Date);
+            Log.DebugFormat("UpdateCCA: ProcessCCA projectId {0} with {1} machines for date {2}", project.id,machinesToProcess.Count,utcDate.Date);
             ProcessCCA(utcDate.Date, project, geofenceUids, geofences, machinesToProcess);
             utcDate = utcDate.Date.AddDays(1);
             projDate = projDate.Date.AddDays(1);
@@ -182,7 +181,7 @@ namespace LandfillDatasync.netcore
         }
         catch (Exception e)
         {
-          Console.WriteLine("RunUpdateCCAFromRaptor Skipping project {0} id {1} - Exception {2}", project.name,project.id, e.Message);
+          Log.WarnFormat("UpdateCCA: Skipping project {0} id {1} - Exception {2}", project.name,project.id, e.Message);
         }
       }
     }
@@ -210,8 +209,7 @@ namespace LandfillDatasync.netcore
         {
           foreach (var lift in machine.lifts)
           {
-            Log.DebugFormat("ProcessCCA machine lifts {0}, geofence {1}, machine {2}, lift {3}, machineId {4}",
-              projectResponse.id, geofenceUid, machine, lift.layerId, machineIds[machine]);
+           // Log.DebugFormat("ProcessCCA machine lifts {0}, geofence {1}, machine {2}, lift {3}, machineId {4}",projectResponse.id, geofenceUid, machine, lift.layerId, machineIds[machine]);
             new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
               new GenericConfiguration(new NullLoggerFactory()),
               new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
@@ -221,8 +219,7 @@ namespace LandfillDatasync.netcore
           }
 
           //Also do the 'All Lifts'
-          Log.DebugFormat("ProcessCCA all lifts {0}, geofence {1}, machine {2}, lift {3}, machineId {4}",
-            projectResponse.id, geofenceUid, machine, "ALL", machineIds[machine]);
+          //Log.DebugFormat("ProcessCCA all lifts {0}, geofence {1}, machine {2}, lift {3}, machineId {4}",projectResponse.id, geofenceUid, machine, "ALL", machineIds[machine]);
           new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
             new GenericConfiguration(new NullLoggerFactory()),
             new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
