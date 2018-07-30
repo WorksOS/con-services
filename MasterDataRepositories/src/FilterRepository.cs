@@ -238,7 +238,7 @@ namespace VSS.MasterData.Repositories
               VALUES
                 (@CustomerUid, @UserId, @ProjectUid, @FilterUid,  
                  @Name, @FilterJson, @FilterType,
-                 1, @LastActionedUTC)";
+                 1, @LastActionedUtc)";
 
         upsertedCount = await ExecuteWithAsyncPolicy(delete, filter);
         log.LogDebug(
