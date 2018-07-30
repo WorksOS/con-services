@@ -65,17 +65,14 @@ namespace LandfillDatasync.netcore
             .Range(0, 1 + DateTime.Today.Subtract(startDate).Days)
             .Select(offset => startDate.AddDays(offset))
             .Select(d => new DateEntry { geofenceUid = g, date = d })).ToList());
-          Console.WriteLine($"Valid project {project.name} has {geofenceUids.Count} geofences");
+          Log.DebugFormat($"Valid project {project.name} has {geofenceUids.Count} geofences");
         }
         catch (Exception e)
         {
-          Console.WriteLine($"Skipping project {project.name} as failed. Exception:" + e.Message);
-          //Log.Debug($"Skipping project {project.name} as failed to get statistics");
+          Log.DebugFormat($"Skipping project {project.name} as failed. Exception:" + e.Message);
         }
       }
-      Console.WriteLine("Got {0} entries to process for volumes", result.Count);
-      //Log.DebugFormat("Got {0} entries to process for volumes", result.Count);
-
+      Log.DebugFormat("Got {0} entries to process for volumes", result.Count);
       return result;
     }
 
@@ -125,8 +122,7 @@ namespace LandfillDatasync.netcore
 
       //Use same criteria as volumes to select projects to process. 
       //No point in getting CCA if no weights or volumes and therefore no density data.
-      Log.InfoFormat("***** Start Processing volumes for the last {0} days", ccaDaysBackFill);
-
+      Log.InfoFormat("***** Start Processing CCA for the last {0} days", ccaDaysBackFill);
       var projects = GetListOfProjectsToRetrieve();
       Log.InfoFormat("UpdateCCA: Got {0} projects to process for CCA", projects.Count);
       var headers = new Dictionary<string, string> { { "Authorization", $"Bearer {authn.Get3DPmSchedulerBearerToken().Result}" } };

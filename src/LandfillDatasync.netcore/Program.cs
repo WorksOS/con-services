@@ -13,19 +13,17 @@ namespace LandfillDatasync.netcore
     private static void Main(string[] args)
     {
       XmlConfigurator.Configure(new FileInfo("log4net.xml"));
-
       var dataSync = new DataSynchronizer(Log);
 
       // *************  Process the volumes for the last nn days  *************** 
-
       var noOfDaysVolsVar = Environment.GetEnvironmentVariable("NoOfDaysBackForVolumes");
       var noOfDaysVols = 30;
       if (!string.IsNullOrEmpty(noOfDaysVolsVar))
       {
         noOfDaysVols = -Math.Abs(Convert.ToInt32(noOfDaysVolsVar));
       }
-
       dataSync.RunUpdateVolumesFromRaptor(noOfDaysVols);
+      Log.Debug("***** Finished Processing volumes ***** ");
 
       // *************  Process the CCA for the last nn days  *************** 
       var noOfDaysCca = Environment.GetEnvironmentVariable("NoOfDaysBackForCCA");
@@ -35,8 +33,7 @@ namespace LandfillDatasync.netcore
         ccaDaysBackFill = -Math.Abs(Convert.ToInt32(noOfDaysCca));
       }
       dataSync.RunUpdateCcaFromRaptor(ccaDaysBackFill);
-
-      Log.Debug("***** Finished Processing volumes and CCA ");
+      Log.Debug("***** Finished Processing CCA ******");
     }
   }
 }

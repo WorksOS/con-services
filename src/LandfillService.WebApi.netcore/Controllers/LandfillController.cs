@@ -48,9 +48,9 @@ namespace LandfillService.WebApi.netcore.Controllers
     /// <param name="userUid">User ID</param>
     /// <param name="customerUid">User ID</param>
     /// <returns>A list of projects or error details</returns>
-    private IEnumerable<ProjectResponse> PerhapsUpdateProjectList(string userUid,
-      string customerUid)
+    private IEnumerable<ProjectResponse> PerhapsUpdateProjectList(string userUid,string customerUid)
     {
+      Log.LogDebug("PerhapsUpdateProjectList: user: " + userUid + " customer: " + customerUid);
       var projects = LandfillDb.GetProjects(userUid, customerUid);
       return projects;
     }
