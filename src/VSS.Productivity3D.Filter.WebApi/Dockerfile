@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2.1-sdk
+FROM microsoft/dotnet:2.0-sdk
 
 # Set the Working Directory
 WORKDIR /app
