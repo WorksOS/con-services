@@ -164,7 +164,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/projectthumbnail")]
     [HttpGet]
-    [ResponseCache(Duration = 86400, VaryByQueryKeys = new[] { "*" })]
+    [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
     public async Task<TileResult> GetProjectThumbnail(
       [FromQuery] Guid projectUid)
     {
@@ -190,7 +190,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/projectthumbnail/png")]
     [HttpGet]
-    [ResponseCache(Duration = 86400, VaryByQueryKeys = new[] { "*" })]
+    [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
     public async Task<FileResult> GetProjectThumbnailRaw([FromQuery] Guid projectUid)
     {
       Log.LogDebug("GetProjectThumbnailRaw: " + Request.QueryString);
