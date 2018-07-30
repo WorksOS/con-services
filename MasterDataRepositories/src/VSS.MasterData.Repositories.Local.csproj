@@ -23,12 +23,12 @@
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
     <PackageReference Include="System.Linq" Version="4.3.0" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.26.*" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\ConfigurationStore\src\VSS.ConfigurationStore.Local.csproj" />
     <ProjectReference Include="..\..\ITask\src\VSS.ITask.Local.csproj" />
+    <ProjectReference Include="..\..\MasterDataModels\src\VSS.MasterData.Models.Local.csproj" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

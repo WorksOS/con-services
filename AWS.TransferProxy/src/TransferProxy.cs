@@ -79,8 +79,9 @@ namespace VSS.AWS.TransferProxy
     /// <param name="stream">Content stream to upload</param>
     /// <param name="s3Key">s3 key (filename) to content</param>
     /// <param name="contentType">Content Type of the data being uploaded (defines extension of the filename)</param>
+    /// <returns>Path to the file (could be renamed based on the contentType)</returns>
     /// <exception cref="ArgumentException">If invalid contentType is passed in</exception>
-    public void Upload(Stream stream, string s3Key, string contentType)
+    public string Upload(Stream stream, string s3Key, string contentType)
     {
       var extension = Path.GetExtension(s3Key);
       var expectedExtension = MimeTypeMap.GetExtension(contentType);
@@ -89,10 +90,12 @@ namespace VSS.AWS.TransferProxy
 
       if (string.Compare(expectedExtension, extension, StringComparison.InvariantCultureIgnoreCase) != 0)
       {
-        path = Path.Combine(s3Key, expectedExtension);
+        // Do we want to replace the existing extension???
+        path = s3Key + expectedExtension;
       }
 
       Upload(stream, path);
+      return path;
     }
 
     public string GeneratePreSignedUrl(string s3Key)
