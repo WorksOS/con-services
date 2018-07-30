@@ -8,8 +8,6 @@ namespace VSS.TRex.Exports.Surfaces
   {
     public TrimbleTINModel TIN { get; set; }
 
-//    public GridToTINDecimator Decimator {get; set;}
-
     /// <summary>
     /// List of triangles that need adjusting to the new coord
     /// </summary>
@@ -46,7 +44,7 @@ namespace VSS.TRex.Exports.Surfaces
 
       AffSideList = new AffSideNode[1000];
       CandidateList = new TriListNode[1000];
-      AffSideList = new AffSideNode[1000];
+      AffectedList = new TriListNode[1000];
     }
 
     /// <summary>
@@ -148,16 +146,6 @@ namespace VSS.TRex.Exports.Surfaces
     /// </summary>
     public Action<Triangle> TriangleUpdated = tri => { };
 
-//    protected void TriangleAdded(Triangle tri)
-    //    {
-    //      Decimator.TriangleAdded(tri);
-    //    }
-
-//    protected void TriangleUpdated(Triangle tri)
-//    {
-//      Decimator.TriangleUpdated(tri);
-//    }
-
     protected Triangle NewTriangle(TriVertex coord1, TriVertex coord2, TriVertex coord3,
       Triangle side1, Triangle side2, Triangle side3,
       int theFlags,
@@ -183,9 +171,6 @@ namespace VSS.TRex.Exports.Surfaces
         TIN.Triangles.Add(result);
 
         TriangleAdded(result);
-
-        // NOTE: This triangle will not yet exist in the TTM index so we must add it now
-        //      FIndex.AddTriangle(Result, Result.Tag - 1);
       }
       else
       {
@@ -379,15 +364,6 @@ namespace VSS.TRex.Exports.Surfaces
     /// <param name="forming"></param>
     protected void MakeAffSideList(bool forming)
     {
-      //        Index         : Integer;
-      //      TestIndex: Integer;
-      //      triPtr: TTriListNodePtr;
-      //      done: boolean;
-      //      j: Integer;
-      //      nextPoint: TTriVertex;
-      //      SideIdx: Integer;
-      //      Found: Boolean;
-
       void LengthenAffSideList()
       {
         Array.Resize(ref AffSideList, AffSideList.Length + 1000);
@@ -774,11 +750,7 @@ namespace VSS.TRex.Exports.Surfaces
           else
             nextPoint = AffSideList[AffSideList[sidePtr].Next].point;
 
-          int theFlags;
-          if (forming)
-            theFlags = 0;
-          else
-            theFlags = GetFlags(status, AffSideList[sidePtr].isStatic, AffSideList[sidePtr].point, nextPoint);
+          int theFlags = forming ? 0 : GetFlags(status, AffSideList[sidePtr].isStatic, AffSideList[sidePtr].point, nextPoint);
 
           // triangle on side 2 of new/ updated triangle - generally the next to be made / updated
           Triangle nextSide = GetNextSide(sidePtr, status, forming, AffectedIdx, firstTri);
@@ -884,10 +856,7 @@ namespace VSS.TRex.Exports.Surfaces
       // add first triangle's neighbours to the candidate list
       for (int j = 0; j < 3; j++)
       {
-        if (forming)
-          notAffected = false;
-        else
-          notAffected = CrossingStaticSide(currentTri, j) && !StatusOverrides(currentTri, j, status);
+        notAffected = forming ? false : CrossingStaticSide(currentTri, j) && !StatusOverrides(currentTri, j, status);
         AddCandidate(currentTri.Neighbours[j], notAffected);
       }
 
@@ -913,10 +882,7 @@ namespace VSS.TRex.Exports.Surfaces
           //with FAffectedList[FNumAffected - 1] do
           for (int j = 0; j < 3; j++)
           {
-            if (forming)
-              notAffected = false;
-            else
-              notAffected = CrossingStaticSide(AffectedList[NumAffected - 1].Tri, j);
+            notAffected = forming ? false : CrossingStaticSide(AffectedList[NumAffected - 1].Tri, j);
             AddCandidate(AffectedList[NumAffected - 1].Tri.Neighbours[j], notAffected);
           }
         }
@@ -1038,9 +1004,6 @@ namespace VSS.TRex.Exports.Surfaces
       TIN.Vertices.GetLimits(ref LocalHeader.MinimumEasting, ref LocalHeader.MinimumNorthing, ref MinElevation,
         ref LocalHeader.MaximumEasting, ref LocalHeader.MaximumNorthing, ref MaxElevation);
       TIN.Header = LocalHeader;
-
-      // Set up the spatial index used during surface generation:
-      //  FIndex.Initialise(FTIN);
 
       // Set up the initial state to insert the coordinates into
       MakeMinimumBoundingRectangle(out TriVertex TL, out TriVertex TR, out TriVertex BL, out TriVertex BR);

@@ -10,6 +10,7 @@ namespace VSS.TRex.Exports.Surfaces
     Unknown = 1,
     NoDataStore = 2,
     NoData = 3,
-    TrianglesExceeded = 4
+    TrianglesExceeded = 4,
+    DestinationTINNotEmpty
   }
 }

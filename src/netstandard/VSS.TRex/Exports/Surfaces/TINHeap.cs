@@ -104,9 +104,9 @@ namespace VSS.TRex.Tests.Exports.Surfaces
     {
       Debug.Assert(tri.Vertices[0] != null && tri.Vertices[1] != null && tri.Vertices[2] != null, "One or emore vertices in triangle is null");
 
-      int heapIndex = Count;
+      tri.HeapIndex = Count;
       Add(new GridToTINHeapNode(tri, import));
-      Upheap(heapIndex);
+      Upheap(tri.HeapIndex);
     }
 
     public void Update(GridToTINTriangle tri, double import)

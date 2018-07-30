@@ -39,7 +39,7 @@ namespace VSS.TRex.Exports.Surfaces
     /// FDataStore is a reference to a client data store that contains the
     /// grid if point information we are creating the TIN surface from
     /// </summary>
-    public GenericSubGridTree<float> DataStore = new GenericSubGridTree<float>();
+    public GenericSubGridTree<float> DataStore { set; get; } // = new GenericSubGridTree<float>();
 
     /// <summary>
     /// Tolerance represents the maximum acceptable difference between the height
@@ -148,7 +148,7 @@ namespace VSS.TRex.Exports.Surfaces
 
     public DecimationResult BuildMeshFaultCode;
 
-    private void SetDecimationExtents(BoundingWorldExtent3D value)
+    public void SetDecimationExtents(BoundingWorldExtent3D value)
     {
       DecimationExtents = value;
 
@@ -217,9 +217,9 @@ namespace VSS.TRex.Exports.Surfaces
 
       // Sort the three vertices in ascending Y order. The three compares and swaps
       // are more efficient than calling qsort to do it.
-      if (v0.Y > v1.Z) MinMax.Swap(ref v0, ref v1);
-      if (v1.Y > v2.Z) MinMax.Swap(ref v1, ref v2);
-      if (v0.Y > v1.Z) MinMax.Swap(ref v0, ref v1);
+      if (v0.Y > v1.Y) MinMax.Swap(ref v0, ref v1);
+      if (v1.Y > v2.Y) MinMax.Swap(ref v1, ref v2);
+      if (v0.Y > v1.Y) MinMax.Swap(ref v0, ref v1);
     }
 
     protected void GetHeightForTriangleScan(int x, int y, bool spotElevationOnly, int numElevationsToScan, double[] elevations)
@@ -251,7 +251,7 @@ namespace VSS.TRex.Exports.Surfaces
         CacheSubgrid = (GenericLeafSubGrid<float>)DataStore.LocateSubGridContaining((uint)TestX, (uint)TestY);
       else
       {
-        CacheSubgridIndex = TestX % SubGridTree.SubGridTreeDimension - Elevations_MinXTriangleScanRange % SubGridTree.SubGridTreeDimension;
+        CacheSubgridIndex = TestX / SubGridTree.SubGridTreeDimension - Elevations_MinXTriangleScanRange / SubGridTree.SubGridTreeDimension;
         GetCacheElevationMap();
       }
 
@@ -281,11 +281,11 @@ namespace VSS.TRex.Exports.Surfaces
 
           if (elev == Common.Consts.NullHeight)
           {
-            Elevations[elevationIndex++] = NullVertexHeight;
+            elevations[elevationIndex++] = NullVertexHeight;
             ElevationCellValuesRetrievedAreNull++;
           }
           else
-            Elevations[elevationIndex++] = elev;
+            elevations[elevationIndex++] = elev;
 
           SubGridX++; // Move to next cell in scan line
 
@@ -346,9 +346,9 @@ namespace VSS.TRex.Exports.Surfaces
       if (NumElevationsToScan > Elevations.Length)
         Array.Resize(ref Elevations, NumElevationsToScan + 100);
 
-      GetHeightForTriangleScan(startx, _y, false, NumElevationsToScan, Elevations /*@(FElevations[0])*/);
+      GetHeightForTriangleScan(startx, _y, false, NumElevationsToScan, Elevations);
 
-      for (int I = 0; I < NumElevationsToScan - 1; I++)
+      for (int I = 0; I < NumElevationsToScan; I++)
       {
         if (ExistanceBitMask == null ||
             !ExistanceBitMask.Bits.BitSet(BitMaskIndexX, BitMaskIndexY))
@@ -359,17 +359,19 @@ namespace VSS.TRex.Exports.Surfaces
           // Note: There is a final 'IsUsed' check to make sure this point is not one of the
           // initial seed points placed into the TIN surface
           if (Diff > Candidate.Import)
-          if (!YOrdinateIsASeedVertexRow || (_x % XSeedIntervalStep != 0))
           {
-            Candidate.Import = Diff;
-            Candidate.X = _x;
-            Candidate.Y = _y;
-            Candidate.Z = _z;
-            NumImportUpdates++;
+            if (!YOrdinateIsASeedVertexRow || _x % XSeedIntervalStep != 0)
+            {
+              Candidate.Import = Diff;
+              Candidate.X = _x;
+              Candidate.Y = _y;
+              Candidate.Z = _z;
+              NumImportUpdates++;
+            }
           }
         }
 
-        z0 = z0 + dz;
+        z0 += dz;
         _x++;
 
         BitMaskIndexX++;
@@ -435,11 +437,11 @@ namespace VSS.TRex.Exports.Surfaces
         {
           UpdateCacheIndices(y);
           scan_triangle_line(y, x1, x2, ref NumImportUpdates);
-          x1 = x1 + dx1;
-          x2 = x2 + dx2;
+          x1 += dx1;
+          x2 += dx2;
         }
 
-        x2 = x2 - dx2;
+        x2 -= dx2;
       }
 
       /////////////////////////////
@@ -457,22 +459,21 @@ namespace VSS.TRex.Exports.Surfaces
         if (ProcessedCentralRow)
         {
           starty++;
-          x1 = x1 + dx1;
-          x2 = x2 + dx2;
+          x1 += dx1;
+          x2 += dx2;
         }
 
         for (int y = starty; y <= endy; y++)
         {
           UpdateCacheIndices(y);
           scan_triangle_line(y, x1, x2, ref NumImportUpdates);
-          x1 = x1 + dx1;
-          x2 = x2 + dx2;
+          x1 += dx1;
+          x2 += dx2;
         }
-
       }
 
       bool Result = NumImportUpdates > 0;
-      if (Result && (NumImportUpdates == 1))
+      if (Result && NumImportUpdates == 1)
       {
         // Check that the triangle is not flat (null) and the 'Import' value is not the null value
         if (v0.Z == NullVertexHeight && v0.Z == v1.Z && v1.Z == v2.Z && Candidate.Import == Math.Abs(NullVertexHeight))
@@ -508,7 +509,7 @@ namespace VSS.TRex.Exports.Surfaces
 
     private void Update() => ScanTriangle(false);
 
-    private double MaxError() => Heap?.Top.Import ?? 0;
+    private double MaxError() => Heap.Top?.Import ?? 0;
 
     /// <summary>
     /// GreedyIndsert pulls the triangle with the greatest error from the top of the
@@ -659,10 +660,6 @@ namespace VSS.TRex.Exports.Surfaces
 
       void ConstructSeedTriangleMesh2()
       {
-        int _X1, _Y1;
-        int _X2, _Y2;
-        int _X3, _Y3;
-        int _X4, _Y4;
         double[] _Z1 = new double[1];
         double[] _Z2 = new double[1];
         double[] _Z3 = new double[1];
@@ -689,7 +686,6 @@ namespace VSS.TRex.Exports.Surfaces
             }, //OnProcessLeafSubgrid, 
             NodeSubGrid => SubGridProcessNodeSubGridResult.OK);
             
-
           // If there is some grid data in the triangle area then add the triangle to
           // the heap with a default large error (ie: don't waste time scanning it
           // we know we will be scanning it again later).
@@ -708,7 +704,7 @@ namespace VSS.TRex.Exports.Surfaces
           XSeedIntervalStep = GridExtents.SizeX / NXSeedIntervals + 1;
           YSeedIntervalStep = GridExtents.SizeY / NYSeedIntervals + 1;
 
-          /// TODO readd when loggin available
+          /// TODO readd when logging available
           //SIGLogMessage.PublishNoODS(Self, Format('Creating %d seed positions into extent of area being TINNed using X/Y seed intervals of %d/%d', 
            // [(NXSeedIntervals + 1) * (NYSeedIntervals + 1), FXSeedIntervalStep, FYSeedIntervalStep]), slmcMessage);
 
@@ -717,17 +713,17 @@ namespace VSS.TRex.Exports.Surfaces
             for (int I = 0; I <= NXSeedIntervals + 1; I++)
             for (int J = 0; J <= NYSeedIntervals + 1; J++)
             {
-              _X1 = I * XSeedIntervalStep;
-              _Y1 = J * YSeedIntervalStep;
+              int _X1 = I * XSeedIntervalStep;
+              int _Y1 = J * YSeedIntervalStep;
 
-              _X2 = (I + 1) * XSeedIntervalStep;
-              _Y2 = J * YSeedIntervalStep;
+              int _X2 = (I + 1) * XSeedIntervalStep;
+              int _Y2 = J * YSeedIntervalStep;
 
-              _X3 = I * XSeedIntervalStep;
-              _Y3 = (J + 1) * YSeedIntervalStep;
+              int _X3 = I * XSeedIntervalStep;
+              int _Y3 = (J + 1) * YSeedIntervalStep;
 
-              _X4 = (I + 1) * XSeedIntervalStep;
-              _Y4 = (J + 1) * YSeedIntervalStep;
+              int _X4 = (I + 1) * XSeedIntervalStep;
+              int _Y4 = (J + 1) * YSeedIntervalStep;
 
               GetHeightForTriangleScan(_X1, _Y1, true, 1, _Z1);
               GetHeightForTriangleScan(_X2, _Y2, true, 1, _Z2);
@@ -767,7 +763,7 @@ namespace VSS.TRex.Exports.Surfaces
 
       if (Engine.TIN.Vertices.Count != 0)
       {
-        BuildMeshFaultCode = DecimationResult.NoData;
+        BuildMeshFaultCode = DecimationResult.DestinationTINNotEmpty;
         return false;
       }
 
@@ -957,5 +953,11 @@ namespace VSS.TRex.Exports.Surfaces
       TIN.Vertices.Pack();
       TIN.Vertices.NumberVertices();
     }
+
+    /// <summary>
+    /// Returns the TIN constructed from the decimated grid dat
+    /// </summary>
+    /// <returns></returns>
+    public TrimbleTINModel GetTIN() => Engine.TIN;
   }
 }

@@ -668,7 +668,7 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
-        /// GetCellExtentsconputes the real world extents of the OTG cell identified
+        /// GetCellExtents computes the real world extents of the OTG cell identified
         /// by X and Y. X and Y are in the bottom left origin of the grid.
         /// The returned extents are translated to the centered origin of the real
         /// world coordinate system

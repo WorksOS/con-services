@@ -194,6 +194,8 @@ namespace VSS.TRex.Designs.TTM
           if (this[index_from] != null)
             this[index_to++] = this[index_from];
         }
+
+        RemoveRange(index_to, Count - index_to);
       }
 
     // procedure DumpVertexList(FileName : TFileName);

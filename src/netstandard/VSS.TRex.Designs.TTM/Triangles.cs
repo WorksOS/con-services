@@ -26,7 +26,7 @@ namespace VSS.TRex.Designs.TTM
       /// </summary>
         public Func<TriVertex, TriVertex, TriVertex, Triangle> CreateTriangleFunc { set; get; } = (v0, v1, v2) => new Triangle(v0, v1, v2);
 
-        public virtual Triangle CreateTriangle(TriVertex Vertex1, TriVertex Vertex2, TriVertex Vertex3) => CreateTriangleFunc(Vertex1, Vertex2, Vertex3);
+        public Triangle CreateTriangle(TriVertex Vertex1, TriVertex Vertex2, TriVertex Vertex3) => CreateTriangleFunc(Vertex1, Vertex2, Vertex3);
 
         public Triangle AddTriangle(TriVertex Vertex1, TriVertex Vertex2, TriVertex Vertex3)
         {
@@ -84,8 +84,10 @@ namespace VSS.TRex.Designs.TTM
           if (this[index_from] != null)
             this[index_to++] = this[index_from];
         }
+
+        RemoveRange(index_to, Count - index_to);
       }
 
-        //        procedure DumpTriangleList(Filename : TFilename);
+      // procedure DumpTriangleList(Filename : TFilename);
     }
 }
