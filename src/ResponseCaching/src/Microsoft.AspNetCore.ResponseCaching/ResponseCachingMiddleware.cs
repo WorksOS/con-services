@@ -98,8 +98,6 @@ namespace Microsoft.AspNetCore.ResponseCaching
           }
           finally
           {
-            //Actually we don't want to send ANY headers related to caching
-            context.CachedResponseHeaders.Remove(HeaderNames.CacheControl);
             UnshimResponseStream(context);
           }
 
@@ -156,9 +154,6 @@ namespace Microsoft.AspNetCore.ResponseCaching
           // accuracy of age calculation is considered appropriate since it is small compared to clock
           // skews and the "Age" header is an estimate of the real age of cached content.
           response.Headers[HeaderNames.Age] = HeaderUtilities.FormatNonNegativeInt64(context.CachedEntryAge.Value.Ticks / TimeSpan.TicksPerSecond);
-
-          //Actually we don't want to send ANY headers related to caching
-          response.Headers.Remove(HeaderNames.CacheControl);
 
           // Copy the cached response body
           var body = context.CachedResponse.Body;
