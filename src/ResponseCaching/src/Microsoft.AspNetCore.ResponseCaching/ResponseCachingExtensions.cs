@@ -16,7 +16,7 @@ namespace Microsoft.AspNetCore.Builder
                 throw new ArgumentNullException(nameof(app));
             }
 
-          return app.UseMiddleware<CacheControlRemoverMiddleware>().UseMiddleware<ResponseCachingMiddleware>();
+          return app.UseMiddleware<ResponseCachingMiddleware>();
         }
     }
 }
