@@ -6,10 +6,10 @@ MYSQL_USERNAME: vssLandfillUsr
 MYSQL_ROOT_PASSWORD: y)Rty85hER
 KAFKA_URI: 10.211.16.11
 KAFKA_PORT: "9092"
-KAFKA_GROUP_NAME: Landfill-Prod-July2018
+KAFKA_GROUP_NAME: Landfill-Prod-July2018-1
 KAFKA_TOPICS: VSS.Interfaces.Events.MasterData.IProjectEvent.V2,VSS.Interfaces.Events.MasterData.ICustomerEvent.V1,VSS.Interfaces.Events.MasterData.IGeofenceEvent.V1,VSS.Interfaces.Events.MasterData.ISubscriptionEvent.V1
 KAFKA_TOPIC_NAME_SUFFIX: 
-KAFKA_OFFSET: Latest
+KAFKA_OFFSET: earliest
 IMPORTED_FILE_API_URL: https://api.trimble.com/t/trimble.com/vss-projects/1.4/importedfiles
 CUSTOMERSERVICE_API_URL: https://api.trimble.com/t/trimble.com/vss-customerservice/1.0/Customers/me
 RAPTOR_V1_BASE_API_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/1.0
