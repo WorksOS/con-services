@@ -3,7 +3,7 @@ using ProtoBuf;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 {
-  [ProtoContract (SkipConstructor = true), ProtoInclude(100, typeof(PatchSubgridOriginProtobufResult))]
+  [ProtoContract (SkipConstructor = true), ProtoInclude(10, typeof(PatchSubgridOriginProtobufResult))]
   public abstract class PatchSubgridResultBase
   {
     /// <summary>
