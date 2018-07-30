@@ -124,7 +124,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             for (var j = 0; j < arrayLength; j++)
             {
               var elevOffset = StreamUtils.__Global.ReadWordFromStream(ms);
-              var elevation = elevOffset != 0xffff ? (float)(elevationOrigin + (elevOffset / 1000.0)) : -100000;
+              
+              // Return raw elevation offset delta and the client will determine the elevation using the following equation:
+              // float elevation = elevOffset != 0xffff ? (float)(elevationOrigin + (elevOffset / 1000.0)) : -100000;
+
+              // Increment all non-null values by 1. The consumer will subtract 1 from all non zero values to determine the true elevation offset.
+              // The goal is to return the smallest value possible, so we leverage the variant lenght feature of Protobuf to use the smallest number
+              // of bytes possible for each cell element.
+              ushort elevation = (ushort) (elevOffset != 0xffff ? elevOffset + 0x1 : 0x0);
 
               cells[j] = PatchCellHeightResult.Create(elevation);
             }

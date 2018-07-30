@@ -2,9 +2,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
 using TechTalk.SpecFlow;
+using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {

@@ -17,12 +17,12 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// </summary>
     [JsonProperty(PropertyName = "elevation")]
     [ProtoMember(1)]
-    public float Elevation { get; private set; }
+    public ushort Elevation { get; private set; }
 
     /// <summary>
     /// Static constructor.
     /// </summary>
-    public static PatchCellHeightResult Create(float elevation)
+    public static PatchCellHeightResult Create(ushort elevation)
     {
       return new PatchCellHeightResult
       {
