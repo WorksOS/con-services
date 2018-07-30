@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.AWS.TransferProxy.Interfaces;
+using VSS.ConfigurationStore;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -28,6 +30,8 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     private readonly IASNodeClient raptorClient;
     private readonly ILogger log;
     private readonly ILoggerFactory logger;
+    private readonly ITransferProxy transferProxy;
+    private readonly IConfigurationStore configStore;
 
     private async Task<long> GetLegacyProjectId(Guid? projectUid) => projectUid == null
       ? VelociraptorConstants.NO_PROJECT_ID
@@ -36,12 +40,14 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public TagFileController(IASNodeClient raptorClient, ITagProcessor tagProcessor, ILoggerFactory logger)
+    public TagFileController(IASNodeClient raptorClient, ITagProcessor tagProcessor, ILoggerFactory logger, ITransferProxy transferProxy, IConfigurationStore configStore)
     {
       this.raptorClient = raptorClient;
       this.tagProcessor = tagProcessor;
       this.logger = logger;
       log = logger.CreateLogger<TagFileController>();
+      this.transferProxy = transferProxy;
+      this.configStore = configStore;
     }
 
     /// <summary>
@@ -106,7 +112,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       tfRequest.Validate();
 
       var result = RequestExecutorContainerFactory
-             .Build<TagFileDirectSubmissionExecutor>(logger, raptorClient, tagProcessor)
+             .Build<TagFileDirectSubmissionExecutor>(logger, raptorClient, tagProcessor, configStore, null, null, null, null, transferProxy)
              .Process(tfRequest) as TagFileDirectSubmissionResult;
 
       if (result.Code == 0)
