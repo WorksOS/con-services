@@ -15,14 +15,14 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// <summary>
     /// Gets the northing patch origin in meters, as a delta.
     /// </summary>
-    [ProtoMember(1)]
+    [ProtoMember(1, IsRequired = true)]
     [JsonProperty(PropertyName = "patchOriginN")]
     public double PatchOriginN { get; private set; }
 
     /// <summary>
     /// Gets the easting patch origin in meters, as a delta.
     /// </summary>
-    [ProtoMember(2)]
+    [ProtoMember(2, IsRequired = true)]
     [JsonProperty(PropertyName = "patchOriginE")]
     public double PatchOriginE { get; private set; }
 
@@ -36,7 +36,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// When the CellController 'api/v1/productiondata/patches/worldorigin' endpoint is no longer required for testing by the CTCT team we can remove it and
     /// remove <see cref="PatchSubgridOriginResult"/> and associated methods/classes.
     /// </remarks>
-    [ProtoMember(3)]
+    [ProtoMember(3, IsRequired = true)]
     [JsonProperty(PropertyName = "cells")]
     protected PatchCellHeightResult[] Cells { get; set; }
 

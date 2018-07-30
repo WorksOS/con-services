@@ -13,16 +13,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
         => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
 
-    [global::ProtoBuf.ProtoMember(1)]
-    [global::System.ComponentModel.DefaultValue(0)]
-    public uint Elevation
-    {
-      get { return __pbn__Elevation ?? 0; }
-      set { __pbn__Elevation = value; }
-    }
-    public bool ShouldSerializeElevation() => __pbn__Elevation != null;
-    public void ResetElevation() => __pbn__Elevation = null;
-    private uint? __pbn__Elevation;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true)]
+    public uint Elevation { get; set; }
 
   }
 
@@ -33,38 +25,14 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
         => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
 
-    [global::ProtoBuf.ProtoMember(1)]
-    [global::System.ComponentModel.DefaultValue(0)]
-    public double CellSize
-    {
-      get { return __pbn__CellSize ?? 0; }
-      set { __pbn__CellSize = value; }
-    }
-    public bool ShouldSerializeCellSize() => __pbn__CellSize != null;
-    public void ResetCellSize() => __pbn__CellSize = null;
-    private double? __pbn__CellSize;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true)]
+    public double CellSize { get; set; }
 
-    [global::ProtoBuf.ProtoMember(2)]
-    [global::System.ComponentModel.DefaultValue(0)]
-    public int NumSubgridsInPatch
-    {
-      get { return __pbn__NumSubgridsInPatch ?? 0; }
-      set { __pbn__NumSubgridsInPatch = value; }
-    }
-    public bool ShouldSerializeNumSubgridsInPatch() => __pbn__NumSubgridsInPatch != null;
-    public void ResetNumSubgridsInPatch() => __pbn__NumSubgridsInPatch = null;
-    private int? __pbn__NumSubgridsInPatch;
+    [global::ProtoBuf.ProtoMember(2, IsRequired = true)]
+    public int NumSubgridsInPatch { get; set; }
 
-    [global::ProtoBuf.ProtoMember(3)]
-    [global::System.ComponentModel.DefaultValue(0)]
-    public int TotalNumPatchesRequired
-    {
-      get { return __pbn__TotalNumPatchesRequired ?? 0; }
-      set { __pbn__TotalNumPatchesRequired = value; }
-    }
-    public bool ShouldSerializeTotalNumPatchesRequired() => __pbn__TotalNumPatchesRequired != null;
-    public void ResetTotalNumPatchesRequired() => __pbn__TotalNumPatchesRequired = null;
-    private int? __pbn__TotalNumPatchesRequired;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true)]
+    public int TotalNumPatchesRequired { get; set; }
 
     [global::ProtoBuf.ProtoMember(4)]
     public global::System.Collections.Generic.List<PatchSubgridResultBase> Subgrids { get; } = new global::System.Collections.Generic.List<PatchSubgridResultBase>();
@@ -78,27 +46,11 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
         => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
 
-    [global::ProtoBuf.ProtoMember(1)]
-    [global::System.ComponentModel.DefaultValue(0)]
-    public double PatchOriginN
-    {
-      get { return __pbn__PatchOriginN ?? 0; }
-      set { __pbn__PatchOriginN = value; }
-    }
-    public bool ShouldSerializePatchOriginN() => __pbn__PatchOriginN != null;
-    public void ResetPatchOriginN() => __pbn__PatchOriginN = null;
-    private double? __pbn__PatchOriginN;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true)]
+    public double PatchOriginN { get; set; }
 
-    [global::ProtoBuf.ProtoMember(2)]
-    [global::System.ComponentModel.DefaultValue(0)]
-    public double PatchOriginE
-    {
-      get { return __pbn__PatchOriginE ?? 0; }
-      set { __pbn__PatchOriginE = value; }
-    }
-    public bool ShouldSerializePatchOriginE() => __pbn__PatchOriginE != null;
-    public void ResetPatchOriginE() => __pbn__PatchOriginE = null;
-    private double? __pbn__PatchOriginE;
+    [global::ProtoBuf.ProtoMember(2, IsRequired = true)]
+    public double PatchOriginE { get; set; }
 
     [global::ProtoBuf.ProtoMember(3)]
     public global::System.Collections.Generic.List<PatchCellHeightResult> Cells { get; } = new global::System.Collections.Generic.List<PatchCellHeightResult>();
@@ -112,27 +64,11 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
         => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
 
-    [global::ProtoBuf.ProtoMember(1)]
-    [global::System.ComponentModel.DefaultValue(false)]
-    public bool IsNull
-    {
-      get { return __pbn__IsNull ?? false; }
-      set { __pbn__IsNull = value; }
-    }
-    public bool ShouldSerializeIsNull() => __pbn__IsNull != null;
-    public void ResetIsNull() => __pbn__IsNull = null;
-    private bool? __pbn__IsNull;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true)]
+    public bool IsNull { get; set; }
 
-    [global::ProtoBuf.ProtoMember(2)]
-    [global::System.ComponentModel.DefaultValue(0)]
-    public float ElevationOrigin
-    {
-      get { return __pbn__ElevationOrigin ?? 0; }
-      set { __pbn__ElevationOrigin = value; }
-    }
-    public bool ShouldSerializeElevationOrigin() => __pbn__ElevationOrigin != null;
-    public void ResetElevationOrigin() => __pbn__ElevationOrigin = null;
-    private float? __pbn__ElevationOrigin;
+    [global::ProtoBuf.ProtoMember(2, IsRequired = true)]
+    public float ElevationOrigin { get; set; }
 
     [global::ProtoBuf.ProtoMember(10)]
     public PatchSubgridOriginProtobufResult PatchSubgridOriginProtobufResult { get; set; }

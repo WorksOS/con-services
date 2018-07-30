@@ -16,7 +16,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// Elevation at the cell center point
     /// </summary>
     [JsonProperty(PropertyName = "elevation")]
-    [ProtoMember(1)]
+    [ProtoMember(1, IsRequired = true)]
     public ushort Elevation { get; private set; }
 
     /// <summary>
