@@ -6,7 +6,7 @@
     <Company>VSS</Company>
     <Product>VSS.AWS.TransferProxy</Product>
     <Description>AWS file transfer wrapper</Description>
-    <VersionPrefix>1.2.0</VersionPrefix>
+    <VersionPrefix>1.3.0</VersionPrefix>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>VSS.AWS.TransferProxy</AssemblyName>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
