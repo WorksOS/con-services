@@ -1,9 +1,9 @@
-MYSQL_SERVER_NAME_VSPDB: vss-landfill.caeli9f4iehl.us-west-2.rds.amazonaws.com
-MYSQL_SERVER_NAME_ReadVSPDB: vss-landfill.caeli9f4iehl.us-west-2.rds.amazonaws.com
-MYSQL_DATABASE_NAME: VSS-Landfill-V22
+MYSQL_SERVER_NAME_VSPDB: vss-masterdata.caeli9f4iehl.us-west-2.rds.amazonaws.com
+MYSQL_SERVER_NAME_ReadVSPDB: vss-masterdata.caeli9f4iehl.us-west-2.rds.amazonaws.com
+MYSQL_DATABASE_NAME: VSS-Landfill-20180730
 MYSQL_PORT: "3306"
-MYSQL_USERNAME: Merino
-MYSQL_ROOT_PASSWORD: R58Kper%5
+MYSQL_USERNAME: vssLandfillUsr
+MYSQL_ROOT_PASSWORD: y)Rty85hER
 KAFKA_URI: 10.211.16.11
 KAFKA_PORT: "9092"
 KAFKA_GROUP_NAME: Landfill-Prod-July2018
@@ -20,9 +20,10 @@ JAEGER_SERVICE_NAME: Landfill Service
 NEW_RELIC_LICENSE_KEY: 71c62a7fd0b5f943adbfe5126b34300ba7aaaec7 
 NEW_RELIC_APP_NAME: k8s-landfill-service
 newrelic: "true"
-TPAAS_APP_TOKENKEYS: RlRKNmFQZkxLbEJrMUttWFZNeGRmZENXWVZVYTp6ZmIzQTk5Z2JlMm53M2prdGZPQjJUM3VQNlVh
+TPAAS_APP_TOKENKEYS: WGtWczJoa1VDR041VEMyZG1hcnh4Y29BR1FnYTowMXV6dkNzbWtEUGtlWXZSeWVzZk1NbUFFamNh
 TPAAS_OAUTH_URL: https://identity.trimble.com/i/oauth2/token
 ENVIRONMENT_PROJECTTYPEGEOFENCE_ISREQUIRED: "true"
 NoOfDaysBackForCCA: "30"
 NoOfDaysBackForVolumes: "30"
 TopOfWasteDesignFilename: TOW.ttm
+TCCfilespaceId: ucc083712-346e-466e-8cba-3c3eb0f9fb05
