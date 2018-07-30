@@ -43,7 +43,7 @@ namespace VSS.TRex.Designs.TTM
             (Vertices as TTMVertices).SnapToOutputResolution(FHeader);
         }
 
-        public TrimbleTINModel() : base()
+    public TrimbleTINModel() : base()
         {
             FEdges = new TTMEdges();
             FStartPoints = new TTMStartPoints();

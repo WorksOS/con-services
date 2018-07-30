@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using VSS.TRex.Designs.TTM;
+﻿using VSS.TRex.Designs.TTM;
 
 namespace VSS.TRex.Exports.Surfaces
 {

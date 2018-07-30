@@ -70,8 +70,7 @@ namespace VSS.TRex.Exports.Surfaces
     /// </summary>
     private TINHeap Heap = new TINHeap(50000);
 
-    /// IsUsed keeps track of which cells have been used in the construction
-    /// of the TIN
+    /// IsUsed keeps track of which cells have been used in the construction of the TIN
     private SubGridTreeBitMask IsUsed = new SubGridTreeBitMask();
 
     /// <summary>
@@ -147,7 +146,7 @@ namespace VSS.TRex.Exports.Surfaces
 
     private long TriangleScanInvocationNumber;
 
-    private DecimationResult BuildMeshFaultCode;
+    public DecimationResult BuildMeshFaultCode;
 
     private void SetDecimationExtents(BoundingWorldExtent3D value)
     {
@@ -483,7 +482,7 @@ namespace VSS.TRex.Exports.Surfaces
       return Result;
     }
 
-    public void TriangleAdded(Triangle tri)
+    private void TriangleAdded(Triangle tri)
     {
       // Every new triangle must be added to the heap for consideration in processing
       // ... but only if it is not a nil triangle
@@ -496,7 +495,7 @@ namespace VSS.TRex.Exports.Surfaces
       ScanTri = null;
     }
 
-    public void TriangleUpdated(Triangle tri)
+    private void TriangleUpdated(Triangle tri)
     {
       // Every updated triangle must be rescanned to update its candidate grid point
       ScanTri = (GridToTINTriangle) tri;
@@ -544,9 +543,12 @@ namespace VSS.TRex.Exports.Surfaces
     {
       //FIsUsed = TSubGridTreeBitMask.Create(FDataStore.NumLevels, FDataStore.CellSize);
 
-      Engine = new TinningEngine();
-      // Engine.TIN.Triangles.TriangleClass = TGridToTINTriangle;
-
+      Engine = new TinningEngine
+      {
+        TriangleAdded = TriangleAdded,
+        TriangleUpdated = TriangleUpdated
+      };
+      Engine.TIN.Triangles.CreateTriangleFunc = (_v0, _v1, _v2) => new GridToTINTriangle(_v0, _v1, _v2);
 
       // Allocate an appropriately sized cache array for the InUse and elevation subgrids
       CachedElevationSubgrids = new CachedSubGridMap[1000];
@@ -891,7 +893,7 @@ namespace VSS.TRex.Exports.Surfaces
       return true;
     }
 
-    protected void ScanTriangle(bool force)
+    private void ScanTriangle(bool force)
     {
       bool ValidTriangle;
 
@@ -929,7 +931,7 @@ namespace VSS.TRex.Exports.Surfaces
       }
     }
 
-    protected void RemoveCornerAndNullTriangles()
+    private void RemoveCornerAndNullTriangles()
     {
       TrimbleTINModel TIN = Engine.TIN;
 

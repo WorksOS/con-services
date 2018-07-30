@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace VSS.TRex.Designs.TTM
 {
@@ -6,11 +7,6 @@ namespace VSS.TRex.Designs.TTM
     {
         //  private
         //    FCrossingTriangleQuery: TCrossingTriangleQuery;
-
-        //  protected
-        // FTriangleClass denotes a descendant of TTriangle that should be constructed
-        // when creating new triangles in the model. It is set to TTriangle by default.
-        //    FTriangleClass : TTriangleClass;
 
         //  protected
         //    procedure FixCrossingTriangle(Triangle: TTriangle;
@@ -21,18 +17,16 @@ namespace VSS.TRex.Designs.TTM
         //    procedure FixCrossingTriangles(MaxShortestSide: Double );
         //        procedure RemoveTriangleWithFewestNeighbours(Triangle1, Triangle2: TTriangle );
 
-        ///        public
-        //          property TriangleClass : TTriangleClass read FTriangleClass write FTriangleClass;
-
         public Triangles()
         {
-            // FTriangleClass = TTriangle;
         }
 
-        public virtual Triangle CreateTriangle(TriVertex Vertex1, TriVertex Vertex2, TriVertex Vertex3)
-        {
-            return new Triangle(Vertex1, Vertex2, Vertex3);
-        }
+      /// <summary>
+      /// The default delegate for creating triangles present in the triangles collection for the surface
+      /// </summary>
+        public Func<TriVertex, TriVertex, TriVertex, Triangle> CreateTriangleFunc { set; get; } = (v0, v1, v2) => new Triangle(v0, v1, v2);
+
+        public virtual Triangle CreateTriangle(TriVertex Vertex1, TriVertex Vertex2, TriVertex Vertex3) => CreateTriangleFunc(Vertex1, Vertex2, Vertex3);
 
         public Triangle AddTriangle(TriVertex Vertex1, TriVertex Vertex2, TriVertex Vertex3)
         {

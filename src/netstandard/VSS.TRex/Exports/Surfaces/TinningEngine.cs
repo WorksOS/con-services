@@ -8,7 +8,7 @@ namespace VSS.TRex.Exports.Surfaces
   {
     public TrimbleTINModel TIN { get; set; }
 
-    public GridToTINDecimator Decimator {get;set;}
+//    public GridToTINDecimator Decimator {get; set;}
 
     /// <summary>
     /// List of triangles that need adjusting to the new coord
@@ -43,6 +43,7 @@ namespace VSS.TRex.Exports.Surfaces
     public TinningEngine()
     {
       TIN = new TrimbleTINModel();
+
       AffSideList = new AffSideNode[1000];
       CandidateList = new TriListNode[1000];
       AffSideList = new AffSideNode[1000];
@@ -137,15 +138,25 @@ namespace VSS.TRex.Exports.Surfaces
       TriangleUpdated(tri);
     }
 
-    protected void TriangleAdded(Triangle tri)
-    {
-      Decimator.TriangleAdded(tri);
-    }
+    /// <summary>
+    /// Delegate allowing a client to supply behaviour triggered by addition of triangles 
+    /// </summary>
+    public Action<Triangle> TriangleAdded = tri => { };
 
-    protected void TriangleUpdated(Triangle tri)
-    {
-      Decimator.TriangleUpdated(tri);
-    }
+    /// <summary>
+    ///  Delagate allowing a client to supply behaviour triggered by addition of triangles 
+    /// </summary>
+    public Action<Triangle> TriangleUpdated = tri => { };
+
+//    protected void TriangleAdded(Triangle tri)
+    //    {
+    //      Decimator.TriangleAdded(tri);
+    //    }
+
+//    protected void TriangleUpdated(Triangle tri)
+//    {
+//      Decimator.TriangleUpdated(tri);
+//    }
 
     protected Triangle NewTriangle(TriVertex coord1, TriVertex coord2, TriVertex coord3,
       Triangle side1, Triangle side2, Triangle side3,
