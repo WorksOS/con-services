@@ -19,7 +19,7 @@ node ('jenkinsslave-pod') {
     def container = "registry.k8s.vspengg.com:80/${project_name}:${versionNumber}"
 	def containerDb = "registry.k8s.vspengg.com:80/${project_name}.db:${versionNumber}"
     def testContainer = "registry.k8s.vspengg.com:80/${project_name}.tests:${versionNumber}"
-    def finalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}:${versionNumber}"
+    def finalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}-webapi:${versionNumber}"
 	def dbFinalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}-db:${versionNumber}"
 	
     def vars = []
