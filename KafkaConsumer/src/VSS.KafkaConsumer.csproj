@@ -6,7 +6,7 @@
     <Company>VSS</Company>
     <Product>VSS.KafkaConsumer.netcore</Product>
     <Description>Shared across Merino apps kafka consumer based on RD Kafka</Description>
-    <VersionPrefix>3.7.12</VersionPrefix>
+    <VersionPrefix>3.7.13</VersionPrefix>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>VSS.KafkaConsumer</AssemblyName>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>

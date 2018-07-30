@@ -71,6 +71,10 @@ namespace VSS.MasterData.Repositories
         {
           upsertedCount = await UpsertProjectDetail(project, "CreateProjectEvent");
         }
+        else
+        {
+          log.LogWarning($"ProjectRepository/CreateProject: Unable to createProject as Boundary is missing. Project: {JsonConvert.SerializeObject(project)}))')");
+        }
       }
       else if (evt is UpdateProjectEvent)
       {
@@ -315,7 +319,7 @@ namespace VSS.MasterData.Repositories
         if (upsertedCount > 0)
         {
           upsertedCount = await InsertProjectHistory(project);
-          await UpsertProjectTypeGeofence("CreatedProject", project, existing);
+          await UpsertProjectTypeGeofence("CreatedProject", project);
         }
 
         return upsertedCount;
@@ -407,7 +411,7 @@ namespace VSS.MasterData.Repositories
         if (upsertedCount > 0)
         {
           upsertedCount = await InsertProjectHistory(project);
-          await UpsertProjectTypeGeofence("UpdatedProject", project, existing);
+          await UpsertProjectTypeGeofence("UpdatedProject", project);
         }
 
         return upsertedCount;
@@ -461,7 +465,7 @@ namespace VSS.MasterData.Repositories
           if (upsertedCount > 0)
           {
             upsertedCount = await InsertProjectHistory(project);
-            await UpsertProjectTypeGeofence("UpdatedProject", project, existing);
+            await UpsertProjectTypeGeofence("UpdatedProject", project);
           }
 
           return upsertedCount;
@@ -484,7 +488,7 @@ namespace VSS.MasterData.Repositories
         if (upsertedCount > 0)
         {
           upsertedCount = await InsertProjectHistory(project);
-          await UpsertProjectTypeGeofence("CreatedProject", project, existing);
+          await UpsertProjectTypeGeofence("CreatedProject", project);
         }
 
         return upsertedCount;
@@ -642,22 +646,34 @@ namespace VSS.MasterData.Repositories
 
     #region landfill
 
-    private async Task UpsertProjectTypeGeofence(string upsertType, Project project, Project existing)
+    private async Task UpsertProjectTypeGeofence(string upsertType, Project project)
     {
       if (!_isProjectTypeGeofenceRequired)
         return;
 
-      log.LogDebug(
-        $"ProjectRepository/UpsertProjectTypeGeofence: upsertType {upsertType}. project={project.ProjectUID}");
+      if (string.IsNullOrEmpty(project.GeometryWKT))
+      {
+        log.LogInformation($"ProjectRepository/UpsertProjectTypeGeofence: Unable to Upsert GeofenceBoundary as boundary not available. UpsertType {upsertType}. project={project.ProjectUID}.");
+        return;
+      }
 
-      if (upsertType == "CreatedProject")
-      {
-        await CreateGeofenceAndAssociation(project);
-      }
-      else if (upsertType == "UpdatedProject")
-      {
-        await UpdateGeofence(project);
-      }
+      // may be an existing one if this create comes from a replay of kafka que.
+      var select = "SELECT GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, GeometryWKT, " +
+                   "     FillColor, IsTransparent, IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID, " +
+                   "     AreaSqMeters, g.LastActionedUTC " +
+                   "  FROM ProjectGeofence pg " +
+                   "   INNER JOIN Geofence g ON g.GeofenceUID = pg.fk_GeofenceUID " +
+                   $" WHERE fk_ProjectUID = '{project.ProjectUID}' " +
+                   $"  AND fk_GeofenceTypeID = {(int)GeofenceType.Project}; ";
+      var existingGeofence = (await QueryWithAsyncPolicy<Geofence>(select)).FirstOrDefault();
+
+      log.LogDebug(
+        $"ProjectRepository/UpsertProjectTypeGeofence: going to upsert. upsertType {upsertType}. project={project.ProjectUID} existingGeofence? {existingGeofence}");
+
+      if (existingGeofence == null)
+          await CreateGeofenceAndAssociation(project);
+        else
+          await UpdateGeofence(project, existingGeofence);
     }
 
     private async Task<int> CreateGeofenceAndAssociation(Project project)
@@ -671,7 +687,6 @@ namespace VSS.MasterData.Repositories
       geofence.AreaSqMeters = GeofenceValidation.CalculateAreaSqMeters(project.GeometryWKT);
       geofence.IsDeleted = false;
       geofence.LastActionedUTC = DateTime.UtcNow;
-      log.LogDebug($"ProjectRepository/CreateGeofence: going to create geofence={geofence}");
 
       const string insert =
         @"INSERT Geofence
@@ -680,7 +695,7 @@ namespace VSS.MasterData.Repositories
               (@GeofenceUID, @Name, @Description, @GeometryWKT, @FillColor, @IsTransparent, @IsDeleted, @CustomerUID, @UserUID, @LastActionedUTC, @GeofenceType, @AreaSqMeters)";
 
       var upsertedCount = await ExecuteWithAsyncPolicy(insert, geofence);
-      log.LogDebug($"ProjectRepository/CreateGeofence upserted {upsertedCount} rows for: geofenceUid:{geofence.GeofenceUID}");
+      log.LogDebug($"ProjectRepository/UpsertGeofence inserted. upsertedCount {upsertedCount} rows for: geofenceUid:{geofence.GeofenceUID}");
 
       if (upsertedCount == 1)
       {
@@ -691,28 +706,14 @@ namespace VSS.MasterData.Repositories
       return 0;
     }
 
-    private async Task<int> UpdateGeofence(Project project)
+    private async Task<int> UpdateGeofence(Project project, Geofence existingGeofence)
     {
-      var select = "SELECT GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, GeometryWKT, " +
-                   "     FillColor, IsTransparent, IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID, " +
-                   "     AreaSqMeters, g.LastActionedUTC " +
-                   "  FROM ProjectGeofence pg " +
-                   "   INNER JOIN Geofence g ON g.GeofenceUID = pg.fk_GeofenceUID " +
-                   $" WHERE fk_ProjectUID = '{project.ProjectUID}' " +
-                   $"  AND fk_GeofenceTypeID = {(int)GeofenceType.Project}; ";
-      var geofence = (await QueryWithAsyncPolicy<Geofence>(select)).FirstOrDefault();
-
-      if (geofence == null)
-      {
-        return await CreateGeofenceAndAssociation(project);
-      }
-
       var update = "UPDATE Geofence " +
                    $" SET GeometryWKT = '{project.GeometryWKT}' " +
-                   $" WHERE GeofenceUID = '{geofence.GeofenceUID}' " +
+                   $" WHERE GeofenceUID = '{existingGeofence.GeofenceUID}' " +
                    $"  AND fk_GeofenceTypeID = {(int)GeofenceType.Project}; ";
       var upsertedCount = await ExecuteWithAsyncPolicy(update);
-      log.LogDebug($"ProjectRepository/UpdateGeofence upserted {upsertedCount} rows for: geofenceUid:{geofence.GeofenceUID}");
+      log.LogDebug($"ProjectRepository/UpsertGeofence updated. upsertedCount {upsertedCount} rows for: geofenceUid:{existingGeofence.GeofenceUID}");
 
       return upsertedCount;
     }
