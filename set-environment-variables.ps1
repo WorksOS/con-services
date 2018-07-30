@@ -29,14 +29,18 @@ $acceptanceTestsEnvironmentVariables = @(
 $tccAndAwsEnvironmentVariables = @(
   @{key = "ALK_KEY"; value = "97CC5BD1CA28934796791B229AE9C3FA"},
   @{key = "AWS_ACCESS_KEY"; value = "AKIAIBGOEETXHMANDX7A"},
-  @{key = "AWS_BUCKET_NAME"; value = "vss-exports-stg"},
+  @{key = "AWS_BUCKET_NAME"; value = "vss-stg-directtagfile-archives"},
   @{key = "AWS_SECRET_KEY"; value = "v0kHIWmLJ7cUvqgH4JEDdHWSxOU9767i+vgb4hdZ"},
   @{key = "TCCBASEURL"; value = "https://www.myconnectedsite.com"},
   @{key = "TCCFILESPACEID"; value = "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01"},
   @{key = "TILE_RENDER_JOB_TIMEOUT"; value = "00:00:10"},
   @{key = "TILE_RENDER_MAX_ZOOM_LEVEL"; value = ""},
   @{key = "TILE_RENDER_MAX_ZOOM_RANGE"; value = "14"},
-  @{key = "TILE_RENDER_WAIT_INTERVAL"; value = "2000"})
+  @{key = "TILE_RENDER_WAIT_INTERVAL"; value = "2000"},
+  @{key = "TCCSynchProductionDataArchivedFolder"; value = "Production-Data (Archived)"},
+  @{key = "TCCSynchProjectBoundaryIssueFolder"; value = "Project Boundary (Issue)"},    
+  @{key = "TCCSynchSubscriptionIssueFolder"; value = "Subscription (Issue)"},
+  @{key = "TCCSynchOtherIssueFolder"; value = "Other... (Issue)"})
 
 # Used when running the collaborating services against a locally running MockWebApi service.
 $localhostEnvironmentVariables = @(

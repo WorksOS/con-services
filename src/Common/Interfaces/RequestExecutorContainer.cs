@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
@@ -56,6 +57,8 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// For working with profiles
     /// </summary>
     protected ICompactionProfileResultHelper profileResultHelper;
+
+    protected ITransferProxy transferProxy;
 
     /// <summary>
     /// Gets the available contract execution error states.
@@ -139,7 +142,7 @@ namespace VSS.Productivity3D.Common.Interfaces
     protected virtual void ProcessErrorCodes()
     { }
 
-    public void Initialise(ILogger logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator, List<FileData> fileList, ICompactionProfileResultHelper profileResultHelper)
+    public void Initialise(ILogger logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator, List<FileData> fileList, ICompactionProfileResultHelper profileResultHelper, ITransferProxy transferProxy)
     {
       this.raptorClient = raptorClient;
       this.tagProcessor = tagProcessor;
@@ -149,6 +152,7 @@ namespace VSS.Productivity3D.Common.Interfaces
       this.tileGenerator = tileGenerator;
       this.fileList = fileList;
       this.profileResultHelper = profileResultHelper;
+      this.transferProxy = transferProxy;
     }
 
     /// <summary>
