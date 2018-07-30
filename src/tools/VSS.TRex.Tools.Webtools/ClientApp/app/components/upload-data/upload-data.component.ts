@@ -2,7 +2,7 @@
 import {  FileUploader } from 'ng2-file-upload';
 
 // const URL = '/api/';
-const URL = 'http://localhost/';
+const URL = 'http://trex.dev.k8s.vspengg.com/api/v2/tagfiles';
 
 @Component({
   selector: 'upload-data',
