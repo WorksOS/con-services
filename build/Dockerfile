@@ -5,7 +5,7 @@ WORKDIR /build
 
 RUN chmod 777 *.sh
 
-RUN ["/bin/sh", "build.sh"]
+RUN ["/bin/sh", "/build/build.sh"]
 
 FROM microsoft/dotnet:2.0-runtime
 
