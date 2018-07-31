@@ -8,6 +8,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
@@ -21,6 +22,14 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
   public class SummaryPassCountsExecutor : RequestExecutorContainer
   {
     /// <summary>
+    /// Default constructor for RequestExecutorContainer.Build
+    /// </summary>
+    public SummaryPassCountsExecutor()
+    {
+      ProcessErrorCodes();
+    }
+
+    /// <summary>
     /// Processes the summary pass counts request by passing the request to Raptor and returning the result.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -29,28 +38,42 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       ContractExecutionResult result;
-      PassCounts request = item as PassCounts;
-      TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId,
-        request.overrideStartUTC, request.overrideEndUTC, request.overrideAssetIds);
-      bool success = raptorClient.GetPassCountSummary(request.ProjectId ?? -1,
-        ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0, TASNodeCancellationDescriptorType.cdtPassCountSummary),
-        ConvertSettings(),
-        raptorFilter,
-        RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
-        out TPassCountSummary passCountSummary);
-      if (success)
+
+      try
       {
-        result = ConvertResult(passCountSummary, request.liftBuildSettings);
+        PassCounts request = item as PassCounts;
+        TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId,
+          request.overrideStartUTC, request.overrideEndUTC, request.overrideAssetIds);
+        var raptorResult = raptorClient.GetPassCountSummary(request.ProjectId ?? -1,
+          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0, TASNodeCancellationDescriptorType.cdtPassCountSummary),
+          ConvertSettings(),
+          raptorFilter,
+          RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
+          out TPassCountSummary passCountSummary);
+        if (raptorResult == TASNodeErrorStatus.asneOK)
+        {
+          result = ConvertResult(passCountSummary, request.liftBuildSettings);
+        }
+        else
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult((int)raptorResult,//ContractExecutionStatesEnum.FailedToGetResults,
+            $"Failed to get requested pass count summary data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
+        }
       }
-      else
+      finally
       {
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "Failed to get requested pass count summary data"));
+        ContractExecutionStates.ClearDynamic();
       }
 
       return result;
     }
 
-      private PassCountSummaryResult ConvertResult(TPassCountSummary summary, LiftBuildSettings liftSettings)
+    protected sealed override void ProcessErrorCodes()
+    {
+      RaptorResult.AddErrorMessages(ContractExecutionStates);
+    }
+
+    private PassCountSummaryResult ConvertResult(TPassCountSummary summary, LiftBuildSettings liftSettings)
     {
       return PassCountSummaryResult.Create(
           liftSettings != null && liftSettings.overridingTargetPassCountRange != null ? liftSettings.overridingTargetPassCountRange : TargetPassCountRange.CreateTargetPassCountRange(summary.ConstantTargetPassCountRange.Min, summary.ConstantTargetPassCountRange.Max), 

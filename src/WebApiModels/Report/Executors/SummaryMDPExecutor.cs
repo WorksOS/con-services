@@ -52,20 +52,20 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
 
         TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId,
             request.overrideStartUTC, request.overrideEndUTC, request.overrideAssetIds, fileSpaceName);
-        bool success = raptorClient.GetMDPSummary(request.ProjectId ?? -1,
+        var raptorResult = raptorClient.GetMDPSummary(request.ProjectId ?? -1,
                             ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0, TASNodeCancellationDescriptorType.cdtMDPSummary),
                             ConvertSettings(request.mdpSettings),
                             raptorFilter,
                             RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
                             out TMDPSummary mdpSummary);
-        if (success)
+        if (raptorResult == TASNodeErrorStatus.asneOK)
         {
           result = ConvertResult(mdpSummary);
         }
         else
         {
-          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-            $"Failed to get requested MDP summary data with error: {ContractExecutionStates.FirstNameWithOffset(mdpSummary.ReturnCode)}"));
+          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult((int) raptorResult,//ContractExecutionStatesEnum.FailedToGetResults,
+            $"Failed to get requested MDP summary data with error: {ContractExecutionStates.FirstNameWithOffset((int) raptorResult)}"));
         }
 
       }

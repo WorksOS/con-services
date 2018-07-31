@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using ASNodeDecls;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -76,9 +77,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       catch (ServiceException exception)
       {
-        throw new ServiceException(
-          HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, exception.Message));
+        //throw new ServiceException(
+        //  HttpStatusCode.BadRequest,
+        //  new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, exception.Message));
+
+        var statusCode = (TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics ? HttpStatusCode.NoContent : HttpStatusCode.BadRequest;
+
+        throw new ServiceException(statusCode,
+          new ContractExecutionResult(exception.GetResult.Code, exception.Message));
       }
       finally
       {
@@ -114,6 +120,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         -1,
         null, null, null);
       request.Validate();
+
       try
       {
         var result = RequestExecutorContainerFactory.Build<SummaryMDPExecutor>(LoggerFactory, RaptorClient, null, this.ConfigStore)
@@ -127,8 +134,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       catch (ServiceException exception)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, exception.Message));
+        //throw new ServiceException(HttpStatusCode.BadRequest,
+        //  new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, exception.Message));
+
+        var statusCode = (TASNodeErrorStatus) exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics ? HttpStatusCode.NoContent : HttpStatusCode.BadRequest;
+
+        throw new ServiceException(statusCode,
+          new ContractExecutionResult(exception.GetResult.Code, exception.Message));
       }
       finally
       {
@@ -169,8 +181,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       catch (ServiceException exception)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, exception.Message));
+        //throw new ServiceException(HttpStatusCode.BadRequest,
+        //  new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, exception.Message));
+
+        var statusCode = (TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics ? HttpStatusCode.NoContent : HttpStatusCode.BadRequest;
+
+        throw new ServiceException(statusCode,
+          new ContractExecutionResult(exception.GetResult.Code, exception.Message));
       }
       finally
       {
@@ -218,8 +235,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       catch (ServiceException exception)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, exception.Message));
+        //throw new ServiceException(HttpStatusCode.BadRequest,
+        //  new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, exception.Message));
+
+        var statusCode = (TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics ? HttpStatusCode.NoContent : HttpStatusCode.BadRequest;
+
+        throw new ServiceException(statusCode,
+          new ContractExecutionResult(exception.GetResult.Code, exception.Message));
       }
       finally
       {
@@ -268,8 +290,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       catch (ServiceException exception)
       {
-        throw new ServiceException(HttpStatusCode.NoContent,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, exception.Message));
+        //throw new ServiceException(HttpStatusCode.NoContent,
+        //  new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, exception.Message));
+
+        var statusCode = (TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics ? HttpStatusCode.NoContent : HttpStatusCode.BadRequest;
+
+        throw new ServiceException(statusCode,
+          new ContractExecutionResult(exception.GetResult.Code, exception.Message));
       }
       finally
       {
@@ -358,7 +385,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       catch (ServiceException exception)
       {
-        returnResult = new CompactionVolumesSummaryResult(exception.GetResult.Code, exception.GetResult.Message);
+        //returnResult = new CompactionVolumesSummaryResult(exception.GetResult.Code, exception.GetResult.Message);
+
+        var statusCode = (TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics ? HttpStatusCode.NoContent : HttpStatusCode.BadRequest;
+
+        throw new ServiceException(statusCode,
+          new ContractExecutionResult(exception.GetResult.Code, exception.Message));
       }
       finally
       {

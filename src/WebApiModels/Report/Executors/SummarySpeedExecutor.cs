@@ -8,6 +8,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 
@@ -18,6 +19,14 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
   /// </summary>
   public class SummarySpeedExecutor : RequestExecutorContainer
   {
+    /// <summary>
+    /// Default constructor for RequestExecutorContainer.Build
+    /// </summary>
+    public SummarySpeedExecutor()
+    {
+      ProcessErrorCodes();
+    }
+
     private SpeedSummaryResult ConvertResult(TASNodeSpeedSummaryResult result)
     {
 
@@ -32,25 +41,37 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      SummarySpeedRequest request = item as SummarySpeedRequest;
-      new TASNodeSpeedSummaryResult();
-
-      bool success = this.raptorClient.GetSummarySpeed(request.ProjectId ?? -1,
-        ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.CallId ?? Guid.NewGuid()), 0,
-          TASNodeCancellationDescriptorType.cdtVolumeSummary),
-        RaptorConverters.ConvertFilter(request.FilterId, request.Filter, request.ProjectId, null, null,
-          new List<long>()),
-        RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone),
-        out var result);
-
-      if (success)
+      try
       {
-        return ConvertResult(result);
-      }
+        SummarySpeedRequest request = item as SummarySpeedRequest;
+        new TASNodeSpeedSummaryResult();
 
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-          "Failed to get requested speed summary data"));
+        var raptorResult = this.raptorClient.GetSummarySpeed(request.ProjectId ?? -1,
+          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.CallId ?? Guid.NewGuid()), 0,
+            TASNodeCancellationDescriptorType.cdtVolumeSummary),
+          RaptorConverters.ConvertFilter(request.FilterId, request.Filter, request.ProjectId, null, null,
+            new List<long>()),
+          RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone),
+          out var result);
+
+        if (raptorResult == TASNodeErrorStatus.asneOK)
+        {
+          return ConvertResult(result);
+        }
+
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult((int)raptorResult,//ContractExecutionStatesEnum.FailedToGetResults,
+          $"Failed to get requested speed summary data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
+      }
+      finally
+      {
+        ContractExecutionStates.ClearDynamic();
+      }
     }
+
+    protected sealed override void ProcessErrorCodes()
+    {
+      RaptorResult.AddErrorMessages(ContractExecutionStates);
+    }
+
   }
 }

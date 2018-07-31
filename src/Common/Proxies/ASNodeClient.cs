@@ -56,12 +56,12 @@ namespace VSS.Productivity3D.Common.Proxies
           out DataExport);
     }
 
-    public bool GetPassCountSummary(long projectID, TASNodeRequestDescriptor externalRequestDescriptor,
+    public TASNodeErrorStatus GetPassCountSummary(long projectID, TASNodeRequestDescriptor externalRequestDescriptor,
           TPassCountSettings passCountSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
           out TPassCountSummary passCountSummary)
     {
       return client.GetPassCountSummary(projectID, externalRequestDescriptor, passCountSettings, filter,
-          liftBuildSettings, out passCountSummary) == TASNodeErrorStatus.asneOK;
+          liftBuildSettings, out passCountSummary);
     }
 
     public bool GetPassCountDetails(long projectID, TASNodeRequestDescriptor externalRequestDescriptor,
@@ -97,24 +97,24 @@ namespace VSS.Productivity3D.Common.Proxies
       return client.UpdateCacheWithDesign(dataModelId, designFileName, designId, deleteTTM);
     }
 
-    public bool GetSummaryVolumes(long DataModelID, TASNodeRequestDescriptor ExternalRequestDescriptor,
+    public TASNodeErrorStatus GetSummaryVolumes(long DataModelID, TASNodeRequestDescriptor ExternalRequestDescriptor,
           TComputeICVolumesType VolumeType, TICFilterSettings BaseFilter, TVLPDDesignDescriptor BaseDesign,
           TICFilterSettings TopFilter, TVLPDDesignDescriptor TopDesign, TICFilterSettings AdditionalSpatialFilter,
           TICLiftBuildSettings LiftBuildSettings, out TASNodeSimpleVolumesResult Results)
     {
       return client.GetSummaryVolumes(DataModelID, ExternalRequestDescriptor, VolumeType, BaseFilter, BaseDesign,
           TopFilter,
-          TopDesign, AdditionalSpatialFilter, LiftBuildSettings, out Results) == TASNodeErrorStatus.asneOK;
+          TopDesign, AdditionalSpatialFilter, LiftBuildSettings, out Results);
     }
 
-    public bool GetSummaryVolumes(long DataModelID, TASNodeRequestDescriptor ExternalRequestDescriptor,
+    public TASNodeErrorStatus GetSummaryVolumes(long DataModelID, TASNodeRequestDescriptor ExternalRequestDescriptor,
     TComputeICVolumesType VolumeType, TICFilterSettings BaseFilter, TVLPDDesignDescriptor BaseDesign,
     TICFilterSettings TopFilter, TVLPDDesignDescriptor TopDesign, TICFilterSettings AdditionalSpatialFilter, double CutTolerance, double FillTolerance,
     TICLiftBuildSettings LiftBuildSettings, out TASNodeSimpleVolumesResult Results)
     {
       return client.GetSummaryVolumes(DataModelID, ExternalRequestDescriptor, VolumeType, BaseFilter, BaseDesign,
           TopFilter,
-          TopDesign, AdditionalSpatialFilter, CutTolerance, FillTolerance, LiftBuildSettings, out Results) == TASNodeErrorStatus.asneOK;
+          TopDesign, AdditionalSpatialFilter, CutTolerance, FillTolerance, LiftBuildSettings, out Results);
     }
 
 
@@ -126,10 +126,10 @@ namespace VSS.Productivity3D.Common.Proxies
           TopFilter, AdditionalSpatialFilter, LiftBuildSettings, out Results) == TASNodeErrorStatus.asneOK;
     }
 
-    public bool GetSummarySpeed(long DataModelID, TASNodeRequestDescriptor ExternalRequestDescriptor, TICFilterSettings filter,
+    public TASNodeErrorStatus GetSummarySpeed(long DataModelID, TASNodeRequestDescriptor ExternalRequestDescriptor, TICFilterSettings filter,
         TICLiftBuildSettings LiftBuildSettings, out TASNodeSpeedSummaryResult Results)
     {
-      return client.GetSpeedSummary(DataModelID, ExternalRequestDescriptor, filter, LiftBuildSettings, out Results) == TASNodeErrorStatus.asneOK;
+      return client.GetSpeedSummary(DataModelID, ExternalRequestDescriptor, filter, LiftBuildSettings, out Results);
     }
 
     public bool GetDataModelExtents(long DataModelID, TSurveyedSurfaceID[] SurveyedSurfaceExclusionList,
@@ -232,20 +232,19 @@ namespace VSS.Productivity3D.Common.Proxies
       return layers;
     }
 
-    public bool GetMDPSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
+    public TASNodeErrorStatus GetMDPSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
       TMDPSettings mdpSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
       out TMDPSummary mdpSummary)
     {
       return client.GetMDPSummary(projectId, externalRequestDescriptor, mdpSettings, filter,
-          liftBuildSettings, out mdpSummary) == TASNodeErrorStatus.asneOK;
+          liftBuildSettings, out mdpSummary);
     }
 
-    public bool GetCMVSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
+    public TASNodeErrorStatus GetCMVSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
         TCMVSettings cmvSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
         out TCMVSummary cmvSummary)
     {
-      return client.GetCMVSummary(projectId, externalRequestDescriptor, cmvSettings, filter,
-          liftBuildSettings, out cmvSummary) == TASNodeErrorStatus.asneOK;
+      return client.GetCMVSummary(projectId, externalRequestDescriptor, cmvSettings, filter, liftBuildSettings, out cmvSummary);
     }
 
     public bool GetCMVChangeSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
@@ -271,12 +270,12 @@ namespace VSS.Productivity3D.Common.Proxies
                liftBuildSettings, out cmvDetails) == TASNodeErrorStatus.asneOK;
     }
 
-    public bool GetTemperatureSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
+    public TASNodeErrorStatus GetTemperatureSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
       TTemperatureSettings temperatureSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
       out TTemperature temperatureSummary)
     {
       return client.GetTemperatureSummary(projectId, externalRequestDescriptor, temperatureSettings, filter,
-          liftBuildSettings, out temperatureSummary) == TASNodeErrorStatus.asneOK;
+          liftBuildSettings, out temperatureSummary);
     }
 
 

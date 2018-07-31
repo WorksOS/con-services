@@ -43,7 +43,7 @@ namespace VSS.Productivity3D.Common.Interfaces
         TDateTime DateFromUTC, TDateTime DateToUTC, TTranslation[] Translations, T3DBoundingWorldExtent ProjectExtents,
         out TDataExport DataExport);
 
-    bool GetPassCountSummary(long projectID, TASNodeRequestDescriptor externalRequestDescriptor,
+    TASNodeErrorStatus GetPassCountSummary(long projectID, TASNodeRequestDescriptor externalRequestDescriptor,
         TPassCountSettings passCountSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
         out TPassCountSummary passCountSummary);
 
@@ -60,7 +60,7 @@ namespace VSS.Productivity3D.Common.Interfaces
 
     TDesignProfilerRequestResult UpdateCacheWithDesign(long dataModelId, string designFileName, long designId, bool deleteTTM);
 
-    bool GetSummaryVolumes(long DataModelID, TASNodeRequestDescriptor ExternalRequestDescriptor,
+    TASNodeErrorStatus GetSummaryVolumes(long DataModelID, TASNodeRequestDescriptor ExternalRequestDescriptor,
               TComputeICVolumesType VolumeType,
               TICFilterSettings BaseFilter, TVLPDDesignDescriptor BaseDesign,
               TICFilterSettings TopFilter, TVLPDDesignDescriptor TopDesign,
@@ -69,7 +69,7 @@ namespace VSS.Productivity3D.Common.Interfaces
               out TASNodeSimpleVolumesResult Results);
 
 
-    bool GetSummaryVolumes(long DataModelID, TASNodeRequestDescriptor ExternalRequestDescriptor,
+    TASNodeErrorStatus GetSummaryVolumes(long DataModelID, TASNodeRequestDescriptor ExternalRequestDescriptor,
       TComputeICVolumesType VolumeType, TICFilterSettings BaseFilter, TVLPDDesignDescriptor BaseDesign,
       TICFilterSettings TopFilter, TVLPDDesignDescriptor TopDesign, TICFilterSettings AdditionalSpatialFilter,
       double CutTolerance, double FillTolerance,
@@ -82,7 +82,7 @@ namespace VSS.Productivity3D.Common.Interfaces
               TICLiftBuildSettings LiftBuildSettings,
               out TASNodeThicknessSummaryResult Results);
 
-    bool GetSummarySpeed(long DataModelID, TASNodeRequestDescriptor ExternalRequestDescriptor,
+    TASNodeErrorStatus GetSummarySpeed(long DataModelID, TASNodeRequestDescriptor ExternalRequestDescriptor,
       TICFilterSettings filter,
       TICLiftBuildSettings LiftBuildSettings,
       out TASNodeSpeedSummaryResult Results);
@@ -145,11 +145,11 @@ namespace VSS.Productivity3D.Common.Interfaces
     TDesignName[] GetOverriddenDesigns(long projectId, long assetId);
     TDesignLayer[] GetOverriddenLayers(long projectId, long assetId);
 
-    bool GetMDPSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
+    TASNodeErrorStatus GetMDPSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
            TMDPSettings mdpSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
            out TMDPSummary mdpSummary);
 
-    bool GetCMVSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
+    TASNodeErrorStatus GetCMVSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
               TCMVSettings cmvSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
               out TCMVSummary cmvSummary);
 
@@ -166,7 +166,7 @@ namespace VSS.Productivity3D.Common.Interfaces
       TCMVSettingsExt cmvSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
       out TCMVDetails cmvDetails);
 
-    bool GetTemperatureSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
+    TASNodeErrorStatus GetTemperatureSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
       TTemperatureSettings temperatureSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
       out TTemperature temperatureSummary);
 

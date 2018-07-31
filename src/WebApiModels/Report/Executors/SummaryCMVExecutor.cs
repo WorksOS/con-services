@@ -40,24 +40,23 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId,
             request.overrideStartUTC, request.overrideEndUTC, request.overrideAssetIds);
 
-        bool success = raptorClient.GetCMVSummary(request.ProjectId ?? -1,
+        var raptorResult = raptorClient.GetCMVSummary(request.ProjectId ?? -1,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.callId ?? Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtCMVSummary),
           ConvertSettings(request.cmvSettings),
           raptorFilter,
           RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
           out var cmvSummary);
 
-        if (success)
+        if (raptorResult == TASNodeErrorStatus.asneOK)
         {
           result = ConvertResult(cmvSummary);
         }
         else
         {
-          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-            $"Failed to get requested CMV summary data with error: {ContractExecutionStates.FirstNameWithOffset(cmvSummary.ReturnCode)}"));
+          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult((int)raptorResult,//ContractExecutionStatesEnum.FailedToGetResults,
+            $"Failed to get requested CMV summary data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
         }
       }
-
       finally
       {
         ContractExecutionStates.ClearDynamic();
