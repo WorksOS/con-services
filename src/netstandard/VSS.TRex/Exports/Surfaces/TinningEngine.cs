@@ -116,9 +116,7 @@ namespace VSS.TRex.Exports.Surfaces
       TriVertex thirdCoord,
       Triangle firstSide,
       Triangle secondSide,
-      Triangle thirdSide,
-      int theFlags,
-      bool isDeleted)
+      Triangle thirdSide)
     {
       Debug.Assert(tri != firstSide && tri != secondSide && tri != thirdSide, "Triangle cannot be its own neighbour");
 
@@ -128,10 +126,6 @@ namespace VSS.TRex.Exports.Surfaces
       tri.Neighbours[0] = firstSide;
       tri.Neighbours[1] = secondSide;
       tri.Neighbours[2] = thirdSide;
-
-      tri.Flags = (ushort) (theFlags & ~(Consts.IsDeletedFlag + Consts.IsDiscardedFlag + Consts.IsTriDrawnFlag + Consts.IsContDrawnFlag));
-      if (isDeleted)
-        tri.IsDeletedFlag = true;
 
       TriangleUpdated(tri);
     }
@@ -146,10 +140,7 @@ namespace VSS.TRex.Exports.Surfaces
     /// </summary>
     public Action<Triangle> TriangleUpdated = tri => { };
 
-    protected Triangle NewTriangle(TriVertex coord1, TriVertex coord2, TriVertex coord3,
-      Triangle side1, Triangle side2, Triangle side3,
-      int theFlags,
-      bool deleteIt)
+    protected Triangle NewTriangle(TriVertex coord1, TriVertex coord2, TriVertex coord3, Triangle side1, Triangle side2, Triangle side3)
     {
       Triangle result;
 
@@ -185,12 +176,6 @@ namespace VSS.TRex.Exports.Surfaces
       result.Neighbours[1] = side2;
       result.Neighbours[2] = side3;
 
-      result.Flags = (ushort) (theFlags & ~(Consts.IsDeletedFlag + Consts.IsDiscardedFlag +
-                                            Consts.IsTriDrawnFlag + Consts.IsContDrawnFlag));
-
-      if (deleteIt)
-        result.IsDeletedFlag = true;
-
       return result;
     }
 
@@ -210,32 +195,6 @@ namespace VSS.TRex.Exports.Surfaces
       return -1;
     }
 
-    protected int GetFlags(StatusType[] status, bool staticFlag, TriVertex lastPoint, TriVertex nextPoint)
-    {
-      int Result = 0;
-
-      if (staticFlag)
-        Result = Result | Consts.side3StaticFlag;
-
-      if (lastPoint == status[0].firstCoord || lastPoint == status[0].secondCoord)
-        if (status[0].isStatic)
-          Result = Result | Consts.side2StaticFlag;
-
-      if (lastPoint == status[1].firstCoord || lastPoint == status[1].secondCoord)
-        if (status[1].isStatic)
-          Result = Result | Consts.side2StaticFlag;
-
-      if (nextPoint == status[0].firstCoord || nextPoint == status[0].secondCoord)
-        if (status[0].isStatic)
-          Result = Result | Consts.side1StaticFlag;
-
-      if (nextPoint == status[1].firstCoord || nextPoint == status[1].secondCoord)
-        if (status[1].isStatic)
-          Result = Result | Consts.side1StaticFlag;
-
-      return Result;
-    }
-
     protected void UpdateNeighbour(Triangle theTri, TriVertex thePoint, Triangle newTri)
     {
       if (theTri != null)
@@ -245,47 +204,22 @@ namespace VSS.TRex.Exports.Surfaces
     }
 
     /// <summary>
-    /// { sidePtr points to what will be side[3] of the first updated triangle.
-    /// return the triangle that will be its side[2].  Generally it will be
-    /// the second of the 2 new triangles formed.If the new coord is being
-    /// inserted on the edge of the model(this is impossible if forming),
-    /// only one new triangle will be formed by this operation.If this is the
-    /// case, the last side may be this triangle, or the edge itself. }
+    /// Creates a pait of new triangles to use...
     /// </summary>
-    /// <param name="sidePoint"></param>
-    /// <param name="status"></param>
-    /// <param name="forming"></param>
-    protected Triangle GetLastSide(TriVertex sidePoint, StatusType[] status, bool forming)
+    protected Triangle GetLastSide()
     {
-      Triangle Result = null;
-
       Triangle AddEmptyTriangle(int Offset)
       {
-        Triangle Result2 = TIN.Triangles.CreateTriangle(null, null, null);
-        Result2.Tag = TIN.Triangles.Count + Offset;
+        Triangle Result = TIN.Triangles.CreateTriangle(null, null, null);
+        Result.Tag = TIN.Triangles.Count + Offset;
 
-        return Result2;
+        return Result;
       }
 
-      SuccLastTriangle = null;
-      SuccSuccLastTriangle = null;
+      SuccLastTriangle = AddEmptyTriangle(1);
+      SuccSuccLastTriangle = AddEmptyTriangle(2);
 
-      if (forming || !(status[0].edge || status[1].edge))
-      {
-        SuccLastTriangle = AddEmptyTriangle(1);
-        SuccSuccLastTriangle = AddEmptyTriangle(2);
-        Result = SuccSuccLastTriangle;
-      }
-      else if ((status[0].edge && sidePoint == status[0].secondCoord) ||
-               (status[1].edge && sidePoint == status[1].secondCoord))
-        Result = null;
-      else
-      {
-        SuccLastTriangle = AddEmptyTriangle(1);
-        Result = SuccLastTriangle;
-      }
-
-      return Result;
+      return SuccSuccLastTriangle;
     }
 
     /// <summary>
@@ -293,58 +227,26 @@ namespace VSS.TRex.Exports.Surfaces
     /// Return the triangle that will be its side[1].  Generally it will be
     /// next triangle in the affectedPtr list.If we have run out of these,
     /// It will be the first or second of the to-be-created triangles.If the
-    /// currently being made triangle is the last one, return firstTri.If
-    /// the new coord is being inserted on the edge of the model(impossible
-    /// if forming), the next side may be the edge. }
+    /// currently being made triangle is the last one, return firstTri. }
     /// </summary>
     /// <param name="sideIndex"></param>
-    /// <param name="status"></param>
-    /// <param name="forming"></param>
     /// <param name="index"></param>
     /// <param name="firstTri"></param>
     /// <returns></returns>
-    protected Triangle GetNextSide(int sideIndex, StatusType[] status, bool forming, int index, Triangle firstTri)
+    protected Triangle GetNextSide(int sideIndex, int index, Triangle firstTri)
     {
       if (AffSideList[sideIndex].Next == -1)
         return firstTri;
-
-      if (!forming &&
-          status[0].edge && AffSideList[AffSideList[sideIndex].Next].point == status[0].firstCoord &&
-          status[1].edge && AffSideList[AffSideList[sideIndex].Next].point == status[1].firstCoord)
-        return null;
 
       if (index + 1 < NumAffected)
         return AffectedList[index + 1].Tri;
 
       if (index >= NumAffected)
       {
-        if (forming || !(status[0].edge || status[1].edge))
-          return SuccSuccLastTriangle;
-
-        return SuccLastTriangle;
+        return SuccSuccLastTriangle;
       }
 
       return SuccLastTriangle;
-    }
-
-    /// <summary>
-    /// sidePtr points to what will be side[3] of the first updated triangle.
-    /// Return this triangle, the first in the affectedTris list.If the new
-    /// coord is being inserted on the edge of the model(this is impossible
-    /// if forming), return edge_index if the last new triangle formed will
-    /// not be a neighbour to firstTri. 
-    /// </summary>
-    /// <param name="sidePoint"></param>
-    /// <param name="status"></param>
-    /// <param name="forming"></param>
-    /// <param name="affectedTri"></param>
-    /// <returns></returns>
-    protected Triangle GetFirstTri(TriVertex sidePoint, StatusType[] status, bool forming, Triangle affectedTri)
-    {
-      if (!forming && (status[0].edge && sidePoint == status[0].firstCoord || status[1].edge && sidePoint == status[0].firstCoord))
-        return null;
-
-      return affectedTri;
     }
 
     protected bool InList(Triangle theTri, TriListNode[] theList, int numEntries)
@@ -359,10 +261,9 @@ namespace VSS.TRex.Exports.Surfaces
     /// <summary>
     /// Constructs the list of affected sides from the most recent point addition
     /// make affSideList describe a walk around the edge of the polygon making up
-    // affectedTris - ie the boundary between affectedTris and surroundingTris
+    /// affectedTris - ie the boundary between affectedTris and surroundingTris
     /// </summary>
-    /// <param name="forming"></param>
-    protected void MakeAffSideList(bool forming)
+    protected void MakeAffSideList()
     {
       void LengthenAffSideList()
       {
@@ -401,10 +302,7 @@ namespace VSS.TRex.Exports.Surfaces
 
       AffSideList[NumAffSides - 1].point = AffectedList[Index].Tri.Vertices[SideIdx];
       AffSideList[NumAffSides - 1].tri = AffectedList[Index].Tri;
-      AffSideList[NumAffSides - 1].deleted = AffectedList[Index].Tri.IsDeletedFlag;
       AffSideList[NumAffSides - 1].side = AffectedList[Index].Tri.Neighbours[SideIdx];
-      if (!forming)
-        AffSideList[NumAffSides - 1].isStatic = EdgeIsStatic(AffectedList[Index].Tri, SideIdx);
 
       AffSideList[NumAffSides - 1].Next = -1;
       if (NumAffSides > 1)
@@ -417,7 +315,7 @@ namespace VSS.TRex.Exports.Surfaces
       bool done = false;
       while (!done)
       {
-        //if the next side(clockwise) of the triPtr triangle adjoins a triangle
+        // if the next side(clockwise) of the triPtr triangle adjoins a triangle
         // within the polygon move triPtr to the adjoining triangle
         //  this is repeated until we find a side on the edge of the polygon
         //  that shares nextPoint 
@@ -448,11 +346,8 @@ namespace VSS.TRex.Exports.Surfaces
         NumAffSides++;
 
         AffSideList[NumAffSides - 1].tri = AffectedList[Index].Tri;
-        AffSideList[NumAffSides - 1].deleted = AffectedList[Index].Tri.IsDeletedFlag;
         AffSideList[NumAffSides - 1].point = AffectedList[Index].Tri.Vertices[SideIdx];
         AffSideList[NumAffSides - 1].side = AffectedList[Index].Tri.Neighbours[SideIdx];
-        if (!forming)
-          AffSideList[NumAffSides - 1].isStatic = EdgeIsStatic(AffectedList[Index].Tri, SideIdx);
 
         AffSideList[NumAffSides - 1].Next = -1;
         if (NumAffSides > 1)
@@ -463,20 +358,6 @@ namespace VSS.TRex.Exports.Surfaces
         // keep going until we reach the start point 
         done = nextPoint == AffSideList[0].point;
       }
-    }
-
-    protected bool EdgeIsADelBound(Triangle tri, int side)
-    {
-      return tri.Neighbours[side] != null && tri.IsDeletedFlag ^ tri.Neighbours[side].IsDeletedFlag;
-    }
-
-    protected bool EdgeIsStatic(Triangle tri, int side)
-    {
-      if (side == 0) return tri.Side1StaticFlag || EdgeIsADelBound(tri, side);
-      if (side == 1) return tri.Side2StaticFlag || EdgeIsADelBound(tri, side);
-      if (side == 2) return tri.Side3StaticFlag || EdgeIsADelBound(tri, side);
-
-      return false;
     }
 
     /// <summary>
@@ -500,36 +381,6 @@ namespace VSS.TRex.Exports.Surfaces
 
         return Math.Pow(theCoord.X - cEast, 2) + Math.Pow(theCoord.Y - cNorth, 2) < radSq;
       }
-
-      return false;
-    }
-
-    /// <summary>
-    /// Return true if the end points of 'side' side of triBuffer match one
-    /// of the status pair 
-    /// </summary>
-    /// <param name="tri"></param>
-    /// <param name="side"></param>
-    /// <param name="status"></param>
-    /// <returns></returns>
-    protected bool StatusOverrides(Triangle tri, int side, StatusType[] status)
-    {
-      return (tri.Vertices[side] == status[0].firstCoord && tri.Vertices[(side + 1) % 3] == status[0].secondCoord)
-             ||
-             (tri.Vertices[side] == status[1].firstCoord && tri.Vertices[(side + 1) % 3] == status[1].secondCoord);
-    }
-
-    /// <summary>
-    /// Return true if theSide side of tri is a boundary or breakline 
-    /// </summary>
-    /// <param name="tri"></param>
-    /// <param name="theSide"></param>
-    /// <returns></returns>
-    protected bool CrossingStaticSide(Triangle tri, int theSide)
-    {
-      if (theSide == 0) return tri.Side1StaticFlag || EdgeIsADelBound(tri, theSide);
-      if (theSide == 1) return tri.Side2StaticFlag || EdgeIsADelBound(tri, theSide);
-      if (theSide == 2) return tri.Side3StaticFlag || EdgeIsADelBound(tri, theSide);
 
       return false;
     }
@@ -598,7 +449,6 @@ namespace VSS.TRex.Exports.Surfaces
     /// </summary>
     /// <param name="coord"></param>
     /// <param name="lastTri"></param>
-    /// <param name="forming"></param>
     /// <param name="checkIt"></param>
     /// <returns></returns>
     protected Triangle LocateTriangle2(TriVertex coord, Triangle lastTri, bool checkIt)
@@ -641,12 +491,10 @@ namespace VSS.TRex.Exports.Surfaces
     }
 
     public TriVertex AddVertex(double x, double y, double z) => TIN.Vertices.AddPoint(x, y, z);
-    public TriVertex AddVertex(TriVertex vertex) => TIN.Vertices.AddPoint(vertex.X, vertex.Y, vertex.Z);
 
     public Triangle AddTriangle(TriVertex V1, TriVertex V2, TriVertex V3)
     {
-      // Add the triangle and assign its tag member to be its position in the list
-      // (ie: it will be the last one)
+      // Add the triangle and assign its tag member to be its position in the list (ie: it will be the last one)
       Triangle tri = TIN.Triangles.AddTriangle(V1, V2, V3);
       tri.Tag = TIN.Triangles.Count;
 
@@ -655,19 +503,9 @@ namespace VSS.TRex.Exports.Surfaces
       return tri;
     }
 
-    public void AddTriangle(double X1, double Y1, double Z1,
-      double X2, double Y2, double Z2,
-      double X3, double Y3, double Z3)
-    {
-      AddTriangle(TIN.Vertices.AddPoint(X1, Y1, Z1),
-        TIN.Vertices.AddPoint(X2, Y2, Z2),
-        TIN.Vertices.AddPoint(X3, Y3, Z3));
-    }
-
-
     /// <summary>
-    /// add four coords to the model, which form the minimum bounding rectangle
-    /// about the selected points.Return these. }
+    /// Add four coords to the model, which form the minimum bounding rectangle
+    /// about the selected points.Return these.
     /// </summary>
     /// <param name="tl"></param>
     /// <param name="tr"></param>
@@ -708,12 +546,10 @@ namespace VSS.TRex.Exports.Surfaces
     /// side of the polygon as baselines, with the new coord
     /// </summary>
     /// <param name="newCoord"></param>
-    /// <param name="forming"></param>
-    /// <param name="status"></param>
-    protected void AlterAffected(TriVertex newCoord, bool forming, StatusType[] status)
+    protected void AlterAffected(TriVertex newCoord)
     {
-      // determine the edge of the polygon -fill affSideList to describe this makeAffSideList(forming);
-      MakeAffSideList(forming);
+      // determine the edge of the polygon -fill affSideList to describe this makeAffSideList
+      MakeAffSideList();
 
       if (NumAffected == 0) // Nothing to do!
         return;
@@ -721,97 +557,62 @@ namespace VSS.TRex.Exports.Surfaces
       int sidePtr = 0;
       int AffectedIdx = 0;
 
-      //first triangle in the affected list 
-      Triangle firstTri = GetFirstTri(AffSideList[sidePtr].point, status, forming, AffectedList[0].Tri);
+      // First triangle in the affected list 
+      Triangle firstTri = AffectedList[0].Tri;
 
       // triangle on side 1 of new/ updated triangle - generally the previously made / updated one
-      Triangle lastSide = GetLastSide(AffSideList[sidePtr].point, status, forming);
+      Triangle lastSide = GetLastSide();
 
       // Make two new triangle
       while (sidePtr != -1) //  more triangles to update/ make 
       {
-        if (forming ||
-            !(status[0].edge && AffSideList[sidePtr].point == status[0].firstCoord ||
-              status[1].edge && AffSideList[sidePtr].point == status[1].firstCoord))
+        TriVertex nextPoint = AffSideList[sidePtr].Next == -1 ? AffSideList[0].point : AffSideList[AffSideList[sidePtr].Next].point;
+
+        // triangle on side 2 of new/ updated triangle - generally the next to be made / updated
+        Triangle nextSide = GetNextSide(sidePtr, AffectedIdx, firstTri);
+
+        if (AffectedIdx >= NumAffected)
         {
-          TriVertex nextPoint;
-          if (AffSideList[sidePtr].Next == -1)
-            nextPoint = AffSideList[0].point;
-          else
-            nextPoint = AffSideList[AffSideList[sidePtr].Next].point;
+          // the last one or two triangles will be new, rather than updated 
+          Debug.Assert(SuccLastTriangle != null, "Cannot use a nil triangle for a new triangle");
+          lastSide = NewTriangle(nextPoint,
+            newCoord,
+            AffSideList[sidePtr].point,
+            nextSide,
+            lastSide,
+            AffSideList[sidePtr].side);
 
-          int theFlags = forming ? 0 : GetFlags(status, AffSideList[sidePtr].isStatic, AffSideList[sidePtr].point, nextPoint);
-
-          // triangle on side 2 of new/ updated triangle - generally the next to be made / updated
-          Triangle nextSide = GetNextSide(sidePtr, status, forming, AffectedIdx, firstTri);
-
-          if (AffectedIdx >= NumAffected)
-          {
-            // the last one or two triangles will be new, rather than updated 
-            Debug.Assert(SuccLastTriangle != null, "Cannot use a nil triangle for a new triangle");
-            lastSide = NewTriangle(nextPoint,
-              newCoord,
-              AffSideList[sidePtr].point,
-              nextSide,
-              lastSide,
-              AffSideList[sidePtr].side,
-              theFlags,
-              AffSideList[sidePtr].deleted);
-
-            SuccLastTriangle = SuccSuccLastTriangle;
-            SuccSuccLastTriangle = null;
-          }
-          else
-          {
-            //  update affectedPtr^.tri triangle 
-            makeUpdatedTriangle(AffectedList[AffectedIdx].Tri,
-              nextPoint,
-              newCoord,
-              AffSideList[sidePtr].point,
-              nextSide,
-              lastSide,
-              AffSideList[sidePtr].side,
-              theFlags,
-              AffSideList[sidePtr].deleted);
-
-            lastSide = AffectedList[AffectedIdx].Tri;
-            AffectedIdx++;
-          }
-
-          // tell the triangles neighbour that the triangle has become its new neighbour 
-          UpdateNeighbour(AffSideList[sidePtr].side, AffSideList[sidePtr].point, lastSide);
-
-          /*
-              // DEBUG check
-              for I := 0 to FTIN.Triangles.Count - 1 do
-              with FTIN.Triangles[I] do
-            for J := 1 to 3 do
-                with Vertex[J] do
-            Assert(X > 1, 'Bad X value'); { SKIP}
-          */
+          SuccLastTriangle = SuccSuccLastTriangle;
+          SuccSuccLastTriangle = null;
         }
         else
-          lastSide = null;
+        {
+          //  update affectedPtr^.tri triangle 
+          makeUpdatedTriangle(AffectedList[AffectedIdx].Tri,
+            nextPoint,
+            newCoord,
+            AffSideList[sidePtr].point,
+            nextSide,
+            lastSide,
+            AffSideList[sidePtr].side);
+
+          lastSide = AffectedList[AffectedIdx].Tri;
+          AffectedIdx++;
+        }
+
+        // tell the triangles neighbour that the triangle has become its new neighbour 
+        UpdateNeighbour(AffSideList[sidePtr].side, AffSideList[sidePtr].point, lastSide);
 
         sidePtr = AffSideList[sidePtr].Next;
       }
 
-      /*Some debugging code useful for tracking down issues when the 1 or 2 empty triangles
-     
-        that may get created as a part of resolving affected triangles to not get used as expected
-       if Assigned(SUCCSuccLastTriangle) then
-    begin
+      /*//Some debugging code useful for tracking down issues when the 1 or 2 empty triangles     
+        //that may get created as a part of resolving affected triangles to not get used as expected
+       if (Assigned(SUCCSuccLastTriangle))
       Assert(Not Assigned(SUCCSuccLastTriangle.Vertex[1]), 'SUCCSuccLastTriangle appears to point to non-null vertices');
-      { SKIP}
-      FreeAndNil(SUCCSuccLastTriangle);
-      end;
 
-      if Assigned(SuccLastTriangle) then
-        begin
+      if (Assigned(SuccLastTriangle))
       Assert(Not Assigned(SuccLastTriangle.Vertex[1]), 'SuccLastTriangle appears to point to non-null vertices');
-      { SKIP}
-      FreeAndNil(SuccLastTriangle);
-      end;
 
       Assert(not assigned(SuccLastTriangle) and not assigned(SUCCSuccLastTriangle));
       */
@@ -821,9 +622,7 @@ namespace VSS.TRex.Exports.Surfaces
     {
       NumAffSides = 0;
 
-      // Add a dummy node at the head of the affected node list that contains
-      // the passed first triangle
-
+      // Add a dummy node at the head of the affected node list that contains the passed first triangle
       NumAffected = 1;
       AffectedList[0].Tri = firstTri;
 
@@ -835,9 +634,7 @@ namespace VSS.TRex.Exports.Surfaces
     /// </summary>
     /// <param name="theCoord"></param>
     /// <param name="currentTri"></param>
-    /// <param name="status"></param>
-    /// <param name="forming"></param>
-    protected void AddCoordToModel(TriVertex theCoord, Triangle currentTri, StatusType[] status, bool forming)
+    protected void AddCoordToModel(TriVertex theCoord, Triangle currentTri)
     {
       InitLists(currentTri);
 
@@ -845,8 +642,7 @@ namespace VSS.TRex.Exports.Surfaces
       for (int j = 0; j < 3; j++)
       {
         // put the triangle into the candidate list, but note that it cannot be affected 
-        bool notAffected = forming ? false : CrossingStaticSide(currentTri, j) && !StatusOverrides(currentTri, j, status);
-        AddCandidate(currentTri.Neighbours[j], notAffected);
+        AddCandidate(currentTri.Neighbours[j], false);
       }
 
       // go through the candidate list - if a triangle is influenced by the new
@@ -871,8 +667,7 @@ namespace VSS.TRex.Exports.Surfaces
           for (int j = 0; j < 3; j++)
           {
             // put the triangle into the candidate list, but note that it cannot be affected 
-            bool notAffected = forming ? false : CrossingStaticSide(AffectedList[NumAffected - 1].Tri, j);
-            AddCandidate(AffectedList[NumAffected - 1].Tri.Neighbours[j], notAffected);
+            AddCandidate(AffectedList[NumAffected - 1].Tri.Neighbours[j], false);
           }
         }
 
@@ -881,16 +676,18 @@ namespace VSS.TRex.Exports.Surfaces
 
       // Note: Candidate list will have holes in it, remove them, but do not remove the first candidate from the list
       int Diff = 0;
-      for (int i = 0; i < NumCandidates; i++)
+      for (int i = 1; i < NumCandidates; i++)
+      {
         if (CandidateList[i].Tri == null)
           Diff++;
         else if (Diff > 0)
           CandidateList[i - Diff] = CandidateList[i];
+      }
 
       NumCandidates -= Diff;
 
       // make appropriate changes to all the affected triangles
-      AlterAffected(theCoord, forming, status);
+      AlterAffected(theCoord);
     }
 
     /// <summary>
@@ -899,13 +696,9 @@ namespace VSS.TRex.Exports.Surfaces
     /// </summary>
     /// <param name="theCoord"></param>
     /// <param name="currentTri"></param>
-    /// <param name="forming"></param>
     /// <returns></returns>
-    protected bool IncorporateCoord(TriVertex theCoord, ref Triangle currentTri, bool forming)
+    protected bool IncorporateCoord(TriVertex theCoord, ref Triangle currentTri)
     {
-      // Todo: This is never modified from it's null state???????????
-      StatusType[] status = new StatusType[2]; 
-
       currentTri = LocateTriangle2(theCoord, currentTri, false);
       if (currentTri == null)
       {
@@ -913,10 +706,7 @@ namespace VSS.TRex.Exports.Surfaces
         return false;
       }
 
-      //  if (!forming)
-      //    CheckStatus(coordBuffer, checkBuffer, status);
-
-      AddCoordToModel(theCoord, currentTri, status, forming);
+      AddCoordToModel(theCoord, currentTri);
 
       Debug.Assert(SuccLastTriangle != null, "Not all created triangles used.");
 
@@ -957,9 +747,7 @@ namespace VSS.TRex.Exports.Surfaces
     /// <returns></returns>
     public bool IncorporateCoordIntoTriangle(TriVertex theCoord, Triangle tri)
     {
-      StatusType[] status = new StatusType[2]; // TODO This is never initialised from its null state
-
-      AddCoordToModel(theCoord, tri, status, true);
+      AddCoordToModel(theCoord, tri);
 
       if (SuccLastTriangle != null)
         Debug.Assert(false, "Not all created triangles used.");
@@ -997,8 +785,7 @@ namespace VSS.TRex.Exports.Surfaces
       MakeMinimumBoundingRectangle(out TriVertex TL, out TriVertex TR, out TriVertex BL, out TriVertex BR);
       CreateInitialTriangles(TL, TR, BL, BR);
 
-      // Make sure all the vertices are numbered correctly, along with the 4
-      // MBR vertices
+      // Make sure all the vertices are numbered correctly, along with the 4 MBR vertices
       TIN.Vertices.NumberVertices();
 
       // Subtract the origin from the vertices to preserve numeric precision
@@ -1020,7 +807,7 @@ namespace VSS.TRex.Exports.Surfaces
       // Don't read the 4 vertices we added for the bounding rectangle tris
       int MaxRealVertex = TIN.Vertices.Count - 1 - 4;
       for (int I = 0; I < MaxRealVertex; I++)
-        if (!IncorporateCoord(TIN.Vertices[I], ref CurrentTri, true))
+        if (!IncorporateCoord(TIN.Vertices[I], ref CurrentTri))
           return false;
 
       DateTime FinishTime = DateTime.Now;
@@ -1047,7 +834,7 @@ namespace VSS.TRex.Exports.Surfaces
         // swallow exception due to logging...
       }
 
-  // Add the origin back to the vertex positions to re-translate than back to their correct positions
+    // Add the origin back to the vertex positions to re-translate than back to their correct positions
     for (int I = 0; I < TIN.Vertices.Count; I++)
       {
         TIN.Vertices[I].X += TIN.Header.MinimumEasting;

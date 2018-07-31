@@ -10,8 +10,5 @@ namespace VSS.TRex.Exports.Surfaces
     public Triangle side; // triangle on the other side of the line 
 
     public int Next; // Index of next AffSideNode element in array
-
-    public bool isStatic; // part of a breakline or boundary? 
-    public bool deleted; // is tri deleted? 
   }
 }

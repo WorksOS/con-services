@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Reflection;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.TTM;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
@@ -25,6 +27,8 @@ namespace VSS.TRex.Exports.Surfaces
 {
   public class GridToTINDecimator
   {
+    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+
     private const double kNullVertexHeight = -9999;
     private const int kMaxSeedIntervals = 500;
     private const int kDefaultSeedPointInterval = 40;
@@ -70,8 +74,10 @@ namespace VSS.TRex.Exports.Surfaces
     /// </summary>
     private TINHeap Heap = new TINHeap(50000);
 
+    /// <summary>
     /// IsUsed keeps track of which cells have been used in the construction of the TIN
-    private SubGridTreeBitMask IsUsed = new SubGridTreeBitMask();
+    /// </summary>
+    private SubGridTreeBitMask IsUsed;
 
     /// <summary>
     /// Aborted is a flag that allows an external agency to abort the process
@@ -100,7 +106,7 @@ namespace VSS.TRex.Exports.Surfaces
     /// Candidate is a description of a candidate grid point being considered
     /// as the next grid point to be inserted
     /// </summary>
-    private Candidate Candidate; // = new Candidate();
+    private Candidate Candidate; 
 
     /// <summary>
     /// v0, v1, v2 are height ordered references to the vertices in a triangle
@@ -116,8 +122,6 @@ namespace VSS.TRex.Exports.Surfaces
     private GridToTINTriangle ScanTri = null;
 
     private bool DontScanTriangles = false;
-
-    private bool FoundGridData;
 
     private long ElevationCellValuesRetrieved = 0;
     private long ElevationCellValuesRetrievedAreNull = 0;
@@ -141,7 +145,6 @@ namespace VSS.TRex.Exports.Surfaces
     private InUseSubGridMap[] CachedInUseMaps;
     private CachedSubGridMap[] CachedElevationSubgrids;
 
-    private double[] NullElevationsArray;
     private double[] Elevations;
 
     private long TriangleScanInvocationNumber;
@@ -306,7 +309,7 @@ namespace VSS.TRex.Exports.Surfaces
       }
     }
 
-    protected void scan_triangle_line(int _y, double x1, double x2, ref int NumImportUpdates)
+    protected void Scan_triangle_line(int _y, double x1, double x2, ref int NumImportUpdates)
     {
       int _x;
       SubGridTreeLeafBitmapSubGrid ExistanceBitMask;
@@ -352,8 +355,7 @@ namespace VSS.TRex.Exports.Surfaces
 
       for (int I = 0; I < NumElevationsToScan; I++)
       {
-        if (ExistanceBitMask == null ||
-            !ExistanceBitMask.Bits.BitSet(BitMaskIndexX, BitMaskIndexY))
+        if (ExistanceBitMask == null || !ExistanceBitMask.Bits.BitSet(BitMaskIndexX, BitMaskIndexY))
         {
           double _z = Elevations[I];
           double Diff = Math.Abs(_z - z0);
@@ -377,7 +379,7 @@ namespace VSS.TRex.Exports.Surfaces
         _x++;
 
         BitMaskIndexX++;
-        if (BitMaskIndexX == SubGridTree.SubGridTreeDimension && I != (NumElevationsToScan - 1))
+        if (BitMaskIndexX == SubGridTree.SubGridTreeDimension && I != NumElevationsToScan - 1)
         {
           BitMaskCacheSubgridIndex++;
           GetInUseExistanceMap();
@@ -438,7 +440,7 @@ namespace VSS.TRex.Exports.Surfaces
         for (int y = starty; y <= endy; y++)
         {
           UpdateCacheIndices(y);
-          scan_triangle_line(y, x1, x2, ref NumImportUpdates);
+          Scan_triangle_line(y, x1, x2, ref NumImportUpdates);
           x1 += dx1;
           x2 += dx2;
         }
@@ -468,7 +470,7 @@ namespace VSS.TRex.Exports.Surfaces
         for (int y = starty; y <= endy; y++)
         {
           UpdateCacheIndices(y);
-          scan_triangle_line(y, x1, x2, ref NumImportUpdates);
+          Scan_triangle_line(y, x1, x2, ref NumImportUpdates);
           x1 += dx1;
           x2 += dx2;
         }
@@ -544,7 +546,7 @@ namespace VSS.TRex.Exports.Surfaces
 
     private void CreateDecimationState()
     {
-      //FIsUsed = TSubGridTreeBitMask.Create(FDataStore.NumLevels, FDataStore.CellSize);
+      IsUsed = new SubGridTreeBitMask(DataStore.NumLevels, DataStore.CellSize);
 
       Engine = new TinningEngine
       {
@@ -579,182 +581,102 @@ namespace VSS.TRex.Exports.Surfaces
       CreateDecimationState();
     }
 
-    public bool BuildMesh()
+    void ConstructSeedTriangleMesh()
     {
-      DateTime StartTime;
+      double[] _Z1 = new double[1];
+      double[] _Z2 = new double[1];
+      double[] _Z3 = new double[1];
+      double[] _Z4 = new double[1];
 
-      int NXSeedIntervals, NYSeedIntervals;
-
-      int _X, _Y;
-      double[] _Z = new double[1];
-      double XFactor, YFactor;
-
-      void ConstructSeedTriangleMesh1()
+      void PerformTriangleAdditionToHeap()
       {
-        DontScanTriangles = true;
-        try
-        {
-          // First create the two new triangles
-          BoundingIntegerExtent2D InitialTINExtents = new BoundingIntegerExtent2D(GridExtents.MinX - 100,
-            GridExtents.MinY - 100,
-            GridExtents.MaxX + 100,
-            GridExtents.MaxY + 100);
+        InitialiseTriangleVertexOrdering();
 
-          Engine.InitialiseInitialTriangles(InitialTINExtents.MinX,
-            InitialTINExtents.MinY,
-            InitialTINExtents.MaxX,
-            InitialTINExtents.MaxY,
-            NullVertexHeight,
-            out Triangle TLTri, out Triangle BRTri);
+        Candidate = new Candidate(int.MinValue);
 
-          // Seed the model with a small number of points from the grid
+        BoundingIntegerExtent2D Extents = new BoundingIntegerExtent2D((int)Math.Round(GridOriginOffsetX + Math.Min(Math.Min(v0.X, v1.X), v2.X)),
+          (int)Math.Round(GridOriginOffsetY + v0.Y),
+          (int)Math.Round(GridOriginOffsetX + Math.Max(Math.Max(v0.X, v1.X), v2.X)),
+          (int)Math.Round(GridOriginOffsetY + v2.Y));
 
-          NXSeedIntervals = Math.Min(GridExtents.SizeX / SeedPointInterval + 1, kMaxSeedIntervals);
-          NYSeedIntervals = Math.Min(GridExtents.SizeY / SeedPointInterval + 1, kMaxSeedIntervals);
-
-          XFactor = GridExtents.SizeX / NXSeedIntervals;
-          YFactor = GridExtents.SizeY / NYSeedIntervals;
-
-          // TODO Readd when logging available
-          //SIGLogMessage.PublishNoODS(Self, Format('Creating %d seed positions into extent of area being TINNed using a seed interval of %d and max seed intervals of %d', 
-          //  [(NXSeedIntervals + 1) * (NYSeedIntervals + 1), FSeedPointInterval, kMaxSeedIntervals]), slmcMessage);
-          if (NXSeedIntervals > 0 && NYSeedIntervals > 0)
+        // Determine if there is any data in the grid to be processed
+        bool FoundGridData = false;
+        DataStore.Root.ScanSubGrids(Extents,
+          leaf =>
           {
-            // Insert the seeds as new grid points into the relevant triangles
-            for (int I = 0; I <= NXSeedIntervals; I++)
+            FoundGridData = true;
+            return false; // Terminate the scan
+            }, //OnProcessLeafSubgrid, 
+          NodeSubGrid => SubGridProcessNodeSubGridResult.OK);
+
+        // If there is some grid data in the triangle area then add the triangle to
+        // the heap with a default large error (ie: don't waste time scanning it
+        // we know we will be scanning it again later).
+        if (FoundGridData)
+          ScanTriangle(true);
+      }
+
+      DontScanTriangles = true;
+      try
+      {
+        // Seed the model with a small number of points from the grid
+
+        int NXSeedIntervals = Math.Min(GridExtents.SizeX / SeedPointInterval + 1, kMaxSeedIntervals);
+        int NYSeedIntervals = Math.Min(GridExtents.SizeY / SeedPointInterval + 1, kMaxSeedIntervals);
+
+        XSeedIntervalStep = GridExtents.SizeX / NXSeedIntervals + 1;
+        YSeedIntervalStep = GridExtents.SizeY / NYSeedIntervals + 1;
+
+        /// TODO readd when logging available
+        //SIGLogMessage.PublishNoODS(Self, Format('Creating %d seed positions into extent of area being TINNed using X/Y seed intervals of %d/%d', 
+        // [(NXSeedIntervals + 1) * (NYSeedIntervals + 1), FXSeedIntervalStep, FYSeedIntervalStep]), slmcMessage);
+
+        // Insert the seeds as new grid points into the relevant triangles
+        if (NXSeedIntervals > 0 && NYSeedIntervals > 0)
+          for (int I = 0; I <= NXSeedIntervals + 1; I++)
+          {
+            for (int J = 0; J <= NYSeedIntervals + 1; J++)
             {
-              for (int J = 0; J <= NYSeedIntervals; J++)
-              {
-                _X = (int) Math.Round(I * XFactor);
-                _Y = (int) Math.Round(J * YFactor);
+              int _X1 = I * XSeedIntervalStep;
+              int _Y1 = J * YSeedIntervalStep;
 
-                // Find the triangle this seed point lies in
-                Triangle tri = Engine.TIN.GetTriangleAtPoint(_X, _Y, out double _);
+              int _X2 = (I + 1) * XSeedIntervalStep;
+              int _Y2 = J * YSeedIntervalStep;
 
-                if (tri == null)
-                {
-                  // Probably exactly on a triangle edge - don't worry about it
-                  // Dont bother to insert this point
-                  continue;
-                }
+              int _X3 = I * XSeedIntervalStep;
+              int _Y3 = (J + 1) * YSeedIntervalStep;
 
-                GetHeightForTriangleScan(_X, _Y, true, 1, _Z);
+              int _X4 = (I + 1) * XSeedIntervalStep;
+              int _Y4 = (J + 1) * YSeedIntervalStep;
 
-                // Insert the seed point into it
-                Engine.IncorporateCoordIntoTriangle(Engine.AddVertex(_X, _Y, _Z[0]), tri);
-              }
+              GetHeightForTriangleScan(_X1, _Y1, true, 1, _Z1);
+              GetHeightForTriangleScan(_X2, _Y2, true, 1, _Z2);
+              GetHeightForTriangleScan(_X3, _Y3, true, 1, _Z3);
+              GetHeightForTriangleScan(_X4, _Y4, true, 1, _Z4);
+
+              // Create both triangles across the panel keeping the vertex order as clockwise
+              ScanTri = (GridToTINTriangle)Engine.TIN.Triangles.AddTriangle(Engine.TIN.Vertices.AddPoint(_X1, _Y1, _Z1[0]), Engine.TIN.Vertices.AddPoint(_X2, _Y2, _Z2[0]), Engine.TIN.Vertices.AddPoint(_X3, _Y3, _Z3[0]));
+              PerformTriangleAdditionToHeap();
+              ScanTri = (GridToTINTriangle)Engine.TIN.Triangles.AddTriangle(Engine.TIN.Vertices.AddPoint(_X3, _Y3, _Z3[0]), Engine.TIN.Vertices.AddPoint(_X2, _Y2, _Z2[0]), Engine.TIN.Vertices.AddPoint(_X4, _Y4, _Z4[0]));
+              PerformTriangleAdditionToHeap();
             }
           }
-        }
-        finally
-        {
-          DontScanTriangles = false;
-        }
-
-        // Now scan all the triangles we have made
-        for (int I = 0; I < Engine.TIN.Triangles.Count; I++)
-        {
-          ScanTri = (GridToTINTriangle) Engine.TIN.Triangles[I];
-          ScanTriangle(false);
-        }
-
-        ScanTri = null;
       }
-
-      void ConstructSeedTriangleMesh2()
+      finally
       {
-        double[] _Z1 = new double[1];
-        double[] _Z2 = new double[1];
-        double[] _Z3 = new double[1];
-        double[] _Z4 = new double[1];
-
-        void PerformTriangleAdditionToHeap()
-        {
-          InitialiseTriangleVertexOrdering();
-
-          Candidate = new Candidate(int.MinValue);
-
-          BoundingIntegerExtent2D Extents = new BoundingIntegerExtent2D((int)Math.Round(GridOriginOffsetX + Math.Min(Math.Min(v0.X, v1.X), v2.X)),
-            (int)Math.Round(GridOriginOffsetY + v0.Y),
-            (int)Math.Round(GridOriginOffsetX + Math.Max(Math.Max(v0.X, v1.X), v2.X)),
-            (int)Math.Round(GridOriginOffsetY + v2.Y));
-
-          // Determine if there is any data in the grid to be processed
-          FoundGridData = false;
-          DataStore.Root.ScanSubGrids(Extents, 
-            leaf =>
-            {
-              FoundGridData = true;
-              return false; // Terminate the scan
-            }, //OnProcessLeafSubgrid, 
-            NodeSubGrid => SubGridProcessNodeSubGridResult.OK);
-            
-          // If there is some grid data in the triangle area then add the triangle to
-          // the heap with a default large error (ie: don't waste time scanning it
-          // we know we will be scanning it again later).
-          if (FoundGridData)
-            ScanTriangle(true);
-        }
-
-        DontScanTriangles = true;
-        try
-        {
-          // Seed the model with a small number of points from the grid
-
-          NXSeedIntervals = Math.Min(GridExtents.SizeX / SeedPointInterval + 1, kMaxSeedIntervals);
-          NYSeedIntervals = Math.Min(GridExtents.SizeY / SeedPointInterval + 1, kMaxSeedIntervals);
-
-          XSeedIntervalStep = GridExtents.SizeX / NXSeedIntervals + 1;
-          YSeedIntervalStep = GridExtents.SizeY / NYSeedIntervals + 1;
-
-          /// TODO readd when logging available
-          //SIGLogMessage.PublishNoODS(Self, Format('Creating %d seed positions into extent of area being TINNed using X/Y seed intervals of %d/%d', 
-           // [(NXSeedIntervals + 1) * (NYSeedIntervals + 1), FXSeedIntervalStep, FYSeedIntervalStep]), slmcMessage);
-
-          // Insert the seeds as new grid points into the relevant triangles
-          if (NXSeedIntervals > 0 && NYSeedIntervals > 0)
-            for (int I = 0; I <= NXSeedIntervals + 1; I++)
-            {
-              for (int J = 0; J <= NYSeedIntervals + 1; J++)
-              {
-                int _X1 = I * XSeedIntervalStep;
-                int _Y1 = J * YSeedIntervalStep;
-
-                int _X2 = (I + 1) * XSeedIntervalStep;
-                int _Y2 = J * YSeedIntervalStep;
-
-                int _X3 = I * XSeedIntervalStep;
-                int _Y3 = (J + 1) * YSeedIntervalStep;
-
-                int _X4 = (I + 1) * XSeedIntervalStep;
-                int _Y4 = (J + 1) * YSeedIntervalStep;
-
-                GetHeightForTriangleScan(_X1, _Y1, true, 1, _Z1);
-                GetHeightForTriangleScan(_X2, _Y2, true, 1, _Z2);
-                GetHeightForTriangleScan(_X3, _Y3, true, 1, _Z3);
-                GetHeightForTriangleScan(_X4, _Y4, true, 1, _Z4);
-
-                // Create both triangles across the panel keeping the vertex order as clockwise
-                ScanTri = (GridToTINTriangle) Engine.TIN.Triangles.AddTriangle(Engine.TIN.Vertices.AddPoint(_X1, _Y1, _Z1[0]), Engine.TIN.Vertices.AddPoint(_X2, _Y2, _Z2[0]), Engine.TIN.Vertices.AddPoint(_X3, _Y3, _Z3[0]));
-                PerformTriangleAdditionToHeap();
-                ScanTri = (GridToTINTriangle) Engine.TIN.Triangles.AddTriangle(Engine.TIN.Vertices.AddPoint(_X3, _Y3, _Z3[0]), Engine.TIN.Vertices.AddPoint(_X2, _Y2, _Z2[0]), Engine.TIN.Vertices.AddPoint(_X4, _Y4, _Z4[0]));
-                PerformTriangleAdditionToHeap();
-              }
-            }
-        }
-        finally
-        {
-          DontScanTriangles = false;
-        }
-
-        Engine.TIN.BuildTriangleLinks();
-        Engine.TIN.BuildEdgeList();
-
-        ScanTri = null;
+        DontScanTriangles = false;
       }
 
+      Engine.TIN.BuildTriangleLinks();
+      Engine.TIN.BuildEdgeList();
+
+      ScanTri = null;
+    }
+
+    public bool BuildMesh()
+    {
       BuildMeshFaultCode = DecimationResult.NoError;
-      StartTime = DateTime.Now;
+      DateTime StartTime = DateTime.Now;
 
       Debug.Assert(DataStore != null, "No Datastor");
 
@@ -796,7 +718,7 @@ namespace VSS.TRex.Exports.Surfaces
 
       NullVertexHeight = DecimationExtents.MinZ - 100 * Tolerance - 10000.0;
 
-      ConstructSeedTriangleMesh2();
+      ConstructSeedTriangleMesh();
 
       //  {$IFDEF DEBUG}
       //  FTinningEngine.TIN.SaveToFile('C:\Temp\IC_GRIDToTIN_AfterInitialIntervalTesselation.ttm', True); {SKIP}
@@ -819,9 +741,7 @@ namespace VSS.TRex.Exports.Surfaces
           return false;
         }
 
-        /*
-         * {$IFDEF DEBUG}
-         
+        /*{$IFDEF DEBUG}         
         if (FTinningEngine.TIN.Triangles.Count MOD 200000) = 0 then
           begin
             SIGLogMessage.PublishNoODS(Self, Format('GridToTIN: Mesh size = %d tris. Heap Size = %d. MaxError = %.5f', {SKIP}
@@ -875,8 +795,8 @@ namespace VSS.TRex.Exports.Surfaces
       // Now convert all vertex coordinates to their true world positions
       // Calculate the vertex offset to take into account the local grid origin
       // offset and the fact the vertex heights are measured at the center of each cell
-      double VertexOffsetX = (DataStore.CellSize * (GridOriginOffsetX - DataStore.IndexOriginOffset)) + (DataStore.CellSize / 2);
-      double VertexOffsetY = (DataStore.CellSize * (GridOriginOffsetY - DataStore.IndexOriginOffset)) + (DataStore.CellSize / 2);
+      double VertexOffsetX = DataStore.CellSize * (GridOriginOffsetX - DataStore.IndexOriginOffset) + DataStore.CellSize / 2;
+      double VertexOffsetY = DataStore.CellSize * (GridOriginOffsetY - DataStore.IndexOriginOffset) + DataStore.CellSize / 2;
 
       for (int I = 0; I < Engine.TIN.Vertices.Count - 1; I++)
       {

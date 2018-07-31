@@ -7,7 +7,13 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Exports.Surfaces
 {
-    public class GridToTINDecimatorTests
+  public class DecimationElevationSubGridTree : GenericSubGridTree<float>
+  {
+    public override float NullCellValue => Common.Consts.NullHeight;
+  }
+
+
+  public class GridToTINDecimatorTests
     {
       [Fact]
       public void GridToTINDecimatorTests_Creation_NoDataStore()
@@ -20,7 +26,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces
       [Fact]
       public void GridToTINDecimatorTests_Creation_WithDataStore()
       {
-        GridToTINDecimator decimator = new GridToTINDecimator(new GenericSubGridTree<float>());
+        GridToTINDecimator decimator = new GridToTINDecimator(new DecimationElevationSubGridTree());
 
         Assert.NotNull(decimator);
       }
@@ -28,7 +34,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces
       [Fact]
       public void GridToTINDecimatorTests_Refresh()
       {
-        GridToTINDecimator decimator = new GridToTINDecimator(new GenericSubGridTree<float>());
+        GridToTINDecimator decimator = new GridToTINDecimator(new DecimationElevationSubGridTree());
         decimator.Refresh();
 
         Assert.NotNull(decimator);
@@ -37,10 +43,10 @@ namespace VSS.TRex.Tests.Exports.Surfaces
       [Fact]
       public void GridToTINDecimatorTests_BuildMesh_EmptyDataSource()
       {
-        GridToTINDecimator decimator = new GridToTINDecimator(new GenericSubGridTree<float>());
+        GridToTINDecimator decimator = new GridToTINDecimator(new DecimationElevationSubGridTree());
         bool result = decimator.BuildMesh();
 
-        Assert.False(result, $"Failed to fail to build build mesh from empty data store with fault code {decimator.BuildMeshFaultCode}");
+        Assert.False(result, $"Failed to fail to build mesh from empty data store with fault code {decimator.BuildMeshFaultCode}");
       }
 
       [Fact]
@@ -55,7 +61,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces
         Assert.True(decimator.GridCalcExtents.MaxY == 100);
       }
 
-      private BoundingWorldExtent3D DataStoreExtents(GenericSubGridTree<float> dataStore)
+      private BoundingWorldExtent3D DataStoreExtents(DecimationElevationSubGridTree dataStore)
       {
         BoundingWorldExtent3D ComputedGridExtent = BoundingWorldExtent3D.Inverted();
 
@@ -64,8 +70,10 @@ namespace VSS.TRex.Tests.Exports.Surfaces
           SubGridUtilities.SubGridDimensionalIterator((x, y) =>
           {
             float elev = ((GenericLeafSubGrid<float>) subGrid).Items[x, y];
-            if (elev != Common.Consts.NullHeight)
+            if (elev != 0)
               ComputedGridExtent.Include((int)(subGrid.OriginX + x), (int)(subGrid.OriginY + y), elev);
+            else
+              ((GenericLeafSubGrid<float>)subGrid).Items[x, y] = Common.Consts.NullHeight;
           });
 
           return true;
@@ -87,59 +95,70 @@ namespace VSS.TRex.Tests.Exports.Surfaces
     [Fact]
       public void GridToTINDecimatorTests_BuildMesh_SinglePoint()
       {
-        GenericSubGridTree<float> dataStore = new GenericSubGridTree<float>();
-        dataStore[100, 100] = 100.0f;
+        DecimationElevationSubGridTree dataStore = new DecimationElevationSubGridTree();
+        dataStore[SubGridTree.DefaultIndexOriginOffset + 100, SubGridTree.DefaultIndexOriginOffset + 100] = 100.0f;
 
         GridToTINDecimator decimator = new GridToTINDecimator(dataStore);
 
         decimator.SetDecimationExtents(DataStoreExtents(dataStore));
         bool result = decimator.BuildMesh();
 
-        Assert.False(result, $"Failed to fail to build build mesh from data store with single point fault code {decimator.BuildMeshFaultCode}");
+        Assert.False(result, $"Failed to fail to build mesh from data store with single point fault code {decimator.BuildMeshFaultCode}");
       }
 
       [Fact]
       public void GridToTINDecimatorTests_BuildMesh_TwoPoints()
       {
-        GenericSubGridTree<float> dataStore = new GenericSubGridTree<float>();
-        dataStore[100, 100] = 100.0f;
-        dataStore[200, 200] = 100.0f;
-
-        GridToTINDecimator decimator = new GridToTINDecimator(dataStore);
-        decimator.SetDecimationExtents(DataStoreExtents(dataStore));
-        bool result = decimator.BuildMesh();
-
-        Assert.False(result, $"Failed to fail to build build mesh from data store with two points fault code {decimator.BuildMeshFaultCode}");
-      }
-
-      [Fact]
-      public void GridToTINDecimatorTests_BuildMesh_ThreePoints()
-      {
-        GenericSubGridTree<float> dataStore = new GenericSubGridTree<float>();
-        dataStore[100, 100] = 100.0f;
-        dataStore[101, 101] = 100.0f;
-        dataStore[101, 100] = 100.0f;
+        DecimationElevationSubGridTree dataStore = new DecimationElevationSubGridTree();
+        dataStore[SubGridTree.DefaultIndexOriginOffset + 100, SubGridTree.DefaultIndexOriginOffset + 100] = 100.0f;
+        dataStore[SubGridTree.DefaultIndexOriginOffset + 101, SubGridTree.DefaultIndexOriginOffset + 101] = 100.0f;
 
       GridToTINDecimator decimator = new GridToTINDecimator(dataStore);
         decimator.SetDecimationExtents(DataStoreExtents(dataStore));
         bool result = decimator.BuildMesh();
 
-        Assert.True(result, $"Failed to build build mesh from data store with three points fault code {decimator.BuildMeshFaultCode}");
+        Assert.False(result, $"Failed to fail to build mesh from data store with two points fault code {decimator.BuildMeshFaultCode}");
+      }
+
+      [Fact]
+      public void GridToTINDecimatorTests_BuildMesh_ThreePoints()
+      {
+        DecimationElevationSubGridTree dataStore = new DecimationElevationSubGridTree();
+        dataStore[SubGridTree.DefaultIndexOriginOffset + 100, SubGridTree.DefaultIndexOriginOffset + 100] = 100.0f;
+        dataStore[SubGridTree.DefaultIndexOriginOffset + 101, SubGridTree.DefaultIndexOriginOffset + 101] = 100.0f;
+        dataStore[SubGridTree.DefaultIndexOriginOffset + 101, SubGridTree.DefaultIndexOriginOffset + 100] = 100.0f;
+
+      GridToTINDecimator decimator = new GridToTINDecimator(dataStore);
+        decimator.SetDecimationExtents(DataStoreExtents(dataStore));
+        bool result = decimator.BuildMesh();
+
+        Assert.True(result, $"Failed to build mesh from data store with three points fault code {decimator.BuildMeshFaultCode}");
       }
 
       [Fact]
       public void GridToTINDecimatorTests_BuildMesh_GetTIN()
       {
-        GenericSubGridTree<float> dataStore = new GenericSubGridTree<float>();
-        dataStore[100, 100] = 100.0f;
-        dataStore[101, 101] = 100.0f;
-        dataStore[101, 100] = 100.0f;
+        DecimationElevationSubGridTree dataStore = new DecimationElevationSubGridTree();
+
+        /*
+        dataStore[SubGridTree.DefaultIndexOriginOffset + 100, SubGridTree.DefaultIndexOriginOffset + 100] = 100.0f;
+        dataStore[SubGridTree.DefaultIndexOriginOffset + 100, SubGridTree.DefaultIndexOriginOffset + 101] = 100.0f;
+        dataStore[SubGridTree.DefaultIndexOriginOffset + 100, SubGridTree.DefaultIndexOriginOffset + 102] = 100.0f;
+        dataStore[SubGridTree.DefaultIndexOriginOffset + 101, SubGridTree.DefaultIndexOriginOffset + 100] = 100.0f;
+        dataStore[SubGridTree.DefaultIndexOriginOffset + 101, SubGridTree.DefaultIndexOriginOffset + 101] = 110.0f;
+        dataStore[SubGridTree.DefaultIndexOriginOffset + 101, SubGridTree.DefaultIndexOriginOffset + 102] = 100.0f;
+        dataStore[SubGridTree.DefaultIndexOriginOffset + 102, SubGridTree.DefaultIndexOriginOffset + 100] = 100.0f;
+        dataStore[SubGridTree.DefaultIndexOriginOffset + 102, SubGridTree.DefaultIndexOriginOffset + 101] = 100.0f;
+        dataStore[SubGridTree.DefaultIndexOriginOffset + 102, SubGridTree.DefaultIndexOriginOffset + 102] = 100.0f;
+        */
+
+        SubGridUtilities.SubGridDimensionalIterator((x, y) => dataStore[SubGridTree.DefaultIndexOriginOffset + x, SubGridTree.DefaultIndexOriginOffset + y] = 100.0f);
 
         GridToTINDecimator decimator = new GridToTINDecimator(dataStore);
         decimator.SetDecimationExtents(DataStoreExtents(dataStore));
         bool result = decimator.BuildMesh();
 
-        Assert.True(result, $"Failed to build build mesh from data store with three points fault code {decimator.BuildMeshFaultCode}");
+        Assert.True(result, $"Failed to build mesh from data store with three points fault code {decimator.BuildMeshFaultCode}");
 
         Assert.NotNull(decimator.GetTIN());
         Assert.True(decimator.GetTIN().Triangles.Count == 1);
