@@ -338,6 +338,19 @@ namespace VSS.MasterData.Models.Models
     }
 
     /// <summary>
+    /// Sets names for file UIDs. Is used by dependant services, e.g. Filter service to hydrate filenames from a UID.
+    /// </summary>
+    /// <remarks>
+    /// Do not pass empty strings unless you want to null the name.
+    /// </remarks>
+    public void SetFilenames(string designName = null, string alignmentName = null, string boundaryName = null)
+    {
+      if (designName != null) DesignName = designName;
+      if (alignmentName != null) AlignmentName = alignmentName;
+      if (boundaryName != null) PolygonName = boundaryName;
+    }
+
+    /// <summary>
     /// Create instance of Filter
     /// </summary>
     public static Filter CreateFilter(
