@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using VSS.ConfigurationStore;
@@ -34,16 +35,16 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     /// <param name="jobRequest">Details of the job request</param>
     /// <param name="customHeaders">Custom HTTP headers for the HTTP request</param>
     /// <returns>The result of the HTTP request as a stream</returns>
-    public async Task<Stream> SendRequest(ScheduleJobRequest jobRequest, IDictionary<string, string> customHeaders)
+    public async Task<StreamContent> SendRequest(ScheduleJobRequest jobRequest, IDictionary<string, string> customHeaders)
     {
-      Stream result = null;
+      StreamContent result = null;
       var method = jobRequest.Method ?? "GET";
       try
       {
         var request = new GracefulWebRequest(logger, configurationStore);
         //Stop retries in GracefulWebRequest
-        result = await request.ExecuteRequest(jobRequest.Url, method, customHeaders, jobRequest.Payload, jobRequest.Timeout, 0);
-        log.LogDebug("Result of send request: Stream length={0}", result.Length);
+        result = await request.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, jobRequest.Payload, jobRequest.Timeout, 0);
+        log.LogDebug("Result of send request: Stream Content={0}", result);
       }
       catch (Exception ex)
       {

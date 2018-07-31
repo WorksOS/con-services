@@ -1,19 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using Hangfire;
 using Hangfire.Server;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using VSS.Common.Exceptions;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies.Interfaces;
+
 
 namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
 {
@@ -22,6 +15,16 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
   /// </summary>
   public class ExportJob : IExportJob
   {
+    /// <summary>
+    /// Used to store the final download link for export jobs
+    /// </summary>
+    public const string DownloadLinkStateKey = "downloadLink";
+
+    /// <summary>
+    /// Used to store the s3 key for the export jobs
+    /// </summary>
+    public const string S3KeyStateKey = "s3Key";
+
     private readonly IApiClient apiClient;
     private readonly ITransferProxy transferProxy;
     private readonly ILogger log;
@@ -51,13 +54,30 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       {
         //TODO: Do we want something like applicationName/customerUid/userId/jobId for S3 path?
         //where app name and userId (appId or userUid) from JWT
-        transferProxy.Upload(data, GetS3Key(context.BackgroundJob.Id, request.Filename));
+        var stream = await data.ReadAsStreamAsync();
+        var contentType = data.Headers.ContentType == null ? string.Empty : data.Headers.ContentType.MediaType;
+        var path = GetS3Key(context.BackgroundJob.Id, request.Filename);
+        if (string.IsNullOrEmpty(contentType))
+        {
+          // The default data will be zip file (for backwards compatability where it defaulted to zip files)
+          path = path + ".zip"; 
+          contentType = "application/octet-stream";
+        }
+
+        // Transfer proxy will upload the file with a potentially different extension, matching the contenttype
+        // So we may get a new path
+        var newPath = transferProxy.Upload(stream, path, contentType);
+
+        // Set the results so the results can access the final url easily
+        JobStorage.Current.GetConnection().SetJobParameter(context.BackgroundJob.Id, S3KeyStateKey, newPath);
+        JobStorage.Current.GetConnection().SetJobParameter(context.BackgroundJob.Id, DownloadLinkStateKey, transferProxy.GeneratePreSignedUrl(newPath));
       }
     }
 
     /// <summary>
     /// Gets the download link for the completed job.
     /// </summary>
+    [Obsolete("Use the JobStorage to store download links, as the requested filename could change")]
     public string GetDownloadLink(string jobId, string filename)
     {
       return transferProxy.GeneratePreSignedUrl(GetS3Key(jobId, filename));
@@ -71,7 +91,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     /// <returns>The S3 key where the file is stored. This is the full path and file name in AWS.</returns>
     public static string GetS3Key(string jobId, string filename)
     {
-      return $"3dpm/{jobId}/{filename}.zip";
+      return $"3dpm/{jobId}/{filename}";
     }
   }
 }
