@@ -57,27 +57,29 @@ namespace VSS.TRex.Tests.Exports.Surfaces
 
       private BoundingWorldExtent3D DataStoreExtents(GenericSubGridTree<float> dataStore)
       {
-        BoundingIntegerExtent2D ComputedGridExtent = BoundingIntegerExtent2D.Inverted();
+        BoundingWorldExtent3D ComputedGridExtent = BoundingWorldExtent3D.Inverted();
 
         dataStore.ScanAllSubGrids(subGrid =>
         {
           SubGridUtilities.SubGridDimensionalIterator((x, y) =>
           {
-            if (((GenericLeafSubGrid<float>)subGrid).Items[x, y] != Common.Consts.NullHeight)
-              ComputedGridExtent.Include((int)(subGrid.OriginX + x), (int)(subGrid.OriginY + y));
+            float elev = ((GenericLeafSubGrid<float>) subGrid).Items[x, y];
+            if (elev != Common.Consts.NullHeight)
+              ComputedGridExtent.Include((int)(subGrid.OriginX + x), (int)(subGrid.OriginY + y), elev);
           });
 
           return true;
         });
 
-        if (ComputedGridExtent.IsValidExtent)
+        if (ComputedGridExtent.IsValidPlanExtent)
           ComputedGridExtent.Offset(-(int)SubGridTree.DefaultIndexOriginOffset, -(int)SubGridTree.DefaultIndexOriginOffset);
 
         // Convert the grid rectangle to a world rectangle
         BoundingWorldExtent3D ComputedWorldExtent = new BoundingWorldExtent3D(ComputedGridExtent.MinX * dataStore.CellSize,
           ComputedGridExtent.MinY * dataStore.CellSize,
           (ComputedGridExtent.MaxX + 1) * dataStore.CellSize,
-          (ComputedGridExtent.MaxY + 1) * dataStore.CellSize);
+          (ComputedGridExtent.MaxY + 1) * dataStore.CellSize,
+          ComputedGridExtent.MinZ, ComputedGridExtent.MaxZ);
 
         return ComputedWorldExtent;
       }
@@ -115,10 +117,10 @@ namespace VSS.TRex.Tests.Exports.Surfaces
       {
         GenericSubGridTree<float> dataStore = new GenericSubGridTree<float>();
         dataStore[100, 100] = 100.0f;
-        dataStore[200, 200] = 100.0f;
-        dataStore[200, 100] = 100.0f;
+        dataStore[101, 101] = 100.0f;
+        dataStore[101, 100] = 100.0f;
 
-        GridToTINDecimator decimator = new GridToTINDecimator(dataStore);
+      GridToTINDecimator decimator = new GridToTINDecimator(dataStore);
         decimator.SetDecimationExtents(DataStoreExtents(dataStore));
         bool result = decimator.BuildMesh();
 
@@ -149,6 +151,8 @@ namespace VSS.TRex.Tests.Exports.Surfaces
         Assert.True(decimator.GetTIN().Vertices[0].Z == 100.0f);
         Assert.True(decimator.GetTIN().Vertices[1].Z == 100.0f);
         Assert.True(decimator.GetTIN().Vertices[2].Z == 100.0f);
+
+        decimator.GetTIN().SaveToFile(@"C:\temp\UnitTestExportTTM.ttm", true);
     }
   }
 }

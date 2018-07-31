@@ -72,6 +72,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces
         heap.Insert(tri2, 34.56);
 
         Assert.True(heap.Extract().Import == 34.56);
+        Assert.True(heap.Count == 1, "Count not one after extracting element from heap");
       }
 
       [Fact]

@@ -25,7 +25,7 @@ namespace VSS.TRex.Exports.Surfaces
 {
   public class GridToTINDecimator
   {
-    private double NullVertexHeight = -9999;
+    private const double kNullVertexHeight = -9999;
     private const int kMaxSeedIntervals = 500;
     private const int kDefaultSeedPointInterval = 40;
 
@@ -100,7 +100,7 @@ namespace VSS.TRex.Exports.Surfaces
     /// Candidate is a description of a candidate grid point being considered
     /// as the next grid point to be inserted
     /// </summary>
-    private Candidate Candidate = new Candidate();
+    private Candidate Candidate; // = new Candidate();
 
     /// <summary>
     /// v0, v1, v2 are height ordered references to the vertices in a triangle
@@ -147,6 +147,8 @@ namespace VSS.TRex.Exports.Surfaces
     private long TriangleScanInvocationNumber;
 
     public DecimationResult BuildMeshFaultCode;
+
+    public double NullVertexHeight;
 
     public void SetDecimationExtents(BoundingWorldExtent3D value)
     {
@@ -264,9 +266,9 @@ namespace VSS.TRex.Exports.Surfaces
           if (numElevationsToScan < NumValuesFromThisSubgrid)
             NumValuesFromThisSubgrid = numElevationsToScan;
 
-          // Set all the elavations for cells in tihs subgrid to null 
+          // Set all the elavations for cells in this subgrid to null 
           for (int i = 0; i < NumValuesFromThisSubgrid; i++)
-            elevations[elevationIndex++] = Common.Consts.NullHeight;
+            elevations[elevationIndex++] = NullVertexHeight;
 
           SubGridX += NumValuesFromThisSubgrid; // Move to next cell in scan line
 
@@ -620,27 +622,28 @@ namespace VSS.TRex.Exports.Surfaces
           {
             // Insert the seeds as new grid points into the relevant triangles
             for (int I = 0; I <= NXSeedIntervals; I++)
-            for (int J = 0; J <= NYSeedIntervals; J++)
             {
-              _X = (int) Math.Round(I * XFactor);
-              _Y = (int) Math.Round(J * YFactor);
-
-              // Find the triangle this seed point lies in
-              Triangle tri = Engine.TIN.GetTriangleAtPoint(_X, _Y, out double _);
-
-              if (tri == null)
+              for (int J = 0; J <= NYSeedIntervals; J++)
               {
-                // Probably exactly on a triangle edge - don't worry about it
-                // Dont bother to insert this point
-                continue;
+                _X = (int) Math.Round(I * XFactor);
+                _Y = (int) Math.Round(J * YFactor);
+
+                // Find the triangle this seed point lies in
+                Triangle tri = Engine.TIN.GetTriangleAtPoint(_X, _Y, out double _);
+
+                if (tri == null)
+                {
+                  // Probably exactly on a triangle edge - don't worry about it
+                  // Dont bother to insert this point
+                  continue;
+                }
+
+                GetHeightForTriangleScan(_X, _Y, true, 1, _Z);
+
+                // Insert the seed point into it
+                Engine.IncorporateCoordIntoTriangle(Engine.AddVertex(_X, _Y, _Z[0]), tri);
               }
-
-              GetHeightForTriangleScan(_X, _Y, true, 1, _Z);
-
-              // Insert the seed point into it
-              Engine.IncorporateCoordIntoTriangle(Engine.AddVertex(_X, _Y, _Z[0]), tri);
             }
-
           }
         }
         finally
@@ -669,7 +672,7 @@ namespace VSS.TRex.Exports.Surfaces
         {
           InitialiseTriangleVertexOrdering();
 
-          Candidate = new Candidate();
+          Candidate = new Candidate(int.MinValue);
 
           BoundingIntegerExtent2D Extents = new BoundingIntegerExtent2D((int)Math.Round(GridOriginOffsetX + Math.Min(Math.Min(v0.X, v1.X), v2.X)),
             (int)Math.Round(GridOriginOffsetY + v0.Y),
@@ -711,30 +714,32 @@ namespace VSS.TRex.Exports.Surfaces
           // Insert the seeds as new grid points into the relevant triangles
           if (NXSeedIntervals > 0 && NYSeedIntervals > 0)
             for (int I = 0; I <= NXSeedIntervals + 1; I++)
-            for (int J = 0; J <= NYSeedIntervals + 1; J++)
             {
-              int _X1 = I * XSeedIntervalStep;
-              int _Y1 = J * YSeedIntervalStep;
+              for (int J = 0; J <= NYSeedIntervals + 1; J++)
+              {
+                int _X1 = I * XSeedIntervalStep;
+                int _Y1 = J * YSeedIntervalStep;
 
-              int _X2 = (I + 1) * XSeedIntervalStep;
-              int _Y2 = J * YSeedIntervalStep;
+                int _X2 = (I + 1) * XSeedIntervalStep;
+                int _Y2 = J * YSeedIntervalStep;
 
-              int _X3 = I * XSeedIntervalStep;
-              int _Y3 = (J + 1) * YSeedIntervalStep;
+                int _X3 = I * XSeedIntervalStep;
+                int _Y3 = (J + 1) * YSeedIntervalStep;
 
-              int _X4 = (I + 1) * XSeedIntervalStep;
-              int _Y4 = (J + 1) * YSeedIntervalStep;
+                int _X4 = (I + 1) * XSeedIntervalStep;
+                int _Y4 = (J + 1) * YSeedIntervalStep;
 
-              GetHeightForTriangleScan(_X1, _Y1, true, 1, _Z1);
-              GetHeightForTriangleScan(_X2, _Y2, true, 1, _Z2);
-              GetHeightForTriangleScan(_X3, _Y3, true, 1, _Z3);
-              GetHeightForTriangleScan(_X4, _Y4, true, 1, _Z4);
+                GetHeightForTriangleScan(_X1, _Y1, true, 1, _Z1);
+                GetHeightForTriangleScan(_X2, _Y2, true, 1, _Z2);
+                GetHeightForTriangleScan(_X3, _Y3, true, 1, _Z3);
+                GetHeightForTriangleScan(_X4, _Y4, true, 1, _Z4);
 
-              // Create both triangles across the panel keeping the vertex order as clockwise
-              ScanTri = (GridToTINTriangle)Engine.TIN.Triangles.AddTriangle(Engine.TIN.Vertices.AddPoint(_X1, _Y1, _Z1[0]), Engine.TIN.Vertices.AddPoint(_X2, _Y2, _Z2[0]), Engine.TIN.Vertices.AddPoint(_X3, _Y3, _Z3[0]));
-              PerformTriangleAdditionToHeap();
-              ScanTri = (GridToTINTriangle)Engine.TIN.Triangles.AddTriangle(Engine.TIN.Vertices.AddPoint(_X3, _Y3, _Z3[0]), Engine.TIN.Vertices.AddPoint(_X2, _Y2, _Z2[0]), Engine.TIN.Vertices.AddPoint(_X4, _Y4, _Z4[0]));
-              PerformTriangleAdditionToHeap();
+                // Create both triangles across the panel keeping the vertex order as clockwise
+                ScanTri = (GridToTINTriangle) Engine.TIN.Triangles.AddTriangle(Engine.TIN.Vertices.AddPoint(_X1, _Y1, _Z1[0]), Engine.TIN.Vertices.AddPoint(_X2, _Y2, _Z2[0]), Engine.TIN.Vertices.AddPoint(_X3, _Y3, _Z3[0]));
+                PerformTriangleAdditionToHeap();
+                ScanTri = (GridToTINTriangle) Engine.TIN.Triangles.AddTriangle(Engine.TIN.Vertices.AddPoint(_X3, _Y3, _Z3[0]), Engine.TIN.Vertices.AddPoint(_X2, _Y2, _Z2[0]), Engine.TIN.Vertices.AddPoint(_X4, _Y4, _Z4[0]));
+                PerformTriangleAdditionToHeap();
+              }
             }
         }
         finally
@@ -773,8 +778,6 @@ namespace VSS.TRex.Exports.Surfaces
         return false;
       }
 
-      NullVertexHeight = DecimationExtents.MinZ - (100 * Tolerance) - 10000.0;
-
       // Alter the grid extents to that its origin is at (0, 0)
       GridExtents = GridCalcExtents;
 
@@ -790,6 +793,9 @@ namespace VSS.TRex.Exports.Surfaces
         GridExtents.MaxX + 100,
         GridExtents.MaxY + 100,
         PointLimit * 3);
+
+      NullVertexHeight = DecimationExtents.MinZ - 100 * Tolerance - 10000.0;
+
       ConstructSeedTriangleMesh2();
 
       //  {$IFDEF DEBUG}
@@ -875,7 +881,7 @@ namespace VSS.TRex.Exports.Surfaces
       for (int I = 0; I < Engine.TIN.Vertices.Count - 1; I++)
       {
         Engine.TIN.Vertices[I].X = Engine.TIN.Vertices[I].X * DataStore.CellSize + VertexOffsetX;
-        Engine.TIN.Vertices[I].Y = Engine.TIN.Vertices[I].Y * DataStore.CellSize + VertexOffsetX;
+        Engine.TIN.Vertices[I].Y = Engine.TIN.Vertices[I].Y * DataStore.CellSize + VertexOffsetY;
       }
 
       // TODO readd when logging available
@@ -898,7 +904,7 @@ namespace VSS.TRex.Exports.Surfaces
 
       ScanTriangleInvocations++;
 
-      Candidate = new Candidate();
+      Candidate = new Candidate(int.MinValue);
 
       InitialiseTriangleVertexOrdering();
 
