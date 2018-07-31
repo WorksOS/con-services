@@ -1,0 +1,37 @@
+{{- if .Values.kibana.enabled }}
+{{- $elasticsearchServiceName := printf "%s-%s" .Release.Name "elasticsearch" | trunc 63 -}}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}-hq
+  labels:
+    app: {{ template "fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    component: {{ template "fullname" . }}-hq
+spec:
+  replicas: {{ .Values.kibana.replicas }}
+  selector:
+    matchLabels:
+     component: {{ template "fullname" . }}-hq
+  template:
+    metadata:
+      labels:
+        component: {{ template "fullname" . }}-hq
+    spec:
+      containers:
+      - name: kibana
+        image: "{{ .Values.hq.image.repository }}:{{ .Values.hq.image.tag }}"
+        imagePullPolicy: {{ .Values.kibana.image.pullPolicy }}
+        {{- range $key, $value :=  .Values.kibana.env }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
+        resources:
+{{ toYaml .Values.kibana.resources | indent 12 }}
+        ports:
+        - containerPort: 5000
+          name: hq
+          protocol: TCP
+{{- end }}

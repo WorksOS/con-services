@@ -1,0 +1,32 @@
+{{- if .Values.kibana.ingress.enabled -}}
+{{- $serviceName := printf "%s-hq" (include "fullname" .) -}}
+{{- $servicePort := .Values.hq.httpPort -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ template "fullname" . }}-hq
+  labels:
+    app: {{ template "name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: {{ template "fullname" . }}-hq
+  annotations:
+    {{- range $key, $value := .Values.hq.ingress.annotations }}
+      {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+  rules:
+    {{- range $host := .Values.hq.ingress.hosts }}
+    - host: {{ $host }}
+      http:
+        paths:
+          - backend:
+              serviceName: {{ $serviceName }}
+              servicePort: {{ $servicePort }}
+    {{- end -}}
+  {{- if .Values.hq.ingress.tls }}
+  tls:
+{{ toYaml .Values.hq.ingress.tls | indent 4 }}
+  {{- end -}}
+{{- end -}}
