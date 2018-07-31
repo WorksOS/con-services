@@ -16,7 +16,7 @@ echo "Check the database and kafka to see if port is available"
 
 echo "Run the AcceptanceTests solution"
 cd AcceptanceTests
-dotnet test VSS.Visionlink.Filter.AcceptanceTests.sln --logger \"xunit;LogFileName=acceptancetestresults.xml\"
+dotnet test VSS.Visionlink.Filter.AcceptanceTests.sln --logger \"xunit;LogFileName=acceptancetestresults.xml\" --diag testlog.log
 echo " "
 echo " All acceptance tests completed"
 echo " "
