@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Interfaces;
 using VSS.MasterData.Models.Internal;
@@ -40,13 +40,19 @@ namespace VSS.MasterData.Models.Models
     /// Gets the date range name for this filter, e.g. Today, Yesterday, ProjectExtents.
     /// </summary>
     [JsonProperty(PropertyName = "dateRangeName")]
-    public string DateRangeName => this.DateRangeType != null ? Enum.GetName(typeof(DateRangeType), this.DateRangeType) : string.Empty;
+    public string DateRangeName => DateRangeType != null ? Enum.GetName(typeof(DateRangeType), DateRangeType) : string.Empty;
 
     /// <summary>
     /// A design file unique identifier. Used as a spatial filter.
     /// </summary>
     [JsonProperty(PropertyName = "designUid", Required = Required.Default)]
     public string DesignUid { get; protected set; }
+
+    /// <summary>
+    /// A design filename.
+    /// </summary>
+    [JsonProperty(PropertyName = "designName", Required = Required.Default)]
+    public string DesignName { get; protected set; }
 
     /// <summary>
     /// A comma-separated list of contributing machines.
@@ -114,6 +120,12 @@ namespace VSS.MasterData.Models.Models
     /// </summary>
     [JsonProperty(PropertyName = "alignmentUid", Required = Required.Default)]
     public string AlignmentUid { get; protected set; }
+
+    /// <summary>
+    /// The alignmentFile filename.
+    /// </summary>
+    [JsonProperty(PropertyName = "alignmentName", Required = Required.Default)]
+    public string AlignmentName { get; protected set; }
 
     /// <summary>
     /// The starting Station along the alignment in meters.
@@ -201,7 +213,11 @@ namespace VSS.MasterData.Models.Models
     }
     public bool ShouldSerializeDesignUid()
     {
-      return DesignUid != null;
+      return !string.IsNullOrEmpty(DesignUid);
+    }
+    public bool ShouldSerializeDesignName()
+    {
+      return !string.IsNullOrEmpty(DesignName);
     }
     public bool ShouldSerializeContributingMachines()
     {
@@ -221,11 +237,11 @@ namespace VSS.MasterData.Models.Models
     }
     public bool ShouldSerializePolygonUid()
     {
-      return PolygonUid != null;
+      return !string.IsNullOrEmpty(PolygonUid);
     }
     public bool ShouldSerializePolygonName()
     {
-      return PolygonName != null;
+      return !string.IsNullOrEmpty(PolygonName);
     }
     public bool ShouldSerializePolygonLL()
     {
@@ -241,7 +257,11 @@ namespace VSS.MasterData.Models.Models
     }
     public bool ShouldSerializeAlignmentUid()
     {
-      return AlignmentUid != null;
+      return !string.IsNullOrEmpty(AlignmentUid);
+    }
+    public bool ShouldSerializeAlignmentName()
+    {
+      return !string.IsNullOrEmpty(AlignmentName);
     }
     public bool ShouldSerializeStartStation()
     {
@@ -298,6 +318,7 @@ namespace VSS.MasterData.Models.Models
       (ContributingMachines != null && ContributingMachines.Count > 0) ||
       (PolygonLL != null && PolygonLL.Count > 0) ||
       !string.IsNullOrEmpty(AlignmentUid) ||
+      !string.IsNullOrEmpty(AlignmentName) ||
       StartStation.HasValue ||
       EndStation.HasValue ||
       LeftOffset.HasValue ||
@@ -311,19 +332,19 @@ namespace VSS.MasterData.Models.Models
 
     public void AddBoundary(string polygonUID, string polygonName, List<WGSPoint> polygonLL)
     {
-      this.PolygonUid = polygonUID;
-      this.PolygonName = polygonName;
-      this.PolygonLL = polygonLL;
+      PolygonUid = polygonUID;
+      PolygonName = polygonName;
+      PolygonLL = polygonLL;
     }
 
     /// <summary>
     /// Create instance of Filter
     /// </summary>
-    public static Filter CreateFilter
-      (
+    public static Filter CreateFilter(
         DateTime? startUtc,
         DateTime? endUtc,
         string designUid,
+        string designName,
         List<MachineDetails> contributingMachines,
         long? onMachineDesignId,
         ElevationType? elevationType,
@@ -334,6 +355,7 @@ namespace VSS.MasterData.Models.Models
         string polygonUid = null,
         string polygonName = null,
         string alignmentUid = null,
+        string alignmentName = null,
         double? startStation = null,
         double? endStation = null,
         double? leftOffset = null,
@@ -343,14 +365,14 @@ namespace VSS.MasterData.Models.Models
         double? temperatureRangeMin = null,
         double? temperatureRangeMax = null,
         int? passCountRangeMin = null,
-        int? passCountRangeMax = null
-      )
+        int? passCountRangeMax = null)
     {
       return new Filter
       {
         StartUtc = startUtc,
         EndUtc = endUtc,
         DesignUid = designUid,
+        DesignName = designName,
         ContributingMachines = contributingMachines,
         OnMachineDesignId = onMachineDesignId,
         ElevationType = elevationType,
@@ -361,6 +383,7 @@ namespace VSS.MasterData.Models.Models
         PolygonUid = polygonUid,
         PolygonName = polygonName,
         AlignmentUid = alignmentUid,
+        AlignmentName = alignmentName,
         StartStation = startStation,
         EndStation = endStation,
         LeftOffset = leftOffset,
@@ -376,9 +399,9 @@ namespace VSS.MasterData.Models.Models
 
     public string ToJsonString()
     {
-      var filter = CreateFilter(StartUtc, EndUtc, DesignUid, ContributingMachines, OnMachineDesignId, ElevationType, 
-        VibeStateOn, PolygonLL, ForwardDirection, LayerNumber, PolygonUid, PolygonName, 
-        AlignmentUid, StartStation, EndStation, LeftOffset, RightOffset, AsAtDate, AutomaticsType,
+      var filter = CreateFilter(StartUtc, EndUtc, DesignUid, DesignName, ContributingMachines, OnMachineDesignId, ElevationType,
+        VibeStateOn, PolygonLL, ForwardDirection, LayerNumber, PolygonUid, PolygonName,
+        AlignmentUid, AlignmentName, StartStation, EndStation, LeftOffset, RightOffset, AsAtDate, AutomaticsType,
         TemperatureRangeMin, TemperatureRangeMax, PassCountRangeMin, PassCountRangeMax);
 
       return JsonConvert.SerializeObject(filter);
@@ -432,7 +455,7 @@ namespace VSS.MasterData.Models.Models
       // check alignment
       if (AlignmentUid != null && Guid.TryParse(AlignmentUid, out Guid _) == false)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 64); 
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 64);
       }
 
       // must have both or neither; must increase 
@@ -512,18 +535,22 @@ namespace VSS.MasterData.Models.Models
 
     public bool Equals(Filter other)
     {
-      if (ReferenceEquals(null, other)) return false;
+      if (other is null) return false;
       if (ReferenceEquals(this, other)) return true;
+
       return StartUtc.Equals(other.StartUtc) && EndUtc.Equals(other.EndUtc) && DateRangeType == other.DateRangeType &&
-             string.Equals(DesignUid, other.DesignUid) && ContributingMachines.ScrambledEquals(other.ContributingMachines) &&
+             string.Equals(DesignUid, other.DesignUid) &&
+             string.Equals(DesignName, other.DesignName) &&
+             ContributingMachines.ScrambledEquals(other.ContributingMachines) &&
              OnMachineDesignId == other.OnMachineDesignId && ElevationType == other.ElevationType &&
              VibeStateOn == other.VibeStateOn && string.Equals(PolygonUid, other.PolygonUid) &&
              string.Equals(PolygonName, other.PolygonName) && PolygonLL.ScrambledEquals(other.PolygonLL) &&
-             ForwardDirection == other.ForwardDirection && LayerNumber == other.LayerNumber && 
-             string.Equals(AlignmentUid, other.AlignmentUid) && 
+             ForwardDirection == other.ForwardDirection && LayerNumber == other.LayerNumber &&
+             string.Equals(AlignmentUid, other.AlignmentUid) &&
+             string.Equals(AlignmentName, other.AlignmentName) &&
              StartStation.Equals(other.StartStation) && EndStation.Equals(other.EndStation) &&
              LeftOffset.Equals(other.LeftOffset) && RightOffset.Equals(other.RightOffset) &&
-             AutomaticsType == other.AutomaticsType && 
+             AutomaticsType == other.AutomaticsType &&
              TemperatureRangeMin.Equals(other.TemperatureRangeMin) && TemperatureRangeMax.Equals(other.TemperatureRangeMax) &&
              PassCountRangeMin.Equals(other.PassCountRangeMin) && PassCountRangeMax.Equals(other.PassCountRangeMax);
     }
@@ -532,7 +559,7 @@ namespace VSS.MasterData.Models.Models
     {
       if (ReferenceEquals(null, obj)) return false;
       if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
+      if (obj.GetType() != GetType()) return false;
       return Equals((Filter)obj);
     }
 
@@ -544,16 +571,18 @@ namespace VSS.MasterData.Models.Models
         hashCode = (hashCode * 397) ^ EndUtc.GetHashCode();
         hashCode = (hashCode * 397) ^ (DateRangeType != null ? DateRangeType.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (DesignUid != null ? DesignUid.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (DesignName != null ? DesignName.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (ContributingMachines != null ? ContributingMachines.GetListHashCode() : 397);
         hashCode = (hashCode * 397) ^ (OnMachineDesignId != null ? OnMachineDesignId.GetHashCode() : 397);
-        hashCode = (hashCode * 397) ^ (ElevationType !=null ? ElevationType.GetHashCode() : 397);
-        hashCode = (hashCode * 397) ^ (VibeStateOn !=null ? VibeStateOn.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (ElevationType != null ? ElevationType.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (VibeStateOn != null ? VibeStateOn.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (PolygonUid != null ? PolygonUid.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (PolygonName != null ? PolygonName.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (PolygonLL != null ? PolygonLL.GetListHashCode() : 397);
-        hashCode = (hashCode * 397) ^ (ForwardDirection !=null ? ForwardDirection.GetHashCode() : 397);
-        hashCode = (hashCode * 397) ^ (LayerNumber!=null ? LayerNumber.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (ForwardDirection != null ? ForwardDirection.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (LayerNumber != null ? LayerNumber.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (AlignmentUid != null ? AlignmentUid.GetHashCode() : 397);
+        hashCode = (hashCode * 397) ^ (AlignmentName != null ? AlignmentName.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (StartStation != null ? StartStation.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (EndStation != null ? EndStation.GetHashCode() : 397);
         hashCode = (hashCode * 397) ^ (LeftOffset != null ? LeftOffset.GetHashCode() : 397);
@@ -585,7 +614,7 @@ namespace VSS.MasterData.Models.Models
     /// <param name="useEndOfCurrentDay">True if the current date range types should use the end of the day rather than now for the end of the period.
     /// The filter service uses 'now' as the value is returned to the client and displayed in the UI. The 3dpm service uses the end of the day to pass 
     /// to Raptor so that Raptor's cache works properly.</param>
-    public void ApplyDateRange(string ianaTimeZoneName, bool useEndOfCurrentDay=false)
+    public void ApplyDateRange(string ianaTimeZoneName, bool useEndOfCurrentDay = false)
     {
       if (!string.IsNullOrEmpty(ianaTimeZoneName) &&
           DateRangeType != null &&
@@ -610,6 +639,4 @@ namespace VSS.MasterData.Models.Models
       }
     }
   }
-
- 
 }

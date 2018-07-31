@@ -23,6 +23,10 @@ echo "RepositoryTests starting...."
 dotnet TestRun/TestRun.dll results=/testresults/RepositoryTestsResults project=RepositoryTests messages=false
 echo "RepositoryTests finished"
 
+echo "RepositoryLandfillTests starting...."
+dotnet TestRun/TestRun.dll results=/testresults/RepositoryLandfillTestsResults project=RepositoryLandfillTests messages=false
+echo "RepositoryLandfillTests finished"
+
 echo "Run the component/acceptance tests"
 echo "EventTests event tests starting...."
 dotnet TestRun/TestRun.dll results=/testresults/EventTestsResults project=EventTests messages=false

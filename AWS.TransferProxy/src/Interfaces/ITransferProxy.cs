@@ -10,6 +10,8 @@ namespace VSS.AWS.TransferProxy.Interfaces
 
     void Upload(Stream stream, string s3Key);
 
+    string Upload(Stream stream, string s3Key, string contentType);
+
     string GeneratePreSignedUrl(string s3Key);
   }
 }

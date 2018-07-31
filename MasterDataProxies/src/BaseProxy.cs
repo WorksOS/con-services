@@ -74,16 +74,7 @@ namespace VSS.MasterData.Proxies
       }
       catch (Exception ex)
       {
-        var message = ex.Message;
-        var stacktrace = ex.StackTrace;
-        //Check for 400 and 500 errors which come through as an inner exception
-        if (ex.InnerException != null)
-        {
-          message = ex.InnerException.Message;
-          stacktrace = ex.InnerException.StackTrace;
-        }
-        log.LogWarning("Error sending data from master data: ", message);
-        log.LogWarning("Stacktrace: ", stacktrace);
+        LogWebRequestException(ex);
         throw;
       }
       return result;
@@ -154,16 +145,7 @@ namespace VSS.MasterData.Proxies
       }
       catch (Exception ex)
       {
-        var message = ex.Message;
-        var stacktrace = ex.StackTrace;
-        //Check for 400 and 500 errors which come through as an inner exception
-        if (ex.InnerException != null)
-        {
-          message = ex.InnerException.Message;
-          stacktrace = ex.InnerException.StackTrace;
-        }
-        log.LogWarning("Error getting data from master data: ", message);
-        log.LogWarning("Stacktrace: ", stacktrace);
+        LogWebRequestException(ex);
         throw;
       }
       return result;
@@ -194,6 +176,34 @@ namespace VSS.MasterData.Proxies
       string queryParams = null, string route = null)
     {
       return await GetObjectsFromMasterdata<T>(urlKey, customHeaders, queryParams, route);
+    }
+
+    /// <summary>
+    ///   Gets an item from the specified service as Stream Content. No Caching
+    /// </summary>
+    /// <param name="urlKey">The configuration store key for the URL</param>
+    /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
+    /// <param name="queryParams">Query parameters for the request (optional)</param>
+    /// <param name="route">Additional routing to add to the base URL (optional)</param>
+    /// <returns>List of items</returns>
+    protected async Task<StreamContent> GetMasterDataStreamContent(string urlKey,
+      IDictionary<string, string> customHeaders,
+      string queryParams = null, string route = null)
+    {
+      StreamContent result =null;
+      var url = ExtractUrl(urlKey, route, queryParams);
+      try
+      {
+        var request = new GracefulWebRequest(logger, configurationStore);
+        result = await request.ExecuteRequestAsStreamContent(url, "GET", customHeaders);
+        log.LogDebug($"Result of get stream content request: {JsonConvert.SerializeObject(result)}");
+      }
+      catch (Exception ex)
+      {
+        LogWebRequestException(ex);
+        throw;
+      }
+      return result;
     }
 
     /// <summary>
@@ -444,6 +454,25 @@ namespace VSS.MasterData.Proxies
       return list.SingleOrDefault(itemSelector);
 
     }
+
+    /// <summary>
+    /// Check exception for Web Request details and log a warning
+    /// </summary>
+    /// <param name="ex">Exception to be logged</param>
+    private void LogWebRequestException(Exception ex)
+    {
+      var message = ex.Message;
+      var stacktrace = ex.StackTrace;
+      //Check for 400 and 500 errors which come through as an inner exception
+      if (ex.InnerException != null)
+      {
+        message = ex.InnerException.Message;
+        stacktrace = ex.InnerException.StackTrace;
+      }
+      log.LogWarning("Error sending data from master data: ", message);
+      log.LogWarning("Stacktrace: ", stacktrace);
+    }
+
     /// <summary>
     /// Gets an item from a list. If the item is not in the list then clears the cache and does the get again
     /// which will issue the http request to get the list again. This lets us pick up items which have been

@@ -1,7 +1,7 @@
 @ECHO OFF
 
 SET config=Release
-SET projectFile=VSS.AWS.TransferProxy
+SET projectFile=VSS.AWS.TransferProxy.csproj
 SET packageServer=https://packages.vspengg.com/
 SET packageId=VSS.AWS.TransferProxy
 SET apiKey=qATxVIHO5rIPF3K7

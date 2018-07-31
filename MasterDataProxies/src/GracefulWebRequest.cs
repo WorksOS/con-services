@@ -3,6 +3,8 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -75,7 +77,7 @@ namespace VSS.MasterData.Proxies
         return responseString;
       }
 
-      private async Task<Stream> GetMemoryStreamFromResponseStream(WebResponse response)
+      private async Task<StreamContent> GetStreamContentFromResponseStream(WebResponse response)
       {
         var readStream = response.GetResponseStream();
         byte[] buffer = ArrayPool<byte>.Shared.Rent(BUFFER_MAX_SIZE);
@@ -105,7 +107,13 @@ namespace VSS.MasterData.Proxies
           readStream?.Dispose();
           ArrayPool<byte>.Shared.Return(buffer);
         }
-        return resultStream;
+        var result = new StreamContent(resultStream);
+
+        // Don't set a content type if we don't know it (RFC-7231 Spec says)
+        if (MediaTypeHeaderValue.TryParse(response.ContentType, out var contentType))
+          result.Headers.ContentType = contentType;
+
+        return result;
       }
 
       private async Task<WebRequest> PrepareWebRequest(string endpoint, string method,
@@ -194,8 +202,32 @@ namespace VSS.MasterData.Proxies
         this.timeout = timeout;
       }
 
-
+      /// <summary>
+      /// Execute the request and return a stream
+      /// </summary>
+      /// <returns>Stream to the response if successful, otherwise null</returns>
       public async Task<Stream> ExecuteActualStreamRequest()
+      {
+        var content = await ExecuteActualStreamContentRequest();
+        if (content == null)
+        {
+          return null;
+        }
+
+        var stream = await content.ReadAsStreamAsync();
+        if (stream != null)
+        {
+          stream.Position = 0;
+        }
+
+        return stream;
+      }
+
+      /// <summary>
+      /// Execute the request and return a content stream
+      /// </summary>
+      /// <returns>StreamContent to the response if successful, otherwise null</returns>
+      public async Task<StreamContent> ExecuteActualStreamContentRequest()
       {
         var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData, null, timeout);
 
@@ -207,7 +239,7 @@ namespace VSS.MasterData.Proxies
           if (response != null)
           {
             log.LogDebug($"ExecuteRequest() T executed the request");
-            return await GetMemoryStreamFromResponseStream(response);
+            return await GetStreamContentFromResponseStream(response);
           }
         }
         catch (WebException ex)
@@ -254,9 +286,9 @@ namespace VSS.MasterData.Proxies
         return null;
       }
 
-      public async Task<T> ExecuteActualRequest<T>(Stream requestSteam = null)
+      public async Task<T> ExecuteActualRequest<T>(Stream requestStream = null)
       {
-        var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData, requestSteam, timeout);
+        var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData, requestStream, timeout);
 
         string responseString = null;
         WebResponse response = null;
@@ -386,8 +418,40 @@ namespace VSS.MasterData.Proxies
     /// <param name="timeout">Optional timeout in millisecs for the request</param>
     /// <param name="retries">The retries.</param>
     /// <param name="suppressExceptionLogging">if set to <c>true</c> [suppress exception logging].</param>
-    /// <returns></returns>
+    /// <returns>A Stream to the response if successful, otherwise null</returns>
     public async Task<Stream> ExecuteRequest(string endpoint, string method,
+      IDictionary<string, string> customHeaders = null, string payloadData = null,
+      int? timeout = null, int retries = 3, bool suppressExceptionLogging = false)
+    {
+      var streamContent = await ExecuteRequestAsStreamContent(endpoint,
+        method, 
+        customHeaders, 
+        payloadData, 
+        timeout, 
+        retries,
+        suppressExceptionLogging);
+
+      var stream = await streamContent.ReadAsStreamAsync();
+      if (stream != null)
+      {
+        stream.Position = 0; // make sure we seek to the beginning, as the creeated stream may have a different position
+      }      
+      
+      return stream;
+    }
+
+    /// <summary>
+    /// Execute a request
+    /// </summary>
+    /// <param name="endpoint">The endpoint.</param>
+    /// <param name="method">The method.</param>
+    /// <param name="customHeaders">The custom headers.</param>
+    /// <param name="payloadData">The payload data.</param>
+    /// <param name="timeout">Optional timeout in millisecs for the request</param>
+    /// <param name="retries">The retries.</param>
+    /// <param name="suppressExceptionLogging">if set to <c>true</c> [suppress exception logging].</param>
+    /// <returns>A stream content representing the result returned from the endpoint if successful, otherwise null</returns>
+    public async Task<StreamContent> ExecuteRequestAsStreamContent(string endpoint, string method,
       IDictionary<string, string> customHeaders = null, string payloadData = null,
       int? timeout = null, int retries = 3, bool suppressExceptionLogging = false)
     {
@@ -401,7 +465,7 @@ namespace VSS.MasterData.Proxies
         {
           log.LogDebug($"Trying to execute request {endpoint}");
           var executor = new RequestExecutor(endpoint, method, customHeaders, payloadData, log, logMaxChar, timeout);
-          return await executor.ExecuteActualStreamRequest();
+          return await executor.ExecuteActualStreamContentRequest();
         });
 
       if (policyResult.FinalException != null)
