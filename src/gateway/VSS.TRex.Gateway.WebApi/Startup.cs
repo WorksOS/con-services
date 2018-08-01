@@ -1,20 +1,20 @@
-﻿using Apache.Ignite.Core;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
-using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.TRex.Gateway.Common.Converters;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Rendering.Servers.Client;
 using VSS.TRex.Servers;
 using VSS.TRex.Servers.Client;
+using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Storage;
+using VSS.TRex.Storage.Interfaces;
 using VSS.WebApi.Common;
 
 namespace VSS.TRex.Gateway.WebApi
@@ -32,43 +32,38 @@ namespace VSS.TRex.Gateway.WebApi
 
     private IServiceCollection serviceCollection;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Startup"/> class.
-    /// </summary>
-    /// <param name="env">The env.</param>
-    public Startup(IHostingEnvironment env)
-    {
-      var builder = new ConfigurationBuilder()
-        .SetBasePath(env.ContentRootPath)
-        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
-
-      env.ConfigureLog4Net("log4net.xml", LoggerRepoName);
-
-      builder.AddEnvironmentVariables();
-      Configuration = builder.Build();
-
-      AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
-    }
-
-    /// <summary>
-    /// Gets the default configuration object.
-    /// </summary>
-    public IConfigurationRoot Configuration { get; }
-
-    /// <summary>
-    /// This method gets called by the runtime. Use this method to add services to the container.
-    /// </summary>
+    // This method gets called by the runtime. Use this method to add services to the container.
+    // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
     public void ConfigureServices(IServiceCollection services)
     {
+      // Add framework services.
+      services.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory());
+      services.AddSingleton<ISiteModels>(new SiteModels.SiteModels());
+
+      services.AddSingleton<IConfigurationStore, GenericConfiguration>();
+      services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
+      services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
+
+      services.AddOpenTracing(builder =>
+      {
+        builder.ConfigureAspNetCore(options =>
+        {
+          options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
+        });
+      });
+
+      services.AddJaeger(SERVICE_TITLE);
+
+      //services.AddMemoryCache();
       services.AddCommon<Startup>(SERVICE_TITLE, "API for TRex Gateway");
 
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-      //Add services here
-      services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
-      services.AddScoped<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
+      //Set up logging etc. for TRex
+      var serviceProvider = services.BuildServiceProvider();
+      var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+      Logging.Logger.Inject(loggerFactory);
+      DIContext.Inject(serviceProvider);
 
       //TODO: Work out how we want to activate the grid in netcore. For now do it here directly.
       //Log.LogInformation("About to call ActivatePersistentGridServer.Instance().SetGridActive() for Immutable TRex grid");
@@ -88,19 +83,13 @@ namespace VSS.TRex.Gateway.WebApi
       serviceCollection = services;
     }
 
-    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
-    /// <summary>
-    /// Configures the specified application.
-    /// </summary>
-    /// <param name="app">The application.</param>
-    /// <param name="env">The env.</param>
-    /// <param name="loggerFactory">The logger factory.</param>
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
     {
-      loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-      loggerFactory.AddDebug();
-      serviceCollection.AddSingleton(loggerFactory);
-      serviceCollection.BuildServiceProvider();
+      if (env.IsDevelopment())
+      {
+        app.UseDeveloperExceptionPage();
+      }
 
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCommon(SERVICE_TITLE);
