@@ -23,21 +23,22 @@ namespace ExecutorTests.Internal
     protected ILoggerFactory Logger;
     protected IServiceExceptionHandler ServiceExceptionHandler;
     protected IProjectListProxy ProjectListProxy;
+    protected IFileListProxy FileListProxy;
     protected IRaptorProxy RaptorProxy;
     protected IKafka Producer;
     protected string KafkaTopicName;
     protected FilterRepository FilterRepo;
     protected ProjectRepository ProjectRepo;
     protected GeofenceRepository GeofenceRepo;
-    private readonly string loggerRepoName = "UnitTestLogTest";
+    private const string LOGGER_REPO_NAME = "UnitTestLogTest";
 
     public void SetupDI()
     {
-      Log4NetProvider.RepoName = loggerRepoName;
-      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
+      Log4NetProvider.RepoName = LOGGER_REPO_NAME;
+      Log4NetAspExtensions.ConfigureLog4Net(LOGGER_REPO_NAME, "log4nettest.xml");
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
+      loggerFactory.AddLog4Net(LOGGER_REPO_NAME);
 
       ServiceProvider = new ServiceCollection()
         .AddLogging()
@@ -48,6 +49,7 @@ namespace ExecutorTests.Internal
           .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
           .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
           .AddTransient<IProjectListProxy, ProjectListProxy>()
+          .AddTransient<IFileListProxy, FileListProxy>()
           .AddTransient<IRaptorProxy, RaptorProxy>()
           .AddSingleton<IKafka, RdKafkaDriver>()
           .AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>()
@@ -61,6 +63,7 @@ namespace ExecutorTests.Internal
       ProjectRepo = ServiceProvider.GetRequiredService<IRepository<IProjectEvent>>() as ProjectRepository;
       GeofenceRepo = ServiceProvider.GetRequiredService<IRepository<IGeofenceEvent>>() as GeofenceRepository;
       ProjectListProxy = ServiceProvider.GetRequiredService<IProjectListProxy>();
+      FileListProxy = ServiceProvider.GetRequiredService<IFileListProxy>();
       RaptorProxy = ServiceProvider.GetRequiredService<IRaptorProxy>();
 
       Assert.IsNotNull(ServiceProvider.GetService<ILoggerFactory>());
