@@ -18,6 +18,7 @@ data:
   KAFKA_ZOOKEEPER_CONNECT: localhost:2181
   KAFKA_CREATE_TOPICS: VSS.Interfaces.Events.MasterData.IBoundaryEvent-Filter:1:1,VSS.Interfaces.Events.MasterData.IFilterEvent-Filter:1:1
   KAFKA_ADVERTISED_PORT: "9092"  
+  KAFKA_PRODUCER_SESSION_TIMEOUT: "1000"
   RAPTOR_NOTIFICATION_API_URL: http://localhost:5001/api/v2/notification
   PROJECT_API_URL: http://localhost:5001/api/v4/mockproject
   CUSTOMERSERVICE_API_URL: http://localhost:5001/api/v1/mock/getcustomersforme
