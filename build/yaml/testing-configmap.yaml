@@ -14,7 +14,7 @@ data:
   KAFKA_GROUP_NAME: Filter-Producer
   KAFKA_OFFSET: latest
   KAFKA_PORT: "9092"
-  KAFKA_URI: kafka
+  KAFKA_URI: localhost
   KAFKA_ZOOKEEPER_CONNECT: localhost:2181
   KAFKA_CREATE_TOPICS: VSS.Interfaces.Events.MasterData.IBoundaryEvent-Filter:1:1,VSS.Interfaces.Events.MasterData.IFilterEvent-Filter:1:1
   KAFKA_ADVERTISED_PORT: "9092"  
