@@ -63,13 +63,14 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       try
       {
         IEnumerable<ProjectGeofence> associations = 
-          await (auxRepository as IProjectRepository).GetAssociatedGeofences(request.ProjectUid)
+          await ((IProjectRepository) auxRepository).GetAssociatedGeofences(request.ProjectUid)
           .ConfigureAwait(false);
 
-        if (associations.Count() > 0)
+        var projectGeofences = associations.ToList();
+        if (projectGeofences.Any())
         {
           geofences = await ((IGeofenceRepository) Repository)
-            .GetGeofences(associations.Select(a => a.GeofenceUID.ToString()))
+            .GetGeofences(projectGeofences.Select(a => a.GeofenceUID.ToString()))
             .ConfigureAwait(false);
         }
       }

@@ -70,7 +70,12 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         request);
 
       requestFull.Validate(ServiceExceptionHandler);
+
+      Log.LogDebug($"Jeannie before MakeGoodWkt");
       requestFull.Request.BoundaryPolygonWKT = GeofenceValidation.MakeGoodWkt(requestFull.Request.BoundaryPolygonWKT);
+      Log.LogDebug($"Jeannie after MakeGoodWkt1");
+      requestFull.Request.BoundaryPolygonWKT = GeofenceValidation.MakeGoodWkt(requestFull.Request.BoundaryPolygonWKT);
+      Log.LogDebug($"Jeannie after MakeGoodWkt2");
 
       //var getResult = await GetProjectBoundaries(projectUid);
       var getResult = await TempGetProjectBoundaries(projectUid).ConfigureAwait(false);
@@ -191,6 +196,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
           ((IProjectRepository)_projectRepository).GetAssociatedGeofences(projectUid)
             .ConfigureAwait(false);
 
+        Log.LogDebug($"Jeannie before TempGetProjectBoundaries geofenceRepo.GetGeofences");
         var projectGeofences = associations.ToList();
         if (projectGeofences.Any())
         {
@@ -198,6 +204,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
             .GetGeofences(projectGeofences.Select(a => a.GeofenceUID.ToString()))
             .ConfigureAwait(false);
         }
+        Log.LogDebug($"Jeannie after TempGetProjectBoundaries geofenceRepo.GetGeofences");
       }
       catch (Exception e)
       {

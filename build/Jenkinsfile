@@ -127,7 +127,7 @@ node ('jenkinsslave-pod') {
 					}
 
 					//Dump log from webapi to buildlog
-					//containerLog 'service-container'
+					containerLog 'service-container'
 					
 					//Archive test logs
 					archiveArtifacts artifacts: 'testresults/*.*', fingerprint: true
