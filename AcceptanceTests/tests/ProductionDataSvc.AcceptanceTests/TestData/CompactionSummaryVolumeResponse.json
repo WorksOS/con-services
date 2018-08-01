@@ -169,9 +169,9 @@
     "Message": "success"
   },
   "NoDataResponse": {
-    "volumeSummaryData": null,
-    "Code": -4,
-    "Message": "Failed to get requested volumes summary data"
+      "volumeSummaryData": null,
+      "Code": 76,
+      "Message": "Failed to get requested volumes summary data with error: No production data found"
   },
   "NullJsonResponse": {
     "volumeSummaryData": null,

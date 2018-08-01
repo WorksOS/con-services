@@ -16,7 +16,7 @@ Examples:
 | GroundToGroundEarliestToLatest   | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 7730ea54-6c6f-4450-ae94-1933471d7961 | f4e9b4dd-e8c4-4edb-b9aa-59a209c17de7 | GroundToGroundEarliestToLatest   | 200      |
 #| GroundToGroundLatestToEarliest   | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | f4e9b4dd-e8c4-4edb-b9aa-59a209c17de7 | 7730ea54-6c6f-4450-ae94-1933471d7961 | GroundToGroundLatestToEarliest   | 200      |
 | SummaryVolumesFilterNull20121101 | ff91dd40-1569-4765-a2bc-014321f76ace | e2c7381d-1a2e-4dc7-8c0e-45df2f92ba0e | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | SummaryVolumesFilterNull20121101 | 200      |
-| GroundToGroundNoData             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | fe6065a7-21fe-4db0-8f47-3ea6c320dac7 | ce4497d9-76d0-4477-aa23-2ee1acd8c4f0 | NoDataResponse                   | 200      |
+| GroundToGroundNoData             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | fe6065a7-21fe-4db0-8f47-3ea6c320dac7 | ce4497d9-76d0-4477-aa23-2ee1acd8c4f0 | NoDataResponse                   | 400      |
 | CustomBulkingAndShrinkage        | 3335311a-f0e2-4dbe-8acd-f21135bafee4 | 98f03939-e559-442b-b376-4dd25f86349e | 98f03939-e559-442b-b376-4dd25f86349e | CustomBulkingAndShrinkage        | 200      |
 | DesignToLatestGround             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 7730ea54-6c6f-4450-ae94-1933471d7961 | 3d255208-8aa2-4172-9046-f97a36eff896 | DesignToLatestGround             | 200      |
 | EarliestGroundToDesign           | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 3d255208-8aa2-4172-9046-f97a36eff896 | f4e9b4dd-e8c4-4edb-b9aa-59a209c17de7 | LatestGroundToLatestGround       | 200      |

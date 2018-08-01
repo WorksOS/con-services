@@ -165,11 +165,11 @@ this.CompactionGetSummaryVolumes("SummaryVolumesFilterNull20121101", "ff91dd40-1
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:TopUid", "fe6065a7-21fe-4db0-8f47-3ea6c320dac7")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:BaseUid", "ce4497d9-76d0-4477-aa23-2ee1acd8c4f0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDataResponse")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:httpCode", "200")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:httpCode", "400")]
         public virtual void CompactionGetSummaryVolumes_GroundToGroundNoData()
         {
 #line 5
-this.CompactionGetSummaryVolumes("GroundToGroundNoData", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "fe6065a7-21fe-4db0-8f47-3ea6c320dac7", "ce4497d9-76d0-4477-aa23-2ee1acd8c4f0", "NoDataResponse", "200", ((string[])(null)));
+this.CompactionGetSummaryVolumes("GroundToGroundNoData", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "fe6065a7-21fe-4db0-8f47-3ea6c320dac7", "ce4497d9-76d0-4477-aa23-2ee1acd8c4f0", "NoDataResponse", "400", ((string[])(null)));
 #line hidden
         }
         

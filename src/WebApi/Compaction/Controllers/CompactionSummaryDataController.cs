@@ -84,7 +84,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var statusCode = (TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics ? HttpStatusCode.NoContent : HttpStatusCode.BadRequest;
 
         throw new ServiceException(statusCode,
-          new ContractExecutionResult(exception.GetResult.Code, exception.Message));
+          new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
       }
       finally
       {
@@ -140,7 +140,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var statusCode = (TASNodeErrorStatus) exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics ? HttpStatusCode.NoContent : HttpStatusCode.BadRequest;
 
         throw new ServiceException(statusCode,
-          new ContractExecutionResult(exception.GetResult.Code, exception.Message));
+          new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
       }
       finally
       {
@@ -187,7 +187,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var statusCode = (TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics ? HttpStatusCode.NoContent : HttpStatusCode.BadRequest;
 
         throw new ServiceException(statusCode,
-          new ContractExecutionResult(exception.GetResult.Code, exception.Message));
+          new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
       }
       finally
       {
@@ -241,7 +241,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var statusCode = (TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics ? HttpStatusCode.NoContent : HttpStatusCode.BadRequest;
 
         throw new ServiceException(statusCode,
-          new ContractExecutionResult(exception.GetResult.Code, exception.Message));
+          new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
       }
       finally
       {
@@ -296,7 +296,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var statusCode = (TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics ? HttpStatusCode.NoContent : HttpStatusCode.BadRequest;
 
         throw new ServiceException(statusCode,
-          new ContractExecutionResult(exception.GetResult.Code, exception.Message));
+          new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
       }
       finally
       {
@@ -390,7 +390,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var statusCode = (TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics ? HttpStatusCode.NoContent : HttpStatusCode.BadRequest;
 
         throw new ServiceException(statusCode,
-          new ContractExecutionResult(exception.GetResult.Code, exception.Message));
+          new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
       }
       finally
       {
