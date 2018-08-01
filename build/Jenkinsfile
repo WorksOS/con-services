@@ -145,8 +145,7 @@ node ('jenkinsslave-pod') {
 				}
 			}		
 		}
-		
-		sh "kubectl delete pod -l ${label} --namespace=testing" 
+	
 	}
 	
 	stage ('Publish results') {
