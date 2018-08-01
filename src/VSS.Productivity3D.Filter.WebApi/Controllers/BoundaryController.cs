@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Security.Principal;
@@ -9,14 +11,17 @@ using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
+using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.WebApi.Common;
 
@@ -67,7 +72,8 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       requestFull.Validate(ServiceExceptionHandler);
       requestFull.Request.BoundaryPolygonWKT = GeofenceValidation.MakeGoodWkt(requestFull.Request.BoundaryPolygonWKT);
 
-      var getResult = await GetProjectBoundaries(projectUid);
+      //var getResult = await GetProjectBoundaries(projectUid);
+      var getResult = await TempGetProjectBoundaries(projectUid).ConfigureAwait(false);
       if (getResult.GeofenceData.Any(g => request.Name.Equals(g.GeofenceName, StringComparison.OrdinalIgnoreCase)))
       {
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 62);
@@ -174,6 +180,37 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       Log.LogInformation(
         $"{ToString()}.GetProjectBoundary Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");
       return result as GeofenceDataSingleResult;
+    }
+
+    private async Task<GeofenceDataListResult> TempGetProjectBoundaries(string projectUid)
+    {
+      IEnumerable<Geofence> geofences = null;
+      try
+      {
+        IEnumerable<ProjectGeofence> associations = await 
+          ((IProjectRepository)_projectRepository).GetAssociatedGeofences(projectUid)
+            .ConfigureAwait(false);
+
+        var projectGeofences = associations.ToList();
+        if (projectGeofences.Any())
+        {
+          geofences = await ((IGeofenceRepository)_geofenceRepository)
+            .GetGeofences(projectGeofences.Select(a => a.GeofenceUID.ToString()))
+            .ConfigureAwait(false);
+        }
+      }
+      catch (Exception e)
+      {
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 49, e.Message);
+      }
+
+      // may be none, return success and empty list
+      return new GeofenceDataListResult
+      {
+        GeofenceData = (geofences ?? new List<Geofence>())
+          .Select(x => AutoMapperUtility.Automapper.Map<GeofenceData>(x))
+          .ToImmutableList()
+      };
     }
   }
 }
