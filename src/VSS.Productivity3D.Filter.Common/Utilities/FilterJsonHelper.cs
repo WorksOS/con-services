@@ -1,12 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Nito.AsyncEx;
+using Newtonsoft.Json;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
 using DbFilter = VSS.MasterData.Repositories.DBModels.Filter;
 
@@ -62,13 +58,13 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
       try
       {
         MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterJson);
-   
+
         filterObj.ApplyDateRange(project?.IanaTimeZone);
 
         if (filterObj.DateRangeType == DateRangeType.ProjectExtents)
         {
           //get extents from 3d pm
-          ProjectStatisticsResult statistics = raptorProxy?.GetProjectStatistics(Guid.Parse(project?.ProjectUid), customHeaders).Result;
+          var statistics = raptorProxy?.GetProjectStatistics(Guid.Parse(project?.ProjectUid), customHeaders).Result;
           filterObj.StartUtc = statistics?.startTime;
           filterObj.EndUtc = statistics?.endTime;
         }
@@ -76,14 +72,14 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
         //The UI needs to know the start date for specified ranges, this is actually the range data will be returned for
         if (filterObj.AsAtDate == true)
         {
-          ProjectStatisticsResult statistics = raptorProxy?.GetProjectStatistics(Guid.Parse(project?.ProjectUid), customHeaders).Result;
+          var statistics = raptorProxy?.GetProjectStatistics(Guid.Parse(project?.ProjectUid), customHeaders).Result;
           filterObj.StartUtc = statistics?.startTime;
           filterObj.DateRangeType = DateRangeType.Custom;
         }
 
         return JsonConvert.SerializeObject(filterObj);
       }
-      catch(Exception)
+      catch (Exception exception)
       {
         return string.Empty;
       }

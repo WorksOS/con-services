@@ -18,6 +18,7 @@ COORDSYSPOST_API_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/1
 RAPTOR_NOTIFICATION_API_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0/notification
 CUSTOMERSERVICE_API_URL: https://api.trimble.com/t/trimble.com/vss-customerservice/1.0/Customers/me
 RAPTOR_PROJECT_SETTINGS_API_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0
+IMPORTED_FILE_API_URL: https://api-trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles
 PROJECTSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IProjectEvent.V2
 TCCBASEURL: https://www.myconnectedsite.com
 TCCUSERNAME: vlproduction

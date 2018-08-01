@@ -21,20 +21,16 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// This constructor allows us to mock raptorClient
     /// </summary>
     public DeleteFilterExecutor(IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      IProjectListProxy projectListProxy, IRaptorProxy raptorProxy,
+      IProjectListProxy projectListProxy, IRaptorProxy raptorProxy, IFileListProxy fileListProxy,
       RepositoryBase repository, IKafka producer, string kafkaTopicName)
-      : base(configStore, logger, serviceExceptionHandler,
-          projectListProxy, raptorProxy,
-          repository, producer, kafkaTopicName, null)
+      : base(configStore, logger, serviceExceptionHandler, projectListProxy, raptorProxy,fileListProxy, repository, producer, kafkaTopicName, null)
     { }
 
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
     public DeleteFilterExecutor()
-    {
-    }
-
+    { }
 
     /// <summary>
     /// Processes the DeleteFilter Request

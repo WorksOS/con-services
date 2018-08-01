@@ -1,20 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Security.Principal;
-using Newtonsoft.Json;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
-using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Filter.Common.Models
 {
   public class FilterRequestFull : FilterRequest
   {
-
     public ProjectData ProjectData { get; set; }
 
     public string CustomerUid { get; set; }

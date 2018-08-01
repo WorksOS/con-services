@@ -38,6 +38,11 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     protected IProjectListProxy projectListProxy;
 
     /// <summary>
+    /// Gets the proxy used to retrieve files, e.g. design or alignment.
+    /// </summary>
+    protected IFileListProxy FileListProxy;
+
+    /// <summary>
     /// Implementation of the proxy interface for <see cref="IRaptorProxy"/>.
     /// </summary>
     protected IRaptorProxy raptorProxy;
@@ -140,7 +145,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     protected RequestExecutorContainer(IConfigurationStore configStore,
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      IProjectListProxy projectListProxy, IRaptorProxy raptorProxy, RepositoryBase repository,
+      IProjectListProxy projectListProxy, IRaptorProxy raptorProxy, IFileListProxy fileListProxy, RepositoryBase repository,
       IKafka producer, string kafkaTopicName, RepositoryBase auxRepository) : this()
     {
       this.configStore = configStore;
@@ -153,6 +158,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       this.producer = producer;
       this.kafkaTopicName = kafkaTopicName;
       this.auxRepository = auxRepository;
+      FileListProxy = fileListProxy;
     }
 
     /// <summary>
@@ -173,7 +179,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
       RepositoryBase repository, RepositoryBase auxRepository,
       IProjectListProxy projectListProxy = null, IRaptorProxy raptorProxy = null,
-      IKafka producer = null, string kafkaTopicName = null)
+      IKafka producer = null, string kafkaTopicName = null, IFileListProxy fileListProxy = null)
       where TExecutor : RequestExecutorContainer, new()
     {
       var executor = new TExecutor
@@ -183,6 +189,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         serviceExceptionHandler = serviceExceptionHandler,
         projectListProxy = projectListProxy,
         raptorProxy = raptorProxy,
+        FileListProxy = fileListProxy,
         Repository = repository,
         producer = producer,
         kafkaTopicName = kafkaTopicName,

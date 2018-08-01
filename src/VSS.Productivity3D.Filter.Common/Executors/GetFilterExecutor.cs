@@ -23,11 +23,9 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     public GetFilterExecutor(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
-      IProjectListProxy projectListProxy, IRaptorProxy raptorProxy,
+      IProjectListProxy projectListProxy, IRaptorProxy raptorProxy, IFileListProxy fileListProxy,
       RepositoryBase repository, IKafka producer, string kafkaTopicName)
-      : base(configStore, logger, serviceExceptionHandler,
-          projectListProxy, raptorProxy,
-          repository, producer, kafkaTopicName, null)
+      : base(configStore, logger, serviceExceptionHandler, projectListProxy, raptorProxy,fileListProxy, repository, producer, kafkaTopicName, null)
     { }
 
     /// <summary>

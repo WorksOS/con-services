@@ -211,3 +211,4 @@ project.fragment.lock.json
 
 *.lock.json
 **/.vs/restore.dg
+*.zip

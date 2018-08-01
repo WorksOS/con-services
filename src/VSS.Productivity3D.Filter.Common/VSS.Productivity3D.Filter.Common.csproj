@@ -14,11 +14,11 @@
 
   <ItemGroup>
     <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.7.*" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.26.*" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.27.*" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.11.*" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
     <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.7.*" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.26.*" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.35.*" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.11.*" />
     <PackageReference Include="AutoMapper" Version="6.2.2" />
     <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.*" />
