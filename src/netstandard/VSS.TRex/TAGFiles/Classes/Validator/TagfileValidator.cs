@@ -60,7 +60,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       var apiResult = tfa.ValidateTagfile(tagDetail.projectId, Guid.Parse(tagDetail.tccOrgId), processor.RadioSerial, radioType, processor.LLHLat * (180 / Math.PI), processor.LLHLon * (180 / Math.PI), processor.DataTime, ref tagDetail.projectId, out tagDetail.assetId, out string tfaReturnMessage, ref tfaCode);
       tfaMessage = tfaReturnMessage;
 
-      Log.LogInformation($"#Progress# CheckFileIsProcessible. TFA GetId returned for {tagDetail.tagFileName} StatusCode: {apiResult}, ProjectId:{tagDetail.projectId}, AssetId:{tagDetail.assetId}, TFAMessage:{tfaMessage}");
+      Log.LogInformation($"#Progress# CheckFileIsProcessible. TFA GetId returned for {tagDetail.tagFileName} StatusCode: {apiResult}, ProjectId:{tagDetail.projectId}, AssetId:{tagDetail.assetId}, TFAMessage:{tfaMessage}, TFACode:{tfaCode}");
       if (apiResult == ValidationResult.Valid)
       {
         // Check For JohnDoe machines. if you get a valid pass and no assetid it means it had a manual3dlicense

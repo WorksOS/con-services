@@ -8,7 +8,7 @@ namespace VSS.TRex.Rendering.GridFabric.Responses
     /// </summary>
     public class TileRenderResponse : ITileRenderResponse, IAggregateWith<ITileRenderResponse>
     {
-//        public System.Drawing.Bitmap Bitmap { get; set; }
+//        public Bitmap Bitmap { get; set; }
 
         public virtual ITileRenderResponse AggregateWith(ITileRenderResponse other)
         {

@@ -1,9 +1,9 @@
-using System.Drawing;
+﻿using Draw = System.Drawing;
 
 namespace VSS.TRex.Rendering.Abstractions
 {
   public interface IBrush
   {
-    Color Color { get; set; }
+    Draw.Color Color { get; set; }
   }
 }

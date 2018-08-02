@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+﻿using Draw = System.Drawing;
 
 namespace VSS.TRex.Rendering.Palettes.Interfaces
 {
@@ -7,11 +7,11 @@ namespace VSS.TRex.Rendering.Palettes.Interfaces
     /// </summary>
     public interface IPlanViewPalette
     {
-        /// <summary>
-        /// Returns a Color derived from the given value datum
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        Color ChooseColour(double value);
+    /// <summary>
+    /// Returns a Color derived from the given value datum
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    Draw.Color ChooseColour(double value);
     }
 }

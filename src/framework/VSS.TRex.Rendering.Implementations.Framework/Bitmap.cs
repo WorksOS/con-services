@@ -1,5 +1,5 @@
 ﻿using System;
-using CC = System.Drawing;
+using Draw = System.Drawing;
 using VSS.TRex.Rendering.Abstractions;
 
 namespace VSS.TRex.Rendering.Implementations.Framework
@@ -7,13 +7,13 @@ namespace VSS.TRex.Rendering.Implementations.Framework
   public class Bitmap : IBitmap, IDisposable
   {
 
-    private readonly CC.Bitmap container;
+    private readonly Draw.Bitmap container;
 
-    internal CC.Bitmap UnderlyingBitmap => container;
+    internal Draw.Bitmap UnderlyingBitmap => container;
 
     public Bitmap(int x, int y)
     {
-      container = new CC.Bitmap(x, y);
+      container = new Draw.Bitmap(x, y);
     }
 
     public int Width => container.Width;

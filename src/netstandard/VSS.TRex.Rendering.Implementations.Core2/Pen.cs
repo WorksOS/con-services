@@ -1,21 +1,21 @@
 ﻿using System;
+using Draw = System.Drawing;
 using VSS.TRex.Rendering.Abstractions;
 
 namespace VSS.TRex.Rendering.Implementations.Core2
 {
   public class Pen : IPen, IDisposable
   {
+    private readonly Draw.Pen container;
 
-    private readonly System.Drawing.Pen container;
+    internal Draw.Pen UnderlyingImplementation => container;
 
-    internal System.Drawing.Pen UnderlyingImplementation => container;
-
-    internal Pen(System.Drawing.Color color)
+    internal Pen(Draw.Color color)
     {
-      container = new System.Drawing.Pen(color);
+      container = new Draw.Pen(color);
     }
 
-    public System.Drawing.Color Color
+    public Draw.Color Color
     {
       get => container.Color;
       set => container.Color = value;

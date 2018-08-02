@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+﻿using Draw = System.Drawing;
 using VSS.TRex.Cells;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.SubGridTrees.Client;
@@ -14,7 +14,7 @@ namespace VSS.TRex.Rendering.Displayers
     /// <summary>
     /// The default colour that is used to display decoupled CMV data.
     /// </summary>
-    private Color DefaultDecoupledCMVColour = Color.Black;
+    private Draw.Color DefaultDecoupledCMVColour = Draw.Color.Black;
 
     /// <summary>
     /// The flag is to indicate wehther or not the machine CMV target to be user overrides.
@@ -57,12 +57,12 @@ namespace VSS.TRex.Rendering.Displayers
     /// Queries the data at the current cell location and determines the colour that should be displayed there.
     /// </summary>
     /// <returns></returns>
-    protected override Color DoGetDisplayColour()
+    protected override Draw.Color DoGetDisplayColour()
     {
       var cellValue = SubGrid.Cells[east_col, north_row];
 
       if (cellValue.MeasuredCMV == CellPass.NullCCV)
-        return Color.Empty;
+        return Draw.Color.Empty;
 
       var decoupled = cellValue.IsDecoupled && ((CMVPalette) Palette).DisplayDecoupledColourInPVM;
 

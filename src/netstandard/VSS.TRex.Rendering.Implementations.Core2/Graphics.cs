@@ -1,14 +1,14 @@
 ﻿using System;
+using Draw = System.Drawing;
 using VSS.TRex.Rendering.Abstractions;
 
 namespace VSS.TRex.Rendering.Implementations.Core2
 {
   public class Graphics : IGraphics, IDisposable
   {
+    private readonly Draw.Graphics container;
 
-    private readonly System.Drawing.Graphics container;
-
-    internal Graphics(System.Drawing.Graphics graphics)
+    internal Graphics(Draw.Graphics graphics)
     {
       container = graphics;
     }
@@ -18,7 +18,7 @@ namespace VSS.TRex.Rendering.Implementations.Core2
       container?.Dispose();
     }
 
-    public void DrawRectangle(IPen pen, System.Drawing.Rectangle rectangle)
+    public void DrawRectangle(IPen pen, Draw.Rectangle rectangle)
     {
       container.DrawRectangle(((Pen)pen).UnderlyingImplementation,rectangle);
     }
@@ -38,17 +38,17 @@ namespace VSS.TRex.Rendering.Implementations.Core2
       container.DrawRectangle(((Pen)pen).UnderlyingImplementation, x1, y1, x2, y2);
     }
 
-    public void FillPolygon(IBrush brush, System.Drawing.Point[] points)
+    public void FillPolygon(IBrush brush, Draw.Point[] points)
     {
       container.FillPolygon(((Brush)brush).UnderlyingImplementation, points);
     }
 
-    public void DrawPolygon(IPen pen, System.Drawing.Point[] points)
+    public void DrawPolygon(IPen pen, Draw.Point[] points)
     {
       container.DrawPolygon(((Pen)pen).UnderlyingImplementation, points);
     }
 
-    public void Clear(System.Drawing.Color penColor)
+    public void Clear(Draw.Color penColor)
     {
       container.Clear(penColor);
     }

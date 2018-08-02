@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+﻿using Draw = System.Drawing;
 using VSS.TRex.Cells;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.SubGridTrees.Client;
@@ -52,12 +52,12 @@ namespace VSS.TRex.Rendering.Displayers
     /// Queries the data at the current cell location and determines the colour that should be displayed there.
     /// </summary>
     /// <returns></returns>
-    protected override Color DoGetDisplayColour()
+    protected override Draw.Color DoGetDisplayColour()
     {
       var cellValue = SubGrid.Cells[east_col, north_row];
 
       if (cellValue.MeasuredMDP == CellPass.NullMDP)
-        return Color.Empty;
+        return Draw.Color.Empty;
 
       var targetMDPValue = cellValue.TargetMDP;
 

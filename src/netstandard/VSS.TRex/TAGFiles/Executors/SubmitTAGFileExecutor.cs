@@ -104,7 +104,7 @@ namespace VSS.TRex.TAGFiles.Executors
             }
             else
             {
-              response.Code = (int)ValidationResult.SubmissionError;
+              response.Code = (int)ValidationResult.QueueSubmissionError;
               response.Success = false;
               response.Message = "SubmitTAGFileResponse. Failed to submit tagfile to processing queue. Request already exists";
             }
@@ -122,7 +122,7 @@ namespace VSS.TRex.TAGFiles.Executors
       }
       finally
       {
-        Log.LogInformation($"#Out# SubmitTAGFileResponse. Processed {tagFileName} Result: {response.Success}, Message:{response.Message}");
+        Log.LogInformation($"#Out# SubmitTAGFileResponse. Processed {tagFileName} Result: {response.Success}, Message:{response.Message} Code:{response.Code}");
       }
       return response;
     }

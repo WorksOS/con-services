@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+﻿using Draw = System.Drawing;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering.Palettes
@@ -16,15 +16,15 @@ namespace VSS.TRex.Rendering.Palettes
     private double _minTarget;
     private double _maxTarget;
 
-    private Color _targetCCVColour = Color.Blue;
+    private Draw.Color _targetCCVColour = Draw.Color.Blue;
 
     private static Transition[] Transitions =
     {
-      new Transition(0, Color.Green),
-      new Transition(20, Color.Yellow),
-      new Transition(40, Color.Olive),
-      new Transition(60, Color.Blue),
-      new Transition(100, Color.SkyBlue)
+      new Transition(0, Draw.Color.Green),
+      new Transition(20, Draw.Color.Yellow),
+      new Transition(40, Draw.Color.Olive),
+      new Transition(60, Draw.Color.Blue),
+      new Transition(100, Draw.Color.SkyBlue)
     };
 
     public CMVPalette() : base(Transitions)
@@ -33,7 +33,7 @@ namespace VSS.TRex.Rendering.Palettes
       _maxTarget = _cmvPercentageRange.Max / 100;
     }
 
-    public Color ChooseColour(double value, double targetValue)
+    public Draw.Color ChooseColour(double value, double targetValue)
     {
       // Check to see if the value is in the target range and use the target CMV colour
       // if it is. CCVRange holds a min/max percentage of target CMV...

@@ -58,12 +58,13 @@ namespace VSS.TRex.TAGFiles.Classes
       if (!Directory.Exists(thePath))
         Directory.CreateDirectory(thePath);
 
+      string fType = "tagfile";
+
       string ArchiveTagfilePath = Path.Combine(thePath, tagDetail.tagFileName);
 
-      // We dont keep dups
+      // We dont keep dups in TRex
       if (File.Exists(ArchiveTagfilePath))
         File.Delete(ArchiveTagfilePath);
-
 
       try
       {
@@ -74,9 +75,13 @@ namespace VSS.TRex.TAGFiles.Classes
 
         Log.LogDebug($"Tagfile archived to {ArchiveTagfilePath}");
 
+        /* This feature is not required in TRex. Plus not sure if under netcore the serializer is working probably so commented out for now
+          leaving code here in case we change our minds in future
+
         IConfiguration config = DIContext.Obtain<IConfiguration>();
         if (config.GetValue<bool>("ENABLE_TAGFILE_ARCHIVING_METADATA", false))
         {
+          fType = "metafile";
           string ArchiveTagfileMetaDataPath = Path.ChangeExtension(ArchiveTagfilePath, ".xml");
 
           if (File.Exists(ArchiveTagfileMetaDataPath))
@@ -97,19 +102,18 @@ namespace VSS.TRex.TAGFiles.Classes
           {
             new XmlSerializer(typeof(TagfileMetaData)).Serialize(file, tmd);
           }
+          
 
-        }
+        } */
 
         // Another process should move tagfiles eventually to S3 bucket
 
         return true;
       }
 
-
-
       catch (System.Exception e)
       {
-        Log.LogWarning(String.Format("Exception occured saving tagfile {0}", e.Message));
+        Log.LogWarning(String.Format("Exception occured saving {0}. error:{1}", fType, e.Message));
         return false;
       }
     }

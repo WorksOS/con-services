@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Drawing;
+using Draw = System.Drawing;
 using System.Reflection;
-using Amazon.S3.Model;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
@@ -64,7 +63,7 @@ namespace VSS.TRex.Rendering.Executors
     // ComputeICVolumesType ReferenceVolumeType = ComputeICVolumesType.None;
     // FColourPalettes: TColourPalettes;
     // ICOptions ICOptions = new ICOptions();
-    private Color RepresentColor;
+    private Draw.Color RepresentColor;
 
     /// <summary>
     /// Constructor for the renderer
@@ -92,10 +91,10 @@ namespace VSS.TRex.Rendering.Executors
       CombinedFilter AFilter1,
       CombinedFilter AFilter2,
       Guid ACutFillDesignID, //DesignDescriptor ACutFillDesign,
-      //AReferenceVolumeType : TComputeICVolumesType;
-      //AColourPalettes: TColourPalettes;
-      //AICOptions: TSVOICOptions;
-      Color ARepresentColor,
+                             //AReferenceVolumeType : TComputeICVolumesType;
+                             //AColourPalettes: TColourPalettes;
+                             //AICOptions: TSVOICOptions;
+      Draw.Color ARepresentColor,
       string requestingTRexNodeId
     )
     {
