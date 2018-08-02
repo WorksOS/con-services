@@ -37,7 +37,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <param name="exceptionHandler"></param>
     /// <param name="tagfileClientServer"></param>
     public TagFileExecutor(IConfigurationStore configStore,
-        ILoggerFactory logger, IServiceExceptionHandler exceptionHandler, IMutableClientServer tagfileClientServer) : base(configStore, logger, exceptionHandler, null, tagfileClientServer)
+        ILoggerFactory logger, IServiceExceptionHandler exceptionHandler, IMutableClientServer tagfileClientServer) : base(configStore, logger, exceptionHandler, null, tagfileClientServer, null)
     {
     }
 

@@ -56,6 +56,11 @@
     public const string ANALYTICS_NODE = "Analytics";
 
     /// <summary>
+    /// A server responsible for reporting various analytics, such as cut fill statistics, from production data
+    /// </summary>
+    public const string ANALYTICS_NODE_CLIENT = "AnalyticsClient";
+
+    /// <summary>
     /// A server responsible for producing elevation subgrid information from design and surveyed surface topology models (TTMs)
     /// </summary>
     public const string DESIGN_PROFILER = "DesignProfiler";

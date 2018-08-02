@@ -85,6 +85,10 @@ namespace VSS.TRex.Gateway.WebApi
       MutableClientServer tagFileMutableClientServer = new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT);
       services.AddSingleton<IMutableClientServer>(tagFileMutableClientServer);
 
+      ImmutableClientServer reportImmutableClientServer = new ImmutableClientServer(ServerRoles.ANALYTICS_NODE_CLIENT);
+      services.AddSingleton<IImmutableClientServer>(reportImmutableClientServer);
+
+
       serviceCollection = services;
     }
 

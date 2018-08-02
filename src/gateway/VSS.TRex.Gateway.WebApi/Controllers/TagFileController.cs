@@ -81,7 +81,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     {
 
       var tagfileResult = WithServiceExceptionTryExecute(() => RequestExecutorContainer
-                                                     .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null, tagfileClientServer)
+                                                     .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null, tagfileClientServer, null)
                                                      .Process(tfRequest)) as TagFileResult;
 
       // todo we probably need to return some proper return codes to determine further course of action
