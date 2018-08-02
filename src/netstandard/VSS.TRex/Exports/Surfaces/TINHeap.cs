@@ -69,12 +69,12 @@ namespace VSS.TRex.Tests.Exports.Surfaces
     }
 
     /// <summary>
-    /// Moves element i down the heap to its correct locatio to maintain order
+    /// Moves element i down the heap to its correct location to maintain order
     /// </summary>
     /// <param name="i"></param>
     private void Downheap(int i)
     {
-      if (i >= this.Count)
+      if (i >= Count)
         return; // perhaps just extracted the last
 
 

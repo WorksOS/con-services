@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using VSS.TRex.Designs.TTM;
+using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Exports.Surfaces
 {
@@ -200,7 +201,7 @@ namespace VSS.TRex.Exports.Surfaces
       if (theTri != null)
         for (int j = 0; j < 3; j++)
           if (theTri.Vertices[j] == thePoint)
-            theTri.Neighbours[(j + 1) % 3] = newTri;
+            theTri.Neighbours[XYZ.PrevSide(j)] = newTri;
     }
 
     /// <summary>
@@ -272,6 +273,8 @@ namespace VSS.TRex.Exports.Surfaces
         // Reset all the next pointers in the affected side list
         for (int I = 0; I < NumAffSides - 2; I++)
           AffSideList[I].Next = I + 1;
+
+        AffSideList[NumAffSides - 1].Next = -1;
       }
 
       //get Index to point to affectedTri with a side on the edge of the
@@ -310,7 +313,7 @@ namespace VSS.TRex.Exports.Surfaces
 
       // set nextPoint to the clockwise - most point of this side - the next side
       // in the list will share this point }
-      TriVertex nextPoint = AffectedList[Index].Tri.Vertices[(SideIdx + 1) % 3];
+      TriVertex nextPoint = AffectedList[Index].Tri.Vertices[XYZ.NextSide(SideIdx)];
 
       bool done = false;
       while (!done)
@@ -320,7 +323,7 @@ namespace VSS.TRex.Exports.Surfaces
         //  this is repeated until we find a side on the edge of the polygon
         //  that shares nextPoint 
 
-        int TestIndex = getNode(AffectedList, AffectedList[Index].Tri.Neighbours[(SideIdx + 1) % 3], NumAffected);
+        int TestIndex = getNode(AffectedList, AffectedList[Index].Tri.Neighbours[XYZ.NextSide(SideIdx)], NumAffected);
         if (TestIndex != -1)
         {
           Index = TestIndex;
@@ -339,7 +342,7 @@ namespace VSS.TRex.Exports.Surfaces
           }
         }
         else
-          SideIdx = (SideIdx + 1) % 3;
+          SideIdx = XYZ.NextSide(SideIdx);
 
         if (NumAffSides >= AffSideList.Length)
           LengthenAffSideList();
@@ -353,7 +356,7 @@ namespace VSS.TRex.Exports.Surfaces
         if (NumAffSides > 1)
           AffSideList[NumAffSides - 2].Next = NumAffSides - 1;
 
-        nextPoint = AffectedList[Index].Tri.Vertices[(SideIdx + 1) % 3];
+        nextPoint = AffectedList[Index].Tri.Vertices[XYZ.NextSide(SideIdx)];
 
         // keep going until we reach the start point 
         done = nextPoint == AffSideList[0].point;

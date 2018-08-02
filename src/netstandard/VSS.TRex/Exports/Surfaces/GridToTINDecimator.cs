@@ -329,7 +329,7 @@ namespace VSS.TRex.Exports.Surfaces
       }
 
       int startx = (int)Math.Ceiling(Math.Min(x1, x2));
-      int endx = (int)Math.Floor(Math.Min(x1, x2));
+      int endx = (int)Math.Floor(Math.Max(x1, x2));
 
       if (startx > endx)
         return;
@@ -627,9 +627,7 @@ namespace VSS.TRex.Exports.Surfaces
         XSeedIntervalStep = GridExtents.SizeX / NXSeedIntervals + 1;
         YSeedIntervalStep = GridExtents.SizeY / NYSeedIntervals + 1;
 
-        /// TODO readd when logging available
-        //SIGLogMessage.PublishNoODS(Self, Format('Creating %d seed positions into extent of area being TINNed using X/Y seed intervals of %d/%d', 
-        // [(NXSeedIntervals + 1) * (NYSeedIntervals + 1), FXSeedIntervalStep, FYSeedIntervalStep]), slmcMessage);
+        Log.LogInformation($"Creating {(NXSeedIntervals + 1) * (NYSeedIntervals + 1)} seed positions into extent of area being TINNed using X/Y seed intervals of {XSeedIntervalStep}/{YSeedIntervalStep}");
 
         // Insert the seeds as new grid points into the relevant triangles
         if (NXSeedIntervals > 0 && NYSeedIntervals > 0)
@@ -727,11 +725,7 @@ namespace VSS.TRex.Exports.Surfaces
       // Add grid points into the triangle with the largest error (importance)
       // until there are no triangles whose error fall outside of the tolerance
 
-//      {$IFDEF DEBUG}
-//      SIGLogMessage.PublishNoODS(Self, Format('GridToTIN: Mesh size = %d tris. Heap Size = %d. MaxError = %.5f',
-//                                          [Engine.TIN.Triangles.Count,
-//                                           Heap.Count, MaxError]), slmcDebug);
-//      {$ENDIF}
+      Log.LogDebug($"Finished: Mesh size = {Engine.TIN.Triangles.Count} tris. Heap size = {Heap.Count}. Max error = {MaxError()}");
 
       while (MaxError() > Tolerance && Engine.TIN.Vertices.Count < PointLimit && !Aborted)
       {
@@ -741,35 +735,22 @@ namespace VSS.TRex.Exports.Surfaces
           return false;
         }
 
-        /*{$IFDEF DEBUG}         
-        if (FTinningEngine.TIN.Triangles.Count MOD 200000) = 0 then
-          begin
-            SIGLogMessage.PublishNoODS(Self, Format('GridToTIN: Mesh size = %d tris. Heap Size = %d. MaxError = %.5f', {SKIP}
-                                                    [FTinningEngine.TIN.Triangles.Count,
-                                                     Fheap.Count, MaxError]), slmcDebug);
-            SIGLogMessage.PublishNoODS(Self, Format('ElevationCellValuesRetrieved = %d', [FElevationCellValuesRetrieved]), slmcDebug);
-            SIGLogMessage.PublishNoODS(Self, Format('ElevationCellValuesRetrievedAreNull = %d', [FElevationCellValuesRetrievedAreNull]), slmcDebug);
-            SIGLogMessage.PublishNoODS(Self, Format('FScanTriangleInvocations = %d', [FScanTriangleInvocations]), slmcDebug);
-            SIGLogMessage.PublishNoODS(Self, Format('FNumTrivialTrianglesPassedToScanWholeTriangleGeometry = %d', [FNumTrivialTrianglesPassedToScanWholeTriangleGeometry]), slmcDebug);
-          end;
-        {$ENDIF}
-        */
+        Log.LogDebug($"Finished: Mesh size = {Engine.TIN.Triangles.Count} tris. Heap size = {Heap.Count}. Max error = {MaxError()}");
+        Log.LogDebug($"ElevationCellValuesRetrieved = {ElevationCellValuesRetrieved}");
+        Log.LogDebug($"ElevationCellValuesRetrievedAreNull = {ElevationCellValuesRetrievedAreNull}");
+        Log.LogDebug($"FScanTriangleInvocations = {ScanTriangleInvocations}");
+        Log.LogDebug($"FNumTrivialTrianglesPassedToScanWholeTriangleGeometry = {NumTrivialTrianglesPassedToScanWholeTriangleGeometry}");
       }
 
-      /*
-  SIGLogMessage.PublishNoODS(Self, Format('Finished: Mesh = %d tris. Heap = %d. Initial Tolerance = %.3f', {SKIP}
-                                          [FTinningEngine.TIN.Triangles.Count, Fheap.Count, FTolerance]), slmcDebug);
-  SIGLogMessage.PublishNoODS(Self, Format('ElevationCellValuesRetrieved = %d', [FElevationCellValuesRetrieved]), slmcDebug);
-  SIGLogMessage.PublishNoODS(Self, Format('ElevationCellValuesRetrievedAreNull = %d', [FElevationCellValuesRetrievedAreNull]), slmcDebug);
-  SIGLogMessage.PublishNoODS(Self, Format('FScanTriangleInvocations = %d', [FScanTriangleInvocations]), slmcDebug);
-  SIGLogMessage.PublishNoODS(Self, Format('FNumTrivialTrianglesPassedToScanWholeTriangleGeometry = %d', [FNumTrivialTrianglesPassedToScanWholeTriangleGeometry]), slmcDebug);
-  */
-
+      Log.LogInformation($"Finished: Mesh = {Engine.TIN.Triangles.Count} tris. Heap = {Heap.Count}. Initial Tolerance = {Tolerance}");
+      Log.LogInformation($"ElevationCellValuesRetrieved = {ElevationCellValuesRetrieved}");
+      Log.LogInformation($"ElevationCellValuesRetrievedAreNull = {ElevationCellValuesRetrievedAreNull}");
+      Log.LogInformation($"FScanTriangleInvocations = {ScanTriangleInvocations}");
+      Log.LogInformation($"FNumTrivialTrianglesPassedToScanWholeTriangleGeometry = {NumTrivialTrianglesPassedToScanWholeTriangleGeometry}");
+  
       if (Engine.TIN.Vertices.Count >= PointLimit)
       {
-        // Todo: Readd logging
-        //SIGLogMessage.PublishNoODS(Self, Format('TIN construction aborted after adding a maximum of %d vertices to the surface being constructed.',  
-        //[FTinningEngine.TIN.Vertices.Count]), slmcMessage);
+        Log.LogInformation($"TIN construction aborted after adding a maximum of {Engine.TIN.Vertices.Count} vertices to the surface being constructed.");
         BuildMeshFaultCode = DecimationResult.TrianglesExceeded;
         return false;
       }
@@ -798,19 +779,13 @@ namespace VSS.TRex.Exports.Surfaces
       double VertexOffsetX = DataStore.CellSize * (GridOriginOffsetX - DataStore.IndexOriginOffset) + DataStore.CellSize / 2;
       double VertexOffsetY = DataStore.CellSize * (GridOriginOffsetY - DataStore.IndexOriginOffset) + DataStore.CellSize / 2;
 
-      for (int I = 0; I < Engine.TIN.Vertices.Count - 1; I++)
+      for (int I = 0; I < Engine.TIN.Vertices.Count; I++)
       {
         Engine.TIN.Vertices[I].X = Engine.TIN.Vertices[I].X * DataStore.CellSize + VertexOffsetX;
         Engine.TIN.Vertices[I].Y = Engine.TIN.Vertices[I].Y * DataStore.CellSize + VertexOffsetY;
       }
 
-      // TODO readd when logging available
-      //SIGLogMessage.PublishNoODS(Self,
-      //                       Format('GridToTIN: %d tris. Seed interval = %d. Time = %s', {SKIP}
-      //                              [FTinningEngine.TIN.Triangles.Count,
-      //                               FSeedPointInterval,
-      //                               FormatDateTime('nn:ss.zzz', Now - StartTime)]),
-      //                       slmcMessage);
+      Log.LogInformation($"GridToTIN: {Engine.TIN.Triangles.Count} tris. Seed interval = {SeedPointInterval}. Time = {DateTime.Now - StartTime}");
 
       return true;
     }
@@ -860,19 +835,22 @@ namespace VSS.TRex.Exports.Surfaces
       double NullHeightLimit = DecimationExtents.MinZ - 0.001;
 
       // Remove all triangles that have a null height vertex as a corner
-      for (int I = TIN.Triangles.Count - 1; I >= 0; I--)
+      for (int I = 0; I < TIN.Triangles.Count; I++)
       {
         if (TIN.Triangles[I].Vertices[0].Z < NullHeightLimit ||
             TIN.Triangles[I].Vertices[1].Z < NullHeightLimit ||
             TIN.Triangles[I].Vertices[2].Z < NullHeightLimit)
+        {
+          //Debug.Assert(TIN.Triangles[I].Tag - 1 == I, "Tag and triangle index inconsistent");
           TIN.Triangles.RemoveTriangle(TIN.Triangles[I]);
+        }
       }
 
       TIN.Triangles.Pack();
       TIN.Triangles.NumberTriangles();
 
       // Remove all vertices with null heights
-      for (int I = TIN.Vertices.Count - 1; I >= 0; I--)
+      for (int I = 0; I < TIN.Vertices.Count; I++)
         if (TIN.Vertices[I].Z < NullHeightLimit)
           TIN.Vertices[I] = null;
 

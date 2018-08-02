@@ -1,8 +1,10 @@
-﻿using VSS.TRex.Exports.Surfaces;
+﻿using System;
+using VSS.TRex.Designs.TTM;
+using VSS.TRex.Exports.Surfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
-using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.Exports.Surfaces
@@ -11,10 +13,9 @@ namespace VSS.TRex.Tests.Exports.Surfaces
   {
     public override float NullCellValue => Common.Consts.NullHeight;
   }
-
-
-  public class GridToTINDecimatorTests
-    {
+  
+  public class GridToTINDecimatorTests : IClassFixture<DILoggingFixture>
+  {
       [Fact]
       public void GridToTINDecimatorTests_Creation_NoDataStore()
       {
@@ -85,11 +86,11 @@ namespace VSS.TRex.Tests.Exports.Surfaces
         // Convert the grid rectangle to a world rectangle
         BoundingWorldExtent3D ComputedWorldExtent = new BoundingWorldExtent3D(ComputedGridExtent.MinX * dataStore.CellSize,
           ComputedGridExtent.MinY * dataStore.CellSize,
-          (ComputedGridExtent.MaxX + 1) * dataStore.CellSize,
-          (ComputedGridExtent.MaxY + 1) * dataStore.CellSize,
+          (ComputedGridExtent.MaxX + 0.01) * dataStore.CellSize,
+          (ComputedGridExtent.MaxY + 0.01) * dataStore.CellSize,
           ComputedGridExtent.MinZ, ComputedGridExtent.MaxZ);
 
-        return ComputedWorldExtent;
+      return ComputedWorldExtent;
       }
 
     [Fact]
@@ -113,7 +114,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces
         dataStore[SubGridTree.DefaultIndexOriginOffset + 100, SubGridTree.DefaultIndexOriginOffset + 100] = 100.0f;
         dataStore[SubGridTree.DefaultIndexOriginOffset + 101, SubGridTree.DefaultIndexOriginOffset + 101] = 100.0f;
 
-      GridToTINDecimator decimator = new GridToTINDecimator(dataStore);
+        GridToTINDecimator decimator = new GridToTINDecimator(dataStore);
         decimator.SetDecimationExtents(DataStoreExtents(dataStore));
         bool result = decimator.BuildMesh();
 
@@ -128,7 +129,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces
         dataStore[SubGridTree.DefaultIndexOriginOffset + 101, SubGridTree.DefaultIndexOriginOffset + 101] = 100.0f;
         dataStore[SubGridTree.DefaultIndexOriginOffset + 101, SubGridTree.DefaultIndexOriginOffset + 100] = 100.0f;
 
-      GridToTINDecimator decimator = new GridToTINDecimator(dataStore);
+        GridToTINDecimator decimator = new GridToTINDecimator(dataStore);
         decimator.SetDecimationExtents(DataStoreExtents(dataStore));
         bool result = decimator.BuildMesh();
 
@@ -140,18 +141,6 @@ namespace VSS.TRex.Tests.Exports.Surfaces
       {
         DecimationElevationSubGridTree dataStore = new DecimationElevationSubGridTree();
 
-        /*
-        dataStore[SubGridTree.DefaultIndexOriginOffset + 100, SubGridTree.DefaultIndexOriginOffset + 100] = 100.0f;
-        dataStore[SubGridTree.DefaultIndexOriginOffset + 100, SubGridTree.DefaultIndexOriginOffset + 101] = 100.0f;
-        dataStore[SubGridTree.DefaultIndexOriginOffset + 100, SubGridTree.DefaultIndexOriginOffset + 102] = 100.0f;
-        dataStore[SubGridTree.DefaultIndexOriginOffset + 101, SubGridTree.DefaultIndexOriginOffset + 100] = 100.0f;
-        dataStore[SubGridTree.DefaultIndexOriginOffset + 101, SubGridTree.DefaultIndexOriginOffset + 101] = 110.0f;
-        dataStore[SubGridTree.DefaultIndexOriginOffset + 101, SubGridTree.DefaultIndexOriginOffset + 102] = 100.0f;
-        dataStore[SubGridTree.DefaultIndexOriginOffset + 102, SubGridTree.DefaultIndexOriginOffset + 100] = 100.0f;
-        dataStore[SubGridTree.DefaultIndexOriginOffset + 102, SubGridTree.DefaultIndexOriginOffset + 101] = 100.0f;
-        dataStore[SubGridTree.DefaultIndexOriginOffset + 102, SubGridTree.DefaultIndexOriginOffset + 102] = 100.0f;
-        */
-
         SubGridUtilities.SubGridDimensionalIterator((x, y) => dataStore[SubGridTree.DefaultIndexOriginOffset + x, SubGridTree.DefaultIndexOriginOffset + y] = 100.0f);
 
         GridToTINDecimator decimator = new GridToTINDecimator(dataStore);
@@ -161,7 +150,14 @@ namespace VSS.TRex.Tests.Exports.Surfaces
         Assert.True(result, $"Failed to build mesh from data store with three points fault code {decimator.BuildMeshFaultCode}");
 
         Assert.NotNull(decimator.GetTIN());
-        Assert.True(decimator.GetTIN().Triangles.Count == 1);
+
+//        string fileName = $@"C:\temp\UnitTestExportTTM({DateTime.Now.Ticks}).ttm";
+        //decimator.GetTIN().SaveToFile(fileName, true);  
+
+//        TrimbleTINModel tin = new TrimbleTINModel();        
+//        tin.LoadFromFile(fileName);
+
+        Assert.True(decimator.GetTIN().Triangles.Count == 3);
         Assert.True(decimator.GetTIN().Triangles[0].Vertices[0].Z == 100f);
         Assert.True(decimator.GetTIN().Triangles[0].Vertices[1].Z == 100f);
         Assert.True(decimator.GetTIN().Triangles[0].Vertices[2].Z == 100f);
@@ -170,8 +166,6 @@ namespace VSS.TRex.Tests.Exports.Surfaces
         Assert.True(decimator.GetTIN().Vertices[0].Z == 100.0f);
         Assert.True(decimator.GetTIN().Vertices[1].Z == 100.0f);
         Assert.True(decimator.GetTIN().Vertices[2].Z == 100.0f);
-
-        decimator.GetTIN().SaveToFile(@"C:\temp\UnitTestExportTTM.ttm", true);
     }
   }
 }
