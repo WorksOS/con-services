@@ -163,7 +163,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 86);
       }
 
-      log.LogInformation(
+      //Note: This is a very old legacy code that validates subs against TCC. This is not needed anymore as we allow project creation regardless of TCC subscription to support Earthworks machines.
+
+       /* log.LogInformation(
         $"ValidateTCCAuthorization. tccAuthorizationRequest: {JsonConvert.SerializeObject(tccAuthorizationRequest)}");
 
       tccAuthorizationRequest.Validate();
@@ -176,7 +178,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             null, null, null,
             null, fileRepo, customerRepo)
           .ProcessAsync(tccAuthorizationRequest)
-      );
+      );*/
 
       log.LogInformation("ValidateTccAuthorization. completed succesfully");
       return ReturnSuccessV2Result.CreateReturnSuccessV2Result(HttpStatusCode.OK, true);
