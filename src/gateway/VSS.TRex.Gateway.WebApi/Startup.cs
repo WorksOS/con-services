@@ -82,8 +82,8 @@ namespace VSS.TRex.Gateway.WebApi
       TileRenderingServer tileRenderServer = TileRenderingServer.NewInstance(new[] { ApplicationServiceServer.DEFAULT_ROLE_CLIENT, ServerRoles.TILE_RENDERING_NODE });
       services.AddSingleton<ITileRenderingServer>(tileRenderServer);
 
-      MutableClientServer tagFileRenderServer = new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT);
-      services.AddSingleton<IMutableClientServer>(tagFileRenderServer);
+      MutableClientServer tagFileServer = new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT);
+      services.AddSingleton<IMutableClientServer>(tagFileServer);
 
       serviceCollection = services;
     }
