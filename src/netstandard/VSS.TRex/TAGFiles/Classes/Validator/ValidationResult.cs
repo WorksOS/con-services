@@ -16,10 +16,10 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     Unknown = -1,
     BadRequest = -2,
     InvalidTagfile = -3,
-    TfaError = -4,
-    TfaAcessError = -5,
+    TfaFailedValidation = -4,
+    TfaException = -5,
     MissingConfiguration = -6,
-    SubmissionError = -7
+    QueueSubmissionError = -7
   }
 
 

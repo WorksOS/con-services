@@ -1,16 +1,17 @@
 ﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.TRex.Rendering.Implementations.Core2;
+using VSS.TRex.Common;
+using Draw = System.Drawing;
 
 namespace VSS.TRex.Gateway.Common.ResultHandling
 {
   public class TileResult : ContractExecutionResult
   {
-    public Bitmap TileData { get; private set; }
+    public byte[] TileData { get; private set; }
 
     /// <summary>
     /// Create instance of TileResult
     /// </summary>
-    public static TileResult CreateTileResult(Bitmap data)
+    public static TileResult CreateTileResult(byte[] data)
     {
       return new TileResult
       {
@@ -24,9 +25,9 @@ namespace VSS.TRex.Gateway.Common.ResultHandling
     /// <returns>Returns an empty <see cref="TileResult"/> object.</returns>
     public static TileResult EmptyTile(int width, int height)
     {
-      using (Bitmap bitmap = new Bitmap(width, height))
+      using (Draw.Bitmap bitmap = new Draw.Bitmap(width, height))
       {
-        return CreateTileResult(bitmap);
+        return CreateTileResult(bitmap.BitmapToByteArray());
       }
     }
   }

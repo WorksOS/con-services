@@ -1,6 +1,8 @@
 ﻿using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Abstractions.GridFabric.Responses;
 using VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses;
+using Draw = System.Drawing;
+using VSS.TRex.Common;
 
 namespace VSS.TRex.Rendering.Implementations.Framework
 {
@@ -13,15 +15,15 @@ namespace VSS.TRex.Rendering.Implementations.Framework
 
         public IGraphics CreateGraphics(IBitmap bitmap)
         {
-            return new Graphics(System.Drawing.Graphics.FromImage(((Bitmap)bitmap).UnderlyingBitmap));
+            return new Graphics(Draw.Graphics.FromImage(((Bitmap)bitmap).UnderlyingBitmap));
         }
 
-        public IPen CreatePen(System.Drawing.Color color)
+        public IPen CreatePen(Draw.Color color)
         {
             return new Pen(color);
         }
 
-        public IBrush CreateBrush(System.Drawing.Color color)
+        public IBrush CreateBrush(Draw.Color color)
         {
             return new Brush(color);
         }
@@ -30,7 +32,7 @@ namespace VSS.TRex.Rendering.Implementations.Framework
         {
             return new TileRenderResponse_Framework()
             {
-                TileBitmap = (System.Drawing.Bitmap)bitmap
+                TileBitmapData = ((Draw.Bitmap)bitmap).BitmapToByteArray()
             };
         }
     }

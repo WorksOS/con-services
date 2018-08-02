@@ -25,7 +25,7 @@ namespace VSS.TRex.TAGFiles.Executors
 
         public static ProcessTAGFileResponse Execute(Guid ProjectID, Guid AssetID, IEnumerable<ProcessTAGFileRequestFileItem> TAGFiles)
         {
-            Log.LogInformation($"Processing {TAGFiles.Count()} TAG files into project {ProjectID}, asset {AssetID}");
+            Log.LogInformation($"ProcessTAGFileResponse.Execute. Processing {TAGFiles.Count()} TAG files into project {ProjectID}, asset {AssetID}");
 
             ProcessTAGFileResponse response = new ProcessTAGFileResponse();
 
@@ -48,7 +48,7 @@ namespace VSS.TRex.TAGFiles.Executors
             {
                 try
                 {
-                    Log.LogInformation($"Processing TAG file {item.FileName} into project {ProjectID}");
+                    Log.LogInformation($"#Progress# Processing TAG file {item.FileName} into project {ProjectID}");
 
                     TAGFileConverter converter = new TAGFileConverter();
 
@@ -56,7 +56,7 @@ namespace VSS.TRex.TAGFiles.Executors
                     {
                         converter.Execute(fs);
 
-                        Log.LogInformation($"TAG file generated {converter.ProcessedCellPassCount} cell passes from {converter.ProcessedEpochCount} epochs");
+                        Log.LogInformation($"#Progress# TAG file generated {converter.ProcessedCellPassCount} cell passes from {converter.ProcessedEpochCount} epochs");
                     }
 
                     converter.SiteModel.ID = ProjectID;

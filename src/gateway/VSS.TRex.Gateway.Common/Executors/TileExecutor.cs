@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Buffers.Text;
+using Draw = System.Drawing;
+using System.IO;
 using System.Net;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Extensions.Logging;
@@ -49,7 +53,8 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     private CombinedFilter ConvertFilter(FilterResult filter, ISiteModel siteModel)
     {
-      if (filter == null) return null;
+      if (filter == null)
+        return new CombinedFilter();//TRex doesn't like null filter
 
       var combinedFilter = Mapper.Map<FilterResult, CombinedFilter>(filter);
       // TODO Map the excluded surveyed surfaces from the filter.SurveyedSurfaceExclusionList to the ones that are in the TRex database
@@ -91,7 +96,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       }
       CombinedFilter filter1 = ConvertFilter(request.Filter1, siteModel);
       CombinedFilter filter2 = ConvertFilter(request.Filter2, siteModel);
-
+   
       var response = tileRenderServer.RenderTile(
         new TileRenderRequestArgument
         (siteModel.ID,
@@ -105,7 +110,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           Guid.Empty //TODO: request.DesignDescriptor
         )) as TileRenderResponse_Core2;
 
-      return TileResult.CreateTileResult(response?.TileBitmap); 
+      return TileResult.CreateTileResult(response?.TileBitmapData);
     }
 
     /// <summary>

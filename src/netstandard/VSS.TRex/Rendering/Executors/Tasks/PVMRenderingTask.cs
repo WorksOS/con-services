@@ -45,7 +45,13 @@ namespace VSS.TRex.Rendering.Executors.Tasks
                 return false;
             }
 
-            return TileRenderer.Displayer.RenderSubGrid((response as IClientLeafSubGrid[])[0]);
+            var subGridResponses = response as IClientLeafSubGrid[];
+            if (subGridResponses == null || subGridResponses.Length == 0)
+            {
+              Log.LogWarning("No subgrid responses returned");
+              return false;
+            }
+            return TileRenderer.Displayer.RenderSubGrid(subGridResponses[0]);
         }
     }
 }

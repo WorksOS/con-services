@@ -18,13 +18,13 @@ using VSS.TRex.Storage;
 
 namespace VSS.TRex.Servers.Client
 {
-    /// <summary>
-    /// Defines a representation of a client able to request TRex related compute operations using
-    /// the Ignite In Memory Data Grid. All client type server classes should descend from this class.
-    /// </summary>
-    public class MutableClientServer : IgniteServer, IMutableClientServer
+  /// <summary>
+  /// Defines a representation of a client able to request TRex related compute operations using
+  /// the Ignite In Memory Data Grid. All client type server classes should descend from this class.
+  /// </summary>
+  public class MutableClientServer : IgniteServer, IMutableClientServer
   {
-        private static readonly ILogger Log = Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+    private static readonly ILogger Log = Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
     /// <summary>
     /// Constructor that creates a new server instance with a single role
@@ -43,7 +43,9 @@ namespace VSS.TRex.Servers.Client
       if (mutableTRexGrid == null)
       {
         // Attempt to attach to an already existing Ignite instance
+        Log.LogInformation("Getting mutable grid");
         mutableTRexGrid = TRexGridFactory.Grid(TRexGrids.MutableGridName());
+        Log.LogInformation($"Got {mutableTRexGrid?.Name}");
 
         // If there was no connection obtained, attempt to create a new instance
         if (mutableTRexGrid == null)
@@ -56,7 +58,7 @@ namespace VSS.TRex.Servers.Client
 
           IgniteConfiguration cfg = new IgniteConfiguration()
           {
-            SpringConfigUrl = @".\igniteKubeConfig.xml",
+            SpringConfigUrl = @".\igniteMutableKubeConfig.xml",
 
             IgniteInstanceName = TRexGrids.MutableGridName(),
             ClientMode = true,
@@ -84,10 +86,16 @@ namespace VSS.TRex.Servers.Client
             //    }
             //},
 
+            //DiscoverySpi = new TcpDiscoverySpi()
+            //{
+            //  //  LocalAddress = "127.0.0.1",
+            //  LocalPort = 48500
+            //},
+
             CommunicationSpi = new TcpCommunicationSpi()
             {
               //LocalAddress = "127.0.0.1",
-              LocalPort = 47100,
+              LocalPort = 48100,
             },
 
             Logger = new TRexIgniteLogger(Logger.CreateLogger("MutableClientServer")),
@@ -136,6 +144,7 @@ namespace VSS.TRex.Servers.Client
 
           try
           {
+            base.ConfigureTRexGrid(cfg);
             mutableTRexGrid = Ignition.Start(cfg);
           }
           catch (Exception e)

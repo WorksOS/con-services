@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+﻿using Draw = System.Drawing;
 
 namespace VSS.TRex.Rendering.Palettes
 {
@@ -8,9 +8,9 @@ namespace VSS.TRex.Rendering.Palettes
     public struct Transition
     {
         public double Value; 
-        public Color Color;
+        public Draw.Color Color;
 
-        public Transition(double value, Color color)
+        public Transition(double value, Draw.Color color)
         {
             Value = value;
             Color = color;

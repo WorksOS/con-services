@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+﻿using Draw = System.Drawing;
 
 namespace VSS.TRex.Rendering.Palettes
 {
@@ -9,11 +9,11 @@ namespace VSS.TRex.Rendering.Palettes
     {
         private static Transition[] Transitions =
         {
-            new Transition(0, Color.Green),
-            new Transition(500, Color.Yellow),
-            new Transition(1000, Color.Olive),
-            new Transition(1500, Color.Blue),
-            new Transition(2500, Color.SkyBlue)
+            new Transition(0, Draw.Color.Green),
+            new Transition(500, Draw.Color.Yellow),
+            new Transition(1000, Draw.Color.Olive),
+            new Transition(1500, Draw.Color.Blue),
+            new Transition(2500, Draw.Color.SkyBlue)
         };
 
       

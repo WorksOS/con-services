@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+﻿using Draw = System.Drawing;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 
 namespace VSS.TRex.Rendering.Palettes
@@ -19,7 +19,7 @@ namespace VSS.TRex.Rendering.Palettes
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public Color ChooseColour(double value)
+        public Draw.Color ChooseColour(double value)
         {
             for (int i = PaletteTransitions.Length - 1; i >= 0; i--)
             {
@@ -29,7 +29,7 @@ namespace VSS.TRex.Rendering.Palettes
                 }
             }
 
-            return Color.Empty;
+            return Draw.Color.Empty;
         }
     }
 }

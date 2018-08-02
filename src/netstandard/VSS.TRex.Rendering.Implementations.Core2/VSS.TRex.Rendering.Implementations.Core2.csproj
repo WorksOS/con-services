@@ -1,18 +1,19 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CoreCompat.System.Drawing.v2" Version="5.2.0-preview1-r131" />
+    <PackageReference Include="System.Drawing.Common" Version="4.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.0.3" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
-    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.0" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\interfaces\VSS.TRex.Rendering.Abstractions\VSS.TRex.Rendering.Abstractions.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Common\VSS.TRex.Common.csproj" />
     <ProjectReference Include="..\VSS.TRex\VSS.TRex.csproj" />
   </ItemGroup>
 

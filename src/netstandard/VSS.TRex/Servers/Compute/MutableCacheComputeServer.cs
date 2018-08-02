@@ -46,7 +46,7 @@ namespace VSS.TRex.Servers.Compute
     public override void ConfigureTRexGrid(IgniteConfiguration cfg)
     {
       base.ConfigureTRexGrid(cfg);
-      cfg.SpringConfigUrl = @".\igniteKubeConfig.xml";
+      cfg.SpringConfigUrl = @".\igniteMutableKubeConfig.xml";
 
       cfg.IgniteInstanceName = TRexGrids.MutableGridName();
 
@@ -98,8 +98,9 @@ namespace VSS.TRex.Servers.Compute
 
       //cfg.DiscoverySpi = new TcpDiscoverySpi()
       //{
-      //  LocalAddress = "127.0.0.1",
-      //  LocalPort = 48500,
+      //  //  LocalAddress = "127.0.0.1",
+      //  LocalPort = 48500
+      //};
 
       //  IpFinder = new TcpDiscoveryStaticIpFinder()
       //  {
@@ -111,7 +112,7 @@ namespace VSS.TRex.Servers.Compute
       cfg.CommunicationSpi = new TcpCommunicationSpi()
       {
         //LocalAddress = "127.0.0.1",
-        LocalPort = 47100,
+        LocalPort = 48100,
       };
 
       cfg.Logger = new TRexIgniteLogger(Logger.CreateLogger("MutableCacheComputeServer"));

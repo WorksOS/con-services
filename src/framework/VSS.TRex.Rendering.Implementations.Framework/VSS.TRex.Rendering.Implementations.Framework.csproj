@@ -63,6 +63,9 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Common, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\System.Drawing.Common.4.5.0\lib\net461\System.Drawing.Common.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.4.4.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
@@ -92,6 +95,10 @@
     <ProjectReference Include="..\..\interfaces\VSS.TRex.Rendering.Abstractions\VSS.TRex.Rendering.Abstractions.csproj">
       <Project>{3ff74fe8-c1b2-4a78-b685-99fabcd4989b}</Project>
       <Name>VSS.TRex.Rendering.Abstractions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Common\VSS.TRex.Common.csproj">
+      <Project>{737bfd08-031b-4506-8205-947b82c6d2ba}</Project>
+      <Name>VSS.TRex.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex\VSS.TRex.csproj">
       <Project>{40db7cf3-5817-45a5-9f90-29baa80e2c7a}</Project>
