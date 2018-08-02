@@ -30,10 +30,10 @@ namespace VSS.TRex.Gateway.WebApi
     /// </summary>
     public const string LoggerRepoName = "WebApi";
 
-    private IServiceCollection serviceCollection;
-
-    // This method gets called by the runtime. Use this method to add services to the container.
-    // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+    /// <summary>
+    /// This method gets called by the runtime. Use this method to add services to the container.
+    /// For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+    /// </summary>
     public void ConfigureServices(IServiceCollection services)
     {
       // Add framework services.
@@ -79,11 +79,11 @@ namespace VSS.TRex.Gateway.WebApi
 
       MutableClientServer tagFileMutableClientServer = new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT);
       services.AddSingleton<IMutableClientServer>(tagFileMutableClientServer);
-
-      serviceCollection = services;
     }
 
-    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    /// <summary>
+    /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    /// </summary>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env)
     {
       if (env.IsDevelopment())
