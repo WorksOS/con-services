@@ -1,3 +1,4 @@
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -95,6 +96,7 @@ namespace VSS.MasterData.Project.WebAPI
         builder.ConfigureAspNetCore(options =>
         {
           options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
+          options.Hosting.IgnorePatterns.Add(request => request.Request.GetUri().ToString().Contains("newrelic.com"));
         });
       });
 
