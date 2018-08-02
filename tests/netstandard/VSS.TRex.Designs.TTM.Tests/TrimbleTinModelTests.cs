@@ -1,12 +1,5 @@
-﻿using VSS.TRex.Designs.TTM;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using Xunit;
-using Xunit.Sdk;
 
 namespace VSS.TRex.Designs.TTM.Tests
 {
