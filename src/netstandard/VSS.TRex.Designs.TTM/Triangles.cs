@@ -44,11 +44,11 @@ namespace VSS.TRex.Designs.TTM
         public void RemoveTriangle(Triangle triangle)
         {
             // Disconnect neighbours
-            for (int Side = 0; Side < 2; Side++)
+            for (int Side = 0; Side < 3; Side++)
             {
                 if (triangle.Neighbours[Side] != null)
                 {
-                    for (int NbrSide = 0; Side < 2; Side++)
+                    for (int NbrSide = 0; NbrSide < 3; NbrSide++)
                     {
                         if (triangle == triangle.Neighbours[Side].Neighbours[NbrSide])
                         {

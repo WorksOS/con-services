@@ -148,8 +148,8 @@ namespace VSS.TRex.Designs.TTM
             long HeaderPos = writer.BaseStream.Position;
 
             FHeader.FileSignature = ASCIIEncoding.ASCII.GetBytes(Consts.TTMFileIdentifier);
-            FHeader.DTMModelInternalName = ASCIIEncoding.ASCII.GetBytes(ModelName);
-            if (FHeader.DTMModelInternalName.Length > HeaderConsts.kDTMInternalModelNameSize)
+            FHeader.DTMModelInternalName = ASCIIEncoding.ASCII.GetBytes(ModelName ?? "Un-named Model\0");
+            if (FHeader.DTMModelInternalName.Length != HeaderConsts.kDTMInternalModelNameSize)
             {
                 Array.Resize(ref FHeader.DTMModelInternalName, HeaderConsts.kDTMInternalModelNameSize);
             }
@@ -237,7 +237,7 @@ namespace VSS.TRex.Designs.TTM
                                      double ElevationResolution = Consts.DefaultElevationResolution,
                                       bool BuildEdgeListEtAl = true)
         {
-            if (BuildEdgeListEtAl && (Triangles.Count > 0))
+            if (BuildEdgeListEtAl && Triangles.Count > 0)
             {
                 BuildTriangleLinks();
                 BuildEdgeList();
@@ -316,7 +316,7 @@ namespace VSS.TRex.Designs.TTM
         public string ModelName { get { return FModelName; } set { FModelName = value; } }
         public TTMStartPoints StartPoints { get { return FStartPoints; } }
         public TTMEdges Edges { get { return FEdges; } }
-        public TTMHeader Header; //{ get { return FHeader; } }
+        public TTMHeader Header = TTMHeader.NewHeader(); //{ get { return FHeader; } }
 
         public double CoordinateResolution { get; set; }
         public double ElevationResolution { get; set; }

@@ -157,7 +157,7 @@ namespace VSS.TRex.Designs.TTM
                                    int ExpectedPointCount)
         {
             // Use largest range to calculate hash index
-            if ((MaxX - MinX) > (MaxY - MinY))
+            if (MaxX - MinX > MaxY - MinY)
             {
                 HashOrdinate = HashOrdinate.hoX;
                 MinHashOrdinate = MinX;

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.TTM
@@ -9,7 +8,6 @@ namespace VSS.TRex.Designs.TTM
         private TriVertices FVertices;
         private Triangles FTriangles;
 
-        //  protected
         protected virtual void CreateLists(out TriVertices vertices, out Triangles triangles)
         {
             vertices = new TriVertices();
@@ -26,18 +24,17 @@ namespace VSS.TRex.Designs.TTM
             CreateLists(out FVertices, out FTriangles);
         }
 
-        //  public
         public TriVertices Vertices { get { return FVertices; } }
+
         public Triangles Triangles { get { return FTriangles; } }
 
-
-        private Triangle FindNeighbour(List<List<Triangle>> Trianglelists, Triangle Triangle, TriVertex FromVertex, TriVertex ToVertex)
+        private Triangle FindNeighbour(List<List<Triangle>> Trianglelists, Triangle triangle, TriVertex fromVertex, TriVertex toVertex)
         {
-            for (int i = 0; i < Trianglelists[FromVertex.Tag].Count; i++)
+            for (int i = 0; i < Trianglelists[fromVertex.Tag].Count; i++)
             {
-                Triangle Result = Trianglelists[FromVertex.Tag][i];
+                Triangle Result = Trianglelists[fromVertex.Tag][i];
 
-                if ((Result != Triangle) && (Trianglelists[ToVertex.Tag].IndexOf(Result) >= 0))
+                if (Result != triangle && Trianglelists[toVertex.Tag].IndexOf(Result) >= 0)
                     return Result;
             }
 
@@ -46,8 +43,6 @@ namespace VSS.TRex.Designs.TTM
 
         public void BuildTriangleLinks()
         {
-            TriVertex FromVertex, ToVertex;
-
             // Ensure all the indices are correct
 
             //  Triangles.DumpTriangleList('c:\TriangleList_BeforeNumber.txt');
@@ -70,7 +65,7 @@ namespace VSS.TRex.Designs.TTM
                 Trianglelists.Add(new List<Triangle>());
             }
 
-            //    Vertices.DumpVertexList('c:\VertexList_AfterTriangleListCreate.txt');
+            // Vertices.DumpVertexList('c:\VertexList_AfterTriangleListCreate.txt');
 
             // Associate triangles with points
             for (int i = 0; i < Triangles.Count; i++)
@@ -84,29 +79,29 @@ namespace VSS.TRex.Designs.TTM
             // Find the neighbour for each triangle side
             for (int i = 0; i < Triangles.Count; i++)
             {
-                for (int Side = 0; Side < 3; Side++)
-                {
-                    if (Triangles[i].Neighbours[Side] != null)
-                    {
-                        FromVertex = Vertices[Side];
-                        ToVertex = Vertices[XYZ.NextSide(Side)];
+              for (int Side = 0; Side < 3; Side++)
+              {
+                if (Triangles[i].Neighbours[Side] != null)
+                  continue;
 
-                        Triangle Nbr = FindNeighbour(Trianglelists, Triangles[i], FromVertex, ToVertex);
-                        Triangles[i].Neighbours[Side] = Nbr;
-                        if (Nbr != null)
-                        {
-                            int NbrSide = Nbr.GetSideIndex(FromVertex, ToVertex);
-                            if (Nbr.Neighbours[NbrSide] == null)
-                            {
-                                Nbr.Neighbours[NbrSide] = Triangles[i];
-                            }
-                            else
-                            {
-                                Triangles[i].Neighbours[Side] = null;
-                            }
-                        }
-                    }
+                TriVertex FromVertex = Triangles[i].Vertices[Side];
+                TriVertex ToVertex = Triangles[i].Vertices[XYZ.NextSide(Side)];
+
+                Triangle Nbr = FindNeighbour(Trianglelists, Triangles[i], FromVertex, ToVertex);
+                Triangles[i].Neighbours[Side] = Nbr;
+                if (Nbr != null)
+                {
+                  int NbrSide = Nbr.GetSideIndex(FromVertex, ToVertex);
+                  if (Nbr.Neighbours[NbrSide] == null)
+                  {
+                    Nbr.Neighbours[NbrSide] = Triangles[i];
+                  }
+                  else
+                  {
+                    Triangles[i].Neighbours[Side] = null;
+                  }
                 }
+              }
             }
         }
 
