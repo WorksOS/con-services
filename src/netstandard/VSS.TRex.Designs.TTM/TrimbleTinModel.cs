@@ -215,14 +215,19 @@ namespace VSS.TRex.Designs.TTM
             Write(writer);
         }
 
-        public void LoadFromFile(string FileName)
+      public void LoadFromStream(Stream stream)
+      {
+        using (BinaryReader reader = new BinaryReader(stream))
+        {
+          Read(reader);
+        }
+      }
+
+    public void LoadFromFile(string FileName)
         {
             using (FileStream fs = new FileStream(FileName, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                using (BinaryReader reader = new BinaryReader(fs))
-                {
-                    Read(reader);
-                }
+               LoadFromStream(fs);
             }
 
             if (FModelName.Length == 0)
@@ -231,30 +236,36 @@ namespace VSS.TRex.Designs.TTM
             }
         }
 
-
-        public void SaveToFile(string FileName,
-                                      double CoordinateResolution = Consts.DefaultCoordinateResolution,
-                                     double ElevationResolution = Consts.DefaultElevationResolution,
-                                      bool BuildEdgeListEtAl = true)
+      public void SaveToStream(double CoordinateResolution,
+                               double ElevationResolution,
+                               bool BuildEdgeListEtAl,
+                               Stream stream)
+      {
+        if (BuildEdgeListEtAl && Triangles.Count > 0)
         {
-            if (BuildEdgeListEtAl && Triangles.Count > 0)
-            {
-                BuildTriangleLinks();
-                BuildEdgeList();
-                BuildStartPointList();
-            }
+          BuildTriangleLinks();
+          BuildEdgeList();
+          BuildStartPointList();
+        }
 
-            this.CoordinateResolution = CoordinateResolution;
-            this.ElevationResolution = ElevationResolution;
+        this.CoordinateResolution = CoordinateResolution;
+        this.ElevationResolution = ElevationResolution;
 
+      using (BinaryWriter writer = new BinaryWriter(stream))
+          {
+            Write(writer);
+          }
+    }
+
+    public void SaveToFile(string FileName,
+                           double CoordinateResolution = Consts.DefaultCoordinateResolution,
+                           double ElevationResolution = Consts.DefaultElevationResolution,
+                           bool BuildEdgeListEtAl = true)
+        {
             using (FileStream fs = new FileStream(FileName, FileMode.CreateNew, FileAccess.Write))
             {
-                using (BinaryWriter writer = new BinaryWriter(fs))
-                {
-                    Write(writer);
-                }
+                SaveToStream(CoordinateResolution, ElevationResolution, BuildEdgeListEtAl, fs);
             }
-
         }
 
         public void SaveToFile(string FileName,

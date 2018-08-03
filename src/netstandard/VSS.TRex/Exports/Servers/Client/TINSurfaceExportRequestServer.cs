@@ -1,11 +1,13 @@
-﻿using VSS.TRex.Exports.Surfaces;
+﻿using System.IO;
+using VSS.TRex.Designs.TTM;
+using VSS.TRex.Exports.Surfaces;
 using VSS.TRex.Exports.Surfaces.GridFabric;
 using VSS.TRex.Servers;
 using VSS.TRex.Servers.Client;
 
 namespace VSS.TRex.Exports.Servers.Client
 {
-    public class TINSurfaceExportRequestServer : ApplicationServiceServer
+  public class TINSurfaceExportRequestServer : ApplicationServiceServer, ITINSurfaceExportRequestServer
   {
       /// <summary>
       /// Default no-arg constructor that creates a server with the default Application Service role and the specialise tile rendering role.
@@ -38,10 +40,12 @@ namespace VSS.TRex.Exports.Servers.Client
 
         TINSurfaceRequestResponse response = request.Execute(argument);
 
-        TINSurfaceResult result = new TINSurfaceResult
+        TINSurfaceResult result = new TINSurfaceResult();
+        using (MemoryStream ms = new MemoryStream())
         {
-          // ????
-        };
+          response.TIN.SaveToStream(Consts.DefaultCoordinateResolution, Consts.DefaultElevationResolution, false, ms);
+          result.data = ms.ToArray();
+        }
 
         return result;
       }

@@ -10,6 +10,9 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
   [Serializable]
   public class TINSurfaceRequestArgument : BaseApplicationServiceRequestArgument
   {
-    private DesignDescriptor DesignDescriptor { get; set; }
+    /// <summary>
+    /// The tolerance to use (in meters) when decimating the elevation surface into a TIN
+    /// </summary>
+    public double Tolerance { get; set; }
   }
 }

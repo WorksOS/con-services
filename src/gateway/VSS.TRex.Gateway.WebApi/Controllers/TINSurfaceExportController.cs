@@ -1,41 +1,54 @@
-﻿using System.IO;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models;
+using VSS.TRex.Exports.Servers.Client;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.ResultHandling;
-using VSS.TRex.Rendering.Servers.Client;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
-    public class TINSurfaceExportController : BaseController
-    {
-//    private ITileRenderingServer tileRenderServer;
+  /// <summary>
+  /// The controller for generating TIN surfaces decimatied from elevation data
+  /// </summary>
+  public class TINSurfaceExportController : BaseController
+  {
+    private ITINSurfaceExportRequestServer tinSurfaceExportServer;
 
+    /// <summary>
+    /// Constructor for TIN surface export controller
+    /// </summary>
+    /// <param name="loggerFactory"></param>
+    /// <param name="exceptionHandler"></param>
+    /// <param name="configStore"></param>
+    /// <param name="tinSurfaceExportServer"></param>
     public TINSurfaceExportController(ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler,
-      IConfigurationStore configStore, ITileRenderingServer tileRenderServer)
+      IConfigurationStore configStore, ITINSurfaceExportRequestServer tinSurfaceExportServer)
       : base(loggerFactory, loggerFactory.CreateLogger<TileController>(), exceptionHandler, configStore)
     {
-//      this.tileRenderServer = tileRenderServer;
+      this.tinSurfaceExportServer = tinSurfaceExportServer;
     }
 
+    /// <summary>
+    /// Web service end point controller for TIN surface export
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
     [HttpPost]
     [Route("api/v1/export/surface/ttm")]
-    public FileResult GetTINSurface([FromBody] bool /*ExportTINSurfaceRequest */request)
+    public TINSurfaceExportResult GetTINSurface([FromBody] TileRequest request)
     {
-      Log.LogDebug("GetTINSUrface: " + Request.QueryString);
+      Log.LogDebug("GetTINSurface: " + Request.QueryString);
 
-//      request.Validate();
+      request.Validate();
 
-      //var tileResult = WithServiceExceptionTryExecute(() =>
-      //  RequestExecutorContainer
-      //    .Build<TileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, tileRenderServer, null)
-      //    .Process(request)) as TileResult;
+      var container = RequestExecutorContainer.Build<TINSurfaceExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null, null);
+      container.tINSurfaceExportRequestServer = tinSurfaceExportServer;
 
-      return null; //new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
+      var tinResult = WithServiceExceptionTryExecute(() => container.Process(request)) as TINSurfaceExportResult;
+
+      return tinResult;
     }
   }
 }

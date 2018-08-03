@@ -332,7 +332,7 @@ namespace VSS.TRex.SubGridTrees
             {
                 for (int I = 0; I < SparseCellCount; I++)
                 {
-                    if (SparseCells[I].CellX == X) && (SparseCells[I].CellY == Y)
+                    if (SparseCells[I].CellX == X && SparseCells[I].CellY == Y)
                     {
                         if (I < SparseCellCount - 1)
                             Array.Copy(SparseCells, I + 1, SparseCells, I, SparseCellCount - I);
