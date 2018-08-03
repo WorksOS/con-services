@@ -64,12 +64,12 @@ namespace VSS.Productivity3D.Common.Proxies
           liftBuildSettings, out passCountSummary);
     }
 
-    public bool GetPassCountDetails(long projectID, TASNodeRequestDescriptor externalRequestDescriptor,
+    public TASNodeErrorStatus GetPassCountDetails(long projectID, TASNodeRequestDescriptor externalRequestDescriptor,
         TPassCountSettings passCountSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
         out TPassCountDetails passCountDetails)
     {
       return client.GetPassCountDetails(projectID, externalRequestDescriptor, passCountSettings, filter,
-          liftBuildSettings, out passCountDetails) == TASNodeErrorStatus.asneOK;
+          liftBuildSettings, out passCountDetails);
     }
 
 
@@ -247,27 +247,27 @@ namespace VSS.Productivity3D.Common.Proxies
       return client.GetCMVSummary(projectId, externalRequestDescriptor, cmvSettings, filter, liftBuildSettings, out cmvSummary);
     }
 
-    public bool GetCMVChangeSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
+    public TASNodeErrorStatus GetCMVChangeSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
         TASNodeCMVChangeSettings cmvSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
         out TASNodeCMVChangeResult cmvSummary)
     {
       return client.GetCMVChangeSummary(projectId, externalRequestDescriptor, filter, liftBuildSettings, cmvSettings,
-          out cmvSummary) == TASNodeErrorStatus.asneOK;
+          out cmvSummary);
     }
 
-    public bool GetCMVDetails(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
+    public TASNodeErrorStatus GetCMVDetails(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
         TCMVSettings cmvSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
         out TCMVDetails cmvDetails)
     {
       return client.GetCMVDetails(projectId, externalRequestDescriptor, cmvSettings, filter,
-          liftBuildSettings, out cmvDetails) == TASNodeErrorStatus.asneOK;
+          liftBuildSettings, out cmvDetails);
     }
 
-    public bool GetCMVDetailsExt(long projectId, TASNodeRequestDescriptor externalRequestDescriptor, TCMVSettingsExt cmvSettings,
+    public TASNodeErrorStatus GetCMVDetailsExt(long projectId, TASNodeRequestDescriptor externalRequestDescriptor, TCMVSettingsExt cmvSettings,
       TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings, out TCMVDetails cmvDetails)
     {
       return client.GetCMVDetailsExt(projectId, externalRequestDescriptor, cmvSettings, filter,
-               liftBuildSettings, out cmvDetails) == TASNodeErrorStatus.asneOK;
+               liftBuildSettings, out cmvDetails);
     }
 
     public TASNodeErrorStatus GetTemperatureSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,

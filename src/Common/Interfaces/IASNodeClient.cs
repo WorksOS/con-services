@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.Common.Interfaces
         TPassCountSettings passCountSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
         out TPassCountSummary passCountSummary);
 
-    bool GetPassCountDetails(long projectID, TASNodeRequestDescriptor externalRequestDescriptor,
+    TASNodeErrorStatus GetPassCountDetails(long projectID, TASNodeRequestDescriptor externalRequestDescriptor,
         TPassCountSettings passCountSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
         out TPassCountDetails passCountDetails);
 
@@ -154,15 +154,15 @@ namespace VSS.Productivity3D.Common.Interfaces
               out TCMVSummary cmvSummary);
 
 
-    bool GetCMVChangeSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
+    TASNodeErrorStatus GetCMVChangeSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
               TASNodeCMVChangeSettings cmvSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
               out TASNodeCMVChangeResult cmvSummary);
 
-    bool GetCMVDetails(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
+    TASNodeErrorStatus GetCMVDetails(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
      TCMVSettings cmvSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
      out TCMVDetails cmvDetails);
 
-    bool GetCMVDetailsExt(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
+    TASNodeErrorStatus GetCMVDetailsExt(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
       TCMVSettingsExt cmvSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
       out TCMVDetails cmvDetails);
 
