@@ -1,24 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Executors.Tasks;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Types;
 
-namespace VSS.TRex.Exports.Patches.Executors.Tasks
+namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
 {
   /// <summary>
-  /// The task responsible for receiving subgrids to be aggregated into a Patch response
+  /// The task responsible for receiving subgrids to be processed into a TIN surface
   /// </summary>
-  public class PatchTask : PipelinedSubGridTask
+  public class SurfaceTask : PipelinedSubGridTask
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     /// <summary>
     /// The collection of subgrids being collected for a patch response
     /// </summary>
-    public List<IClientLeafSubGrid> PatchSubgrids = new List<IClientLeafSubGrid>();
+    public List<IClientLeafSubGrid> SurfaceSubgrids = new List<IClientLeafSubGrid>();
 
     /// <summary>
     /// Constructs the patch task
@@ -26,7 +26,7 @@ namespace VSS.TRex.Exports.Patches.Executors.Tasks
     /// <param name="requestDescriptor"></param>
     /// <param name="tRexNodeId"></param>
     /// <param name="gridDataType"></param>
-    public PatchTask(Guid requestDescriptor, string tRexNodeId, GridDataType gridDataType) : base(requestDescriptor, tRexNodeId, gridDataType)
+    public SurfaceTask(Guid requestDescriptor, string tRexNodeId, GridDataType gridDataType) : base(requestDescriptor, tRexNodeId, gridDataType)
     {
     }
 
@@ -45,7 +45,7 @@ namespace VSS.TRex.Exports.Patches.Executors.Tasks
         return false;
       }
 
-      PatchSubgrids.Add((response as IClientLeafSubGrid[])[0]);
+      SurfaceSubgrids.Add((response as IClientLeafSubGrid[])[0]);
 
       return true;
     }

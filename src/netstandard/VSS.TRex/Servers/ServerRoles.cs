@@ -59,5 +59,10 @@
     /// A server responsible for producing elevation subgrid information from design and surveyed surface topology models (TTMs)
     /// </summary>
     public const string DESIGN_PROFILER = "DesignProfiler";
+
+    /// <summary>
+    /// A server responsible for decimating production elevation data into a TIN surface for export
+    /// </summary>
+    public const string TIN_SURFACE_EXPORT_ROLE = "TINSurfaceExport";
   }
 }

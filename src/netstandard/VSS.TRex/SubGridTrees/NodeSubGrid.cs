@@ -282,7 +282,7 @@ namespace VSS.TRex.SubGridTrees
             // (ie: the caller is trying to be too clever!)
             if (Value != null)
             {
-                if (Value.Level != 0 && Value.Level != (Level + 1))
+                if (Value.Level != 0 && Value.Level != Level + 1)
                     throw new ArgumentException("Level of subgrid being added is non-null and is not set correctly for the level it is being added to", "Value.Level");
 
                 Value.Parent = this;
@@ -332,7 +332,7 @@ namespace VSS.TRex.SubGridTrees
             {
                 for (int I = 0; I < SparseCellCount; I++)
                 {
-                    if ((SparseCells[I].CellX == X) && (SparseCells[I].CellY == Y))
+                    if (SparseCells[I].CellX == X) && (SparseCells[I].CellY == Y)
                     {
                         if (I < SparseCellCount - 1)
                             Array.Copy(SparseCells, I + 1, SparseCells, I, SparseCellCount - I);
