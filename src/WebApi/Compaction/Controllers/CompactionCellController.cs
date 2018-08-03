@@ -93,7 +93,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="patchSize">Number of cell subgrids horizontally/vertically in a square patch (each subgrid has 32 cells)</param>
     /// <param name="cellDownSample">Cell downsample factor (1 - cell size = 0.34, 2 - cell size = 0.68 etc.)</param>
     /// <returns>Returns a highly efficient response stream of patch information (using Protobuf protocol).</returns>
-    [ProjectUidVerifier(AllowLandfillProjects = true)]
+    [ProjectUidVerifier]
     [Route("api/v2/patches")]
     [HttpGet]
     public async Task<IActionResult> GetSubGridPatches(Guid projectUid, Guid filterUid, int patchId, DisplayMode mode, int patchSize, int cellDownSample = 1)

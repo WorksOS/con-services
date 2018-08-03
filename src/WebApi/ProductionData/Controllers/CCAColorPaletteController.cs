@@ -81,7 +81,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="endUtc">End date of the requested CCA data in UTC.</param>
     /// <param name="liftId">Lift identifier of the requested CCA data.</param>
     /// <returns>Execution result with a list of CCA data colour palettes.</returns>
-    [ProjectUidVerifier(AllowLandfillProjects = true)]
+    [ProjectUidVerifier]
     [Route("api/v2/ccacolors")]
     [HttpGet]
     public async Task<CCAColorPaletteResult> Get([FromQuery] Guid projectUid,

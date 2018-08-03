@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <executor>CellPassesExecutor</executor>
     [PostRequestVerifier]
     [ProjectIdVerifier]
-    [ProjectUidVerifier(AllowLandfillProjects = true)]
+    [ProjectUidVerifier]
     [Route("api/v1/productiondata/cells/passes")]
     [HttpPost]
     public CellPassesResult Post([FromBody]CellPassesRequest request)
@@ -55,8 +55,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="request">The request body parameters for the request.</param>
     /// <returns>The requested thematic value expressed as a floating point number. Interpretation is dependant on the thematic domain.</returns>
     [PostRequestVerifier]
-    [ProjectIdVerifier(AllowLandfillProjects = true)]
-    [ProjectUidVerifier(AllowLandfillProjects = true)]
+    [ProjectIdVerifier]
+    [ProjectUidVerifier]
     [Route("api/v1/productiondata/cells/datum")]
     [HttpPost]
     public CellDatumResponse Post([FromBody]CellDatumRequest request)
@@ -69,8 +69,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// Requests cell passes information in patches (raw Raptor data output)
     /// </summary>
     [PostRequestVerifier]
-    [ProjectIdVerifier(AllowLandfillProjects = true)]
-    [ProjectUidVerifier(AllowLandfillProjects = true)]
+    [ProjectIdVerifier]
+    [ProjectUidVerifier]
     [Route("api/v1/productiondata/patches")]
     [HttpPost]
     public ContractExecutionResult Post([FromBody]PatchRequest request)
@@ -84,8 +84,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// Requests cell passes information in patches but returning co-ordinates relative to the world origin rather than cell origins.
     /// </summary>
     [PostRequestVerifier]
-    [ProjectIdVerifier(AllowLandfillProjects = true)]
-    [ProjectUidVerifier(AllowLandfillProjects = true)]
+    [ProjectIdVerifier]
+    [ProjectUidVerifier]
     [Route("api/v1/productiondata/patches/worldorigin")]
     [HttpPost]
     public ContractExecutionResult GetSubGridPatchesAsWorldOrigins([FromBody]PatchRequest request)

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Common.Filters.Authentication
 {
@@ -14,11 +13,6 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
   public class ProjectUidVerifier : ActionFilterAttribute
   {
     private const string NAME = "projectUid";
-
-    /// <summary>
-    /// Gets or sets whether the Filter will check for and reject Landfill Projects.
-    /// </summary>
-    public bool AllowLandfillProjects { get; set; }
 
     /// <summary>
     /// Gets or sets whether the Filter will check for and reject archived Projects.
@@ -54,13 +48,6 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
 
       // RaptorPrincipal will handle the failure case where project isn't found.
       var projectDescriptor = ((RaptorPrincipal) actionContext.HttpContext.User).GetProject((string)projectUidValue).Result;
-
-      if (AllowLandfillProjects && projectDescriptor.ProjectType == ProjectType.LandFill)
-      {
-        throw new ServiceException(HttpStatusCode.Unauthorized,
-          new ContractExecutionResult(ContractExecutionStatesEnum.AuthError,
-            "Don't have access to the selected landfill project."));
-      }
 
       if (AllowArchivedState && projectDescriptor.IsArchived)
       {

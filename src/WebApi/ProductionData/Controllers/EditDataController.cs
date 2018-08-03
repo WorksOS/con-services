@@ -57,8 +57,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <returns>A list of the edits applied to the production data for the project and machine.</returns>
     /// <executor>GetEditDataExecutor</executor> 
     [PostRequestVerifier]
-    [ProjectIdVerifier(AllowLandfillProjects = true)]
-    [ProjectUidVerifier(AllowLandfillProjects = true)]
+    [ProjectIdVerifier]
+    [ProjectUidVerifier]
     [Route("api/v1/productiondata/getedits")]
     [HttpPost]
     public EditDataResult PostEditDataAcquire([FromBody] GetEditDataRequest request)
@@ -75,8 +75,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <returns></returns>
     /// <executor>EditDataExecutor</executor>
     [PostRequestVerifier]
-    [ProjectIdVerifier(AllowLandfillProjects = true, AllowArchivedState = true)]
-    [ProjectUidVerifier(AllowLandfillProjects = true, AllowArchivedState = true)]
+    [ProjectIdVerifier(AllowArchivedState = true)]
+    [ProjectUidVerifier(AllowArchivedState = true)]
     [Route("api/v1/productiondata/edit")]
     [HttpPost]
     public ContractExecutionResult Post([FromBody]EditDataRequest request)
