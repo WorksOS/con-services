@@ -91,12 +91,13 @@ namespace VSS.TRex.Exports.Surfaces.Executors
       if (ComputedGridExtent.IsValidPlanExtent)
         ComputedGridExtent.Offset(-(int)SubGridTree.DefaultIndexOriginOffset, -(int)SubGridTree.DefaultIndexOriginOffset);
 
-      // Convert the grid rectangle to a world rectangle
-      BoundingWorldExtent3D ComputedWorldExtent = new BoundingWorldExtent3D(ComputedGridExtent.MinX * dataStore.CellSize,
-        ComputedGridExtent.MinY * dataStore.CellSize,
-        (ComputedGridExtent.MaxX + 0.01) * dataStore.CellSize,
-        (ComputedGridExtent.MaxY + 0.01) * dataStore.CellSize,
-        ComputedGridExtent.MinZ, ComputedGridExtent.MaxZ);
+      // Convert the grid rectangle to a world rectangle, padding out the 3D bound by a small margin to avoid edge effects in calcualations
+      BoundingWorldExtent3D ComputedWorldExtent = new BoundingWorldExtent3D
+       (ComputedGridExtent.MinX - 0.01 * dataStore.CellSize,
+        ComputedGridExtent.MinY - 0.01 * dataStore.CellSize,
+        (ComputedGridExtent.MaxX + 1 + 0.01) * dataStore.CellSize,
+        (ComputedGridExtent.MaxY + 1 + 0.01) * dataStore.CellSize,
+        ComputedGridExtent.MinZ - 0.01, ComputedGridExtent.MaxZ + 0.01);
 
       return ComputedWorldExtent;
     }

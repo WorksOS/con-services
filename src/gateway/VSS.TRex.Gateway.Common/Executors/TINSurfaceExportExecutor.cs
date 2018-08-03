@@ -12,11 +12,8 @@ using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Exports.Servers.Client;
 using VSS.TRex.Exports.Surfaces.GridFabric;
 using VSS.TRex.Filters;
-using VSS.TRex.Gateway.Common.Converters;
+using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Gateway.Common.ResultHandling;
-using VSS.TRex.Geometry;
-using VSS.TRex.Rendering.GridFabric.Arguments;
-using VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses;
 using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Gateway.Common.Executors
@@ -54,6 +51,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         return new CombinedFilter();//TRex doesn't like null filter
 
       var combinedFilter = Mapper.Map<FilterResult, CombinedFilter>(filter);
+
       // TODO Map the excluded surveyed surfaces from the filter.SurveyedSurfaceExclusionList to the ones that are in the TRex database
       bool includeSurveyedSurfaces = filter.SurveyedSurfaceExclusionList.Count == 0;
       var excludedIds = siteModel.SurveyedSurfaces == null || includeSurveyedSurfaces ? new Guid[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray();
@@ -63,19 +61,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      var request = item as TileRequest;
-
-      BoundingWorldExtent3D extents = null;
-      bool hasGridCoords = false;
-      if (request.BoundBoxLatLon != null)
-      {
-        extents = AutoMapperUtility.Automapper.Map<BoundingBox2DLatLon, BoundingWorldExtent3D>(request.BoundBoxLatLon);
-      }
-      else if (request.BoundBoxGrid != null)
-      {
-        hasGridCoords = true;
-        extents = AutoMapperUtility.Automapper.Map<BoundingBox2DGrid, BoundingWorldExtent3D>(request.BoundBoxGrid);
-      }
+      var request = item as TINSurfaceExportRequest;
 
       ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(request.ProjectUid.Value);
 
@@ -85,32 +71,20 @@ namespace VSS.TRex.Gateway.Common.Executors
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
             $"Site model {request.ProjectUid} is unavailable"));
       }
-      CombinedFilter filter1 = ConvertFilter(request.Filter1, siteModel);
-      CombinedFilter filter2 = ConvertFilter(request.Filter2, siteModel);
 
-      var response = tINSurfaceExportRequestServer.Execute(new TINSurfaceRequestArgument()
-        {}
+      var response = tINSurfaceExportRequestServer.Execute(new TINSurfaceRequestArgument
+        {
+          Tolerance = request.Tolerance ?? 0.0,
+          ProjectID = request.ProjectUid.Value,
+          Filters = new FilterSet(ConvertFilter(request.Filter, siteModel))
+        }
       );
 
-      /*      var response = tileRenderServer.RenderTile(
-              new TileRenderRequestArgument
-              (siteModel.ID,
-                (Types.DisplayMode)request.Mode,
-                extents,
-                hasGridCoords,
-                request.Width, // PixelsX
-                request.Height, // PixelsY
-                filter1,
-                filter2,
-                Guid.Empty //TODO: request.DesignDescriptor
-              )) as TileRenderResponse_Core2;
-      */
-
-      return TINSurfaceExportResult.CreateTINResult(response.data)
+      return TINSurfaceExportResult.CreateTINResult(response.data);
     }
 
     /// <summary>
-    /// Processes the tile request asynchronously.
+    /// Processes the surface request asynchronously.
     /// </summary>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {

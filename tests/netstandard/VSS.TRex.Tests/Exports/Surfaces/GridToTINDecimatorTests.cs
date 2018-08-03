@@ -84,10 +84,11 @@ namespace VSS.TRex.Tests.Exports.Surfaces
           ComputedGridExtent.Offset(-(int)SubGridTree.DefaultIndexOriginOffset, -(int)SubGridTree.DefaultIndexOriginOffset);
 
         // Convert the grid rectangle to a world rectangle
-        BoundingWorldExtent3D ComputedWorldExtent = new BoundingWorldExtent3D(ComputedGridExtent.MinX * dataStore.CellSize,
-          ComputedGridExtent.MinY * dataStore.CellSize,
-          (ComputedGridExtent.MaxX + 0.01) * dataStore.CellSize,
-          (ComputedGridExtent.MaxY + 0.01) * dataStore.CellSize,
+        BoundingWorldExtent3D ComputedWorldExtent = new BoundingWorldExtent3D
+         (ComputedGridExtent.MinX - 0.01 * dataStore.CellSize,
+          ComputedGridExtent.MinY - 0.01 * dataStore.CellSize,
+          (ComputedGridExtent.MaxX + 1 + 0.01) * dataStore.CellSize,
+          (ComputedGridExtent.MaxY + 1 + 0.01) * dataStore.CellSize,
           ComputedGridExtent.MinZ, ComputedGridExtent.MaxZ);
 
       return ComputedWorldExtent;
@@ -152,7 +153,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces
         Assert.NotNull(decimator.GetTIN());
 
 //        string fileName = $@"C:\temp\UnitTestExportTTM({DateTime.Now.Ticks}).ttm";
-        //decimator.GetTIN().SaveToFile(fileName, true);  
+//        decimator.GetTIN().SaveToFile(fileName, true);  
 
 //        TrimbleTINModel tin = new TrimbleTINModel();        
 //        tin.LoadFromFile(fileName);

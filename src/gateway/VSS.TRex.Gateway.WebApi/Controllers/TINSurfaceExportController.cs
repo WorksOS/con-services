@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Exports.Servers.Client;
 using VSS.TRex.Gateway.Common.Executors;
+using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Gateway.Common.ResultHandling;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
@@ -25,23 +27,35 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="tinSurfaceExportServer"></param>
     public TINSurfaceExportController(ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler,
       IConfigurationStore configStore, ITINSurfaceExportRequestServer tinSurfaceExportServer)
-      : base(loggerFactory, loggerFactory.CreateLogger<TileController>(), exceptionHandler, configStore)
+      : base(loggerFactory, loggerFactory.CreateLogger<TINSurfaceExportController>(), exceptionHandler, configStore)
     {
       this.tinSurfaceExportServer = tinSurfaceExportServer;
     }
 
+
     /// <summary>
     /// Web service end point controller for TIN surface export
     /// </summary>
-    /// <param name="request"></param>
+    /// <param name="projectUid"></param>
+    /// <param name="tolerance"></param>
+    /// <param name="filterUid"></param>
     /// <returns></returns>
-    [HttpPost]
+    [HttpGet]
     [Route("api/v1/export/surface/ttm")]
-    public TINSurfaceExportResult GetTINSurface([FromBody] TileRequest request)
+    public TINSurfaceExportResult GetTINSurface([FromQuery] Guid projectUid,
+      [FromQuery] double ? tolerance,
+      [FromQuery] Guid ? filterUid)
     {
       Log.LogDebug("GetTINSurface: " + Request.QueryString);
 
-      request.Validate();
+      TINSurfaceExportRequest request = new TINSurfaceExportRequest
+      {
+        ProjectUid = projectUid,
+        Tolerance = tolerance,
+        Filter = FilterResult.CreateFilter(null) // Todo: Get the actual filter from the filterUid
+      };
+
+      // request.Validate();
 
       var container = RequestExecutorContainer.Build<TINSurfaceExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null, null);
       container.tINSurfaceExportRequestServer = tinSurfaceExportServer;

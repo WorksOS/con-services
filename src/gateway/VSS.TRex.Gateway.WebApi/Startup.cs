@@ -10,6 +10,7 @@ using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.TRex.Exports.Servers.Client;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Rendering.Servers.Client;
@@ -84,6 +85,9 @@ namespace VSS.TRex.Gateway.WebApi
 
       MutableClientServer tagFileMutableClientServer = new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT);
       services.AddSingleton<IMutableClientServer>(tagFileMutableClientServer);
+
+      TINSurfaceExportRequestServer tINSurfaceExportRequestServer = new TINSurfaceExportRequestServer();
+      services.AddSingleton<ITINSurfaceExportRequestServer>(tINSurfaceExportRequestServer);
 
       serviceCollection = services;
     }
