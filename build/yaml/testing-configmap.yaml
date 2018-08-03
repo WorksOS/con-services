@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fileaccessservice-testing
+data: 
+  WEBAPI_DEBUG_URI: http://localhost:80/
+  WEBAPI_URI: http://localhost:80/

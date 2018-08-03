@@ -9,11 +9,7 @@ using VSS.Log4Net.Extensions;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
 
-#if NET_4_7
-using VSS.Productivity3D.FileAccess.Service.WebAPI.Filters;
-#endif
-
-namespace VSS.Productivity3D.FileAccess.Service.WebAPI
+namespace VSS.Productivity3D.FileAccess.WebAPI
 {
   public class Startup
   {
@@ -41,9 +37,9 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
     public Startup(IHostingEnvironment env)
     {
       var builder = new ConfigurationBuilder()
-          .SetBasePath(env.ContentRootPath)
-          .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-          .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+        .SetBasePath(env.ContentRootPath)
+        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
       env.ConfigureLog4Net("log4net.xml", LOGGER_REPO_NAME);
 
@@ -78,14 +74,6 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
       serviceCollection.BuildServiceProvider();
 
       app.UseCommon(SERVICE_TITLE);
-
-#if NET_4_7
-      if (Configuration["newrelic"] == "true")
-      {
-        app.UseMiddleware<NewRelicMiddleware>();
-      }
-#endif
-
       app.UseMvc();
     }
   }
