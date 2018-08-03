@@ -1,0 +1,8 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-mutable-data
+spec:
+  selector:
+      component: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-mds
+  clusterIP: None # custom value.
