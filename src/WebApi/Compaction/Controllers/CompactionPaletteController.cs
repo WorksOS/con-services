@@ -41,7 +41,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     /// <param name="projectUid">Project UID</param>
     /// <returns>Color palettes for all display types</returns>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/colorpalettes")]
     [HttpGet]
     public async Task<CompactionColorPalettesResult> GetColorPalettes(
@@ -170,7 +170,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="projectUid">Project UID</param>
     /// <param name="filterUid">Filter UID</param>
     /// <returns>Elevation color palette</returns>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/elevationpalette")]
     [HttpGet]
     public async Task<CompactionDetailPaletteResult> GetElevationPalette(

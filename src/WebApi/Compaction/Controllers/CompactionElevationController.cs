@@ -58,7 +58,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Get elevation range from Raptor for the specified project and date range. Either legacy project ID or project UID must be provided.
     /// </summary>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/elevationrange")]
     [HttpGet]
     public async Task<ElevationStatisticsResult> GetElevationRange(
@@ -101,7 +101,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="alignmentFileUid">Alignment file UID</param>
     /// <param name="boundingBoxService">Project UID</param>
     /// <returns>Station range for alignment file</returns>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/alignmentstationrange")]
     [HttpGet]
     public async Task<AlignmentStationResult> GetAlignmentStationRange(
@@ -131,7 +131,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Gets project statistics from Raptor.
     /// </summary>
     /// <returns>Project statistics</returns>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/projectstatistics")]
     [HttpGet]
     public async Task<ProjectStatisticsResult> GetProjectStatistics(

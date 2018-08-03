@@ -26,7 +26,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// A controller for getting 3d map tiles
   /// </summary>
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
-  [ProjectUidVerifier]
+  [ProjectVerifier]
   public class Compaction3DMapController : BaseController<Compaction3DMapController>
   {
     /// <summary>

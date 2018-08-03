@@ -44,7 +44,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Get CMV summary from Raptor for the specified project and date range.
     /// </summary>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/cmv/summary")]
     [HttpGet]
     public async Task<CompactionCmvSummaryResult> GetCmvSummary(
@@ -96,7 +96,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Get MDP summary from Raptor for the specified project and date range.
     /// </summary>
     /// when the filter layer method is OffsetFromDesign or OffsetFromProfile.
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/mdp/summary")]
     [HttpGet]
     public async Task<CompactionMdpSummaryResult> GetMdpSummary(
@@ -151,7 +151,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Get pass count summary from Raptor for the specified project and date range.
     /// </summary>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/passcounts/summary")]
     [HttpGet]
     public async Task<CompactionPassCountSummaryResult> GetPassCountSummary(
@@ -198,7 +198,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Get Temperature summary from Raptor for the specified project and date range.
     /// </summary>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/temperature/summary")]
     [HttpGet]
     public async Task<CompactionTemperatureSummaryResult> GetTemperatureSummary(
@@ -252,7 +252,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Get Speed summary from Raptor for the specified project and date range. Either legacy project ID or project UID must be provided.
     /// </summary>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/speed/summary")]
     [HttpGet]
     public async Task<CompactionSpeedSummaryResult> GetSpeedSummary(
@@ -311,7 +311,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="projectUid">The project Uid.</param>
     /// <param name="baseUid">The Uid for the base surface, either a filter or design.</param>
     /// <param name="topUid">The Uid for the top surface, either a filter or design.</param>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/volumes/summary")]
     [HttpGet]
     public async Task<CompactionVolumesSummaryResult> GetSummaryVolumes(

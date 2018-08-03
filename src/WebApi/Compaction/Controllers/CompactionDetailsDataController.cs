@@ -26,7 +26,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting Raptor production data for details requests.
   /// </summary>
-  [ProjectUidVerifier]
+  [ProjectVerifier]
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   public class CompactionDetailsDataController : CompactionDataBaseController
   {

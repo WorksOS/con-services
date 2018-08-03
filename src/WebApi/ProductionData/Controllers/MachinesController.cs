@@ -42,7 +42,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// Gets details such as last known position, design, status etc. for machines for a specified project
     /// </summary>
     /// <returns>List of machines for the project</returns>
-    [ProjectIdVerifier]
+    [ProjectVerifier]
     [Route("api/v1/projects/{projectId}/machines")]
     [HttpGet]
 
@@ -58,7 +58,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// Gets details such as last known position, design, status etc. for machines for a specified project with a unique identifier
     /// </summary>
     /// <returns>List of machines for the project</returns>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/projects/{projectUid}/machines")]
     [HttpGet]
 
@@ -78,7 +78,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="machineId">The machine identifier.</param>
     /// <returns>Info about machine</returns>
     /// <executor>GetMachineIdsExecutor</executor> 
-    [ProjectIdVerifier]
+    [ProjectVerifier]
     [Route("api/v1/projects/{projectId}/machines/{machineId}")]
     [HttpGet]
 
@@ -99,7 +99,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="machineId">The machine identifier.</param>
     /// <returns>Info about machine</returns>
     /// <executor>GetMachineIdsExecutor</executor> 
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/projects/{projectUid}/machines/{machineId}")]
     [HttpGet]
 
@@ -121,7 +121,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="projectId">The project identifier.</param>
     /// <returns>List with all available OnMachine designs in the selected datamodel as reported to Raptor via tag files.</returns>
     /// <executor>GetMachineDesignsExecutor</executor> 
-    [ProjectIdVerifier]
+    [ProjectVerifier]
     [Route("api/v1/projects/{projectId}/machinedesigns")]
     [HttpGet]
 
@@ -140,7 +140,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="projectUid">The project unique identifier.</param>
     /// <returns>List with all available OnMachine designs in the selected datamodel as reported to Raptor via tag files.</returns>
     /// <executor>GetMachineDesignsExecutor</executor> 
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/projects/{projectUid}/machinedesigns")]
     [HttpGet]
     public async Task<MachineDesignsExecutionResult> GetMachineDesigns([FromRoute] Guid projectUid)
@@ -176,7 +176,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="endUtc">The end date/time in UTC.</param>
     /// <returns>List with all available OnMachine designs in the selected project as reported to Raptor via tag files.</returns>
     /// <executor>GetMachineDesignsExecutor</executor> 
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/projects/{projectUid}/machinedesigndetails")]
     [HttpGet]
     public async Task<MachineDesignDetailsExecutionResult> GetMachineDesignDetails([FromRoute] Guid projectUid, [FromQuery]string startUtc, [FromQuery]string endUtc)
@@ -216,7 +216,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="projectId">The project identifier.</param>
     /// <returns>List with all available OnMachine layerids in the selected datamodel.</returns>
     /// <executor>GetLayerIdsExecutor</executor> 
-    [ProjectIdVerifier]
+    [ProjectVerifier]
     [Route("api/v1/projects/{projectId}/liftids")]
     [HttpGet]
     public LayerIdsExecutionResult GetMachineLayerIds([FromRoute] long projectId)
@@ -232,7 +232,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="projectUid">The project unique identifier.</param>
     /// <returns>List with all available OnMachine layerids in the selected datamodel.</returns>
     /// <executor>GetLayerIdsExecutor</executor> 
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/projects/{projectUid}/liftids")]
     [HttpGet]
     public async Task<LayerIdsExecutionResult> GetMachineLayerIds([FromRoute] Guid projectUid)
@@ -252,7 +252,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <returns>List with all available liftids for each machine in the selected datamodel as reported to Raptor via tag files.</returns>
     /// <executor>GetLayerIdsExecutor</executor> 
     /// <executor>GetMachineIdsExecutor</executor> 
-    [ProjectIdVerifier]
+    [ProjectVerifier]
     [Route("api/v1/projects/{projectId}/machinelifts")]
     [HttpGet]
     public MachineLayerIdsExecutionResult GetMachineLifts([FromRoute] long projectId, [FromQuery] string startUtc = null, [FromQuery] string endUtc = null)
@@ -272,7 +272,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <returns>List with all available liftids for each machine in the selected datamodel as reported to Raptor via tag files.</returns>
     /// <executor>GetLayerIdsExecutor</executor> 
     /// <executor>GetMachineIdsExecutor</executor> 
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/projects/{projectUid}/machinelifts")]
     [HttpGet]
     public async Task<MachineLayerIdsExecutionResult> GetMachineLifts([FromRoute] Guid projectUid, [FromQuery] string startUtc = null, [FromQuery] string endUtc = null)

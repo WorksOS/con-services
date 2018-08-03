@@ -25,7 +25,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Invalidates the response cache objects for a given project.
     /// </summary>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/diagnostics/clearresponsecache")]
     [HttpPut]
     public ActionResult InvalidateCache(Guid projectUid)

@@ -40,8 +40,7 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     /// </returns>
     /// <executor>CoordinateSystemExecutorPost</executor>
     [PostRequestVerifier]
-    [ProjectIdVerifier(AllowArchivedState = true)]
-    [ProjectUidVerifier(AllowArchivedState = true)]
+    [ProjectVerifier(AllowArchivedState = true)]
     [Route("api/v1/coordsystem")]
     [HttpPost]
     public CoordinateSystemSettings Post([FromBody]CoordinateSystemFile request)
@@ -58,7 +57,6 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     /// True for success and false for failure.
     /// </returns>
     /// <executor>CoordinateSystemExecutorPost</executor>
-    /// 
     [PostRequestVerifier]
     [Route("api/v1/coordsystem/validation")]
     [HttpPost]
@@ -82,7 +80,7 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     ///     FailedToGetResults = -4;
     /// </returns>
     /// <executor>CoordinateSystemExecutorGet</executor>
-    [ProjectIdVerifier]
+    [ProjectVerifier]
     [Route("api/v1/projects/{projectId}/coordsystem")]
     [HttpGet]
     public CoordinateSystemSettings Get([FromRoute] long projectId)
@@ -107,7 +105,7 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     ///     FailedToGetResults = -4;
     /// </returns>
     /// <executor>CoordinateSystemExecutorGet</executor>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/projects/{projectUid}/coordsystem")]
     [HttpGet]
     public async Task<CoordinateSystemSettings> Get([FromRoute] Guid projectUid)
@@ -129,8 +127,7 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     /// <executor>CoordinateCoversionExecutor</executor>
     /// 
     [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v1/coordinateconversion")]
     [HttpPost]
     public CoordinateConversionResult Post([FromBody]CoordinateConversionRequest request)
