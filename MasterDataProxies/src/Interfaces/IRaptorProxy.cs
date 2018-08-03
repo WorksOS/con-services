@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
+using VSS.Productivity3D.Models.Enums;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Proxies.Interfaces
@@ -52,6 +54,21 @@ namespace VSS.MasterData.Proxies.Interfaces
     Task<T> ExecuteGenericV1Request<T>(string route, string query, IDictionary<string, string> customHeaders = null);
 
     Task<BaseDataResult> InvalidateCache(string projectUid,
+      IDictionary<string, string> customHeaders = null);
+
+    Task<AlignmentPointsResult> GetAlignmentPoints(Guid projectUid, Guid alignmentUid, IDictionary<string, string> customHeaders = null);
+    Task<PointsListResult> GetAlignmentPointsList(Guid projectUid, IDictionary<string, string> customHeaders = null);
+    Task<PointsListResult> GetDesignBoundaryPoints(Guid projectUid, Guid designUid,
+      IDictionary<string, string> customHeaders = null);
+
+    Task<PointsListResult> GetFilterPoints(Guid projectUid, Guid filterUid,
+      IDictionary<string, string> customHeaders = null);
+
+    Task<PointsListResult> GetFilterPointsList(Guid projectUid, Guid? filterUid, Guid? baseUid, Guid? topUid, FilterBoundaryType boundaryType,
+      IDictionary<string, string> customHeaders = null);
+
+    Task<FileResult> GetProductionDataTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, ushort width,
+      ushort height, string bbox, DisplayMode mode, Guid? baseUid, Guid? topUid, VolumeCalcType? volCalcType,
       IDictionary<string, string> customHeaders = null);
 
   }

@@ -257,7 +257,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void AsAtDateFilterCustom_Success()
     {
       var filter = Filter.CreateFilter(null, DateTime.UtcNow.AddDays(-1), null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null, null, true);
+        null, null, null, null, null, null, null, null, null, true);
       var filterResult = FilterResult.CreateFilter(filter, null, null, null, null, null, null);
       filterResult.Validate();
     }
@@ -276,7 +276,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void AsAtDateFilterFailure_MissingEndUtc()
     {
       var filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, true);
+        null, null, null, null, null, null, true);
       var filterResult = FilterResult.CreateFilter(filter, null, null, null, null, null, null);
       Assert.ThrowsException<ServiceException>(() => filterResult.Validate());
     }
@@ -285,7 +285,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void AsAtDateFilterFailure_MissingStartUtc()
     {
       var filter = Filter.CreateFilter(null, DateTime.UtcNow.AddDays(-1), null, null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, false);
+        null, null, null, null, null, null, false);
       var filterResult = FilterResult.CreateFilter(filter, null, null, null, null, null, null);
       Assert.ThrowsException<ServiceException>(() => filterResult.Validate());
     }

@@ -3,10 +3,12 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Models.Enums;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Proxies
@@ -204,7 +206,99 @@ namespace VSS.MasterData.Proxies
       return response;
     }
 
+    #region Tile Service Raptor requests
+    /// <summary>
+    /// Get the points for all active alignment files for a project.
+    /// </summary>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="customHeaders">The custom headers.</param>
+    public async Task<PointsListResult> GetAlignmentPointsList(Guid projectUid, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"RaptorProxy.GetAlignmentPointsList: {projectUid}");
+      PointsListResult response = await SendRequest<PointsListResult>("RAPTOR_PROJECT_SETTINGS_API_URL",
+        string.Empty, customHeaders, "/raptor/alignmentpointslist", "GET", $"?projectUid={projectUid}");
 
+      return response;
+    }
+
+    /// <summary>
+    /// Get the points for an alignment file for a project.
+    /// </summary>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="alignmentUid">Alignment file UID</param>
+    /// <param name="customHeaders">The custom headers.</param>
+    public async Task<AlignmentPointsResult> GetAlignmentPoints(Guid projectUid, Guid alignmentUid, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"RaptorProxy.GetAlignmentPoints: projectUid={projectUid}, alignmentUid={alignmentUid}");
+      AlignmentPointsResult response = await SendRequest<AlignmentPointsResult>("RAPTOR_PROJECT_SETTINGS_API_URL",
+        string.Empty, customHeaders, "/raptor/alignmentpoints", "GET", $"?projectUid={projectUid}&alignmentUid={alignmentUid}");
+
+      return response;
+    }
+
+
+    /// <summary>
+    /// Get the boundary points for a design for a project.
+    /// </summary>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="designUid">Design UID</param>
+    /// <param name="customHeaders">The custom headers.</param>
+    public async Task<PointsListResult> GetDesignBoundaryPoints(Guid projectUid, Guid designUid, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"RaptorProxy.GetDesignBoundaryPoints: projectUid={projectUid}, designUid={designUid}");
+      PointsListResult response = await SendRequest<PointsListResult>("RAPTOR_PROJECT_SETTINGS_API_URL",
+        string.Empty, customHeaders, "/raptor/designboundarypoints", "GET", $"?projectUid={projectUid}&designUid={designUid}");
+
+      return response;
+    }
+
+    /// <summary>
+    /// Get the boundary points for a filter for a project if it has a spatial filter
+    /// </summary>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="filterUid">Filter UID</param>
+    /// <param name="customHeaders">The custom headers.</param>
+    public async Task<PointsListResult> GetFilterPoints(Guid projectUid, Guid filterUid, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"RaptorProxy.GetFilterPoints: projectUid={projectUid}, filterUid={filterUid}");
+      PointsListResult response = await SendRequest<PointsListResult>("RAPTOR_PROJECT_SETTINGS_API_URL",
+        string.Empty, customHeaders, "/raptor/filterpoints", "GET", $"?projectUid={projectUid}&filterUid={filterUid}");
+
+      return response;
+    }
+
+    /// <summary>
+    /// Get the boundary points for the requested filters for a project if they have a spatial filter
+    /// </summary>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="filterUid">Filter UID</param>
+    /// <param name="baseUid">Volume base UID</param>
+    /// <param name="topUid">Volume top UID</param>
+    /// <param name="boundaryType">The type of spatial filter to get points for</param>
+    /// <param name="customHeaders">The custom headers.</param>
+    public async Task<PointsListResult> GetFilterPointsList(Guid projectUid, Guid? filterUid, Guid? baseUid, Guid? topUid, FilterBoundaryType boundaryType, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"RaptorProxy.GetFilterPointsList: projectUid={projectUid}, filterUid={filterUid}, baseUid={baseUid}, topUid={topUid}, boundaryType={boundaryType}");
+      PointsListResult response = await SendRequest<PointsListResult>("RAPTOR_PROJECT_SETTINGS_API_URL",
+        string.Empty, customHeaders, "/raptor/filterpointslist", "GET", $"?projectUid={projectUid}&filterUid={filterUid}&baseUid={baseUid}&topUid={topUid}&boundaryType={boundaryType}");
+
+      return response;
+    }
+
+
+    public async Task<FileResult> GetProductionDataTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, ushort width, ushort height, 
+      string bbox, DisplayMode mode, Guid? baseUid, Guid? topUid, VolumeCalcType? volCalcType, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"RaptorProxy.GetProductionDataTile: projectUid={projectUid}, filterUid={filterUid}, width={width}, height={height}, mode={mode}, bbox={bbox}, baseUid={baseUid}, topUid={topUid}, volCalcType={volCalcType}, cutFillDesignUid={cutFillDesignUid}");
+      string queryParameters1 =
+          $"?projectUid={projectUid}&filterUid={filterUid}&baseUid={baseUid}&topUid={topUid}&volumeCalcType={volCalcType}";
+      string queryParameters2 = $"&width={width}&height={height}&bbox={bbox}&cutFillDesignUid={cutFillDesignUid}";
+      FileResult response = await SendRequest<FileResult>("RAPTOR_PROJECT_SETTINGS_API_URL",
+        string.Empty, customHeaders, "/productiondatatiles/png", "GET", $"{queryParameters1}{queryParameters2}");
+
+      return response;
+    }
+    #endregion
 
     /// <summary>
     /// Validates that filterUid has changed i.e. updated/deleted but not inserted
