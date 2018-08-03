@@ -52,11 +52,19 @@ spec:
         # Ports to open.
         # Might be optional depending on your Kubernetes environment.
         - containerPort: 47100 # communication SPI port number.
-        - containerPort: 47500 # discovery SPI port number
+          name: spicoms
+        - containerPort: 47500 # discovery SPI port number.
+          name: spidisco
         - containerPort: 48100 # communication SPI port number.
+          name: spicommsmutable
+        - containerPort: 48500
+          name: spidiscomutable
         - containerPort: 49112 # JMX port number.
+          name: jmx
         - containerPort: 8080  # REST port number.
+          name: restapi
         - containerPort: 10800 # SQL port number.
+          name: sql
         volumeMounts:
         # Mounting the storage with the Ignite configuration.
         #- mountPath: "/data/ignite"

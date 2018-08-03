@@ -3,7 +3,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-webtools
+  name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-gateway
   labels:
     app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
   annotations:
@@ -12,10 +12,11 @@ metadata:
   {{- end }}
 spec:
   rules:
-    - host: trex-webtools.{{ $fdqn }}
+    {{- range $host := .Values.ingress.hosts }}
+    - host: {{ $host }}.{{ $fdqn }}
       http:
         paths:
           - backend:
-              serviceName: {{ $serviceName }}-webtools 
+              serviceName: {{ $serviceName }}-gateway
               servicePort: 80
-
+    {{- end -}}

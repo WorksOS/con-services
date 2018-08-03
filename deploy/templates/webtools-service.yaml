@@ -1,10 +1,10 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+  name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-webtools
 spec:
   selector:
-    app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+      component: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-webtools
   ports:
   - protocol: TCP
     port: 80
