@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers

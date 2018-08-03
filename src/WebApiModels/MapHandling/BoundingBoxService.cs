@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="filter">The filter to get boundaries for</param>
     /// <param name="boundaryType">Type of boundary to get: custom polygon or design boundaries or both</param>
     /// <returns>A list of boundaries (polygons). Points are latitude/longitude in degrees.</returns>
-    private List<List<WGSPoint>> GetFilterBoundaries(ProjectData project, FilterResult filter, FilterBoundaryType boundaryType)
+    public List<List<WGSPoint>> GetFilterBoundaries(ProjectData project, FilterResult filter, FilterBoundaryType boundaryType)
     {
       var boundaries = new List<List<WGSPoint>>();
       if (filter != null)
@@ -612,19 +612,13 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     List<List<WGSPoint>> GetFilterBoundaries(ProjectData project, FilterResult filter,
                                              FilterResult baseFilter, FilterResult topFilter, FilterBoundaryType boundaryType);
 
+    List<List<WGSPoint>> GetFilterBoundaries(ProjectData project, FilterResult filter, FilterBoundaryType boundaryType);
+
     IEnumerable<WGSPoint> GetAlignmentPoints(long projectId, DesignDescriptor alignDescriptor,
       double startStation=0, double endStation=0, double leftOffset=0, double rightOffset=0);
 
     List<List<WGSPoint>> GetDesignBoundaryPolygons(long projectId, DesignDescriptor designDescriptor);
 
     AlignmentStationResult GetAlignmentStationRange(long projectId, DesignDescriptor alignDescriptor);
-  }
-
-  public enum FilterBoundaryType
-  {
-    All,
-    Polygon,
-    Design,
-    Alignment
   }
 }

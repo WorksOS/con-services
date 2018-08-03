@@ -1,0 +1,240 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling;
+using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.MapHandling;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+
+namespace VSS.Productivity3D.WebApi.Compaction.Controllers
+{
+  /// <summary>
+  /// End points for getting Raptor data e.g. for tile service to get alignment points
+  /// </summary>
+  public class CompactionRaptorController : BaseController<CompactionRaptorController>
+  {
+    private readonly IASNodeClient raptorClient;
+
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
+    public CompactionRaptorController(IASNodeClient raptorClient) :
+      base(null, null, null)
+    {
+      this.raptorClient = raptorClient;
+    }
+
+    /// <summary>
+    /// Gets the boundary points of a design
+    /// </summary>
+    [ProjectUidVerifier]
+    [Route("api/v2/raptor/designboundarypoints")]
+    [HttpGet]
+    public async Task<PointsListResult> GetDesignBoundaryPoints(
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid designUid,
+      [FromServices] IBoundingBoxService boundingBoxService)
+    {
+      Log.LogInformation("GetDesignBoundaryPoints: " + Request.QueryString);
+
+      var projectId = await GetLegacyProjectId(projectUid);
+      DesignDescriptor designDescriptor = await GetAndValidateDesignDescriptor(projectUid, designUid);
+
+      PointsListResult result = new PointsListResult();
+      var polygons = boundingBoxService.GetDesignBoundaryPolygons(
+        projectId, designDescriptor);
+      result.PointsList = ConvertPoints(polygons);
+
+      return result;
+    }
+
+    /// <summary>
+    /// Gets the spatial boundary points of a filter
+    /// </summary>
+    [ProjectUidVerifier]
+    [Route("api/v2/raptor/filterpoints")]
+    [HttpGet]
+    public async Task<PointsListResult> GetFilterPoints(
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid filterUid,
+      [FromServices] IBoundingBoxService boundingBoxService)
+    {
+      Log.LogInformation("GetFilterPoints: " + Request.QueryString);
+
+      var project = await ((RaptorPrincipal)User).GetProject(projectUid);
+      var filter = await GetCompactionFilter(projectUid, filterUid);
+
+      PointsListResult result = new PointsListResult();
+      if (filter != null)
+      {
+        var polygons = boundingBoxService.GetFilterBoundaries(
+          project, filter, FilterBoundaryType.All);
+        result.PointsList = ConvertPoints(polygons);
+      }
+
+      return result;
+    }
+
+    /// <summary>
+    /// Gets the spatial boundary points of the requested filters for the required boundary type
+    /// </summary>
+    [ProjectUidVerifier]
+    [Route("api/v2/raptor/filterpointslist")]
+    [HttpGet]
+    public async Task<PointsListResult> GetFilterPointsList(
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid? filterUid,
+      [FromQuery] Guid? baseUid,
+      [FromQuery] Guid? topUid,
+      [FromQuery] FilterBoundaryType boundaryType,
+      [FromServices] IBoundingBoxService boundingBoxService)
+    {
+      Log.LogInformation("GetFilterPointsList: " + Request.QueryString);
+
+      var project = await ((RaptorPrincipal)User).GetProject(projectUid);
+      var filter = await GetCompactionFilter(projectUid, filterUid);
+      var baseFilter = await GetCompactionFilter(projectUid, baseUid);
+      var topFilter = await GetCompactionFilter(projectUid, topUid);
+
+      PointsListResult result = new PointsListResult();
+ 
+      var polygons = boundingBoxService.GetFilterBoundaries(
+        project, filter, baseFilter, topFilter, boundaryType);
+      result.PointsList = ConvertPoints(polygons);
+      return result;
+    }
+
+    /// <summary>
+    /// Gets the boundary points for an alignment file in a project
+    /// </summary>
+    [ProjectUidVerifier]
+    [Route("api/v2/raptor/alignmentpoints")]
+    [HttpGet]
+    public async Task<AlignmentPointsResult> GetAlignmentPoints(
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid alignmentUid,
+      [FromServices] IBoundingBoxService boundingBoxService)
+    {
+      Log.LogInformation("GetAlignmentPoints: " + Request.QueryString);
+
+      var projectId = await GetLegacyProjectId(projectUid);
+
+      var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentUid);
+      AlignmentPointsResult result = new AlignmentPointsResult();
+      IEnumerable<WGSPoint3D> alignmentPoints = boundingBoxService.GetAlignmentPoints(
+        projectId, alignmentDescriptor);
+
+      if (alignmentPoints != null && alignmentPoints.Any())
+      {
+        //TODO: Fix this when WGSPoint & WGSPoint3D aligned
+        result.AlignmentPoints = alignmentPoints.Select(x => WGSPoint.CreatePoint(x.Lat, x.Lon)).ToList();
+      }
+
+      return result;
+    }
+
+    /// <summary>
+    /// Gets the boundary points for all active alignment files in a project
+    /// </summary>
+    [ProjectUidVerifier]
+    [Route("api/v2/raptor/alignmentpointslist")]
+    [HttpGet]
+    public async Task<PointsListResult> GetAlignmentPointsList(
+      [FromQuery] Guid projectUid,
+      [FromServices] IBoundingBoxService boundingBoxService)
+    {
+      Log.LogInformation("GetAlignmentPointsList: " + Request.QueryString);
+
+      var projectId = await GetLegacyProjectId(projectUid);
+
+      PointsListResult result = new PointsListResult();
+      List<List<WGSPoint3D>> list = new List<List<WGSPoint3D>>();
+      var alignmentDescriptors = await GetAlignmentDescriptors(projectUid);
+      foreach (var alignmentDescriptor in alignmentDescriptors)
+      {
+        IEnumerable<WGSPoint3D> alignmentPoints = boundingBoxService.GetAlignmentPoints(
+          projectId, alignmentDescriptor);
+
+        if (alignmentPoints != null && alignmentPoints.Any())
+        {
+          list.Add(alignmentPoints.ToList());      
+        }
+      }
+
+      result.PointsList = ConvertPoints(list);
+
+      return result;
+    }
+
+
+    /// <summary>
+    /// Gets alignments descriptors of all active alignment files for the project
+    /// </summary>
+    /// <param name="projectUid">The project UID</param>
+    /// <returns>A list of alignment design descriptors</returns>
+    private async Task<List<DesignDescriptor>> GetAlignmentDescriptors(Guid projectUid)
+    {
+      var alignmentFiles = await GetFilesOfType(projectUid, ImportedFileType.Alignment);
+      List<DesignDescriptor> alignmentDescriptors = new List<DesignDescriptor>();
+      if (alignmentFiles != null)
+      {
+        foreach (var alignmentFile in alignmentFiles)
+        {
+          alignmentDescriptors.Add(await GetAndValidateDesignDescriptor(projectUid, new Guid(alignmentFile.ImportedFileUid)));
+        }
+      }
+      return alignmentDescriptors;
+    }
+
+    /// <summary>
+    /// Gets the imported files of the specified type in a project
+    /// </summary>
+    /// <param name="projectUid">The project UID</param>
+    /// <param name="fileType">The type of files to retrieve</param>
+    /// <returns>List of active imported files of specified type</returns>
+    private async Task<List<FileData>> GetFilesOfType(Guid projectUid, ImportedFileType fileType)
+    {
+      var fileList = await FileListProxy.GetFiles(projectUid.ToString(), GetUserId(), CustomHeaders);
+      if (fileList == null || fileList.Count == 0)
+      {
+        return new List<FileData>();
+      }
+
+      return fileList.Where(f => f.ImportedFileType == fileType && f.IsActivated).ToList();
+    }
+
+
+    /// <summary>
+    /// Temporary method to convert between WGSPoint3D and WGSPoint
+    /// </summary>
+    private List<List<WGSPoint>> ConvertPoints(List<List<WGSPoint3D>> polygons)
+    {
+      List<List<WGSPoint>> result = null;
+      if (polygons != null && polygons.Any())
+      {
+        foreach (var polygon in polygons)
+        {
+          if (result == null)
+            result = new List<List<WGSPoint>>();
+          //TODO: Fix this when WGSPoint & WGSPoint3D aligned
+          result.Add(polygon.Select(x => WGSPoint.CreatePoint(x.Lat, x.Lon)).ToList());
+        }
+      }
+
+      return result;
+    }
+
+
+
+  }
+}
