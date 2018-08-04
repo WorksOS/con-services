@@ -148,7 +148,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces
         decimator.SetDecimationExtents(DataStoreExtents(dataStore));
         bool result = decimator.BuildMesh();
 
-        Assert.True(result, $"Failed to build mesh from data store with three points fault code {decimator.BuildMeshFaultCode}");
+        Assert.True(result, $"Failed to build mesh from data store with a subgrid of points fault code {decimator.BuildMeshFaultCode}");
 
         Assert.NotNull(decimator.GetTIN());
 
