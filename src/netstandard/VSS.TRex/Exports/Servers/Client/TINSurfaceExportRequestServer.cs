@@ -12,7 +12,7 @@ namespace VSS.TRex.Exports.Servers.Client
       /// <summary>
       /// Default no-arg constructor that creates a server with the default Application Service role and the specialise tile rendering role.
       /// </summary>
-      public TINSurfaceExportRequestServer() : base(new[] { ApplicationServiceServer.DEFAULT_ROLE, ServerRoles.TIN_SURFACE_EXPORT_ROLE })
+      public TINSurfaceExportRequestServer() : base(new[] { ServerRoles.TIN_SURFACE_EXPORT_ROLE })
       {
       }
 
