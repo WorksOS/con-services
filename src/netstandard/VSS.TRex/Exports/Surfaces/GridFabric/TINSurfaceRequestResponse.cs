@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Designs.TTM;
+﻿using System;
+using VSS.TRex.Designs.TTM;
 using VSS.TRex.Pipelines;
 
 namespace VSS.TRex.Exports.Surfaces.GridFabric
@@ -7,6 +8,7 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
   /// The response returned from the TIN surface export request executor that contains the response code and the
   /// surface generated from the operation
   /// </summary>
+  [Serializable]
   public class TINSurfaceRequestResponse : SubGridsPipelinedReponseBase
   {
     /// <summary>

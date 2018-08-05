@@ -36,7 +36,6 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       this.tagfileClientServer = tagFileClientServer;
     }
 
-
     /// <summary>
     /// Test endpoint for tagfiles
     /// </summary>

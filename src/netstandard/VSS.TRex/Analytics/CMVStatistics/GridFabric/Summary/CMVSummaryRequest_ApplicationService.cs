@@ -1,4 +1,6 @@
-﻿using VSS.TRex.GridFabric.Requests;
+﻿using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Requests;
+using VSS.TRex.Servers;
 
 namespace VSS.TRex.Analytics.CMVStatistics.GridFabric.Summary
 {
@@ -7,5 +9,8 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric.Summary
   /// </summary>
   public class CMVSummaryRequest_ApplicationService : GenericASNodeRequest<CMVSummaryArgument, CMVSummaryComputeFunc_ApplicationService, CMVSummaryResponse>
   {
+    public CMVSummaryRequest_ApplicationService() : base(TRexGrids.ImmutableGridName(), ServerRoles.ASNODE)
+    {
+    }
   }
 }

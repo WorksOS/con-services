@@ -28,7 +28,7 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
 
     public TINSurfaceRequestResponse Invoke(TINSurfaceRequestArgument arg)
     {
-      Log.LogInformation("In PatchRequestComputeFunc.Invoke()");
+      Log.LogInformation("In TINSurfaceRequestComputeFunc.Invoke()");
 
       try
       {
@@ -49,7 +49,7 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
       }
       finally
       {
-        Log.LogInformation("Exiting PatchRequestComputeFunc.Invoke()");
+        Log.LogInformation("Exiting TINSurfaceRequestComputeFunc.Invoke()");
       }
     }
   }

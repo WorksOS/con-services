@@ -1,4 +1,6 @@
-﻿using VSS.TRex.GridFabric.Requests;
+﻿using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Requests;
+using VSS.TRex.Servers;
 
 namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
 {
@@ -7,5 +9,8 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
   /// </summary>
   public class MDPStatisticsRequest_ApplicationService : GenericASNodeRequest<MDPStatisticsArgument, MDPStatisticsComputeFunc_ApplicationService, MDPStatisticsResponse>
   {
+    public MDPStatisticsRequest_ApplicationService() : base(TRexGrids.ImmutableGridName(), ServerRoles.ASNODE)
+    {
+    }
   }
 }

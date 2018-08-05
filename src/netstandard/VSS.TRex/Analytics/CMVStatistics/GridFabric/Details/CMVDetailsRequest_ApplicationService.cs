@@ -1,5 +1,7 @@
 ﻿using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
+using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Requests;
+using VSS.TRex.Servers;
 
 namespace VSS.TRex.Analytics.CMVStatistics.GridFabric.Details
 {
@@ -8,5 +10,8 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric.Details
   /// </summary>
   public class CMVDetailsRequest_ApplicationService : GenericASNodeRequest<CMVDetailsArgument, CMVDetailsComputeFunc_ApplicationService, DetailsAnalyticsResponse>
   {
+    public CMVDetailsRequest_ApplicationService() : base(TRexGrids.ImmutableGridName(), ServerRoles.ASNODE)
+    {
+    }
   }
 }
