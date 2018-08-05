@@ -22,7 +22,7 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
     /// <summary>
     /// Default no-arg constructor that orients the request to the available ASNODE servers on the immutable grid projection
     /// </summary>
-    public TINSurfaceRequestComputeFunc() : base(TRexGrids.ImmutableGridName(), ServerRoles.ASNODE)
+    public TINSurfaceRequestComputeFunc() : base(TRexGrids.ImmutableGridName(), ServerRoles.TIN_SURFACE_EXPORT_ROLE)
     {
     }
 
