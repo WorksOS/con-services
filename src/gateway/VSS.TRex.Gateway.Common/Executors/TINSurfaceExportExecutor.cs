@@ -9,6 +9,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
+using VSS.TRex.Exports.Patches.Requestors;
 using VSS.TRex.Exports.Servers.Client;
 using VSS.TRex.Exports.Surfaces.GridFabric;
 using VSS.TRex.Filters;
@@ -27,11 +28,11 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <param name="configStore"></param>
     /// <param name="logger"></param>
     /// <param name="exceptionHandler"></param>
-    /// <param name="tinSurfaceExportServer"></param>
+    /// <param name="tINSurfaceExportRequestor"></param>
     public TINSurfaceExportExecutor(IConfigurationStore configStore,
-      ILoggerFactory logger, IServiceExceptionHandler exceptionHandler, ITINSurfaceExportRequestServer tinSurfaceExportServer) : base(configStore, logger, exceptionHandler, null, null)
+      ILoggerFactory logger, IServiceExceptionHandler exceptionHandler, ITINSurfaceExportRequestor tINSurfaceExportRequestor) : base(configStore, logger, exceptionHandler, null, null)
     {
-      this.tINSurfaceExportRequestServer = tinSurfaceExportServer;
+      this.tINSurfaceExportRequestor = tINSurfaceExportRequestor;
     }
 
     /// <summary>
@@ -73,13 +74,13 @@ namespace VSS.TRex.Gateway.Common.Executors
             $"Site model {request.ProjectUid} is unavailable"));
       }
 
-      var response = tINSurfaceExportRequestServer.Execute(new TINSurfaceRequestArgument
-        {
-          Tolerance = request.Tolerance ?? 0.0,
-          ProjectID = request.ProjectUid.Value,
-          Filters = new FilterSet(ConvertFilter(request.Filter, siteModel))
-        }
-      );
+      var response = tINSurfaceExportRequestor.Execute(new TINSurfaceRequestArgument
+          {
+            Tolerance = request.Tolerance ?? 0.0,
+            ProjectID = request.ProjectUid.Value,
+            Filters = new FilterSet(ConvertFilter(request.Filter, siteModel))
+          }
+        );
 
       return TINSurfaceExportResult.CreateTINResult(response.data);
     }

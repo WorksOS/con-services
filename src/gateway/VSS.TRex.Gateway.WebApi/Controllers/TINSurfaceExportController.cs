@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.Productivity3D.Models.Models;
-using VSS.TRex.Exports.Servers.Client;
+using VSS.TRex.Exports.Patches.Requestors;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Gateway.Common.ResultHandling;
@@ -16,7 +16,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
   /// </summary>
   public class TINSurfaceExportController : BaseController
   {
-    private ITINSurfaceExportRequestServer tinSurfaceExportServer;
+    private ITINSurfaceExportRequestor tINSurfaceExportRequestor;
 
     /// <summary>
     /// Constructor for TIN surface export controller
@@ -24,12 +24,12 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="loggerFactory"></param>
     /// <param name="exceptionHandler"></param>
     /// <param name="configStore"></param>
-    /// <param name="tinSurfaceExportServer"></param>
+    /// <param name="tINSurfaceExportRequestor"></param>
     public TINSurfaceExportController(ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler,
-      IConfigurationStore configStore, ITINSurfaceExportRequestServer tinSurfaceExportServer)
+      IConfigurationStore configStore, ITINSurfaceExportRequestor tINSurfaceExportRequestor)
       : base(loggerFactory, loggerFactory.CreateLogger<TINSurfaceExportController>(), exceptionHandler, configStore)
     {
-      this.tinSurfaceExportServer = tinSurfaceExportServer;
+      this.tINSurfaceExportRequestor = tINSurfaceExportRequestor;
     }
 
 
@@ -58,7 +58,8 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       // request.Validate();
 
       var container = RequestExecutorContainer.Build<TINSurfaceExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null, null);
-      container.tINSurfaceExportRequestServer = tinSurfaceExportServer;
+
+      container.tINSurfaceExportRequestor = tINSurfaceExportRequestor;
 
       var tinResult = WithServiceExceptionTryExecute(() => container.Process(request)) as TINSurfaceExportResult;
 
