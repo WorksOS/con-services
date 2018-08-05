@@ -344,7 +344,7 @@ namespace VSS.Productivity3D.Filter.Tests
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
       string name = "not entry";
-      string filterJson = "{\"designUid\":\"id\",\"vibeStateOn\":true}";
+      string filterJson = "{\"vibeStateOn\":true}";
 
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();

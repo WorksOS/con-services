@@ -26,6 +26,7 @@ function SetEnvironmentVariableLocalhost {
     [Environment]::SetEnvironmentVariable("RAPTOR_NOTIFICATION_API_URL", "http://localhost:5001/api/v2/notification", "Machine")
     [Environment]::SetEnvironmentVariable("CUSTOMERSERVICE_API_URL", "http://localhost:5001/api/v1/mock/getcustomersforme", "Machine")
     [Environment]::SetEnvironmentVariable("PROJECT_API_URL","http://localhost:5001/api/v4/mockproject", "Machine")
+    [Environment]::SetEnvironmentVariable("IMPORTED_FILE_API_URL","http://localhost:5001/api/v4/mock/importedfiles", "Machine")
 }
 
 function SetEnvironmentVariableDevServer {
@@ -40,6 +41,7 @@ function SetEnvironmentVariableDevServer {
     [Environment]::SetEnvironmentVariable("WEBAPI_DEBUG_URI", "http://10.97.96.103:3001/", "Machine")
     [Environment]::SetEnvironmentVariable("RAPTOR_NOTIFICATION_API_URL", "http://mockprojectwebapi:5001/api/v2/notification", "Machine")
     [Environment]::SetEnvironmentVariable("CUSTOMERSERVICE_API_URL", "http://mockprojectwebapi:5001/api/v1/mock/getcustomersforme", "Machine")
+    [Environment]::SetEnvironmentVariable("IMPORTED_FILE_API_URL", "https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles", "Machine")
 }
 
 Write-Host "Setting common variables..."

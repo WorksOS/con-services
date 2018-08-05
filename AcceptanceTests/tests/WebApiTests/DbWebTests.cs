@@ -331,7 +331,7 @@ namespace WebApiTests
         WGSPoint.CreatePoint(38.8387897637231, -121.347275197506),
         WGSPoint.CreatePoint(38.8387145521594, -121.347189366818)
       };
-      var filter = Filter.CreateFilter(startUtc, endUtc, Guid.NewGuid().ToString(), listMachines, 123,
+      var filter = Filter.CreateFilter(startUtc, endUtc, Guid.NewGuid().ToString(), "DesignName", listMachines, 123,
                                         elevation, vibestate, listPoints, forward, layerNo);
       return filter.ToJsonString();
     }

@@ -45,10 +45,10 @@ namespace VSS.Productivity3D.Filter.Common.Models
         FilterType = filterType
       };
     }
+
     public virtual void Validate(IServiceExceptionHandler serviceExceptionHandler, bool onlyFilterUid=false)
     {
-      if (this.FilterUid == null
-          || (this.FilterUid != string.Empty && Guid.TryParse(this.FilterUid, out Guid _) == false))
+      if (FilterUid == null || (FilterUid != string.Empty && Guid.TryParse(FilterUid, out Guid _) == false))
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
       }
