@@ -52,7 +52,7 @@ namespace VSS.TRex.Servers.Client
         {
           string roleNames = roles.Aggregate("|", (s1, s2) => s1 + s2 + "|");
 
-          TRexNodeID = "mutablebob";
+          TRexNodeID = Guid.NewGuid().ToString();
 
           Log.LogInformation($"Creating new Ignite node with Roles = {roleNames} & TRexNodeId = {TRexNodeID}");
 
