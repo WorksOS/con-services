@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using TestUtility;
-using VSS.Productivity3D.FileAccess.Service.Common.Models;
+using VSS.Productivity3D.FileAccess.WebAPI.Models.Models;
 
 namespace IntegrationTests
 {

@@ -7,7 +7,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Interfaces;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.Productivity3D.FileAccess.Service.Common.Models
+namespace VSS.Productivity3D.FileAccess.WebAPI.Models.Models
 {
   /// <summary>
   /// Description to identify a file by its location in TCC.

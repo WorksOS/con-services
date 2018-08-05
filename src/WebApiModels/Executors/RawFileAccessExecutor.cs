@@ -5,12 +5,11 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.FileAccess.Service.Common.Models;
-using VSS.Productivity3D.FileAccess.Service.WebAPI.Models.FileAccess.ResultHandling;
-using VSS.Productivity3D.FileAccess.WebAPI.Models.Executors;
+using VSS.Productivity3D.FileAccess.WebAPI.Models.Models;
+using VSS.Productivity3D.FileAccess.WebAPI.Models.ResultHandling;
 using VSS.TCCFileAccess;
 
-namespace VSS.Productivity3D.FileAccess.Service.WebAPI.Models.FileAccess.Executors
+namespace VSS.Productivity3D.FileAccess.WebAPI.Models.Executors
 {
   public class RawFileAccessExecutor : RequestExecutorContainer
   {

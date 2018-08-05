@@ -1,6 +1,6 @@
 ﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.Productivity3D.FileAccess.Service.WebAPI.Models.FileAccess.ResultHandling
+namespace VSS.Productivity3D.FileAccess.WebAPI.Models.ResultHandling
 {
   /// <summary>
   /// The result representation of a raw file access request.

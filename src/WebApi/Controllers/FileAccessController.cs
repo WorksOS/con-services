@@ -5,13 +5,12 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.FileAccess.Service.Common.Models;
-using VSS.Productivity3D.FileAccess.Service.WebAPI.Models.FileAccess.Executors;
-using VSS.Productivity3D.FileAccess.Service.WebAPI.Models.FileAccess.ResultHandling;
 using VSS.Productivity3D.FileAccess.WebAPI.Models.Executors;
+using VSS.Productivity3D.FileAccess.WebAPI.Models.Models;
+using VSS.Productivity3D.FileAccess.WebAPI.Models.ResultHandling;
 using VSS.TCCFileAccess;
 
-namespace VSS.Productivity3D.FileAccess.Service.WebAPI.FileAccess.Controllers
+namespace VSS.Productivity3D.FileAccess.WebAPI.Controllers
 {
   /// <summary>
   /// Controller for file access resources.
