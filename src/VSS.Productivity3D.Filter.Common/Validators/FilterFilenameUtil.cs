@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Filter.Common.Models;
@@ -38,7 +39,7 @@ namespace VSS.Productivity3D.Filter.Common.Validators
         log.LogInformation($"{nameof(GetFilterFileNames)}: Resolved: {tmpFilter.AlignmentName}");
       }
 
-      filterRequestFull.FilterJson = tmpFilter.ToJsonString();
+      filterRequestFull.FilterJson = JsonConvert.SerializeObject(tmpFilter);
     }
   }
 }
