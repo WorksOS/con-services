@@ -283,7 +283,6 @@ namespace VSS.MasterData.Models.Models
     {
       return AsAtDate != null;
     }
-
     public bool ShouldSerializeAutomaticsType()
     {
       return AutomaticsType != null;
@@ -408,16 +407,6 @@ namespace VSS.MasterData.Models.Models
         PassCountRangeMin = passCountRangeMin,
         PassCountRangeMax = passCountRangeMax
       };
-    }
-
-    public string ToJsonString()
-    {
-      var filter = CreateFilter(StartUtc, EndUtc, DesignUid, DesignName, ContributingMachines, OnMachineDesignId, ElevationType,
-        VibeStateOn, PolygonLL, ForwardDirection, LayerNumber, PolygonUid, PolygonName,
-        AlignmentUid, AlignmentName, StartStation, EndStation, LeftOffset, RightOffset, AsAtDate, AutomaticsType,
-        TemperatureRangeMin, TemperatureRangeMax, PassCountRangeMin, PassCountRangeMax);
-
-      return JsonConvert.SerializeObject(filter);
     }
 
     public void Validate([FromServices] IServiceExceptionHandler serviceExceptionHandler)
