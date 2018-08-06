@@ -1,7 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
 using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Designs.TTM;
 using VSS.TRex.Exports.Surfaces.Executors;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.GridFabric.Grids;
@@ -14,7 +16,7 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
   /// a client server instance requesting it.
   /// </summary>
   [Serializable]
-  public class TINSurfaceRequestComputeFunc : BaseComputeFunc, IComputeFunc<TINSurfaceRequestArgument, TINSurfaceRequestResponse>
+  public class TINSurfaceRequestComputeFunc : BaseComputeFunc, IComputeFunc<TINSurfaceRequestArgument, TINSurfaceResult>
   {
     [NonSerialized] private static readonly ILogger
       Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
@@ -26,7 +28,7 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
     {
     }
 
-    public TINSurfaceRequestResponse Invoke(TINSurfaceRequestArgument arg)
+    public TINSurfaceResult Invoke(TINSurfaceRequestArgument arg)
     {
       Log.LogInformation("In TINSurfaceRequestComputeFunc.Invoke()");
 
@@ -45,7 +47,17 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
         if (!request.Execute())
           Log.LogError($"Request execution failed");
 
-        return request.SurfaceSubGridsResponse;
+        TINSurfaceResult result = new TINSurfaceResult();
+        using (MemoryStream ms = new MemoryStream())
+        {
+          if (request.SurfaceSubGridsResponse.TIN != null)
+          {
+            request.SurfaceSubGridsResponse.TIN.SaveToStream(Consts.DefaultCoordinateResolution, Consts.DefaultElevationResolution, false, ms);
+            result.data = ms.ToArray();
+          }
+        }
+
+        return result;
       }
       finally
       {

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.TTM;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.Tests.Exports.Surfaces;
 using VSS.TRex.Utilities;
@@ -43,7 +44,7 @@ namespace VSS.TRex.Exports.Surfaces
     /// FDataStore is a reference to a client data store that contains the
     /// grid if point information we are creating the TIN surface from
     /// </summary>
-    public GenericSubGridTree<float> DataStore { set; get; } // = new GenericSubGridTree<float>();
+    public GenericSubGridTree<float> DataStore { set; get; }
 
     /// <summary>
     /// Tolerance represents the maximum acceptable difference between the height

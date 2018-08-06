@@ -81,7 +81,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
       {
         SubGridUtilities.SubGridDimensionalIterator((x, y) =>
         {
-          float elev = ((ClientHeightLeafSubGrid)subGrid).Cells[x, y];
+          float elev = ((GenericLeafSubGrid<float>)subGrid).Items[x, y];
           if (elev != Common.Consts.NullHeight)
             ComputedGridExtent.Include((int)(subGrid.OriginX + x), (int)(subGrid.OriginY + y), elev);
         });
@@ -94,8 +94,8 @@ namespace VSS.TRex.Exports.Surfaces.Executors
 
       // Convert the grid rectangle to a world rectangle, padding out the 3D bound by a small margin to avoid edge effects in calcualations
       BoundingWorldExtent3D ComputedWorldExtent = new BoundingWorldExtent3D
-       (ComputedGridExtent.MinX - 0.01 * dataStore.CellSize,
-        ComputedGridExtent.MinY - 0.01 * dataStore.CellSize,
+       ((ComputedGridExtent.MinX - 0.01) * dataStore.CellSize,
+        (ComputedGridExtent.MinY - 0.01) * dataStore.CellSize,
         (ComputedGridExtent.MaxX + 1 + 0.01) * dataStore.CellSize,
         (ComputedGridExtent.MaxY + 1 + 0.01) * dataStore.CellSize,
         ComputedGridExtent.MinZ - 0.01, ComputedGridExtent.MaxZ + 0.01);

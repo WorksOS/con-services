@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Executors.Tasks;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
@@ -18,7 +21,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
     /// <summary>
     /// The collection of subgrids being collected for a patch response
     /// </summary>
-    public List<IClientLeafSubGrid> SurfaceSubgrids = new List<IClientLeafSubGrid>();
+    public List<GenericLeafSubGrid<float>> SurfaceSubgrids = new List<GenericLeafSubGrid<float>>();
 
     /// <summary>
     /// Constructs the patch task
@@ -45,7 +48,16 @@ namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
         return false;
       }
 
-      SurfaceSubgrids.Add((response as IClientLeafSubGrid[])[0]);
+      // Convert the ClientHeightLeafSubgrid into a GenericLeafSubGrid<float>...
+
+      ClientHeightLeafSubGrid originSubGrid = (ClientHeightLeafSubGrid) (response as IClientLeafSubGrid[])[0];
+
+      GenericLeafSubGrid<float> leaf = new GenericLeafSubGrid<float>
+      {
+        Items = originSubGrid.Clone2DArray()
+      };
+
+      SurfaceSubgrids.Add(leaf);
 
       return true;
     }
