@@ -96,7 +96,6 @@ namespace VSS.TRex.Gateway.WebApi
         app.UseDeveloperExceptionPage();
       }
 
-      //Enable CORS before TID so OPTIONS works without authentication
       app.UseCommon(SERVICE_TITLE);
       app.UseMvc();
     }
