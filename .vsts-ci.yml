@@ -2,7 +2,6 @@ resources:
 - repo: self
 queue:
   name: kubernetes-vsts-agents
-  condition: succeeded()
 #Your build pipeline references an undefined variable named ‘Parameters.serverEndpoint’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
 #Your build pipeline references an undefined variable named ‘Parameters.jobName’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
 #Your build pipeline references an undefined variable named ‘Parameters.jobName’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
