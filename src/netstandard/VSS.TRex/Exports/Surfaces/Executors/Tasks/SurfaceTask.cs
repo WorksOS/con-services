@@ -44,7 +44,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
 
       if (!base.TransferResponse(response))
       {
-        Log.LogWarning("Base TransferResponse returned false");
+        Log.LogWarning($"Base {nameof(TransferResponse)} returned false");
         return false;
       }
 
