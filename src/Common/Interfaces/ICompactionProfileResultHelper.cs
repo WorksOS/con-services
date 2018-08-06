@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using VSS.Productivity3D.Common.Models;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 
 namespace VSS.Productivity3D.Common.Interfaces

@@ -23,6 +23,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.Models.Models;
+using VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 {

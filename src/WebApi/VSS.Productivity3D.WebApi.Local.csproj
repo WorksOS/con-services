@@ -54,13 +54,16 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="2.4.0" />
     <PackageReference Include="System.Net.Primitives" Version="4.3.0" />
+    <PackageReference Include="WebApiContrib.Core.Formatter.Protobuf" Version="2.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\MerinoSandbox\AWS.TransferProxy\src\VSS.AWS.TransferProxy.Local.csproj" />
     <ProjectReference Include="..\..\..\MerinoSandbox\log4netExtensions\src\VSS.Log4NetExtensions.Local.csproj" />
     <ProjectReference Include="..\..\..\MerinoSandbox\MasterDataModels\src\VSS.MasterData.Models.Local.csproj" />
+    <ProjectReference Include="..\..\..\MerinoSandbox\MasterDataProxies\src\VSS.MasterData.Proxies.Local.csproj" />
     <ProjectReference Include="..\..\..\MerinoSandbox\Productivity3DModels\src\VSS.Productivity3D.Models.Local.csproj" />
+    <ProjectReference Include="..\..\..\MerinoSandbox\WebApi.Common\src\VSS.WebApi.Common.Local.csproj" />
     <ProjectReference Include="..\Common\VSS.Productivity3D.Common.Local.csproj" />
     <ProjectReference Include="..\WebApiModels\VSS.Productivity3D.WebApi.Models.Local.csproj" />
   </ItemGroup>

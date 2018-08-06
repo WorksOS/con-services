@@ -1,4 +1,4 @@
-﻿using VSS.MasterData.Models.Models;
+﻿using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 
 namespace VSS.Productivity3D.WebApiModels.MapHandling
