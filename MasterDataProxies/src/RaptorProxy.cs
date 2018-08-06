@@ -215,7 +215,7 @@ namespace VSS.MasterData.Proxies
     public async Task<PointsListResult> GetAlignmentPointsList(Guid projectUid, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.GetAlignmentPointsList: {projectUid}");
-      PointsListResult response = await SendRequest<PointsListResult>("RAPTOR_PROJECT_SETTINGS_API_URL",
+      PointsListResult response = await SendRequest<PointsListResult>("RAPTOR_3DPM_API_URL",
         string.Empty, customHeaders, "/raptor/alignmentpointslist", "GET", $"?projectUid={projectUid}");
 
       return response;
@@ -230,7 +230,7 @@ namespace VSS.MasterData.Proxies
     public async Task<AlignmentPointsResult> GetAlignmentPoints(Guid projectUid, Guid alignmentUid, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.GetAlignmentPoints: projectUid={projectUid}, alignmentUid={alignmentUid}");
-      AlignmentPointsResult response = await SendRequest<AlignmentPointsResult>("RAPTOR_PROJECT_SETTINGS_API_URL",
+      AlignmentPointsResult response = await SendRequest<AlignmentPointsResult>("RAPTOR_3DPM_API_URL",
         string.Empty, customHeaders, "/raptor/alignmentpoints", "GET", $"?projectUid={projectUid}&alignmentUid={alignmentUid}");
 
       return response;
@@ -246,7 +246,7 @@ namespace VSS.MasterData.Proxies
     public async Task<PointsListResult> GetDesignBoundaryPoints(Guid projectUid, Guid designUid, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.GetDesignBoundaryPoints: projectUid={projectUid}, designUid={designUid}");
-      PointsListResult response = await SendRequest<PointsListResult>("RAPTOR_PROJECT_SETTINGS_API_URL",
+      PointsListResult response = await SendRequest<PointsListResult>("RAPTOR_3DPM_API_URL",
         string.Empty, customHeaders, "/raptor/designboundarypoints", "GET", $"?projectUid={projectUid}&designUid={designUid}");
 
       return response;
@@ -261,7 +261,7 @@ namespace VSS.MasterData.Proxies
     public async Task<PointsListResult> GetFilterPoints(Guid projectUid, Guid filterUid, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.GetFilterPoints: projectUid={projectUid}, filterUid={filterUid}");
-      PointsListResult response = await SendRequest<PointsListResult>("RAPTOR_PROJECT_SETTINGS_API_URL",
+      PointsListResult response = await SendRequest<PointsListResult>("RAPTOR_3DPM_API_URL",
         string.Empty, customHeaders, "/raptor/filterpoints", "GET", $"?projectUid={projectUid}&filterUid={filterUid}");
 
       return response;
@@ -290,11 +290,12 @@ namespace VSS.MasterData.Proxies
       string bbox, DisplayMode mode, Guid? baseUid, Guid? topUid, VolumeCalcType? volCalcType, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.GetProductionDataTile: projectUid={projectUid}, filterUid={filterUid}, width={width}, height={height}, mode={mode}, bbox={bbox}, baseUid={baseUid}, topUid={topUid}, volCalcType={volCalcType}, cutFillDesignUid={cutFillDesignUid}");
-      string queryParameters1 =
-          $"?projectUid={projectUid}&filterUid={filterUid}&baseUid={baseUid}&topUid={topUid}&volumeCalcType={volCalcType}";
-      string queryParameters2 = $"&width={width}&height={height}&bbox={bbox}&cutFillDesignUid={cutFillDesignUid}";
-      FileResult response = await SendRequest<FileResult>("RAPTOR_PROJECT_SETTINGS_API_URL",
-        string.Empty, customHeaders, "/productiondatatiles/png", "GET", $"{queryParameters1}{queryParameters2}");
+      string queryParameters1 = $"?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=Layers&CRS=EPSG:4326&STYLES=";
+      string queryParameters2 =
+          $"&projectUid={projectUid}&filterUid={filterUid}&baseUid={baseUid}&topUid={topUid}&volumeCalcType={volCalcType}";
+      string queryParameters3 = $"&width={width}&height={height}&bbox={bbox}&cutFillDesignUid={cutFillDesignUid}";
+      FileResult response = await SendRequest<FileResult>("RAPTOR_3DPM_API_URL",
+        string.Empty, customHeaders, "/productiondatatiles/png", "GET", $"{queryParameters1}{queryParameters2}{queryParameters3}");
 
       return response;
     }
