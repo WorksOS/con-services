@@ -8,12 +8,6 @@ services:
       - ./artifacts/logs:/app/logs
     ports:
      - "3001:80"
-  mockprojectwebapi:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux
-    env_file:
-     - docker-compose-local.env
-    ports:
-     - "5001:5001"
   accepttest:
     build: ./AcceptanceTests/deploy
     env_file:

@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.TCCFileAccess;
 
 namespace WebApiTests.Executors
 {
@@ -30,7 +31,9 @@ namespace WebApiTests.Executors
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton(loggerFactory);
       serviceCollection
-        .AddSingleton<IConfigurationStore, GenericConfiguration>();
+        .AddSingleton<IConfigurationStore, GenericConfiguration>()
+        .AddSingleton<IFileRepository, FileRepository>();
+
       serviceProvider = serviceCollection.BuildServiceProvider();
       configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
     }

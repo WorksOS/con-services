@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.Productivity3D.FileAccess.WebAPI.Filters;
+using VSS.Productivity3D.FileAccess.WebAPI.Models.Utilities;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
 
@@ -57,9 +58,14 @@ namespace VSS.Productivity3D.FileAccess.WebAPI
       services.AddCommon<Startup>(SERVICE_TITLE);
 
       services
-        .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
-        .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .AddSingleton<IFileRepository, FileRepository>();
+        .AddSingleton<IConfigurationStore, GenericConfiguration>();
+
+      var tccUrl = (new GenericConfiguration(new LoggerFactory())).GetValueString("TCCBASEURL");
+      var useMock = string.IsNullOrEmpty(tccUrl) || tccUrl == "mock";
+      if (useMock)
+        services.AddTransient<IFileRepository, MockFileRepository>();
+      else
+        services.AddTransient<IFileRepository, FileRepository>();
 
       services.AddOpenTracing(builder =>
       {
