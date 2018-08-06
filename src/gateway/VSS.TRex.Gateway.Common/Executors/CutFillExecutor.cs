@@ -18,7 +18,7 @@ using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
-  public class CutFillExecutor : RequestExecutorContainer
+  public class CutFillExecutor : BaseExecutor
   {
     public CutFillExecutor(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler exceptionHandler)
@@ -38,15 +38,8 @@ namespace VSS.TRex.Gateway.Common.Executors
       ContractExecutionResult result;
       CutFillDetailsRequest request = item as CutFillDetailsRequest;
 
-      ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(request.ProjectUid.Value);
-
-      if (siteModel == null)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            $"Site model {request.ProjectUid} is unavailable"));
-      }
-
+      var siteModel = GetSiteModel(request.ProjectUid);
+      
       // TODO...
       //var filter = RaptorConverters.ConvertFilter(null, request.filter, request.ProjectId);
       //var designDescriptor = RaptorConverters.DesignDescriptor(request.designDescriptor);

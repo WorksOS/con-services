@@ -31,7 +31,7 @@ using VSS.TRex.Profiling.Servers.Client;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
-  public class TileExecutor : RequestExecutorContainer
+  public class TileExecutor : BaseExecutor
   {
     public TileExecutor(IConfigurationStore configStore, ILoggerFactory logger, 
       IServiceExceptionHandler exceptionHandler, ITileRenderingServer tileRenderServer) 
@@ -73,14 +73,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         extents = AutoMapperUtility.Automapper.Map<BoundingBox2DGrid, BoundingWorldExtent3D>(request.BoundBoxGrid);
       }
 
-      ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(request.ProjectUid.Value);
+      var siteModel = GetSiteModel(request.ProjectUid);
 
-      if (siteModel == null)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            $"Site model {request.ProjectUid} is unavailable"));
-      }
       CombinedFilter filter1 = DataConversionUtility.ConvertFilter(request.Filter1, siteModel);
       CombinedFilter filter2 = DataConversionUtility.ConvertFilter(request.Filter2, siteModel);
    
