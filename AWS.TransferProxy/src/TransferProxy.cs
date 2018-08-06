@@ -22,11 +22,16 @@ namespace VSS.AWS.TransferProxy
 
     private const int MAXIMUM_EXPIRY_DAYS_FOR_PRESIGNED_URL = 7;
 
-    public TransferProxy(IConfigurationStore configStore)
+    [Obsolete]
+    public TransferProxy(IConfigurationStore configStore) : this(configStore, configStore.GetValueString("AWS_BUCKET_NAME"))
+    {
+    }
+
+    public TransferProxy(IConfigurationStore configStore, string storageName)
     {
       awsAccessKey = configStore.GetValueString("AWS_ACCESS_KEY");
       awsSecretKey = configStore.GetValueString("AWS_SECRET_KEY");
-      awsBucketName = configStore.GetValueString("AWS_BUCKET_NAME");
+      awsBucketName = storageName;
 
       awsLinkExpiry = configStore.GetValueTimeSpan("AWS_PRESIGNED_URL_EXPIRY") ?? TimeSpan.FromDays(MAXIMUM_EXPIRY_DAYS_FOR_PRESIGNED_URL);
 
