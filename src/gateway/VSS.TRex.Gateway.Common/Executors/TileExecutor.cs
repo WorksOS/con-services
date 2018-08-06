@@ -51,6 +51,19 @@ namespace VSS.TRex.Gateway.Common.Executors
       return siteModel.SurveyedSurfaces == null || includeSurveyedSurfaces ? new Guid[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray();
     }
 
+    private CombinedFilter ConvertFilter(FilterResult filter, ISiteModel siteModel)
+    {
+      if (filter == null)
+        return new CombinedFilter();//TRex doesn't like null filter
+
+      var combinedFilter = AutoMapperUtility.Automapper.Map<FilterResult, CombinedFilter>(filter);
+      // TODO Map the excluded surveyed surfaces from the filter.SurveyedSurfaceExclusionList to the ones that are in the TRex database
+      bool includeSurveyedSurfaces = filter.SurveyedSurfaceExclusionList.Count == 0;
+      var excludedIds = siteModel.SurveyedSurfaces == null || includeSurveyedSurfaces ? new Guid[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray();
+      combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList = excludedIds;
+      return combinedFilter;
+    }
+
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       var request = item as TileRequest;

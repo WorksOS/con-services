@@ -1,4 +1,6 @@
-﻿using VSS.TRex.GridFabric.Requests;
+﻿using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Requests;
+using VSS.TRex.Servers;
 
 namespace VSS.TRex.Analytics.CutFillStatistics.GridFabric
 {
@@ -7,6 +9,9 @@ namespace VSS.TRex.Analytics.CutFillStatistics.GridFabric
     /// </summary>
     public class CutFillStatisticsRequest_ApplicationService : GenericASNodeRequest<CutFillStatisticsArgument, CutFillStatisticsComputeFunc_ApplicationService, CutFillStatisticsResponse>
     {
-    }
+      public CutFillStatisticsRequest_ApplicationService() : base(TRexGrids.ImmutableGridName(), ServerRoles.ASNODE)
+      {
+      }
+  }
 }
 

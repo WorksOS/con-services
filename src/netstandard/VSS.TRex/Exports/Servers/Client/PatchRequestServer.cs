@@ -9,7 +9,7 @@ namespace VSS.TRex.Exports.Servers.Client
   /// <summary>
   /// The server used to house tile rendering services
   /// </summary>
-  public class PatchRequestServer : ApplicationServiceServer
+  public class PatchRequestServer : ApplicationServiceServer, IPatchRequestServer
   {
     /// <summary>
     /// Default no-arg constructor that creates a server with the default Application Service role and the specialise tile rendering role.

@@ -1,4 +1,6 @@
-﻿using VSS.TRex.GridFabric.Requests;
+﻿using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Requests;
+using VSS.TRex.Servers;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Volumes.GridFabric.ComputeFuncs;
 using VSS.TRex.Volumes.GridFabric.Responses;
@@ -10,5 +12,9 @@ namespace VSS.TRex.Volumes.GridFabric.Requests
     /// </summary>
     public class SimpleVolumesRequest_ApplicationService : GenericASNodeRequest<SimpleVolumesRequestArgument, SimpleVolumesRequestComputeFunc_ApplicationService, SimpleVolumesResponse> 
     {
-    }
+      public SimpleVolumesRequest_ApplicationService() : base(TRexGrids.ImmutableGridName(), ServerRoles.ASNODE)
+      {
+
+      }
+  }
 }

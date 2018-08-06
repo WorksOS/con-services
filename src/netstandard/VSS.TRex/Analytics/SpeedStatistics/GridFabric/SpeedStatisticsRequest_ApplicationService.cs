@@ -1,4 +1,6 @@
-﻿using VSS.TRex.GridFabric.Requests;
+﻿using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Requests;
+using VSS.TRex.Servers;
 
 namespace VSS.TRex.Analytics.SpeedStatistics.GridFabric
 {
@@ -7,5 +9,8 @@ namespace VSS.TRex.Analytics.SpeedStatistics.GridFabric
 	/// </summary>
   public class SpeedStatisticsRequest_ApplicationService : GenericASNodeRequest<SpeedStatisticsArgument, SpeedStatisticsComputeFunc_ApplicationService, SpeedStatisticsResponse>
 	{
+	  public SpeedStatisticsRequest_ApplicationService() : base(TRexGrids.ImmutableGridName(), ServerRoles.ASNODE)
+	  {
+	  }
   }
 }

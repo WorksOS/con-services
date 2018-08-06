@@ -50,4 +50,8 @@
     <ProjectReference Include="..\VSS.TRex.Geometry\VSS.TRex.Geometry.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Exports\Surfaces\Interfaces\" />
+  </ItemGroup>
+
 </Project>

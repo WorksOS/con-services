@@ -10,12 +10,22 @@ using VSS.TRex.Gateway.Common.Converters;
 namespace VSS.TRex.Gateway.Tests
 { 
   public class AutoMapperTests : IClassFixture<AutoMapperFixture>
-  {    [Fact]    public void MapPointToFencePoint()
-    {      var point = new Point      {
-        x = 10,        y = 15      };      var fencePoint = AutoMapperUtility.Automapper.Map<FencePoint>(point);
+  {
+    [Fact]
+    public void MapPointToFencePoint()
+    {
+      var point = new Point
+      {
+        x = 10,
+        y = 15
+      };
+      var fencePoint = AutoMapperUtility.Automapper.Map<FencePoint>(point);
       Assert.Equal(point.x, fencePoint.X);
-      Assert.Equal(point.y, fencePoint.Y);      Assert.Equal(0, fencePoint.Z);    }
-    [Fact]
+      Assert.Equal(point.y, fencePoint.Y);
+      Assert.Equal(0, fencePoint.Z);
+    }
+
+    [Fact]
     public void MapWGSPoint3DToFencePoint()
     {
       var point = Prod3d.WGSPoint3D.CreatePoint(123.4, 567.8);
@@ -36,7 +46,8 @@ namespace VSS.TRex.Gateway.Tests
       Assert.Equal(box.topRightY, box3d.MaxY);
     }
 
-    [Fact]    public void MapBoundingBox2DLatLonToBoundingWorldExtent3D()
+    [Fact]
+    public void MapBoundingBox2DLatLonToBoundingWorldExtent3D()
     {
       var box = BoundingBox2DLatLon.CreateBoundingBox2DLatLon(10, 12, 35, 27);
       var box3d = AutoMapperUtility.Automapper.Map<BoundingWorldExtent3D>(box);

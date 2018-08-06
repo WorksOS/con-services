@@ -8,23 +8,14 @@ namespace VSS.TRex.Designs.TTM
     {
         public const int kDTMInternalModelNameSize = 32;
         public const int kDTMFileSignatureSize = 20;
-
-//    DTMInternalModelName = array[1..kDTMInternalModelNameSize] of Byte;
-//    DTMFileSignature = array[1..kDTMFileSignatureSize] of Byte;
     }
 
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct TTMHeader
     {
         public byte FileMajorVersion; // Must be 1
         public byte FileMinorVersion; // Must be 0
-
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = HeaderConsts.kDTMFileSignatureSize)]
         public byte[] FileSignature; // = new byte[HeaderConsts.kDTMFileSignatureSize]; // Must be "TNL TIN DTM FILE" \0\0\0\0
-
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = HeaderConsts.kDTMInternalModelNameSize)]
         public byte[] DTMModelInternalName; // = new byte[HeaderConsts.kDTMInternalModelNameSize]; // E.g. "Christchurch area TIN DTM" \0
-
         public byte CoordinateUnits; // Must be 1: Metres
         public byte VertexValueUnits; // Must be 1: Metres
         public byte InterpolationMethod;// Must be 1: Linear
@@ -64,8 +55,13 @@ namespace VSS.TRex.Designs.TTM
         {
             FileMajorVersion = reader.ReadByte(); // Must be 1
             FileMinorVersion = reader.ReadByte(); // Must be 0
+
+            FileSignature = new byte[HeaderConsts.kDTMFileSignatureSize];
             reader.Read(FileSignature, 0, HeaderConsts.kDTMFileSignatureSize); // Must be "TNL TIN DTM FILE" \0\0\0\0
-            reader.Read(DTMModelInternalName, 0, HeaderConsts.kDTMInternalModelNameSize); // Must be "TNL TIN DTM FILE" \0\0\0\0
+
+            DTMModelInternalName = new byte[HeaderConsts.kDTMInternalModelNameSize];
+            reader.Read(DTMModelInternalName, 0, HeaderConsts.kDTMInternalModelNameSize); 
+
             CoordinateUnits = reader.ReadByte(); // Must be 1: Metres
             VertexValueUnits = reader.ReadByte(); // Must be 1: Metres
             InterpolationMethod = reader.ReadByte();// Must be 1: Linear
@@ -125,5 +121,5 @@ namespace VSS.TRex.Designs.TTM
             writer.Write(NumberOfStartPoints); // 50 or less
             writer.Write(StartPointRecordSize); // Typically 2 x (vertex coordinate size) + (size of triangle field) but could be larger.
         }
-}
+    }
 }

@@ -31,7 +31,7 @@ namespace VSS.TRex.Gateway.WebApi
       return WebHost.CreateDefaultBuilder(args)
         .ConfigureLogging(builder =>
         {
-          Log4NetProvider.RepoName = Startup.LoggerRepoName;
+          Log4NetProvider.RepoName = Startup.LOGGER_REPO_NAME;
           builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
           builder.SetMinimumLevel(LogLevel.Trace);
           builder.AddConfiguration(kestrelConfig);
@@ -39,7 +39,7 @@ namespace VSS.TRex.Gateway.WebApi
         .ConfigureAppConfiguration((hostingContext, config) =>
         {
           var env = hostingContext.HostingEnvironment;
-          env.ConfigureLog4Net(repoName: Startup.LoggerRepoName, configFileRelativePath: "log4net.xml");
+          env.ConfigureLog4Net(repoName: Startup.LOGGER_REPO_NAME, configFileRelativePath: "log4net.xml");
 
         })
         .UsePrometheus()

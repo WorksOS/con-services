@@ -1,5 +1,7 @@
 ﻿using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
+using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Requests;
+using VSS.TRex.Servers;
 
 namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric.Details
 {
@@ -8,5 +10,8 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric.Details
   /// </summary>
   public class PassCountDetailsRequest_ApplicationService : GenericASNodeRequest<PassCountDetailsArgument, PassCountDetailsComputeFunc_ApplicationService, DetailsAnalyticsResponse>
   {
+    public PassCountDetailsRequest_ApplicationService() : base(TRexGrids.ImmutableGridName(), ServerRoles.ASNODE)
+    {
+    }
   }
 }

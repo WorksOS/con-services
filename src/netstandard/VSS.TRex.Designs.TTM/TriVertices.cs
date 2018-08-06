@@ -69,17 +69,19 @@ namespace VSS.TRex.Designs.TTM
             return null;
         }
 
-        /// <summary>
-        /// Create a new vertex from X, Y and Z coordinates
-        /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <param name="Z"></param>
-        /// <returns></returns>
-        protected virtual TriVertex CreateVertex(double X, double Y, double Z)
-        {
-            return new TriVertex(X, Y, Z);
-        }
+      /// <summary>
+      /// The default delegate for creating triangle vertices present in the vertices collection for the surface
+      /// </summary>
+      public Func<double, double, double, TriVertex> CreateVertexFunc { set; get; } = (x, y, z) => new TriVertex(x, y, z);
+
+    /// <summary>
+    /// Create a new vertex from X, Y and Z coordinates
+    /// </summary>
+    /// <param name="X"></param>
+    /// <param name="Y"></param>
+    /// <param name="Z"></param>
+    /// <returns></returns>
+    protected virtual TriVertex CreateVertex(double X, double Y, double Z) => CreateVertexFunc(X, Y, Z);
 
         /// <summary>
         /// The tolerance to be used when searching for points in the list of vertices. Expressed in meters.
@@ -155,7 +157,7 @@ namespace VSS.TRex.Designs.TTM
                                    int ExpectedPointCount)
         {
             // Use largest range to calculate hash index
-            if ((MaxX - MinX) > (MaxY - MinY))
+            if (MaxX - MinX > MaxY - MinY)
             {
                 HashOrdinate = HashOrdinate.hoX;
                 MinHashOrdinate = MinX;
@@ -172,7 +174,6 @@ namespace VSS.TRex.Designs.TTM
             HashArray = new List<TriVertex>[ExpectedPointCount * 2];
         }
 
-
         public void NumberVertices()
         {
             for (int i = 0; i < Count; i++)
@@ -181,6 +182,22 @@ namespace VSS.TRex.Designs.TTM
             }
         }
 
-        // procedure DumpVertexList(FileName : TFileName);
-    }
+      /// <summary>
+      /// Remove all null vertices references from the list.
+      /// </summary>
+      public void Pack()
+      {
+        int index_to = 0;
+
+        for (int index_from = 0; index_from < Count; index_from++)
+        {
+          if (this[index_from] != null)
+            this[index_to++] = this[index_from];
+        }
+
+        RemoveRange(index_to, Count - index_to);
+      }
+
+    // procedure DumpVertexList(FileName : TFileName);
+  }
 }

@@ -7,7 +7,8 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.TRex.DI;
+using VSS.TRex.Exports.Surfaces.Requestors;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Rendering.Servers.Client;
 using VSS.TRex.Servers;
@@ -16,6 +17,7 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.WebApi.Common;
+using VSS.TRex.DI;
 
 namespace VSS.TRex.Gateway.WebApi
 {
@@ -28,7 +30,7 @@ namespace VSS.TRex.Gateway.WebApi
     /// <summary>
     /// The logger repository name
     /// </summary>
-    public const string LoggerRepoName = "WebApi";
+    public const string LOGGER_REPO_NAME = "WebApi";
 
     /// <summary>
     /// This method gets called by the runtime. Use this method to add services to the container.
@@ -79,6 +81,9 @@ namespace VSS.TRex.Gateway.WebApi
 
       MutableClientServer tagFileMutableClientServer = new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT);
       services.AddSingleton<IMutableClientServer>(tagFileMutableClientServer);
+
+      ITINSurfaceExportRequestor tINSurfaceExportRequestor = new TINSurfaceExportRequestor();
+      services.AddSingleton<ITINSurfaceExportRequestor>(tINSurfaceExportRequestor);
     }
 
     /// <summary>
@@ -91,7 +96,6 @@ namespace VSS.TRex.Gateway.WebApi
         app.UseDeveloperExceptionPage();
       }
 
-      //Enable CORS before TID so OPTIONS works without authentication
       app.UseCommon(SERVICE_TITLE);
       app.UseMvc();
     }
