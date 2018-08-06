@@ -50,7 +50,7 @@ steps:
     saveTo: '$(Build.ArtifactStagingDirectory)'
 
 - task: PublishBuildArtifacts@1
-  displayName: Publish Artifact: chart
+  displayName: "Publish Artifact: chart"
   inputs:
     ArtifactName: chart
 
