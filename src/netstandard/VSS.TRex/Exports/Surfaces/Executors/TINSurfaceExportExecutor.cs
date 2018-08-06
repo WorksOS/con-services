@@ -11,6 +11,7 @@ using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.SubGridTrees.Utilities;
@@ -80,7 +81,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
       {
         SubGridUtilities.SubGridDimensionalIterator((x, y) =>
         {
-          float elev = ((GenericLeafSubGrid<float>)subGrid).Items[x, y];
+          float elev = ((ClientHeightLeafSubGrid)subGrid).Cells[x, y];
           if (elev != Common.Consts.NullHeight)
             ComputedGridExtent.Include((int)(subGrid.OriginX + x), (int)(subGrid.OriginY + y), elev);
         });
