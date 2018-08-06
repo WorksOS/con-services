@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Net;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Net;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -23,12 +23,11 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class ReportController : IReportSvc
   {
-    #region privates
     /// <summary>
     /// Raptor client for use by executor
     /// </summary>
     private readonly IASNodeClient raptorClient;
-    
+
     /// <summary>
     /// LoggerFactory factory for use by executor
     /// </summary>
@@ -52,9 +51,6 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       this.configStore = configStore;
     }
 
-    #endregion
-
-    #region ExportPing
     /// <summary>
     /// Pings the export service root
     /// </summary>
@@ -65,15 +61,12 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     {
       return "Ping!";
     }
-    #endregion
 
-    #region CSVExport
     /// <summary>
     /// Produces a CSV formatted export of production data identified by gridded sampling
     /// </summary>
     [PostRequestVerifier]
-    [ProjectIdVerifier(AllowLandfillProjects = true)]
-    [ProjectUidVerifier(AllowLandfillProjects = true)]
+    [ProjectVerifier]
     [Route("api/v1/export/gridded/csv")]
     [HttpPost]
     public ExportResult PostExportCSVReport([FromBody] ExportGridCSV request)
@@ -81,14 +74,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       request.Validate();
       return RequestExecutorContainerFactory.Build<ExportGridCSVExecutor>(logger, raptorClient, null, configStore).Process(request) as ExportResult;
     }
-    #endregion
 
-    #region PassCounts reports
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="request"></param>
     [PostRequestVerifier]
     [Route("api/v1/export")]
     [HttpPost]
@@ -110,8 +96,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// </returns>
     /// <executor>SummaryPassCountsExecutor</executor>
     [PostRequestVerifier]
-    [ProjectIdVerifier(AllowLandfillProjects = true)]
-    [ProjectUidVerifier(AllowLandfillProjects = true)]
+    [ProjectVerifier]
     [Route("api/v1/compaction/passcounts/summary")]
     [HttpPost]
     public PassCountSummaryResult PostSummary([FromBody] PassCounts request)
@@ -131,8 +116,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// </returns>
     /// <executor>DetailedPassCountExecutor</executor>
     [PostRequestVerifier]
-    [ProjectIdVerifier(AllowLandfillProjects = true)]
-    [ProjectUidVerifier(AllowLandfillProjects = true)]
+    [ProjectVerifier]
     [Route("api/v1/compaction/passcounts/detailed")]
     [HttpPost]
     public PassCountDetailedResult PostDetailed([FromBody] PassCounts request)
@@ -150,10 +134,6 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
           as PassCountDetailedResult;
     }
 
-    #endregion
-
-    #region CMV reports
-
     /// <summary>
     /// Posts summary CMV request to Raptor. 
     /// </summary>
@@ -162,8 +142,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// </returns>
     /// <executor>SummaryCMVExecutor</executor>
     [PostRequestVerifier]
-    [ProjectIdVerifier(AllowLandfillProjects = true)]
-    [ProjectUidVerifier(AllowLandfillProjects = true)]
+    [ProjectVerifier]
     [Route("api/v1/compaction/cmv/summary")]
     [HttpPost]
     public CMVSummaryResult PostSummary([FromBody] CMVRequest request)
@@ -182,8 +161,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// </returns>
     /// <executor>DetailedCMVExecutor</executor>     
     [PostRequestVerifier]
-    [ProjectIdVerifier(AllowLandfillProjects = true)]
-    [ProjectUidVerifier(AllowLandfillProjects = true)]
+    [ProjectVerifier]
     [Route("api/v1/compaction/cmv/detailed")]
     [HttpPost]
     public CMVDetailedResult PostDetailed([FromBody] CMVRequest request)
@@ -195,8 +173,6 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 
     }
 
-    #endregion
-
     /// <summary>
     /// Gets project statistics from Raptor.
     /// </summary>
@@ -204,8 +180,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <returns></returns>
     /// <executor>ProjectStatisticsExecutor</executor>
     [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v1/projects/statistics")]
     [HttpPost]
     public ProjectStatisticsResult PostProjectStatistics([FromBody] ProjectStatisticsRequest request)
@@ -223,8 +198,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <returns></returns>
     /// <executor>SummaryVolumesExecutor</executor>
     [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v1/volumes/summary")]
     [HttpPost]
     public SummaryVolumesResult Post([FromBody] SummaryVolumesRequest request)
@@ -242,8 +216,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <returns></returns>
     /// <executor>SummaryVolumesExecutor</executor>
     [PostRequestVerifier]
-    [ProjectIdVerifier(AllowLandfillProjects = true)]
-    [ProjectUidVerifier(AllowLandfillProjects = true)]
+    [ProjectVerifier]
     [Route("api/v1/thickness/summary")]
     [HttpPost]
     public SummaryThicknessResult Post([FromBody] SummaryParametersBase parameters)
@@ -261,8 +234,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <returns></returns>
     /// <executor>SummarySpeedExecutor</executor>
     [PostRequestVerifier]
-    [ProjectIdVerifier(AllowLandfillProjects = true)]
-    [ProjectUidVerifier(AllowLandfillProjects = true)]
+    [ProjectVerifier]
     [Route("api/v1/speed/summary")]
     [HttpPost]
     public SpeedSummaryResult Post([FromBody] SummarySpeedRequest parameters)
@@ -280,8 +252,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <returns></returns>
     /// <executor>CMVChangeSummaryExecutor</executor>
     [PostRequestVerifier]
-    [ProjectIdVerifier(AllowLandfillProjects = true)]
-    [ProjectUidVerifier(AllowLandfillProjects = true)]
+    [ProjectVerifier]
     [Route("api/v1/cmvchange/summary")]
     [HttpPost]
     public CMVChangeSummaryResult Post([FromBody] CMVChangeSummaryRequest parameters)
@@ -299,8 +270,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <returns></returns>
     /// <executor>ElevationStatisticsExecutor</executor>
     [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v1/statistics/elevation")]
     [HttpPost]
     public ElevationStatisticsResult Post([FromBody] ElevationStatisticsRequest request)
@@ -319,8 +289,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// </returns>
     /// <executor>SummaryCCAExecutor</executor>
     [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v1/compaction/cca/summary")]
     [HttpPost]
     public CCASummaryResult PostSummary([FromBody] CCARequest request)

@@ -85,7 +85,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="language">Optional language parameter</param> 
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>CompactionTileExecutor</executor> 
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/reporttiles")]
     [HttpGet]
     [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
@@ -130,7 +130,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="language"></param>    
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request succeeds.</returns>
     /// <executor>CompactionTileExecutor</executor> 
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/reporttiles/png")]
     [HttpGet]
     [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
@@ -161,7 +161,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Gets a project thumbnail
     /// </summary>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/projectthumbnail")]
     [HttpGet]
     [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
@@ -187,7 +187,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets a project thumbnail image.
     /// </summary>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/projectthumbnail/png")]
     [HttpGet]
     [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]

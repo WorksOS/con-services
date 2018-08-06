@@ -114,7 +114,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <param name="fileId">A unique file identifier</param>
     /// <param name="dxfUnitsType">A DXF file units type</param>
     /// <param name="fileQueue"></param>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/notification/addfile")]
     [HttpGet]
     public async Task<Models.Notification.Models.AddFileResult> GetAddFile(
@@ -182,7 +182,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <summary>
     /// Notifies Raptor that a file has been deleted from a project
     /// </summary> 
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/notification/deletefile")]
     [HttpGet]
     public async Task<ContractExecutionResult> GetDeleteFile(
@@ -229,7 +229,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <summary>
     /// Notifies Raptor that files have been activated or deactivated
     /// </summary>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/notification/updatefiles")]
     [HttpGet]
     public async Task<ContractExecutionResult> GetUpdateFiles(
@@ -261,7 +261,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// </summary>
     /// <param name="projectUid"></param>
     /// <returns></returns>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/notification/invalidatecache")]
     [HttpGet]
     public async Task<ContractExecutionResult> InvalidateCache([FromQuery] Guid projectUid)
@@ -281,7 +281,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     ///      When a file is added via CGen flexGateway, it will tell raptor.
     ///        However the 3dp UI needs to know about the change, so needs to refresh its caches.
     /// </summary>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/notification/importedfilechange")]
     [HttpGet]
     public async Task<ContractExecutionResult> GetNotifyImportedFileChange(

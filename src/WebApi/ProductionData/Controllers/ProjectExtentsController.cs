@@ -44,8 +44,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <executor>ProjectExtentsSubmitter</executor>
     /// 
     [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v1/projectextents")]
     [HttpPost]
 

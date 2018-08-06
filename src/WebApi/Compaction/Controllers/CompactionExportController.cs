@@ -68,7 +68,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="machineNames">The machine names.</param>
     /// <param name="filterUid">The filter uid.</param>
     /// <param name="scheduler">The scheduler.</param>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/export/veta/schedulejob")]
     [HttpGet]
     public ScheduleResult ScheduleVetaJob(
@@ -107,7 +107,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="coordType"></param>
     /// <param name="outputType"></param>
     /// <param name="restrictOutput"></param>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/export/machinepasses/schedulejob")]
     [HttpGet]
     public ScheduleResult ScheduleMachinePassesJob(
@@ -139,7 +139,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="tolerance"></param>
     /// <param name="filterUid">The filter uid.</param>
     /// <param name="scheduler">The scheduler.</param>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/export/surface/schedulejob")]
     [HttpGet]
     public ScheduleResult ScheduleSurfaceJob(
@@ -183,7 +183,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="machineNames">Comma-separated list of machine names.</param>
     /// <param name="filterUid">The filter Uid to apply to the export results</param>
     /// <returns>An instance of the ExportResult class.</returns>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/export/veta")]
     [HttpGet]
     public async Task<FileResult> GetExportReportVeta(
@@ -243,7 +243,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="fileName">Output file name.</param>
     /// <param name="filterUid">The filter Uid to apply to the export results</param>
     /// <returns>An instance of the ExportResult class.</returns>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/export/machinepasses")]
     [HttpGet]
     public async Task<FileResult> GetExportReportMachinePasses(
@@ -304,7 +304,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="tolerance">Controls triangulation density in the output .TTM file.</param>
     /// <param name="filterUid">The filter Uid to apply to the export results</param>
     /// <returns>An instance of the ExportResult class.</returns>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/export/surface")]
     [HttpGet]
     public async Task<FileResult> GetExportReportSurface(

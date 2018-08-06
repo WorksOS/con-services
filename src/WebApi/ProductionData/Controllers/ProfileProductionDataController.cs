@@ -42,8 +42,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// Returns JSON structure wtih operation result as profile calculations./>
     /// </returns>
     [PostRequestVerifier]
-    [ProjectIdVerifier(AllowLandfillProjects = true)]
-    [ProjectUidVerifier(AllowLandfillProjects = true)]
+    [ProjectVerifier]
     [Route("api/v1/profiles/productiondata")]
     [HttpPost]
     public ProfileResult Post([FromBody] ProfileProductionDataRequest request)

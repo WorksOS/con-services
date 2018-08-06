@@ -24,6 +24,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting Raptor production data for summary and details requests
   /// </summary>
+  [ProjectVerifier]
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   public class CompactionProfileController : BaseController<CompactionProfileController>
   {
@@ -65,7 +66,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>
     /// Returns JSON structure wtih operation result as profile calculations <see cref="ContractExecutionResult"/>
     /// </returns>
-    [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v2/profiles/productiondata/slicer")]
     [HttpGet]
     public async Task<CompactionProfileResult<CompactionProfileDataResult>> GetProfileProductionDataSlicer(
@@ -193,7 +193,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Resource to get a profile design slicer.
     /// </summary>
-    [ProjectUidVerifier(AllowLandfillProjects = true)]
     [Route("api/v2/profiles/design/slicer")]
     [HttpGet]
     public async Task<CompactionProfileResult<CompactionDesignProfileResult>> GetProfileDesignSlicer(

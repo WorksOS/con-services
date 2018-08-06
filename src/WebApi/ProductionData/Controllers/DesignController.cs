@@ -22,7 +22,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// <summary>
   /// Controller for Designs resource.
   /// </summary>
-  /// 
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class DesignController : Controller, IDesignContract
   {
@@ -73,7 +72,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="projectUid">The model/project unique identifier.</param>
     /// <param name="tolerance">The spacing interval for the sampled points. Setting to 1.0 will cause points to be spaced 1.0 meters apart.</param>
     /// <returns>Execution result with a list of design boundaries.</returns>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/designs/boundaries")]
     [HttpGet]
     public async Task<ContractExecutionResult> GetDesignBoundaries([FromQuery] Guid projectUid, [FromQuery] double? tolerance)
