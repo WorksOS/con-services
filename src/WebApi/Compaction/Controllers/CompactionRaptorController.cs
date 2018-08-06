@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -28,8 +29,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionRaptorController(IASNodeClient raptorClient) :
-      base(null, null, null)
+    public CompactionRaptorController(IASNodeClient raptorClient, IFileListProxy fileListProxy) :
+      base(null, fileListProxy, null)
     {
       this.raptorClient = raptorClient;
     }
@@ -37,7 +38,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the boundary points of a design
     /// </summary>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/raptor/designboundarypoints")]
     [HttpGet]
     public async Task<PointsListResult> GetDesignBoundaryPoints(
@@ -61,7 +62,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the spatial boundary points of a filter
     /// </summary>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/raptor/filterpoints")]
     [HttpGet]
     public async Task<PointsListResult> GetFilterPoints(
@@ -88,7 +89,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the spatial boundary points of the requested filters for the required boundary type
     /// </summary>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/raptor/filterpointslist")]
     [HttpGet]
     public async Task<PointsListResult> GetFilterPointsList(
@@ -117,7 +118,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the boundary points for an alignment file in a project
     /// </summary>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/raptor/alignmentpoints")]
     [HttpGet]
     public async Task<AlignmentPointsResult> GetAlignmentPoints(
@@ -146,7 +147,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the boundary points for all active alignment files in a project
     /// </summary>
-    [ProjectUidVerifier]
+    [ProjectVerifier]
     [Route("api/v2/raptor/alignmentpointslist")]
     [HttpGet]
     public async Task<PointsListResult> GetAlignmentPointsList(
