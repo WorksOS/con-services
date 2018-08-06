@@ -2,6 +2,8 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using VSS.ConfigurationStore;
@@ -286,18 +288,28 @@ namespace VSS.MasterData.Proxies
     }
 
 
-    public async Task<FileResult> GetProductionDataTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, ushort width, ushort height, 
+    public async Task<byte[]> GetProductionDataTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, ushort width, ushort height, 
       string bbox, DisplayMode mode, Guid? baseUid, Guid? topUid, VolumeCalcType? volCalcType, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.GetProductionDataTile: projectUid={projectUid}, filterUid={filterUid}, width={width}, height={height}, mode={mode}, bbox={bbox}, baseUid={baseUid}, topUid={topUid}, volCalcType={volCalcType}, cutFillDesignUid={cutFillDesignUid}");
-      string queryParameters1 = $"?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=Layers&CRS=EPSG:4326&STYLES=";
-      string queryParameters2 =
-          $"&projectUid={projectUid}&filterUid={filterUid}&baseUid={baseUid}&topUid={topUid}&volumeCalcType={volCalcType}";
-      string queryParameters3 = $"&width={width}&height={height}&bbox={bbox}&cutFillDesignUid={cutFillDesignUid}";
-      FileResult response = await SendRequest<FileResult>("RAPTOR_3DPM_API_URL",
-        string.Empty, customHeaders, "/productiondatatiles/png", "GET", $"{queryParameters1}{queryParameters2}{queryParameters3}");
 
-      return response;
+      string filterParam = filterUid.HasValue ? $"&filterUid={filterUid}" : string.Empty;
+      string cutFillDesignParam = cutFillDesignUid.HasValue ? $"&cutFillDesignUid={cutFillDesignUid}" : string.Empty;
+      string baseParam = baseUid.HasValue ? $"&baseUid={baseUid}" : string.Empty;
+      string topParam = topUid.HasValue ? $"&topUid={topUid}" : string.Empty;
+      string volCalcTypeParam = volCalcType.HasValue ? $"&volumeCalcType={volCalcType}" : string.Empty;
+      string queryParameters1 = $"?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=Layers&CRS=EPSG:4326&STYLES=";
+      string queryParameters2 = $"&projectUid={projectUid}{filterParam}{baseParam}{topParam}{volCalcTypeParam}";
+      string queryParameters3 = $"&width={width}&height={height}&bbox={bbox}{cutFillDesignParam}";
+
+      var request = new GracefulWebRequest(logger, configurationStore);
+      var url = ExtractUrl("RAPTOR_3DPM_API_URL", "/productiondatatiles/png", $"{queryParameters1}{queryParameters2}{queryParameters3}");
+      var result = await request.ExecuteRequest(url, "GET", customHeaders, null, null, 3);
+      using (var ms = new MemoryStream())
+      {
+        await result.CopyToAsync(ms);
+        return ms.ToArray();
+      }
     }
     #endregion
 

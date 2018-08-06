@@ -67,7 +67,7 @@ namespace VSS.MasterData.Proxies.Interfaces
     Task<PointsListResult> GetFilterPointsList(Guid projectUid, Guid? filterUid, Guid? baseUid, Guid? topUid, FilterBoundaryType boundaryType,
       IDictionary<string, string> customHeaders = null);
 
-    Task<FileResult> GetProductionDataTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, ushort width,
+    Task<byte[]> GetProductionDataTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, ushort width,
       ushort height, string bbox, DisplayMode mode, Guid? baseUid, Guid? topUid, VolumeCalcType? volCalcType,
       IDictionary<string, string> customHeaders = null);
 

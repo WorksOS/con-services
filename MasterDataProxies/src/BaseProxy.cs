@@ -20,7 +20,7 @@ namespace VSS.MasterData.Proxies
     private readonly IMemoryCache cache;
     protected readonly IConfigurationStore configurationStore;
     protected readonly ILogger log;
-    private readonly ILoggerFactory logger;
+    protected readonly ILoggerFactory logger;
 
     protected BaseProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IMemoryCache cache)
     {
@@ -341,7 +341,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="route">Any additional routing</param>
     /// <param name="queryParameters">Any query parameters</param>
     /// <returns></returns>
-    private string ExtractUrl(string urlKey, string route, string queryParameters = null)
+    protected string ExtractUrl(string urlKey, string route, string queryParameters = null)
     {
       var url = ExtractBaseUrl(urlKey, route);
       if (!string.IsNullOrEmpty(queryParameters))
