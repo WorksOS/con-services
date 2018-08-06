@@ -80,7 +80,7 @@ namespace LandfillDatasync.netcore
     {
       var geofences = geofenceUids.ToDictionary(g => g,
         g => LandfillDb.GetGeofencePoints(g).ToList());
-      Log.DebugFormat("Got {0} geofences to process for projectResponse {1}", geofenceUids.Count, id);
+      Log.DebugFormat("Got {0} geofences to process for projectID {1}", geofenceUids.Count, id);
 
       return geofences;
     }
