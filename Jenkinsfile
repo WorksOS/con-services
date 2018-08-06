@@ -8,6 +8,12 @@ node ('jenkinsslave-pod') {
                 description: 'The build number supplied by VSTS perhaps fail build if this is nothing to prevent unrequested builds during multibranch scan',
                 name: 'VSTS_BUILD_NUMBER'
             ),
+  	string(
+		defaultValue: null,
+		description: 'The branch name to build',
+		name: 'BRANCH_NAME'
+		),
+
         ])
     ])
 
