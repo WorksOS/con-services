@@ -29,10 +29,6 @@
     <Folder Include="Validation\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\MasterDataModels\src\VSS.MasterData.Models.csproj" />
-  </ItemGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>
