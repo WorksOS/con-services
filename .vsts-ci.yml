@@ -11,7 +11,7 @@ queue:
 #Your build pipeline references an undefined variable named ‘Parameters.jobName’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
 steps:
 - task: JenkinsQueueJob@2
-  displayName: Queue Jenkins Job: vss-fileaccess-webapi
+  displayName: "Queue Jenkins Job: vss-fileaccess-webapi"
   inputs:
     serverEndpoint: '$(Parameters.serverEndpoint)'
     jobName: 'vss-fileaccess-webapi'
