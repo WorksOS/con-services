@@ -19,21 +19,13 @@ namespace VSS.TRex.Tests.Geometry
             Assert.True(p.X == 1 && p.Y == 2 & p.Z == 3, "XYZ did not create as expected");
         }
 
-      [Fact()]
-      public void Test_XYZTests_Creation2()
-      {
-        XYZ p = new XYZ(1, 2);
-
-        Assert.True(p.X == 1 && p.Y == 2 & p.Z == Consts.NullDouble, "XYZ did not create as expected");
-      }
-
-      [Fact()]
-      public void Test_XYZTests_Creation3()
-      {
-        XYZ p = new XYZ(1, 2, 3);
-
-        Assert.True(p.X == 1 && p.Y == 2 & p.Z == 3, "XYZ did not create as expected");
-      }
+        [Fact()]
+        public void Test_XYZTests_Creation2()
+        {
+          XYZ p = new XYZ(1, 2);
+     
+          Assert.True(p.X == 1 && p.Y == 2 & p.Z == Consts.NullDouble, "XYZ did not create as expected");
+        }
 
         [Fact()]
         public void Test_XYZTests_Explode()
