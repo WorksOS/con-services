@@ -40,6 +40,13 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(request.ProjectUid.Value);
 
+      if (siteModel == null)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+            $"Site model {request.ProjectUid} is unavailable"));
+      }
+
       // TODO...
       //var filter = RaptorConverters.ConvertFilter(null, request.filter, request.ProjectId);
       //var designDescriptor = RaptorConverters.DesignDescriptor(request.designDescriptor);
