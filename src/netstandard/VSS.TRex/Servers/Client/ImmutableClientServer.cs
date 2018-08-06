@@ -54,7 +54,7 @@ namespace VSS.TRex.Servers.Client
 
           TRexNodeID = Guid.NewGuid().ToString();
 
-          Log.LogInformation($"Creating new Ignite node with Roles = {roleNames} & TRexNodeId = {TRexNodeID}");
+          //Log.LogInformation($"Creating new Ignite node with Roles = {roleNames} & TRexNodeId = {TRexNodeID}");
 
           IgniteConfiguration cfg = new IgniteConfiguration
           {
