@@ -1,8 +1,9 @@
 #!/bin/bash
 echo "FileAccess Accept tests are starting .... "
-echo "Wait for 10 seconds"
-sleep 10s
+echo "Wait for 50 seconds"
+sleep 50s
 
+cd /app
 echo "Integration tests starting...."
 dotnet vstest IntegrationTests/IntegrationTests.dll --logger:trx
 cp TestResults/*.trx testresults/IntegrationTests.trx
