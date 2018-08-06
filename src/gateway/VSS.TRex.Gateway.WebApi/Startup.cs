@@ -17,6 +17,7 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.WebApi.Common;
+using VSS.TRex.DI;
 
 namespace VSS.TRex.Gateway.WebApi
 {
@@ -80,10 +81,9 @@ namespace VSS.TRex.Gateway.WebApi
 
       MutableClientServer tagFileMutableClientServer = new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT);
       services.AddSingleton<IMutableClientServer>(tagFileMutableClientServer);
+
       ITINSurfaceExportRequestor tINSurfaceExportRequestor = new TINSurfaceExportRequestor();
       services.AddSingleton<ITINSurfaceExportRequestor>(tINSurfaceExportRequestor);
-
-      serviceCollection = services;
     }
 
     /// <summary>
