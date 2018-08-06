@@ -50,6 +50,8 @@ namespace VSS.TRex.Servers.Compute
 
       cfg.SpringConfigUrl = @".\igniteKubeConfig.xml";
 
+      cfg.WorkDirectory = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Immutable");
+
       cfg.IgniteInstanceName = TRexGrids.ImmutableGridName();
 
       cfg.JvmOptions = new List<string>() { "-DIGNITE_QUIET=false", "-Djava.net.preferIPv4Stack=true" };

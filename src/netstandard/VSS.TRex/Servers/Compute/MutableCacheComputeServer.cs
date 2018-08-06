@@ -45,8 +45,11 @@ namespace VSS.TRex.Servers.Compute
 
     public override void ConfigureTRexGrid(IgniteConfiguration cfg)
     {
-      base.ConfigureTRexGrid(cfg);
       cfg.SpringConfigUrl = @".\igniteMutableKubeConfig.xml";
+      base.ConfigureTRexGrid(cfg);
+
+      cfg.WorkDirectory = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Mutable");
+
 
       cfg.IgniteInstanceName = TRexGrids.MutableGridName();
 
