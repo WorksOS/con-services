@@ -39,10 +39,13 @@ node('Ubuntu_Slave') {
             checkout scm
         }
         stage ('Restore packages') {
-            sh "dotnet restore --no-cache"
+            sh "dotnet restore --no-cache VSS.Productivity3D.FileAccess.Service.sln"
         }
         stage ('Build solution') {
             sh "bash ./build.sh"
+        }
+		stage ('Run unit tests') {
+            sh "bash ./unittests.sh" 
         }
         stage ('Prepare Acceptance tests') {
             sh "(cd ./AcceptanceTests/scripts && bash ./deploy_linux.sh)"
