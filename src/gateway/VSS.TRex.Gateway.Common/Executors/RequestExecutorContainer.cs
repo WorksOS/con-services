@@ -33,8 +33,6 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected ITileRenderingServer tileRenderServer;
     protected IMutableClientServer tagfileClientServer;
-    protected IImmutableClientServer reportImmutableClientServer;
-
 
     /// <summary>
     /// Processes the specified item. This is the main method to execute real action.
@@ -106,7 +104,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// Injected constructor.
     /// </summary>
     protected RequestExecutorContainer(IConfigurationStore configStore, ILoggerFactory logger, 
-      IServiceExceptionHandler serviceExceptionHandler, ITileRenderingServer tileRenderServer, IMutableClientServer tagfileClientServer, IImmutableClientServer reportImmutableClientServer) : this()
+      IServiceExceptionHandler serviceExceptionHandler, ITileRenderingServer tileRenderServer, IMutableClientServer tagfileClientServer) : this()
     {
       this.configStore = configStore;
       if (logger != null)
@@ -114,7 +112,6 @@ namespace VSS.TRex.Gateway.Common.Executors
       this.serviceExceptionHandler = serviceExceptionHandler;
       this.tileRenderServer = tileRenderServer;
       this.tagfileClientServer = tagfileClientServer;
-      this.reportImmutableClientServer = reportImmutableClientServer;
     }
 
     /// <summary>
@@ -132,7 +129,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <returns></returns>
     public static TExecutor
       Build<TExecutor>(IConfigurationStore configStore, ILoggerFactory logger, 
-      IServiceExceptionHandler serviceExceptionHandler, ITileRenderingServer tileRenderServer, IMutableClientServer tagfileClientServer, IImmutableClientServer reportImmutableClientServer)
+      IServiceExceptionHandler serviceExceptionHandler, ITileRenderingServer tileRenderServer, IMutableClientServer tagfileClientServer)
       where TExecutor : RequestExecutorContainer, new()
     {
       var executor = new TExecutor
@@ -141,8 +138,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         log = logger.CreateLogger<TExecutor>(),
         serviceExceptionHandler = serviceExceptionHandler,
         tileRenderServer = tileRenderServer,
-        tagfileClientServer = tagfileClientServer,
-        reportImmutableClientServer = reportImmutableClientServer
+        tagfileClientServer = tagfileClientServer
       };
 
       return executor;

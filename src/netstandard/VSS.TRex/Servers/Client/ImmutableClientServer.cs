@@ -22,7 +22,7 @@ namespace VSS.TRex.Servers.Client
     /// Defines a representation of a client able to request TRex related compute operations using
     /// the Ignite In Memory Data Grid. All client type server classes should descend from this class.
     /// </summary>
-    public class ImmutableClientServer : IgniteServer, IImmutableClientServer
+    public class ImmutableClientServer : IgniteServer
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
