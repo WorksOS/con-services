@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -265,7 +265,7 @@ namespace VSS.MasterData.Models.UnitTests
     {
       var filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
         ElevationType.Lowest, true, this._polygonLL, true, 1, this._boundaryUid, this._boundaryName);
-      var jsonString = filter.ToJsonString();
+      var jsonString = JsonConvert.SerializeObject(filter);
 
       Assert.IsTrue(jsonString != String.Empty);
 
@@ -307,7 +307,7 @@ namespace VSS.MasterData.Models.UnitTests
     {
       var filter = Filter.CreateFilter(this._utcNow, this._utcNow.AddDays(10), new Guid().ToString(), "designName", this._machines, 123,
         ElevationType.Lowest, true, this._polygonLL, true, 1, this._boundaryUid, this._boundaryName);
-      var jsonString = filter.ToJsonString();
+      var jsonString = JsonConvert.SerializeObject(filter);
 
       Assert.IsTrue(jsonString != String.Empty);
 
