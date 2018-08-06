@@ -1,6 +1,7 @@
-﻿using Xunit;
+﻿using VSS.TRex.Tests.Exports.Surfaces.GridDecimator;
+using Xunit;
 
-namespace VSS.TRex.Tests.Exports.Surfaces
+namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
 {
     public class TINHeapTests
     {

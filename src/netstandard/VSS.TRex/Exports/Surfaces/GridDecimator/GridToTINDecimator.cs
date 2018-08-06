@@ -5,9 +5,8 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.TTM;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
-using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Types;
-using VSS.TRex.Tests.Exports.Surfaces;
+using VSS.TRex.Tests.Exports.Surfaces.GridDecimator;
 using VSS.TRex.Utilities;
 
 /*
@@ -24,7 +23,7 @@ using VSS.TRex.Utilities;
     6. Extract the resulting TIN model.
  */
 
-namespace VSS.TRex.Exports.Surfaces
+namespace VSS.TRex.Exports.Surfaces.GridDecimator
 {
   public class GridToTINDecimator
   {

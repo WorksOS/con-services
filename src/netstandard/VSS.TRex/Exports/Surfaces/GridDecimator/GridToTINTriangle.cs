@@ -1,6 +1,6 @@
 ﻿using VSS.TRex.Designs.TTM;
 
-namespace VSS.TRex.Tests.Exports.Surfaces
+namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
 {
   /// <summary>
   /// Decorates the standard triangle class with a HeapIndex tracking member

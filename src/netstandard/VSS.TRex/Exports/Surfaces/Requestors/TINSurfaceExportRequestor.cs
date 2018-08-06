@@ -1,6 +1,4 @@
-﻿using System.IO;
-using VSS.TRex.Designs.TTM;
-using VSS.TRex.Exports.Surfaces;
+﻿using VSS.TRex.Exports.Surfaces.GridDecimator;
 using VSS.TRex.Exports.Surfaces.GridFabric;
 
 namespace VSS.TRex.Exports.Surfaces.Requestors

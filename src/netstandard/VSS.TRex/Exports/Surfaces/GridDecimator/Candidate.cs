@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace VSS.TRex.Exports.Surfaces
+﻿namespace VSS.TRex.Exports.Surfaces.GridDecimator
 {
   /// <summary>
   /// Defines a candidate location and elevation for inclusion into the TIN being decimated from the grid points

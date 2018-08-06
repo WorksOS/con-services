@@ -3,7 +3,7 @@ using System.Diagnostics;
 using VSS.TRex.Designs.TTM;
 using VSS.TRex.Geometry;
 
-namespace VSS.TRex.Exports.Surfaces
+namespace VSS.TRex.Exports.Surfaces.GridDecimator
 {
   public class TinningEngine
   {

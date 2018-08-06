@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace VSS.TRex.Tests.Exports.Surfaces
+namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
 {
   public class TINHeap : List<GridToTINHeapNode>
   {

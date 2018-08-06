@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace VSS.TRex.Exports.Surfaces
+﻿namespace VSS.TRex.Exports.Surfaces.GridDecimator
 {
   public enum DecimationResult
   {

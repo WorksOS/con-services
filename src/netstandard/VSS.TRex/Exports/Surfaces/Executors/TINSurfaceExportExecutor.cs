@@ -2,6 +2,7 @@
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Exports.Surfaces.Executors.Tasks;
+using VSS.TRex.Exports.Surfaces.GridDecimator;
 using VSS.TRex.Exports.Surfaces.GridFabric;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
@@ -11,7 +12,6 @@ using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
-using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.SubGridTrees.Utilities;

@@ -1,13 +1,13 @@
 ﻿using Xunit;
 
-namespace VSS.TRex.Tests.Exports.Surfaces
+namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
 {
     public class PlaneTests
     {
       [Fact]
       public void Test_Plane_Creation()
       {
-        TRex.Exports.Surfaces.Plane plane = new TRex.Exports.Surfaces.Plane();
+        TRex.Exports.Surfaces.GridDecimator.Plane plane = new TRex.Exports.Surfaces.GridDecimator.Plane();
 
         Assert.True(true);
       }
@@ -15,7 +15,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces
       [Fact]
       public void Test_Plane_Init()
       {
-        TRex.Exports.Surfaces.Plane plane = new TRex.Exports.Surfaces.Plane();
+        TRex.Exports.Surfaces.GridDecimator.Plane plane = new TRex.Exports.Surfaces.GridDecimator.Plane();
 
         plane.Init(0, 0, 0, 2, 0, 0, 0, 2, 0);
 
@@ -27,7 +27,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces
       [Fact]
       public void Test_Plane_Evaluate()
       {
-        TRex.Exports.Surfaces.Plane plane = new TRex.Exports.Surfaces.Plane();
+        TRex.Exports.Surfaces.GridDecimator.Plane plane = new TRex.Exports.Surfaces.GridDecimator.Plane();
 
         plane.Init(0, 0, 0, 2, 0, 0, 0, 2, 0);
         Assert.True(plane.Evaluate(0, 0) == 0.0, "Plane evaluation incorrect");  

@@ -1,6 +1,6 @@
 ﻿using VSS.TRex.Designs.TTM;
 
-namespace VSS.TRex.Exports.Surfaces
+namespace VSS.TRex.Exports.Surfaces.GridDecimator
 {
   /// <summary>
   /// Representa a triangle via the plane equation derived from its vertices

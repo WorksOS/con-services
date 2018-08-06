@@ -1,13 +1,11 @@
-﻿using System;
-using VSS.TRex.Designs.TTM;
-using VSS.TRex.Exports.Surfaces;
+﻿using VSS.TRex.Exports.Surfaces.GridDecimator;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
-namespace VSS.TRex.Tests.Exports.Surfaces
+namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
 {
   public class DecimationElevationSubGridTree : GenericSubGridTree<float>
   {

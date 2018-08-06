@@ -48,6 +48,8 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     {
       Log.LogDebug("GetTINSurface: " + Request.QueryString);
 
+      Log.LogDebug($"Accept header is {Request.Headers["Accept"]}");
+
       TINSurfaceExportRequest request = new TINSurfaceExportRequest
       {
         ProjectUid = projectUid,

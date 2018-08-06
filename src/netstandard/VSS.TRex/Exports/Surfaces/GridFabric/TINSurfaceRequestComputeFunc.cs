@@ -5,6 +5,7 @@ using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.TTM;
 using VSS.TRex.Exports.Surfaces.Executors;
+using VSS.TRex.Exports.Surfaces.GridDecimator;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Servers;

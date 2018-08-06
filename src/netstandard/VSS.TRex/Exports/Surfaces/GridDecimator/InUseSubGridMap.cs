@@ -1,6 +1,6 @@
 ﻿using VSS.TRex.SubGridTrees;
 
-namespace VSS.TRex.Exports.Surfaces
+namespace VSS.TRex.Exports.Surfaces.GridDecimator
 {
   public struct InUseSubGridMap
   {

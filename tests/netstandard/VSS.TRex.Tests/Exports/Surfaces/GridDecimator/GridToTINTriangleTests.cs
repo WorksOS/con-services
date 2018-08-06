@@ -1,7 +1,7 @@
 ﻿using VSS.TRex.Designs.TTM;
 using Xunit;
 
-namespace VSS.TRex.Tests.Exports.Surfaces
+namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
 {
     public class GridToTINTriangleTests
     {

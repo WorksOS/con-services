@@ -1,8 +1,11 @@
 ﻿using System;
 using VSS.TRex.Designs.TTM;
 
-namespace VSS.TRex.Exports.Surfaces
+namespace VSS.TRex.Exports.Surfaces.GridDecimator
 {
+  /// <summary>
+  /// Provides a collection of gemoetry utilities methods used to support evaluation of Delauney criteria
+  /// </summary>
     public static class TinningUtils
     {
       private static double noCotangent = -1E20;
