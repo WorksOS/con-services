@@ -30,7 +30,7 @@ namespace VSS.TRex.Gateway.WebApi
     /// <summary>
     /// The logger repository name
     /// </summary>
-    public const string LoggerRepoName = "WebApi";
+    public const string LOGGER_REPO_NAME = "WebApi";
 
     /// <summary>
     /// This method gets called by the runtime. Use this method to add services to the container.
