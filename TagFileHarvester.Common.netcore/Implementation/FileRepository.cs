@@ -295,6 +295,7 @@ namespace TagFileHarvester.Implementation
 
     public bool MoveFile(Organization org, string srcFullName, string dstFullName)
     {
+      const string FILE_CHECKED_OUT_ERROR_ID = "INVALID_OPERATION_FILE_IS_LOCKED";
       Log.DebugFormat("MoveFile: org={0} {1}, srcFullName={2}, dstFullName={3}", org.shortName, org.filespaceId,
         srcFullName, dstFullName);
       try
@@ -327,6 +328,18 @@ namespace TagFileHarvester.Implementation
         };
         var result = ExecuteRequest(Ticket, Method.GET, "/tcc/Ren", renParams, typeof(RenResult));
         var renResult = result as RenResult;
+        if (renResult != null && !renResult.success && renResult.errorid.Contains(FILE_CHECKED_OUT_ERROR_ID))
+        {
+          Log.InfoFormat($"File {srcFullName} for org {org.shortName} is locked, attempting to cancel checkout");
+          var cancelled = CancelCheckout(org, srcFullName);
+          if (cancelled)
+          {
+            Log.InfoFormat($"Retrying MoveFile for {srcFullName} for org {org.shortName}");
+            result = ExecuteRequest(Ticket, Method.GET, "/tcc/Ren", renParams, typeof(RenResult));
+            renResult = result as RenResult;
+          }
+        }
+
         if (renResult != null)
         {
           if (renResult.success || renResult.errorid.Contains("INVALID_OPERATION_FILE_IS_LOCKED")) return true;
@@ -345,6 +358,41 @@ namespace TagFileHarvester.Implementation
       return false;
     }
 
+    private bool CancelCheckout(Organization org, string fullName)
+    {
+      Log.DebugFormat("CancelCheckout: org={0} {1}, fullName={2}", org.shortName, org.filespaceId, fullName);
+
+      try
+      {
+        CancelCheckoutParams ccParams = new CancelCheckoutParams
+        {
+          filespaceid = org.filespaceId,
+          path = fullName
+        };
+
+        var result = ExecuteRequest(Ticket, Method.GET, "/tcc/CancelCheckout", ccParams, typeof(CancelCheckoutResult));
+        CancelCheckoutResult ccResult = result as CancelCheckoutResult;
+        if (ccResult != null)
+        {
+          if (ccResult.success)
+          {
+            return true;
+          }
+          CheckForInvalidTicket(ccResult, "CancelCheckout");
+        }
+        else
+        {
+          Log.ErrorFormat("Null result from CancelCheckout for org {0} file {1}", org.shortName, fullName);
+        }
+      }
+
+      catch (Exception ex)
+      {
+        Log.ErrorFormat("Failed to cancel checkout TCC file for org {0} file {1}: {2}", org.shortName, fullName,
+          ex.Message);
+      }
+      return false;
+    }
 
     private string GetCacheKey(Organization org, string path)
     {
