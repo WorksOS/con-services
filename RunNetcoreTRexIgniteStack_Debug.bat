@@ -7,3 +7,5 @@ start "Application" cmd.exe /k "dotnet src/netstandard/services/VSS.TRex.Server.
 timeout 7
 start "DesignElevation" cmd.exe /k "dotnet src/netstandard/services/VSS.TRex.Server.DesignElevation/bin/Debug/netcoreapp2.0/VSS.TRex.Server.DesignElevation.dll"
 timeout 7
+start "TINSurfaceExport" cmd.exe /k "dotnet src/netstandard/services/VSS.TRex.Server.TINSurfaceExport/bin/Debug/netcoreapp2.0/VSS.TRex.Server.TINSurfaceExport.dll"
+timeout 7

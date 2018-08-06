@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.TRex.Common;
 
 namespace VSS.TRex.Geometry
@@ -194,7 +190,7 @@ namespace VSS.TRex.Geometry
         /// <param name="AMinY"></param>
         /// <param name="AMaxX"></param>
         /// <param name="AMaxY"></param>
-        /// <param name="AMaxZ"></param>
+        /// <param name="AMinZ"></param>
         /// <param name="AMaxZ"></param>
         public void Extract3DExtents(out double AMinX, out double AMinY, out double AMaxX, out double AMaxY, out double AMinZ, out double AMaxZ)
         {

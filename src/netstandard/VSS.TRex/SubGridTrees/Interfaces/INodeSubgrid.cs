@@ -8,6 +8,10 @@ namespace VSS.TRex.SubGridTrees.Interfaces
     {
         void DeleteSubgrid(byte SubGridX, byte SubGridY, bool DeleteIfLocked);
 
+        ISubGrid GetSubGrid(byte X, byte Y);
+
+        void SetSubGrid(byte X, byte Y, ISubGrid Value);
+
         bool GetSubGridContainingCell(uint CellX, uint CellY, out byte SubGridX, out byte SubGridY);
 
         void ForEachSubGrid(Func<ISubGrid, SubGridProcessNodeSubGridResult> functor,

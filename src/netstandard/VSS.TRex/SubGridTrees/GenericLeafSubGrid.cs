@@ -18,6 +18,14 @@ namespace VSS.TRex.SubGridTrees
         public GenericLeafSubGrid()
         {
         }
+    
+        /// <summary>
+        /// Creates a new generic leaf and instantiates its content with the provided cell array
+        /// </summary>
+        public GenericLeafSubGrid(T[,] items)
+        {
+          Items = items;
+        }
 
         /// <summary>
         /// Main constructor. Creates the lcoal generic Items[,] array and delegates to base(...)

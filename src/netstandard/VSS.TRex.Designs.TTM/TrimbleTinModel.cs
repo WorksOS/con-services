@@ -43,7 +43,7 @@ namespace VSS.TRex.Designs.TTM
             (Vertices as TTMVertices).SnapToOutputResolution(FHeader);
         }
 
-        public TrimbleTINModel() : base()
+    public TrimbleTINModel() : base()
         {
             FEdges = new TTMEdges();
             FStartPoints = new TTMStartPoints();
@@ -148,8 +148,8 @@ namespace VSS.TRex.Designs.TTM
             long HeaderPos = writer.BaseStream.Position;
 
             FHeader.FileSignature = ASCIIEncoding.ASCII.GetBytes(Consts.TTMFileIdentifier);
-            FHeader.DTMModelInternalName = ASCIIEncoding.ASCII.GetBytes(ModelName);
-            if (FHeader.DTMModelInternalName.Length > HeaderConsts.kDTMInternalModelNameSize)
+            FHeader.DTMModelInternalName = ASCIIEncoding.ASCII.GetBytes(ModelName ?? "Un-named Model\0");
+            if (FHeader.DTMModelInternalName.Length != HeaderConsts.kDTMInternalModelNameSize)
             {
                 Array.Resize(ref FHeader.DTMModelInternalName, HeaderConsts.kDTMInternalModelNameSize);
             }
@@ -215,14 +215,19 @@ namespace VSS.TRex.Designs.TTM
             Write(writer);
         }
 
-        public void LoadFromFile(string FileName)
+      public void LoadFromStream(Stream stream)
+      {
+        using (BinaryReader reader = new BinaryReader(stream))
+        {
+          Read(reader);
+        }
+      }
+
+    public void LoadFromFile(string FileName)
         {
             using (FileStream fs = new FileStream(FileName, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                using (BinaryReader reader = new BinaryReader(fs))
-                {
-                    Read(reader);
-                }
+               LoadFromStream(fs);
             }
 
             if (FModelName.Length == 0)
@@ -231,30 +236,36 @@ namespace VSS.TRex.Designs.TTM
             }
         }
 
-
-        public void SaveToFile(string FileName,
-                                      double CoordinateResolution = Consts.DefaultCoordinateResolution,
-                                     double ElevationResolution = Consts.DefaultElevationResolution,
-                                      bool BuildEdgeListEtAl = true)
+      public void SaveToStream(double CoordinateResolution,
+                               double ElevationResolution,
+                               bool BuildEdgeListEtAl,
+                               Stream stream)
+      {
+        if (BuildEdgeListEtAl && Triangles.Count > 0)
         {
-            if (BuildEdgeListEtAl && (Triangles.Count > 0))
-            {
-                BuildTriangleLinks();
-                BuildEdgeList();
-                BuildStartPointList();
-            }
+          BuildTriangleLinks();
+          BuildEdgeList();
+          BuildStartPointList();
+        }
 
-            this.CoordinateResolution = CoordinateResolution;
-            this.ElevationResolution = ElevationResolution;
+        this.CoordinateResolution = CoordinateResolution;
+        this.ElevationResolution = ElevationResolution;
 
+      using (BinaryWriter writer = new BinaryWriter(stream))
+          {
+            Write(writer);
+          }
+    }
+
+    public void SaveToFile(string FileName,
+                           double CoordinateResolution = Consts.DefaultCoordinateResolution,
+                           double ElevationResolution = Consts.DefaultElevationResolution,
+                           bool BuildEdgeListEtAl = true)
+        {
             using (FileStream fs = new FileStream(FileName, FileMode.CreateNew, FileAccess.Write))
             {
-                using (BinaryWriter writer = new BinaryWriter(fs))
-                {
-                    Write(writer);
-                }
+                SaveToStream(CoordinateResolution, ElevationResolution, BuildEdgeListEtAl, fs);
             }
-
         }
 
         public void SaveToFile(string FileName,
@@ -316,7 +327,7 @@ namespace VSS.TRex.Designs.TTM
         public string ModelName { get { return FModelName; } set { FModelName = value; } }
         public TTMStartPoints StartPoints { get { return FStartPoints; } }
         public TTMEdges Edges { get { return FEdges; } }
-        public TTMHeader Header { get { return FHeader; } }
+        public TTMHeader Header = TTMHeader.NewHeader(); //{ get { return FHeader; } }
 
         public double CoordinateResolution { get; set; }
         public double ElevationResolution { get; set; }

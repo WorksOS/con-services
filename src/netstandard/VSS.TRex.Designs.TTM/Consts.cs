@@ -6,7 +6,7 @@
         public const byte TTMMajorVersion = 1;
         public const byte TTMMinorVersion = 0;
 
-        public const string TTMFileIdentifier = "TNL TIN DTM FILE";
+        public const string TTMFileIdentifier = "TNL TIN DTM FILE\0\0\0\0";
 
         public const string kDesignSubgridOverlaySubgridIndexHeader = "TTMSUBGRIDINDEX";
         public const int kDesignSubgridOverlaySubgridIndexVersion = 2; //= 3; ###RPW### See TFS item 16560

@@ -20,6 +20,14 @@ namespace VSS.TRex.Tests.Geometry
         }
 
         [Fact()]
+        public void Test_XYZTests_Creation2()
+        {
+          XYZ p = new XYZ(1, 2);
+     
+          Assert.True(p.X == 1 && p.Y == 2 & p.Z == Consts.NullDouble, "XYZ did not create as expected");
+        }
+
+        [Fact()]
         public void Test_XYZTests_Explode()
         {
             // Test exploding of args into variables
@@ -72,13 +80,13 @@ namespace VSS.TRex.Tests.Geometry
         [Fact()]
         public void Test_XYZTests_NextSide()
         {
-            Assert.True(XYZ.NextSide(1) == 2 && XYZ.NextSide(2) == 3 && XYZ.NextSide(3) == 1, "Incorrect next side advancement");
+            Assert.True(XYZ.NextSide(0) == 1 && XYZ.NextSide(1) == 2 && XYZ.NextSide(2) == 0, "Incorrect next side advancement");
         }
 
         [Fact()]
         public void Test_XYZTests_PrevSide()
         {
-            Assert.True(XYZ.PrevSide(1) == 3 && XYZ.PrevSide(2) == 1 && XYZ.PrevSide(3) == 2, "Incorrect prev side advancement");
+            Assert.True(XYZ.PrevSide(0) == 2 && XYZ.PrevSide(1) == 0 && XYZ.PrevSide(2) == 1, "Incorrect prev side advancement");
         }
 
         [Fact()]

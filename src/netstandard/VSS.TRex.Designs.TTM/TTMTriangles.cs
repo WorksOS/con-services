@@ -7,14 +7,8 @@ namespace VSS.TRex.Designs.TTM
     {
         public TTMTriangles() : base()
         {
-
+            CreateTriangleFunc = (v0, v1, v2) => new TTMTriangle(v0, v1, v2);
         }
-
-        public override Triangle CreateTriangle(TriVertex Vertex1, TriVertex Vertex2, TriVertex Vertex3)
-        {
-            return new TTMTriangle(Vertex1, Vertex2, Vertex3);
-        }
-
 
         public void Write(BinaryWriter writer, TTMHeader header)
         {

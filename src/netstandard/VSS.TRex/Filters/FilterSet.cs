@@ -23,6 +23,15 @@ namespace VSS.TRex.Filters
     }
 
     /// <summary>
+    /// Constructor accepting a single filters to be set into the filter set
+    /// </summary>
+    /// <param name="filter"></param>
+    public FilterSet(CombinedFilter filter)
+    {
+      Filters = new [] { filter };
+    }
+
+    /// <summary>
     /// Constructor accepting a preinitialised array of filters to be included in the filter set
     /// </summary>
     /// <param name="filters"></param>

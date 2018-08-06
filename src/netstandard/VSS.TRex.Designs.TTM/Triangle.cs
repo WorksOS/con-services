@@ -72,35 +72,28 @@ namespace VSS.TRex.Designs.TTM
             return XYZ.PointInTriangle(Vertices[0].XYZ, Vertices[1].XYZ, Vertices[2].XYZ, X, Y);
         }
 
-        public bool PointInTriangleInclusive(XYZ P1, XYZ P2, XYZ P3, double X, double Y)
+        public bool PointInTriangleInclusive(double X, double Y)
         {
             return XYZ.PointInTriangleInclusive(Vertices[0].XYZ, Vertices[1].XYZ, Vertices[2].XYZ, X, Y);
         }
 
-        public bool CrossesNeighbour(int Side)
-        {
-            TriVertex SideStartPt, SideEndPt, OppositePt, NbrOppositePt;
-            Triangle NbrTri = Neighbours[Side];
+      public bool CrossesNeighbour(int Side)
+      {
+        Triangle NbrTri = Neighbours[Side];
 
-            int NbrSide;
+        if (NbrTri == null)
+          return false;
 
-            if (NbrTri == null)
-            {
-                return false;
-            }
-            else
-            {
-                SideStartPt = Vertices[Side];
-                SideEndPt = Vertices[XYZ.NextSide(Side)];
-                OppositePt = Vertices[XYZ.PrevSide(Side)];
-                NbrSide = NbrTri.GetSideIndex(SideStartPt, SideEndPt);
-                NbrOppositePt = NbrTri.Vertices[XYZ.PrevSide(NbrSide)];
+        TriVertex SideStartPt = Vertices[Side];
+        TriVertex SideEndPt = Vertices[XYZ.NextSide(Side)];
+        TriVertex OppositePt = Vertices[XYZ.PrevSide(Side)];
+        int NbrSide = NbrTri.GetSideIndex(SideStartPt, SideEndPt);
+        TriVertex NbrOppositePt = NbrTri.Vertices[XYZ.PrevSide(NbrSide)];
 
-                return XYZ.PointOnRight(SideStartPt.XYZ, SideEndPt.XYZ, OppositePt.XYZ) == XYZ.PointOnRight(SideStartPt.XYZ, SideEndPt.XYZ, NbrOppositePt.XYZ);
-            }
-        }
+        return XYZ.PointOnRight(SideStartPt.XYZ, SideEndPt.XYZ, OppositePt.XYZ) == XYZ.PointOnRight(SideStartPt.XYZ, SideEndPt.XYZ, NbrOppositePt.XYZ);
+      }
 
-        public bool GetCrossingNeighbour(out int Side)
+      public bool GetCrossingNeighbour(out int Side)
         {
             Side = 0;
 

@@ -192,7 +192,7 @@ namespace VSS.TRex.Pipelines
       if (SiteModel == null)
       {
         // Get the SiteModel for the request
-        ISiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(DataModelID);
+        SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(DataModelID);
         if (SiteModel == null)
         {
           Response.ResultStatus = RequestErrorStatus.NoSuchDataModel;

@@ -22,7 +22,7 @@ namespace VSS.TRex.Exports.Patches.Executors
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     /// <summary>
-    /// The response object avbailable for inspection once the Executor has completed processing
+    /// The response object available for inspection once the Executor has completed processing
     /// </summary>
     public PatchRequestResponse PatchSubGridsResponse { get; set; } = new PatchRequestResponse();
 

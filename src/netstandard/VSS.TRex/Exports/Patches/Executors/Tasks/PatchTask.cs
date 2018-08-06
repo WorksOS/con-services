@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using System.Reflection;
 using VSS.TRex.Executors.Tasks;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Exports.Patches.Executors.Tasks

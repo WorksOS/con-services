@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Requests;
+using VSS.TRex.Servers;
 
 namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
 {
@@ -10,5 +9,8 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
 	/// </summary>
 	public class TemperatureStatisticsRequest_ApplicationService : GenericASNodeRequest<TemperatureStatisticsArgument, TemperatureStatisticsComputeFunc_ApplicationService, TemperatureStatisticsResponse>
 	{
+	  public TemperatureStatisticsRequest_ApplicationService() : base(TRexGrids.ImmutableGridName(), ServerRoles.ASNODE)
+	  {
+	  }
   }
 }

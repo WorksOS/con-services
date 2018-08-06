@@ -119,14 +119,14 @@ namespace VSS.TRex.Geometry
         /// </summary>
         /// <param name="side"></param>
         /// <returns></returns>
-        public static int NextSide(int side) => (side % 3) + 1;
+        public static int NextSide(int side) => (side + 1) % 3;
 
         /// <summary>
         /// Move side to the previous side on a triangle (labelled 1, 2, & 3)
         /// </summary>
         /// <param name="side"></param>
         /// <returns></returns>
-        public static int PrevSide(int side) => ((side + 1) % 3) + 1;
+        public static int PrevSide(int side) => (side + 2) % 3;
 
         /// <summary>
         /// Compare two XYZ points for equality
