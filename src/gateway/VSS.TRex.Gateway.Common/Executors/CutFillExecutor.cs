@@ -46,7 +46,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       //var liftBuildSettings =
       //  RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
 
-      var filter = DataConversionUtility.ConvertFilter(request.filter, siteModel);
+      var filter = ConvertFilter(request.filter, siteModel);
 
       CutFillOperation operation = new CutFillOperation();
       CutFillResult cutFillResult = operation.Execute(new CutFillStatisticsArgument()
