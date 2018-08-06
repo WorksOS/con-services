@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <AssemblyName>VSS.TRex.Gateway.WebApi</AssemblyName>
@@ -10,47 +10,17 @@
     <RootNamespace>VSS.TRex.Gateway.WebApi</RootNamespace>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netcoreapp2.0\VSS.TRex.Gateway.WebApi.xml</DocumentationFile>
-  </PropertyGroup>
-
   <ItemGroup>
-    <Compile Remove="wwwroot\**" />
-    <Content Remove="wwwroot\**" />
-    <EmbeddedResource Remove="wwwroot\**" />
-    <None Remove="wwwroot\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.8" />
-    <PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="2.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.2" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Primitives" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.2" />
-    <!--
-    <PackageReference Include="System.Net.Primitives" Version="4.3.0" />
-    <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
-    -->
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="OpenTracing.Contrib.NetCore" Version="0.4.0" />  
     <PackageReference Include="System.Drawing.Common" Version="4.5.0" />
     <PackageReference Include="Apache.Ignite" Version="2.4.0" />
     <PackageReference Include="log4net.netcore" Version="3.0.0" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.1" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.*" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.*" />
-    <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.1.*" />
+    <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.*" />
     <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.1.*" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -67,21 +37,14 @@
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netcoreapp2.1\VSS.TRex.Gateway.WebApi.xml</DocumentationFile>
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>
   </PropertyGroup>
   
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp2.0|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp2.1|AnyCPU'">
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsAsErrors />
   </PropertyGroup>
-
-  <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
-    <ItemGroup>
-      <DocFile Include="bin\$(Configuration)\$(TargetFramework)\*.xml" />
-    </ItemGroup>
-    <Copy SourceFiles="@(DocFile)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="false" />
-  </Target>
-
 
 </Project>
