@@ -3,7 +3,7 @@ using VSS.TRex.Designs.TTM;
 using VSS.TRex.Exports.Surfaces;
 using VSS.TRex.Exports.Surfaces.GridFabric;
 
-namespace VSS.TRex.Exports.Patches.Requestors
+namespace VSS.TRex.Exports.Surfaces.Requestors
 {
   public interface ITINSurfaceExportRequestor
   {
@@ -30,19 +30,7 @@ namespace VSS.TRex.Exports.Patches.Requestors
       {
         TINSurfaceRequest request = new TINSurfaceRequest();
 
-        TINSurfaceRequestResponse response = request.Execute(argument);
-
-        TINSurfaceResult result = new TINSurfaceResult();
-        using (MemoryStream ms = new MemoryStream())
-        {
-          if (response.TIN != null)
-          {
-            response.TIN.SaveToStream(Consts.DefaultCoordinateResolution, Consts.DefaultElevationResolution, false, ms);
-            result.data = ms.ToArray();
-          }
-        }
-
-        return result;
+        return request.Execute(argument);
       }
   }
 }

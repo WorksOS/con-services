@@ -10,7 +10,7 @@ using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.TRex.Exports.Patches.Requestors;
+using VSS.TRex.Exports.Surfaces.Requestors;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Rendering.Servers.Client;

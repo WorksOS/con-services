@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.Productivity3D.Models.Models;
-using VSS.TRex.Exports.Patches.Requestors;
+using VSS.TRex.Exports.Surfaces.Requestors;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Gateway.Common.ResultHandling;

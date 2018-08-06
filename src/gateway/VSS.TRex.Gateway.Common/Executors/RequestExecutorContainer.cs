@@ -5,8 +5,7 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.TRex.Exports.Patches.Requestors;
-using VSS.TRex.Exports.Servers.Client;
+using VSS.TRex.Exports.Surfaces.Requestors;
 using VSS.TRex.Rendering.Servers.Client;
 using VSS.TRex.Servers.Client;
 
