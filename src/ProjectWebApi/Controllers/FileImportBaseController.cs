@@ -198,7 +198,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         log.LogError($"FileImport DeleteFile in RaptorServices failed. projectUid:{projectUid} FileDescriptor:{fileDescriptor}. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}");
 
         await UndeleteImportedFile(projectUid, importedFileUid).ConfigureAwait(false);
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 54, notificationResult.Code.ToString(), notificationResult.Message);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 108, notificationResult.Code.ToString(), notificationResult.Message);
       }
     }
 
@@ -214,7 +214,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       if (notificationResult != null && notificationResult.Code != 0)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 54, notificationResult.Code.ToString(), notificationResult.Message);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 108, notificationResult.Code.ToString(), notificationResult.Message);
       }
     }
 
@@ -265,7 +265,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<UpsertProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
-            null, raptorProxy, null,
+            raptorProxy, null,
             projectRepo)
           .ProcessAsync(projectSettingsRequest)
       ) as ProjectSettingsResult;

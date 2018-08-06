@@ -1,14 +1,13 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.FlowJSHandler;
 using VSS.KafkaConsumer.Kafka;
@@ -28,10 +27,10 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
-  /// <summary>
-  /// File Import controller v4
-  /// </summary>
-  public class FileImportV4Controller : FileImportBaseController
+    /// <summary>
+    /// File Import controller v4
+    /// </summary>
+    public class FileImportV4Controller : FileImportBaseController
   {
     /// <summary>
     /// Logger factory for use by executor
@@ -200,12 +199,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
     public async Task<ImportedFileDescriptorSingleResult> CreateImportedFileV4(
       FlowFile file,
-      [FromUri] Guid projectUid, 
-      [FromUri] ImportedFileType importedFileType,
-      [FromUri] DxfUnitsType dxfUnitsType,
-      [FromUri] DateTime fileCreatedUtc, 
-      [FromUri] DateTime fileUpdatedUtc,
-      [FromUri] DateTime? surveyedUtc = null)
+      [FromQuery] Guid projectUid,
+      [FromQuery] ImportedFileType importedFileType,
+      [FromQuery] DxfUnitsType dxfUnitsType,
+      [FromQuery] DateTime fileCreatedUtc,
+      [FromQuery] DateTime fileUpdatedUtc,
+      [FromQuery] DateTime? surveyedUtc = null)
     {
       FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
@@ -218,7 +217,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 55);
       }
 
-      var project = await GetProject(projectUid.ToString());
+      var project = await ProjectRequestHelper.GetProject(projectUid.ToString(), customerUid, log, serviceExceptionHandler, projectRepo);
 
       var importedFileList = await ImportedFileRequestHelper.GetImportedFileList(projectUid.ToString(), log, userId, projectRepo).ConfigureAwait(false);
       ImportedFileDescriptor importedFileDescriptor = null;
@@ -312,12 +311,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
     public async Task<ImportedFileDescriptorSingleResult> UpsertImportedFileV4(
       FlowFile file,
-      [FromUri] Guid projectUid, 
-      [FromUri] ImportedFileType importedFileType,
-      [FromUri] DxfUnitsType dxfUnitsType,
-      [FromUri] DateTime fileCreatedUtc, 
-      [FromUri] DateTime fileUpdatedUtc,
-      [FromUri] DateTime? surveyedUtc = null)
+      [FromQuery] Guid projectUid,
+      [FromQuery] ImportedFileType importedFileType,
+      [FromQuery] DxfUnitsType dxfUnitsType,
+      [FromQuery] DateTime fileCreatedUtc,
+      [FromQuery] DateTime fileUpdatedUtc,
+      [FromQuery] DateTime? surveyedUtc = null)
     {
       FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
@@ -330,7 +329,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
 
       // this also validates that this customer has access to the projectUid
-      var project = await GetProject(projectUid.ToString());
+      var project = await ProjectRequestHelper.GetProject(projectUid.ToString(), customerUid, log, serviceExceptionHandler, projectRepo);
 
       FileDescriptor fileDescriptor = null;
       using (var fileStream = new FileStream(file.path, FileMode.Open))
@@ -353,7 +352,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             .Build<UpsertImportedFileExecutor>(logger, configStore, serviceExceptionHandler,
               customerUid, userId, userEmailAddress, customHeaders,
               producer, kafkaTopicName,
-              null, raptorProxy, null,
+              raptorProxy, null,
               projectRepo, null, fileRepo)
             .ProcessAsync(importedFileUpsertEvent)
         ) as ImportedFileDescriptorSingleResult;
@@ -376,8 +375,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <response code="400">Bad request</response>
     [Route("api/v4/importedfile")]
     [HttpDelete]
-    public async Task<ContractExecutionResult> DeleteImportedFileV4([FromUri] Guid projectUid,
-      [FromUri] Guid importedFileUid)
+    public async Task<ContractExecutionResult> DeleteImportedFileV4([FromQuery] Guid projectUid,
+      [FromQuery] Guid importedFileUid)
     {
       log.LogInformation($"DeleteImportedFileV4. projectUid {projectUid} importedFileUid: {importedFileUid}");
 

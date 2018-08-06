@@ -100,28 +100,6 @@ namespace TestUtility
       Assert.AreEqual(expectedEventCount, result, " Number of expected events do not match actual events in database");
     }
 
-    public string VerifyProjectGeofence(string projectUid, int expectedEventCount)
-    {
-      // since we're using geofenceProxy which doesn't write to db, we cant check Geofence in DB
-      var sqlQuery = $@"SELECT COUNT(*) 
-                          FROM Project p 
-                            INNER JOIN ProjectGeofence pg ON pg.fk_ProjectUID = p.ProjectUID                           
-                          WHERE ProjectUID = '{projectUid}'";
-      var result = GetDatabaseCountForEvents(sqlQuery, expectedEventCount);
-      Assert.AreEqual(expectedEventCount, result, " Number of expected events do not match actual events in database");
-
-      string geofenceUid = null;
-      if (result == 1)
-      {
-        sqlQuery = $@"SELECT pg.fk_GeofenceUID
-                          FROM Project p 
-                            INNER JOIN ProjectGeofence pg ON pg.fk_ProjectUID = p.ProjectUID                           
-                          WHERE ProjectUID = '{projectUid}'";
-        geofenceUid = ExecuteMySqlQueryAndReturnRecordCountResult(TsCfg.DbConnectionString, sqlQuery);
-      }
-      return geofenceUid;
-    }
-    
     /// <summary>
     /// Verify the value of fields in the table for the given uid
     /// </summary>
@@ -172,7 +150,7 @@ namespace TestUtility
 
     /// <summary>
     /// Check the database to see if the records injected into kafka have reached there. This
-    /// Will loop for 20 times or until it finds the correct answer.
+    /// Will loop for 10 times or until it finds the correct answer.
     /// </summary>
     /// <param name="query"></param>
     /// <param name="eventCount"></param>
@@ -183,7 +161,7 @@ namespace TestUtility
       var resultCount = 0;
 
       msg.DisplayMySqlQuery(query);
-      while (retryCount < 30)
+      while (retryCount < 10)
       {
         var mysqlHelper = new MySqlHelper();
         resultCount = Convert.ToInt32(mysqlHelper.ExecuteMySqlQueryAndReturnRecordCountResult(appConfig.DbConnectionString, query));

@@ -12,7 +12,7 @@ namespace VSS.MasterData.ProjectTests
   [TestClass]
   public class UtilityTestsV2
   {
-    private static List<Point> _boundaryLL;
+    private static List<TBCPoint> _boundaryLL;
     private static BusinessCenterFile _businessCenterFile;
     private static string _checkBoundaryString;
     private static string _customerUid;
@@ -22,12 +22,12 @@ namespace VSS.MasterData.ProjectTests
     public static void ClassInitialize(TestContext testContext)
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
-      _boundaryLL = new List<Point>()
+      _boundaryLL = new List<TBCPoint>()
       {
-        new Point(-43.5, 172.6),
-        new Point(-43.5003, 172.6),
-        new Point(-43.5003, 172.603),
-        new Point(-43.5, 172.603)
+        new TBCPoint(-43.5, 172.6),
+        new TBCPoint(-43.5003, 172.6),
+        new TBCPoint(-43.5003, 172.603),
+        new TBCPoint(-43.5, 172.603)
       };
 
       _checkBoundaryString = "POLYGON((172.6 -43.5,172.6 -43.5003,172.603 -43.5003,172.603 -43.5,172.6 -43.5))";
@@ -47,8 +47,10 @@ namespace VSS.MasterData.ProjectTests
     [TestMethod]
     public void MapCreateProjectV2RequestToEvent()
     {
+      var requestedProjectType = ProjectType.ProjectMonitoring;
+      var expectedProjectType = ProjectType.Standard;
       var request = CreateProjectV2Request.CreateACreateProjectV2Request
-        (ProjectType.Standard, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
+        (requestedProjectType, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
         "New Zealand Standard Time", _boundaryLL, _businessCenterFile);
       var kafkaEvent = MapV2Models.MapCreateProjectV2RequestToEvent(request, _customerUid);
 
@@ -56,7 +58,7 @@ namespace VSS.MasterData.ProjectTests
       Guid.TryParse(kafkaEvent.CustomerUID.ToString(), out var customerUidOut);
       Assert.AreEqual(_customerUid, customerUidOut.ToString(), "CustomerUID has not been mapped correctly");
       Assert.AreEqual(0, kafkaEvent.CustomerID, "CustomerID has not been mapped correctly");
-      Assert.AreEqual(request.ProjectType, kafkaEvent.ProjectType, "ProjectType has not been mapped correctly");
+      Assert.AreEqual(expectedProjectType, kafkaEvent.ProjectType, "ProjectType has not been mapped correctly");
       Assert.AreEqual(request.ProjectName, kafkaEvent.ProjectName, "ProjectName has not been mapped correctly");
       Assert.IsNull(kafkaEvent.Description, "Description has not been mapped correctly");
       Assert.AreEqual(request.ProjectStartDate, kafkaEvent.ProjectStartDate, "ProjectStartDate has not been mapped correctly");

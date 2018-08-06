@@ -93,7 +93,7 @@ namespace VSS.MasterData.ProjectTests
            .Build<ValidateTccOrgExecutor>(logger, configStore, serviceExceptionHandler,
             _customerUid, null, null, customHeaders,
             null, null,
-            null, null, null,
+            null, null, 
             null, null, fileRepo.Object, customerRepo.Object);
 
       await executor.ProcessAsync(request);

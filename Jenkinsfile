@@ -1,214 +1,146 @@
-properties([disableConcurrentBuilds(), pipelineTriggers([])])
+node ('jenkinsslave-pod') {
 
-def result = ''
-def branch = env.BRANCH_NAME
-def buildNumber = env.BUILD_NUMBER
-def versionPrefix = ""
-def suffix = ""
-def branchName = ""
+	// adds job parameters
+	properties([
+		parameters([
+			string(
+				defaultValue: null,
+				description: 'The build number supplied by VSTS perhaps fail build if this is nothing to prevent unrequested builds during multibranch scan',
+				name: 'VSTS_BUILD_NUMBER'
+			),
+		])
+	])
 
-if (branch.contains("release")) {
-    versionPrefix = "1.0."
-    branchName = "Release"
-} else if (branch.contains("Dev")) {
-    versionPrefix = "0.99."
-    branchName = "Dev"
-} else if (branch.contains("master")) {
-    versionPrefix = "1.0."
-    branchName = "master"
-} else {
-    branchName = branch.substring(branch.lastIndexOf("/") + 1)
-    suffix = "-" + branchName
-    versionPrefix = "0.98."
-}
+	// We may need to rename the branch to conform to DNS name spec
+    def branchName = env.BRANCH_NAME.substring(env.BRANCH_NAME.lastIndexOf("/") + 1)
+	def jobnameparts = JOB_NAME.tokenize('/') as String[]
+	def project_name = jobnameparts[0].toLowerCase() 	
+    def versionNumber = branchName + "-" + params.VSTS_BUILD_NUMBER
+    def container = "registry.k8s.vspengg.com:80/${project_name}:${versionNumber}"
+    def testContainer = "registry.k8s.vspengg.com:80/${project_name}.tests:${versionNumber}"
+    def finalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}:${versionNumber}"
+	
+    def vars = []
+    def acceptance_testing_yaml
+	def runtimeImage
 
-def versionNumber = versionPrefix + buildNumber
-def fullVersion = versionNumber + suffix
+	//Set the build name so it is consistant with VSTS
+	currentBuild.displayName = versionNumber
 
-node('Ubuntu_Slave') {
-    def workspacePath =""
-    currentBuild.displayName = versionNumber + suffix
-
-	try
-	{
-		stage ('Checkout') {
-			checkout scm
+	stage("Prebuild Checks") {
+		if (params.VSTS_BUILD_NUMBER == null) {
+			currentBuild.result = 'ABORTED'
+			error("Build stopping, no valid build number supplied")
 		}
-		stage ('Restore packages') {        
-			sh "dotnet restore --no-cache VSS.Visionlink.Project.sln"
-		}
-		stage ('Build solution') {
-			sh "bash ./build.sh"
-		}
-		stage ('Build solution') {
-			sh "bash ./unittests.sh"
-		}
-		stage ('Prepare Acceptance tests') {
-			sh "(cd ./AcceptanceTests/scripts && bash ./deploy_linux.sh)"
-		}
-		stage ('Compose containers') {
-			sh "bash ./awslogin.sh"
-			sh "bash ./start_containers.sh"
-		}
-		stage ('Wait for containers to finish') {
-			sh "bash ./wait_container.sh testcontainers"
-		}
-		stage ('Bring containers down and archive the logs') {
-			sh "(mkdir -p ./logs && docker-compose logs > ./logs/logs.txt)" 
-			sh "docker-compose down"
-		}
-	}
-	catch (error)
-	{
-		echo "An error occurred during execution of packaging - ${error.getMessage()}."
-		sendBuildFailureMessage()
-		// re-throw error to maintain logic flow
-		throw error
-	}
-
-    //Here we need to find test results and decide if the build successfull
-    stage ('Publish test results and logs') {
-        workspacePath = pwd()
-        currentBuild.result = 'SUCCESS'
-        step([$class: 'JUnitResultArchiver', testResults: '**/testresults/*.xml'])
-        publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './logs', reportFiles: 'logs.txt', reportName: 'Build logs'])
-    
-        echo "Build result is ${currentBuild.result}"
-        result = currentBuild.result
-    }
-
-    if (currentBuild.result=='SUCCESS') {
-		if(!branch.contains("master")) {
-			//Rebuild Image, tag & push to AWS Docker Repo
-			stage ('Get ecr login, push image to Repo') {
-				sh "bash ./awslogin.sh"
-			}
-		}
-
-        if (branch.contains("release")) {
-            stage ('Build Release Images') {
-                sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest-release-${fullVersion} ./artifacts/ProjectWebApi"
-                sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest-release-${fullVersion}"
-                sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest-release-${fullVersion}"
-                sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest-release-${fullVersion} ./database"
-                sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest-release-${fullVersion}"
-                sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest-release-${fullVersion}"
-            }
-            stage ('Tag repository') {
-                sh 'git rev-parse HEAD > GIT_COMMIT'
-                def gitCommit=readFile('GIT_COMMIT').trim()
-                def tagParameters = [
-                    new StringParameterValue("REPO_NAME", "VSS.VisionLink.Project"),
-                    new StringParameterValue("COMMIT_ISH", gitCommit),
-                    new StringParameterValue("TAG", fullVersion)]
-
-                build job: "tag-vso-commit", parameters: tagParameters
-            }
-        }
-        else {
-            if (branch.contains("Dev")) {
-                stage ('Build Development Images') {
-                    sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest ./artifacts/ProjectWebApi"
-                    sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi"
-                    sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest"
-                    sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest ./database"
-                    sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db"
-                    sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest"
-                }
-            }
-        }
-    }
-	else {
-		sendBuildFailureMessage()
-	}
-}
-
-node ('Jenkins-Win2016-Raptor') {
-    if (branch.contains("master")) {
-        if (result=='SUCCESS') {
-            currentBuild.displayName = versionNumber + suffix  
-            stage ('Checkout') {
-                checkout scm
-            }
-
-            stage ('Build') {
-                bat  "PowerShell.exe -ExecutionPolicy Bypass -Command .\\build47.ps1 -uploadArtifact"
-            }
-          
-            archiveArtifacts artifacts: 'ProjectWebApiNet47.zip', fingerprint: true
-            bat "aws s3 cp ProjectWebApiNet47.zip s3://vss-ci-builds/project.service/${versionNumber}/ --profile vss-merino"
-            bat "aws s3 cp ProjectWebApiDb.zip s3://vss-ci-builds/project.service/${versionNumber}/ --profile vss-merino"
-
-            stage ('Tag repository') {
-                bat 'git rev-parse HEAD > GIT_COMMIT'
-                def gitCommit=readFile('GIT_COMMIT').trim()
-                def tagParameters = [
-                    new StringParameterValue("REPO_NAME", "VSS.VisionLink.Project"),
-                    new StringParameterValue("COMMIT_ISH", gitCommit),
-                    new StringParameterValue("TAG", fullVersion+"-master")]
-
-                build job: "tag-vso-commit", parameters: tagParameters
-            }
-        }
-    } else {
-        currentBuild.displayName = versionNumber + suffix
-        stage ('Checkout') {
-            checkout scm
-        }
-        stage ('Coverage') {
-            bat "coverage.bat"
-        }
-
-        step([$class: 'CoberturaPublisher', autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/outputCobertura.xml', failUnhealthy: true, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false])
-        publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './CoverageReport', reportFiles: '*', reportName: 'OpenCover Report'])
-    }
-}
-
-/*	Send build failure message     */
-def sendBuildFailureMessage() {
-	echo "Sending failure email..."
-	try
-	{
-		commitVals = getChangeLogs().split(',')
-		committer = commitVals[0]
-		committerEmail = commitVals[1]
-		commitId = commitVals[2]
-	}
-	catch (error)
-	{
-		echo "Unable to determine committer for failure email: ${error.getMessage()}"
 	}
 	
-	def body = "${env.JOB_NAME} - build failed"	
-	body = "${body}\nBuild #: ${env.BUILD_ID}"
-	body = "${body}\nCommitters: ${committer}"
-	body = "${body}\nCommit SHA: ${commitId}"
-	body = "${body}\nSee console log at ${env.BUILD_URL}console for details"
+    stage('Build Solution') {
+        checkout scm
+		
+	    def build_container = docker.build(container, "-f Dockerfile.build .")
 
-	retry(2)
-	{
-		mail body: "${body}",
-		from: 'jenkins_noreply@vspengg.com',
-		subject: "${env.BUILD_URL} Failed",
-		cc: (env.BRANCH_NAME == 'master' ? 'VSSTeamMerino@trimble.com' : ''),
-		to: committerEmail
+        // Currently we need to execute the tests like this, because the pipeline docker plugin being aware of DIND, and attempting to map
+        // the volume to the bare metal host        
+        
+		//Create results directory in workspace
+		dir("TestResults") {}
+		
+		// Currently we need to execute the tests like this, because the pipeline docker plugin being aware of DIND, and attempting to map
+		// the volume to the bare metal host
+		
+		//Do not modify this unless you know the difference between ' and " in bash
+		// (https://www.gnu.org/software/bash/manual/html_node/Quoting.html#Quoting) see (https://gist.github.com/fuhbar/d00d11297a48b892684da34360e4135a) for Jenkinsfile 
+		// specific escaping examples. One day we might be able to test solutions (and have the results go to a specific directory) rather than specific projects, negating the need for such a complex command.
+		def testCommand = $/docker run -v ${env.WORKSPACE}/TestResults:/TestResults ${build_container.id} bash -c 'cd /build/test && ls UnitTests/**/*Tests.csproj | xargs -I@ -t dotnet test @ /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutputDirectory=/TestResults/TestCoverage/ --test-adapter-path:. --logger:"xunit;LogFilePath=/TestResults/@.xml"'/$
+		
+		//Run the test command generated above
+		sh(script: testCommand)
+
+        sh "ls ${env.WORKSPACE}/TestResults"
+		
+		//Publish test results to Jenkins, set build stability according to configured thresholds
+		//See https://jenkins.io/doc/pipeline/steps/xunit/#xunit-publish-xunit-test-result-report for DSL Guide
+        step([$class: 'XUnitBuilder',
+                thresholds: [
+					[$class: 'FailedThreshold', failureThreshold: '0', unstableThreshold: '1'],
+					[$class: 'SkippedThreshold', unstableThreshold: '1']
+				],
+                tools: [[$class: 'XUnitDotNetTestType', pattern: 'TestResults/UnitTests/**/*.xml']]])
+
+		cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'TestResults/TestCoverage/*.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
+
+		//Stash results for publication to vsts after acceptance/integration tests have run
+		dir("TestResults") {
+			stash name: "build-test-results"
+		} 
+		
+
 	}
-}	
+	
+	stage('Prepairing runtime image') {
+		runtimeImage = docker.build(container, "-f Dockerfile .")
+		runtimeImage.push()
+	}
+	
+    stage('Build Acceptance tests') {	
+	    docker.build(testContainer, "-f Dockerfile.tests .").push()
+	}
 
-/*  Get the changelogs for the commit which triggered this build.   */
-@NonCPS
-def getChangeLogs() {
-    def changeLogSets = currentBuild.changeSets
-    def commitVals
-    for (int i = 0; i < changeLogSets.size(); i++)
-    {
-        def entries = changeLogSets[i].items
-        for (int j = 0; j < entries.length; j++)
-        {
-            def entry = entries[j]
-            def email = entry.author.getProperty(hudson.tasks.Mailer.UserProperty.class).getAddress()
-            commitVals = "${entry.author},${email},${entry.commitId}"
-        }
-    }
-    return commitVals
+	
+	
+	stage ('Run acceptance tests') {
+		dir ("yaml") {
+			def testingEnvVars = readFile("testingvars.env").split("\n")
+				testingEnvVars.each { String line ->
+				def (key, value) = line.split('=')
+				vars.add(envVar(key: key, value: value))
+				}
+			acceptance_testing_yaml = readFile("pod.yaml")
+			acceptance_testing_yaml = acceptance_testing_yaml.replace('!container!', "${container}")
+		}
+			def label = "testingpod-${UUID.randomUUID().toString()}"
+		podTemplate(label: label, namespace: "testing", yaml: acceptance_testing_yaml, containers: [containerTemplate(name: "jnlp", image: testContainer, ttyEnabled: true,  envVars: vars)])
+		{
+			node (label) {
+				dir ("/app") {
+					sh "/bin/sh runtests.sh"
+
+					step([$class: 'XUnitBuilder',
+							thresholds: [[$class: 'FailedThreshold', failureThreshold: '0', unstableThreshold: '1']],
+							tools: [[$class: 'XUnitDotNetTestType', pattern: 'AcceptanceTests/tests/**/TestResults/*.xml']]])
+
+
+					//Unstash test results from earlier for publishing to vsts as we can only do this once
+					dir("TestResults") {
+						unstash "build-test-results"
+						//check that we got something
+						sh "ls -la"
+					}
+
+					//Archive test logs
+					archiveArtifacts artifacts: 'testresults/*.*', fingerprint: true
+                    				
+					//http://javadoc.jenkins-ci.org/tfs/index.html?hudson/plugins/tfs/model/TeamResultType.html
+					//Details of the agent -> https://docs.microsoft.com/en-us/vsts/build-release/task
+					//Agent Variables -> https://docs.microsoft.com/en-us/vsts/build-release/concepts/definitions/build/variables?view=vsts&tabs=batch
+					step([$class: 'TeamCollectResultsPostBuildAction', 
+						requestedResults: [
+							[includes: 'TestResults/UnitTests/**/*.xml', teamResultType: 'XUNIT'],
+							[includes: 'TestResults/TestCoverage/*.xml', teamResultType: 'COBERTURA'],
+							[includes: 'AcceptanceTests/tests/**/TestResults/*.xml', teamResultType: 'XUNIT']
+						]
+					])
+				}
+			}		
+		}
+	}
+	
+	stage ('Publish results') {
+		sh "docker tag ${container} ${finalImage}"
+		sh "eval \$(aws ecr get-login --region us-west-2 --no-include-email)"
+		sh "docker push ${finalImage}"
+		sh "echo ${env.versionNumber} >> chart/build.sbt"
+		sh "ls -la chart/"
+        archiveArtifacts artifacts: 'chart/**/*.*', fingerprint: true
+	}
 }

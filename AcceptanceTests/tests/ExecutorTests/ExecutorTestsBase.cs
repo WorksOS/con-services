@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using TestUtility;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
@@ -15,6 +16,7 @@ using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.Identity.User;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -130,16 +132,32 @@ namespace ExecutorTests
     protected bool CreateProjectSettings(string projectUid, string userId, string settings, ProjectSettingsType settingsType)
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-
+      var projectGuidParseResult = Guid.TryParse(projectUid, out Guid projectGuid);
+      Console.WriteLine($"Guid Parsed {projectGuidParseResult} Creating project settings for project {projectGuid}, for user {userId}");
       var createProjectSettingsEvent = new UpdateProjectSettingsEvent()
       {
-        ProjectUID = Guid.Parse(projectUid),
+        ProjectUID = projectGuid,
         UserID = userId,
         Settings = settings,
         ProjectSettingsType = settingsType,
         ActionUTC = actionUtc
       };
+      Console.WriteLine($"Create project settings event created");
+      Console.WriteLine(
+          $"UpdateProjectSettingsEvent ={JsonConvert.SerializeObject(createProjectSettingsEvent)}))')");
 
+      var projectEvent = createProjectSettingsEvent;
+      var projectSettings = new ProjectSettings
+      {
+        ProjectUid = projectEvent.ProjectUID.ToString(),
+        ProjectSettingsType = projectEvent.ProjectSettingsType,
+        Settings = projectEvent.Settings,
+        UserID = projectEvent.UserID,
+        LastActionedUtc = projectEvent.ActionUTC
+      };
+      
+      Console.WriteLine(
+        $"projectSettings after cast/convert ={JsonConvert.SerializeObject(projectSettings)}))')");
       projectRepo.StoreEvent(createProjectSettingsEvent).Wait();
       var g = projectRepo.GetProjectSettings(projectUid, userId, settingsType); g.Wait();
       return (g.Result != null ? true : false);

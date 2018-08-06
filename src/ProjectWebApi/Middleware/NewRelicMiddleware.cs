@@ -1,5 +1,4 @@
-﻿#if NET_4_7
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -65,4 +64,3 @@ namespace VSS.MasterData.Project.WebAPI.Middleware
     }
   }
 }
-#endif

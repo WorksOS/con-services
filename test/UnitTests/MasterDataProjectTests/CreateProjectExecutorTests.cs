@@ -12,7 +12,6 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
@@ -30,7 +29,7 @@ namespace VSS.MasterData.ProjectTests
   [TestClass]
   public class CreateProjectExecutorTests : ExecutorBaseTests
   {
-    protected static List<Point> _boundaryLL;
+    protected static List<TBCPoint> _boundaryLL;
     private static BusinessCenterFile _businessCenterFile;
     private static string _checkBoundaryString;
 
@@ -40,12 +39,12 @@ namespace VSS.MasterData.ProjectTests
     public static void ClassInitialize(TestContext testContext)
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
-      _boundaryLL = new List<Point>()
+      _boundaryLL = new List<TBCPoint>()
       {
-        new Point(-43.5, 172.6),
-        new Point(-43.5003, 172.6),
-        new Point(-43.5003, 172.603),
-        new Point(-43.5, 172.603)
+        new TBCPoint(-43.5, 172.6),
+        new TBCPoint(-43.5003, 172.6),
+        new TBCPoint(-43.5003, 172.603),
+        new TBCPoint(-43.5, 172.603)
       };
 
       _checkBoundaryString = "POLYGON((172.6 -43.5,172.6 -43.5003,172.603 -43.5003,172.603 -43.5,172.6 -43.5))";
@@ -84,7 +83,6 @@ namespace VSS.MasterData.ProjectTests
     {
       var userId = Guid.NewGuid().ToString();
       var customHeaders = new Dictionary<string, string>();
-      var geofenceUid = Guid.NewGuid();
 
       var request = CreateProjectV2Request.CreateACreateProjectV2Request
       (ProjectType.ProjectMonitoring, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
@@ -122,12 +120,6 @@ namespace VSS.MasterData.ProjectTests
       var httpContextAccessor = new HttpContextAccessor {HttpContext = new DefaultHttpContext()};
       httpContextAccessor.HttpContext.Request.Path = new PathString("/api/v2/projects");
 
-      // temporary work-around UserAuthorization issue means that for TBC, geofence will not be created
-      //var geofenceProxy = new Mock<IGeofenceProxy>();
-      //geofenceProxy.Setup(gp => gp.CreateGeofence(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(),
-      //    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<Guid>(),
-      //    It.IsAny<double>(), It.IsAny<Dictionary<string, string>>()))
-      //  .ReturnsAsync(geofenceUid);
       var raptorProxy = new Mock<IRaptorProxy>();
       raptorProxy.Setup(rp =>
           rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
@@ -149,7 +141,7 @@ namespace VSS.MasterData.ProjectTests
       (logger, configStore, serviceExceptionHandler,
         _customerUid, userId, null, customHeaders,
         producer.Object, KafkaTopicName,
-        null, raptorProxy.Object, subscriptionProxy.Object,
+        raptorProxy.Object, subscriptionProxy.Object,
         projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor);
       await executor.ProcessAsync(createProjectEvent);
     }
@@ -199,11 +191,6 @@ namespace VSS.MasterData.ProjectTests
       var httpContextAccessor = new HttpContextAccessor {HttpContext = new DefaultHttpContext()};
       httpContextAccessor.HttpContext.Request.Path = new PathString("/api/v4/projects");
 
-      var geofenceProxy = new Mock<IGeofenceProxy>();
-      geofenceProxy.Setup(gp => gp.CreateGeofence(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(),
-          It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<Guid>(),
-          It.IsAny<double>(), It.IsAny<Dictionary<string, string>>()))
-        .ReturnsAsync(geofenceUid);
       var raptorProxy = new Mock<IRaptorProxy>();
       raptorProxy.Setup(rp =>
           rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
@@ -225,7 +212,7 @@ namespace VSS.MasterData.ProjectTests
       (logger, configStore, serviceExceptionHandler,
         _customerUid, userId, null, customHeaders,
         producer.Object, KafkaTopicName,
-        geofenceProxy.Object, raptorProxy.Object, subscriptionProxy.Object,
+        raptorProxy.Object, subscriptionProxy.Object,
         projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor);
       await executor.ProcessAsync(createProjectEvent);
     }
@@ -275,11 +262,6 @@ namespace VSS.MasterData.ProjectTests
       var httpContextAccessor = new HttpContextAccessor {HttpContext = new DefaultHttpContext()};
       httpContextAccessor.HttpContext.Request.Path = new PathString("/api/v4/projects");
 
-      var geofenceProxy = new Mock<IGeofenceProxy>();
-      geofenceProxy.Setup(gp => gp.CreateGeofence(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(),
-          It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<Guid>(),
-          It.IsAny<double>(), It.IsAny<Dictionary<string, string>>()))
-        .ReturnsAsync(geofenceUid);
       var raptorProxy = new Mock<IRaptorProxy>();
       raptorProxy.Setup(rp =>
           rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
@@ -301,7 +283,7 @@ namespace VSS.MasterData.ProjectTests
       (logger, configStore, serviceExceptionHandler,
         _customerUid, userId, null, customHeaders,
         producer.Object, KafkaTopicName,
-        geofenceProxy.Object, raptorProxy.Object, subscriptionProxy.Object,
+        raptorProxy.Object, subscriptionProxy.Object,
         projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
         await executor.ProcessAsync(createProjectEvent));
@@ -357,11 +339,6 @@ namespace VSS.MasterData.ProjectTests
       var httpContextAccessor = new HttpContextAccessor {HttpContext = new DefaultHttpContext()};
       httpContextAccessor.HttpContext.Request.Path = new PathString("/api/v4/projects");
 
-      var geofenceProxy = new Mock<IGeofenceProxy>();
-      geofenceProxy.Setup(gp => gp.CreateGeofence(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(),
-          It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<Guid>(),
-          It.IsAny<double>(), It.IsAny<Dictionary<string, string>>()))
-        .ReturnsAsync(geofenceUid);
       var raptorProxy = new Mock<IRaptorProxy>();
       raptorProxy.Setup(rp =>
           rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
@@ -383,7 +360,7 @@ namespace VSS.MasterData.ProjectTests
       (logger, configStore, serviceExceptionHandler,
         _customerUid, userId, null, customHeaders,
         producer.Object, KafkaTopicName,
-        geofenceProxy.Object, raptorProxy.Object, subscriptionProxy.Object,
+        raptorProxy.Object, subscriptionProxy.Object,
         projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
         await executor.ProcessAsync(createProjectEvent));
@@ -438,11 +415,6 @@ namespace VSS.MasterData.ProjectTests
       var httpContextAccessor = new HttpContextAccessor {HttpContext = new DefaultHttpContext()};
       httpContextAccessor.HttpContext.Request.Path = new PathString("/api/v4/projects");
 
-      var geofenceProxy = new Mock<IGeofenceProxy>();
-      geofenceProxy.Setup(gp => gp.CreateGeofence(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(),
-          It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<Guid>(),
-          It.IsAny<double>(), It.IsAny<Dictionary<string, string>>()))
-        .ReturnsAsync(geofenceUid);
       var raptorProxy = new Mock<IRaptorProxy>();
       raptorProxy.Setup(rp =>
           rp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
@@ -464,7 +436,7 @@ namespace VSS.MasterData.ProjectTests
       (logger, configStore, serviceExceptionHandler,
         _customerUid, userId, null, customHeaders,
         producer.Object, KafkaTopicName,
-        geofenceProxy.Object, raptorProxy.Object, subscriptionProxy.Object,
+        raptorProxy.Object, subscriptionProxy.Object,
         projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor);
       await executor.ProcessAsync(createProjectEvent);
     }

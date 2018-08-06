@@ -18,7 +18,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(source);
       createProjectEvent.ProjectUID = Guid.NewGuid();
       createProjectEvent.CustomerUID = Guid.Parse(customerUid);
-      createProjectEvent.ProjectBoundary = GeofenceValidation.GetWicketFromPoints(GeofenceValidation.MakingValidPoints(source.BoundaryLL));
+
+      var internalPoints = AutoMapperUtility.Automapper.Map<List<Point>>(source.BoundaryLL);
+      createProjectEvent.ProjectBoundary =
+        GeofenceValidation.GetWicketFromPoints(GeofenceValidation.MakingValidPoints(internalPoints));
+      createProjectEvent.ProjectType = ProjectType.Standard;
       return createProjectEvent;
     }
   }

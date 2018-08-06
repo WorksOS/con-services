@@ -44,6 +44,7 @@ namespace TestUtility
       try
       {
         string responseString = null;
+        Console.WriteLine("Call Web API=" + resourceUri);
         using (var response = (HttpWebResponse) request.GetResponseAsync().Result)
         {
           responseString = GetStringFromResponseStream(response);
@@ -64,6 +65,7 @@ namespace TestUtility
           msg.DisplayWebApi(httpMethod, resourceUri, resp, payloadData);      
           return resp;
         }
+        Console.WriteLine(ex.InnerException.Message);
         msg.DisplayException(ex.Message);
         return string.Empty;
       }

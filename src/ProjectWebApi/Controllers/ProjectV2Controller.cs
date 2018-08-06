@@ -15,7 +15,6 @@ using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.TCCFileAccess;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -53,7 +52,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="customerRepo"></param>
     /// <param name="store"></param>
     /// <param name="subscriptionProxy"></param>
-    /// <param name="geofenceProxy"></param>
     /// <param name="raptorProxy"></param>
     /// <param name="logger"></param>
     /// <param name="serviceExceptionHandler">The ServiceException handler.</param>
@@ -62,10 +60,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
       IFileRepository fileRepo, ICustomerRepository customerRepo,
       IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
-      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy,
+      IRaptorProxy raptorProxy,
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
       IHttpContextAccessor httpContextAccessor)
-      : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, geofenceProxy, raptorProxy,
+      : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, raptorProxy,
         logger, serviceExceptionHandler, logger.CreateLogger<ProjectV2Controller>())
     {
       this.logger = logger;
@@ -104,11 +102,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var createProjectEvent = MapV2Models.MapCreateProjectV2RequestToEvent(projectRequest, customerUid);
 
       ProjectDataValidator.Validate(createProjectEvent, projectRepo, serviceExceptionHandler);
-      if (createProjectEvent.ProjectType != ProjectType.ProjectMonitoring)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 85);
-      }
-
+    
       projectRequest.CoordinateSystem =
         ProjectDataValidator.ValidateBusinessCentreFile(projectRequest.CoordinateSystem);
 
@@ -128,7 +122,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<CreateProjectExecutor>(logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
-            geofenceProxy, raptorProxy, subscriptionProxy,
+            raptorProxy, subscriptionProxy,
             projectRepo, subscriptionRepo, fileRepo, null, httpContextAccessor)
           .ProcessAsync(createProjectEvent)
       );
@@ -140,7 +134,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     #endregion projects
 
 
-    #region TTCAuthorization
+    #region TCCAuthorization
 
     // POST: api/v2/preferences/tcc
     /// <summary>
@@ -169,7 +163,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 86);
       }
 
-      log.LogInformation(
+      //Note: This is a very old legacy code that validates subs against TCC. This is not needed anymore as we allow project creation regardless of TCC subscription to support Earthworks machines.
+
+       /* log.LogInformation(
         $"ValidateTCCAuthorization. tccAuthorizationRequest: {JsonConvert.SerializeObject(tccAuthorizationRequest)}");
 
       tccAuthorizationRequest.Validate();
@@ -180,14 +176,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             customerUid, null, null, customHeaders,
             null, null,
             null, null, null,
-            null, null, fileRepo, customerRepo)
+            null, fileRepo, customerRepo)
           .ProcessAsync(tccAuthorizationRequest)
-      );
+      );*/
 
       log.LogInformation("ValidateTccAuthorization. completed succesfully");
       return ReturnSuccessV2Result.CreateReturnSuccessV2Result(HttpStatusCode.OK, true);
     }
 
-    #endregion TTCAuthorization
+    #endregion TCCAuthorization
   }
 }

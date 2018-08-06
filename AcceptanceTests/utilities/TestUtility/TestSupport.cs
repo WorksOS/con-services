@@ -12,6 +12,7 @@ using System.Threading;
 using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using TestUtility.Model.WebApi;
 using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Repositories.DBModels;
@@ -100,6 +101,7 @@ namespace TestUtility
     /// <returns></returns>
     public int SetLegacyProjectId()
     {
+      Console.WriteLine("SetLegacyProjectId start");
       var mysql = new MySqlHelper();
       var query = "SELECT max(LegacyProjectID) FROM Project WHERE LegacyProjectID < 100000;";
       var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(TsCfg.DbConnectionString, query);
@@ -108,6 +110,7 @@ namespace TestUtility
         return 1000;
       }
       var legacyProjectId = Convert.ToInt32(result);
+      Console.WriteLine("legacyProjectId=" + legacyProjectId);
       return legacyProjectId + 1;
     }
 
@@ -294,7 +297,7 @@ namespace TestUtility
           response = CallProjectWebApiV4("api/v4/project/", HttpMethod.Put.ToString(), jsonString, customerUid);
           break;
         case "DeleteProjectEvent":
-          response = CallProjectWebApiV4("api/v4/project/" + ProjectUid, HttpMethod.Delete.ToString(), jsonString, customerUid);
+          response = CallProjectWebApiV4("api/v4/project/" + ProjectUid, HttpMethod.Delete.ToString(), string.Empty, customerUid);
           break;
       }
       //Thread.Sleep(500);
@@ -448,11 +451,10 @@ namespace TestUtility
     /// <param name="actionUtc">timestamp of the event</param>
     /// <param name="boundary"></param>
     /// <param name="statusCode">expected status code from web api call</param>
-    public string CreateProjectViaWebApiV2(string name, DateTime startDate, DateTime endDate, string timezone, ProjectType projectType, DateTime actionUtc, string boundary, HttpStatusCode statusCode)
+    public string CreateProjectViaWebApiV2(string name, DateTime startDate, DateTime endDate, string timezone, ProjectType projectType, DateTime actionUtc, List<TBCPoint> boundary, HttpStatusCode statusCode)
     {
       var createProjectV2Request = CreateProjectV2Request.CreateACreateProjectV2Request(
-      projectType, startDate, endDate, name, timezone,
-        GeofenceValidation.ParseGeometryDataPointLL(boundary).ToList(),
+      projectType, startDate, endDate, name, timezone, boundary,
         new BusinessCenterFile() { FileSpaceId = "u3bdc38d-1afe-470e-8c1c-fc241d4c5e01", Name = "CTCTSITECAL.dc", Path = "/BC Data/Sites/Chch Test Site" }
       );
       string requestJson;
@@ -606,6 +608,34 @@ namespace TestUtility
       return projectDescriptorResult?.ProjectDescriptor;
     }
 
+    public GeofenceV4DescriptorsListResult GetProjectGeofencesViaWebApiV4(string customerUid, string geofenceTypeString, string projectUidString )
+    {
+      var routeSuffix = "api/v4/geofences" + geofenceTypeString + projectUidString;
+      var response = CallProjectWebApiV4(routeSuffix, HttpMethod.Get.ToString(), null, customerUid);
+      Log.Info($"GetProjectGeofencesViaWebApiV4. response: {JsonConvert.SerializeObject(response)}", Log.ContentType.ApiSend);
+
+      if (!string.IsNullOrEmpty(response))
+      {
+        return JsonConvert.DeserializeObject<GeofenceV4DescriptorsListResult>(response);
+      }
+      return null;
+    }
+
+    public ContractExecutionResult AssociateProjectGeofencesViaWebApiV4(string customerUid, string projectUid, List<GeofenceType> geofenceTypes, List<Guid> geofenceGuids)
+    {
+      var updateProjectGeofenceRequest =
+        UpdateProjectGeofenceRequest.CreateUpdateProjectGeofenceRequest
+            (ProjectUid = Guid.Parse(projectUid), geofenceTypes, geofenceGuids);
+      var messagePayload = JsonConvert.SerializeObject(updateProjectGeofenceRequest);
+      var response = CallProjectWebApiV4("api/v4/geofences", HttpMethod.Put.ToString(), messagePayload, customerUid);
+      Log.Info($"AssociateProjectGeofencesViaWebApiV4. response: {JsonConvert.SerializeObject(response)}", Log.ContentType.ApiSend);
+
+      if (!string.IsNullOrEmpty(response))
+      {
+        return JsonConvert.DeserializeObject<ContractExecutionResult>(response);
+      }
+      return null;
+    }
 
     /// <summary>
     /// Compare the two lists of projects
@@ -730,7 +760,7 @@ namespace TestUtility
           {
             continue;
           }
-          if (expectedValue.ToString() == "0" || expectedValue.ToString().Contains("1/01/0001"))
+          if (expectedValue.ToString() == "0" || expectedValue.ToString().Contains("1/01/0001") || expectedValue.ToString().Contains("1/1/01"))
           {
             continue;
           }
@@ -810,37 +840,6 @@ namespace TestUtility
       query = $@"INSERT INTO `{TsCfg.dbSchema}`.{"ProjectSubscription"} 
                             (fk_SubscriptionUID,fk_ProjectUID,EffectiveDate,LastActionedUTC) VALUES
                             ('{MockProjectSubscription.SubscriptionUID}','{MockProjectSubscription.ProjectUID}','{MockProjectSubscription.EffectiveDate:yyyy-MM-dd}','{MockProjectSubscription.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
-      mysqlHelper.ExecuteMySqlInsert(TsCfg.DbConnectionString, query);
-    }
-
-    /// <summary>
-    /// Inject the MockSubscription
-    /// </summary>
-    /// <param name="serviceType"></param>
-    /// <param name="subscriptionUid">Subscription UID</param>
-    /// <param name="customerUid">Customer UID</param>
-    /// <param name="startDate">Start date of the subscription</param>
-    /// <param name="endDate">End date of the subscription</param>
-    public void CreateMockSubscription(ServiceTypeEnum serviceType, string subscriptionUid, string customerUid,
-      DateTime startDate, DateTime endDate)
-    {
-      MockSubscription = new Subscription
-      {
-        SubscriptionUID = subscriptionUid,
-        CustomerUID = customerUid,
-        ServiceTypeID = (int) serviceType,
-        StartDate = startDate,
-        EndDate = endDate,
-        LastActionedUTC = DateTime.UtcNow
-      };
-      var query = $@"INSERT INTO `{TsCfg.dbSchema}`.{"Subscription"} 
-                            (SubscriptionUID,fk_CustomerUID,fk_ServiceTypeID,StartDate,EndDate,LastActionedUTC) VALUES
-                            ('{MockSubscription.SubscriptionUID}','{MockSubscription.CustomerUID}',{
-          MockSubscription.ServiceTypeID
-        },'{MockSubscription.StartDate:yyyy-MM-dd HH}','{MockSubscription.EndDate:yyyy-MM-dd}','{
-          MockSubscription.LastActionedUTC
-        :yyyy-MM-dd HH\:mm\:ss.fffffff}');";
-      var mysqlHelper = new MySqlHelper();
       mysqlHelper.ExecuteMySqlInsert(TsCfg.DbConnectionString, query);
     }
 
@@ -1871,6 +1870,7 @@ namespace TestUtility
     public string CallProjectWebApiV4(string routeSuffix, string method, string configJson, string customerUid = null, string jwt = null)
     {
       var uri = GetBaseUri() + routeSuffix;  // "http://localhost:20979/"
+      Console.WriteLine("URI=" + uri);
       var restClient = new RestClientUtil();
       var response = restClient.DoHttpRequest(uri, method, configJson, HttpStatusCode.OK, "application/json", customerUid, jwt);
       return response;

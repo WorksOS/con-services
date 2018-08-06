@@ -1,3 +1,4 @@
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -37,6 +38,7 @@ namespace VSS.MasterData.Project.WebAPI
     /// </summary>
     public const string LoggerRepoName = "WebApi";
     private IServiceCollection serviceCollection;
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -79,7 +81,6 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddSingleton<IKafka, RdKafkaDriver>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<ISubscriptionProxy, SubscriptionProxy>();
-      services.AddTransient<IGeofenceProxy, GeofenceProxy>();
       services.AddTransient<IRaptorProxy, RaptorProxy>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddScoped<IRequestFactory, RequestFactory>();
@@ -90,7 +91,18 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<IProjectSettingsRequestHelper, ProjectSettingsRequestHelper>();
       services.AddScoped<IErrorCodesProvider, ProjectErrorCodesProvider>();
 
+      services.AddOpenTracing(builder =>
+      {
+        builder.ConfigureAspNetCore(options =>
+        {
+          options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
+          options.Hosting.IgnorePatterns.Add(request => request.Request.GetUri().ToString().Contains("newrelic.com"));
+        });
+      });
 
+      services.AddJaeger(SERVICE_TITLE);
+
+      services.AddOpenTracing();
       services.AddMemoryCache();
 
       var tccUrl = (new GenericConfiguration(new LoggerFactory())).GetValueString("TCCBASEURL");
@@ -101,6 +113,8 @@ namespace VSS.MasterData.Project.WebAPI
         services.AddTransient<IFileRepository, FileRepository>();
 
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+
       serviceCollection = services;
     }
 
@@ -113,21 +127,16 @@ namespace VSS.MasterData.Project.WebAPI
     /// <param name="loggerFactory">The logger factory.</param>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
-      loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-      loggerFactory.AddDebug();
       serviceCollection.AddSingleton(loggerFactory);
       serviceCollection.BuildServiceProvider();
 
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCommon(SERVICE_TITLE);
 
-#if NET_4_7
       if (Configuration["newrelic"] == "true")
       {
         app.UseMiddleware<NewRelicMiddleware>();
       }
-#endif
-
       app.UseFilterMiddleware<ProjectAuthentication>();
       app.UseMvc();
     }

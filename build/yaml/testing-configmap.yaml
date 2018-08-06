@@ -8,6 +8,7 @@ data:
   CREATEGEOFENCE_API_URL: http://localhost:5001/dummy/
   CUSTOMERSERVICE_API_URL: http://localhost:5001/api/v1/mock/getcustomersforme
   DISSOCIATESUBSPROJECT_API_URL: http://localhost:5001/dummy/
+  GEOFENCE_API_URL: http://localhost:5001/api/v1/mock/geofences/
   KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
   KAFKA_TOPIC_NAME_SUFFIX: -Project
   KAFKA_GROUP_NAME: Project-Consumer
@@ -26,7 +27,10 @@ data:
   PROJECTSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IProjectEvent
   RAPTOR_NOTIFICATION_API_URL: http://localhost:5001/api/v2/notification
   RAPTOR_PROJECT_SETTINGS_API_URL: http://localhost:5001/api/v2
-  TCCBASEURL: localhost
-  TCCFILESPACEID: localhost
-  WEBAPI_DEBUG_URI: http://localhost:3001/
+  TCCBASEURL: mock
+  TCCFILESPACEID: mock
+  TCCORG: vldev
+  TCCUSERNAME: vldev
+  TCCPWD: vldev_key
+  WEBAPI_DEBUG_URI: http://localhost:80/
   WEBAPI_URI: http://localhost:80/

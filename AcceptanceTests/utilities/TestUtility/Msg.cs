@@ -8,7 +8,8 @@ namespace TestUtility
     public class Msg
     {
 
-      private const string DASH   = "----------------------------------------------------------------------------------------------------------------------"; 
+      private const string DASH = "----------------------------------------------------------------------------------------------------------------------";
+      private const string STAR = "**********************************************************************************************************************";
       private const string INJECT = "                            Inject Kafka Events                            ";
       private const string INJECTWEB = "                        Inject Web API messages                         "; 
       private const string INJSQL = "                            Inject MySql Records                           "; 
@@ -35,11 +36,12 @@ namespace TestUtility
       /// <param name="descriptionOfTest"></param>
       public void Title(string testTag,string descriptionOfTest)
       {
-          currentTest = testTag;
-          Console.WriteLine("Test tag:" + testTag);
-          Console.WriteLine(descriptionOfTest);
-          Console.WriteLine();
-      }    
+        currentTest = testTag;
+        Console.WriteLine(STAR);
+        Console.WriteLine("Test Name:" + testTag);
+        Console.WriteLine(descriptionOfTest);
+        Console.WriteLine(DASH);
+    }    
       /// <summary>
       /// Display all the events in the console 
       /// </summary>

@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
@@ -25,17 +22,67 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
   /// <summary>
   ///
   /// </summary>
-  public class ProjectRequestHelper
+  public partial class ProjectRequestHelper
   {
+
+    #region project
+
     /// <summary>
-    /// validate CordinateSystem if provided
+    /// Gets the project.
     /// </summary>
-    public static async Task<bool> ValidateCoordSystemInRaptor(IProjectEvent project,
-      IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders,
-      IRaptorProxy raptorProxy)
+    /// <param name="projectUid">The project uid.</param>
+    /// <param name="customerUid"></param>
+    /// <param name="log"></param>
+    /// <param name="serviceExceptionHandler"></param>
+    /// <param name="projectRepo"></param>
+    public static async Task<Repositories.DBModels.Project> GetProject(string projectUid, string customerUid,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
     {
-      // a Creating a landfill must have a CS, else optional
-      //  if updating a landfill, or other then May have one. Note that a null one doesn't overwrite any existing.
+      var project =
+        (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
+          p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
+
+      if (project == null)
+      {
+        log.LogWarning($"Customer doesn't have access to projectUid: {projectUid}");
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 1);
+      }
+
+      log.LogInformation($"Project projectUid: {projectUid} retrieved");
+      return project;
+    }
+
+
+    public static async Task<bool> DoesProjectOverlap(string customerUid, string projectUid, DateTime projectStartDate,
+      DateTime projectEndDate, string databaseProjectBoundary,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
+    {
+      var overlaps =
+        await projectRepo.DoesPolygonOverlap(customerUid, databaseProjectBoundary,
+          projectStartDate, projectEndDate, projectUid).ConfigureAwait(false);
+      if (overlaps)
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 43);
+
+      log.LogDebug($"No overlapping projects for: {projectUid}");
+      return overlaps;
+    }
+
+    #endregion project
+
+
+    #region coordSystem
+
+    /// <summary>
+    /// validate if Coord sys file name and content are required
+    /// </summary>
+    public static void ValidateCoordSystemFile(Repositories.DBModels.Project existing, IProjectEvent project,
+      IServiceExceptionHandler serviceExceptionHandler)
+    {
+      // Creating project:
+      //    if landfill then must have a CS, else optional
+      // Updating a landfill, or other then May have one. Note that a null one doesn't overwrite any existing in the DBRepo.
+      // Changing the projectType from standard to Landfill,
+      //    must have CS in existing, or one added in the update
       if (project is CreateProjectEvent)
       {
         var projectEvent = (CreateProjectEvent) project;
@@ -46,6 +93,25 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 45);
       }
 
+      if (project is UpdateProjectEvent)
+      {
+        var projectEvent = (UpdateProjectEvent) project;
+        if (projectEvent.ProjectType == ProjectType.LandFill
+            && (string.IsNullOrEmpty(existing.CoordinateSystemFileName)
+                && (string.IsNullOrEmpty(projectEvent.CoordinateSystemFileName) || projectEvent.CoordinateSystemFileContent == null))
+            && string.IsNullOrEmpty(existing.CoordinateSystemFileName)
+        )
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 45);
+      }
+    }
+
+    /// <summary>
+      /// validate CordinateSystem if provided
+      /// </summary>
+      public static async Task<bool> ValidateCoordSystemInRaptor(IProjectEvent project,
+      IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders,
+      IRaptorProxy raptorProxy)
+    {
       var csFileName = project is CreateProjectEvent
         ? ((CreateProjectEvent) project).CoordinateSystemFileName
         : ((UpdateProjectEvent) project).CoordinateSystemFileName;
@@ -83,48 +149,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       return true;
     }
 
-    public static void ValidateGeofence(string projectBoundary, IServiceExceptionHandler serviceExceptionHandler)
-    {
-      var result = GeofenceValidation.ValidateWKT(projectBoundary);
-      if (String.CompareOrdinal(result, GeofenceValidation.ValidationOk) != 0)
-      {
-        if (String.CompareOrdinal(result, GeofenceValidation.ValidationNoBoundary) == 0)
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 23);
-        }
-
-        if (String.CompareOrdinal(result, GeofenceValidation.ValidationLessThan3Points) == 0)
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 24);
-        }
-
-        if (String.CompareOrdinal(result, GeofenceValidation.ValidationInvalidFormat) == 0)
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 25);
-        }
-      }
-    }
-
-    public static async Task<bool> DoesProjectOverlap(string customerUid, string projectUid, DateTime projectStartDate, DateTime projectEndDate, string databaseProjectBoundary,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
-    {
-      var overlaps =
-        await projectRepo.DoesPolygonOverlap(customerUid, databaseProjectBoundary,
-          projectStartDate, projectEndDate).ConfigureAwait(false);
-      if (overlaps)
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 43);
-
-      log.LogDebug($"No overlapping projects for: {projectUid}");
-      return overlaps;
-    }
-
     /// <summary>
     /// Create CoordinateSystem in Raptor and save a copy of the file in TCC
     /// </summary>
-    public static async Task CreateCoordSystemInRaptorAndTcc(Guid projectUid, int legacyProjectId, string coordinateSystemFileName,
+    public static async Task CreateCoordSystemInRaptorAndTcc(Guid projectUid, int legacyProjectId,
+      string coordinateSystemFileName,
       byte[] coordinateSystemFileContent, bool isCreate,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, string customerUid, IDictionary<string, string> customHeaders, 
-      IProjectRepository projectRepo, IRaptorProxy raptorProxy, IConfigurationStore configStore, IFileRepository fileRepo)
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, string customerUid,
+      IDictionary<string, string> customHeaders,
+      IProjectRepository projectRepo, IRaptorProxy raptorProxy, IConfigurationStore configStore,
+      IFileRepository fileRepo)
     {
       if (!string.IsNullOrEmpty(coordinateSystemFileName))
       {
@@ -147,18 +181,20 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
               coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
           {
             if (isCreate)
-              await ProjectRequestHelper.DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid, log, projectRepo).ConfigureAwait(false);
+              await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid, log, projectRepo).ConfigureAwait(false);
 
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 41,
               (coordinateSystemSettingsResult?.Code ?? -1).ToString(),
               coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
           }
+
           //and save copy of file in TCC
           var fileSpaceId = configStore.GetValueString("TCCFILESPACEID");
           if (string.IsNullOrEmpty(fileSpaceId))
           {
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 48);
           }
+
           using (var ms = new MemoryStream(coordinateSystemFileContent))
           {
             var fileDescriptor = await ProjectRequestHelper.WriteFileToTCCRepository(
@@ -171,14 +207,17 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         catch (Exception e)
         {
           if (isCreate)
-            await ProjectRequestHelper.DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid, log, projectRepo).ConfigureAwait(false);
+            await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid, log, projectRepo).ConfigureAwait(false);
 
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57,
-            "raptorProxy.CoordinateSystemPost", e.Message);
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "raptorProxy.CoordinateSystemPost", e.Message);
         }
       }
     }
 
+    #endregion coordSystem
+
+    
+    #region TCC
     /// <summary>
     /// get file content from TCC
     ///     note that is is intended to be used for small, DC files only.
@@ -202,13 +241,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         if (memStream != null && memStream.CanRead && memStream.Length > 0)
         {
           coordSystemFileContent = new byte[memStream.Length];
-          int numBytesToRead = (int)memStream.Length;
+          int numBytesToRead = (int) memStream.Length;
           numBytesRead = memStream.Read(coordSystemFileContent, 0, numBytesToRead);
         }
         else
         {
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
-              80, $" isAbleToRead: {memStream != null && memStream.CanRead} bytesReturned: {memStream?.Length ?? 0}");
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
+            80, $" isAbleToRead: {memStream != null && memStream.CanRead} bytesReturned: {memStream?.Length ?? 0}");
         }
       }
       catch (Exception e)
@@ -240,7 +279,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       string tccFileName = Path.GetFileName(pathAndFileName);
 
       if (isSurveyedSurface && surveyedUtc != null) // validation should prevent this
-          tccFileName = ImportedFileUtils.IncludeSurveyedUtcInName(tccFileName, surveyedUtc.Value);
+        tccFileName = ImportedFileUtils.IncludeSurveyedUtcInName(tccFileName, surveyedUtc.Value);
 
       bool ccPutFileResult = false;
       bool folderAlreadyExists = false;
@@ -272,7 +311,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         $"WriteFileToTCCRepository: tccFileName {tccFileName} written to TCC. folderAlreadyExists {folderAlreadyExists}");
       return FileDescriptor.CreateFileDescriptor(fileSpaceId, tccPath, tccFileName);
     }
-
+    #endregion TCC
+    
 
     #region rollback
 
@@ -287,7 +327,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <param name="log"></param>
     /// <param name="projectRepo"></param>
     /// <returns></returns>
-    public static async Task DeleteProjectPermanentlyInDb(Guid customerUid, Guid projectUid, ILogger log, IProjectRepository projectRepo)
+    public static async Task DeleteProjectPermanentlyInDb(Guid customerUid, Guid projectUid, ILogger log,
+      IProjectRepository projectRepo)
     {
       log.LogDebug($"DeleteProjectPermanentlyInDB: {projectUid}");
       var deleteProjectEvent = new DeleteProjectEvent
@@ -306,6 +347,25 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       }).ConfigureAwait(false);
     }
 
+
+    /// <summary>
+    /// rolls back the ProjectSubscription association made, due to a subsequent error
+    /// </summary>
+    /// <returns></returns>
+    public static async Task DissociateProjectSubscription(Guid projectUid, string subscriptionUidAssigned,
+      ILogger log, IDictionary<string, string> customHeaders, ISubscriptionProxy subscriptionProxy)
+    {
+      log.LogDebug($"DissociateProjectSubscription projectUid: {projectUid} subscriptionUidAssigned: {subscriptionUidAssigned}");
+
+      if (!string.IsNullOrEmpty(subscriptionUidAssigned) && Guid.TryParse(subscriptionUidAssigned, out var subscriptionUidAssignedGuid))
+      {
+        if (subscriptionUidAssignedGuid != Guid.Empty)
+        {
+          await subscriptionProxy.DissociateProjectSubscription(subscriptionUidAssignedGuid,
+            projectUid, customHeaders).ConfigureAwait(false);
+        }
+      }
+    }
     #endregion rollback
 
   }

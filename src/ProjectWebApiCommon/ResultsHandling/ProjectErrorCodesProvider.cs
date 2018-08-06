@@ -47,7 +47,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       this.DynamicAddwithOffset("Missing CreateProjectRequest.", 39);
       this.DynamicAddwithOffset("Missing UpdateProjectRequest.", 40);
       this.DynamicAddwithOffset("Unable to create/update CoordinateSystem in RaptorServices. returned: {0} {1}.", 41);
-      this.DynamicAddwithOffset("LegacyProjectId has not been generated.", 42);
+      this.DynamicAddwithOffset("LegacyProjectId has not been generated. {0}", 42);
       this.DynamicAddwithOffset("Project boundary overlaps another project, for this customer and time span.", 43);
       this.DynamicAddwithOffset("Missing legacyProjectId.", 44);
       this.DynamicAddwithOffset("Landfill is missing its CoordinateSystem.", 45);
@@ -60,18 +60,17 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       this.DynamicAddwithOffset("CreateImportedFileV4. Unable to store updated Imported File event to database.", 52);
       this.DynamicAddwithOffset("WriteFileToRepository: Unable to write file to TCC.", 53);
       this.DynamicAddwithOffset("Unable to put delete fileDescriptor from TCC. TCC code {0} message {1}", 54);
-      this.DynamicAddwithOffset("FileImport DeleteFile in RaptorServices failed. Reason: {0} {1}.", 54);
       this.DynamicAddwithOffset("CreateImportedFileV4. The uploaded file is not accessible.", 55);
       this.DynamicAddwithOffset("DeleteImportedFileV4. The importedFileUid doesn't exist under this project.", 56);
       this.DynamicAddwithOffset("A problem occurred at the {0} endpoint. Exception: {1}", 57);
       this.DynamicAddwithOffset("CreateImportedFileV4. The file has already been created.", 58);
-      this.DynamicAddwithOffset("GeofenceService CreateGeofence failed. No geofenceUid returned.", 59);
+      this.DynamicAddwithOffset("GeofenceService CreateGeofence failed. No geofenceUid returned. {0}", 59);
       this.DynamicAddwithOffset("Application calling context supports only HttpGet endpoints.", 60);
-      this.DynamicAddwithOffset("Unable to create project.", 61);
-      this.DynamicAddwithOffset("Unable to update project.", 62);
-      this.DynamicAddwithOffset("Unable to associate project with customer.", 63);
+      this.DynamicAddwithOffset("Unable to create project. {0}", 61);
+      this.DynamicAddwithOffset("Unable to update project. {0}", 62);
+      this.DynamicAddwithOffset("Unable to associate project with customer. {0}", 63);
       this.DynamicAddwithOffset("Unable to disassociate project from customer.", 64);
-      this.DynamicAddwithOffset("Unable to associate project with geofence.", 65);
+      this.DynamicAddwithOffset("Unable to store project-geofence associate in database. {0}", 65);
       this.DynamicAddwithOffset("Unable to delete project.", 66);
       this.DynamicAddwithOffset("FileImport AddFile in RaptorServices failed. Reason: {0} {1}.", 67);
       this.DynamicAddwithOffset("Invalid parameters.", 68);
@@ -79,7 +78,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       this.DynamicAddwithOffset("Unable to validate project settings with raptor. Reason: {0} {1}.", 70);
       this.DynamicAddwithOffset("Unable to update project settings with raptor. Reason: {0} {1}.", 71);
       this.DynamicAddwithOffset("Unable to create Kafka event. Reason: {0}.", 72);
-      this.DynamicAddwithOffset("this string is available", 73);
+      this.DynamicAddwithOffset("Invalid geofence Types.", 73);
       this.DynamicAddwithOffset("Landfill projects are not supported.", 74);
       this.DynamicAddwithOffset("CreateImportedFileV4. DxfUnitsType is an unrecognized type.", 75);
       this.DynamicAddwithOffset("CreateImportedFileV4. DxfUnitsType is not supported at present.", 76);
@@ -91,7 +90,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       this.DynamicAddwithOffset("CreateProjectV2: Missing BusinessCentreFile.", 82);
       this.DynamicAddwithOffset("CreateProjectV2: Invalid businessCentreFile path.", 83);
       this.DynamicAddwithOffset("CreateProjectV2: Invalid businessCentreFile fileSpaceId.", 84);
-      this.DynamicAddwithOffset("CreateProjectV2: Invalid ProjectType. Only ProjectMonitoring type is allowed.", 85);
+      this.DynamicAddwithOffset("UpdateProjectV4: Invalid ProjectType. Can ony be changed from Standard to Landfill/Civil.", 85);
       this.DynamicAddwithOffset("ValidateTCCAuthorization: Invalid Request: {0}.", 86);
       this.DynamicAddwithOffset("ValidateTCCAuthorization: Exception getting list of organizations from TCC: {0}.", 87);
       this.DynamicAddwithOffset("ValidateTCCAuthorization: Unable to locate orgShortName in TCC {0}.", 88);
@@ -107,7 +106,17 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       this.DynamicAddwithOffset("UpdateGeofenceInGeofenceService: Unable to find the projects Geofence. Exception: {0}", 98);
       this.DynamicAddwithOffset("UpdateGeofenceInGeofenceService: Unable update the projects Geofence.", 99);
       this.DynamicAddwithOffset("UpdateGeofenceInGeofenceService: Unable update the projects Geofence. Exception: {0}", 100);
-      this.DynamicAddwithOffset("UpdateGeofenceInGeofenceService: Unable to find a project-geofence association for the project.", 101);
+      this.DynamicAddwithOffset("UpdateGeofenceInGeofenceService: Unable to find the project-geofence association. Exception: {0}", 101);
+      this.DynamicAddwithOffset("ProjectGeofenceAssociation: Only landfill project and site types are supported at present.", 102);
+      this.DynamicAddwithOffset("ProjectGeofenceAssociation: Invalid GeofenceUid list.", 103);
+      this.DynamicAddwithOffset("ProjectGeofenceAssociation: Unable to find GeofenceUid/s.", 104);
+      this.DynamicAddwithOffset("ProjectGeofenceAssociation: Geofence is assigned to a different project.", 105);
+      this.DynamicAddwithOffset("ProjectGeofenceAssociation: Error accessing database. Exception: {0}", 106);
+      this.DynamicAddwithOffset("ProjectGeofenceAssociation: Already associated geofence is missing from request.", 107);
+      this.DynamicAddwithOffset("FileImport DeleteFile in RaptorServices failed. Reason: {0} {1}.", 108);
+      this.DynamicAddwithOffset("UpsertProject Not allowed duplicate, active projectnames: {0}.", 109);
+      this.DynamicAddwithOffset("ProjectGeofenceAssociation: Duplicate GeofenceUids appear in the request body.", 110);
     }
   }
 }
+

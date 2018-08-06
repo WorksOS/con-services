@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -9,6 +14,7 @@ using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Repositories;
+using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -34,6 +40,38 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(2),
             projectErrorCodesProvider.FirstNameWithOffset(2)));
+    }
+
+    /// <summary>
+    /// Validate list of geofenceTypes
+    /// </summary>
+    /// <param name="geofenceTypes">FileName</param>
+    /// <param name="projectType"></param>
+    public static bool ValidateGeofenceTypes(List<GeofenceType> geofenceTypes, ProjectType? projectType = null)
+    {
+      if (geofenceTypes == null || geofenceTypes.Count == 0 )
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(73),
+            projectErrorCodesProvider.FirstNameWithOffset(73)));
+      }
+
+      if (geofenceTypes.Count != 1 || geofenceTypes[0] != GeofenceType.Landfill)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(102),
+            projectErrorCodesProvider.FirstNameWithOffset(102)));
+      }
+
+      // future-proofing here, geofence types will be dependant on projectType
+      if (projectType != null && projectType != ProjectType.LandFill )
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(102),
+            projectErrorCodesProvider.FirstNameWithOffset(102)));
+      }
+
+      return true;
     }
 
     /// <summary>
@@ -124,7 +162,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
                 projectErrorCodesProvider.FirstNameWithOffset(8)));
           }
           
-          ProjectRequestHelper.ValidateGeofence(createEvent.ProjectBoundary, serviceExceptionHandler);
+          ProjectRequestHelper.ValidateProjectBoundary(createEvent.ProjectBoundary, serviceExceptionHandler);
 
           if (string.IsNullOrEmpty(createEvent.ProjectTimezone))
           {
@@ -218,7 +256,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
           }
           if (!string.IsNullOrEmpty(updateEvent.ProjectBoundary))
           {
-            ProjectRequestHelper.ValidateGeofence(updateEvent.ProjectBoundary, serviceExceptionHandler);
+            ProjectRequestHelper.ValidateProjectBoundary(updateEvent.ProjectBoundary, serviceExceptionHandler);
           }
         }
         //Nothing else to check for DeleteProjectEvent
@@ -256,5 +294,65 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
         }
       }
     }
+
+
+    /// <summary>
+    /// Seee if any free subs for a project type
+    /// </summary>
+    /// <param name="customerUid">The customer uid.</param>
+    /// <param name="projectType"></param>
+    /// <param name="log"></param>
+    /// <param name="serviceExceptionHandler"></param>
+    /// <param name="subscriptionRepo"></param>
+    /// <returns></returns>
+    public static async Task ValidateFreeSub(string customerUid, ProjectType projectType,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler,
+      ISubscriptionRepository subscriptionRepo)
+    {
+      if (projectType == ProjectType.LandFill || projectType == ProjectType.ProjectMonitoring)
+      {
+        var availableFreeSub =
+          (await subscriptionRepo.GetFreeProjectSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date)
+            .ConfigureAwait(false))
+          .Where(s => s.ServiceTypeID == (int)projectType.MatchSubscriptionType()).ToImmutableList();
+
+        if (!availableFreeSub.Any())
+        {
+          log.LogInformation($"There are no free subscriptions for project type {projectType}");
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 37);
+        }
+      }
+    }
+
+    /// <summary>
+    /// Validates a projectname. Must be unique amoungst active projects for the Customer.
+    /// </summary>
+    /// <param name="customerUid"></param>
+    /// <param name="projectName"></param>
+    /// <param name="projectUid">The project uid.</param>
+    /// <param name="log"></param>
+    /// <param name="serviceExceptionHandler"></param>
+    /// <param name="projectRepo"></param>
+    /// <returns></returns>
+    public static async Task ValidateProjectName(string customerUid, string projectName, string projectUid,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler,
+      IProjectRepository projectRepo)
+    {
+      log.LogInformation($"ValidateProjectName projectName: {projectName} projectUid: {projectUid}");
+      var duplicateProjectNames =
+        (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false))
+        .Where(
+          p => p.IsDeleted == false &&
+                string.Equals(p.Name, projectName, StringComparison.OrdinalIgnoreCase) &&
+               !string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase))
+        .ToList();
+      if (duplicateProjectNames.Any())
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 109, $"Count:{duplicateProjectNames.Count} projectUid: {duplicateProjectNames[0].ProjectUID}");
+      }
+
+      log.LogInformation($"ValidateProjectName Any duplicateProjectNames? {JsonConvert.SerializeObject(duplicateProjectNames)} retrieved");
+    }
+   
   }
 }

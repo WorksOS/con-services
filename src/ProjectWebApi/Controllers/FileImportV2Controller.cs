@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -82,7 +81,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [Route("api/v2/projects/{projectId}/importedfiles")]
     [HttpPut]
     public async Task<ReturnLongV2Result> UpsertImportedFileV2(
-      [FromUri] long projectId,
+      [FromRoute] long projectId,
       [FromBody] ImportedFileTbc importedFileTbc)
     {
       // MobileLinework .kml/.kmz files are sent along with linework files
@@ -128,7 +127,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<UpsertImportedFileExecutor>(logger, configStore, serviceExceptionHandler,
             customerUid, userId, userEmailAddress, customHeaders,
             producer, kafkaTopicName,
-            null, raptorProxy, null,
+            raptorProxy, null,
             projectRepo, null, fileRepo)
           .ProcessAsync(importedFileUpsertEvent)
       ) as ImportedFileDescriptorSingleResult;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using AutoMapper;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Repositories.DBModels;
@@ -117,6 +118,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ProjectID, opt => opt.UseValue(0))
             .ForMember(dest => dest.ProjectUID, opt => opt.Ignore())
             .ForMember(dest => dest.Description, opt => opt.Ignore());
+          cfg.CreateMap<TBCPoint, VSS.MasterData.Models.Models.Point>()
+            .ForMember(dest => dest.y, opt => opt.MapFrom((src => src.Latitude)))
+            .ForMember(dest => dest.x, opt => opt.MapFrom((src => src.Longitude)));
+
+          // ProjectGeofenceAssociations
+          cfg.CreateMap<GeofenceWithAssociation, GeofenceV4Descriptor>();
         }
       );
 

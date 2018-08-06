@@ -1,13 +1,12 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
@@ -22,12 +21,12 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
-  /// <summary>
-  /// Project controller v3
-  ///   This is used by Legacy during Lift and Shift
-  ///   The functionality is quite different (simplified) to v4 
-  /// </summary>
-  public class ProjectV3Controller : ProjectBaseController
+    /// <summary>
+    /// Project controller v3
+    ///   This is used by Legacy during Lift and Shift
+    ///   The functionality is quite different (simplified) to v4
+    /// </summary>
+    public class ProjectV3Controller : ProjectBaseController
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="ProjectV3Controller"/> class.
@@ -37,16 +36,15 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="subscriptionRepo">The subscriptions repo.</param>
     /// <param name="store">The configStore.</param>
     /// <param name="subscriptionProxy">The subs proxy.</param>
-    /// <param name="geofenceProxy">The geofence proxy.</param>
     /// <param name="raptorProxy">The raptorServices proxy.</param>
     /// <param name="fileRepo"></param>
     /// <param name="logger">The logger.</param>
     /// <param name="serviceExceptionHandler">The ServiceException handler</param>
     public ProjectV3Controller(IKafka producer, IProjectRepository projectRepo,
       ISubscriptionRepository subscriptionRepo, IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
-      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, IFileRepository fileRepo, 
+      IRaptorProxy raptorProxy, IFileRepository fileRepo, 
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
-      : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, geofenceProxy, raptorProxy,
+      : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, raptorProxy,
           logger, serviceExceptionHandler, logger.CreateLogger<ProjectV3Controller>())
     { }
 
@@ -97,7 +95,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task CreateProjectV3([FromBody] CreateProjectEvent project)
     {
       log.LogInformation("CreateProjectV3. project: {0}", JsonConvert.SerializeObject(project));
-      ProjectRequestHelper.ValidateGeofence(project.ProjectBoundary, serviceExceptionHandler);
+      ProjectRequestHelper.ValidateProjectBoundary(project.ProjectBoundary, serviceExceptionHandler);
       string wktBoundary = project.ProjectBoundary;
 
       //Convert to old format for Kafka for consistency on kakfa queue
@@ -136,7 +134,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <response code="400">Bad request</response>
     [Route("api/v3/project/{projectUid}")]
     [HttpDelete]
-    public async Task DeleteProjectV3([FromUri] Guid projectUid)
+    public async Task DeleteProjectV3([FromRoute] Guid projectUid)
     {
       log.LogInformation("DeleteProjectV3. project: {0}", projectUid);
       var project = new DeleteProjectEvent
@@ -194,7 +192,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpPost]
     public async Task AssociateGeofenceProjectV3([FromBody] AssociateProjectGeofence geofenceProject)
     {
-      await AssociateGeofenceProject(geofenceProject);
+      ProjectDataValidator.Validate(geofenceProject, projectRepo, serviceExceptionHandler);
+      await ProjectRequestHelper.AssociateProjectGeofence(geofenceProject, projectRepo,
+        log, serviceExceptionHandler, producer, kafkaTopicName);
     }
 
     #region private
@@ -290,28 +290,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         new List<KeyValuePair<string, string>>()
         {
           new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayload)
-        });
-    }
-
-    /// <summary>
-    /// Associates the geofence project.
-    /// </summary>
-    /// <param name="geofenceProject">The geofence project.</param>
-    /// <returns></returns>
-    private async Task AssociateGeofenceProject(AssociateProjectGeofence geofenceProject)
-    {
-      ProjectDataValidator.Validate(geofenceProject, projectRepo, serviceExceptionHandler);
-      geofenceProject.ReceivedUTC = DateTime.UtcNow;
-
-      var isUpdated = await projectRepo.StoreEvent(geofenceProject).ConfigureAwait(false);
-      if (isUpdated == 0)
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 65);
-
-      var messagePayload = JsonConvert.SerializeObject(new { AssociateProjectGeofence = geofenceProject });
-      producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
-        {
-          new KeyValuePair<string, string>(geofenceProject.ProjectUID.ToString(), messagePayload)
         });
     }
 

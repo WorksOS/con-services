@@ -2,11 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
-using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using TestUtility;
+using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
-using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace WebApiTests
@@ -14,9 +13,21 @@ namespace WebApiTests
   [TestClass]
   public class ProjectV2ForTBCTests
   {
-    private const string PROJECT_BOUNDARY = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+    private static List<TBCPoint> _boundaryLL;
 
-   [TestMethod]
+    [TestInitialize]
+    public void Initialize()
+    {
+      _boundaryLL = new List<TBCPoint>()
+      {
+        new TBCPoint(-43.5, 172.6),
+        new TBCPoint(-43.5003, 172.6),
+        new TBCPoint(-43.5003, 172.603),
+        new TBCPoint(-43.5, 172.603)
+      };
+    }
+
+    [TestMethod]
     public void Create_ProjectV2_All_Ok()
     {
       var msg = new Msg();
@@ -24,12 +35,10 @@ namespace WebApiTests
       var mysql = new MySqlHelper();
       var ts = new TestSupport();
 
-      DateTime startDate = ts.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00", ts.FirstEventDate);
-      DateTime endDate = ts.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00", ts.FirstEventDate);
-      ts.CreateMockSubscription(ServiceTypeEnum.ProjectMonitoring, ts.SubscriptionUid.ToString(), ts.CustomerUid.ToString(), startDate, endDate);
+      var serialized = JsonConvert.SerializeObject(_boundaryLL);
+      Assert.AreEqual(@"[{""Latitude"":-43.5,""Longitude"":172.6},{""Latitude"":-43.5003,""Longitude"":172.6},{""Latitude"":-43.5003,""Longitude"":172.603},{""Latitude"":-43.5,""Longitude"":172.603}]", serialized, "TBCPoint not serialized correctly.");
 
       var response = CreateProjectV2(ts, mysql, "project 1", ProjectType.ProjectMonitoring);
-
       var createProjectV2Result = JsonConvert.DeserializeObject<ReturnLongV2Result>(response);
       
       Assert.AreEqual(HttpStatusCode.Created, createProjectV2Result.Code, "Not created ok.");
@@ -75,7 +84,7 @@ namespace WebApiTests
 
     private string CreateProjectV2(TestSupport ts, MySqlHelper mysql, string projectName, ProjectType projectType)
     {
-      var response = ts.CreateProjectViaWebApiV2(projectName, ts.FirstEventDate, ts.LastEventDate, "New Zealand Standard Time", projectType, DateTime.UtcNow, PROJECT_BOUNDARY, HttpStatusCode.OK);
+      var response = ts.CreateProjectViaWebApiV2(projectName, ts.FirstEventDate, ts.LastEventDate, "New Zealand Standard Time", projectType, DateTime.UtcNow, _boundaryLL, HttpStatusCode.OK);
       Console.WriteLine(response);
 
       return response;

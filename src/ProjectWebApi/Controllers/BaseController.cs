@@ -76,7 +76,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     protected readonly IFileRepository fileRepo;
 
-    /// <summary>
+   /// <summary>
     /// Gets the custom customHeaders for the request.
     /// </summary>
     /// <value>
@@ -219,27 +219,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
 
       throw new ArgumentException("Incorrect user email address in request context principal.");
-    }
-
-    /// <summary>
-    /// Gets the project.
-    /// </summary>
-    /// <param name="projectUid">The project uid.</param>
-    protected async Task<Repositories.DBModels.Project> GetProject(string projectUid)
-    {
-      var customerUid = LogCustomerDetails("GetProject by projectUid", projectUid);
-      var project =
-        (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
-          p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
-
-      if (project == null)
-      {
-        log.LogWarning($"User doesn't have access to projectUid: {projectUid}");
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 1);
-      }
-
-      log.LogInformation($"Project projectUid: {projectUid} retrieved");
-      return project;
     }
 
     /// <summary>
