@@ -43,8 +43,8 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [HttpGet]
     [Route("api/v1/export/surface/ttm")]
     public TINSurfaceExportResult GetTINSurface([FromQuery] Guid projectUid,
-      [FromQuery] double ? tolerance,
-      [FromQuery] Guid ? filterUid)
+      [FromQuery] double? tolerance,
+      [FromQuery] Guid? filterUid)
     {
       Log.LogDebug("GetTINSurface: " + Request.QueryString);
 
