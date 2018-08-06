@@ -54,7 +54,10 @@ namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
 
       GenericLeafSubGrid<float> leaf = new GenericLeafSubGrid<float>
       {
-        Items = originSubGrid.Clone2DArray()
+        OriginX = originSubGrid.OriginX,
+        OriginY = originSubGrid.OriginY,
+        Items = originSubGrid.Clone2DArray(),
+        Level = originSubGrid.Level
       };
 
       SurfaceSubgrids.Add(leaf);
