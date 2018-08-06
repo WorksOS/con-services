@@ -41,7 +41,7 @@
     <PackageReference Include="NodaTime" Version="2.3.0" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.*" />
-    <PackageReference Include="VSS.AWS.TransferProxy" Version="1.0.0" />
+    <PackageReference Include="VSS.AWS.TransferProxy" Version="1.4.*" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.*" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.29.*" />

@@ -29,7 +29,7 @@ $acceptanceTestsEnvironmentVariables = @(
 $tccAndAwsEnvironmentVariables = @(
   @{key = "ALK_KEY"; value = "97CC5BD1CA28934796791B229AE9C3FA"},
   @{key = "AWS_ACCESS_KEY"; value = "AKIAIBGOEETXHMANDX7A"},
-  @{key = "AWS_BUCKET_NAME"; value = "vss-stg-directtagfile-archives"},
+  @{key = "AWS_TAGFILE_BUCKET_NAME"; value = "vss-stg-directtagfile-archives"},
   @{key = "AWS_SECRET_KEY"; value = "v0kHIWmLJ7cUvqgH4JEDdHWSxOU9767i+vgb4hdZ"},
   @{key = "TCCBASEURL"; value = "https://www.myconnectedsite.com"},
   @{key = "TCCFILESPACEID"; value = "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01"},
