@@ -4,11 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Log4Net.Extensions;
-using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Converters;
-using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Storage;
-using VSS.TRex.Storage.Interfaces;
 using VSS.WebApi.Common;
 
 namespace VSS.TRex.Gateway.WebApi

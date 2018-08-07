@@ -11,10 +11,6 @@ using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Analytics.CutFillStatistics;
 using VSS.TRex.Analytics.CutFillStatistics.GridFabric;
 using VSS.TRex.Filters;
-using VSS.TRex.Gateway.Common.Converters;
-using VSS.TRex.Rendering.Servers.Client;
-using VSS.TRex.Servers.Client;
-using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {

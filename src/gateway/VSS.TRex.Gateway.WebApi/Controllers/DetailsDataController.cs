@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
@@ -7,7 +6,6 @@ using VSS.MasterData.Models.Handlers;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Gateway.Common.Executors;
-using VSS.TRex.Servers.Client;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
@@ -22,7 +20,6 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="loggerFactory"></param>
     /// <param name="serviceExceptionHandler"></param>
     /// <param name="configStore"></param>
-    /// <param name="reportClientServer"></param>
     public DetailsDataController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore)
       : base(loggerFactory, loggerFactory.CreateLogger<DetailsDataController>(), serviceExceptionHandler, configStore)
     {

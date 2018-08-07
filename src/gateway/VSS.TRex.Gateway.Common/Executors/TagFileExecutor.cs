@@ -1,28 +1,14 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
-using VSS.TRex.Designs.Storage;
-using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.ResultHandling;
-using VSS.TRex.Geometry;
-using VSS.TRex.Rendering.GridFabric.Arguments;
-using VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses;
-using VSS.TRex.Rendering.Servers.Client;
-using VSS.TRex.Servers;
 using VSS.TRex.Servers.Client;
-using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -41,13 +27,11 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
     }
 
-
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
     public TagFileExecutor()
     {
-
     }
 
     /// <summary>
@@ -61,7 +45,6 @@ namespace VSS.TRex.Gateway.Common.Executors
       var request = item as CompactionTagFileRequest;
 
       ContractExecutionResult result = new ContractExecutionResult(1, "Unknown exception");
-
 
       try
       {
