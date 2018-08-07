@@ -102,7 +102,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
     /// <param name="import"></param>
     public void Insert(GridToTINTriangle tri, double import)
     {
-      Debug.Assert(tri.Vertices[0] != null && tri.Vertices[1] != null && tri.Vertices[2] != null, "One or emore vertices in triangle is null");
+      Debug.Assert(tri.Vertices[0] != null && tri.Vertices[1] != null && tri.Vertices[2] != null, "One or more vertices in triangle is null");
 
       tri.HeapIndex = Count;
       Add(new GridToTINHeapNode(tri, import));

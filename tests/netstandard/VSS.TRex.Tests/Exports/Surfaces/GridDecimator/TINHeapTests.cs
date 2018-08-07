@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Tests.Exports.Surfaces.GridDecimator;
+﻿using VSS.TRex.Designs.TTM;
+using VSS.TRex.Tests.Exports.Surfaces.GridDecimator;
 using Xunit;
 
 namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
@@ -27,8 +28,8 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
       {
         TINHeap heap = new TINHeap(1234);
 
-        GridToTINTriangle tri1 = new GridToTINTriangle(null, null, null);
-        GridToTINTriangle tri2 = new GridToTINTriangle(null, null, null);
+        GridToTINTriangle tri1 = new GridToTINTriangle(new TriVertex(1, 2, 0), new TriVertex(2, 2, 0), new TriVertex(2, 1, 0));
+        GridToTINTriangle tri2 = new GridToTINTriangle(new TriVertex(2, 1, 0), new TriVertex(1, 2, 0), new TriVertex(2, 2, 0));
 
         heap.Insert(tri1, 12.34);
         heap.Insert(tri2, 34.56);
@@ -44,8 +45,8 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
       {
         TINHeap heap = new TINHeap(1234);
 
-        GridToTINTriangle tri1 = new GridToTINTriangle(null, null, null);
-        GridToTINTriangle tri2 = new GridToTINTriangle(null, null, null);
+        GridToTINTriangle tri1 = new GridToTINTriangle(new TriVertex(1, 2, 0), new TriVertex(2, 2, 0), new TriVertex(2, 1, 0));
+        GridToTINTriangle tri2 = new GridToTINTriangle(new TriVertex(2, 1, 0), new TriVertex(1, 2, 0), new TriVertex(2, 2, 0));
 
         heap.Insert(tri1, 12.34);
         heap.Insert(tri2, 34.56);
@@ -66,8 +67,8 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
       {
         TINHeap heap = new TINHeap(1234);
 
-        GridToTINTriangle tri1 = new GridToTINTriangle(null, null, null);
-        GridToTINTriangle tri2 = new GridToTINTriangle(null, null, null);
+        GridToTINTriangle tri1 = new GridToTINTriangle(new TriVertex(1, 2, 0), new TriVertex(2, 2, 0), new TriVertex(2, 1, 0));
+        GridToTINTriangle tri2 = new GridToTINTriangle(new TriVertex(2, 1, 0), new TriVertex(1, 2, 0), new TriVertex(2, 2, 0));
 
         heap.Insert(tri1, 12.34);
         heap.Insert(tri2, 34.56);
@@ -81,8 +82,8 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
       {
         TINHeap heap = new TINHeap(1234);
 
-        GridToTINTriangle tri1 = new GridToTINTriangle(null, null, null);
-        GridToTINTriangle tri2 = new GridToTINTriangle(null, null, null);
+        GridToTINTriangle tri1 = new GridToTINTriangle(new TriVertex(1, 2, 0), new TriVertex(2, 2, 0), new TriVertex(2, 1, 0));
+        GridToTINTriangle tri2 = new GridToTINTriangle(new TriVertex(2, 1, 0), new TriVertex(1, 2, 0), new TriVertex(2, 2, 0));
 
         heap.Insert(tri1, 12.34);
         heap.Insert(tri2, 34.56);
@@ -98,8 +99,8 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
       {
         TINHeap heap = new TINHeap(1234);
 
-        GridToTINTriangle tri1 = new GridToTINTriangle(null, null, null);
-        GridToTINTriangle tri2 = new GridToTINTriangle(null, null, null);
+        GridToTINTriangle tri1 = new GridToTINTriangle(new TriVertex(1, 2, 0), new TriVertex(2, 2, 0), new TriVertex(2, 1, 0));
+        GridToTINTriangle tri2 = new GridToTINTriangle(new TriVertex(2, 1, 0), new TriVertex(1, 2, 0), new TriVertex(2, 2, 0));
 
         heap.Insert(tri1, 12.34);
         heap.Insert(tri2, 34.56);
@@ -113,8 +114,8 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
     {
         TINHeap heap = new TINHeap(1234);
 
-        GridToTINTriangle tri1 = new GridToTINTriangle(null, null, null);
-        GridToTINTriangle tri2 = new GridToTINTriangle(null, null, null);
+        GridToTINTriangle tri1 = new GridToTINTriangle(new TriVertex(1, 2, 0), new TriVertex(2, 2, 0), new TriVertex(2, 1, 0));
+        GridToTINTriangle tri2 = new GridToTINTriangle(new TriVertex(2, 1, 0), new TriVertex(1, 2, 0), new TriVertex(2, 2, 0));
 
         heap.CheckConsistency();
         Assert.True(true);
@@ -125,8 +126,8 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
       {
         TINHeap heap = new TINHeap(1234);
 
-        GridToTINTriangle tri1 = new GridToTINTriangle(null, null, null);
-        GridToTINTriangle tri2 = new GridToTINTriangle(null, null, null);
+        GridToTINTriangle tri1 = new GridToTINTriangle(new TriVertex(1, 2, 0), new TriVertex(2, 2, 0), new TriVertex(2, 1, 0));
+        GridToTINTriangle tri2 = new GridToTINTriangle(new TriVertex(2, 1, 0), new TriVertex(1, 2, 0), new TriVertex(2, 2, 0));
 
         foreach (var node in heap)
           heap.CheckConsistency2(node.Tri);

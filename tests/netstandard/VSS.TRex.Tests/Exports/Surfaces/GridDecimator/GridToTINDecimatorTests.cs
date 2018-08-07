@@ -17,7 +17,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
       [Fact]
       public void GridToTINDecimatorTests_Creation_NoDataStore()
       {
-        GridToTINDecimator decimator = new GridToTINDecimator(null);
+        GridToTINDecimator decimator = new GridToTINDecimator(new DecimationElevationSubGridTree());
 
         Assert.NotNull(decimator);
       }
@@ -51,13 +51,13 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
       [Fact]
       public void GridToTINDecimatorTests_BuildMesh_SetDecimationExtents()
       {
-        GridToTINDecimator decimator = new GridToTINDecimator(null);
+        GridToTINDecimator decimator = new GridToTINDecimator(new DecimationElevationSubGridTree());
         decimator.SetDecimationExtents( new BoundingWorldExtent3D(0, 0, 100, 100));
 
-        Assert.True(decimator.GridCalcExtents.MinX == 0);
-        Assert.True(decimator.GridCalcExtents.MaxX == 100);
-        Assert.True(decimator.GridCalcExtents.MinY == 0);
-        Assert.True(decimator.GridCalcExtents.MaxY == 100);
+        Assert.True(decimator.GridCalcExtents.MinX == 536870912);
+        Assert.True(decimator.GridCalcExtents.MaxX == 536871206);
+        Assert.True(decimator.GridCalcExtents.MinY == 536870912);
+        Assert.True(decimator.GridCalcExtents.MaxY == 536871206);
       }
 
       private BoundingWorldExtent3D DataStoreExtents(DecimationElevationSubGridTree dataStore)
@@ -103,7 +103,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
         decimator.SetDecimationExtents(DataStoreExtents(dataStore));
         bool result = decimator.BuildMesh();
 
-        Assert.False(result, $"Failed to fail to build mesh from data store with single point fault code {decimator.BuildMeshFaultCode}");
+        Assert.True(result && decimator.GetTIN().Triangles.Count == 0, $"Failed to fail to build mesh from data store with single point fault code {decimator.BuildMeshFaultCode}");
       }
 
       [Fact]
@@ -117,7 +117,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
         decimator.SetDecimationExtents(DataStoreExtents(dataStore));
         bool result = decimator.BuildMesh();
 
-        Assert.False(result, $"Failed to fail to build mesh from data store with two points fault code {decimator.BuildMeshFaultCode}");
+        Assert.True(result && decimator.GetTIN().Triangles.Count == 0, $"Failed to fail to build mesh from data store with two points fault code {decimator.BuildMeshFaultCode}");
       }
 
       [Fact]
@@ -161,7 +161,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
         Assert.True(decimator.GetTIN().Triangles[0].Vertices[1].Z == 100f);
         Assert.True(decimator.GetTIN().Triangles[0].Vertices[2].Z == 100f);
 
-        Assert.True(decimator.GetTIN().Vertices.Count == 3);
+        Assert.True(decimator.GetTIN().Vertices.Count == 5);
         Assert.True(decimator.GetTIN().Vertices[0].Z == 100.0f);
         Assert.True(decimator.GetTIN().Vertices[1].Z == 100.0f);
         Assert.True(decimator.GetTIN().Vertices[2].Z == 100.0f);

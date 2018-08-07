@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
-using VSS.TRex.Interfaces;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
