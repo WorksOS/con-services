@@ -15,7 +15,7 @@ namespace VSS.Productivity3D.Models.Models
     /// The minimum permitted value in 10ths of a degree celcius. For example, 300 means 30.0°C.
     /// </summary>
     [Range(MIN_TEMPERATURE, MAX_TEMPERATURE)]
-    [JsonProperty(PropertyName = "min", Required = Required.Always)]
+    [JsonProperty(PropertyName = "min", Required = Required.Always)] 
     [Required]
     public ushort min { get; private set; }
 
