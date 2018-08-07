@@ -58,8 +58,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Default constructor.
     /// </summary>
     public CompactionTileController(IASNodeClient raptorClient, IConfigurationStore configStore,
-      IFileRepository fileRepo, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IFilterServiceProxy filterServiceProxy, IProductionDataTileService tileService, IBoundingBoxHelper boundingBoxHelper) :
-      base(configStore, fileListProxy, filterServiceProxy, settingsManager)
+      IFileRepository fileRepo, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataTileService tileService, IBoundingBoxHelper boundingBoxHelper) :
+      base(configStore, fileListProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
       this.fileRepo = fileRepo;

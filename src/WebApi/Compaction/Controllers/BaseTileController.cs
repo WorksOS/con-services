@@ -16,7 +16,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    protected BaseTileController(IConfigurationStore configStore, IFileListProxy fileListProxy, IFilterServiceProxy filterServiceProxy, ICompactionSettingsManager settingsManager)
+    protected BaseTileController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
     : base(configStore, fileListProxy, settingsManager)
     { }
 

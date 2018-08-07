@@ -58,9 +58,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionReportTileController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IFilterServiceProxy filterServiceProxy, IMapTileGenerator tileGenerator,
+    public CompactionReportTileController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IMapTileGenerator tileGenerator,
       IPreferenceProxy prefProxy, IProductionDataRequestFactory requestFactory)
-      : base(configStore, fileListProxy, filterServiceProxy, settingsManager)
+      : base(configStore, fileListProxy, settingsManager)
     {
       this.tileGenerator = tileGenerator;
       this.prefProxy = prefProxy;

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
@@ -22,17 +23,55 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// End points for getting Raptor data e.g. for tile service to get alignment points
   /// </summary>
-  public class CompactionRaptorController : BaseController<CompactionRaptorController>
+  [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
+  public class CompactionRaptorController : BaseTileController<CompactionRaptorController>
   {
     private readonly IASNodeClient raptorClient;
 
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionRaptorController(IASNodeClient raptorClient, IFileListProxy fileListProxy) :
-      base(null, fileListProxy, null)
+    public CompactionRaptorController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager) :
+      base(configStore, fileListProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
+    }
+
+    /// <summary>
+    /// Gets a "best fit" bounding box for the requested project and given query parameters.
+    /// </summary>
+    [ProjectVerifier]
+    [Route("api/v2/raptor/boundingbox")]
+    [HttpGet]
+    public async Task<string> GetBoundingBox(
+      [FromQuery] Guid projectUid,
+      [FromQuery] TileOverlayType[] overlays,
+      [FromQuery] Guid? filterUid,
+      [FromQuery] Guid? cutFillDesignUid,
+      [FromQuery] Guid? baseUid,
+      [FromQuery] Guid? topUid,
+      [FromQuery] VolumeCalcType? volumeCalcType,
+      [FromServices] IBoundingBoxService boundingBoxService)
+    {
+      Log.LogInformation("GetBoundingBox: " + Request.QueryString);
+
+      var project = await((RaptorPrincipal)User).GetProject(projectUid);
+      var filter = await GetCompactionFilter(projectUid, filterUid);
+      DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
+      var sumVolParameters = await GetSummaryVolumesParameters(projectUid, volumeCalcType, baseUid, topUid);
+      var designDescriptor = (!volumeCalcType.HasValue || volumeCalcType.Value == VolumeCalcType.None)
+        ? cutFillDesign
+        : sumVolParameters.Item3;
+      var overlayTypes = overlays.ToList();
+      if (overlays.Contains(TileOverlayType.AllOverlays))
+      {
+        overlayTypes = new List<TileOverlayType>((TileOverlayType[])Enum.GetValues(typeof(TileOverlayType)));
+        overlayTypes.Remove(TileOverlayType.AllOverlays);
+      }
+      var result = boundingBoxService.GetBoundingBox(project, filter, overlayTypes.ToArray(), sumVolParameters.Item1,
+        sumVolParameters.Item2, designDescriptor);
+      var bbox = $"{result.minLatDegrees},{result.minLngDegrees},{result.maxLatDegrees},{result.maxLngDegrees}";
+      return bbox;
     }
 
     /// <summary>
