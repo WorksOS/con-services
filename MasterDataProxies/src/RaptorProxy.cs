@@ -281,13 +281,16 @@ namespace VSS.MasterData.Proxies
     public async Task<PointsListResult> GetFilterPointsList(Guid projectUid, Guid? filterUid, Guid? baseUid, Guid? topUid, FilterBoundaryType boundaryType, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.GetFilterPointsList: projectUid={projectUid}, filterUid={filterUid}, baseUid={baseUid}, topUid={topUid}, boundaryType={boundaryType}");
-      PointsListResult response = await SendRequest<PointsListResult>("RAPTOR_PROJECT_SETTINGS_API_URL",
+      PointsListResult response = await SendRequest<PointsListResult>("RAPTOR_3DPM_API_URL",
         string.Empty, customHeaders, "/raptor/filterpointslist", "GET", $"?projectUid={projectUid}&filterUid={filterUid}&baseUid={baseUid}&topUid={topUid}&boundaryType={boundaryType}");
 
       return response;
     }
 
 
+    /// <summary>
+    /// Gets a production data tile from the 3dpm WMS service.
+    /// </summary>
     public async Task<byte[]> GetProductionDataTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, ushort width, ushort height, 
       string bbox, DisplayMode mode, Guid? baseUid, Guid? topUid, VolumeCalcType? volCalcType, IDictionary<string, string> customHeaders = null)
     {
@@ -310,6 +313,28 @@ namespace VSS.MasterData.Proxies
         await result.CopyToAsync(ms);
         return ms.ToArray();
       }
+    }
+
+    /// <summary>
+    /// Gets a "best fit" bounding box for the requested parameters.
+    /// </summary>
+    /// <returns>The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</returns>
+    public async Task<string> GetBoundingBox(Guid projectUid, TileOverlayType[] overlays, Guid? filterUid, Guid? cutFillDesignUid, Guid? baseUid, 
+      Guid? topUid, VolumeCalcType? volCalcType, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"RaptorProxy.GetBoundingBox: projectUid={projectUid}, overlays={overlays}, filterUid={filterUid}, baseUid={baseUid}, topUid={topUid}, volCalcType={volCalcType}, cutFillDesignUid={cutFillDesignUid}");
+
+      string filterParam = filterUid.HasValue ? $"&filterUid={filterUid}" : string.Empty;
+      string cutFillDesignParam = cutFillDesignUid.HasValue ? $"&cutFillDesignUid={cutFillDesignUid}" : string.Empty;
+      string baseParam = baseUid.HasValue ? $"&baseUid={baseUid}" : string.Empty;
+      string topParam = topUid.HasValue ? $"&topUid={topUid}" : string.Empty;
+      string volCalcTypeParam = volCalcType.HasValue ? $"&volumeCalcType={volCalcType}" : string.Empty;
+      var overlaysParameter = string.Join("&overlays=", overlays);
+      var queryParameters = $"?projectUid={projectUid}&overlays={overlaysParameter}{filterParam}{cutFillDesignParam}{baseParam}{topParam}{volCalcTypeParam}";
+
+      string response = await SendRequest<string>("RAPTOR_3DPM_API_URL",
+        string.Empty, customHeaders, "/raptor/boundingbox", "GET", queryParameters);
+      return response;
     }
     #endregion
 

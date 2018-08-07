@@ -71,5 +71,8 @@ namespace VSS.MasterData.Proxies.Interfaces
       ushort height, string bbox, DisplayMode mode, Guid? baseUid, Guid? topUid, VolumeCalcType? volCalcType,
       IDictionary<string, string> customHeaders = null);
 
+    Task<string> GetBoundingBox(Guid projectUid, TileOverlayType[] overlays, Guid? filterUid, Guid? cutFillDesignUid,
+      Guid? baseUid, Guid? topUid, VolumeCalcType? volCalcType, IDictionary<string, string> customHeaders = null);
+
   }
 }
