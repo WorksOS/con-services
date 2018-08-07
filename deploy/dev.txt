@@ -1,3 +1,8 @@
+TCCBASEURL: mock
+TCCORG: vldev
+TCCUSERNAME: vldev
+TCCPWD: vldev_key
+TCCFILESPACEID: mock
 JAEGER_AGENT_HOST: jaeger-agent.jaeger
 JAEGER_AGENT_PORT: "6831"
 JAEGER_SAMPLER_TYPE: const

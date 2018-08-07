@@ -1,3 +1,8 @@
+TCCBASEURL: https://www.myconnectedsite.com
+TCCUSERNAME: vlbeta
+TCCPWD: vlbeta_key8
+TCCORG: vlbeta
+TCCFILESPACEID: ua9bc5eaf-583a-44d3-b33b-24c035946ae2
 JAEGER_AGENT_HOST: jaeger-agent.jaeger
 JAEGER_AGENT_PORT: "6831"
 JAEGER_SAMPLER_TYPE: const
