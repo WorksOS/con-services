@@ -35,7 +35,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected ISiteModel GetSiteModel(Guid? ID)
     {
-      ISiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID ?? new Guid());
+      ISiteModel siteModel = ID.HasValue ? SiteModels.SiteModels.Instance().GetSiteModel(ID.Value) : null;
 
       if (siteModel == null)
       {

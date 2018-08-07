@@ -35,7 +35,6 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result;
       CutFillDetailsRequest request = item as CutFillDetailsRequest;
 
       var siteModel = GetSiteModel(request.ProjectUid);
@@ -57,18 +56,11 @@ namespace VSS.TRex.Gateway.Common.Executors
         Offsets = request.CutFillTolerances
       });
 
-
       if (cutFillResult != null)
-      {
-        result = CompactionCutFillDetailedResult.CreateCutFillDetailedResult(cutFillResult.Percents);
-      }
-      else
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-          "Failed to get requested cut-fill details data"));
-      }
+        return CompactionCutFillDetailedResult.CreateCutFillDetailedResult(cutFillResult.Percents);
 
-      return result;
+      throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+        "Failed to get requested cut-fill details data"));
     }
 
     /// <summary>
