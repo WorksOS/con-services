@@ -35,7 +35,6 @@ namespace VSS.TRex.Gateway.Common.Executors
     protected ITileRenderingServer tileRenderServer;
     protected IMutableClientServer tagfileClientServer;
     public ITINSurfaceExportRequestor tINSurfaceExportRequestor;
-
     /// <summary>
     /// Processes the specified item. This is the main method to execute real action.
     /// </summary>
