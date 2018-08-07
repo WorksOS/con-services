@@ -139,7 +139,7 @@ curator:
   age:
     timestring: "%Y.%m.%d"
     unit: "days"
-    unit_count: 3
+    unit_count: 90
 
 service:
   httpPort: 9200
@@ -170,7 +170,7 @@ kibana:
       - kibana.k8s.services.myvisionlink.com
     annotations:
       kubernetes.io/ingress.class: nginx
-      # external-dns.alpha.kubernetes.io/target: endpoints.k8s.services.myvisionlink.com
+      external-dns.alpha.kubernetes.io/target: endpoints.k8s.services.myvisionlink.com
       # kubernetes.io/tls-acme: "true"
     tls:
       # Secrets must be manually created in the namespace.
