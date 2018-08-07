@@ -262,7 +262,6 @@ namespace VSS.TRex.Designs.TTM.Optimised
 
         public void GetExtents(out double MinX, out double MinY, out double MaxX, out double MaxY)
         {
-            // NB: Not as performant as it could be. Revisit it this method is called often
           MinX = Math.Min(Math.Min(Vertex0.X, Vertex1.X), Vertex2.X);
           MinY = Math.Min(Math.Min(Vertex0.Y, Vertex1.Y), Vertex2.Y);
           MaxX = Math.Max(Math.Max(Vertex0.X, Vertex1.X), Vertex2.X);
