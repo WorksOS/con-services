@@ -16,7 +16,7 @@ namespace VSS.TRex.Designs.TTM.Tests
         DateTime startTime = DateTime.Now;
         tin.LoadFromFile(@"C:\Users\rwilson\Downloads\5644616_oba9c0bd14_FRL.ttm");
         DateTime endTime = DateTime.Now;
-        Assert.True(false, $"Duration to load file: {endTime - startTime}");
+        Assert.True(false, $"Duration to load file containing {tin.Triangles.Count} triangles and {tin.Vertices.Count} vertices: {endTime - startTime}");
     }
   }
 }
