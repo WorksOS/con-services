@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace VSS.TRex.Designs.TTM.Tests
+namespace VSS.TRex.Designs.TTM.Optimised.Tests
 {
     public class VerticesTests
     {
