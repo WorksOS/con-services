@@ -36,8 +36,8 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
 
         Assert.True(heap.Count == 2);
 
-        Assert.True(heap[0].Tri == tri1);
-        Assert.True(heap[1].Tri == tri2);
+        Assert.True(heap[1].Tri == tri1);
+        Assert.True(heap[0].Tri == tri2);
     }
 
     [Fact]
@@ -53,13 +53,13 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
 
         Assert.True(heap.Count == 2);
 
-        Assert.True(heap[0].Tri == tri1);
-        Assert.True(heap[1].Tri == tri2);
+        Assert.True(heap[1].Tri == tri1);
+        Assert.True(heap[0].Tri == tri2);
 
         heap.Update(tri1, 56.78);
 
-        Assert.True(heap[1].Tri == tri1);
-        Assert.True(heap[0].Tri == tri2);
+        Assert.True(heap[0].Tri == tri1);
+        Assert.True(heap[1].Tri == tri2);
     }
 
       [Fact]
@@ -91,7 +91,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
         heap.Kill(1);
 
         Assert.True(heap.Count == 1);
-        Assert.True(heap[0].Tri == tri1);
+        Assert.True(heap[0].Tri == tri2);
       }
 
       [Fact]
@@ -106,7 +106,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
         heap.Insert(tri2, 34.56);
 
         Assert.True(heap.Top == heap[0]);
-        Assert.True(heap.Top.Tri == tri1);
+        Assert.True(heap.Top.Tri == tri2);
       }
 
       [Fact]

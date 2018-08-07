@@ -98,7 +98,7 @@ namespace VSS.TRex.Gateway.Tests
       Assert.Null(combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList);
       Assert.NotNull(combinedFilter.SpatialFilter);
       Assert.False(combinedFilter.SpatialFilter.CoordsAreGrid);
-      Assert.True(combinedFilter.SpatialFilter.IsSpatial);
+      Assert.False(combinedFilter.SpatialFilter.IsSpatial);
       Assert.Null(combinedFilter.SpatialFilter.Fence);
     }
   }
