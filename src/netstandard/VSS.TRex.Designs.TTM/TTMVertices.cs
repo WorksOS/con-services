@@ -22,22 +22,26 @@ namespace VSS.TRex.Designs.TTM
 
         public void Read(BinaryReader reader, TTMHeader header)
         {
-            Capacity = header.NumberOfVertices;
+          int vertnum = 0;
+          Capacity = header.NumberOfVertices;
+          try
+          {
             for (int i = 0; i < header.NumberOfVertices; i++)
-                try
-                {
-                    long RecPos = reader.BaseStream.Position;
-                    TTMVertex Vert = new TTMVertex(0, 0, 0);
-                    Add(Vert);
-                    Vert.Read(reader, header);
-                    reader.BaseStream.Position = RecPos + header.VertexRecordSize;
-                }
-                catch (Exception E)
-                {
-                    throw new Exception(string.Format("Failed to read vertex {0}\n{1}", i + 1, E));
-                }
+            {
+              vertnum = i;
+              long RecPos = reader.BaseStream.Position;
+              TTMVertex Vert = new TTMVertex(0, 0, 0);
+              Add(Vert);
+              Vert.Read(reader, header);
+              reader.BaseStream.Position = RecPos + header.VertexRecordSize;
+            }
+          }
+          catch (Exception E)
+          {
+            throw new Exception($"Failed to read vertex {vertnum + 1}\n{E}");
+          }
 
-            NumberVertices();
+          NumberVertices();
         }
 
         public void SnapToOutputResolution(TTMHeader header)

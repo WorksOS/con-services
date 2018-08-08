@@ -223,11 +223,11 @@ namespace VSS.TRex.Designs.TTM
         }
       }
 
-    public void LoadFromFile(string FileName)
+      public void LoadFromFile(string FileName)
         {
-            using (FileStream fs = new FileStream(FileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(FileName)))
             {
-               LoadFromStream(fs);
+              LoadFromStream(ms);
             }
 
             if (FModelName.Length == 0)

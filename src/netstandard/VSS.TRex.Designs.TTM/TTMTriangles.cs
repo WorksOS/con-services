@@ -32,18 +32,20 @@ namespace VSS.TRex.Designs.TTM
 
             NumberTriangles();
 
-            for (int i = 0; i < Count; i++)
+            int trinum = 0;
+            try
             {
-                try
-                {
-                    long RecPos = reader.BaseStream.Position;
-                    (this[i] as TTMTriangle).Read(reader, header, vertices, this, i + 1);
-                    reader.BaseStream.Position = RecPos + header.TriangleRecordSize;
-                }
-                catch (Exception E)
-                {
-                    throw new Exception(string.Format("Failed to read triangle {0}\n{1}", i + 1, E));
-                }
+              for (int i = 0; i < Count; i++)
+              {
+                trinum = i;
+                long RecPos = reader.BaseStream.Position;
+                (this[i] as TTMTriangle).Read(reader, header, vertices, this, i + 1);
+                reader.BaseStream.Position = RecPos + header.TriangleRecordSize;
+              }
+            }
+            catch (Exception E)
+            {
+                throw new Exception($"Failed to read triangle {trinum + 1}\n{E}");
             }
         }
     }

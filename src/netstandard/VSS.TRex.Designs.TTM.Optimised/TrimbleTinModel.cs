@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using Microsoft.Win32.SafeHandles;
 
 namespace VSS.TRex.Designs.TTM.Optimised
 {
@@ -79,10 +80,16 @@ namespace VSS.TRex.Designs.TTM.Optimised
 
     public void LoadFromFile(string FileName)
     {
-      using (FileStream fs = new FileStream(FileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+      using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(FileName)))
       {
-        LoadFromStream(fs);
+        LoadFromStream(ms);
       }
+
+      // FYI, This method sucks totally - don't use it
+      //using (FileStream fs = new FileStream(FileName, FileMode.Open, FileAccess.Read, FileShare.Read, 2048))
+      //{
+      //    LoadFromStream(fs);
+      //}
 
       if (ModelName.Length == 0)
       {
