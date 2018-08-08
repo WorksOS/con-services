@@ -10,8 +10,6 @@ namespace VSS.TRex.Designs.TTM
             return new TTMVertex(X, Y, Z);
         }
 
-        // public
-
         public void Write(BinaryWriter writer, TTMHeader header)
         {
             foreach (TTMVertex vertex in this)

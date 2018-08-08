@@ -39,31 +39,42 @@ namespace VSS.TRex.Designs.TTM.Optimised.Tests
       // Check the contents of triangles is the same
       for (int i = 0; i < readwrite_tin.Triangles.Count; i++)
       {
-        Assert.True(readwrite_tin.Triangles[i].Tag == readonly_tin.Triangles.Items[i].Tag, $"Triangle TAGs vary at index {i}, {readwrite_tin.Triangles[i].Tag} vs {readonly_tin.Triangles.Items[i].Tag}");
-        Assert.True(readwrite_tin.Triangles[i].Vertices[0].Tag == readonly_tin.Triangles.Items[i].Vertex0, $"Triangle vertex 0 Tags vary at index {i}, {readwrite_tin.Triangles[i].Vertices[0].Tag} vs {readonly_tin.Triangles.Items[i].Vertex0}");
-        Assert.True(readwrite_tin.Triangles[i].Vertices[1].Tag == readonly_tin.Triangles.Items[i].Vertex1, $"Triangle vertex 1 Tags vary at index {i}, {readwrite_tin.Triangles[i].Vertices[1].Tag} vs {readonly_tin.Triangles.Items[i].Vertex1}");
-        Assert.True(readwrite_tin.Triangles[i].Vertices[2].Tag == readonly_tin.Triangles.Items[i].Vertex2, $"Triangle vertex 2 Tags vary at index {i}, {readwrite_tin.Triangles[i].Vertices[2].Tag} vs {readonly_tin.Triangles.Items[i].Vertex2}");
+//        Assert.True(readwrite_tin.Triangles[i].Tag == readonly_tin.Triangles.Items[i].Tag, $"Triangle TAGs vary at index {i}, {readwrite_tin.Triangles[i].Tag} vs {readonly_tin.Triangles.Items[i].Tag}");
+        Assert.True(readwrite_tin.Triangles[i].Vertices[0].Tag == readonly_tin.Triangles.Items[i].Vertex0 + 1, $"Triangle vertex 0 Tags vary at index {i}, {readwrite_tin.Triangles[i].Vertices[0].Tag} vs {readonly_tin.Triangles.Items[i].Vertex0 + 1}");
+        Assert.True(readwrite_tin.Triangles[i].Vertices[1].Tag == readonly_tin.Triangles.Items[i].Vertex1 + 1, $"Triangle vertex 1 Tags vary at index {i}, {readwrite_tin.Triangles[i].Vertices[1].Tag} vs {readonly_tin.Triangles.Items[i].Vertex1 + 1}");
+        Assert.True(readwrite_tin.Triangles[i].Vertices[2].Tag == readonly_tin.Triangles.Items[i].Vertex2 + 1, $"Triangle vertex 2 Tags vary at index {i}, {readwrite_tin.Triangles[i].Vertices[2].Tag} vs {readonly_tin.Triangles.Items[i].Vertex2 + 1}");
       }
 
       // Check the contents of vertices are the same
       for (int i = 0; i < readwrite_tin.Vertices.Count; i++)
       {
-        Assert.True(readwrite_tin.Vertices[i].Tag == readonly_tin.Vertices.Items[i].Tag, $"Vertex TAGs vary at index {i}, {readwrite_tin.Vertices[i].Tag} vs {readonly_tin.Vertices.Items[i].Tag}");
+//        Assert.True(readwrite_tin.Vertices[i].Tag == readonly_tin.Vertices.Items[i].Tag, $"Vertex TAGs vary at index {i}, {readwrite_tin.Vertices[i].Tag} vs {readonly_tin.Vertices.Items[i].Tag}");
         Assert.True(readwrite_tin.Vertices[i].XYZ.Equals(readonly_tin.Vertices.Items[i].XYZ), $"Vertex location varies at index {i}, {readwrite_tin.Vertices[i].XYZ} vs {readonly_tin.Vertices.Items[i].XYZ}");
       }
 
       // Check the contents of edges are the same
       for (int i = 0; i < readwrite_tin.Edges.Count; i++)
       {
-        Assert.True(readwrite_tin.Edges[i].Tag == readonly_tin.Edges.Items[i], $"Edges TAGs vary at index {i}, {readwrite_tin.Edges[i].Tag} vs {readonly_tin.Edges.Items[i]}");
+        Assert.True(readwrite_tin.Edges[i].Tag == readonly_tin.Edges.Items[i] + 1, $"Edges TAGs vary at index {i}, {readwrite_tin.Edges[i].Tag} vs {readonly_tin.Edges.Items[i] + 1}");
       }
 
       // Check the contents of start points are the same
       for (int i = 0; i < readwrite_tin.StartPoints.Count; i++)
       {
-        Assert.True(readwrite_tin.StartPoints[i].Triangle.Tag == readonly_tin.StartPoints.Items[i].Triangle, 
-          $"Startpoint TAGs vary at index {i}, {readwrite_tin.StartPoints[i].Triangle.Tag} vs {readonly_tin.StartPoints.Items[i].Triangle}");
+        Assert.True(readwrite_tin.StartPoints[i].Triangle.Tag == readonly_tin.StartPoints.Items[i].Triangle + 1, 
+          $"Startpoint TAGs vary at index {i}, {readwrite_tin.StartPoints[i].Triangle.Tag} vs {readonly_tin.StartPoints.Items[i].Triangle + 1}");
       }
+    }
+
+    [Fact]
+    public void Test_TINLoadAndSave()
+    {
+      VSS.TRex.Designs.TTM.TrimbleTINModel readwrite_tin = new VSS.TRex.Designs.TTM.TrimbleTINModel();
+
+      // 165Mb TIN 
+      readwrite_tin.LoadFromFile(@"C:\Users\rwilson\Downloads\5644616_oba9c0bd14_FRL.ttm");
+
+      readwrite_tin.SaveToFile(@"C:\Temp\5644616_oba9c0bd14_FRL.ttm(write from unit test)");
     }
   }
 }

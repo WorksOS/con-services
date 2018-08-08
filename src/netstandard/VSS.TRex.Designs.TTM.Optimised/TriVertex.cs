@@ -9,11 +9,6 @@ namespace VSS.TRex.Designs.TTM.Optimised
   public struct TriVertex
   {
     /// <summary>
-    /// A 'tag' used for various purposes in TTM processing
-    /// </summary>
-    public int Tag;
-
-    /// <summary>
     /// Gets the X, Y, Z location of the vertex as a XYZ instance
     /// </summary>
     /// <returns></returns>
@@ -58,28 +53,25 @@ namespace VSS.TRex.Designs.TTM.Optimised
     }
 
     /// <summary>
-    /// Converts the location of the vertex to a string
-    /// </summary>
-    /// <returns></returns>
-    public string AsText()
-    {
-      return $"Tag:{Tag}, X={X:F3}, Y={Y:F3}, Z={Z:F3}";
-    }
-
-    /// <summary>
     /// Overridden ToString()
     /// </summary>
     /// <returns></returns>
-    public override string ToString()
-    {
-      return AsText();
-    }
+    public override string ToString() => $"X={X:F3}, Y={Y:F3}, Z={Z:F3}";
 
     public void Read(BinaryReader reader, TTMHeader header)
     {
-      Y = Utilities.ReadFloat(reader, header.VertexCoordinateSize) + header.NorthingOffsetValue;
-      X = Utilities.ReadFloat(reader, header.VertexCoordinateSize) + header.EastingOffsetValue;
-      Z = Utilities.ReadFloat(reader, header.VertexValueSize);
+      if (header.VertexCoordinateSize == sizeof(float))
+      {
+        Y = reader.ReadSingle() + header.NorthingOffsetValue;
+        X = reader.ReadSingle() + header.EastingOffsetValue;
+      }
+      else
+      {
+        Y = reader.ReadDouble() + header.NorthingOffsetValue;
+        X = reader.ReadDouble() + header.EastingOffsetValue;
+      }
+
+      Z = header.VertexValueSize == sizeof(float) ? reader.ReadSingle() : reader.ReadDouble();
     }
   }
 }

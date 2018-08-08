@@ -18,7 +18,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
             FY = Utilities.ReadFloat(reader, header.VertexCoordinateSize) + header.NorthingOffsetValue;
             FX = Utilities.ReadFloat(reader, header.VertexCoordinateSize) + header.EastingOffsetValue;
 
-            FTriangle = Utilities.ReadInteger(reader, header.TriangleNumberSize);
+            FTriangle = Utilities.ReadInteger(reader, header.TriangleNumberSize) - 1;
         }
     }
 }

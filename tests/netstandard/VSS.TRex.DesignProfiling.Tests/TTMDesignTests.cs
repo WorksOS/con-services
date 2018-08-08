@@ -99,7 +99,7 @@ namespace VSS.TRex.DesignProfiling.Tests
         {
             LoadTheDesign();
 
-            object Hint = null;
+            int Hint = -1;
 
             bool result = design.InterpolateHeight(ref Hint, probeX, probeY, 0, out double Z);
 
@@ -139,8 +139,8 @@ namespace VSS.TRex.DesignProfiling.Tests
         {
             LoadTheDesign();
 
-            Assert.True(design.Data.Triangles.Count > 0, "No triangles present in loaded TTM file.");
-            Assert.True(design.Data.Vertices.Count > 0, "No vertices present in loaded TTM file.");
+            Assert.True(design.Data.Triangles.Items.Length > 0, "No triangles present in loaded TTM file.");
+            Assert.True(design.Data.Vertices.Items.Length > 0, "No vertices present in loaded TTM file.");
         }
 
         [Fact]

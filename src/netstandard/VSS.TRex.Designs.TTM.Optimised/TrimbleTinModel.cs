@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using Microsoft.Win32.SafeHandles;
 
 namespace VSS.TRex.Designs.TTM.Optimised
 {

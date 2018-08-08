@@ -25,10 +25,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
         {
           vertnum = i;
           long RecPos = reader.BaseStream.Position;
-          Items[i] = new TriVertex
-          {
-            Tag = i + 1
-          };
+          Items[i] = new TriVertex();
           Items[i].Read(reader, header);
           reader.BaseStream.Position = RecPos + header.VertexRecordSize;
         }

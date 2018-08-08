@@ -16,7 +16,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
                 try
                 {
                     long RecPos = reader.BaseStream.Position;
-                    Items[i] = Utilities.ReadInteger(reader, header.TriangleNumberSize);
+                    Items[i] = Utilities.ReadInteger(reader, header.TriangleNumberSize) - 1;
 
                     reader.BaseStream.Position = RecPos + header.EdgeRecordSize;
                 }

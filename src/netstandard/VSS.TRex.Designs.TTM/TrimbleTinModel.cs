@@ -262,9 +262,20 @@ namespace VSS.TRex.Designs.TTM
                            double ElevationResolution = Consts.DefaultElevationResolution,
                            bool BuildEdgeListEtAl = true)
         {
+/*
+          using (MemoryStream ms = new MemoryStream())
+          {
+            SaveToStream(CoordinateResolution, ElevationResolution, BuildEdgeListEtAl, ms);
+
+//            using (FileStream fs = new FileStream(FileName, FileMode.CreateNew, FileAccess.Write))
+//            {
+              File.WriteAllBytes(FileName, ms.ToArray());
+//            }
+          }
+*/
             using (FileStream fs = new FileStream(FileName, FileMode.CreateNew, FileAccess.Write))
             {
-                SaveToStream(CoordinateResolution, ElevationResolution, BuildEdgeListEtAl, fs);
+                 SaveToStream(CoordinateResolution, ElevationResolution, BuildEdgeListEtAl, fs);
             }
         }
 

@@ -28,7 +28,7 @@ namespace VSS.TRex.Designs
 
         public abstract void GetHeightRange(out double z1, out double z2);
 
-        public abstract bool InterpolateHeight(ref object Hint,
+        public abstract bool InterpolateHeight(ref int Hint,
                                    double X, double Y,
                                    double Offset,
                                    out double Z);

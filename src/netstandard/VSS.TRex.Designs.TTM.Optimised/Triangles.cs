@@ -23,11 +23,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
           trinum = i;
 
           long RecPos = reader.BaseStream.Position;
-          Items[i] = new Triangle
-          {
-            Tag = i + 1
-          };
-
+          Items[i] = new Triangle();
           Items[i].Read(reader, header);
           reader.BaseStream.Position = RecPos + header.TriangleRecordSize;
         }
