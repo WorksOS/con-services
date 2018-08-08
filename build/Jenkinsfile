@@ -8,6 +8,11 @@ node ('jenkinsslave-pod') {
 				description: 'The build number supplied by VSTS perhaps fail build if this is nothing to prevent unrequested builds during multibranch scan',
 				name: 'VSTS_BUILD_NUMBER'
 			),
+			string(
+				defaultValue: null,
+				description: 'The branch name to build',
+				name: 'BRANCH_NAME'
+			),
 		])
 	])
 
@@ -34,6 +39,10 @@ node ('jenkinsslave-pod') {
 		if (params.VSTS_BUILD_NUMBER == null) {
 			currentBuild.result = 'ABORTED'
 			error("Build stopping, no valid build number supplied")
+		}
+		if (params.BRANCH_NAME == null) {
+			currentBuild.result = 'ABORTED'
+			error("Build stopping, no valid branch supplied")
 		}
 	}
 	
@@ -67,7 +76,7 @@ node ('jenkinsslave-pod') {
 		//See https://jenkins.io/doc/pipeline/steps/xunit/#xunit-publish-xunit-test-result-report for DSL Guide
         step([$class: 'XUnitBuilder',
                 thresholds: [
-					[$class: 'FailedThreshold', failureThreshold: '4', unstableThreshold: '1'],
+					[$class: 'FailedThreshold', failureThreshold: '0', unstableThreshold: '1'],
 					[$class: 'SkippedThreshold', unstableThreshold: '1']
 				],
                 tools: [[$class: 'XUnitDotNetTestType', pattern: 'TestResults/UnitTests/**/*.xml']]])
@@ -115,8 +124,10 @@ node ('jenkinsslave-pod') {
 					sh "/bin/sh ./build/RunAcceptanceTests.sh"
 
 					step([$class: 'XUnitBuilder',
-							thresholds: [[$class: 'FailedThreshold', unstableThreshold: '1']],
+							thresholds: [[$class: 'FailedThreshold', failureThreshold: '0', unstableThreshold: '1']],
 							tools: [[$class: 'XUnitDotNetTestType', pattern: 'AcceptanceTests/tests/**/TestResults/*.xml']]])
+							
+					sh "ls -la AcceptanceTests/tests/"
 
 
 					//Unstash test results from earlier for publishing to vsts as we can only do this once
@@ -127,7 +138,7 @@ node ('jenkinsslave-pod') {
 					}
 
 					//Dump log from webapi to buildlog
-					containerLog 'service-container'
+					//containerLog 'service-container'
 					
 					//Archive test logs
 					archiveArtifacts artifacts: 'testresults/*.*', fingerprint: true
@@ -149,11 +160,13 @@ node ('jenkinsslave-pod') {
 	}
 	
 	stage ('Publish results') {
-		sh "docker tag ${container} ${finalImage}"
-		sh "docker tag ${containerDb} ${dbFinalImage}"
-		sh "eval \$(aws ecr get-login --region us-west-2 --no-include-email)"
-		sh "docker push ${finalImage}"
-		sh "docker push ${dbFinalImage}"
-        archiveArtifacts artifacts: 'deploy/**/*.*', fingerprint: true
+	    if (currentBuild.result=='SUCCESS') { 
+			sh "docker tag ${container} ${finalImage}"
+			sh "docker tag ${containerDb} ${dbFinalImage}"
+			sh "eval \$(aws ecr get-login --region us-west-2 --no-include-email)"
+			sh "docker push ${finalImage}"
+			sh "docker push ${dbFinalImage}"
+			archiveArtifacts artifacts: 'deploy/**/*.*', fingerprint: true
+		}
 	}
 }
