@@ -126,6 +126,8 @@ node ('jenkinsslave-pod') {
 					step([$class: 'XUnitBuilder',
 							thresholds: [[$class: 'FailedThreshold', failureThreshold: '0', unstableThreshold: '1']],
 							tools: [[$class: 'XUnitDotNetTestType', pattern: 'AcceptanceTests/tests/**/TestResults/*.xml']]])
+							
+					sh "ls -la AcceptanceTests/tests/"
 
 
 					//Unstash test results from earlier for publishing to vsts as we can only do this once
@@ -136,7 +138,7 @@ node ('jenkinsslave-pod') {
 					}
 
 					//Dump log from webapi to buildlog
-					containerLog 'service-container'
+					//containerLog 'service-container'
 					
 					//Archive test logs
 					archiveArtifacts artifacts: 'testresults/*.*', fingerprint: true
@@ -158,11 +160,13 @@ node ('jenkinsslave-pod') {
 	}
 	
 	stage ('Publish results') {
-		sh "docker tag ${container} ${finalImage}"
-		sh "docker tag ${containerDb} ${dbFinalImage}"
-		sh "eval \$(aws ecr get-login --region us-west-2 --no-include-email)"
-		sh "docker push ${finalImage}"
-		sh "docker push ${dbFinalImage}"
-        archiveArtifacts artifacts: 'deploy/**/*.*', fingerprint: true
+	    if (currentBuild.result=='SUCCESS') { 
+			sh "docker tag ${container} ${finalImage}"
+			sh "docker tag ${containerDb} ${dbFinalImage}"
+			sh "eval \$(aws ecr get-login --region us-west-2 --no-include-email)"
+			sh "docker push ${finalImage}"
+			sh "docker push ${dbFinalImage}"
+			archiveArtifacts artifacts: 'deploy/**/*.*', fingerprint: true
+		}
 	}
 }
