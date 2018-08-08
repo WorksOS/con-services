@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\src\VSS.Productivity3D.Filter.Cleanup\VSS.Productivity3D.Filter.Cleanup.csproj" />
     <ProjectReference Include="..\..\..\src\VSS.Productivity3D.Filter.Common\VSS.Productivity3D.Filter.Common.csproj" />
   </ItemGroup>
 

@@ -31,3 +31,4 @@ ingress:
   annotations:
     kubernetes.io/ingress.class: nginx
     external-dns.alpha.kubernetes.io/target: endpoints.k8s.vspengg.com
+schedule: "/4 * * * *"
