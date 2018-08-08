@@ -14,6 +14,9 @@ using VSS.TRex.Filters;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
+  /// <summary>
+  /// Processes the request to get cut-fill details.
+  /// </summary>
   public class CutFillExecutor : BaseExecutor
   {
     public CutFillExecutor(IConfigurationStore configStore, ILoggerFactory logger,
