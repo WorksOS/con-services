@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Runtime.InteropServices;
 
 namespace VSS.TRex.Designs.TTM.Optimised
 {
@@ -87,39 +86,6 @@ namespace VSS.TRex.Designs.TTM.Optimised
             StartOffsetOfStartPoints = reader.ReadInt32();
             NumberOfStartPoints = reader.ReadInt32(); // 50 or less
             StartPointRecordSize = reader.ReadInt16(); // Typically 2 x (vertex coordinate size) + (size of triangle field) but could be larger.
-        }
-
-        public void Write(BinaryWriter writer)
-        {
-            writer.Write(FileMajorVersion); // Must be 1
-            writer.Write(FileMinorVersion); // Must be 0
-            writer.Write(FileSignature, 0, HeaderConsts.kDTMFileSignatureSize); // Must be "TNL TIN DTM FILE" \0\0\0\0
-            writer.Write(DTMModelInternalName, 0, HeaderConsts.kDTMInternalModelNameSize); // E.g. "Christchurch area TIN DTM" \0
-            writer.Write(CoordinateUnits); // Must be 1: Metres
-            writer.Write(VertexValueUnits); // Must be 1: Metres
-            writer.Write(InterpolationMethod);// Must be 1: Linear
-            writer.Write(NorthingOffsetValue); // e.g. 700500. Typically the centre of the area covered by the TIN
-            writer.Write(EastingOffsetValue); // E.g. 300500. Typically the centre of the area covered by the TIN
-            writer.Write(MinimumNorthing); // E.g. 700000
-            writer.Write(MinimumEasting); // E.g. 300000
-            writer.Write(MaximumNorthing); // E.g. 701000
-            writer.Write(MaximumEasting); // E.g. 301000
-            writer.Write(VertexCoordinateSize); // 4: Single precision, 8: Double precision
-            writer.Write(VertexValueSize); // 4: Single precision, 8: Double precision
-            writer.Write(VertexNumberSize); // 2: Short integer, 4: Long integer
-            writer.Write(TriangleNumberSize); // 2: Short integer, 4: Long integer
-            writer.Write(StartOffsetOfVertices);
-            writer.Write(NumberOfVertices);
-            writer.Write(VertexRecordSize); // Typically 2 x (size of vertex coordinate) + (size of vertex value) but could be larger.
-            writer.Write(StartOffsetOfTriangles);
-            writer.Write(NumberOfTriangles);
-            writer.Write(TriangleRecordSize); // Typically 3 x (vertex number size) + 3 x (neighbour field size) but could be larger.
-            writer.Write(StartOffsetOfEdgeList);
-            writer.Write(NumberOfEdgeRecords);
-            writer.Write(EdgeRecordSize); // Typically 1 x (size of triangle field size) but could be larger.
-            writer.Write(StartOffsetOfStartPoints);
-            writer.Write(NumberOfStartPoints); // 50 or less
-            writer.Write(StartPointRecordSize); // Typically 2 x (vertex coordinate size) + (size of triangle field) but could be larger.
         }
     }
 }

@@ -1,36 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace VSS.TRex.Designs.TTM.Optimised
 {
-    public class TTMStartPoints : List<TTMStartPoint>
+    public class TTMStartPoints
     {
+        public TTMStartPoint[] Items;
 
-        public void Write(BinaryWriter writer, TTMHeader header)
+        public void Read(BinaryReader reader, TTMHeader header)
         {
-            for (int i = 0; i < Count; i++)
-            {
-                this[i].Write(writer, header);
-            }
-        }
-        public void Read(BinaryReader reader, TTMHeader header, Triangles triangles)
-        {
-            Capacity = header.NumberOfStartPoints;
+          Items = new TTMStartPoint[header.NumberOfStartPoints];
 
             for (int i = 0; i < header.NumberOfStartPoints; i++)
             {
                 try
                 {
                     long RecPos = reader.BaseStream.Position;
-                    TTMStartPoint Pt = new TTMStartPoint(0, 0, null);
-                    Add(Pt);
-                    Pt.Read(reader, header, triangles);
+                    Items[i] = new TTMStartPoint();
+                    Items[i].Read(reader, header);
                     reader.BaseStream.Position = RecPos + header.StartPointRecordSize;
                 }
                 catch (Exception E)
                 {
-                    throw new Exception(string.Format("Failed to read start point {0}\n{1}", i + 1, E));
+                    throw new Exception($"Failed to read start point {i + 1}\n{E}");
                 }
             }
         }

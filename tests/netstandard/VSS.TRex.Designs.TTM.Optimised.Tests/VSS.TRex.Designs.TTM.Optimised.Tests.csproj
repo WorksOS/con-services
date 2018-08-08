@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Designs.TTM\VSS.TRex.Designs.TTM.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Designs.TTM.Optimised\VSS.TRex.Designs.TTM.Optimised.csproj" />
   </ItemGroup>
 
