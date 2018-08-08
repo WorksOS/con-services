@@ -69,7 +69,7 @@ namespace LandfillDatasync.netcore
         }
         catch (Exception e)
         {
-          Log.DebugFormat($"Skipping project {project.name} as failed. Exception:" + e.Message);
+          Log.DebugFormat("Skipping project {0} as failed. Exception: {1}",project.name,e.Message);
         }
       }
       Log.DebugFormat("Got {0} entries to process for volumes", result.Count);
