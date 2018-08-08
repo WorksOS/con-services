@@ -40,6 +40,10 @@ node ('jenkinsslave-pod') {
 			currentBuild.result = 'ABORTED'
 			error("Build stopping, no valid build number supplied")
 		}
+		if (params.BRANCH_NAME == null) {
+			currentBuild.result = 'ABORTED'
+			error("Build stopping, no valid branch supplied")
+		}
 	}
 	
     stage('Build Solution') {
@@ -120,8 +124,11 @@ node ('jenkinsslave-pod') {
 					sh "/bin/sh ./build/RunAcceptanceTests.sh"
 
 					step([$class: 'XUnitBuilder',
-							thresholds: [[$class: 'FailedThreshold', unstableThreshold: '1']],
-							tools: [[$class: 'XUnitDotNetTestType', pattern: 'AcceptanceTests/tests/**/TestResults/*.xml']]])
+						thresholds: [
+							[$class: 'FailedThreshold', failureThreshold: '0', unstableThreshold: '1'],
+							[$class: 'SkippedThreshold', unstableThreshold: '1']
+							],
+					tools: [[$class: 'XUnitDotNetTestType', pattern: 'AcceptanceTests/tests/**/TestResults/*.xml']]])
 
 
 					//Unstash test results from earlier for publishing to vsts as we can only do this once
