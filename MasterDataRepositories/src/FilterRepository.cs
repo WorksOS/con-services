@@ -313,27 +313,6 @@ namespace VSS.MasterData.Repositories
       return filters;
     }
 
-
-    /// <summary>
-    /// Returns filters which will be removed if cleanup is run.
-    /// </summary>
-    /// <param name="ageInMinutesToBeDeleted"></param>
-    /// <returns></returns>
-    public async Task<IEnumerable<Filter>> GetTransientFiltersToBeCleaned(int ageInMinutesToBeDeleted)
-    {
-      var cutoffActionUtcToDelete = DateTime.Now.AddMinutes(-ageInMinutesToBeDeleted).ToString("yyyy-MM-dd HH:mm:ss");
-      var filters = (await QueryWithAsyncPolicy<Filter>($@"SELECT 
-                f.fk_CustomerUid AS CustomerUID, f.UserID, 
-                f.fk_ProjectUID AS ProjectUID, f.FilterUID,                   
-                f.Name, f.FilterJson, f.fk_FilterTypeID as FilterType,
-                f.IsDeleted, f.LastActionedUTC
-              FROM Filter f
-              WHERE f.fk_FilterTypeID = {(int)FilterType.Transient} 
-                AND f.LastActionedUTC < @cutoffActionUtcToDelete",
-        new { cutoffActionUtcToDelete }));
-      return filters;
-    }
-
     /// <summary>
     /// get filter if active
     /// </summary>
@@ -351,6 +330,18 @@ namespace VSS.MasterData.Repositories
                 AND f.IsDeleted = 0",
         new { FilterUid = filterUid })).FirstOrDefault();
       return filter;
+    }
+
+    public async Task<int> DeleteTransientFilters(string deleteOlderThanUtc)
+    {
+      var deletedCount = 0;
+      var delete =
+         "DELETE FROM Filter " +
+        $"  WHERE fk_FilterTypeID = {(int)FilterType.Transient}" +
+        $"    AND LastActionedUTC < {deleteOlderThanUtc}";
+      deletedCount = await ExecuteWithAsyncPolicy(delete);
+      log.LogDebug("FilterRepository/DeleteTransientFilters: deleted {0} rows");
+      return deletedCount;
     }
 
     /// <summary>
