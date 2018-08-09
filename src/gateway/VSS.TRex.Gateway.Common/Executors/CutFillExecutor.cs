@@ -50,7 +50,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       CutFillResult cutFillResult = operation.Execute(new CutFillStatisticsArgument()
       {
         ProjectID = siteModel.ID,
-        Filters = new FilterSet { Filters = new[] { filter } },
+        Filters = new FilterSet(filter),
         DesignID = request.designDescriptor.uid ?? Guid.Empty,
         Offsets = request.CutFillTolerances
       });

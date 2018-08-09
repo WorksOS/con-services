@@ -44,7 +44,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       DetailsAnalyticsResult cmvDetailsResult = operation.Execute(new CMVDetailsArgument()
       {
         ProjectID = siteModel.ID,
-        Filters = new FilterSet { Filters = new[] { filter } },
+        Filters = new FilterSet(filter),
         CMVDetailValues = request.customCMVDetailTargets
       });
 
