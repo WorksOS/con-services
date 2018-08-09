@@ -236,6 +236,9 @@ namespace VSS.Productivity3D.Common.Filters.Caching
     /// </remarks>>
     private int GenerateFilterHash(string projectUid, string filterUid, IDictionary<string, string> headers)
     {
+      if (string.IsNullOrEmpty(filterUid))
+        return 0;
+
       var filter = filterServiceProxy.GetFilter(projectUid, filterUid, headers).Result;
       if (filter == null)
       {
