@@ -25,6 +25,8 @@ namespace VSS.Productivity3D.Common.Filters.Caching
     // Use the record separator for delimiting components of the cache key to avoid possible collisions
     private const char KEY_DELIMITER = '\x1e';
 
+    private const int NULL_HASH_CODE = 0;
+
     private readonly ObjectPool<StringBuilder> builderPool;
     private readonly ResponseCachingOptions options;
     private readonly IFilterServiceProxy filterServiceProxy;
@@ -237,7 +239,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
     private int GenerateFilterHash(string projectUid, string filterUid, IDictionary<string, string> headers)
     {
       if (string.IsNullOrEmpty(filterUid))
-        return 0;
+        return NULL_HASH_CODE;
 
       var filter = filterServiceProxy.GetFilter(projectUid, filterUid, headers).Result;
       if (filter == null)
