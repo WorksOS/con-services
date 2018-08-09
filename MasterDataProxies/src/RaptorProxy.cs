@@ -298,12 +298,12 @@ namespace VSS.MasterData.Proxies
 
       string filterParam = filterUid.HasValue ? $"&filterUid={filterUid}" : string.Empty;
       string cutFillDesignParam = cutFillDesignUid.HasValue ? $"&cutFillDesignUid={cutFillDesignUid}" : string.Empty;
-      string baseParam = baseUid.HasValue ? $"&baseUid={baseUid}" : string.Empty;
-      string topParam = topUid.HasValue ? $"&topUid={topUid}" : string.Empty;
+      string baseParam = baseUid.HasValue ? $"&volumeBaseUid={baseUid}" : string.Empty;
+      string topParam = topUid.HasValue ? $"&volumeTopUid={topUid}" : string.Empty;
       string volCalcTypeParam = volCalcType.HasValue ? $"&volumeCalcType={volCalcType}" : string.Empty;
       string queryParameters1 = $"?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=Layers&CRS=EPSG:4326&STYLES=";
       string queryParameters2 = $"&projectUid={projectUid}{filterParam}{baseParam}{topParam}{volCalcTypeParam}";
-      string queryParameters3 = $"&width={width}&height={height}&bbox={bbox}{cutFillDesignParam}";
+      string queryParameters3 = $"&mode={mode}&width={width}&height={height}&bbox={bbox}{cutFillDesignParam}";
 
       var request = new GracefulWebRequest(logger, configurationStore);
       var url = ExtractUrl("RAPTOR_3DPM_API_URL", "/productiondatatiles/png", $"{queryParameters1}{queryParameters2}{queryParameters3}");
