@@ -46,7 +46,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         new CMVSummaryArgument()
         {
           ProjectID = siteModel.ID,
-          Filters = new FilterSet { Filters = new[] { filter } },
+          Filters = new FilterSet(filter),
           CMVPercentageRange = new CMVRangePercentageRecord(request.minCMVPercent, request.maxCMVPercent),
           OverrideMachineCMV = request.overrideTargetCMV,
           OverridingMachineCMV = request.cmvTarget
