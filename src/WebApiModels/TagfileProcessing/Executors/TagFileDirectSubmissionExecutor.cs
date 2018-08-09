@@ -103,13 +103,14 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
     {
       //Example tagfile name: 0415J010SW--HOUK IR 29 16--170731225438.tag
       //Format: <display or ECM serial>--<machine name>--yyMMddhhmmss.tag
-      //Required folder structure is <TCC org id>/<machine name>/<archive folder>/<display--machine name--date>/<tagfile>
-      //e.g. HOUK IR 29 16/Production-Data (Archived)/0415J010SW--HOUK IR 29 16--170731/0415J010SW--HOUK IR 29 16--170731225438.tag
-      string[] parts = tagFileName.Split(new string[] {"--"}, StringSplitOptions.None);
+      //Required folder structure is <TCC org id>/<serial>--<machine name>/<archive folder>/<serial--machine name--date>/<tagfile>
+      //e.g. 0415J010SW--HOUK IR 29 16/Production-Data (Archived)/0415J010SW--HOUK IR 29 16--170731/0415J010SW--HOUK IR 29 16--170731225438.tag
+      const string separator = "--";
+      string[] parts = tagFileName.Split(new string[] {separator}, StringSplitOptions.None);
       var nameWithoutTime = tagFileName.Substring(0, tagFileName.Length - 10);
-      //TCC org ID is not always provided
+      //TCC org ID is not provided with direct submission from machines
       var prefix = string.IsNullOrEmpty(tccOrgId) ? string.Empty : $"{tccOrgId}/";
-      return $"{prefix}{parts[1]}/{archiveFolder}/{nameWithoutTime}/{tagFileName}";
+      return $"{prefix}{parts[0]}{separator}{parts[1]}/{archiveFolder}/{nameWithoutTime}/{tagFileName}";
     }
   }
 }
