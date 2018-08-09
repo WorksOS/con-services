@@ -34,7 +34,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [HttpPost]
     public CompactionCmvSummaryResult PostCmvSummary([FromBody] CMVSummaryRequest cmvSummaryRequest)
     {
-      Log.LogInformation("GetCmvSummary: " + Request.QueryString);
+      Log.LogInformation($"{nameof(PostCmvSummary)}: {Request.QueryString}");
 
       //var cmvSummaryRequest = CMVSummaryRequest.CreateCMVSummaryRequest(projectUid, null/* filter */, 50, true, 120, 80);
       cmvSummaryRequest.Validate();
@@ -45,15 +45,17 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Process(cmvSummaryRequest) as CMVSummaryResult);
 
       var cmvSettings = CMVSettings.CreateCMVSettings(
-        cmvSummaryRequest.cmvTarget, 
-        0, 
-        cmvSummaryRequest.maxCMVPercent, 
-        0, 
+        cmvSummaryRequest.cmvTarget,
+        CMV_VALUE_NOT_REQUIRED, 
+        cmvSummaryRequest.maxCMVPercent,
+        CMV_VALUE_NOT_REQUIRED, 
         cmvSummaryRequest.minCMVPercent, 
         cmvSummaryRequest.overrideTargetCMV
       );
 
       return CompactionCmvSummaryResult.Create(result, cmvSettings);
     }
+
+    private const short CMV_VALUE_NOT_REQUIRED = 0;
   }
 }

@@ -11,7 +11,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 {
   /// <summary>
   /// Controller for getting production data for details requests.
-  //[ProjectVerifier]
+  /// </summary>
   public class DetailsDataController : BaseController
   {
     /// <summary>
@@ -34,7 +34,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [HttpPost]
     public CompactionCmvDetailedResult PostCmvDetails([FromBody] CMVDetailsRequest cmvDetailsRequest)
     {
-      Log.LogInformation("GetCmvDetails: " + Request.QueryString);
+      Log.LogInformation($"{nameof(PostCmvDetails)}: {Request.QueryString}");
 
       //var cmvDetailsRequest = CMVDetailsRequest.CreateCMVDetailsRequest(projectUid, null/* filter */, new[] { 0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700 });
       cmvDetailsRequest.Validate();
@@ -56,7 +56,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [HttpPost]
     public CompactionCutFillDetailedResult PostCutFillDetails([FromBody] CutFillDetailsRequest cutFillRequest)
     {
-      Log.LogInformation("GetCutFillDetails: " + Request.QueryString);
+      Log.LogInformation($"{nameof(PostCutFillDetails)}: {Request.QueryString}");
 
       //var cutFillDesign = DesignDescriptor.CreateDesignDescriptor(-1, null, 0.0, cutfillDesignUid);
 

@@ -13,6 +13,11 @@ namespace VSS.TRex.Gateway.Common.Requests
   /// </summary>
   public class CMVSummaryRequest : ProjectID
   {
+    private const ushort MIN_CMV = 0;
+    private const ushort MAX_CMV = 1500;
+    private const double MIN_PERCENT_CMV = 0.0;
+    private const double MAX_PERCENT_CMV = 250.0;
+
     /// <summary>
     /// The filter instance to use in the request.
     /// Value may be null.
@@ -104,10 +109,5 @@ namespace VSS.TRex.Gateway.Common.Requests
         }
       }
     }
-
-    private const ushort MIN_CMV = 0;
-    private const ushort MAX_CMV = 1500;
-    private const double MIN_PERCENT_CMV = 0.0;
-    private const double MAX_PERCENT_CMV = 250.0;
   }
 }
