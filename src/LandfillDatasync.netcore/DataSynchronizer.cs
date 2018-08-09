@@ -29,7 +29,7 @@ namespace LandfillDatasync.netcore
 
     //private RaptorApiClient raptorApiClient = new RaptorApiClient();
 
-    private List<ProjectResponse> GetListOfProjectsToRetrieve()
+    private List<Project> GetListOfProjectsToRetrieve()
     {
       return LandfillDb.GetListOfAvailableProjects();
     }
@@ -39,10 +39,10 @@ namespace LandfillDatasync.netcore
     /// </summary>
     /// <param name="noOfDaysVols"></param>
     /// <returns></returns>
-    private Dictionary<ProjectResponse, List<DateEntry>> GetListOfEntriesToUpdate(int noOfDaysVols)
+    private Dictionary<Project, List<DateEntry>> GetListOfEntriesToUpdate(int noOfDaysVols)
     {
       var projects = GetListOfProjectsToRetrieve();
-      var result = new Dictionary<ProjectResponse, List<DateEntry>>();
+      var result = new Dictionary<Project, List<DateEntry>>();
       Log.DebugFormat("Got {0} projects to process for volumes", projects.Count);
       var headers = new Dictionary<string, string> {{"Authorization", $"Bearer {authn.Get3DPmSchedulerBearerToken().Result}"}};
       foreach (var project in projects)
@@ -116,9 +116,9 @@ namespace LandfillDatasync.netcore
     /// <param name="ccaDaysBackFill"></param>
     public void RunUpdateCcaFromRaptor(int ccaDaysBackFill)
     {
-      //1. Do the scheduled date for each projectResponse (note: UTC date)
-      //2. Do missing dates with no CCA for each projectResponse (note: these are projectResponse time zone)
-      //3. Retry unretrieved entries for each projectResponse (also projectResponse time zone)
+      //1. Do the scheduled date for each project (note: UTC date)
+      //2. Do missing dates with no CCA for each project (note: these are project time zone)
+      //3. Retry unretrieved entries for each project (also project time zone)
 
       //Use same criteria as volumes to select projects to process. 
       //No point in getting CCA if no weights or volumes and therefore no density data.
@@ -129,7 +129,7 @@ namespace LandfillDatasync.netcore
 
       foreach (var project in projects)
       {
-        //   if (projectResponse.id != 2712) continue;
+        //   if (project.id != 2712) continue;
         try
         {
           //var utcDate = DateTime.UtcNow.AddMonths(-1);
@@ -183,19 +183,19 @@ namespace LandfillDatasync.netcore
     }
 
     /// <summary>
-    ///   Process CCA for the projectResponse and date.
+    ///   Process CCA for the project and date.
     /// </summary>
-    /// <param name="date">Date (in projectResponse time zone)</param>
-    /// <param name="projectResponse">Project</param>
+    /// <param name="date">Date (in project time zone)</param>
+    /// <param name="project">Project</param>
     /// <param name="geofenceUids">GeofenceResponse UIDs</param>
     /// <param name="geofences">GeofenceResponse boundaries</param>
     /// <param name="machines">Machines and lifts to process for given date</param>
-    private void ProcessCCA(DateTime date, ProjectResponse projectResponse, IEnumerable<string> geofenceUids,
+    private void ProcessCCA(DateTime date, Project project, IEnumerable<string> geofenceUids,
       Dictionary<string, List<WGSPoint>> geofences, IEnumerable<MachineLifts> machines)
     {
-      var machineIds = machines.ToDictionary(m => m, m => LandfillDb.GetMachineId(projectResponse.projectUid, m));
+      var machineIds = machines.ToDictionary(m => m, m => LandfillDb.GetMachineId(project.projectUid, m));
       var headers = new Dictionary<string, string> { { "Authorization", $"Bearer {authn.Get3DPmSchedulerBearerToken().Result}" } };
-      headers["X-VisionLink-CustomerUID"] = projectResponse.customerUid;
+      headers["X-VisionLink-CustomerUID"] = project.customerUid;
 
       foreach (var geofenceUid in geofenceUids)
       {
@@ -205,23 +205,23 @@ namespace LandfillDatasync.netcore
         {
           foreach (var lift in machine.lifts)
           {
-           // Log.DebugFormat("ProcessCCA machine lifts {0}, geofence {1}, machine {2}, lift {3}, machineId {4}",projectResponse.id, geofenceUid, machine, lift.layerId, machineIds[machine]);
+           // Log.DebugFormat("ProcessCCA machine lifts {0}, geofence {1}, machine {2}, lift {3}, machineId {4}",project.id, geofenceUid, machine, lift.layerId, machineIds[machine]);
             new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
               new GenericConfiguration(new NullLoggerFactory()),
               new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
               new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
                 new MemoryCache(new MemoryCacheOptions())), headers).GetCCAInBackground(
-              userId, projectResponse, geofenceUid, geofence, date, machineIds[machine], machine, lift.layerId).Wait();
+              userId, project, geofenceUid, geofence, date, machineIds[machine], machine, lift.layerId).Wait();
           }
 
           //Also do the 'All Lifts'
-          //Log.DebugFormat("ProcessCCA all lifts {0}, geofence {1}, machine {2}, lift {3}, machineId {4}",projectResponse.id, geofenceUid, machine, "ALL", machineIds[machine]);
+          //Log.DebugFormat("ProcessCCA all lifts {0}, geofence {1}, machine {2}, lift {3}, machineId {4}",project.id, geofenceUid, machine, "ALL", machineIds[machine]);
           new RaptorApiClient(new NullLoggerFactory().CreateLogger(""),
             new GenericConfiguration(new NullLoggerFactory()),
             new RaptorProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory()),
             new FileListProxy(new GenericConfiguration(new NullLoggerFactory()), new NullLoggerFactory(),
               new MemoryCache(new MemoryCacheOptions())), headers).GetCCAInBackground(
-            userId, projectResponse, geofenceUid, geofence, date, machineIds[machine], machine, null).Wait();
+            userId, project, geofenceUid, geofence, date, machineIds[machine], machine, null).Wait();
         }
       }
     }

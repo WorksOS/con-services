@@ -22,7 +22,7 @@ using VSS.WebApi.Common;
 namespace LandfillService.WebApi.netcore.Controllers
 {
   /// <summary>
-  ///   Handles projectResponse related requests
+  ///   Handles project related requests
   /// </summary>
   public class ProjectsController : Controller
   {
@@ -48,7 +48,7 @@ namespace LandfillService.WebApi.netcore.Controllers
     /// <param name="userUid">User ID</param>
     /// <param name="customerUid">User ID</param>
     /// <returns>A list of projects or error details</returns>
-    private IEnumerable<ProjectResponse> PerhapsUpdateProjectList(string userUid,string customerUid)
+    private IEnumerable<Project> PerhapsUpdateProjectList(string userUid,string customerUid)
     {
       Log.LogDebug("PerhapsUpdateProjectList: user: " + userUid + " customer: " + customerUid);
       var projects = LandfillDb.GetProjects(userUid, customerUid);
@@ -77,9 +77,9 @@ namespace LandfillService.WebApi.netcore.Controllers
     }
 
     /// <summary>
-    ///   TEST CODE: generate random projectResponse data entries
+    ///   TEST CODE: generate random project data entries
     /// </summary>
-    /// <returns>Random projectResponse data entries</returns>
+    /// <returns>Random project data entries</returns>
     private IEnumerable<DayEntry> GetRandomEntries()
     {
       var totalDays = 730;
@@ -112,16 +112,16 @@ namespace LandfillService.WebApi.netcore.Controllers
     }
 
     /// <summary>
-    ///   Returns the projectResponse data for the given projectResponse. If geofenceUid is not specified,
-    ///   data for the entire projectResponse area is returned otherwise data for the geofenced area is returned.
-    ///   If no date range specified, returns data for the last 2 years to today in the projectResponse time zone
+    ///   Returns the project data for the given project. If geofenceUid is not specified,
+    ///   data for the entire project area is returned otherwise data for the geofenced area is returned.
+    ///   If no date range specified, returns data for the last 2 years to today in the project time zone
     ///   otherwise returns data for the specified date range.
     /// </summary>
     /// <param name="id">Project ID</param>
     /// <param name="geofenceUid">GeofenceResponse UID</param>
-    /// <param name="startDate">Start date in projectResponse time zone for which to return data</param>
-    /// <param name="endDate">End date in projectResponse time zone for which to return data</param>
-    /// <returns>List of data entries for each day in date range and the status of volume retrieval for the projectResponse</returns>
+    /// <param name="startDate">Start date in project time zone for which to return data</param>
+    /// <param name="endDate">End date in project time zone for which to return data</param>
+    /// <returns>List of data entries for each day in date range and the status of volume retrieval for the project</returns>
     [Route("api/v2/projects/{id}")]
     public object Get(uint id, Guid? geofenceUid = null, DateTime? startDate = null,DateTime? endDate = null)
     {
@@ -137,13 +137,13 @@ namespace LandfillService.WebApi.netcore.Controllers
         try
         {
           var project = projects.First(p => p.id == id);
-          //  GetMissingVolumesInBackground(userUid, projectResponse);  // retry volume requests which weren't successful before
+          //  GetMissingVolumesInBackground(userUid, project);  // retry volume requests which weren't successful before
           var entries = new ProjectData
           {
-            projectResponse = project,
+            Project = project,
             entries = LandfillDb.GetEntries(project, geofenceUid.HasValue ? geofenceUid.ToString() : null, startDate,
               endDate),
-            retrievingVolumes = false //  todo LandfillDb.RetrievalInProgress(projectResponse)
+            retrievingVolumes = false //  todo LandfillDb.RetrievalInProgress(project)
           };
 
           return Ok(entries);
@@ -162,8 +162,8 @@ namespace LandfillService.WebApi.netcore.Controllers
     #region Weights
 
     /// <summary>
-    ///   Returns the weights for all geofences for the projectResponse for the date range
-    ///   of the last 2 years to today in the projectResponse time zone.
+    ///   Returns the weights for all geofences for the project for the date range
+    ///   of the last 2 years to today in the project time zone.
     /// </summary>
     /// <param name="id">Project ID</param>
     /// <returns>List of entries for each day in date range and the weight for each geofence for that day</returns>
@@ -183,9 +183,9 @@ namespace LandfillService.WebApi.netcore.Controllers
 
           var data = new WeightData
           {
-            projectResponse = project,
+            Project = project,
             entries = GetGeofenceWeights(project),
-            retrievingVolumes = false // todo LandfillDb.RetrievalInProgress(projectResponse)
+            retrievingVolumes = false // todo LandfillDb.RetrievalInProgress(project)
           };
 
           return Ok(data);
@@ -198,17 +198,17 @@ namespace LandfillService.WebApi.netcore.Controllers
     }
 
     /// <summary>
-    ///   Retrieves weights entries for each geofence in the projectResponse.
+    ///   Retrieves weights entries for each geofence in the project.
     /// </summary>
-    /// <param name="projectResponse">Project</param>
+    /// <param name="project">Project</param>
     /// <returns>List of dates with the weight for each geofence for that date</returns>
-    private List<GeofenceWeightEntry> GetGeofenceWeights(ProjectResponse projectResponse)
+    private List<GeofenceWeightEntry> GetGeofenceWeights(Project project)
     {
       var weights = new Dictionary<DateTime, List<GeofenceWeight>>();
-      var geofenceUids = LandfillDb.GetGeofences(projectResponse.projectUid).Select(g => g.uid);
+      var geofenceUids = LandfillDb.GetGeofences(project.projectUid).Select(g => g.uid);
       foreach (var geofenceUid in geofenceUids)
       {
-        var entries = LandfillDb.GetEntries(projectResponse, geofenceUid.ToString(), null, null);
+        var entries = LandfillDb.GetEntries(project, geofenceUid.ToString(), null, null);
         foreach (var entry in entries)
         {
           if (!weights.ContainsKey(entry.date))
@@ -292,7 +292,7 @@ namespace LandfillService.WebApi.netcore.Controllers
 
         return Ok(new WeightData
         {
-          projectResponse = project,
+          Project = project,
           entries = GetGeofenceWeights(project),
           retrievingVolumes = true
         });
@@ -304,7 +304,7 @@ namespace LandfillService.WebApi.netcore.Controllers
     #region Volumes
 
     /// <summary>
-    ///   Gets volume and time summary for a landfill projectResponse.
+    ///   Gets volume and time summary for a landfill project.
     /// </summary>
     /// <param name="id">Project ID</param>
     /// <returns>Current week volume, current month volume, remaining volume (air space) and time remaining (days)</returns>
@@ -312,7 +312,7 @@ namespace LandfillService.WebApi.netcore.Controllers
     public async Task<object> GetVolumeTimeSummary(uint id)
     {
       var principal = HttpContext.User as TIDCustomPrincipal;
-      //Secure with projectResponse list
+      //Secure with project list
       IfProjectAuthorized(principal.Identity.Name, principal.CustomerUid, id);
       Log.LogDebug("volumeTime: user: " + principal.Identity.Name + " customer: " + principal.CustomerUid + " Project:" + id);
       try
@@ -397,18 +397,18 @@ namespace LandfillService.WebApi.netcore.Controllers
     ///   Retrieves airspace volume summary from Raptor.
     /// </summary>
     /// <param name="userUid">User ID</param>
-    /// <param name="projectResponse">Project</param>
+    /// <param name="project">Project</param>
     /// <param name="returnEarliest">Indicates if filtering by earliest or latest cell pass</param>
     /// <param name="designId"></param>
     /// <returns></returns>
-    private async Task<double?> GetAirspaceVolumeInBackground(string userUid, ProjectResponse projectResponse,
+    private async Task<double?> GetAirspaceVolumeInBackground(string userUid, Project project,
       bool returnEarliest,
       int designId)
     {
       try
       {
         var raptorApiClient = new RaptorApiClient(Log, config, raptorProxy, files, Request.Headers.GetCustomHeaders());
-        var res = await raptorApiClient.GetAirspaceVolumeAsync(userUid, projectResponse, returnEarliest, designId);
+        var res = await raptorApiClient.GetAirspaceVolumeAsync(userUid, project, returnEarliest, designId);
         Log.LogDebug("Airspace Volume res:" + res);
         Log.LogDebug("Airspace Volume: " + res.Fill);
 
@@ -428,19 +428,19 @@ namespace LandfillService.WebApi.netcore.Controllers
     }
 
     /// <summary>
-    ///   Retrieves projectResponse statistics from Raptor.
+    ///   Retrieves project statistics from Raptor.
     /// </summary>
     /// <param name="userUid">User ID</param>
-    /// <param name="projectResponse">Project</param>
-    /// <returns>Date extents from projectResponse statistics</returns>
+    /// <param name="project">Project</param>
+    /// <returns>Date extents from project statistics</returns>
     private async Task<IEnumerable<DateTime>> GetProjectStatisticsInBackground(string userUid,
-      ProjectResponse projectResponse)
+      Project project)
     {
       try
       {
         var raptorApiClient = new RaptorApiClient(Log, config, raptorProxy, files, Request.Headers.GetCustomHeaders());
 
-        var res = await raptorApiClient.GetProjectStatisticsAsync(userUid, projectResponse);
+        var res = await raptorApiClient.GetProjectStatisticsAsync(userUid, project);
         Log.LogDebug("Statistics dates: " + res.startTime + " - " + res.endTime);
         return new List<DateTime> {res.startTime, res.endTime};
       }
@@ -456,8 +456,8 @@ namespace LandfillService.WebApi.netcore.Controllers
     #region Geofences
 
     /// <summary>
-    ///   Returns a list of geofences for the projectResponse. A geofence is associated with a projectResponse if its
-    ///   boundary is inside or intersects that of the projectResponse and it is of type 'Landfill'. The projectResponse
+    ///   Returns a list of geofences for the project. A geofence is associated with a project if its
+    ///   boundary is inside or intersects that of the project and it is of type 'Landfill'. The project
     ///   geofence is also returned.
     /// </summary>
     /// <param name="id">Project ID</param>
@@ -466,7 +466,7 @@ namespace LandfillService.WebApi.netcore.Controllers
     public object GetGeofences(uint id)
     {
       var principal = HttpContext.User as TIDCustomPrincipal;
-      //Secure with projectResponse list
+      //Secure with project list
       IfProjectAuthorized(principal.Identity.Name, principal.CustomerUid, id);
 
       try
@@ -492,7 +492,7 @@ namespace LandfillService.WebApi.netcore.Controllers
     public object GetGeofenceBoundary(uint id, Guid geofenceUid)
     {
       var principal = HttpContext.User as TIDCustomPrincipal;
-      //Secure with projectResponse list
+      //Secure with project list
       IfProjectAuthorized(principal.Identity.Name, principal.CustomerUid, id);
 
       var geofenceUidStr = geofenceUid.ToString();
@@ -521,23 +521,23 @@ namespace LandfillService.WebApi.netcore.Controllers
     #region CCA
 
     /// <summary>
-    ///   Gets CCA ratio data on a daily basis for a landfill projectResponse for all machines. If geofenceUid is not
+    ///   Gets CCA ratio data on a daily basis for a landfill project for all machines. If geofenceUid is not
     ///   specified,
-    ///   CCA ratio data for the entire projectResponse area is returned otherwise CCA ratio data for the geofenced area is
+    ///   CCA ratio data for the entire project area is returned otherwise CCA ratio data for the geofenced area is
     ///   returned.
-    ///   If no date range specified, returns CCA ratio data for the last 2 years to today in the projectResponse time zone
+    ///   If no date range specified, returns CCA ratio data for the last 2 years to today in the project time zone
     ///   otherwise returns CCA ratio data for the specified date range.
     /// </summary>
     /// <param name="id">Project ID</param>
     /// <param name="geofenceUid">GeofenceResponse UID</param>
-    /// <param name="startDate">Start date in projectResponse time zone for which to return data</param>
-    /// <param name="endDate">End date in projectResponse time zone for which to return data</param>
+    /// <param name="startDate">Start date in project time zone for which to return data</param>
+    /// <param name="endDate">End date in project time zone for which to return data</param>
     /// <returns>List of machines and daily CCA ratio</returns>
     [Route("api/v2/projects/{id}/ccaratio")]
     public object GetCCARatio(uint id, Guid? geofenceUid = null, DateTime? startDate = null,DateTime? endDate = null)
     {
       var principal = HttpContext.User as TIDCustomPrincipal;
-      //Secure with projectResponse list
+      //Secure with project list
       IfProjectAuthorized(principal.Identity.Name, principal.CustomerUid, id);
 
       try
@@ -565,14 +565,14 @@ namespace LandfillService.WebApi.netcore.Controllers
     }
 
     /// <summary>
-    ///   Gets CCA summary data for a landfill projectResponse for the specified date. If geofenceUid is not specified,
-    ///   CCA summary data for the entire projectResponse area is returned otherwise CCA data for the geofenced area is
+    ///   Gets CCA summary data for a landfill project for the specified date. If geofenceUid is not specified,
+    ///   CCA summary data for the entire project area is returned otherwise CCA data for the geofenced area is
     ///   returned.
     ///   If machine (asset ID, machine name and John Doe flag) is not specified, returns data for all machines
     ///   else for the specified machine. If lift ID is not specified returns data for all lifts else for the specified lift.
     /// </summary>
     /// <param name="id">Project ID</param>
-    /// <param name="date">Date in projectResponse time zone for which to return data</param>
+    /// <param name="date">Date in project time zone for which to return data</param>
     /// <param name="geofenceUid">GeofenceResponse UID</param>
     /// <param name="assetId">Asset ID (from MachineDetails)</param>
     /// <param name="machineName">Machine name (from MachineDetails)</param>
@@ -587,7 +587,7 @@ namespace LandfillService.WebApi.netcore.Controllers
       //If data for more than one day is required, client must call Raptor service directly
 
       var principal = HttpContext.User as TIDCustomPrincipal;
-      //Secure with projectResponse list
+      //Secure with project list
       IfProjectAuthorized(principal.Identity.Name, principal.CustomerUid, id);
 
       if (!date.HasValue)
@@ -644,30 +644,30 @@ namespace LandfillService.WebApi.netcore.Controllers
     }
 
     /// <summary>
-    ///   Gets a list of machines and lifts for a landfill projectResponse. If no date range specified,
-    ///   the last 2 years to today in the projectResponse time zone is used.
+    ///   Gets a list of machines and lifts for a landfill project. If no date range specified,
+    ///   the last 2 years to today in the project time zone is used.
     /// </summary>
     /// <param name="id">Project ID</param>
-    /// <param name="startDate">Start date in projectResponse time zone for which to return data</param>
-    /// <param name="endDate">End date in projectResponse time zone for which to return data</param>
-    /// <returns>List of machines and lifts in projectResponse time zone</returns>
+    /// <param name="startDate">Start date in project time zone for which to return data</param>
+    /// <param name="endDate">End date in project time zone for which to return data</param>
+    /// <returns>List of machines and lifts in project time zone</returns>
     [Route("api/v2/projects/{id}/machinelifts")]
     public async Task<object> GetMachineLifts(uint id, DateTime? startDate = null, DateTime? endDate = null)
     {
       var principal = HttpContext.User as TIDCustomPrincipal;
-      //Secure with projectResponse list
+      //Secure with project list
       IfProjectAuthorized(principal.Identity.Name, principal.CustomerUid, id);
 
       try
       {
         var project = LandfillDb.GetProjects(principal.Identity.Name, principal.CustomerUid).First(p => p.id == id);
-        //    var projectResponse = LandfillDb.GetProject(id).First(); 
+        //    var project = LandfillDb.GetProject(id).First(); 
         var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
 
         var utcNow = DateTime.UtcNow;
         var projTimeZoneOffsetFromUtc = projTimeZone.GetUtcOffset(Instant.FromDateTimeUtc(utcNow));
         if (!endDate.HasValue)
-          endDate = (utcNow + projTimeZoneOffsetFromUtc.ToTimeSpan()).Date; //today in projectResponse time zone
+          endDate = (utcNow + projTimeZoneOffsetFromUtc.ToTimeSpan()).Date; //today in project time zone
         if (!startDate.HasValue)
           startDate = endDate.Value.AddYears(-2);
         var raptorApiClient = new RaptorApiClient(Log, config, raptorProxy, files, Request.Headers.GetCustomHeaders());
