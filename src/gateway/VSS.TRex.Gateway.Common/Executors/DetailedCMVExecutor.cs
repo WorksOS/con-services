@@ -38,10 +38,6 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
-      // TODO...
-      //var filter = RaptorConverters.ConvertFilter(null, request.filter, request.ProjectId);
-      //var liftBuildSettings = RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
-
       var filter = ConvertFilter(request.filter, siteModel);
 
       CMVDetailsOperation operation = new CMVDetailsOperation();
