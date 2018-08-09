@@ -13,7 +13,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 {
   /// <summary>
   /// Controller for getting production data for details requests.
-  /// </summary>
+  //[ProjectVerifier]
   public class DetailsDataController : BaseController
   {
     /// <summary>
