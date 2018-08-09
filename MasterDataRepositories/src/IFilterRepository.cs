@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.MasterData.Repositories.DBModels;
@@ -9,8 +10,8 @@ namespace VSS.MasterData.Repositories
   {
     Task<IEnumerable<Filter>> GetFiltersForProjectUser(string customerUid, string projectUid, string userUid, bool includeAll = false);
     Task<IEnumerable<Filter>> GetFiltersForProject(string projectUid);
-    Task<IEnumerable<Filter>> GetTransientFiltersToBeCleaned(int ageInMinutesToBeDeleted);
     Task<Filter> GetFilter(string filterUid);
+    Task<int> DeleteTransientFilters(string deleteOlderThanUtc);
     Task<int> StoreEvent(IFilterEvent evt);
   }
 }
