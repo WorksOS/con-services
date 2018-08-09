@@ -13,6 +13,12 @@ namespace VSS.Productivity3D.Models.Models
   public class DesignDescriptor : IEquatable<DesignDescriptor>
   {
     /// <summary>
+    /// The unique id of the design file
+    /// </summary>
+    [JsonProperty(PropertyName = "uid", Required = Required.Default)]
+    public Guid? uid { get; private set; }
+
+    /// <summary>
     /// The id of the design file
     /// </summary>
     [JsonProperty(PropertyName = "id", Required = Required.Default)]
@@ -31,6 +37,8 @@ namespace VSS.Productivity3D.Models.Models
     [JsonProperty(PropertyName = "offset", Required = Required.Default)]
     public double offset { get; private set; }
 
+    public bool ShouldSerializeuid() => uid.HasValue;
+
     /// <summary>
     /// Private constructor
     /// </summary>
@@ -40,13 +48,14 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Create instance of FileDescriptor
     /// </summary>
-    public static DesignDescriptor CreateDesignDescriptor(long id, FileDescriptor file, double offset)
+    public static DesignDescriptor CreateDesignDescriptor(long id, FileDescriptor file, double offset, Guid? uid = null)
     {
       return new DesignDescriptor
       {
         id = id,
         file = file,
-        offset = offset
+        offset = offset,
+        uid = uid
       };
     }
 
@@ -55,6 +64,9 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     public void Validate()
     {
+      if (uid != null )
+        return;
+
       if (id <= 0 && file == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
