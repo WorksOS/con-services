@@ -1,15 +1,16 @@
 ﻿using System;
 using System.IO;
-using System.Text;
 
 namespace VSS.TRex.Designs.TTM.Optimised
 {
   public class TrimbleTINModel
   {
     public TriVertices Vertices { get; set; } = new TriVertices();
+
     public Triangles Triangles { get; set; } = new Triangles();
 
     public TTMEdges Edges { get; } = new TTMEdges();
+
     public TTMStartPoints StartPoints { get; } = new TTMStartPoints();
 
     public TTMHeader Header = TTMHeader.NewHeader();
@@ -81,7 +82,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
     {
       using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(FileName)))
       {
-        LoadFromStream(ms);
+          LoadFromStream(ms);
       }
 
       // FYI, This method sucks totally - don't use it
@@ -93,41 +94,6 @@ namespace VSS.TRex.Designs.TTM.Optimised
       if (ModelName.Length == 0)
       {
         ModelName = Path.ChangeExtension(Path.GetFileName(FileName), "");
-      }
-    }
-
-    public static bool ReadHeaderFromFile(string FileName, out TTMHeader Header)
-    {
-      Header = TTMHeader.NewHeader();
-
-      try
-      {
-        using (FileStream fs = new FileStream(FileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-        {
-          using (BinaryReader reader = new BinaryReader(fs))
-          {
-            Header.Read(reader);
-
-            // Check signature
-            string signature = ASCIIEncoding.ASCII.GetString(Header.FileSignature).Substring(0, Consts.TTMFileIdentifier.Length);
-            if (!Consts.TTMFileIdentifier.Equals(signature))
-            {
-              return false;
-            }
-
-            // Check file version
-            if (Header.FileMajorVersion != Consts.TTMMajorVersion || Header.FileMinorVersion != Consts.TTMMinorVersion)
-            {
-              return false;
-            }
-
-            return true;
-          }
-        }
-      }
-      catch
-      {
-        return false;
       }
     }
   }

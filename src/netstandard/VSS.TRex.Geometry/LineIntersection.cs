@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.TRex.Common;
 
 namespace VSS.TRex.Geometry
@@ -69,8 +65,8 @@ namespace VSS.TRex.Geometry
             LinesAreColinear = false;
 
             Denominator = 1 / Denominator;
-            double Param1 = ((DeltaL2x * DeltaL1L2y) - (DeltaL2y * DeltaL1L2x)) * Denominator;
-            double Param2 = ((DeltaL1x * DeltaL1L2y) - (DeltaL1y * DeltaL1L2x)) * Denominator;
+            double Param1 = (DeltaL2x * DeltaL1L2y - DeltaL2y * DeltaL1L2x) * Denominator;
+            double Param2 = (DeltaL1x * DeltaL1L2y - DeltaL1y * DeltaL1L2x) * Denominator;
 
             if ((considerEnds && ((Param1 < 0.0) || (Param1 > 1.0) || (Param2 < 0.0) || (Param2 > 1.0)))
              || (!considerEnds && ((Param1 <= eps) || (Param1 >= (1.0 - eps)) ||  (Param2 <= eps) || (Param2 >= (1.0 - eps)))))

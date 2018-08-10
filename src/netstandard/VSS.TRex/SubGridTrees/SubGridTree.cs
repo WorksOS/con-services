@@ -294,15 +294,11 @@ namespace VSS.TRex.SubGridTrees
                                                                   uint IndexOriginOffset,
                                                                   out uint CellX, out uint CellY)
         {
-            // Calculate the cell index in a centered [0,0] origin basis
-            CellX = (uint)Math.Floor(X / CellSize);
-            CellY = (uint)Math.Floor(Y / CellSize);
-
-            // Convert the cell indexes into a bottom left [0,0] basis (ie: to grid cell
-            // indexes in the top right quadrant).
-
-            CellX += IndexOriginOffset;
-            CellY += IndexOriginOffset;
+          // Calculate the cell index in a centered [0,0] origin basis
+          // Convert the cell indexes into a bottom left [0,0] basis (ie: to grid cell
+          // indexes in the top right quadrant).
+            CellX = (uint)Math.Floor(X / CellSize) + IndexOriginOffset;
+            CellY = (uint)Math.Floor(Y / CellSize) + IndexOriginOffset;
         }
 
         /// <summary>
@@ -318,7 +314,7 @@ namespace VSS.TRex.SubGridTrees
         public bool CalculateIndexOfCellContainingPosition(double X, double Y,
                                                            out uint CellX, out uint CellY)
         {
-            if ((Math.Abs(X) > MaxOrdinate) || (Math.Abs(Y) > MaxOrdinate))
+            if (Math.Abs(X) > MaxOrdinate || Math.Abs(Y) > MaxOrdinate)
             {
                 CellX = uint.MaxValue;
                 CellY = uint.MaxValue;

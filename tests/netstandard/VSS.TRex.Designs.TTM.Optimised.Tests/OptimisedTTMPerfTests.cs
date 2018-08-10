@@ -49,7 +49,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Tests
       for (int i = 0; i < readwrite_tin.Vertices.Count; i++)
       {
 //        Assert.True(readwrite_tin.Vertices[i].Tag == readonly_tin.Vertices.Items[i].Tag, $"Vertex TAGs vary at index {i}, {readwrite_tin.Vertices[i].Tag} vs {readonly_tin.Vertices.Items[i].Tag}");
-        Assert.True(readwrite_tin.Vertices[i].XYZ.Equals(readonly_tin.Vertices.Items[i].XYZ), $"Vertex location varies at index {i}, {readwrite_tin.Vertices[i].XYZ} vs {readonly_tin.Vertices.Items[i].XYZ}");
+        Assert.True(readwrite_tin.Vertices[i].XYZ.Equals(readonly_tin.Vertices.Items[i]), $"Vertex location varies at index {i}, {readwrite_tin.Vertices[i].XYZ} vs {readonly_tin.Vertices.Items[i]}");
       }
 
       // Check the contents of edges are the same
