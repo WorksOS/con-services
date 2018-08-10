@@ -1,32 +1,83 @@
 ﻿using System;
-using System.Collections.Generic;
+using VSS.TRex.Designs;
+using VSS.TRex.DI;
+using VSS.TRex.SubGridTrees;
 
 namespace VSS.TRex.Sandbox.TTMPerformanceTest
 {
+
     class Program
     {
-        static void Main(string[] args)
+      public static void ScanAllElevationsOverGiantDesign()
+      {
+        DateTime _start = DateTime.Now;
+        TTMDesign design = new TTMDesign(SubGridTree.DefaultCellSize);
+        design.LoadFromFile(@"C:\Users\rwilson\Downloads\5644616_oba9c0bd14_FRL.ttm");
+        TimeSpan loadTime = DateTime.Now - _start;
+
+        Console.WriteLine($"Perf Test: Duration for file load and index preparation = {loadTime}");
+
+        float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];  
+
+        int numPatches = 0;
+        _start = DateTime.Now;
+
+        design.SpatialIndexOptimised.ScanAllSubGrids(leaf =>
         {
-          for (int i = 0; i < 20; i++)
+          double cellSize = leaf.Owner.CellSize;
+          leaf.CalculateWorldOrigin(out double originX, out double originY);
+
+          leaf.ForEach((x, y) =>
+          {           
+            if (design.InterpolateHeights(Patch, originX + x * cellSize, originY + y * cellSize, cellSize / SubGridTree.SubGridTreeDimension, 0))
+              numPatches++;
+          });
+
+          return true;
+        });
+
+        TimeSpan lookupTime = DateTime.Now - _start;
+
+        Console.WriteLine($"Perf Test: Duration for {numPatches} lookups = {lookupTime}");
+      }
+
+      public static void LoadTheGiantDesignALotOfTimes()
+      {
+        TimeSpan bestTime = TimeSpan.MaxValue;
+
+        for (int i = 0; i < 1000; i++)
+        {
+          Designs.TTM.Optimised.TrimbleTINModel readonly_tin = new Designs.TTM.Optimised.TrimbleTINModel();
+
+          DateTime _start = DateTime.Now;
+          readonly_tin.LoadFromFile(@"C:\Users\rwilson\Downloads\5644616_oba9c0bd14_FRL.ttm");
+          DateTime _end = DateTime.Now;
+
+          if (_end - _start < bestTime)
           {
-            Designs.TTM.Optimised.TrimbleTINModel readonly_tin = new Designs.TTM.Optimised.TrimbleTINModel();
-
-            DateTime _start = DateTime.Now;
-            readonly_tin.LoadFromFile(@"C:\Users\rwilson\Downloads\5644616_oba9c0bd14_FRL.ttm");
-            DateTime _end = DateTime.Now;
-            Console.WriteLine($"Readonly tin read in {_end - _start}");
+            bestTime = _end - _start;
+            Console.WriteLine($"Readonly tin read (#{i}) in best time of {bestTime}");
           }
-
-          for (int i = 0; i < 0; i++)
-          {
-            Designs.TTM.TrimbleTINModel readwrite_tin = new Designs.TTM.TrimbleTINModel();
-            DateTime _start = DateTime.Now;
-            readwrite_tin.LoadFromFile(@"C:\Users\rwilson\Downloads\5644616_oba9c0bd14_FRL.ttm");
-            DateTime _end = DateTime.Now;
-            Console.WriteLine($"Read/write tin read in {_end - _start}");
-          }
-
-//          Console.ReadKey();
         }
+
+        for (int i = 0; i < 0; i++)
+        {
+          Designs.TTM.TrimbleTINModel readwrite_tin = new Designs.TTM.TrimbleTINModel();
+          DateTime _start = DateTime.Now;
+          readwrite_tin.LoadFromFile(@"C:\Users\rwilson\Downloads\5644616_oba9c0bd14_FRL.ttm");
+          DateTime _end = DateTime.Now;
+          Console.WriteLine($"Read/write tin read in {_end - _start}");
+        }     
+    }
+
+    static void Main(string[] args)
+    {
+      DIBuilder.New().AddLogging().Complete();
+
+      LoadTheGiantDesignALotOfTimes();
+      //ScanAllElevationsOverGiantDesign();
+
+      Console.ReadKey();
+    }
   }
 }

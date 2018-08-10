@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\src\netstandard\VSS.TRex.Designs.TTM\VSS.TRex.Designs.TTM.csproj" />
     <ProjectReference Include="..\..\..\..\src\netstandard\VSS.TRex.Designs.TTM.Optimised\VSS.TRex.Designs.TTM.Optimised.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex\VSS.TRex.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
