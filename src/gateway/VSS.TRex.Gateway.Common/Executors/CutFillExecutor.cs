@@ -14,6 +14,9 @@ using VSS.TRex.Filters;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
+  /// <summary>
+  /// Processes the request to get cut-fill details.
+  /// </summary>
   public class CutFillExecutor : BaseExecutor
   {
     public CutFillExecutor(IConfigurationStore configStore, ILoggerFactory logger,
@@ -47,7 +50,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       CutFillResult cutFillResult = operation.Execute(new CutFillStatisticsArgument()
       {
         ProjectID = siteModel.ID,
-        Filters = new FilterSet { Filters = new[] { filter } },
+        Filters = new FilterSet(filter),
         DesignID = request.designDescriptor.uid ?? Guid.Empty,
         Offsets = request.CutFillTolerances
       });
