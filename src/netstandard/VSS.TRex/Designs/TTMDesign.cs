@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using VSS.TRex.Designs.TTM.Optimised;
@@ -31,15 +31,18 @@ namespace VSS.TRex.Designs
         private double FCellSize;
         private SubGridTreeSubGridExistenceBitMask FSubgridIndex;
 
-        private void SwapVertices(ref TriVertex A, ref TriVertex B) => MinMax.Swap(ref A, ref B);
+        private void SwapVertices(ref XYZ A, ref XYZ B) => MinMax.Swap(ref A, ref B);
 
         public TrimbleTINModel Data { get { return FData; } }
 
-        // Removed, this is the 'list of triangles per subgrid' spatial index model
-        // private GenericSubGridTree<List<Triangle>> FSpatialIndex;
-        // public GenericSubGridTree<List<Triangle>> SpatialIndex { get { return FSpatialIndex; } }
+        private Triangle[] TriangleItems;
+        private XYZ[] VertexItems;  
 
-        public struct TriangleArrayReference
+    // Removed, this is the 'list of triangles per subgrid' spatial index model
+    // private GenericSubGridTree<List<Triangle>> FSpatialIndex;
+    // public GenericSubGridTree<List<Triangle>> SpatialIndex { get { return FSpatialIndex; } }
+
+    public struct TriangleArrayReference
         {
             public uint TriangleArrayIndex;
             public uint Count;
@@ -50,7 +53,7 @@ namespace VSS.TRex.Designs
         private GenericSubGridTree<TriangleArrayReference> FSpatialIndexOptimised;
         public GenericSubGridTree<TriangleArrayReference> SpatialIndexOptimised { get { return FSpatialIndexOptimised; } }  
 
-        private void AddTrianglePieceToElevationPatch(TriVertex H1, TriVertex H2, TriVertex V,
+        private void AddTrianglePieceToElevationPatch(XYZ H1, XYZ H2, XYZ V,
                                                       Triangle Tri,
                                                       bool SingleRowOnly,
                                                       double OriginX, double OriginY,
@@ -59,7 +62,6 @@ namespace VSS.TRex.Designs
                                                       double OffSet,
                                                       ref int ValueCount)
         {
-            double Y, Z;
             double H1Slope, H2Slope;
             int HCellIndexY, VCellIndexY;
             int Delta;
@@ -248,11 +250,11 @@ namespace VSS.TRex.Designs
 
                     if (LeftCellIndexX <= RightCellIndexX)
                     {
-                        Y = ((PatchOriginCellIndexY + ProcessingCellYIndex) * CellSize) + HalfCellSize;
+                        double Y = ((PatchOriginCellIndexY + ProcessingCellYIndex) * CellSize) + HalfCellSize;
 
                         for (int I = LeftCellIndexX; I < RightCellIndexX; I++)
                         {
-                            Z = GetHeight(Tri, I * CellSize + HalfCellSize, Y);
+                            double Z = GetHeight(Tri, I * CellSize + HalfCellSize, Y);
 
                             if (Z != Common.Consts.NullReal)
                             {
@@ -288,7 +290,7 @@ namespace VSS.TRex.Designs
                                                     int sourceTriangle,
                                                     Func<SubGridTree, uint, uint, bool> leafSatisfied,
                                                     Action<SubGridTree, uint, uint, int> includeTriangleInLeaf,
-                                                    TriVertex H1, TriVertex H2, TriVertex V, bool SingleRowOnly)
+                                                    XYZ H1, XYZ H2, XYZ V, bool SingleRowOnly)
         {
             uint TestLeftSubGridX, TestRightSubGridX; 
             double H1Slope, H2Slope;
@@ -451,33 +453,35 @@ namespace VSS.TRex.Designs
                                                   int, // sourceTriangle
                                                   Func<SubGridTree, uint, uint, bool>,  // leafSatisfied
                                                   Action<SubGridTree, uint, uint, int>, // includeTriangleInLeaf
-                                                  TriVertex, TriVertex, TriVertex, bool> ProcessTrianglePiece,
-                                           TriVertex IntersectionVertex)
+                                             XYZ, XYZ, XYZ, bool> ProcessTrianglePiece)
         {
-            Triangle Tri = FData.Triangles.Items[triIndex];
+            Triangle Tri = TriangleItems[triIndex];
 
-            // Split triangle into two pieces, a 'top' piece and a 'bottom' piece to simplify
-            // scanning across the triangle. Split is always with a horizontal line
-           
-            TriVertex[] SortVertices = { FData.Vertices.Items[Tri.Vertex0 - 1],
-                                         FData.Vertices.Items[Tri.Vertex1 - 1],
-                                         FData.Vertices.Items[Tri.Vertex2 - 1]};
+      // Split triangle into two pieces, a 'top' piece and a 'bottom' piece to simplify
+      // scanning across the triangle. Split is always with a horizontal line
+
+            XYZ[] SortVertices = new XYZ[]
+            {
+              VertexItems[Tri.Vertex0],
+              VertexItems[Tri.Vertex1],
+              VertexItems[Tri.Vertex2]
+            };
 
             if (SortVertices[0].Y > SortVertices[1].Y) SwapVertices(ref SortVertices[0], ref SortVertices[1]);
             if (SortVertices[1].Y > SortVertices[2].Y) SwapVertices(ref SortVertices[1], ref SortVertices[2]);
             if (SortVertices[0].Y > SortVertices[1].Y) SwapVertices(ref SortVertices[0], ref SortVertices[1]);
 
-            TriVertex TopVertex = SortVertices[2];
-            TriVertex CentralVertex = SortVertices[1];
-            TriVertex BottomVertex = SortVertices[0];
+            XYZ TopVertex = SortVertices[2];
+            XYZ CentralVertex = SortVertices[1];
+            XYZ BottomVertex = SortVertices[0];
 
             // now make sure leftmost vertex in in first array item
             if (SortVertices[0].X > SortVertices[1].X) SwapVertices(ref SortVertices[0], ref SortVertices[1]);
             if (SortVertices[1].X > SortVertices[2].X) SwapVertices(ref SortVertices[1], ref SortVertices[2]);
             if (SortVertices[0].X > SortVertices[1].X) SwapVertices(ref SortVertices[0], ref SortVertices[1]);
 
-            TriVertex LeftMostVertex = SortVertices[0];
-            TriVertex RightMostVertex = SortVertices[2];
+            XYZ LeftMostVertex = SortVertices[0];
+            XYZ RightMostVertex = SortVertices[2];
 
             // Are top or bottom vertices coincident with the middle vertex
             bool BottomPieceOnly = Math.Abs(TopVertex.Y - CentralVertex.Y) < 0.0001;
@@ -499,7 +503,7 @@ namespace VSS.TRex.Designs
                                                         BottomVertex.X, BottomVertex.Y,
                                                         out double IntersectX, out double IntersectY, true, out _))
                     {
-                        IntersectionVertex.XYZ = new XYZ(IntersectX, IntersectY, 0);
+                        XYZ IntersectionVertex = new XYZ(IntersectX, IntersectY, 0);
                         ProcessTrianglePiece(tree, triIndex, leafSatisfied, includeTriangleInLeaf, CentralVertex, IntersectionVertex, TopVertex, false);
                         ProcessTrianglePiece(tree, triIndex, leafSatisfied, includeTriangleInLeaf, CentralVertex, IntersectionVertex, BottomVertex, false);
                     }
@@ -572,15 +576,15 @@ namespace VSS.TRex.Designs
 
                 try
                 {
-                    TriVertex intersectionVertex = new TriVertex();
-                    for (int triIndex = 0; triIndex < FData.Triangles.Items.Length; triIndex++)
+                    int triangleCount = FData.Triangles.Items.Length;
+                    for (int triIndex = 0; triIndex < triangleCount; triIndex++)
                     {
                         ScanCellsOverTriangle(FSubgridIndex,
                                               triIndex,
                                               (tree, x, y) => (tree as SubGridTreeSubGridExistenceBitMask)[x, y],
                                               (tree, x, y, t) => (tree as SubGridTreeSubGridExistenceBitMask)[x, y] = true,
-                                              AddTrianglePieceToSubgridIndex,
-                                              intersectionVertex);
+                                              AddTrianglePieceToSubgridIndex
+                                              );
                     }
                 }
                 finally
@@ -604,6 +608,9 @@ namespace VSS.TRex.Designs
         public TTMDesign(double ACellSize)
         {
             FData = new TrimbleTINModel();
+            TriangleItems = FData.Triangles.Items;
+            VertexItems = FData.Vertices.Items;
+
             FCellSize = ACellSize;
 
             // Create a subgrid tree bit mask index that holds one bit per on-the-ground
@@ -648,7 +655,7 @@ namespace VSS.TRex.Designs
                 FMinHeight = 1E100;
                 FMaxHeight = -1E100;
 
-                foreach (var vertex in FData.Vertices.Items)
+                foreach (var vertex in VertexItems)
                 {
                     if (vertex.Z < FMinHeight) FMinHeight = vertex.Z;
                     if (vertex.Z > FMaxHeight) FMaxHeight = vertex.Z;
@@ -658,21 +665,6 @@ namespace VSS.TRex.Designs
             z1 = FMinHeight;
             z2 = FMaxHeight;
         }
-
-        /*
-            function TTTMDesign.GetMemorySizeInKB: Integer;
-            begin
-              Result = -1;
-            try
-    Result = TTrimbleTINModel.MemorySizeInKB(FileName) + (BA_AllocationSize(FSpatialIndex.BAtree) div 1024);
-            // debug LogWarnToTRexLog(Format('Full Est%d',[Result]));
-
-            except
-              on E: Exception do
-                SIGLogMessage.PublishNoODS(Nil, Format('Exception ''%s'' for %s in %s.GetMemorySizeInKB', [E.Message, FileName, Self.ClassName]), slmcException);              
-           end;
-            end;
-*/
 
         public override bool HasElevationDataForSubGridPatch(double X, double Y)
         {
@@ -688,22 +680,14 @@ namespace VSS.TRex.Designs
 
       private double GetHeight(Triangle tri, double X, double Y)
       {
-        return XYZ.GetTriangleHeight(FData.Vertices.Items[tri.Vertex0].XYZ, 
-                                     FData.Vertices.Items[tri.Vertex1].XYZ, 
-                                     FData.Vertices.Items[tri.Vertex2].XYZ, X, Y);
+        return XYZ.GetTriangleHeight(VertexItems[tri.Vertex0],
+                                     VertexItems[tri.Vertex1],
+                                     VertexItems[tri.Vertex2], X, Y);
       }
 
     private bool CheckHint(ref int hint, double x, double y, double offset, out double z)
         {
-            if (hint == -1)
-            {
-                z = Common.Consts.NullHeight;
-                return false;
-            }
-
-            Triangle hintAsTriangle = FData.Triangles.Items[hint];
-
-            z = GetHeight(hintAsTriangle, x, y);
+            z = GetHeight(TriangleItems[hint], x, y);
             if (z != Common.Consts.NullReal)
             {
                 z += offset;
@@ -729,13 +713,12 @@ namespace VSS.TRex.Designs
                                        out double Z)
         {
             // Member added for compilation only
-            GenericSubGridTree<List<int>> FSpatialIndex = null;
-            if (CheckHint(ref Hint, X, Y, Offset, out Z))
+            if (Hint != -1 && CheckHint(ref Hint, X, Y, Offset, out Z))
                 return true;
 
-            // Search in the subgrid triangle list for this subgrid from the spatial index
-            Z = Common.Consts.NullReal;
+            GenericSubGridTree<List<int>> FSpatialIndex = null;
 
+            // Search in the subgrid triangle list for this subgrid from the spatial index
             FSpatialIndex.CalculateIndexOfCellContainingPosition(X, Y, out uint CellX, out uint CellY);
 
             List<int> cell = FSpatialIndex[CellX, CellY];
@@ -743,13 +726,14 @@ namespace VSS.TRex.Designs
             if (cell == null)
             {
                 // There are no triangles that can satisfy the query
+                Z = Common.Consts.NullReal;
                 return false;
             }
             
             // Search the triangles in the leaf to locate the one to interpolate height from
             foreach (int triIndex in cell)
             {
-                Z = GetHeight(FData.Triangles.Items[triIndex], X, Y);
+                Z = GetHeight(TriangleItems[triIndex], X, Y);
 
                 if (Z != Common.Consts.NullReal)
                 {
@@ -759,8 +743,11 @@ namespace VSS.TRex.Designs
                 }
             }
 
+            Z = Common.Consts.NullReal;
             return false; 
         }
+
+//      private uint maxArrayCount = 0;
 
         /// <summary>
         /// Interpolates a single spot height fromn the design, using the optimised spatial index
@@ -776,7 +763,7 @@ namespace VSS.TRex.Designs
                                       double Offset,
                                       out double Z)
         {
-            if (CheckHint(ref Hint, X, Y, Offset, out Z))
+            if (Hint != -1 && CheckHint(ref Hint, X, Y, Offset, out Z))
                 return true;
 
             // Search in the subgrid triangle list for this subgrid from the spatial index
@@ -792,12 +779,18 @@ namespace VSS.TRex.Designs
                 return false;
             }
 
-            // Search the triangles in the leaf to locate the one to interpolate height from
+//          if (maxArrayCount < arrayReference.Count)
+//          {
+//            maxArrayCount = arrayReference.Count;
+//            Console.WriteLine($"Largest array list encountered with {maxArrayCount} triangles");
+//          }
+
+          // Search the triangles in the leaf to locate the one to interpolate height from
             uint limit = arrayReference.TriangleArrayIndex + arrayReference.Count;
             for (uint i = arrayReference.TriangleArrayIndex; i < limit; i++)
             {
                 int triIndex = FSpatialIndexOptimisedTriangles[i];
-                Z = GetHeight(FData.Triangles.Items[triIndex], X, Y);
+                Z = GetHeight(TriangleItems[triIndex], X, Y);
 
                 if (Z != Common.Consts.NullReal)
                 {
@@ -831,7 +824,7 @@ namespace VSS.TRex.Designs
             // Local var added to allow compilation only - shadows the class scope member of same name
             TTMQuadTree QuadTreeSpatialIndex = null;
 
-            if (CheckHint(ref Hint, X, Y, Offset, out Z))
+            if (Hint != -1 && CheckHint(ref Hint, X, Y, Offset, out Z))
                 return true;
             
             SearchState.start_search(X - 0.1, Y - 0.1, X + 0.1, Y + 0.1, true, QuadTreeSpatialIndex);
@@ -1004,8 +997,8 @@ namespace VSS.TRex.Designs
                 SubGridUtilities.SubGridDimensionalIterator((x, y) =>
                 {
                     if (InterpolateHeight(ref Hint,
-                                          OriginXPlusHalfCellSize + (CellSize * x),
-                                          OriginYPlusHalfCellSize + (CellSize * y),
+                                          OriginXPlusHalfCellSize + CellSize * x,
+                                          OriginYPlusHalfCellSize + CellSize * y,
                                           Offset, out double Z))
                     {
                         Patch[x, y] = (float)Z;
@@ -1026,6 +1019,8 @@ namespace VSS.TRex.Designs
             }
         }
 
+      // public int TotalDuplicates = 0;
+
     /// <summary>
     /// Includes a triangle into the list of triangles that intersect the extent of a subgrid
     /// </summary>
@@ -1035,7 +1030,7 @@ namespace VSS.TRex.Designs
     /// <param name="triIndex"></param>
     private void IncludeTriangleInSubGridTreeIndex(GenericSubGridTree<List<int>> tree, uint x, uint y, int triIndex)
         {
-            // Get subgrid from tree, creating the path and leaf ic necessary
+            // Get subgrid from tree, creating the path and leaf if necessary
             GenericLeafSubGrid<List<int>> leaf = tree.ConstructPathToCell(x, y, SubGridPathConstructionType.CreateLeaf) as GenericLeafSubGrid<List<int>>;
 
             leaf.GetSubGridCellIndex(x, y, out byte SubGridX, out byte SubGridY);
@@ -1050,13 +1045,12 @@ namespace VSS.TRex.Designs
                 leaf.Items[SubGridX, SubGridY] = triangles;
             }
 
-            // Add the triangle to the cell, but not if it is already there
-            if (!triangles.Any(t => t == triIndex))
-                triangles.Add(triIndex);
+            // Add the triangle to the cell, even if it is already there (duplicates will be taken care of later)
+            triangles.Add(triIndex);
         }
 
         /// <summary>
-        /// Build a spatial index for the triangles in the TIN surface by assinging each triangle to eavery subgrid it intersects with
+        /// Build a spatial index for the triangles in the TIN surface by assigning each triangle to every subgrid it intersects with
         /// </summary>
         /// <returns></returns>
         private bool ConstructSpatialIndex()
@@ -1071,19 +1065,59 @@ namespace VSS.TRex.Designs
                 try
                 {
                     // Construct a subgrid tree containing list of triangles that intersect each on-the-ground subgrid
-                    for (int triIndex = 0; triIndex < FData.Triangles.Items.Length; triIndex++)
+                    int triangleCount = FData.Triangles.Items.Length;
+                    for (int triIndex = 0; triIndex < triangleCount; triIndex++)
                     {
                         ScanCellsOverTriangle(FSpatialIndex,
                                               triIndex,
                                               (tree, x, y) => false,
                                               (tree, x, y, t) => IncludeTriangleInSubGridTreeIndex(tree as GenericSubGridTree<List<int>>, x, y, t),
-                                              AddTrianglePieceToSubgridIndex,
-                                              new TriVertex());
+                                              AddTrianglePieceToSubgridIndex);
                     }
 
+                    /////////////////////////////////////////////////
+                    // Remove duplicate triangles added to the lists
+                    /////////////////////////////////////////////////
+                    BitArray uniques = new BitArray(TriangleItems.Length);
+
+                    FSpatialIndex.ScanAllSubGrids(leaf =>
+                    {
+                      // Iterate across all cells in each (level 5) leaf subgrid. Each cell represents 
+                      // a subgrid in the level 6 subgrid representing cells sampled across the surface at the
+                      // core cell size for the project
+                      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+                      {
+                        List<int> triList = FSpatialIndex[leaf.OriginX + x, leaf.OriginY + y];
+                 
+                        if (triList == null)
+                          return;
+
+                        uniques.SetAll(false);
+
+                        int triListCount = triList.Count;
+                        int uniqueCount = 0;
+                        for (int i = 0; i < triListCount; i++)
+                        {
+                          var triIndex = triList[i];
+                          if (!uniques[triIndex])
+                          {
+                            triList[uniqueCount++] = triIndex;
+                            uniques[triIndex] = true;
+                          }
+                        }
+
+                        if (uniqueCount < triListCount)
+                          triList.RemoveRange(uniqueCount, triListCount - uniqueCount);
+                      });
+                 
+                      return true;
+                    });
+                 
+                    // Console.WriteLine($"Total duplicates encountered: {TotalDuplicates}");
+                 
                     // Transform this subgrid tree into one where each on-the-ground subgrid is represented by an index and a number of triangles present in a
                     // a single list of triangles.
-
+                 
                     // Count the numnber of triangle references present in the tree
                     int numTriangleReferences = 0;
                     FSpatialIndex.ForEach(x => { numTriangleReferences += x?.Count ?? 0; return true; });
@@ -1095,7 +1129,10 @@ namespace VSS.TRex.Designs
 
                     uint copiedCount = 0;
 
+                    /////////////////////////////////////////////////
                     // Iterate across all leaf subgrids
+                    /////////////////////////////////////////////////
+                 
                     FSpatialIndex.ScanAllSubGrids(leaf =>
                     {
                         // Iterate across all cells in each (level 5) leaf subgrid. Each cell represents 
@@ -1165,6 +1202,8 @@ namespace VSS.TRex.Designs
             try
             {
                 FData.LoadFromFile(fileName);
+                TriangleItems = FData.Triangles.Items;
+                VertexItems = FData.Vertices.Items; 
 
                 Log.LogInformation($"Loaded TTM file {fileName} containing {FData.Header.NumberOfTriangles} triangles and {FData.Header.NumberOfVertices} vertices.");
 
@@ -1312,7 +1351,7 @@ namespace VSS.TRex.Designs
         /// <param name="H2"></param>
         /// <param name="V"></param>
         /// <returns></returns>
-        private bool SubGridIntersectsTriangle(BoundingWorldExtent3D Extents, TriVertex H1, TriVertex H2, TriVertex V)
+        private bool SubGridIntersectsTriangle(BoundingWorldExtent3D Extents, XYZ H1, XYZ H2, XYZ V)
         {
             // If any of the triangle vertices are in the cell extents then 'yes'
             if (Extents.Includes(H1.X, H1.Y) || Extents.Includes(H2.X, H2.Y) || Extents.Includes(V.X, V.Y))
@@ -1322,14 +1361,10 @@ namespace VSS.TRex.Designs
 
             // If any of the subgrid corners sit in the triangle then 'yes'
             {
-                XYZ H1_XYZ = H1.XYZ;
-                XYZ H2_XYZ = H2.XYZ;
-                XYZ V_XYZ = V.XYZ;
-
-                if (XYZ.PointInTriangle(H1_XYZ, H2_XYZ, V_XYZ, Extents.MinX, Extents.MinY) ||
-                    XYZ.PointInTriangle(H1_XYZ, H2_XYZ, V_XYZ, Extents.MinX, Extents.MaxY) ||
-                    XYZ.PointInTriangle(H1_XYZ, H2_XYZ, V_XYZ, Extents.MaxX, Extents.MaxY) ||
-                    XYZ.PointInTriangle(H1_XYZ, H2_XYZ, V_XYZ, Extents.MaxX, Extents.MinY))
+                if (XYZ.PointInTriangle(H1, H2, V, Extents.MinX, Extents.MinY) ||
+                    XYZ.PointInTriangle(H1, H2, V, Extents.MinX, Extents.MaxY) ||
+                    XYZ.PointInTriangle(H1, H2, V, Extents.MaxX, Extents.MaxY) ||
+                    XYZ.PointInTriangle(H1, H2, V, Extents.MaxX, Extents.MinY))
                 {
                     return true;
                 }
