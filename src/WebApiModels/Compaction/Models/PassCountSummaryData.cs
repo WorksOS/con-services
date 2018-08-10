@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
 {
