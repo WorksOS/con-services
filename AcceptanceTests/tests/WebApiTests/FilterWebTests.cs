@@ -290,7 +290,7 @@ namespace WebApiTests
       listMachines.Add(machine);
       var filter = Filter.CreateFilter(startUtc, endUtc, null, null, listMachines, onMachineDesignId,
                                        elevation, vibestate, polygonPoints, forward, layerNo, polygonUid, polygonName);
-      return filter.ToJsonString();
+      return JsonConvert.SerializeObject(filter);
     }
   }
 }

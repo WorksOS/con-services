@@ -333,7 +333,7 @@ namespace WebApiTests
       };
       var filter = Filter.CreateFilter(startUtc, endUtc, Guid.NewGuid().ToString(), "DesignName", listMachines, 123,
                                         elevation, vibestate, listPoints, forward, layerNo);
-      return filter.ToJsonString();
+      return JsonConvert.SerializeObject(filter);
     }
 
     #endregion
