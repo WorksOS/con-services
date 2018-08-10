@@ -76,7 +76,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SandBox", "SandBox", "{9AAE
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TTMPerf", "TTMPerf", "{490C354B-AE0E-42E0-996C-58F8DAE470D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TTMPerformanceTest", "src\netstandard\SandBox\TTMPerformanceTest\TTMPerformanceTest.csproj", "{DAC9191A-3CB3-46F8-9BBF-95C08C71B536}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TTMPerformanceTest", "src\netstandard\SandBox\TTMPerformanceTest\TTMPerformanceTest.csproj", "{DAC9191A-3CB3-46F8-9BBF-95C08C71B536}"
 	ProjectSection(ProjectDependencies) = postProject
 		{28DA8E55-DF7D-4241-A525-797B664BC09C} = {28DA8E55-DF7D-4241-A525-797B664BC09C}
 		{8F7A2465-2E5F-4627-9162-2F1EED8B0747} = {8F7A2465-2E5F-4627-9162-2F1EED8B0747}
@@ -318,6 +318,9 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C2E7378F-4D70-4EA4-8A6C-A96934CBABD8}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true
