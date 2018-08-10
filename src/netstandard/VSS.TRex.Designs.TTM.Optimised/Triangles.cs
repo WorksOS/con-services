@@ -3,8 +3,14 @@ using System.IO;
 
 namespace VSS.TRex.Designs.TTM.Optimised
 {
+  /// <summary>
+  /// Defines the collection of triangles that make up this surface
+  /// </summary>
   public class Triangles
   {
+    /// <summary>
+    /// The actual array of triangles
+    /// </summary>
     public Triangle[] Items;
 
     public Triangles()
@@ -68,6 +74,11 @@ namespace VSS.TRex.Designs.TTM.Optimised
         }
     */
 
+    /// <summary>
+    /// Reads the set of triangles in the model utilising the given reader
+    /// </summary>
+    /// <param name="reader"></param>
+    /// <param name="header"></param>
     public void Read(BinaryReader reader, TTMHeader header)
     {
       Items = new Triangle[header.NumberOfTriangles];

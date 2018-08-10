@@ -5,14 +5,29 @@ namespace VSS.TRex.Designs.TTM.Optimised
 {
   public class TrimbleTINModel
   {
+    /// <summary>
+    /// The full set of vertices that make up this TIN model
+    /// </summary>
     public TriVertices Vertices { get; set; } = new TriVertices();
 
+    /// <summary>
+    /// The full set of triangles that make up this TIN model
+    /// </summary>
     public Triangles Triangles { get; set; } = new Triangles();
 
+    /// <summary>
+    /// The set of triangles that comprise the edge of the TIN
+    /// </summary>
     public TTMEdges Edges { get; } = new TTMEdges();
 
+    /// <summary>
+    /// The set of start points defined for the TIN
+    /// </summary>
     public TTMStartPoints StartPoints { get; } = new TTMStartPoints();
 
+    /// <summary>
+    /// The header information stored with a TIN surface in a TTM file
+    /// </summary>
     public TTMHeader Header = TTMHeader.NewHeader();
 
     public string ModelName { get; set; }
@@ -21,6 +36,10 @@ namespace VSS.TRex.Designs.TTM.Optimised
     {
     }
 
+    /// <summary>
+    /// Reads a TrimbleTINModel using the provided reader
+    /// </summary>
+    /// <param name="reader"></param>
     public void Read(BinaryReader reader)
     {
       string LoadErrMsg = "";
@@ -70,6 +89,10 @@ namespace VSS.TRex.Designs.TTM.Optimised
       }
     }
 
+    /// <summary>
+    /// Loads a TrimbleTINModel from a stream
+    /// </summary>
+    /// <param name="stream"></param>
     public void LoadFromStream(Stream stream)
     {
       using (BinaryReader reader = new BinaryReader(stream))
@@ -78,11 +101,15 @@ namespace VSS.TRex.Designs.TTM.Optimised
       }
     }
 
+    /// <summary>
+    /// Loads a TrimbleTINModel from a stream
+    /// </summary>
+    /// <param name="FileName"></param>
     public void LoadFromFile(string FileName)
     {
       using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(FileName)))
       {
-          LoadFromStream(ms);
+        LoadFromStream(ms);
       }
 
       // FYI, This method sucks totally - don't use it
