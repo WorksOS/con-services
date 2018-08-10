@@ -1,12 +1,13 @@
 ﻿using System;
-using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.Log4Net.Extensions;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
-using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Filter.Common.ResultHandling;
 
 namespace VSS.Productivity3D.Filter.Cleanup
 {
@@ -18,6 +19,7 @@ namespace VSS.Productivity3D.Filter.Cleanup
     protected static ILoggerFactory Logger;
     protected static IFilterRepository FilterRepository;
     protected static ILogger Log;
+    public const string LoggerRepoName = "FilterCleanup";
 
 
     private static void Main(string[] args)
@@ -33,20 +35,19 @@ namespace VSS.Productivity3D.Filter.Cleanup
     {
       var serviceCollection = new ServiceCollection();
 
-      const string loggerRepoName = "FilterCleanup";
-      Log4NetProvider.RepoName = loggerRepoName;
-      var logPath = Directory.GetCurrentDirectory();
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
-
+      Log4NetProvider.RepoName = LoggerRepoName;
+      Log4NetAspExtensions.ConfigureLog4Net(LoggerRepoName, "log4net.xml");
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
+      loggerFactory.AddLog4Net(LoggerRepoName);
 
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton(loggerFactory);
+
       serviceCollection.AddSingleton<IConfigurationStore, GenericConfiguration>();
       serviceCollection.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
       serviceCollection.AddTransient<IFilterRepository, FilterRepository>();
+      serviceCollection.AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>();
       ServiceProvider = serviceCollection.BuildServiceProvider();
 
       Logger = ServiceProvider.GetRequiredService<ILoggerFactory>();

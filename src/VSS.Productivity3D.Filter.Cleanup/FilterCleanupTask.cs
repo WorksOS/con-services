@@ -21,7 +21,7 @@ namespace VSS.Productivity3D.Filter.Cleanup
     private readonly IConfigurationStore _configStore;
     private readonly IServiceExceptionHandler _serviceExceptionHandler;
     private readonly IFilterRepository _filterRepository;
-    private static int DefaultFilterAgeDefaultMinutes { get; } = 4;
+    private static int DefaultFilterAgeDefaultMinutes { get; } = 720;
     private readonly int _ageInMinutesToDelete;
 
     /// <summary>
