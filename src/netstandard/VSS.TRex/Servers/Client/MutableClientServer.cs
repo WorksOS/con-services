@@ -8,6 +8,7 @@ using Apache.Ignite.Core.Discovery.Tcp.Static;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Apache.Ignite.Core.Deployment;
@@ -58,7 +59,6 @@ namespace VSS.TRex.Servers.Client
 
           IgniteConfiguration cfg = new IgniteConfiguration()
           {
-            SpringConfigUrl = @".\igniteMutableKubeConfig.xml",
 
             IgniteInstanceName = TRexGrids.MutableGridName(),
             ClientMode = true,
@@ -72,31 +72,6 @@ namespace VSS.TRex.Servers.Client
                             { "TRexNodeId", TRexNodeID }
                         },
 
-
-
-            //// Enforce using only the LocalHost interface
-            //DiscoverySpi = new TcpDiscoverySpi()
-            //{
-            //    LocalAddress = "127.0.0.1",
-            //    LocalPort = 48500,
-
-            //    IpFinder = new TcpDiscoveryStaticIpFinder()
-            //    {
-            //        Endpoints = new [] { "127.0.0.1:48500..48509" }
-            //    }
-            //},
-
-            //DiscoverySpi = new TcpDiscoverySpi()
-            //{
-            //  //  LocalAddress = "127.0.0.1",
-            //  LocalPort = 48500
-            //},
-
-            CommunicationSpi = new TcpCommunicationSpi()
-            {
-              //LocalAddress = "127.0.0.1",
-              LocalPort = 48100,
-            },
 
             Logger = new TRexIgniteLogger(Logger.CreateLogger("MutableClientServer")),
 
@@ -142,6 +117,9 @@ namespace VSS.TRex.Servers.Client
             cfg.UserAttributes.Add($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{roleName}", "True");
           }
 
+          bool.TryParse(Environment.GetEnvironmentVariable("IS_KUBERNETES"), out bool isKubernetes);
+          cfg = isKubernetes ? setKubernetesIgniteConfiguration(cfg) : setLocalIgniteConfiguration(cfg);
+
           try
           {
             base.ConfigureTRexGrid(cfg);
@@ -158,6 +136,45 @@ namespace VSS.TRex.Servers.Client
         }
       }
     }
+
+    private IgniteConfiguration setKubernetesIgniteConfiguration(IgniteConfiguration cfg)
+    {
+      cfg.SpringConfigUrl = @".\igniteMutableKubeConfig.xml";
+
+      cfg.CommunicationSpi = new TcpCommunicationSpi()
+      {
+        LocalPort = 48100,
+      };
+      return cfg;
+    }
+
+    private IgniteConfiguration setLocalIgniteConfiguration(IgniteConfiguration cfg)
+    {
+
+      //TODO this should not be here but will do for the moment
+      TRexConfig.PersistentCacheStoreLocation = Path.Combine(Path.GetTempPath(), "TRexIgniteData");
+
+
+      // Enforce using only the LocalHost interface
+      cfg.DiscoverySpi = new TcpDiscoverySpi()
+      {
+        LocalAddress = "127.0.0.1",
+        LocalPort = 48500,
+
+        IpFinder = new TcpDiscoveryStaticIpFinder()
+        {
+          Endpoints = new[] {"127.0.0.1:48500..48509"}
+        }
+      };
+
+      cfg.CommunicationSpi = new TcpCommunicationSpi()
+      {
+        LocalAddress = "127.0.0.1",
+        LocalPort = 48100,
+      };
+      return cfg;
+    }
+
 
     public override ICache<NonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg)
     {

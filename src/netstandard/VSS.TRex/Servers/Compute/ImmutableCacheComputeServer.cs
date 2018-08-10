@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Apache.Ignite.Core.Deployment;
 using VSS.TRex.DI;
@@ -48,13 +49,16 @@ namespace VSS.TRex.Servers.Compute
     {
       base.ConfigureTRexGrid(cfg);
 
-      cfg.SpringConfigUrl = @".\igniteKubeConfig.xml";
-
       cfg.WorkDirectory = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Immutable");
 
       cfg.IgniteInstanceName = TRexGrids.ImmutableGridName();
 
-      cfg.JvmOptions = new List<string>() { "-DIGNITE_QUIET=false", "-Djava.net.preferIPv4Stack=true" };
+      cfg.JvmOptions = new List<string>() {
+        "-DIGNITE_QUIET=false",
+        "-Djava.net.preferIPv4Stack=true",
+        "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=4243" };
+
+
       cfg.JvmInitialMemoryMb = 512; // Set to minimum advised memory for Ignite grid JVM of 512Mb
       cfg.JvmMaxMemoryMb = 1 * 1024; // Set max to 1Gb
       cfg.UserAttributes = new Dictionary<string, object>
@@ -87,24 +91,10 @@ namespace VSS.TRex.Servers.Compute
       Log.LogInformation($"cfg.DataStorageConfiguration.WalPath={cfg.DataStorageConfiguration.WalPath}");
 
 
-      //cfg.SpringConfigUrl = @".\igniteKubeConfig.xml";
+      bool.TryParse(Environment.GetEnvironmentVariable("IS_KUBERNETES"), out bool isKubernetes);
+      cfg = isKubernetes ? setKubernetesIgniteConfiguration(cfg) : setLocalIgniteConfiguration(cfg);
+      cfg.WorkDirectory = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Mutable");
 
-      //cfg.DiscoverySpi = new TcpDiscoverySpi()
-      //{
-      //  LocalAddress = "127.0.0.1",
-      //  LocalPort = 47500,
-
-      //  IpFinder = new TcpDiscoveryStaticIpFinder()
-      //  {
-      //    Endpoints = new[] { "127.0.0.1:47500..47509" }
-      //  }
-      //};
-
-      cfg.CommunicationSpi = new TcpCommunicationSpi()
-      {
-        //LocalAddress = "127.0.0.1",
-        LocalPort = 47100,
-      };
 
       cfg.Logger = new TRexIgniteLogger(Logger.CreateLogger("ImmutableCacheComputeServer"));
 
@@ -118,6 +108,46 @@ namespace VSS.TRex.Servers.Compute
 
       //cfg.BinaryConfiguration = new BinaryConfiguration(typeof(TestQueueItem));
     }
+
+
+    private IgniteConfiguration setKubernetesIgniteConfiguration(IgniteConfiguration cfg)
+    {
+      cfg.SpringConfigUrl = @".\ignitePersistentImmutableKubeConfig.xml";
+
+      cfg.CommunicationSpi = new TcpCommunicationSpi()
+      {
+        LocalPort = 47100,
+      };
+      return cfg;
+    }
+
+    private IgniteConfiguration setLocalIgniteConfiguration(IgniteConfiguration cfg)
+    {
+      //TODO this should not be here but will do for the moment
+      TRexConfig.PersistentCacheStoreLocation = Path.Combine(Path.GetTempPath(), "TRexIgniteData");
+
+      cfg.SpringConfigUrl = @".\immutablePersistence.xml";
+
+      // Enforce using only the LocalHost interface
+      cfg.DiscoverySpi = new TcpDiscoverySpi()
+      {
+        LocalAddress = "127.0.0.1",
+        LocalPort = 47500,
+
+        IpFinder = new TcpDiscoveryStaticIpFinder()
+        {
+          Endpoints = new[] { "127.0.0.1:47500..47509" }
+        }
+      };
+
+      cfg.CommunicationSpi = new TcpCommunicationSpi()
+      {
+        LocalAddress = "127.0.0.1",
+        LocalPort = 47100,
+      };
+      return cfg;
+    }
+
 
     public override void ConfigureNonSpatialImmutableCache(CacheConfiguration cfg)
     {
@@ -191,7 +221,7 @@ namespace VSS.TRex.Servers.Compute
       ConfigureTRexGrid(cfg);
 
       Log.LogInformation($"Creating new Ignite node for {cfg.IgniteInstanceName}");
-      
+
       try
       {
         Console.WriteLine($"Creating new Ignite node for {cfg.IgniteInstanceName}");
@@ -201,6 +231,7 @@ namespace VSS.TRex.Servers.Compute
       {
         Console.WriteLine($"Exception during creation of new Ignite node:\n {e}");
         Log.LogError($"Exception during creation of new Ignite node:\n {e}");
+        throw e;
       }
       finally
       {
@@ -216,9 +247,11 @@ namespace VSS.TRex.Servers.Compute
       ConfigureNonSpatialImmutableCache(CacheCfg);
       NonSpatialImmutableCache = InstantiateTRexCacheReference(CacheCfg);
 
-      CacheCfg = new CacheConfiguration();
-      ConfigureImmutableSpatialCache(CacheCfg);
-      SpatialImmutableCache = InstantiateSpatialCacheReference(CacheCfg);
+      //CacheCfg = new CacheConfiguration();
+      var spatialcacheConfiguration = immutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.ImmutableSpatialCacheName()));
+
+      //ConfigureImmutableSpatialCache(CacheCfg);
+      SpatialImmutableCache = InstantiateSpatialCacheReference(spatialcacheConfiguration);
     }
 
 
