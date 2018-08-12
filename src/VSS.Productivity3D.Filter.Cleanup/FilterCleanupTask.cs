@@ -7,6 +7,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Cleanup.Utilities;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Filter.Cleanup
 {

@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\MerinoSandbox\KafkaConsumer\src\VSS.KafkaConsumer.Local.csproj" />
-    <ProjectReference Include="..\..\..\MerinoSandbox\MasterDataProxies\src\VSS.MasterData.Proxies.Local.csproj" />
     <ProjectReference Include="..\..\..\MerinoSandbox\MasterDataRepositories\src\VSS.MasterData.Repositories.Local.csproj" />
     <ProjectReference Include="..\..\..\MerinoSandbox\WebApi.Common\src\VSS.WebApi.Common.Local.csproj" />
   </ItemGroup>

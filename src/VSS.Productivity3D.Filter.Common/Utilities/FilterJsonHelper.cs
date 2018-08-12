@@ -81,7 +81,7 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
       }
       catch (Exception exception)
       {
-        Console.WriteLine($"JeannieTemp exception: {JsonConvert.SerializeObject(exception)}");
+        //Console.WriteLine($"JeannieTemp exception: {JsonConvert.SerializeObject(exception)}");
         return string.Empty;
       }
     }
