@@ -105,8 +105,7 @@ namespace VSS.TRex.Servers.Compute
 
       cfg.JvmOptions = new List<string>() {
         "-DIGNITE_QUIET=false",
-        "-Djava.net.preferIPv4Stack=true",
-        "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=4242" };
+        "-Djava.net.preferIPv4Stack=true" };
 
 
       cfg.Logger = new TRexIgniteLogger(Logger.CreateLogger("MutableCacheComputeServer"));
