@@ -31,7 +31,7 @@ spec:
       - name: ignite-node
         # Ignite Docker image. Kubernetes IP finder is supported starting from
         # Apache Ignite 2.3.0
-        image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-trex:{{ .Values.image.tag }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         
         resources:
 {{ toYaml .Values.resources | indent 10 }}

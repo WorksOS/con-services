@@ -13,6 +13,7 @@ rootDomain: k8s.vspengg.com
 serviceAccountName: trex
 
 image:
+  repository: "276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-trex"
   tag: latest
 
 ingress:
@@ -32,7 +33,7 @@ resources:
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-
+  
   requests:
     cpu: 300m
     memory: 1.6Gi

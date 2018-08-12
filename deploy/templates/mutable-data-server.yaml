@@ -31,7 +31,7 @@ spec:
       - name: ignite-node
         # Ignite Docker image. Kubernetes IP finder is supported starting from
         # Apache Ignite 2.3.0
-        image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-trex:{{ .Values.image.tag }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         
         resources:
 {{ toYaml .Values.resources | indent 10 }}
@@ -46,6 +46,8 @@ spec:
           value: "true"
         - name: TFA_SERVICE_BASEURL
           value: "http://tagfileauth.dev.k8s.vspengg.com/"
+        - name: IS_KUBERNETES
+          value: "true"
 
         ports:
         # Ports to open.
@@ -66,7 +68,7 @@ spec:
           name: sql
         volumeMounts:
         # Mounting the persistant storage - currently this is in temp which will change when we sort config
-        - mountPath: "/tmp/TRexIgniteData/"
+        - mountPath: "/persist/"
           name: trex-mutable-storage
   volumeClaimTemplates:
   - metadata:
