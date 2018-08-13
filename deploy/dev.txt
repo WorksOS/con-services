@@ -9,13 +9,12 @@ KAFKA_PORT: "9092"
 KAFKA_GROUP_NAME: Filter-Producer
 KAFKA_TOPIC_NAME_SUFFIX: -Dev
 KAFKA_OFFSET: latest
-RAPTOR_NOTIFICATION_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0/notification
-CUSTOMERSERVICE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me
-PROJECT_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/project?includeLandfill=true
-RAPTOR_PROJECT_SETTINGS_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0
-IMPORTED_FILE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles
+RAPTOR_NOTIFICATION_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0/notification
+CUSTOMERSERVICE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me
+PROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/project?includeLandfill=true
+RAPTOR_PROJECT_SETTINGS_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0
+IMPORTED_FILE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles
 CUSTOM_INIT_SCRIPT: zookeeper_check.sh
-PROJECT_CACHE_LIFE=00:15:00
 LOG_MAX_CHAR: "1000"
 JAEGER_AGENT_HOST: jaeger-agent.jaeger
 JAEGER_AGENT_PORT: "6831"
