@@ -40,7 +40,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
     /// Reads a TrimbleTINModel using the provided reader
     /// </summary>
     /// <param name="reader"></param>
-    public void Read(BinaryReader reader)
+    public void Read(BinaryReader reader, byte[] bytes)
     {
       string LoadErrMsg = "";
 
@@ -70,10 +70,12 @@ namespace VSS.TRex.Designs.TTM.Optimised
         LoadErrMsg = "Error reading vertices";
         reader.BaseStream.Position = Header.StartOffsetOfVertices;
         Vertices.Read(reader, Header);
+        //Vertices.Read(bytes, Header.StartOffsetOfVertices, Header);
 
         LoadErrMsg = "Error reading triangles";
         reader.BaseStream.Position = Header.StartOffsetOfTriangles;
         Triangles.Read(reader, Header);
+        //Triangles.Read(bytes, Header.StartOffsetOfTriangles, Header);
 
         LoadErrMsg = "Error reading edges";
         reader.BaseStream.Position = Header.StartOffsetOfEdgeList;
@@ -93,11 +95,11 @@ namespace VSS.TRex.Designs.TTM.Optimised
     /// Loads a TrimbleTINModel from a stream
     /// </summary>
     /// <param name="stream"></param>
-    public void LoadFromStream(Stream stream)
+    public void LoadFromStream(Stream stream, byte [] bytes)
     {
       using (BinaryReader reader = new BinaryReader(stream))
       {
-        Read(reader);
+        Read(reader, bytes);
       }
     }
 
@@ -107,9 +109,11 @@ namespace VSS.TRex.Designs.TTM.Optimised
     /// <param name="FileName"></param>
     public void LoadFromFile(string FileName)
     {
-      using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(FileName)))
+      byte[] bytes = File.ReadAllBytes(FileName);
+
+      using (MemoryStream ms = new MemoryStream(bytes))
       {
-        LoadFromStream(ms);
+        LoadFromStream(ms, bytes);
       }
 
       // FYI, This method sucks totally - don't use it

@@ -119,8 +119,89 @@ namespace VSS.TRex.Designs.TTM.Optimised
       }
       catch (Exception E)
       {
+        throw new Exception($"Failed to read triangles\n{E}", E);
+      }
+    }
+
+    /// <summary>
+    /// Reads the set of triangles in the model utilising the given reader
+    /// </summary>
+    /// <param name="bytes"></param>
+    /// <param name="bufPos"></param>
+    /// <param name="header"></param>
+    public void Read(byte[] bytes, int bufPos, TTMHeader header)
+    {
+      Items = new Triangle[header.NumberOfTriangles];
+      bool readInt16s = header.VertexNumberSize == sizeof(short);
+
+      int RecPos;
+
+//      void Read(ref Triangle tri)
+//      {
+        /*
+        if (readInt16s)
+        {
+          tri.Vertex0 = bytes[RecPos++] | bytes[RecPos++] << 8;
+          tri.Vertex1 = bytes[RecPos++] | bytes[RecPos++] << 8;
+          tri.Vertex2 = bytes[RecPos++] | bytes[RecPos++] << 8;
+        }
+        else
+        {
+          tri.Vertex0 = bytes[RecPos++] | bytes[RecPos++] << 8 | bytes[RecPos++] << 16 | bytes[RecPos++] << 24;
+          tri.Vertex1 = bytes[RecPos++] | bytes[RecPos++] << 8 | bytes[RecPos++] << 16 | bytes[RecPos++] << 24;
+          tri.Vertex2 = bytes[RecPos++] | bytes[RecPos++] << 8 | bytes[RecPos++] << 16 | bytes[RecPos++] << 24;
+        }
+        */
+        /*
+        if (readInt16s)
+        {
+          tri.Vertex0 = bytes[RecPos] | bytes[RecPos + 1] << 8;
+          tri.Vertex1 = bytes[RecPos + 2] | bytes[RecPos + 3] << 8;
+          tri.Vertex2 = bytes[RecPos + 4] | bytes[RecPos + 5] << 8;
+        }
+        else
+        {
+          tri.Vertex0 = bytes[RecPos] | bytes[RecPos + 1] << 8 | bytes[RecPos + 2] << 16 | bytes[RecPos + 3] << 24;
+          tri.Vertex1 = bytes[RecPos + 4] | bytes[RecPos + 5] << 8 | bytes[RecPos + 6] << 16 | bytes[RecPos + 7] << 24;
+          tri.Vertex2 = bytes[RecPos + 8] | bytes[RecPos + 9] << 8 | bytes[RecPos + 10] << 16 | bytes[RecPos + 11] << 24;
+        }
+        */
+        // This loop does not need to be executed since the reader repositions the reading location after each serialise in
+        //for (int i = 0; i < 3; i++)
+        //{
+        //  int NeighbourIndex = Utilities.ReadInteger(reader, header.TriangleNumberSize);
+        // SetNeighbour(i, (NeighbourIndex < 1 || NeighbourIndex > triangles.Items.Length) ? null : triangles.Items[NeighbourIndex - 1]);
+        //}
+//      }
+
+      try
+      {
+        int loopLimit = header.NumberOfTriangles;
+        for (int i = 0; i < loopLimit; i++)
+        {
+          RecPos = bufPos;
+
+          if (readInt16s)
+          {
+            Items[i].Vertex0 = bytes[RecPos] | bytes[RecPos + 1] << 8;
+            Items[i].Vertex1 = bytes[RecPos + 2] | bytes[RecPos + 3] << 8;
+            Items[i].Vertex2 = bytes[RecPos + 4] | bytes[RecPos + 5] << 8;
+          }
+          else
+          {
+            Items[i].Vertex0 = bytes[RecPos] | bytes[RecPos + 1] << 8 | bytes[RecPos + 2] << 16 | bytes[RecPos + 3] << 24;
+            Items[i].Vertex1 = bytes[RecPos + 4] | bytes[RecPos + 5] << 8 | bytes[RecPos + 6] << 16 | bytes[RecPos + 7] << 24;
+            Items[i].Vertex2 = bytes[RecPos + 8] | bytes[RecPos + 9] << 8 | bytes[RecPos + 10] << 16 | bytes[RecPos + 11] << 24;
+          }
+
+          bufPos += header.TriangleRecordSize;
+        }
+      }
+      catch (Exception E)
+      {
         throw new Exception($"Failed to read triangles\n{E}");
       }
     }
+
   }
 }

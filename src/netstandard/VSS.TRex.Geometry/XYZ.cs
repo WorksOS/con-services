@@ -270,131 +270,121 @@ namespace VSS.TRex.Geometry
         /// <returns></returns>
         public static double GetTriArea(XYZ P1, XYZ P2, XYZ P3) => VectorLength(CrossProduct(P1, P2, P3)) / 2;
 
-        /// <summary>
-        /// Internal function to calculate an intersection on the X axis
-        /// </summary>
-        /// <param name="_X1"></param>
-        /// <param name="_Y1"></param>
-        /// <param name="_X2"></param>
-        /// <param name="_Y2"></param>
-        /// <param name="_X"></param>
-        /// <returns></returns>
-        private static double GetInt(double _X1, double _Y1, double _X2, double _Y2, double _X)
-        {
-          const double min_epsylon = -0.000000001; // Allow a nanometer tolerance on triangle edges...
-          const double max_epsylon = 1.000000001;  // Allow a nanometer tolerance on triangle edges...
-
-            if (Math.Abs(_X1 - _X2) < 0.0000000001)  // Consider them the same
+    
+            /// <summary>
+            /// Internal function to calculate an intersection on the X axis
+            /// </summary>
+            /// <param name="_X1"></param>
+            /// <param name="_Y1"></param>
+            /// <param name="_X2"></param>
+            /// <param name="_Y2"></param>
+            /// <param name="_X"></param>
+            /// <returns></returns>
+            private static double GetInt(double _X1, double _Y1, double _X2, double _Y2, double _X)
             {
+              const double min_epsylon = -0.000000001; // Allow a nanometer tolerance on triangle edges...
+              const double max_epsylon = 1.000000001;  // Allow a nanometer tolerance on triangle edges...
+
+              if (Math.Abs(_X1 - _X2) < 0.0000000001)  // Consider them the same
+              {
                 return Consts.NullDouble;
-            }
+              }
 
-            double Fraction = (_X - _X1) / (_X2 - _X1);
+              double Fraction = (_X - _X1) / (_X2 - _X1);
 
-            return Fraction >= min_epsylon && Fraction <= max_epsylon ? _Y1 + Fraction * (_Y2 - _Y1) : Consts.NullDouble;
+              return Fraction >= min_epsylon && Fraction <= max_epsylon ? _Y1 + Fraction * (_Y2 - _Y1) : Consts.NullDouble;
         }
 
-      /// <summary>
-      /// Internal function to determine is there is an intesection on the Y axis
-      /// </summary>
-      /// <param name="P1"></param>
-      /// <param name="P2"></param>
-      /// <param name="X"></param>
-      /// <param name="Y"></param>
-      /// <param name="Z"></param>
-      /// <returns></returns>
-      private static bool GetYInt(XYZ P1, XYZ P2, double X, out double Y, out double Z)
-      {
-        const double min_epsylon = -0.000000001; // Allow a nanometer tolerance on triangle edges...
-        const double max_epsylon = 1.000000001;  // Allow a nanometer tolerance on triangle edges...
-
-        // Compute the first GetYInt long handed...
-        if (Math.Abs(P1.X - P2.X) < 0.0000000001) // Consider them the same
-        {
-          Y = Consts.NullDouble;
-          Z = Consts.NullDouble;
-          return false;
-        }
-
-        double Fraction = (X - P1.X) / (P2.X - P1.X);
-
-        if (Fraction >= min_epsylon && Fraction <= max_epsylon)
-          Y = P1.Y + Fraction * (P2.Y - P1.Y);
-        else
-        {
-          Y = Consts.NullDouble;
-          Z = Consts.NullDouble;
-          return false;
-        }
-
-        // Compute the second leveraging the results of the first
-        Z = P1.Z + Fraction * (P2.Z - P1.Z);
-        return true;
-
-//      Y = GetInt(P1.X, P1.Y, P2.X, P2.Y, X);
-
-//      if (Y != Consts.NullDouble)
-//      {
-//          Z = GetInt(P1.X, P1.Z, P2.X, P2.Z, X);
-//          return true;
-//      }
-
-//      Z = Consts.NullDouble;
-//      return false;
-    }
-
-      /// <summary>
-        /// Calculate the height on a triangle given by three XYZ points at the location given by X & Y
+        /// <summary>
+        /// Internal function to determine is there is an intesection on the Y axis
         /// </summary>
         /// <param name="P1"></param>
         /// <param name="P2"></param>
-        /// <param name="P3"></param>
         /// <param name="X"></param>
         /// <param name="Y"></param>
+        /// <param name="Z"></param>
         /// <returns></returns>
-        public static double GetTriangleHeight(XYZ P1, XYZ P2, XYZ P3, double X, double Y)
-        {
-            bool GetInt1 = GetYInt(P1, P2, X, out double Y1, out double Z1);
-            bool GetInt2 = GetYInt(P2, P3, X, out double Y2, out double Z2);
+        private static bool GetYInt(XYZ P1, XYZ P2, double X, out double Y, out double Z)
+          {
+            const double min_epsylon = -0.000000001; // Allow a nanometer tolerance on triangle edges...
+            const double max_epsylon = 1.000000001;  // Allow a nanometer tolerance on triangle edges...
 
-            // Note: In some cases we may actually work out that we have intersects
-            // with all three edges (yes, it can happen). Thus, if we fail to get a
-            // height interpolated from a pair of intersects, and we have the third
-            // intersect on hand, we'll give that one a go too...
-            if (GetInt1 && GetInt2)
+            // Compute the first GetYInt long handed...
+            if (Math.Abs(P1.X - P2.X) < 0.0000000001) // Consider them the same
             {
-                double Result = GetInt(Y1, Z1, Y2, Z2, Y);
+              Y = Consts.NullDouble;
+              Z = Consts.NullDouble;
+              return false;
+            }
 
-                if (Result == Consts.NullDouble)
+            double Fraction = (X - P1.X) / (P2.X - P1.X);
+
+            if (Fraction >= min_epsylon && Fraction <= max_epsylon)
+              Y = P1.Y + Fraction * (P2.Y - P1.Y);
+            else
+            {
+              Y = Consts.NullDouble;
+              Z = Consts.NullDouble;
+              return false;
+            }
+
+            // Compute the second leveraging the results of the first
+            Z = P1.Z + Fraction * (P2.Z - P1.Z);
+            return true;
+        }
+
+            /// <summary>
+            /// Calculate the height on a triangle given by three XYZ points at the location given by X & Y
+            /// </summary>
+            /// <param name="P1"></param>
+            /// <param name="P2"></param>
+            /// <param name="P3"></param>
+            /// <param name="X"></param>
+            /// <param name="Y"></param>
+            /// <returns></returns>
+            public static double GetTriangleHeight(XYZ P1, XYZ P2, XYZ P3, double X, double Y)
+            {
+                bool GetInt1 = GetYInt(P1, P2, X, out double Y1, out double Z1);
+                bool GetInt2 = GetYInt(P2, P3, X, out double Y2, out double Z2);
+
+                // Note: In some cases we may actually work out that we have intersects
+                // with all three edges (yes, it can happen). Thus, if we fail to get a
+                // height interpolated from a pair of intersects, and we have the third
+                // intersect on hand, we'll give that one a go too...
+                if (GetInt1 && GetInt2)
                 {
-                  if (GetYInt(P1, P3, X, out double _Y3, out double _Z3))                
-                    return GetInt(Y1, Z1, _Y3, _Z3, Y);
+                    double Result = GetInt(Y1, Z1, Y2, Z2, Y);
+
+                    if (Result == Consts.NullDouble)
+                    {
+                      if (GetYInt(P1, P3, X, out double _Y3, out double _Z3))                
+                        return GetInt(Y1, Z1, _Y3, _Z3, Y);
+                    }
+
+                    return Result;
                 }
 
-                return Result;
+                bool GetInt3 = GetYInt(P1, P3, X, out double Y3, out double Z3);
+
+                if (GetInt1 && GetInt3)
+                    return GetInt(Y1, Z1, Y3, Z3, Y); 
+
+                if (GetInt2 && GetInt3)
+                    return GetInt(Y2, Z2, Y3, Z3, Y);
+
+                return Consts.NullDouble;
             }
-
-            bool GetInt3 = GetYInt(P1, P3, X, out double Y3, out double Z3);
-
-            if (GetInt1 && GetInt3)
-                return GetInt(Y1, Z1, Y3, Z3, Y); 
-
-            if (GetInt2 && GetInt3)
-                return GetInt(Y2, Z2, Y3, Z3, Y);
-
-            return Consts.NullDouble;
-        }
-
-        /// <summary>
-        /// Determine if the given point (X, Y) is inside the triangle defined by three XYZ points
-        /// </summary>
-        /// <param name="P1"></param>
-        /// <param name="P2"></param>
-        /// <param name="P3"></param>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <returns></returns>
-        public static bool PointInTriangle(XYZ P1, XYZ P2, XYZ P3, double X, double Y)
+    
+   /// <summary>
+    /// Determine if the given point (X, Y) is inside the triangle defined by three XYZ points
+    /// </summary>
+    /// <param name="P1"></param>
+    /// <param name="P2"></param>
+    /// <param name="P3"></param>
+    /// <param name="X"></param>
+    /// <param name="Y"></param>
+    /// <returns></returns>
+    public static bool PointInTriangle(XYZ P1, XYZ P2, XYZ P3, double X, double Y)
         {
             XYZ TestPos = new XYZ(X, Y, 0);
             bool IsOnRight = PointOnRight(P1, P2, TestPos);

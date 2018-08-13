@@ -23,9 +23,6 @@ namespace VSS.TRex.Designs
 
         private TrimbleTINModel FData;
 
-       // Removed, this is the old quadtree spatial index, not performant enough
-       // public TTMQuadTree QuadTreeSpatialIndex; 
-
         private double FMinHeight;
         private double FMaxHeight;
         private double FCellSize;
@@ -36,19 +33,24 @@ namespace VSS.TRex.Designs
         public TrimbleTINModel Data { get { return FData; } }
 
         private Triangle[] TriangleItems;
-        private XYZ[] VertexItems;  
+        private XYZ[] VertexItems;
 
-    // Removed, this is the 'list of triangles per subgrid' spatial index model
-    // private GenericSubGridTree<List<Triangle>> FSpatialIndex;
-    // public GenericSubGridTree<List<Triangle>> SpatialIndex { get { return FSpatialIndex; } }
+      public long NumTINProbeLookups = 0;
+      public long NumTINHeightRequests = 0;
+      public long NumNonNullProbeResults = 0;
 
     public struct TriangleArrayReference
         {
-            public uint TriangleArrayIndex;
-            public uint Count;
+            public int TriangleArrayIndex;
+            public int Count;
         }
 
-        private int[] FSpatialIndexOptimisedTriangles;
+      public struct TriangleSubGridCellExtents
+      {
+        public byte MinX, MinY, MaxX, MaxY;
+      }
+
+        private int[] SpatialIndexOptimisedTriangles;
 
         private GenericSubGridTree<TriangleArrayReference> FSpatialIndexOptimised;
         public GenericSubGridTree<TriangleArrayReference> SpatialIndexOptimised { get { return FSpatialIndexOptimised; } }  
@@ -286,7 +288,14 @@ namespace VSS.TRex.Designs
             }
         }
 
-        private void AddTrianglePieceToSubgridIndex(SubGridTree index,
+    /// <summary>
+    /// AddTrianglePieceToSubgridIndex_Extents is used to prevent very large numbers of bounding extent record allocations in the
+    /// AddTrianglePieceToSubgridIndex method. Note: This code is expected to be single threaded. Note: Do not use this
+    /// member in any other context
+    /// </summary>
+    private BoundingWorldExtent3D AddTrianglePieceToSubgridIndex_Extents = new BoundingWorldExtent3D();
+
+    private void AddTrianglePieceToSubgridIndex(SubGridTree index,
                                                     int sourceTriangle,
                                                     Func<SubGridTree, uint, uint, bool> leafSatisfied,
                                                     Action<SubGridTree, uint, uint, int> includeTriangleInLeaf,
@@ -376,16 +385,14 @@ namespace VSS.TRex.Designs
                     TestLeftSubGridX = FirstRow ? LeftSubGridX : (PrevLeftSubGridX < LeftSubGridX) ? PrevLeftSubGridX : LeftSubGridX;
                     TestRightSubGridX = FirstRow ? RightSubGridX : (PrevRightSubGridX > RightSubGridX) ? PrevRightSubGridX : RightSubGridX;
 
-                    BoundingWorldExtent3D Extents;
-
                     // Scan 'central' portion of subgrids between the two end points
                     for (uint I = TestLeftSubGridX; I <= TestRightSubGridX; I++)
                     {
                         if (!leafSatisfied(index, I, OverrideSubGridY))
                         {
-                            Extents = index.GetCellExtents(I, OverrideSubGridY);
+                            index.GetCellExtents(I, OverrideSubGridY, ref AddTrianglePieceToSubgridIndex_Extents);
 
-                            if (SubGridIntersectsTriangle(Extents, H1, H2, V))
+                            if (SubGridIntersectsTriangle(AddTrianglePieceToSubgridIndex_Extents, H1, H2, V))
                                 includeTriangleInLeaf(index, I, OverrideSubGridY, sourceTriangle);
                         }
                     }
@@ -396,9 +403,9 @@ namespace VSS.TRex.Designs
                     {
                         SubGridX--;
 
-                        Extents = index.GetCellExtents(SubGridX, OverrideSubGridY);
+                        index.GetCellExtents(SubGridX, OverrideSubGridY, ref AddTrianglePieceToSubgridIndex_Extents);
 
-                        if (!SubGridIntersectsTriangle(Extents, H1, H2, V))
+                        if (!SubGridIntersectsTriangle(AddTrianglePieceToSubgridIndex_Extents, H1, H2, V))
                             break;
 
                         if (!leafSatisfied(index, SubGridX, OverrideSubGridY))
@@ -411,9 +418,9 @@ namespace VSS.TRex.Designs
                     {
                         SubGridX++;
 
-                        Extents = index.GetCellExtents(SubGridX, OverrideSubGridY);
+                        index.GetCellExtents(SubGridX, OverrideSubGridY, ref AddTrianglePieceToSubgridIndex_Extents);
 
-                        if (!SubGridIntersectsTriangle(Extents, H1, H2, V))
+                        if (!SubGridIntersectsTriangle(AddTrianglePieceToSubgridIndex_Extents, H1, H2, V))
                             break;
 
                         if (!leafSatisfied(index, SubGridX, OverrideSubGridY))
@@ -620,10 +627,6 @@ namespace VSS.TRex.Designs
                 CellSize = SubGridTree.SubGridTreeDimension * ACellSize
             };
 
-            // Create a subgrid tree spatial index for triangles in the TTM
-            // Removed, this is the 'list of triangles per subgrid' spatial index model
-            // FSpatialIndex = new GenericSubGridTree<List<Triangle>>(SubGridTree.SubGridTreeLevels - 1, SubGridTree.SubGridTreeDimension * ACellSize);
-
             // Create the optimised subgrid tree spatial index that minmises the number of allocations in the final result.
             FSpatialIndexOptimised = new GenericSubGridTree<TriangleArrayReference>(SubGridTree.SubGridTreeLevels - 1, SubGridTree.SubGridTreeDimension * ACellSize);
         }
@@ -678,76 +681,12 @@ namespace VSS.TRex.Designs
 
         public override bool HasFiltrationDataForSubGridPatch(uint SubGridX, uint SubgridY) => false;
 
-      private double GetHeight(Triangle tri, double X, double Y)
-      {
-        return XYZ.GetTriangleHeight(VertexItems[tri.Vertex0],
-                                     VertexItems[tri.Vertex1],
-                                     VertexItems[tri.Vertex2], X, Y);
-      }
-
-    private bool CheckHint(ref int hint, double x, double y, double offset, out double z)
+        private double GetHeight(Triangle tri, double X, double Y)
         {
-            z = GetHeight(TriangleItems[hint], x, y);
-            if (z != Common.Consts.NullReal)
-            {
-                z += offset;
-                return true;
-            }
-
-            hint = -1;
-            return false;
+            return XYZ.GetTriangleHeight(VertexItems[tri.Vertex0],
+                                         VertexItems[tri.Vertex1],
+                                         VertexItems[tri.Vertex2], X, Y);
         }
-
-        /// <summary>
-        /// Interpolates a single spot height fromn the design
-        /// </summary>
-        /// <param name="Hint"></param>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <param name="Offset"></param>
-        /// <param name="Z"></param>
-        /// <returns></returns>
-        public bool InterpolateHeight2(ref int Hint,
-                                       double X, double Y,
-                                       double Offset,
-                                       out double Z)
-        {
-            // Member added for compilation only
-            if (Hint != -1 && CheckHint(ref Hint, X, Y, Offset, out Z))
-                return true;
-
-            GenericSubGridTree<List<int>> FSpatialIndex = null;
-
-            // Search in the subgrid triangle list for this subgrid from the spatial index
-            FSpatialIndex.CalculateIndexOfCellContainingPosition(X, Y, out uint CellX, out uint CellY);
-
-            List<int> cell = FSpatialIndex[CellX, CellY];
-
-            if (cell == null)
-            {
-                // There are no triangles that can satisfy the query
-                Z = Common.Consts.NullReal;
-                return false;
-            }
-            
-            // Search the triangles in the leaf to locate the one to interpolate height from
-            foreach (int triIndex in cell)
-            {
-                Z = GetHeight(TriangleItems[triIndex], X, Y);
-
-                if (Z != Common.Consts.NullReal)
-                {
-                    Hint = triIndex;
-                    Z += Offset;
-                    return true;
-                }
-            }
-
-            Z = Common.Consts.NullReal;
-            return false; 
-        }
-
-//      private uint maxArrayCount = 0;
 
         /// <summary>
         /// Interpolates a single spot height fromn the design, using the optimised spatial index
@@ -763,10 +702,19 @@ namespace VSS.TRex.Designs
                                       double Offset,
                                       out double Z)
         {
-            if (Hint != -1 && CheckHint(ref Hint, X, Y, Offset, out Z))
-                return true;
+          if (Hint != -1)
+          {
+            Z = GetHeight(TriangleItems[Hint], X, Y);
+            if (Z != Common.Consts.NullDouble)
+            {
+              Z += Offset;
+              return true;
+            }
 
-            // Search in the subgrid triangle list for this subgrid from the spatial index
+            Hint = -1;
+          }
+
+          // Search in the subgrid triangle list for this subgrid from the spatial index
 
             FSpatialIndexOptimised.CalculateIndexOfCellContainingPosition(X, Y, out uint CellX, out uint CellY);
 
@@ -779,17 +727,11 @@ namespace VSS.TRex.Designs
                 return false;
             }
 
-//          if (maxArrayCount < arrayReference.Count)
-//          {
-//            maxArrayCount = arrayReference.Count;
-//            Console.WriteLine($"Largest array list encountered with {maxArrayCount} triangles");
-//          }
-
           // Search the triangles in the leaf to locate the one to interpolate height from
-            uint limit = arrayReference.TriangleArrayIndex + arrayReference.Count;
-            for (uint i = arrayReference.TriangleArrayIndex; i < limit; i++)
+            int limit = arrayReference.TriangleArrayIndex + arrayReference.Count;
+            for (int i = arrayReference.TriangleArrayIndex; i < limit; i++)
             {
-                int triIndex = FSpatialIndexOptimisedTriangles[i];
+                int triIndex = SpatialIndexOptimisedTriangles[i]; //.TriangleIndex;
                 Z = GetHeight(TriangleItems[triIndex], X, Y);
 
                 if (Z != Common.Consts.NullReal)
@@ -802,215 +744,153 @@ namespace VSS.TRex.Designs
 
             Z = Common.Consts.NullReal;
             return false;
-    }
-
-/* COMMENTED OUT AS A RESULT OF USE OF THE OPIMISED TTM FORMAT
+        }
+    
+        private TriangleSubGridCellExtents nullTriangleCellExtents = new TriangleSubGridCellExtents { MinX = 255, MinY = 255, MaxX = 255, MaxY = 255 };
+    
         /// <summary>
-        /// Interpolates a single spot height fromn the design
+        /// Interpolates heights from the design for all the cells in a subgrid
         /// </summary>
-        /// <param name="SearchState"></param>
-        /// <param name="Hint"></param>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
+        /// <param name="Patch"></param>
+        /// <param name="OriginX"></param>
+        /// <param name="OriginY"></param>
+        /// <param name="CellSize"></param>
         /// <param name="Offset"></param>
-        /// <param name="Z"></param>
         /// <returns></returns>
-        public bool InterpolateHeight1(ref TriangleQuadTree.Tsearch_state_rec SearchState,
-                                       ref int Hint,
-                                       double X, double Y,
-                                       double Offset,
-                                       out double Z)
+        public override bool InterpolateHeights(float[,] Patch,
+                                                double OriginX, double OriginY,
+                                                double CellSize,
+                                                double Offset)
         {
-            // Local var added to allow compilation only - shadows the class scope member of same name
-            TTMQuadTree QuadTreeSpatialIndex = null;
+            int HintIndex = -1;
+            bool hasValues = false;
+            TriangleArrayReference arrayReference;
+            TriangleSubGridCellExtents triangleCellExtent = new TriangleSubGridCellExtents();
 
-            if (Hint != -1 && CheckHint(ref Hint, X, Y, Offset, out Z))
-                return true;
-            
-            SearchState.start_search(X - 0.1, Y - 0.1, X + 0.1, Y + 0.1, true, QuadTreeSpatialIndex);
-
-            int eindex = 0;
-            int iterationCount = 0;
-
-            while (QuadTreeSpatialIndex.next_entity(ref SearchState, ref eindex, ref Hint))
+            try
             {
-                iterationCount++;
-                Z = ((Triangle)Hint).GetHeight(X, Y);
+                double HalfCellSize = CellSize / 2;
+                double halfCellSizeMinusEpsilon = HalfCellSize - 0.0001;
+                double OriginXPlusHalfCellSize = OriginX + HalfCellSize;
+                double OriginYPlusHalfCellSize = OriginY + HalfCellSize;
 
-                if (Z != Common.Consts.NullReal)
+                // Search in the subgrid triangle list for this subgrid from the spatial index
+                // All cells in this subgrid will be contained in the same triangle list from the spatial index
+                FSpatialIndexOptimised.CalculateIndexOfCellContainingPosition(OriginXPlusHalfCellSize, OriginYPlusHalfCellSize, out uint CellX, out uint CellY);
+                arrayReference = FSpatialIndexOptimised[CellX, CellY];
+                int triangleCount = arrayReference.Count;
+
+                if (triangleCount == 0)
                 {
-                    Z += Offset;
-                    return true;
+                  // There are no triangles that can satisfy the query (leaf cell is empty)
+                  return false;
                 }
-            }
 
-            Hint = null;
-            Z = Common.Consts.NullReal;
+                double leafCellSize = FSpatialIndexOptimised.CellSize / SubGridTree.SubGridTreeDimension;
+                BoundingWorldExtent3D cellWorldExtent = FSpatialIndexOptimised.GetCellExtents(CellX, CellY);
 
-            return false;
-        }
-*/
+                // Create the array of triangle cell exents in the subgrid
+                TriangleSubGridCellExtents[] triangleCellExtents = new TriangleSubGridCellExtents[triangleCount];
 
-      /*
-        /// <summary>
-        /// Interpolates heights from the design for all the cells in a subgrid
-        /// </summary>
-        /// <param name="Patch"></param>
-        /// <param name="OriginX"></param>
-        /// <param name="OriginY"></param>
-        /// <param name="CellSize"></param>
-        /// <param name="Offset"></param>
-        /// <returns></returns>
-        public override bool InterpolateHeights(float[,] Patch,
-                                                double OriginX, double OriginY,
-                                                double CellSize,
-                                                double Offset)
-        {
-            return InterpolateHeights3(Patch, OriginX, OriginY, CellSize, Offset);
-        }
-        */
-
-
-/* COMMENTED OUT AS A RESULT OF USE OF THE OPIMISED TTM FORMAT
-
-        /// <summary>
-        /// Interpolates heights from the design for all the cells in a subgrid
-        /// </summary>
-        /// <param name="Patch"></param>
-        /// <param name="OriginX"></param>
-        /// <param name="OriginY"></param>
-        /// <param name="CellSize"></param>
-        /// <param name="Offset"></param>
-        /// <returns></returns>
-        public bool InterpolateHeights1(float[,] Patch, 
-                                        double OriginX, double OriginY,
-                                        double CellSize,
-                                        double Offset)
-        {
-            int ValueCount = 0;
-            object Hint = null;
-            double HalfCellSize = CellSize / 2;
-            double OriginXPlusHalfCellSize = OriginX + HalfCellSize;
-            double OriginYPlusHalfCellSize = OriginY + HalfCellSize;
-
-            TriangleQuadTree.Tsearch_state_rec SearchState = TriangleQuadTree.Tsearch_state_rec.Init();
-
-            try
-            {
-                SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+                // Compute the bounding structs for the triangles in this subgrid
+                for (int i = 0; i < triangleCount; i++)
                 {
-                    if (InterpolateHeight1(ref SearchState,
-                                           ref Hint,
-                                           OriginXPlusHalfCellSize + (CellSize * x),
-                                           OriginYPlusHalfCellSize + (CellSize * y),
-                                           Offset, out double Z))
+                  // Get the triangle...
+                  Triangle tri = TriangleItems[SpatialIndexOptimisedTriangles[arrayReference.TriangleArrayIndex + i] /*.TriangleIndex*/];
+
+                  // Get the real world bounding box for the triangle
+                  // Note: As sampling occurs at cell centers shrink the effective bounding box for each triangle used
+                  // for caculating the cell bounding box by half a cell size (less a small Epsilon) so the cell bounding box
+                  // captures cell centers falling in the triangle world coordinate bounding box
+
+                  XYZ TriVertex0 = VertexItems[tri.Vertex0];
+                  XYZ TriVertex1 = VertexItems[tri.Vertex1];
+                  XYZ TriVertex2 = VertexItems[tri.Vertex2];
+
+                  double TriangleWorldExtent_MinX = Math.Min(TriVertex0.X, Math.Min(TriVertex1.X, TriVertex2.X)) + halfCellSizeMinusEpsilon;
+                  double TriangleWorldExtent_MinY = Math.Min(TriVertex0.Y, Math.Min(TriVertex1.Y, TriVertex2.Y)) + halfCellSizeMinusEpsilon;
+                  double TriangleWorldExtent_MaxX = Math.Max(TriVertex0.X, Math.Max(TriVertex1.X, TriVertex2.X)) - halfCellSizeMinusEpsilon;
+                  double TriangleWorldExtent_MaxY = Math.Max(TriVertex0.Y, Math.Max(TriVertex1.Y, TriVertex2.Y)) - halfCellSizeMinusEpsilon;
+
+                  int minCellX = (int)Math.Floor((TriangleWorldExtent_MinX - cellWorldExtent.MinX) / leafCellSize);
+                  int minCellY = (int)Math.Floor((TriangleWorldExtent_MinY - cellWorldExtent.MinY) / leafCellSize);
+                  int maxCellX = (int)Math.Floor((TriangleWorldExtent_MaxX - cellWorldExtent.MinX) / leafCellSize);
+                  int maxCellY = (int)Math.Floor((TriangleWorldExtent_MaxY - cellWorldExtent.MinY) / leafCellSize);
+
+                  triangleCellExtent.MinX = (byte) (minCellX <= 0 ? 0 : minCellX >= SubGridTree.SubGridTreeDimensionMinus1 ? SubGridTree.SubGridTreeDimensionMinus1 : minCellX);
+                  triangleCellExtent.MinY = (byte) (minCellY <= 0 ? 0 : minCellY >= SubGridTree.SubGridTreeDimensionMinus1 ? SubGridTree.SubGridTreeDimensionMinus1 : minCellY);
+                  triangleCellExtent.MaxX = (byte) (maxCellX <= 0 ? 0 : maxCellX >= SubGridTree.SubGridTreeDimensionMinus1 ? SubGridTree.SubGridTreeDimensionMinus1 : maxCellX);
+                  triangleCellExtent.MaxY = (byte) (maxCellY <= 0 ? 0 : maxCellY >= SubGridTree.SubGridTreeDimensionMinus1 ? SubGridTree.SubGridTreeDimensionMinus1 : maxCellY);
+
+                  triangleCellExtents[i] = triangleCellExtent;
+                }
+
+              // Iterate over all the cells in the grid using the triangle subgrid cell extents to filter
+              // triangles in the leaf that will be considered for point-in-triangle & elevation checks.
+                SubGridUtilities.SubGridDimensionalIterator((x, y) =>    
+                {
+                  double X = OriginXPlusHalfCellSize + CellSize * x;
+                  double Y = OriginYPlusHalfCellSize + CellSize * y;
+
+                  // If there is a hint, check it out
+                  if (HintIndex != -1)
+                  {
+                    triangleCellExtent = triangleCellExtents[HintIndex];
+
+                    // Check that this hint triangle has an extent in the subgrid that intersects with the (x, y) point being queried
+                    if (x >= triangleCellExtent.MinX && x <= triangleCellExtent.MaxX && y >= triangleCellExtent.MinY && y <= triangleCellExtent.MaxY)
                     {
-                        Patch[x, y] = (float)Z;
-                        ValueCount++;
+                      double Z = GetHeight(TriangleItems[SpatialIndexOptimisedTriangles[HintIndex]], X, Y);
+
+                      if (Z != Common.Consts.NullDouble)
+                      {
+                        Patch[x, y] = (float) (Z + Offset);
+                        hasValues = true;
+                        return; // Move to next cell
+                      }
+
+                      HintIndex = -1;
                     }
-                    else
+                  }
+
+                  // Search the triangles in the leaf to locate the one to interpolate height from
+                  for (int i = 0; i < triangleCount; i++)
+                  {
+                    //NumTINProbeLookups++;
+                    //triangleCellExtent = triangleCellExtents[i];
+
+                    // ###############################################################
+                    // ### This is the hottest line in this functionality...
+                    // Check that this triangle has an extent in the subgrid that intersects with the (x, y) point being queried
+                    //if (x < triangleCellExtent.MinX || x > triangleCellExtent.MaxX || y < triangleCellExtent.MinY || y > triangleCellExtent.MaxY)
+                    if (x < triangleCellExtents[i].MinX || x > triangleCellExtents[i].MaxX || y < triangleCellExtents[i].MinY || y > triangleCellExtents[i].MaxY)
+                      continue; // No intersection, move to next triangle
+                    // ###############################################################
+
+                    //NumTINHeightRequests++;
+
+                    // It does intersect, so perform the detailed point-in-triangle based height calculation
+                    //int triIndex = SpatialIndexOptimisedTriangles[arrayReference.TriangleArrayIndex + i]; //.TriangleIndex;
+                    //double Z = GetHeight(TriangleItems[triIndex], X, Y);
+
+                    // Note: This line is 1 second faster compared to two lines above. Difference is the intermediary variable
+                    double Z = GetHeight(TriangleItems[SpatialIndexOptimisedTriangles[arrayReference.TriangleArrayIndex + i] /*.TriangleIndex;*/], X, Y);
+
+                    if (Z != Common.Consts.NullReal)
                     {
-                        Patch[x, y] = Common.Consts.NullHeight;
+                      //NumNonNullProbeResults++;
+                      HintIndex = i;
+                      hasValues = true;
+                      Patch[x, y] = (float) (Z + Offset);
+
+                      return; // No more triangles needs to be examined for this cell
                     }
+                  }
+
+                  Patch[x, y] = Common.Consts.NullHeight;
                 });
 
-                return ValueCount > 0;
-            }
-            catch (Exception e)
-            {
-                Log.LogError($"Exception {e} occurred in TTTMDesign.InterpolateHeights");
-                return false;
-            }
-        }
-*/
-
-        /// <summary>
-        /// Interpolates heights from the design for all the cells in a subgrid
-        /// </summary>
-        /// <param name="Patch"></param>
-        /// <param name="OriginX"></param>
-        /// <param name="OriginY"></param>
-        /// <param name="CellSize"></param>
-        /// <param name="Offset"></param>
-        /// <returns></returns>
-        public bool InterpolateHeights2(float[,] Patch,
-                                        double OriginX, double OriginY,
-                                        double CellSize,
-                                        double Offset)
-        {
-            int ValueCount = 0;
-            int Hint = -1;
-            double HalfCellSize = CellSize / 2;
-            double OriginXPlusHalfCellSize = OriginX + HalfCellSize;
-            double OriginYPlusHalfCellSize = OriginY + HalfCellSize;
-
-            try
-            {
-                SubGridUtilities.SubGridDimensionalIterator((x, y) =>
-                {
-                    if (InterpolateHeight2(ref Hint,
-                                           OriginXPlusHalfCellSize + (CellSize * x),
-                                           OriginYPlusHalfCellSize + (CellSize * y),
-                                           Offset, out double Z))
-                    {
-                        Patch[x, y] = (float)Z;
-                        ValueCount++;
-                    }
-                    else
-                    {
-                        Patch[x, y] = Common.Consts.NullHeight;
-                    }
-                });
-
-                return ValueCount > 0;
-            }
-            catch (Exception e)
-            {
-                Log.LogError($"Exception {e} occurred in TTTMDesign.InterpolateHeights");
-
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Interpolates heights from the design for all the cells in a subgrid
-        /// </summary>
-        /// <param name="Patch"></param>
-        /// <param name="OriginX"></param>
-        /// <param name="OriginY"></param>
-        /// <param name="CellSize"></param>
-        /// <param name="Offset"></param>
-        /// <returns></returns>
-        public override bool InterpolateHeights(float[,] Patch,
-                                                double OriginX, double OriginY,
-                                                double CellSize,
-                                                double Offset)
-        {
-            int ValueCount = 0;
-            int Hint = -1;
-            double HalfCellSize = CellSize / 2;
-            double OriginXPlusHalfCellSize = OriginX + HalfCellSize;
-            double OriginYPlusHalfCellSize = OriginY + HalfCellSize;
-
-            try
-            {
-                SubGridUtilities.SubGridDimensionalIterator((x, y) =>
-                {
-                    if (InterpolateHeight(ref Hint,
-                                          OriginXPlusHalfCellSize + CellSize * x,
-                                          OriginYPlusHalfCellSize + CellSize * y,
-                                          Offset, out double Z))
-                    {
-                        Patch[x, y] = (float)Z;
-                        ValueCount++;
-                    }
-                    else
-                    {
-                        Patch[x, y] = Common.Consts.NullHeight;
-                    }
-                });
-
-                return ValueCount > 0;
+                return hasValues;
             }
             catch (Exception e)
             {
@@ -1043,10 +923,17 @@ namespace VSS.TRex.Designs
             {
                 triangles = new List<int>();
                 leaf.Items[SubGridX, SubGridY] = triangles;
+                triangles.Add(triIndex);
             }
-
-            // Add the triangle to the cell, even if it is already there (duplicates will be taken care of later)
-            triangles.Add(triIndex);
+            else
+            {
+                // Add the triangle to the cell, even if it is already there (duplicates will be taken care of later)
+                // Note: Duplicates tend to occur one after the other, so do a trivial last triangle duplicate check here
+                if (triangles[triangles.Count - 1] != triIndex)
+                {
+                    triangles.Add(triIndex);
+                }
+            }
         }
 
         /// <summary>
@@ -1079,6 +966,7 @@ namespace VSS.TRex.Designs
                     // Remove duplicate triangles added to the lists
                     /////////////////////////////////////////////////
                     BitArray uniques = new BitArray(TriangleItems.Length);
+                    long TotalDuplicates = 0;
 
                     FSpatialIndex.ScanAllSubGrids(leaf =>
                     {
@@ -1098,11 +986,15 @@ namespace VSS.TRex.Designs
                         int uniqueCount = 0;
                         for (int i = 0; i < triListCount; i++)
                         {
-                          var triIndex = triList[i];
+                          int triIndex = triList[i];
                           if (!uniques[triIndex])
                           {
                             triList[uniqueCount++] = triIndex;
                             uniques[triIndex] = true;
+                          }
+                          else
+                          {
+                            TotalDuplicates++;
                           }
                         }
 
@@ -1113,7 +1005,7 @@ namespace VSS.TRex.Designs
                       return true;
                     });
                  
-                    // Console.WriteLine($"Total duplicates encountered: {TotalDuplicates}");
+                    Console.WriteLine($"Total duplicates encountered: {TotalDuplicates}");
                  
                     // Transform this subgrid tree into one where each on-the-ground subgrid is represented by an index and a number of triangles present in a
                     // a single list of triangles.
@@ -1123,16 +1015,24 @@ namespace VSS.TRex.Designs
                     FSpatialIndex.ForEach(x => { numTriangleReferences += x?.Count ?? 0; return true; });
 
                     // Create the single array
-                    FSpatialIndexOptimisedTriangles = new int[numTriangleReferences];
+                    SpatialIndexOptimisedTriangles = new int[numTriangleReferences]; 
 
                     // Copy all triangle lists into it, and add the appropriate reference blocks in the new tree.
 
-                    uint copiedCount = 0;
+                    int copiedCount = 0;
+           
+                    TriangleArrayReference arrayReference = new TriangleArrayReference()
+                    {
+                      Count = 0,
+                      TriangleArrayIndex = 0
+                    };
 
                     /////////////////////////////////////////////////
                     // Iterate across all leaf subgrids
                     /////////////////////////////////////////////////
-                 
+               
+                    BoundingWorldExtent3D cellWorldExtent = new BoundingWorldExtent3D();                            
+               
                     FSpatialIndex.ScanAllSubGrids(leaf =>
                     {
                         // Iterate across all cells in each (level 5) leaf subgrid. Each cell represents 
@@ -1140,29 +1040,138 @@ namespace VSS.TRex.Designs
                         // core cell size for the project
                         SubGridUtilities.SubGridDimensionalIterator((x, y) =>
                         {
-                            List<int> triList = FSpatialIndex[leaf.OriginX + x, leaf.OriginY + y];
+                          uint CellX = leaf.OriginX + x;
+                          uint CellY = leaf.OriginY + y;
 
-                            if (triList == null)
-                                return;
+                          List<int> triList = FSpatialIndex[CellX, CellY];
 
-                            // Copy triangles
-                            Array.Copy(triList.ToArray(), 0, FSpatialIndexOptimisedTriangles, copiedCount, triList.Count);
+                          if (triList == null)
+                              return;
 
-                            // Add new entry for optimised tree
-                            FSpatialIndexOptimised[leaf.OriginX + x, leaf.OriginY + y] = new TriangleArrayReference
+                          /////////////////////////////////////////////////////////////////////////////////////////////////
+                          /// Start: Determine the triangles that definitely cannot cover one or more cells in each subgrid
+                      
+                          double leafCellSize = FSpatialIndexOptimised.CellSize / SubGridTree.SubGridTreeDimension;
+                          double halfLeafCellSize = leafCellSize / 2;
+                          double halfCellSizeMinusEpsilon = halfLeafCellSize - 0.0001;
+
+                          int trianglesCopiedToLeaf = 0;
+
+                          FSpatialIndexOptimised.GetCellExtents(CellX, CellY, ref cellWorldExtent);
+
+                          // Compute the bounding structs for the triangles in this subgrid and remove any triangles whose
+                          // bounding struct is null (ie: no cell centers are covered by its bounding box).
+
+                          for (int i = 0; i < triList.Count; i++)
+                          {
+                            // Get the triangle...
+                            Triangle tri = TriangleItems[triList[i]];
+
+                            // Get the real world bounding box for the triangle
+                            // Note: As sampling occurs at cell centers shrink the effective bounding box for each triangle used
+                            // for caculating the cell bounding box by half a cell size (less a small Epsilon) so the cell bounding box
+                            // captures cell centers falling in the triangle world coordinate bounding box
+
+                            XYZ Vertex0 = VertexItems[tri.Vertex0];
+                            XYZ Vertex1 = VertexItems[tri.Vertex1];
+                            XYZ Vertex2 = VertexItems[tri.Vertex2];
+
+                            double TriangleWorldExtent_MinX = Math.Min(Vertex0.X, Math.Min(Vertex1.X, Vertex2.X)) + halfCellSizeMinusEpsilon;
+                            double TriangleWorldExtent_MinY = Math.Min(Vertex0.Y, Math.Min(Vertex1.Y, Vertex2.Y)) + halfCellSizeMinusEpsilon;
+                            double TriangleWorldExtent_MaxX = Math.Max(Vertex0.X, Math.Max(Vertex1.X, Vertex2.X)) - halfCellSizeMinusEpsilon;
+                            double TriangleWorldExtent_MaxY = Math.Max(Vertex0.Y, Math.Max(Vertex1.Y, Vertex2.Y)) - halfCellSizeMinusEpsilon;
+
+                            // Calculate cell coordinates relative to the origin of the subgrid
+                            int minCellX = (int)Math.Floor((TriangleWorldExtent_MinX - cellWorldExtent.MinX) / leafCellSize);
+                            int minCellY = (int)Math.Floor((TriangleWorldExtent_MinY - cellWorldExtent.MinY) / leafCellSize);
+                            int maxCellX = (int)Math.Floor((TriangleWorldExtent_MaxX - cellWorldExtent.MinX) / leafCellSize);
+                            int maxCellY = (int)Math.Floor((TriangleWorldExtent_MaxY - cellWorldExtent.MinY) / leafCellSize);
+
+                            // Check if the result bounds are valid - if not, there is no point including it
+                            if (minCellX > maxCellX || minCellY > maxCellY)
                             {
-                                TriangleArrayIndex = copiedCount,
-                                Count = (uint)triList.Count
-                            };
+                              // There are no cell probe positions that can lie in this triangle, ignore it
+                              continue;
+                            }
 
-                            // Keep track of how may have been copied
-                            copiedCount += (uint)triList.Count;
+                            // Check if there is an intersection between the triangle cell bounds and the leaf cell bounds
+                            if (minCellX > SubGridTree.SubGridTreeDimensionMinus1 || minCellY > SubGridTree.SubGridTreeDimensionMinus1 || maxCellX < 0 || maxCellY < 0)
+                            {
+                              // There is no bounding box intersection, ignore it
+                              continue;
+                            }
+
+                            // Transform the cell bounds by clamping them to the bounds of this subgrid
+                            minCellX = minCellX <= 0 ? 0 : minCellX >= SubGridTree.SubGridTreeDimensionMinus1 ? SubGridTree.SubGridTreeDimensionMinus1 : minCellX;
+                            minCellY = minCellY <= 0 ? 0 : minCellY >= SubGridTree.SubGridTreeDimensionMinus1 ? SubGridTree.SubGridTreeDimensionMinus1 : minCellY;
+                            maxCellX = maxCellX <= 0 ? 0 : maxCellX >= SubGridTree.SubGridTreeDimensionMinus1 ? SubGridTree.SubGridTreeDimensionMinus1 : maxCellX;
+                            maxCellY = maxCellY <= 0 ? 0 : maxCellY >= SubGridTree.SubGridTreeDimensionMinus1 ? SubGridTree.SubGridTreeDimensionMinus1 : maxCellY;
+
+                            // Check all the cells in the subgrid covered by this bounding box to check if at least one cell will actively probe this triangle
+
+                            bool found = false;
+                            double _x = cellWorldExtent.MinX + minCellX * leafCellSize + halfLeafCellSize;
+
+                            for (int cellX = minCellX; cellX <= maxCellX; cellX++)
+                            {
+                              double _y = cellWorldExtent.MinY + minCellY * leafCellSize + halfLeafCellSize;
+                              for (int cellY = minCellY; cellY <= maxCellY; cellY++)
+                              {
+                                if (XYZ.GetTriangleHeight(Vertex0, Vertex1, Vertex2, _x, _y) != Common.Consts.NullDouble)
+                                {
+                                  found = true;
+                                  break;
+                                }
+
+                                _y += leafCellSize;
+                              }
+
+                              if (found)
+                                break;
+
+                              _x += leafCellSize;
+                            }
+
+                            if (!found)
+                            {
+                              // No cell in the subgrid intersects with the triangle - ignore it
+                              //continue;
+                            }
+
+                            // This triangle is a candidate for beign probed, copy it into the array
+                            trianglesCopiedToLeaf++;
+                            SpatialIndexOptimisedTriangles[copiedCount++] = triList[i];
+                          }
+                          /// End: Determine the triangles that definitely cannot cover one or more cells in each subgrid
+                          ///////////////////////////////////////////////////////////////////////////////////////////////
+                          
+                          // Copy triangles
+                          //Array.Copy(triList.ToArray(), 0, SpatialIndexOptimisedTriangles, copiedCount, triList.Count);
+
+                          arrayReference.Count = trianglesCopiedToLeaf; 
+                          //arrayReference.Count = triList.Count; 
+
+                          // Add new entry for optimised tree
+                          FSpatialIndexOptimised[leaf.OriginX + x, leaf.OriginY + y] = arrayReference;
+
+                          // Keep track of how may have been copied
+                          //copiedCount += triList.Count;
+
+                          // Set copied count into the array reference for the next leaf so it captures the starting location
+                          // in the overall arrya for it
+                          arrayReference.TriangleArrayIndex = copiedCount;
                         });
 
                         return true;
                     });
+
+                  Console.WriteLine($"Number of original triangle references: {SpatialIndexOptimisedTriangles.Length}");
+                  Console.WriteLine($"Number of triangle references removed as unprobe-able: {SpatialIndexOptimisedTriangles.Length - copiedCount}");
+
+                  // Finally, resize the master triangle reference array to remove the unused entries due to unprobe-able triangles
+                  Array.Resize(ref SpatialIndexOptimisedTriangles, copiedCount);
                 }
-                finally
+                finally  
                 {
                     // Emit some logging indicating likely efficiency of index.
                     long sumTriangleReferences = 0;
@@ -1217,12 +1226,6 @@ namespace VSS.TRex.Designs
                     return DesignLoadResult.UnableToLoadSubgridIndex;
 
                 Log.LogInformation($"Area: ({FData.Header.MinimumEasting}, {FData.Header.MinimumNorthing}) -> ({FData.Header.MaximumEasting}, {FData.Header.MaximumNorthing}): [{FData.Header.MaximumEasting - FData.Header.MinimumEasting} x {FData.Header.MaximumNorthing - FData.Header.MinimumNorthing}]");
-
-                // Build the quadtree based spatial index
-                // Removed, this is the old quadtree spatial index, not performant enough
-                //QuadTreeSpatialIndex = new TTMQuadTree();
-                //QuadTreeSpatialIndex.Initialise(FData, false);
-                //Log.LogInformation($"Constructed quadtree spatial index using {QuadTreeSpatialIndex.BATree.Count} BTree blocks");
 
                 return DesignLoadResult.Success;
             }

@@ -17,28 +17,40 @@ namespace VSS.TRex.Sandbox.TTMPerformanceTest
 
         Console.WriteLine($"Perf Test: Duration for file load and index preparation = {loadTime}");
 
+        TimeSpan bestTime = TimeSpan.MaxValue;
+
         float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];  
 
-        int numPatches = 0;
-        _start = DateTime.Now;
-
-        design.SpatialIndexOptimised.ScanAllSubGrids(leaf =>
+        for (int i = 0; i < 100; i++)
         {
-          double cellSize = leaf.Owner.CellSize;
-          leaf.CalculateWorldOrigin(out double originX, out double originY);
+          int numPatches = 0;
+          _start = DateTime.Now;
 
-          leaf.ForEach((x, y) =>
-          {           
-            if (design.InterpolateHeights(Patch, originX + x * cellSize, originY + y * cellSize, cellSize / SubGridTree.SubGridTreeDimension, 0))
-              numPatches++;
+          design.NumTINProbeLookups = 0;
+          design.NumTINHeightRequests = 0;
+          design.NumNonNullProbeResults = 0;
+          design.SpatialIndexOptimised.ScanAllSubGrids(leaf =>
+          {
+            double cellSize = leaf.Owner.CellSize;
+            leaf.CalculateWorldOrigin(out double originX, out double originY);
+
+            leaf.ForEach((x, y) =>
+            {
+              if (design.InterpolateHeights(Patch, originX + x * cellSize, originY + y * cellSize, cellSize / SubGridTree.SubGridTreeDimension, 0))
+                numPatches++;
+            });
+
+            return true;
           });
 
-          return true;
-        });
+          TimeSpan lookupTime = DateTime.Now - _start;
 
-        TimeSpan lookupTime = DateTime.Now - _start;
-
-        Console.WriteLine($"Perf Test: Duration for {numPatches} lookups = {lookupTime}");
+          if (lookupTime < bestTime)
+          {
+            bestTime = lookupTime;
+            Console.WriteLine($"Perf Test: Run {i}: Duration for {numPatches} lookups = {lookupTime}, probes = {design.NumTINProbeLookups}, Triangle evaluations = {design.NumTINHeightRequests}, non-null results = {design.NumNonNullProbeResults}");
+          }
+        }
       }
 
       public static void LoadTheGiantDesignALotOfTimes()
@@ -74,8 +86,8 @@ namespace VSS.TRex.Sandbox.TTMPerformanceTest
     {
       DIBuilder.New().AddLogging().Complete();
 
-      LoadTheGiantDesignALotOfTimes();
-      //ScanAllElevationsOverGiantDesign();
+      //LoadTheGiantDesignALotOfTimes();
+      ScanAllElevationsOverGiantDesign();
 
       Console.ReadKey();
     }
