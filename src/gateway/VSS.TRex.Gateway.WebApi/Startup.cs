@@ -54,9 +54,19 @@ namespace VSS.TRex.Gateway.WebApi
 
       services.AddJaeger(SERVICE_TITLE);
 
+      //add a more permissive cors for this during testing
+      //TODO Review this.....
+      services.AddCors(options =>
+      {
+        options.AddPolicy("VSS", builder => builder.AllowAnyOrigin()
+          .WithHeaders("*")
+          .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE"));
+      });
+
       //services.AddMemoryCache();
       services.AddCommon<Startup>(SERVICE_TITLE, "API for TRex Gateway");
 
+    
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
       //Set up logging etc. for TRex
