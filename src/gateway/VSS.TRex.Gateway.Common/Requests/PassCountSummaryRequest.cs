@@ -18,12 +18,6 @@ namespace VSS.TRex.Gateway.Common.Requests
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
     public FilterResult filter { get; private set; }
 
-    ///// <summary>
-    ///// Override the Pass Count target range recorded from the machine with the value of overridingTargetPassCountRange
-    ///// </summary>
-    //[JsonProperty(PropertyName = "overrideTargetCMV", Required = Required.Default)]
-    //public bool overrideTargetPassCountRange { get; protected set; }
-
     /// <summary>
     /// The global override value for target pass count range. Optional.
     /// </summary>
@@ -43,7 +37,6 @@ namespace VSS.TRex.Gateway.Common.Requests
     public static PassCountSummaryRequest CreatePassCountSummaryRequest(
       Guid projectUid,
       FilterResult filter,
-      //bool overrideTargetPassCountRange,
       TargetPassCountRange overridingTargetPassCountRange
     )
     {
@@ -51,7 +44,6 @@ namespace VSS.TRex.Gateway.Common.Requests
       {
         ProjectUid = projectUid,
         filter = filter,
-        //overrideTargetPassCountRange = overrideTargetPassCountRange,
         overridingTargetPassCountRange = overridingTargetPassCountRange
       };
     }
