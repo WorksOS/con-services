@@ -85,8 +85,12 @@ namespace VSS.TRex.Gateway.Common.Requests
     /// <summary>
     /// Validates all properties
     /// </summary>
-    public virtual void Validate()
+    public override void Validate()
     {
+      base.Validate();
+
+      filter?.Validate();
+
       if (overrideTargetCMV)
       {
         if (!(cmvTarget > 0) || !(minCMVPercent > 0 && maxCMVPercent > 0))

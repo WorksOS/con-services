@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
@@ -45,6 +46,28 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Process(cmvDetailsRequest) as CMVDetailedResult);
 
       return CompactionCmvDetailedResult.CreateCmvDetailedResult(result);
+    }
+
+    /// <summary>
+    /// Get Pass Count details from production data for the specified project and date range.
+    /// </summary>
+    [Route("api/v1/passcounts/details")]
+    [HttpGet]
+    public CompactionPassCountDetailedResult GetPassCountDetails(
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid? filterUid)
+    {
+      Log.LogInformation($"{nameof(GetPassCountDetails)}: {Request.QueryString}");
+
+      var passCountDetailsRequest = PassCountDetailsRequest.CreatePassCountDetailsRequest(projectUid, null/* filter */, new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
+      passCountDetailsRequest.Validate();
+
+      var result = WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<DetailedPassCountExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null, null)
+          .Process(passCountDetailsRequest) as PassCountDetailedResult);
+
+      return CompactionPassCountDetailedResult.CreatePassCountDetailedResult(result);
     }
 
     /// <summary>

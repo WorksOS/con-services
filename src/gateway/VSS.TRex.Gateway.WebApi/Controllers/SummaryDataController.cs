@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
@@ -14,6 +15,10 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
   /// </summary>
   public class SummaryDataController : BaseController
   {
+    private const short CMV_VALUE_NOT_REQUIRED = 0;
+    private const ushort PASS_COUNT_TARGET_MIN = 5;
+    private const ushort PASS_COUNT_TARGET_MAX = 7;
+
     /// <summary>
     /// Default constructor.
     /// </summary>
@@ -56,6 +61,26 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       return CompactionCmvSummaryResult.Create(result, cmvSettings);
     }
 
-    private const short CMV_VALUE_NOT_REQUIRED = 0;
+    /// <summary>
+    /// Get Pass Count summary from production data for the specified project and date range.
+    /// </summary>
+    [Route("api/v1/passcounts/summary")]
+    [HttpGet]
+    public CompactionPassCountSummaryResult GetPassCountSummary(
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid? filterUid)
+    {
+      Log.LogInformation($"{nameof(GetPassCountSummary)}: {Request.QueryString}");
+
+      var passCountSummaryRequest = PassCountSummaryRequest.CreatePassCountSummaryRequest(projectUid, null/* filter */, TargetPassCountRange.CreateTargetPassCountRange(PASS_COUNT_TARGET_MIN, PASS_COUNT_TARGET_MAX));
+      passCountSummaryRequest.Validate();
+
+      var result = WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<SummaryPassCountExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null, null)
+          .Process(passCountSummaryRequest) as PassCountSummaryResult);
+
+      return CompactionPassCountSummaryResult.CreatePassCountSummaryResult(result);
+    }
   }
 }
