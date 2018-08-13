@@ -55,34 +55,27 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
 
     private static string ProcessFilterJson(ProjectData project, string filterJson, IRaptorProxy raptorProxy, IDictionary<string, string> customHeaders)
     {
-      try
+      MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterJson);
+
+      filterObj.ApplyDateRange(project?.IanaTimeZone);
+
+      if (filterObj.DateRangeType == DateRangeType.ProjectExtents)
       {
-        MasterData.Models.Models.Filter filterObj = JsonConvert.DeserializeObject<MasterData.Models.Models.Filter>(filterJson);
-
-        filterObj.ApplyDateRange(project?.IanaTimeZone);
-
-        if (filterObj.DateRangeType == DateRangeType.ProjectExtents)
-        {
-          //get extents from 3d pm
-          var statistics = raptorProxy?.GetProjectStatistics(Guid.Parse(project?.ProjectUid), customHeaders).Result;
-          filterObj.StartUtc = statistics?.startTime;
-          filterObj.EndUtc = statistics?.endTime;
-        }
-
-        //The UI needs to know the start date for specified ranges, this is actually the range data will be returned for
-        if (filterObj.AsAtDate == true)
-        {
-          var statistics = raptorProxy?.GetProjectStatistics(Guid.Parse(project?.ProjectUid), customHeaders).Result;
-          filterObj.StartUtc = statistics?.startTime;
-          filterObj.DateRangeType = DateRangeType.Custom;
-        }
-
-        return JsonConvert.SerializeObject(filterObj);
+        //get extents from 3d pm
+        var statistics = raptorProxy?.GetProjectStatistics(Guid.Parse(project?.ProjectUid), customHeaders).Result;
+        filterObj.StartUtc = statistics?.startTime;
+        filterObj.EndUtc = statistics?.endTime;
       }
-      catch (Exception exception)
+
+      //The UI needs to know the start date for specified ranges, this is actually the range data will be returned for
+      if (filterObj.AsAtDate == true)
       {
-        return string.Empty;
+        var statistics = raptorProxy?.GetProjectStatistics(Guid.Parse(project?.ProjectUid), customHeaders).Result;
+        filterObj.StartUtc = statistics?.startTime;
+        filterObj.DateRangeType = DateRangeType.Custom;
       }
+
+      return JsonConvert.SerializeObject(filterObj);
     }
   }
 }
