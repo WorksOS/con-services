@@ -29,5 +29,11 @@ Scenario Outline: TagFile - Bad Request
   | NullFileName     | -1   |
   | NullData         | -1   |
   | NullBoundary     | -1   |
-  | InvalidProjectId | 2011 |
   | FilenameTooLong  | -1   |
+
+Scenario Outline: TagFile - Unauthorized
+  When I POST a Tag file with name "<ParamName>" from the repository expecting Unauthorized return
+  Then the Tag Process Service response should contain Code <Code> and Message <Message>
+  Examples: 
+  | ParamName        | Code | Message                                                                                                  |
+  | InvalidProjectId | -5   | "Missing Project or project does not belong to specified customer or don't have access to the project 0" |

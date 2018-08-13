@@ -250,19 +250,6 @@ this.TagFile_BadRequest("NullBoundary", "-1", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("TagFile - Bad Request: InvalidProjectId")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "TagFile")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "InvalidProjectId")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:paramName", "InvalidProjectId")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:code", "2011")]
-        public virtual void TagFile_BadRequest_InvalidProjectId()
-        {
-#line 24
-this.TagFile_BadRequest("InvalidProjectId", "2011", ((string[])(null)));
-#line hidden
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("TagFile - Bad Request: FilenameTooLong")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "TagFile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "FilenameTooLong")]
@@ -272,6 +259,38 @@ this.TagFile_BadRequest("InvalidProjectId", "2011", ((string[])(null)));
         {
 #line 24
 this.TagFile_BadRequest("FilenameTooLong", "-1", ((string[])(null)));
+#line hidden
+        }
+        
+        public virtual void TagFile_Unauthorized(string paramName, string code, string message, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("TagFile - Unauthorized", exampleTags);
+#line 34
+this.ScenarioSetup(scenarioInfo);
+#line 4
+this.FeatureBackground();
+#line 35
+  testRunner.When(string.Format("I POST a Tag file with name \"{0}\" from the repository expecting Unauthorized retu" +
+                        "rn", paramName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 36
+  testRunner.Then(string.Format("the Tag Process Service response should contain Code {0} and Message {1}", code, message), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("TagFile - Unauthorized: InvalidProjectId")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "TagFile")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "InvalidProjectId")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParamName", "InvalidProjectId")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Code", "-5")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Message", "\"Missing Project or project does not belong to specified customer or don\'t have a" +
+            "ccess to the project 0\"")]
+        public virtual void TagFile_Unauthorized_InvalidProjectId()
+        {
+#line 34
+this.TagFile_Unauthorized("InvalidProjectId", "-5", "\"Missing Project or project does not belong to specified customer or don\'t have a" +
+                    "ccess to the project 0\"", ((string[])(null)));
 #line hidden
         }
     }

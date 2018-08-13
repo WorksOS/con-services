@@ -20,29 +20,16 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// 
   /// </summary>
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+  [ProjectVerifier]
   public class EditDataController : IEditDataContract
   {
-    /// <summary>
-    /// Tag processor for use by executor
-    /// </summary>
     private readonly ITagProcessor tagProcessor;
-
-    /// <summary>
-    /// Raptor client for use by executor
-    /// </summary>
     private readonly IASNodeClient raptorClient;
-
-    /// <summary>
-    /// LoggerFactory factory for use by executor
-    /// </summary>
     private readonly ILoggerFactory logger;
 
     /// <summary>
     /// Constructor with dependency injection
     /// </summary>
-    /// <param name="raptorClient">Raptor client</param>
-    /// <param name="tagProcessor">Tag processor client</param>
-    /// <param name="logger">LoggerFactory</param>
     public EditDataController(IASNodeClient raptorClient, ITagProcessor tagProcessor, ILoggerFactory logger)
     {
       this.raptorClient = raptorClient;
@@ -53,11 +40,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// Gets a list of edits or overrides of the production data for a project and machine.
     /// </summary>
-    /// <param name="request">The request representation for the operation.</param>
     /// <returns>A list of the edits applied to the production data for the project and machine.</returns>
-    /// <executor>GetEditDataExecutor</executor> 
     [PostRequestVerifier]
-    [ProjectVerifier]
     [Route("api/v1/productiondata/getedits")]
     [HttpPost]
     public EditDataResult PostEditDataAcquire([FromBody] GetEditDataRequest request)
@@ -70,11 +54,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// Applies an edit to production data to correct data that has been recorded wrongly in Machines by Operator.
     /// </summary>
-    /// <param name="request">The request representation for the operation</param>
-    /// <returns></returns>
-    /// <executor>EditDataExecutor</executor>
     [PostRequestVerifier]
-    [ProjectVerifier(AllowArchivedState = true)]
     [Route("api/v1/productiondata/edit")]
     [HttpPost]
     public ContractExecutionResult Post([FromBody]EditDataRequest request)
@@ -128,8 +108,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// Validates new edit is within production data date range for the project
     /// </summary>
-    /// <param name="projectId">Project ID</param>
-    /// <param name="dataEdit">New edit</param>
     private void ValidateDates(long projectId, ProductionDataEdit dataEdit)
     {
       var request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId, new long[0]);

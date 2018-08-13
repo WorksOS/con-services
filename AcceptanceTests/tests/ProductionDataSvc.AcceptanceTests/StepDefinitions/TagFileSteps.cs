@@ -42,6 +42,12 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       tagPoster.DoInvalidRequest(paramName);
     }
 
+    [When(@"I POST a Tag file with name ""(.*)"" from the repository expecting Unauthorized return")]
+    public void WhenIPOSTATagFileWithNameFromTheRepositoryExpectingUnauthorizedReturn(string code)
+    {
+      tagPoster.DoInvalidRequest(code, HttpStatusCode.Unauthorized);
+    }
+
     [Then(@"the Tag Process Service response should contain Code (.*) and Message ""(.*)""")]
     public void ThenTheTagProcessServiceResponseShouldContainCodeAndMessage(int code, string message)
     {

@@ -24,6 +24,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
   /// For handling Tag file submissions from either TCC or machines equiped with direct submission capable units.
   /// </summary>
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+  [ProjectVerifier(AllowArchivedState = false)]
   public class TagFileController : Controller
   {
     private readonly ITagProcessor tagProcessor;
