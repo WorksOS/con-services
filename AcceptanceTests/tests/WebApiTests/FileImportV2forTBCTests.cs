@@ -60,10 +60,10 @@ namespace WebApiTests
 
       var importFileList = importFile.GetImportedFilesFromWebApiV2(ts.GetBaseUri() + $"api/v2/projects/{project.LegacyProjectId}/importedfiles", customerUid);
       Assert.IsTrue(importFileList.Count == 1, "Expected 1 imported files but got " + importFileList.Count);
-      var expectedResult =
-        new DesignDetailV2Result {id = importFileV2Result.Id, name = TestFile.TestAlignment1, fileType = (int)ImportedFileType.Alignment};
-      ts.CompareTheActualImportFileWithExpectedV2(importFileList[0], expectedResult, true);
-
+      Assert.AreEqual(importFileV2Result.Id, importFileList[0].id, "Wrong id");
+      Assert.AreEqual(TestFile.TestAlignment1, importFileList[0].name, "Wrong name");
+      Assert.AreEqual((int)ImportedFileType.Alignment, importFileList[0].fileType, "Wrong filetype");
+      //Cannot compare insertUTC as we don't know it here
     }
 
     [TestMethod]
