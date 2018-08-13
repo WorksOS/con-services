@@ -41,7 +41,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.AWS.TransferProxy.UnitT
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Models", "Productivity3DModels\src\VSS.Productivity3D.Models.csproj", "{8CA7E0D6-B0AC-47D2-AC62-34EAADBABE98}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Productivity3D.Models.UnitTests", "Productivity3DModels\test\UnitTests\VSS.Productivity3D.Models.UnitTests.csproj", "{50C20DB1-6D68-45ED-849A-C0C5E84F139A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Models.UnitTests", "Productivity3DModels\test\UnitTests\VSS.Productivity3D.Models.UnitTests.csproj", "{50C20DB1-6D68-45ED-849A-C0C5E84F139A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageComparisonNetcore", "XnaFanImageComparison\ImageComparisonNetcore\ImageComparisonNetcore.csproj", "{F66EB29D-5852-4918-8E12-61F8FB3E7DB9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -125,6 +127,10 @@ Global
 		{50C20DB1-6D68-45ED-849A-C0C5E84F139A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50C20DB1-6D68-45ED-849A-C0C5E84F139A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50C20DB1-6D68-45ED-849A-C0C5E84F139A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F66EB29D-5852-4918-8E12-61F8FB3E7DB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F66EB29D-5852-4918-8E12-61F8FB3E7DB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F66EB29D-5852-4918-8E12-61F8FB3E7DB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F66EB29D-5852-4918-8E12-61F8FB3E7DB9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
