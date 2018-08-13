@@ -72,3 +72,5 @@ spec:
         env:
           - name: IGNITE_HOME
             value: "/trex/"
+          - name: IS_KUBERNETES
+            value: "true"

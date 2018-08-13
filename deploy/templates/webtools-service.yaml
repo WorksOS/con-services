@@ -4,7 +4,7 @@ metadata:
   name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-webtools
 spec:
   selector:
-      component: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-webtools
+    component: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-webtools
   ports:
   - protocol: TCP
     port: 80

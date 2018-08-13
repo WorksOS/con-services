@@ -12,11 +12,10 @@ metadata:
   {{- end }}
 spec:
   rules:
-    {{- range $host := .Values.ingress.hosts }}
-    - host: {{ $host }}.{{ $fdqn }}
+    - host: trex.{{ $fdqn }}
       http:
         paths:
           - backend:
               serviceName: {{ $serviceName }}-gateway
               servicePort: 80
-    {{- end -}}
+
