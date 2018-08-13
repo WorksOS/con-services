@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -61,7 +62,7 @@ namespace WebApiTests
       var importFileList = importFile.GetImportedFilesFromWebApiV2(ts.GetBaseUri() + $"api/v2/projects/{project.LegacyProjectId}/importedfiles", customerUid);
       Assert.IsTrue(importFileList.Count == 1, "Expected 1 imported files but got " + importFileList.Count);
       Assert.AreEqual(importFileV2Result.Id, importFileList[0].id, "Wrong id");
-      Assert.AreEqual(TestFile.TestAlignment1, importFileList[0].name, "Wrong name");
+      Assert.AreEqual(Path.GetFileName(TestFile.TestAlignment1), importFileList[0].name, "Wrong name");
       Assert.AreEqual((int)ImportedFileType.Alignment, importFileList[0].fileType, "Wrong filetype");
       //Cannot compare insertUTC as we don't know it here
     }
