@@ -10,7 +10,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric.Summary
   /// <summary>
   /// The response state returned from a Pass Count summary request
   /// </summary>
-  public class PassCountSummaryResponse : SummaryAnalyticsResponse, IAggregateWith<PassCountSummaryResponse>, IAnalyticsOperationResponseResultConversion<PassCountSummaryCountResult>
+  public class PassCountSummaryResponse : SummaryAnalyticsResponse, IAggregateWith<PassCountSummaryResponse>, IAnalyticsOperationResponseResultConversion<PassCountSummaryResult>
   {
     /// <summary>
     /// Holds last known good target Pass Count range values.
@@ -34,9 +34,9 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric.Summary
       return base.AggregateWith(other) as PassCountSummaryResponse;
     }
 
-    public PassCountSummaryCountResult ConstructResult()
+    public PassCountSummaryResult ConstructResult()
     {
-      return new PassCountSummaryCountResult
+      return new PassCountSummaryResult
       {
         IsTargetPassCountConstant = IsTargetValueConstant,
         ConstantTargetPassCountRange = LastPassCountTargetRange,

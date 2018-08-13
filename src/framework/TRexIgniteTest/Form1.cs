@@ -1339,7 +1339,7 @@ namespace TRexIgniteTest
         PriorProcessingMessage();
 
         PassCountSummaryOperation operation = new PassCountSummaryOperation();
-        PassCountSummaryCountResult result = operation.Execute(
+        PassCountSummaryResult result = operation.Execute(
           new PassCountSummaryArgument()
           {
             ProjectID = siteModel.ID,
